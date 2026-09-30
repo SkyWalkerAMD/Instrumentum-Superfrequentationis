@@ -5,9 +5,10 @@
 本轮在用户提供的 `octool-linux-refactor.tar.gz` 上继续扩展。作者确认旧 GUI 源码丢失后，
 授权按 Windows/Linux 二进制证据重构，首批选择基础信息和 MSR/MMIO/PCI 原始读写。
 实际 Qt5 工程现已位于 `gui/`，96 字节 ABI 和旧 MMIO 协议保留；新 GUI 使用已有 HAL。
-公开 GitHub Actions 已取得 EL8 GUI 和部分桌面实测结果，完整矩阵状态见验证文档。
+公开 GitHub Actions 的十目标完整矩阵已全绿，包含 AMD PStates 只读页；详细证据见验证文档。
 
 - [多发行版构建、运行和打包](multi-distro.md)：十目标、构建入口、依赖方案、CI 门禁。
+- [已验证安装包和源包](artifacts.md)：产物名称、每目标选择方式、下载和哈希校验。
 - [GitHub 仓库与 Actions](github-actions.md)：当前测试路径、公开状态与计费边界。
 - [Actions 实测修复记录](actions-debugging.md)：软件源、Kbuild 探测与 EL headers 的实际失败及处理。
 - [GUI 恢复与重构](gui-recovery.md)：源码丢失后的作者授权、Windows 输入现状与恢复边界。

@@ -156,3 +156,9 @@ GUI 缺失是独立输入问题，不能以示例 Qt 窗口、旧 Ubuntu 二进�
   第 18c18c5 轮 Ubuntu26 Xwayland 四页截图已下载并逐页检查，基础表单可读且没有裁切。
 
 这几轮可用 GUI 的所有范围都不包含容器外的真实寄存器、MOK 固件登记或模块加载。
+
+c48a38f / [run 36670288030](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36670288030)
+首次全部 23 个 job 成功。EL10 Xlib 检查器、Mutter/Xwayland 路径得到实际验证；新增 AMD PStates
+的五项回归也在十个目标通过，QtTest 各 12 项结果无失败/跳过。保存 20 个发行版安装包与 SHA256SUMS，
+下载核对源码包和 SDK SHA；Debian11/EL10/Ubuntu26 的新增页截图均已目视核查。
+逐目标记录见 [完整证据](validation/actions-run-36670288030.json)。

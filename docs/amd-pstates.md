@@ -66,6 +66,14 @@ SHIMADA 分支落到 `1550 - raw*6.25`。原始数据和标志实际值仍需真
 QtTest 应报告 12 项结果。模拟 transport 明确验证逻辑 CPU、原始 bit32 保留、地址集合及零写入。
 这些是离线回归，不是 9995WX 实机运行证据。
 
+c48a38f 的 [完整矩阵](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36670288030)
+已确认每个目标 12 项结果全部通过，普通用户的实际窗口也通过。Debian11 的新增页面截图已逐项查看，
+CPU 输入、按钮、表头和八行均可读；初始状态没有实际寄存器数据。
+
+EL10 的实际 Xwayland 窗口（未发起读取，不是模拟传感器数值）：
+
+![EL10 AMD PStates 初始窗口](validation/pstates-c48a38f-el10.png)
+
 真机步骤接入 [验收清单](hardware-acceptance.md)。需记录实际 CPUID 和 BIOS，
 将快照中的 MSR 与同 CPU 的 raw MSR 页对照；禁用定义不显示配置频率，错误/不支持不伪造成功。
 后续恢复电压、电流或写入前，仍需对应型号资料或作者确认的原始值/算法。

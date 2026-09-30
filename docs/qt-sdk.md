@@ -58,3 +58,12 @@ SDK 带源码许可文件副本和 Qt 来源记录；最终 OCTool 的第三方�
 原 GUI 源码已丢失，现已检查可读取的 Windows 包并重构基础版；详细输入见
 [GUI 恢复流程](gui-recovery.md)。基础版只链接 QtBase，不能把 SDK 中 Charts 等模块的许可
 或存在状态当作当前 GUI 的已链接依赖。
+
+## 完整 GUI 矩阵使用的后续 SDK
+
+bootstrap 修复发行版差异后，81ea801 的 baseline 从源码重建 Qt 并保存新配方缓存。
+c48a38f / run 36670288030 恢复该 SDK，通过哈希校验，再重编当前 GUI/测试；全矩阵通过。
+当前 SDK SHA-256 为 `6afaa07b5716c00c92ece61ef42eae007b18e57e2d650f6b450ddfa52afc8d7c`，
+本地另存 `dist/qt-sdk/octool-qt-5.15.18-el8-sdk-c48a38f.tar.gz` 及 `.sha256`，未覆盖上面的历史 SDK。
+最终发行 GUI 的实际最高需求为 GLIBC2.28、GLIBCXX3.4.15、CXXABI1.3.9，不能继续沿用 qmake 的
+CXXABI1.3.8 结果替代它。完整结果见 [矩阵证据](validation/actions-run-36670288030.json)。

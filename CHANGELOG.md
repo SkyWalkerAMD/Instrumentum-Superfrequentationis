@@ -1,9 +1,15 @@
 # CHANGELOG
 
-## 2.0.1 — 2026-09-30（未发布，待完整 Linux/GUI 验证）
+## 2.0.1 — 2026-09-30（未发布，十目标 CI 通过，待真机验收和后续面板恢复）
 
 ### Windows 包取得与 GUI 第一阶段重构
 
+- c48a38f / run 36670288030 首次完整全绿，2026-09-30 04:53:35 UTC 完成：23 个 job 成功，
+  包含十目标 kernel、十目标 desktop、EL8 baseline、matrix 与 gate。十目标各 12 项 QtTest 结果全过，
+  HAL loopback/真实 transport 包装/parity selftest 与 17 项 Python 测试继续为门禁。
+  EL10 实测 Mutter49.4/Xwayland24.1.9，发行/native 两个窗口分别保持可见通过，错误 PID 不被接受。
+  保存每目标镜像 digest、11 个 kernel release、GUI/模块包及日志哈希；真机 MOK/加载/对拍仍未运行。
+  当前仅基础信息、原始 MSR/MMIO/PCI 与 AMD PStates 只读子页，不将 CI 全绿宣称原平台全部功能恢复。
 - 作者明确选择先恢复 AMD PStates 的可核实只读频率与原始值，暂无电压/电流定义。
   新增 gui/pstates.*，显式 CPUID 厂商/Family1Ah/硬件 P-state 能力门禁；按 PstateMaxVal 限制读取，
   配置频率与实时频率分开标注，禁用/保留编码/错误均不显示伪造零值；完整保留 64 位原始 MSR。

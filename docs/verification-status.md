@@ -7,11 +7,12 @@
 原 GUI 源码丢失后，作者已授权重构，并先选择基础信息与 MSR/MMIO/PCI，随后提供四套平台截图。
 可编译的真实 Qt5 GUI 已接入。作者进一步选择先恢复 AMD PStates 的只读频率和完整原始值。
 
-最近完成的 [run 36666985989](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36666985989)
-（18c18c5）通过 EL8 baseline、十个 kernel 和九个 desktop job。EL10 fresh runtime 因软件源没有
-xwininfo 而失败，总门禁为红；[结果摘要](validation/actions-run-36666985989.json)保留每项结论。
-修复使用独立 Xlib 窗口检查器，81ea801 的完整矩阵正在运行；新增 PStates 页尚待 Linux Qt 回归。
-本文在取得最终结果后更新，不提前声称全绿。
+已归档的完整验收为 [run 36670288030](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36670288030)
+（c48a38f8d75367c22c9463f680a532d6f5b41426），23 个 job 全部成功，包含总门禁及源码包产出。
+十个目标均通过模块、原生 GUI、Qt 回归、GUI+DKMS 包安装/重装和两个真实窗口检查。
+EL10 改用独立 Xlib 检查器后通过 Mutter/Xwayland；新增 PStates 页在每个目标的 QtTest 中通过。
+详细记录见 [actions-run-36670288030.json](validation/actions-run-36670288030.json)。
+后续文档提交仍运行同一矩阵，最新状态可从仓库 Actions 查看；本页保留这一完整验收的精确源码版本。
 
 ## 验证范围
 
@@ -19,26 +20,26 @@ xwininfo 而失败，总门禁为红；[结果摘要](validation/actions-run-366
 |---|---|---|
 | EL8 baseline | 静态 Qt5.15.18、实际 GUI/Qt 回归编译、ELF ABI 检查通过 | 原 GUI 全部面板恢复 |
 | 十个 kernel job | HAL、loopback/transport/parity selftest、17 项 Python 测试、Kbuild、签名试验、DKMS 安装/同版本重装/卸载再装 | 真正加载模块、真实 MMIO 等价 |
-| 九个 desktop job | 各发行版原生 GUI 编译/Qt 回归、GUI+DKMS rpm/deb、新容器安装、发行和 native 两个真实窗口 | EL10 窗口与全矩阵完成 |
+| 十个 desktop job | 各发行版原生 GUI 编译/Qt 回归、GUI+DKMS rpm/deb、新容器安装、发行和 native 两个真实窗口 | 真机寄存器操作有效 |
 | Ubuntu26 GUI 视觉检查 | 下载并查看四页真实 Xwayland 截图，表单未裁切 | 真实硬件功能/电压/超频有效 |
-| 新 AMD PStates | 已实现且接入工程，规格/静态检查完成 | 尚未执行的新 Qt 回归和 9995WX 实机通过 |
+| 新 AMD PStates | 十目标均通过新增五项回归；连同既有测试及 init/cleanup，每个目标共 12 项结果全部通过 | 9995WX 实机已验收 |
 | MOK/live 对拍 | 有可执行脚本、签名辅助与详细清单 | 固件登记、模块加载、真实读写尚未运行 |
 
 当前 GUI ELF 最高需求 GLIBC_2.28、GLIBCXX_3.4.15、CXXABI_1.3.9；没有动态 Qt/ICU/libjpeg/Wayland
 客户端依赖。EL8 新 Qt SDK tar SHA-256：
-`7009c060b85b329202028228fd64faddf643c9ed4ea69bef211abdf5cb54e85e`。
+`6afaa07b5716c00c92ece61ef42eae007b18e57e2d650f6b450ddfa52afc8d7c`。
 SDK 仅按匹配构建配方与 SHA 复用，GUI 每次重编。具体依赖策略见 [多发行版指南](multi-distro.md)。
 
 ## 十目标状态
 
 以下内核 release 由已归档的成功 kernel 矩阵确认；每轮的包/镜像细节以对应 run artifact 为准。
-GUI/装包列是 18c18c5 的结果，不将此前模块单独成功冒充 GUI 成功。
+GUI/装包列是 c48a38f 的结果，不将此前模块单独成功冒充 GUI 成功。
 
 | 目标 | 已实际编译的内核 release | 原生 GUI 编译 | GUI+DKMS 安装/窗口 |
 |---|---|---|---|
 | EL8（Rocky） | 4.18.0-553.168.1.el8_10.x86_64 | 通过 | 通过 |
 | EL9（Rocky） | 5.14.0-687.52.1.el9_8.x86_64 | 通过 | 通过 |
-| EL10（Rocky） | 6.12.0-211.60.1.el10_2.x86_64 | 通过 | 测试依赖安装失败，待重跑 |
+| EL10（Rocky） | 6.12.0-211.60.1.el10_2.x86_64 | 通过 | Xwayland 通过 |
 | Ubuntu20.04 | 5.4.0-216-generic | 通过 | 通过 |
 | Ubuntu22.04 | 5.15.0-194-generic、6.8.0-138-generic | 通过 | 通过 |
 | Ubuntu24.04 | 6.8.0-142-generic | 通过 | 通过 |
