@@ -14,6 +14,7 @@
 static uint64_t mailbox[512];
 static struct octool_hwio_req last;
 static int direct_mode, short_io, reply_error;
+static unsigned fortified_reads;
 static const uint64_t token = 71;
 int __wrap_open(const char *path, int flags, ...)
 {
@@ -41,6 +42,14 @@ ssize_t __wrap_write(int fd, const void *buf, size_t len)
 }
 ssize_t __wrap_pread(int fd, void *buf, size_t len, off_t off)
 { (void)off; assert(fd == 600); memset(buf, 0, len); errno = 0; return short_io ? 0 : (ssize_t)len; }
+/* Some distro compilers redirect the bounded PCI buffer read to this libc
+ * entry point. Keep the bound check and route it to the same fake syscall. */
+ssize_t __wrap___pread_chk(int fd, void *buf, size_t len, off_t off, size_t capacity)
+{
+    assert(len <= capacity);
+    fortified_reads++;
+    return __wrap_pread(fd, buf, len, off);
+}
 ssize_t __wrap_pwrite(int fd, const void *buf, size_t len, off_t off)
 { (void)buf; (void)off; assert(fd == 600); errno = 0; return short_io ? 0 : (ssize_t)len; }
 
@@ -72,5 +81,6 @@ int main(void)
     assert(hwio_pci_write(h, 0, 0, 0, 0, 4, 1) == -EIO);
     hwio_close(h);
     puts("PASS: real transport preserves target CPU and legacy MMIO token; short I/O fails");
+    printf("Fortified pread calls intercepted: %u\n", fortified_reads);
     return 0;
 }

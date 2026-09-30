@@ -4,6 +4,12 @@
 
 ### Windows 包取得与 GUI 第一阶段重构
 
+- run 36665814220 实际完成 EL8 GUI 与测试程序链接，SDK seed/cache 校验成功；GUI 回归退出 1。
+  首轮日志在失败时未打印测试文件，现用 finally 保留失败细节；修正模拟确认只调用 dialog.done
+  而不点击按钮的问题，并清理误导缩进告警。未把这次链接成功当作窗口/功能验收成功。
+- 新 transport 测试在 Ubuntu22/24/26 的 PCI 短读断言失败，其他七目标通过；补拦截有界缓冲区
+  的 __pread_chk 并输出实际命中计数，等待下一轮验证 distro fortify 路径。
+  从已生成 Qt SDK .prl 核实 zstd 和各 xcb 链接接口，补 Debian native GUI 开发包，EL8 Qt 配方不变。
 - 新 SDK 缓存允许用已成功 run 36661824443 的精确归档哈希引导；实际比对当前两份构建配方
   与 bfa992d 完全相同。配方变化/旧 artifact 到期走源码构建，哈希错误失败；始终重编 GUI。
 - 用户新提供 E:/Download/Edge/ 两个 ZIP；Windows 包 79,363,256 字节、158 项，SHA-256

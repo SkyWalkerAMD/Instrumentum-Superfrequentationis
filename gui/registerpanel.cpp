@@ -94,9 +94,12 @@ void RegisterPanel::submit(bool write)
         request.cpu = unsigned(n);
     }
     if (space_ == Space::Pci) {
-        if (!number("bus", 16, 255, n)) return; request.bus = unsigned(n);
-        if (!number("device", 16, 31, n)) return; request.device = unsigned(n);
-        if (!number("function", 16, 7, n)) return; request.function = unsigned(n);
+        if (!number("bus", 16, 255, n)) return;
+        request.bus = unsigned(n);
+        if (!number("device", 16, 31, n)) return;
+        request.device = unsigned(n);
+        if (!number("function", 16, 7, n)) return;
+        request.function = unsigned(n);
     }
     if (write && !number("value", 16, std::numeric_limits<quint64>::max(), request.value)) return;
     QString invalid = validate(request);

@@ -13,7 +13,7 @@ hwio_smoke: hwio_smoke.c ../hal/octool_hwio.c $(HEADERS)
 	$(CC) $(CFLAGS) -o $@ $(filter %.c,$^)
 
 transport: hwio_transport_test.c ../hal/octool_hwio.c $(HEADERS)
-	$(CC) $(CFLAGS) -o $@ $(filter %.c,$^) $(foreach call,open close mmap munmap read write pread pwrite,-Wl,--wrap=$(call))
+	$(CC) $(CFLAGS) -o $@ $(filter %.c,$^) $(foreach call,open close mmap munmap read write pread pwrite __pread_chk,-Wl,--wrap=$(call))
 
 # LD_PRELOAD observer used to capture a real octool session's reads
 octool_capture.so: octool_capture.c $(HEADERS)

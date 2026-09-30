@@ -98,12 +98,12 @@ private slots:
         auto *write = panel.findChild<QPushButton *>("write");
         QTimer::singleShot(0, [] {
             auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget());
-            if (box) box->done(QMessageBox::Cancel);
+            if (box) box->button(QMessageBox::Cancel)->click();
         });
         write->click(); QCOMPARE(reference.calls.load(), 0);
         QTimer::singleShot(0, [] {
             auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget());
-            if (box) box->done(QMessageBox::Yes);
+            if (box) box->button(QMessageBox::Yes)->click();
         });
         write->click(); QTRY_VERIFY(panel.isEnabled());
         QCOMPARE(reference.calls.load(), 1);

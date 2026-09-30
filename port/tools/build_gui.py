@@ -65,9 +65,13 @@ def main():
                        cwd=tests, check=True)
         subprocess.run(["make", "-j" + os.environ.get("JOBS", "2")], cwd=tests, check=True)
         env = dict(os.environ, QT_QPA_PLATFORM="offscreen")
-        subprocess.run([str((tests / "gui-regression").resolve()), "-o", "gui-tests.txt,txt"],
-                       cwd=tests, env=env, check=True, timeout=120)
-        print((tests / "gui-tests.txt").read_text())
+        try:
+            subprocess.run([str((tests / "gui-regression").resolve()), "-o", "gui-tests.txt,txt"],
+                           cwd=tests, env=env, check=True, timeout=120)
+        finally:
+            log = tests / "gui-tests.txt"
+            if log.exists():
+                print(log.read_text(), flush=True)
     binary = (args.build_dir / cfg["binary"]).resolve()
     if args.build_dir.resolve() not in binary.parents or not binary.is_file():
         parser.error("configured GUI binary was not produced: " + str(binary))

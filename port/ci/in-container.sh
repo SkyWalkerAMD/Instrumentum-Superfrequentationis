@@ -19,6 +19,13 @@ import json, sys
 print(next(t for t in json.load(open('port/ci/targets.json')) if t['id'] == sys.argv[1])['family'])
 PY
 )
+if [ "$action" = desktop ] && [ "$family" = deb ]; then
+    # The EL8 static SDK's .prl files require these link interfaces; installing
+    # a small set needed to configure Qt on EL8 does not provide them on Debian.
+    apt-get install -y --no-install-recommends libzstd-dev libx11-xcb-dev \
+        libxcb-glx0-dev libxcb-randr0-dev libxcb-render0-dev libxcb-shape0-dev \
+        libxcb-shm0-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-xinput-dev
+fi
 cat /etc/os-release > "$out/os-release-$action.txt"
 gcc --version > "$out/compiler-$action.txt"
 ldd --version > "$out/libc-$action.txt"
