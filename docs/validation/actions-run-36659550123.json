@@ -1,0 +1,339 @@
+{
+  "databaseId": 36659550123,
+  "headSha": "a8a5f1eb390032fd1814cb39074cbe00a0ff3990",
+  "status": "completed",
+  "conclusion": "failure",
+  "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36659550123",
+  "kernel_matrix_passed": true,
+  "gui": "blocked_missing_source",
+  "hardware_acceptance": "not_run",
+  "targets": [
+    {
+      "target": "debian11",
+      "job_id": 109711079453,
+      "conclusion": "success",
+      "image": {
+        "Id": "sha256:d89d848cffea21f345166115b8db117797b081ad20f705706d7e7ce5d3449e78",
+        "RepoDigests": [
+          "debian@sha256:6f519a81440354a85eb592c5f32109ab80605f6b892455983a6f618bf87fabe9"
+        ],
+        "Architecture": "amd64"
+      },
+      "kernels": [
+        {
+          "release": "5.10.0-46-amd64",
+          "vermagic": "5.10.0-46-amd64 SMP mod_unload modversions ",
+          "class_create_arity": 2,
+          "module_sha256": "28b32b5b4e861901ef2cc0e6a491ea85d336b718e9ac8a51b85653d5aa13d1a2",
+          "test_signed_module_sha256": "9cb9435ef08991df313a15a2be48ef335217c9ea5a14c06e4efba485c5b7e23f"
+        }
+      ],
+      "packages": [
+        {
+          "name": "octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "sha256": "2f0e4d2d64ca47b1aeb224346baf639c50f4218bb236b8e64631555002a901b2",
+          "size": 9234
+        }
+      ],
+      "offline_c_tests": "passed",
+      "python_tests": "17 passed",
+      "dkms_install": "passed",
+      "console_sha256": "480c2ca5c01e5d1622c26b5d493ca6c8552757dd2bcb7b1b5442fa3a2e433729"
+    },
+    {
+      "target": "debian12",
+      "job_id": 109711079413,
+      "conclusion": "success",
+      "image": {
+        "Id": "sha256:a1dd2f4ae2a9f34d85cfa5a568df5382d7c71b22dfc29493b5205d1c4729b9f5",
+        "RepoDigests": [
+          "debian@sha256:f37a335e82bca302e955fa39f9dfe28f1be618f016f8a2b56318e5a5111afc26"
+        ],
+        "Architecture": "amd64"
+      },
+      "kernels": [
+        {
+          "release": "6.1.0-53-amd64",
+          "vermagic": "6.1.0-53-amd64 SMP preempt mod_unload modversions ",
+          "class_create_arity": 2,
+          "module_sha256": "088474c145badee0cdbfe4b503ba7e0af11ba6eb0e1833f5ada94436f6d0f472",
+          "test_signed_module_sha256": "8ad713c5af429776f395edc5cfa8fb608c8555cca256a009d70f73b687c642a9"
+        }
+      ],
+      "packages": [
+        {
+          "name": "octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "sha256": "956602ae92a341d3e3a7e510e7f355aeefa1d15bdfcbbc4cd1927cb7deb7f8f1",
+          "size": 9234
+        }
+      ],
+      "offline_c_tests": "passed",
+      "python_tests": "17 passed",
+      "dkms_install": "passed",
+      "console_sha256": "eb4487bf762fc62290c84a3d230cf9d4596e348edbe095c83c7120c068f371cf"
+    },
+    {
+      "target": "debian13",
+      "job_id": 109711079324,
+      "conclusion": "success",
+      "image": {
+        "Id": "sha256:36c636ddb9c578b068df381216d26a921c64fc2534e20baf7d0c53fb800b3a74",
+        "RepoDigests": [
+          "debian@sha256:9cc080028c43b27d2074d63a5f9caf7166d731494965616c1a6d2827a004585c"
+        ],
+        "Architecture": "amd64"
+      },
+      "kernels": [
+        {
+          "release": "6.12.111+deb13-amd64",
+          "vermagic": "6.12.111+deb13-amd64 SMP preempt mod_unload modversions ",
+          "class_create_arity": 1,
+          "module_sha256": "dc9e7a48d152a5903f7b925b96b8818166287cf6ffeab7843c4161f12536f9e4",
+          "test_signed_module_sha256": "27754c07bfd5ab3158798ac826ccd605c28e6340ebaa8172606c388f8d465717"
+        }
+      ],
+      "packages": [
+        {
+          "name": "octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "sha256": "620860a4894d090f9c2f4bc94eb0dd38a9ebec4c5ad75dcefaecc186c72241fe",
+          "size": 9238
+        }
+      ],
+      "offline_c_tests": "passed",
+      "python_tests": "17 passed",
+      "dkms_install": "passed",
+      "console_sha256": "8399873b56c5994e3f66d9343336bd9647590f14f29d6d1545a583872784a055"
+    },
+    {
+      "target": "el10",
+      "job_id": 109711079423,
+      "conclusion": "success",
+      "image": {
+        "Id": "sha256:0b5329d806d053ad65ab6b21fc3e49f1025e970cd826547a01a93b3ce9012796",
+        "RepoDigests": [
+          "quay.io/rockylinux/rockylinux@sha256:827d37bc128288ccf160ee318bb3cb92d591164cb217e92f8bc61e3982ae1834"
+        ],
+        "Architecture": "amd64"
+      },
+      "kernels": [
+        {
+          "release": "6.12.0-211.60.1.el10_2.x86_64",
+          "vermagic": "6.12.0-211.60.1.el10_2.x86_64 SMP preempt mod_unload modversions ",
+          "class_create_arity": 1,
+          "module_sha256": "57c1ae4f3620777371d6659f833aaaf447a0bfa8ab419d043949f5c209a5c310",
+          "test_signed_module_sha256": "091ca0c3b37e9bb70ee38a65b9e981d08fc269026c1e6a200fa8b0df86158774"
+        }
+      ],
+      "packages": [
+        {
+          "name": "octool-hwio-dkms-2.0.1-1.el10.noarch.rpm",
+          "sha256": "b09307ecf3a9db927773fe2c717539c908369a25f7a3698b0f25b6a0f7ec9045",
+          "size": 17584
+        }
+      ],
+      "offline_c_tests": "passed",
+      "python_tests": "17 passed",
+      "dkms_install": "passed",
+      "console_sha256": "923ce11c18aa60cc39a447fad835356052162126c3080f8eea045e5b7e00c90e"
+    },
+    {
+      "target": "el8",
+      "job_id": 109711079381,
+      "conclusion": "success",
+      "image": {
+        "Id": "sha256:c79048e50f5fce116723442952adf4f5258455a1665bbc64aa65469abe9ead90",
+        "RepoDigests": [
+          "rockylinux@sha256:9794037624aaa6212aeada1d28861ef5e0a935adaf93e4ef79837119f2a2d04c"
+        ],
+        "Architecture": "amd64"
+      },
+      "kernels": [
+        {
+          "release": "4.18.0-553.168.1.el8_10.x86_64",
+          "vermagic": "4.18.0-553.168.1.el8_10.x86_64 SMP mod_unload modversions ",
+          "class_create_arity": 2,
+          "module_sha256": "577402112c55d0924b502bc2b25fdc68591167a29f829f4e4ea0ff7c87515d91",
+          "test_signed_module_sha256": "e3c62b5535ed5ed3bb4c79add9ffb9f56fc631a588b63519f84aa421fd288f9b"
+        }
+      ],
+      "packages": [
+        {
+          "name": "octool-hwio-dkms-2.0.1-1.el8.noarch.rpm",
+          "sha256": "c7a5702be84e3a006392265e77274086a5731089c4e5c0459eb433714b4af04c",
+          "size": 17452
+        }
+      ],
+      "offline_c_tests": "passed",
+      "python_tests": "17 passed",
+      "dkms_install": "passed",
+      "console_sha256": "5b22188593a129c0f477d76cb9bfc29cce3c43c2585f11b3628fb9a7a5d91434"
+    },
+    {
+      "target": "el9",
+      "job_id": 109711079344,
+      "conclusion": "success",
+      "image": {
+        "Id": "sha256:9cc24f05f309508aa852967ab1e3b582b302afc92605c24ce27715c683acd805",
+        "RepoDigests": [
+          "rockylinux@sha256:d7be1c094cc5845ee815d4632fe377514ee6ebcf8efaed6892889657e5ddaaa6"
+        ],
+        "Architecture": "amd64"
+      },
+      "kernels": [
+        {
+          "release": "5.14.0-687.52.1.el9_8.x86_64",
+          "vermagic": "5.14.0-687.52.1.el9_8.x86_64 SMP preempt mod_unload modversions ",
+          "class_create_arity": 1,
+          "module_sha256": "5fee2a0de2b5b0fa52b3ef60089574304fbd04fc56f1cf91caff0215021635a7",
+          "test_signed_module_sha256": "14955bb12e9299e0bb9d70c44dfddcbfc0a3ca5eeaa4b93da9467c864b107a97"
+        }
+      ],
+      "packages": [
+        {
+          "name": "octool-hwio-dkms-2.0.1-1.el9.noarch.rpm",
+          "sha256": "06748636ec9f4348e6c7a00e38d59be8cca87ec8994417f6ca3b68512cbc1207",
+          "size": 17476
+        }
+      ],
+      "offline_c_tests": "passed",
+      "python_tests": "17 passed",
+      "dkms_install": "passed",
+      "console_sha256": "a41501c640a8ba77f3781b8c274b71646518896fe1192e8d62ae989921e767e5"
+    },
+    {
+      "target": "ubuntu20.04",
+      "job_id": 109711079364,
+      "conclusion": "success",
+      "image": {
+        "Id": "sha256:b7bab04fd9aa0c771e5720bf0cc7cbf993fd6946645983d9096126e5af45d713",
+        "RepoDigests": [
+          "ubuntu@sha256:8feb4d8ca5354def3d8fce243717141ce31e2c428701f6682bd2fafe15388214"
+        ],
+        "Architecture": "amd64"
+      },
+      "kernels": [
+        {
+          "release": "5.4.0-216-generic",
+          "vermagic": "5.4.0-216-generic SMP mod_unload modversions ",
+          "class_create_arity": 2,
+          "module_sha256": "276b25e814393273eb1efbffaca74a486aec996748b4da7719ae880cfdb19786",
+          "test_signed_module_sha256": "db7f9645f56974f71880a343f58578adb04927e54ad0d0057db6c7969be4712a"
+        }
+      ],
+      "packages": [
+        {
+          "name": "octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "sha256": "5cf514d7bd990e26266ad372f705aca1c8be0143b8d04b2617a1ec61c2685a82",
+          "size": 9232
+        }
+      ],
+      "offline_c_tests": "passed",
+      "python_tests": "17 passed",
+      "dkms_install": "passed",
+      "console_sha256": "505af249470fda1a13580396cda92781aac68b800bc9dfd47e1f866ea1444417"
+    },
+    {
+      "target": "ubuntu22.04",
+      "job_id": 109711079278,
+      "conclusion": "success",
+      "image": {
+        "Id": "sha256:bf7f4568d95723d2148bb19c688526d1404ef3302ef024bc1513ad8f533d46c8",
+        "RepoDigests": [
+          "ubuntu@sha256:b8b6ee6aa931ecd9d0d952abc34dc0e5f7c6a30c6bb71b079fe399fde0329c02"
+        ],
+        "Architecture": "amd64"
+      },
+      "kernels": [
+        {
+          "release": "5.15.0-194-generic",
+          "vermagic": "5.15.0-194-generic SMP mod_unload modversions ",
+          "class_create_arity": 2,
+          "module_sha256": "4e6982ff135b580d4fede573220beec4a3694d119444c20ed5794c33ae60b161",
+          "test_signed_module_sha256": "3ce9a49f3ddbe3c1ef03b88026e6086e7f57f1c30eb487ac1fa72db3adf51402"
+        },
+        {
+          "release": "6.8.0-138-generic",
+          "vermagic": "6.8.0-138-generic SMP preempt mod_unload modversions ",
+          "class_create_arity": 1,
+          "module_sha256": "4318bbfb64cece657cf2e56d127e890b6525baa3327329734948d7b0e659b2e2",
+          "test_signed_module_sha256": "cf805d2a1818b57b693b350b2405c9ebea7bdca2541c19526af7db0a0dfa618d"
+        }
+      ],
+      "packages": [
+        {
+          "name": "octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "sha256": "edd91b4f5cfb6cbee930af3fa2844464a6fe5cbe3e45b62f31e862301d13c16f",
+          "size": 9236
+        }
+      ],
+      "offline_c_tests": "passed",
+      "python_tests": "17 passed",
+      "dkms_install": "passed",
+      "console_sha256": "912e8ac3411aa94a5cc1242d04eed40cd67747e8c53cac3a5ae17aefb31b1775"
+    },
+    {
+      "target": "ubuntu24.04",
+      "job_id": 109711079325,
+      "conclusion": "success",
+      "image": {
+        "Id": "sha256:6232b38791000e3818b58d8847b5a8f5612d606929e01156dd8febc423e0f2ef",
+        "RepoDigests": [
+          "ubuntu@sha256:008173c23f95b170204355c12626cb5a965d779a7e1283b09e9cffbb1bf33ca3"
+        ],
+        "Architecture": "amd64"
+      },
+      "kernels": [
+        {
+          "release": "6.8.0-142-generic",
+          "vermagic": "6.8.0-142-generic SMP preempt mod_unload modversions ",
+          "class_create_arity": 1,
+          "module_sha256": "6856b2ce1d6e9060564b5833ccad04d066dc03328fe481d91afcfce192665aaa",
+          "test_signed_module_sha256": "c81bb9361fce242bd9543092adb7222a181960b214ed78a68856ccbea6bf3c81"
+        }
+      ],
+      "packages": [
+        {
+          "name": "octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "sha256": "99ee8605e68a412345e8f6a6b4229aa48e09027487e8ee9322c8a347f86c3f91",
+          "size": 9236
+        }
+      ],
+      "offline_c_tests": "passed",
+      "python_tests": "17 passed",
+      "dkms_install": "passed",
+      "console_sha256": "0dcd7ce5d9c9d10b991325a5e85e3d8c47b7dbaa50f492e4dc4507620f5af797"
+    },
+    {
+      "target": "ubuntu26.04",
+      "job_id": 109711079363,
+      "conclusion": "success",
+      "image": {
+        "Id": "sha256:5a0b35d4505084df58fc9e986b9ce23e6090260f5e54808626335435ba913b5e",
+        "RepoDigests": [
+          "ubuntu@sha256:da6fc2be547864451aa253836dd926da33623312df4a9a243e35dc877c378a78"
+        ],
+        "Architecture": "amd64"
+      },
+      "kernels": [
+        {
+          "release": "7.0.0-34-generic",
+          "vermagic": "7.0.0-34-generic SMP preempt mod_unload modversions ",
+          "class_create_arity": 1,
+          "module_sha256": "b7c4c111f89e0a8d38835a60d7ea5caa5a69e9ad7175d43497f02d60f7055e49",
+          "test_signed_module_sha256": "14948573c86c8a11762de438b86fefb6e6a8c3da49aede0df513ed0a2e63a91d"
+        }
+      ],
+      "packages": [
+        {
+          "name": "octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "sha256": "edd91b4f5cfb6cbee930af3fa2844464a6fe5cbe3e45b62f31e862301d13c16f",
+          "size": 9236
+        }
+      ],
+      "offline_c_tests": "passed",
+      "python_tests": "17 passed",
+      "dkms_install": "passed",
+      "console_sha256": "c121eb96f7f85369a0e7776dfc73f7b3d8822319f4404d56f2d44df9090de718"
+    }
+  ]
+}

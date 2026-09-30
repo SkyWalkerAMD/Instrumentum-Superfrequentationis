@@ -4,6 +4,13 @@
 
 ### 仓库改名与首轮真实 Linux CI 修复
 
+- 第四轮 a8a5f1e / run 36659550123：十个目标 kernel job 全绿，共 11 个 release。
+  真实 HAL/C 自测、17 项 Python 测试、Kbuild/modpost、临时证书签名、rpm/deb 构建和 DKMS
+  installed/vermagic/version 查询均通过。已下载全部 artifacts，包复制到 dist/packages/。
+  各镜像 digest、kernel release、包和 .ko 哈希写入 docs/validation/actions-run-36659550123.json。
+  总门禁继续因 GUI 未恢复失败，不能写“完整矩阵全绿”。
+- 将同版本包重装、卸载、再安装加入独立 kernel job，实际验证此前未测的 RPM safe-upgrade
+  与 Debian prerm/configure，不再因 GUI 缺失而跳过模块包生命周期检查。
 - 第三轮 e530b51 / run 36659298597：Debian11 和 Ubuntu20.04 kernel job 通过；
   其他目标 class_create 在 C 编译阶段通过，但 modpost 重读 Kbuild 时没有 try-run，触发误判。
   探测限定到 Makefile.build 的实际 C 编译阶段；clean/modpost 不执行探测。

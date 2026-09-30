@@ -2,10 +2,13 @@
 
 日期：2026-09-30。状态分为“输入包已有记录”“本轮实际检查”“尚未运行”，不混用。
 
-GitHub Actions 已实际运行。首轮为提交 `22d0ea0` 的
-[run 36657953069](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36657953069)，
-Ubuntu20.04 kernel job 成功，总门禁失败。当前改名、失败原因与修复见
-[Actions 实测记录](actions-debugging.md)。下表按这轮结果填写，修复后尚待复测。
+GitHub Actions 已实际运行。第四轮提交 `a8a5f1e` 的
+[run 36659550123](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36659550123)
+十个 kernel job 全部成功，覆盖 11 个实际 kernel release。每个目标的 HAL、C 离线自测、
+17 项 Python 测试、模块实编、签名试验和 DKMS 原生包安装通过；总门禁因 GUI 缺失仍失败。
+镜像 digest、kernel release、签名分支与包 SHA-256 见
+[机器可读证据](validation/actions-run-36659550123.json)。失败到修复过程见
+[Actions 实测记录](actions-debugging.md)。
 
 ## 输入包
 
@@ -56,16 +59,21 @@ Ubuntu20.04 kernel job 成功，总门禁失败。当前改名、失败原因与
 
 | 目标 | 本轮内核实编 | 本轮 GUI 编译/窗口 | 本轮 rpm/deb 安装 | 真机 MOK/对拍 |
 |---|---|---|---|---|
-| EL8 | headers 路径发现失败；离线测试通过 | 缺 GUI 源码 | 未运行 | 未运行 |
-| EL9 | headers 路径发现失败；离线测试通过 | 缺 GUI 源码 | 未运行 | 未运行 |
-| EL10 | headers 路径发现失败；离线测试通过 | 缺 GUI 源码 | 未运行 | 未运行 |
+| EL8 | 4.18.0-553.168.1.el8_10.x86_64 通过 | 待恢复/重构 | DKMS RPM 构建安装通过 | 未运行 |
+| EL9 | 5.14.0-687.52.1.el9_8.x86_64 通过 | 待恢复/重构 | DKMS RPM 构建安装通过 | 未运行 |
+| EL10 | 6.12.0-211.60.1.el10_2.x86_64 通过 | 待恢复/重构 | DKMS RPM 构建安装通过 | 未运行 |
 | Ubuntu20.04 | 5.4.0-216-generic 通过，含签名试验 | 缺 GUI 源码 | DKMS deb 安装通过；GUI 包未运行 | 未运行 |
-| Ubuntu22.04 | class_create 探测失败 | 缺 GUI 源码 | 未运行 | 未运行 |
-| Ubuntu24.04 | class_create 探测失败 | 缺 GUI 源码 | 未运行 | 未运行 |
-| Ubuntu26.04 | class_create 探测失败 | 缺 GUI 源码 | 未运行 | 未运行 |
-| Debian11 | security 包下载 404，尚未编译 | 缺 GUI 源码 | 未运行 | 未运行 |
-| Debian12 | class_create 探测失败 | 缺 GUI 源码 | 未运行 | 未运行 |
-| Debian13 | class_create 探测失败 | 缺 GUI 源码 | 未运行 | 未运行 |
+| Ubuntu22.04 | 5.15.0-194、6.8.0-138 generic 均通过 | 待恢复/重构 | DKMS deb 构建安装通过 | 未运行 |
+| Ubuntu24.04 | 6.8.0-142-generic 通过 | 待恢复/重构 | DKMS deb 构建安装通过 | 未运行 |
+| Ubuntu26.04 | 7.0.0-34-generic 通过 | 待恢复/重构 | DKMS deb 构建安装通过 | 未运行 |
+| Debian11 | 5.10.0-46-amd64 通过 | 待恢复/重构 | DKMS deb 构建安装通过 | 未运行 |
+| Debian12 | 6.1.0-53-amd64 通过 | 待恢复/重构 | DKMS deb 构建安装通过 | 未运行 |
+| Debian13 | 6.12.111+deb13-amd64 通过 | 待恢复/重构 | DKMS deb 构建安装通过 | 未运行 |
+
+以上仅模块包；GUI 包未产出。全部 artifact 已下载，本地分发行版包保存在 dist/packages/。
+MOK 固件登记、加载及真实 MMIO 对拍未运行；容器签名试验不等于 Secure Boot 验收。
+用户确认原 Linux GUI 源码丢失，授权检查 Windows 版后必要时重构。
+当前提供的 Windows ZIP 路径仍不存在；EL8 Qt SDK 的独立编译正在运行。
 
 以下为接入 Actions 之前的环境核实历史：本机 WSL 未安装，未发现 Docker/Podman；
 当时当前工具没有远程 Linux 执行入口，Node 执行工具同样报告 win32。

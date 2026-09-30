@@ -65,6 +65,23 @@ case "$action" in
         python3 port/tools/build_packages.py --format "$family" --module-only --output "$out/packages"
         install_packages
         verify_dkms
+        # Same-version RPM reinstall exercises the DKMS safe-upgrade lock;
+        # apt reinstall exercises prerm/configure against an existing build.
+        # These module package checks must not depend on GUI availability.
+        if [ "$family" = deb ]; then
+            apt-get install -y --reinstall "$out/packages/"*.deb
+        else
+            dnf reinstall -y "$out/packages/"*.rpm
+        fi
+        verify_dkms
+        if [ "$family" = deb ]; then
+            apt-get purge -y octool-hwio-dkms
+        else
+            dnf remove -y octool-hwio-dkms
+        fi
+        test -z "$(dkms status -m octool-hwio -v "$(cat VERSION)")"
+        install_packages
+        verify_dkms
         ;;
     sdk)
         # Toolchain validation can proceed while GUI recovery is in progress.

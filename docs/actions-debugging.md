@@ -80,6 +80,14 @@ deb [check-valid-until=no] http://snapshot.debian.org/archive/debian-security/20
 
 ## 证据保留和后续
 
+第四轮 [run 36659550123](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36659550123)
+（a8a5f1e）十目标 kernel 全部成功，含三个 Debian、三个 EL、四个 Ubuntu，Ubuntu22.04 同测 GA/HWE。
+EL8 的 RPM 安装索引问题已解决，所有目标均通过按模块名 modinfo 和版本/vermagic 检查。
+详细 release、镜像 ID/digest、原始/试验签名模块及包 hash 保存于
+[actions-run-36659550123.json](validation/actions-run-36659550123.json)。
+仍需实测同版本重装及卸载重装，现将这两项从依赖 GUI 的 runtime 任务补到独立 kernel 任务，
+以验证 RPM safe-upgrade 锁和 Debian prerm/configure 的实际事务行为。
+
 每次修复保留失败 run；成功只能按具体源码 SHA、目标镜像和发行版包版本陈述。
 Actions artifacts 保留 7 天；实际 kernel release、包 hash 和运行链接应追加到 docs/validation。
 GUI 缺失是独立输入问题，不能以示例 Qt 窗口、旧 Ubuntu 二进制或忽略 baseline 来通过总门禁。
