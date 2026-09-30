@@ -4,6 +4,10 @@
 本页专门记录**源码已丢失的原版 GUI**。基础版重构 GUI 的十目标全绿记录仍见
 [verification-status.md](verification-status.md)，不能用它代替原版验证。
 
+当前结论：原文件不变，私有运行库已在 EL8/9/10 实际完成装载并显示 Qt 对话框，EL10 使用
+Mutter/Xwayland；原主窗口仍被 PCI/DMI 硬件检查拒绝。重构版新增栈属性门禁后十目标仍全绿。
+没有把原版的 Not supported 窗口算成成功，也没有用仿真硬件或猜测寄存器值替代验收。
+
 ## 样本与复现
 
 原始 `octool-linux.zip` 中 `octool` 的 SHA-256：
@@ -173,6 +177,32 @@ EL 目标机是否因其 SELinux 域/策略拒绝原程序的 execstack，仍需
 属性含义参考 [GNU ld 的栈选项](https://sourceware.org/binutils/docs/ld/Options.html)，
 策略拒绝示例见 [Red Hat execstack 诊断](https://access.redhat.com/solutions/43215)；示例是另一程序的
 受限域，不作为 OCTool 在默认 EL 桌面必然被拒绝的证据。
+
+## 本轮最终复测记录
+
+- [原版诊断 36676593044](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36676593044)
+  使用 446ff37：EL8 官方仓库修复后构建显示环境成功，三目标均执行到了原 Qt 对话框；加载器返回0，
+  无外部 `.so`、无 Fontconfig 错误。三张截图与第二轮逐字节相同，均为 Not supported；三个 GUI 门禁
+  仍失败。详见[完整机器可读结果](validation/legacy-el-run-36676593044.json)。
+- 此轮 EL8 实际为 GenuineIntel，EL9/EL10 为 AuthenticAMD；三者均无 PCI00:00.0 节点且 DMI 为
+  Microsoft Virtual Machine。实际 maps 的 `[stack]` 也是 `rwxp`，与旧 ELF 的 RWE 属性一致。
+- [生产回归 36676590930](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36676590930)
+  同为 446ff37，23 个 job 全部成功：[证据](validation/actions-run-36676590930.json)。
+  新 GNU_STACK 门禁通过，18 项 Python 门禁和 ELF PLT/CET/GOT fixture 继续参与；
+  既有 HAL/MMIO 协议、内核模块、重构 GUI 源码在本轮均未改变。
+
+重跑原版诊断（拥有此仓库草稿附件访问权的账户）：
+
+```sh
+gh workflow run legacy-runtime.yml --ref main -f asset_id=600130240
+gh run list --workflow legacy-runtime.yml --limit 5
+# 用上一条输出的 run ID，下载仅含诊断证据的产物
+gh run download RUN_ID --pattern 'legacy-*-evidence' --dir build/legacy-evidence
+```
+
+原 ELF 保存在未发布输入草稿；私有库只在临时 runner 工作区组装，不放入公开 artifact 或现有 GUI RPM/DEB。
+当前仍需作者的真实目标平台完成[硬件验收](hardware-acceptance.md)中的 PCI/DMI、权限、MOK、
+主窗口及 MMIO live 对拍；本轮没有拿到这些真机结果。
 
 ## 相关原始资料
 

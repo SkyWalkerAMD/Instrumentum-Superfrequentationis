@@ -17,6 +17,8 @@ EL10 改用独立 Xlib 检查器后通过 Mutter/Xwayland；新增 PStates 页�
 原版二进制的独立 EL 诊断见 [legacy-el-compatibility.md](legacy-el-compatibility.md)：
 配套私有运行库已在 EL8/9/10 越过装载并显示真实 Qt 对话框，但旧硬件检查显示 Not supported，
 其主窗口门禁仍失败。此结果不替换上面的重构基础版全绿记录。新打包另增加 GNU_STACK 非执行门禁。
+该新增门禁已经在 [446ff37 / run 36676590930](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36676590930)
+的 23 个 job 全绿矩阵中验证，见[本轮记录](validation/actions-run-36676590930.json)。
 
 ## 验证范围
 
