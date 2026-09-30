@@ -4,6 +4,8 @@
 
 ### Windows 包取得与 GUI 第一阶段重构
 
+- 新 SDK 缓存允许用已成功 run 36661824443 的精确归档哈希引导；实际比对当前两份构建配方
+  与 bfa992d 完全相同。配方变化/旧 artifact 到期走源码构建，哈希错误失败；始终重编 GUI。
 - 用户新提供 E:/Download/Edge/ 两个 ZIP；Windows 包 79,363,256 字节、158 项，SHA-256
   02a50088a94000f651f8783b32bf1ff63a48fd4e6a3909983c7c1ed0a5a417a3；Linux 包与此前相同。
   Windows 无工程/C++/.ui/PDB，Tool.exe 的 debug 项只有类型 13；静态读取 Qt 元对象确认

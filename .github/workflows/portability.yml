@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: portability-${{ github.ref }}
   cancel-in-progress: true
@@ -64,6 +65,11 @@ jobs:
             build/baseline/qt-sdk.tar.gz
             build/baseline/qt-sdk.sha256
           key: el8-qt-sdk-v1-${{ hashFiles('port/ci/build-qt-el8.sh', 'port/ci/bootstrap.sh') }}
+      - name: Seed SDK cache from validated EL8 artifact
+        if: steps.qt-cache.outputs.cache-hit != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 port/ci/seed-qt-sdk.py
       - run: |
           mkdir -p build/baseline
           docker pull rockylinux:8
