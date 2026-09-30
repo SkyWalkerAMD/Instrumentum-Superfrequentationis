@@ -25,6 +25,16 @@ for tree in /lib/modules/*/build; do
     # newly unpacked sources, not DKMS's previous build cache.
     OCTOOL_KERNEL_CC="$cc" dkms build -m octool-hwio -v "$version" -k "$kernel" --force
     dkms install -m octool-hwio -v "$version" -k "$kernel" --force
+    # Modern DKMS can remove an empty modules.dep while replacing the only
+    # module in a headers-only tree, then skip depmod during install. Ensure
+    # the installed module is actually discoverable on initial/reinstallation.
+    depmod -a "$kernel"
+    installed_version=$(modinfo -k "$kernel" -F version octool_hwio)
+    installed_kernel=$(modinfo -k "$kernel" -F vermagic octool_hwio | awk '{print $1}')
+    if [ "$installed_version" != "$version" ] || [ "$installed_kernel" != "$kernel" ]; then
+        echo "octool: installed module metadata does not match $version / $kernel" >&2
+        exit 1
+    fi
     count=$((count + 1))
 done
 if [ "$count" -eq 0 ]; then

@@ -103,16 +103,6 @@ else
         printf 'Target headers: %s -> %s\n' "$link" "$tree"
     done
 fi
-# Modern DKMS intentionally skips depmod when modules.dep is absent (no kernel
-# image installed). Initialize the target container's indexes before testing
-# module installation; never pass the runner's uname release to depmod.
-for tree in /lib/modules/*/build; do
-    [ -f "$tree/Makefile" ] || continue
-    kernel=${tree%/build}; kernel=${kernel##*/}
-    if [ ! -f "/lib/modules/$kernel/modules.dep" ]; then
-        depmod -a "$kernel"
-    fi
-done
 if [ "$mode" = kernel ]; then
     if command -v apt-get >/dev/null; then
         apt-get install -y --no-install-recommends dpkg-dev binutils

@@ -4,6 +4,13 @@
 
 ### 仓库改名与首轮真实 Linux CI 修复
 
+- 第五轮 818af54 / run 36659952626 的生命周期测试找出 EL 三项和 Ubuntu26.04 重装缺模块索引问题。
+  rpm_safe_upgrade 锁已生效；DKMS force rebuild 删除最后一个模块时清掉 modules.dep，
+  随后 install 又跳过 depmod。将索引建立收敛到包内 dkms-register：每次安装后实际 depmod，
+  按模块名核对版本/vermagic 再报告成功；移除 CI 只初始化一次索引的补丁。
+  新的真实事务回归保留，继续验证完整卸载和重装。
+- 新增 docs/gui-recovery.md，详细记录原源码丢失后的恢复/重构授权、Windows ZIP 仍不可读、
+  历史二进制分析与本轮证据的区别、GUI 功能/硬件单位的待确认边界及恢复后的 CI 接入顺序。
 - 第四轮 a8a5f1e / run 36659550123：十个目标 kernel job 全绿，共 11 个 release。
   真实 HAL/C 自测、17 项 Python 测试、Kbuild/modpost、临时证书签名、rpm/deb 构建和 DKMS
   installed/vermagic/version 查询均通过。已下载全部 artifacts，包复制到 dist/packages/。

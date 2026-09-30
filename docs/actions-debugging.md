@@ -88,6 +88,15 @@ EL8 的 RPM 安装索引问题已解决，所有目标均通过按模块名 modi
 仍需实测同版本重装及卸载重装，现将这两项从依赖 GUI 的 runtime 任务补到独立 kernel 任务，
 以验证 RPM safe-upgrade 锁和 Debian prerm/configure 的实际事务行为。
 
+第五轮 [run 36659952626](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36659952626)
+（818af54）补测发现：EL 三项与 Ubuntu26.04 初装成功，但生命周期后 modinfo 按名称失败。
+safe-upgrade 锁已实际生效（旧包 preun 正确取消 remove）；问题在 `dkms build --force` 删除
+最后一个已安装模块时会清掉空 modules.dep，随后安装又跳过 depmod。因此只在 bootstrap
+初始化一次索引不足以解决生命周期问题。
+改由发行包的 dkms-register 在每次安装后实际 `depmod -a <target>`，再按模块名核对
+MODULE_VERSION/vermagic 后才报告成功；移除 CI 预先创建索引的补丁。
+这项修复也覆盖真实 headers-only 目标树，无需修改用户全局 DKMS 配置。
+
 每次修复保留失败 run；成功只能按具体源码 SHA、目标镜像和发行版包版本陈述。
 Actions artifacts 保留 7 天；实际 kernel release、包 hash 和运行链接应追加到 docs/validation。
 GUI 缺失是独立输入问题，不能以示例 Qt 窗口、旧 Ubuntu 二进制或忽略 baseline 来通过总门禁。
