@@ -15,6 +15,7 @@ struct Request {
     int width = 8;
 };
 struct Reply { int error = 0; quint64 value = 0; };
+struct CpuIdReply { int error = 0; uint32_t words[4]{}; };
 bool parseNumber(const QString &text, int base, quint64 maximum, quint64 &value);
 QString validate(const Request &request);
 QString targetText(const Request &request);
@@ -25,6 +26,7 @@ public:
     explicit HardwareAccess(hwio_t *handle = nullptr);
     ~HardwareAccess();
     Reply execute(const Request &request);
+    CpuIdReply cpuid(unsigned cpu, uint32_t leaf, uint32_t subleaf = 0);
     QString backend(Space space) const;
 private:
     hwio_t *handle_;

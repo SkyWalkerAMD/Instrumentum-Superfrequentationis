@@ -4,6 +4,12 @@
 
 ### Windows 包取得与 GUI 第一阶段重构
 
+- 作者明确选择先恢复 AMD PStates 的可核实只读频率与原始值，暂无电压/电流定义。
+  新增 gui/pstates.*，显式 CPUID 厂商/Family1Ah/硬件 P-state 能力门禁；按 PstateMaxVal 限制读取，
+  配置频率与实时频率分开标注，禁用/保留编码/错误均不显示伪造零值；完整保留 64 位原始 MSR。
+  GUI CPUID 封装在直接后端临时绑定并恢复工作线程 CPU 亲和性，模块后端保持原 HAL/ABI。
+  无启动扫描、无写入、无 VID/电流猜测。新增五项 Qt 回归，预期合计 12 项结果，待云端实编验证。
+  docs/amd-pstates.md 记录 Linux 固定提交、AMD PPR 页码/哈希、旧 ELF 函数地址和算法差异。
 - 作者确认四套 CPU：Z790/i9-14900KS、W790 ACE/w5-2565X（18 核，明确纠正先前笔误）、
   W890E-SAGE SE/Xeon 658X、TRX50 SAGE/Threadripper PRO 9995WX；BIOS 均未知。
   写入 docs/platform-recovery.md 及独立 JSON，不把型号确认等同于 CPUID/拓扑/寄存器实测。

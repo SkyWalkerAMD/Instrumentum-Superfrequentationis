@@ -25,7 +25,9 @@ push、pull_request 和 workflow_dispatch 触发 portability 工作流。
 - baseline：EL8 构建静态 Qt SDK 和当前 GUI，执行 Qt 控件回归与 ELF ABI 下限检查。
   SDK 按配方哈希缓存、恢复时校验 SHA-256；每次重新编 GUI。SDK 失败不放行 desktop。
 - desktop：依赖 baseline，分别重编 GUI/Qt 回归、打包，在新容器安装并冒烟测试发行与 native 窗口。
-  四页截图、显示日志和安装后 ldd 与 DKMS 记录一同上传；EL10/Ubuntu26 使用 Xwayland。
+  各页截图、显示日志和安装后 ldd 与 DKMS 记录一同上传；EL10/Ubuntu26 使用 Xwayland。
+  window-probe 通过 Xlib 检查真实窗口的 PID、标题和 IsViewable；错误 PID 负向检查必须失败匹配。
+  它在各目标编译，仅用于 CI，不依赖 EL10 已移除的 xwininfo，也不进入产品包。
 - gate：任何必需阶段失败、取消或跳过都失败；不豁免 GUI 缺失来制造全绿。
 
 上传的 Actions artifacts 保留 7 天；发布验收所需的日志/包应另行归档到正式交付记录。

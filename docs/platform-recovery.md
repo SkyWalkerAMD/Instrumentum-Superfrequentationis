@@ -128,6 +128,9 @@ BIOS、实际拓扑和未标明的硬件字段规则仍待核实，不能继续�
 
 ## 与当前构建链的关系
 
+首个恢复的子页为 [AMD PStates 只读页](amd-pstates.md)：作者已明确选择只读频率和完整原始值。
+Intel Controls、AMD Per CCX/SMU 等仍处于规格核对阶段，不把参考布局当成已恢复功能。
+
 新面板继续加入 gui/，复用 HardwareAccess 和同一 HAL；不要让 Qt 界面直接新增任意 ioctl
 或改变旧 MMIO 编码。先完成可核对的只读字段，再按作者确认的写入规则增加操作。
 每次修改继续跑十目标真实 GUI 编译、Qt 回归、包安装/窗口门禁与原 loopback/transport/parity selftest。

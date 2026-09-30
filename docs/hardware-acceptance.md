@@ -233,6 +233,25 @@ sudo CORPUS="$PWD/octool-corpus.bin" \
 GUI 如需 root，使用该机器的合法本地显示认证，在已授权的会话中保留所需 DISPLAY/XAUTHORITY；
 这一步须在目标桌面验收。当前包没有加入提权代理，设备 capability 检查和 root:root 0600 保留。
 
+### 5.1 TRX50 / 9995WX 的 AMD PStates 只读页
+
+规格与已知限制见 [amd-pstates.md](amd-pstates.md)。此项只验证传统配置表，不进行电压/电流换算或写入。
+
+1. 保存 `lscpu`、`lscpu -e=CPU,ONLINE,CORE,SOCKET` 和 BIOS 版本；从在线列表选择逻辑 CPU，
+   不把截图的 CCX/Core 行号直接当成 CPU 编号。记录 cpufreq scaling_driver（若存在）。
+2. 打开 AMD PStates；确认表为空且显示尚未读取。输入所选 CPU，点击 Read once。
+3. 保存页面显示的 family/model/stepping、P-state 上限、所有原始值及逐行错误，点击 Copy snapshot。
+   若 CPU/能力不支持，结果应明确拒绝自动 MSR 读取，不把占位符当成 0。
+4. 在原始 MSR 页选择同一 CPU，逐项读取面板实际读过的 C0010064h 起的寄存器，核对完整 64 位一致。
+   这一步验证 GUI 与 HAL 路径一致；若使用独立工具或旧 GUI 比较，另记工具、模块与样本时间。
+5. 只核对 bit63 有效且 FID 不属于保留编码的配置频率。失效定义/访问失败不显示 MHz；
+   不要求配置频率等于任务管理器/实时遥测或 CPPC 当前频率。
+6. 更改 CPU，确认旧表立即清空；制造无权限/离线 CPU 的读取错误时保留错误文本。
+   不用错误地址写入来测试失败路径。
+
+- [ ] 上述快照已保存；bit32 等所有原始位没有丢失，没有将截图 306 mV/31 A 当作新换算依据。
+- [ ] 用户确认界面读数和访问范围，实机结果写入对应目标记录。云端内存 transport 不替代这一步。
+
 ## 6. 单目标验收记录模板
 
 | 项目 | 结果/证据路径 |

@@ -128,7 +128,7 @@ MODULE_VERSION/vermagic 后才报告成功；移除 CI 预先创建索引的补�
 完整机器可读结果和更新后的包哈希见
 [actions-run-36660297759.json](validation/actions-run-36660297759.json)。本地 dist/packages/ 已替换为这轮产物。
 
-最新代码 bfa992d 的
+当时提交 bfa992d 的
 [run 36661823555](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555)
 再次确认十个 kernel job 全部通过；baseline/desktop/gate 仍因缺 GUI 未通过，
 [结果摘要](validation/actions-run-36661823555.json)保留所有 job ID。
@@ -136,3 +136,23 @@ MODULE_VERSION/vermagic 后才报告成功；移除 CI 预先创建索引的补�
 每次修复保留失败 run；成功只能按具体源码 SHA、目标镜像和发行版包版本陈述。
 Actions artifacts 保留 7 天；实际 kernel release、包 hash 和运行链接应追加到 docs/validation。
 GUI 缺失是独立输入问题，不能以示例 Qt 窗口、旧 Ubuntu 二进制或忽略 baseline 来通过总门禁。
+
+## 基础 GUI 接入后的真实矩阵
+
+作者找回 Windows 二进制包后仍无源码，已按其选择实现基础信息/MSR/MMIO/PCI GUI。
+这解除了缺少可编译工程的阻塞；平台功能仍按确认过的定义逐项恢复。
+
+- run 36665814220：EL8 GUI 和测试程序完成链接；Qt 回归发现模拟对话框确认方式错误，
+  同时 Ubuntu 的 fortified pread 路径绕过了 transport 测试原 wrap 点。改为点击实际按钮，
+  拦截 __pread_chk，并在失败时仍输出测试日志。
+- c63582b / [run 36666155701](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36666155701)：
+  十个 kernel、EL8 baseline 和四个 desktop 成功。GUI RPM 的空 debugsource、EL9 curl-minimal、
+  旧 Debian/Ubuntu 的 Wayland soname 符号、Ubuntu26 xauth 差异见 [GUI 记录](gui-phase1.md)。
+- 18c18c5 / [run 36666985989](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36666985989)：
+  十个 kernel、EL8 baseline 和九个 desktop 成功；新配方 Qt 从源码重建，GUI GLIBC 最高 2.28。
+  EL10 的 fresh runtime 找不到 xwininfo 包提供者，总门禁仍为失败。
+- 81ea801：用 CI 独立编译的 window-probe 直接调用 Xlib，保持实际 PID、标题、IsViewable 检查，
+  加错误 PID 负向检查。runtime 不再要求 xwininfo/xprop。未替换为 offscreen 或退回 Xvfb。
+  第 18c18c5 轮 Ubuntu26 Xwayland 四页截图已下载并逐页检查，基础表单可读且没有裁切。
+
+这几轮可用 GUI 的所有范围都不包含容器外的真实寄存器、MOK 固件登记或模块加载。

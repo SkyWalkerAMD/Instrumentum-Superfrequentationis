@@ -13,6 +13,7 @@
 - [GUI 恢复与重构](gui-recovery.md)：源码丢失后的作者授权、Windows 输入现状与恢复边界。
 - [首批 GUI 重构](gui-phase1.md)：作者选择的基础信息和原始读写、传输修复与测试范围。
 - [平台面板恢复](platform-recovery.md)：作者已选择继续；23 个原面板类的证据与待补硬件/字段规格。
+- [AMD PStates 只读页](amd-pstates.md)：CPU/能力探测、配置频率、原始值及旧算法核对边界。
 - [EL8 静态 Qt SDK](qt-sdk.md)：成功 run、产物哈希、依赖配置及复用边界。
 - [云端接入状态](cloud-access.md)：用户要求 OpenAI 托管云端；当前工具/CLI 的实际核实结果。
 - [Linux Docker 执行指南](cloud-build.md)：独立 runner、日志和失败判定。
@@ -36,7 +37,8 @@
   [输入分析记录](validation/reference-packages-20260930.json)。原来 F 盘不可读的问题已解除。
 - `gui/octool.pro`、实际 C++ 窗口/访问实现与 Qt 回归测试已接入 `port/gui/build.json`。
   新文件沿用 HAL 的 GPLv2；没有替旧二进制或附带第三方程序重新授权。
-- 平台监控/超频面板尚未恢复。CPU、主板、BIOS、面板优先级，以及寄存器含义/单位须由作者确认。
+- 四组 CPU 已由作者确认，W790 更正为 w5-2565X、18 核，BIOS 均未知。
+  AMD PStates 首批只读频率/原始值已实现；其余平台字段与写入规则继续核对。
 - 当前本地执行环境为 Windows；用户现在授权使用公开 GitHub 仓库的 Actions Linux runner。
   真实结果以仓库 run 和验证文档为准，写好 workflow 不等于已经通过。
 - 用户要求使用 OpenAI/Codex 托管云端，不是提供自有服务器。Cloud CLI 可连接服务，

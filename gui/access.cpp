@@ -4,6 +4,32 @@
 #include <QRegularExpression>
 #include <cerrno>
 #include <limits>
+#include <sched.h>
+
+CpuIdReply HardwareAccess::cpuid(unsigned cpu, uint32_t leaf, uint32_t subleaf)
+{
+    QMutexLocker lock(&mutex_);
+    CpuIdReply reply;
+    if (!handle_) { reply.error = -ENOMEM; return reply; }
+    if (hwio_backend_for(handle_, HWIO_FAM_CPU) == HWIO_BE_MODULE) {
+        reply.error = hwio_cpuid(handle_, cpu, leaf, subleaf, reply.words);
+        return reply;
+    }
+    // Direct HAL CPUID runs on the calling CPU. Pin only this worker thread,
+    // and restore its affinity before returning it to Qt's thread pool.
+    if (cpu >= CPU_SETSIZE) { reply.error = -ERANGE; return reply; }
+    cpu_set_t previous, selected;
+    if (sched_getaffinity(0, sizeof(previous), &previous)) {
+        reply.error = -errno; return reply;
+    }
+    CPU_ZERO(&selected); CPU_SET(cpu, &selected);
+    if (sched_setaffinity(0, sizeof(selected), &selected)) {
+        reply.error = -errno; return reply;
+    }
+    reply.error = hwio_cpuid(handle_, cpu, leaf, subleaf, reply.words);
+    if (sched_setaffinity(0, sizeof(previous), &previous)) reply.error = -errno;
+    return reply;
+}
 
 bool parseNumber(const QString &text, int base, quint64 maximum, quint64 &value)
 {

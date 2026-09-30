@@ -41,7 +41,7 @@ kernel release、modinfo 和构建日志。发布时保存这些 artifacts，并
 - `resources`：需要分发的额外资源路径，当前复制到 `/opt/octool/share/<原路径>`。
   必须根据真实 GUI 的资源查找方式核对后配置。
 - `license_file`：新 GUI 的 GPLv2 文件 `gui/LICENSE`，与所链接 HAL 许可一致。
-- `window_title_regex`：匹配当前真实主窗口 `OCTool — Basic information and raw registers`。
+- `window_title_regex`：匹配当前真实主窗口 `OCTool — Hardware information and registers`。
 
 ```sh
 python3 port/tools/build_gui.py --preflight
@@ -134,17 +134,22 @@ RHEL10 移除了 Xorg server，仍支持 Xwayland；不依赖目标机上的 Xor
 EL10 与 Ubuntu26.04 的无头门禁运行：
 
 ```sh
-# 非 root 用户、有可写 HOME；依赖 xwayland-run、mutter、Xwayland、xauth、xwininfo/xprop。
-bash port/ci/headless-smoke.sh xwayland --log /tmp/octool-gui.log
+# 在有 X11 开发头文件的目标构建环境编译 CI 检查器；不安装到产品包。
+mkdir -p build
+cc -std=c11 -O2 -Wall -Wextra -Werror port/ci/window-probe.c -lX11 -o build/window-probe
+PROBE="$PWD/build/window-probe"
+# 非 root 用户、有可写 HOME；依赖 xwayland-run、mutter、Xwayland、xauth。
+bash port/ci/headless-smoke.sh xwayland --probe "$PROBE" --log /tmp/octool-gui.log
 # 其余矩阵目标：
-bash port/ci/headless-smoke.sh xvfb --log /tmp/octool-gui.log
+bash port/ci/headless-smoke.sh xvfb --probe "$PROBE" --log /tmp/octool-gui.log
 ```
 
 测试必须找到真实 GUI PID 所属、标题匹配、已映射的窗口，连续保持至少 5 秒。
 进程早退、崩溃、窗口缺失、显示服务无法启动均为失败，超时不算成功。
 普通用户运行，不挂载设备、不加载模块、不注入假硬件应答。
 当前基础版正常主窗口无需硬件权限；访问失败显示实际错误，不伪造传感器值。
-CI 通过 OCTOOL_SMOKE_SCREENSHOT 指定路径保存四页窗口截图，正常启动不产生截图。
+CI 通过 OCTOOL_SMOKE_SCREENSHOT 指定路径保存各页窗口截图，正常启动不产生截图。
+窗口检查器直接使用 Xlib，兼容 EL10 已不提供 xwininfo 的软件源，检查实际 PID/标题/IsViewable。
 
 ## 6. 原生打包
 

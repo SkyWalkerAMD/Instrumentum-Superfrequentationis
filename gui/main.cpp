@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "registerpanel.h"
+#include "pstates.h"
 #include <QApplication>
 #include <QFile>
 #include <QFormLayout>
@@ -34,7 +35,7 @@ int main(int argc, char **argv)
     auto access = std::make_shared<HardwareAccess>();
     QMainWindow window;
     window.setObjectName("MainWindow");
-    window.setWindowTitle("OCTool — Basic information and raw registers");
+    window.setWindowTitle("OCTool — Hardware information and registers");
     window.resize(940, 700);
     auto *tabs = new QTabWidget(&window);
     auto *overview = new QWidget(tabs);
@@ -58,14 +59,15 @@ int main(int argc, char **argv)
     row("Hardware access", msr == "module" ? "Connected to /dev/mydev" :
         "Module unavailable. Explicit register operations may use direct OS access if permitted.");
     layout->addLayout(form);
-    auto *scope = new QLabel("First reconstruction stage: basic information and raw MSR / MMIO / PCI access. "
-        "Platform monitoring and overclocking panels are not restored yet.", overview);
+    auto *scope = new QLabel("Basic information, raw MSR / MMIO / PCI access, and read-only AMD PStates. "
+        "Other platform monitoring and overclocking panels are being restored.", overview);
     scope->setWordWrap(true); layout->addWidget(scope);
     layout->addStretch();
     tabs->addTab(overview, "Information");
     tabs->addTab(new RegisterPanel(Space::Msr, access, tabs), "MSR");
     tabs->addTab(new RegisterPanel(Space::Memory, access, tabs), "MMIO");
     tabs->addTab(new RegisterPanel(Space::Pci, access, tabs), "PCI");
+    tabs->addTab(new PstatesPanel(access, tabs), "AMD PStates");
     window.setCentralWidget(tabs);
     window.show();
     // CI requests snapshots of these real windows for visual inspection.
