@@ -9,6 +9,7 @@
 - [GitHub 仓库与 Actions](github-actions.md)：当前测试路径、公开状态与计费边界。
 - [Actions 实测修复记录](actions-debugging.md)：软件源、Kbuild 探测与 EL headers 的实际失败及处理。
 - [GUI 恢复与重构](gui-recovery.md)：源码丢失后的作者授权、Windows 输入现状与恢复边界。
+- [EL8 静态 Qt SDK](qt-sdk.md)：成功 run、产物哈希、依赖配置及复用边界。
 - [云端接入状态](cloud-access.md)：用户要求 OpenAI 托管云端；当前工具/CLI 的实际核实结果。
 - [Linux Docker 执行指南](cloud-build.md)：独立 runner、日志和失败判定。
 - [真机验收清单](hardware-acceptance.md)：安装、MOK、insmod/modprobe、MMIO 对拍、GUI。
@@ -27,7 +28,8 @@
 ## 当前缺失输入
 
 - 用户随后确认原 Linux GUI 源码已经丢失，授权先检查 Windows 版，必要时重构。
-  Windows 版实际路径待提供；重构不得猜测硬件字段、单位或面板含义。
+  已提供 `F:\OpenAI\Codex\project\octool\OCTool0528.zip`，但当前环境中该文件不存在；
+  重构不得猜测硬件字段、单位或面板含义。
 - 原 GUI 源码：当前树没有 `.pro`/GUI C++ 源码。`port/gui/build.json` 的
   `gui/octool.pro` 是明确的接入位置，**不是已经存在的工程**。
 - 用户最初提到的 `OCTool0528.zip` 不在给定工作目录；已读取的 Linux ZIP 只有二进制。

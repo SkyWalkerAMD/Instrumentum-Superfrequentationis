@@ -1,0 +1,87 @@
+{
+  "databaseId": 36661824443,
+  "headSha": "bfa992d2114c4203b1fb4213cc46b7bc7eafbb18",
+  "status": "completed",
+  "conclusion": "success",
+  "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661824443",
+  "createdAt": "2026-09-30T02:52:22Z",
+  "updatedAt": "2026-09-30T03:09:24Z",
+  "job_id": 109718066632,
+  "scope": "EL8 static Qt SDK build/install/archive only; no OCTool GUI built or launched",
+  "image": {
+    "Id": "sha256:c79048e50f5fce116723442952adf4f5258455a1665bbc64aa65469abe9ead90",
+    "RepoDigests": [
+      "rockylinux@sha256:9794037624aaa6212aeada1d28861ef5e0a935adaf93e4ef79837119f2a2d04c"
+    ],
+    "Architecture": "amd64"
+  },
+  "os_release_record": "NAME=\"Rocky Linux\"\nVERSION=\"8.9 (Green Obsidian)\"\nID=\"rocky\"\nID_LIKE=\"rhel centos fedora\"\nVERSION_ID=\"8.9\"\nPLATFORM_ID=\"platform:el8\"\nPRETTY_NAME=\"Rocky Linux 8.9 (Green Obsidian)\"\nANSI_COLOR=\"0;32\"\nLOGO=\"fedora-logo-icon\"\nCPE_NAME=\"cpe:/o:rocky:rocky:8:GA\"\nHOME_URL=\"https://rockylinux.org/\"\nBUG_REPORT_URL=\"https://bugs.rockylinux.org/\"\nSUPPORT_END=\"2029-05-31\"\nROCKY_SUPPORT_PRODUCT=\"Rocky-Linux-8\"\nROCKY_SUPPORT_PRODUCT_VERSION=\"8.9\"\nREDHAT_SUPPORT_PRODUCT=\"Rocky Linux\"\nREDHAT_SUPPORT_PRODUCT_VERSION=\"8.9\"\n",
+  "compiler": "gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-28)",
+  "libc": "ldd (GNU libc) 2.28",
+  "qt_version": "5.15.18",
+  "qt_source_sha256": "cea1fbabf02455f3f0e8eaa839f5d6f45cdb56b62c8a83af5c1d00ac05f912ea",
+  "sdk_archive": {
+    "name": "qt-sdk.tar.gz",
+    "sha256": "3aaa15077aa3c15989c6a0f7d40215d8210a1c6aa765d9e07590c16ca3823b55",
+    "bytes": 56674389
+  },
+  "artifact_id": 11074823344,
+  "static_platform_plugins": [
+    "octool-qt/plugins/platforms/libqeglfs.a",
+    "octool-qt/plugins/platforms/libqlinuxfb.a",
+    "octool-qt/plugins/platforms/libqminimal.a",
+    "octool-qt/plugins/platforms/libqminimalegl.a",
+    "octool-qt/plugins/platforms/libqoffscreen.a",
+    "octool-qt/plugins/platforms/libqvnc.a",
+    "octool-qt/plugins/platforms/libqwayland-egl.a",
+    "octool-qt/plugins/platforms/libqwayland-generic.a",
+    "octool-qt/plugins/platforms/libqwayland-xcomposite-glx.a",
+    "octool-qt/plugins/platforms/libqxcb.a"
+  ],
+  "features": {
+    "static": true,
+    "icu": false,
+    "system_jpeg": false,
+    "system_tiff": false,
+    "system_webp": false,
+    "accessibility": true,
+    "atspi_bridge": true,
+    "openssl": false,
+    "wayland_client": true
+  },
+  "atspi_feature_header": "octool-qt/include/QtGui/5.15.18/QtGui/private/qtgui-config_p.h",
+  "qmake_elf_policy_check": {
+    "needed": [
+      "libc.so.6",
+      "libgcc_s.so.1",
+      "libm.so.6",
+      "libstdc++.so.6"
+    ],
+    "versions": [
+      "CXXABI_1.3",
+      "CXXABI_1.3.8",
+      "GCC_3.0",
+      "GLIBCXX_3.4",
+      "GLIBCXX_3.4.11",
+      "GLIBCXX_3.4.15",
+      "GLIBC_2.14",
+      "GLIBC_2.16",
+      "GLIBC_2.2.5",
+      "GLIBC_2.28",
+      "GLIBC_2.3",
+      "GLIBC_2.4",
+      "GLIBC_2.6"
+    ],
+    "rpaths": [],
+    "errors": []
+  },
+  "qmake_check_scope": "SDK tool only; not evidence of the future GUI dependency floor",
+  "evidence_sha256": {
+    "qt-config-summary.txt": "29163fef140e571ca0ee6ae62b0077aa3b8b88a9102d1ec2674105649be281d8",
+    "qt-build.log": "9e1bb8d01e29010fcb5d0639fd76f2113cc1664f4e8a9237a2932c856fa61a27",
+    "packages-sdk.txt": "9521ee08ea99945c564b2c82e67b561e524b069c63cff54647b0af43d111da02",
+    "bootstrap-sdk.log": "2ab04179efdc470b7daad820e9cbcc7d11da9206b2f861b008ad6c76e9dee31c"
+  },
+  "gui": "blocked_source_recovery",
+  "hardware_acceptance": "not_run"
+}

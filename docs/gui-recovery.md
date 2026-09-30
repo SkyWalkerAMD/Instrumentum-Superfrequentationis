@@ -11,6 +11,7 @@
 
 作者提供 Windows 包路径为 `F:\OpenAI\Codex\project\octool\OCTool0528.zip`。
 本轮多次以完整路径读取、枚举项目目录，并在 Downloads 中按 OCTool 名称检索，均未取得该文件。
+沙箱外再次查询完整路径及父目录，结果相同；父目录实际只有 octool-linux.zip 和 error.log 两个文件。
 这只说明当前工具环境无法读取该路径，不代表 Windows 包本身损坏或不可恢复。
 目前实际拿到的 `octool-linux.zip` 仍只有预编译产物。
 
@@ -39,3 +40,5 @@ Windows SDK、驱动和 Qt DLL 不能直接链接进 Linux 构建。
 内核和 DKMS 包矩阵已取得真实十目标成功证据，见 [verification-status.md](verification-status.md)。
 手动 `Qt SDK diagnostic` 使用同一 EL8 Qt 构建脚本验证静态工具链，避免 GUI 恢复期间完全停工。
 它不依赖虚假的 GUI 源文件、不豁免正式 baseline/desktop 门禁，也不证明现有 GUI 功能已恢复。
+该诊断已在 [run 36661824443](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661824443)
+成功完成；SDK 和配置证据见 [qt-sdk.md](qt-sdk.md)。下一步仍需可读取的 Windows 包来建立实际功能清单。

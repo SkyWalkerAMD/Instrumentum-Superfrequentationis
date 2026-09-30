@@ -27,8 +27,9 @@ bootstrap 现在读取配置树的 `include/config/kernel.release`，建立相�
 第二轮 EL8 已完成实编、签名、RPM 构建和 DKMS 安装，但最后按模块名查询失败。
 核对[DKMS 3.4.3 的 do_depmod](https://github.com/dkms-project/dkms/blob/v3.4.3/dkms.in)：
 它在目标目录没有 modules.dep 时认为未安装内核映像，跳过创建索引。
-headers-only 容器现在在安装 OCTool 包之前对目标 release 执行 depmod 初始化索引，
-之后仍由真实 DKMS 安装更新索引，并通过 modinfo 按名称检验，不改成仅检查 .ko 文件存在。
+早期修复在 headers-only 容器安装 OCTool 包之前对目标 release 执行 depmod 初始化索引，
+之后通过 modinfo 按名称检验，不改成仅检查 .ko 文件存在。第五轮发现重装仍会丢索引，
+最终修复改为包内每次安装刷新索引，见后面的生命周期记录；不再依赖 CI 预建索引。
 此外 EPEL 的 dracut post_transaction 在无 boot image 的容器中失败，容器 bootstrap
 明确禁用该启动映像钩子；配置不进入发行包。真实内核升级/启动映像和 MOK 仍必须在 VM/真机验收。
 
@@ -78,9 +79,7 @@ deb [check-valid-until=no] http://snapshot.debian.org/archive/debian-security/20
 第二轮中该快照配置已实际安装完成，Debian11 的 HAL、C 离线自测和 17 项 Python 测试通过，
 随后进入 5.10.0-46 headers 的编译探测并触发上述 Make 转义问题。
 
-## 证据保留和后续
-
-### EL8 静态 Qt 独立诊断
+## EL8 静态 Qt 独立诊断
 
 [run 36659551087](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36659551087)
 实际校验官方 Qt5.15.18 源码并进入静态 C++ 编译。实时 configure 报告 ICU=no、内置 JPEG/TIFF/WebP、
@@ -98,6 +97,14 @@ bridge 需要 accessibility、xcb、D-Bus 和 atspi-2；补 Debian libatspi2.0-d
 现按实际生成的 config.summary / qtbase/config.summary 选择并打印路径，避免把未验证的推断写死。
 OpenSSL 在首轮配置中为 no；完整网络/TLS 功能尚待恢复 GUI 后按实际需求实现并验收，
 不把单独 SDK 构建当作所有 GUI 功能和运行依赖均已解决。
+
+[run 36661824443](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661824443)
+（bfa992d）最终成功，耗时约 17 分钟；实际 summary 位于顶层 config.summary。
+已下载并核验 SDK tar SHA-256，检查压缩包内静态 xcb/Wayland 插件和 AT-SPI 私有宏，
+qmake ELF 通过 EL8 符号版本门禁。配置、哈希和范围说明见 [SDK 记录](qt-sdk.md)。
+qmake 检查只覆盖 SDK 工具；GUI 最终链接、soname 闭包与窗口测试仍未执行。
+
+## 模块包生命周期与后续证据
 
 第四轮 [run 36659550123](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36659550123)
 （a8a5f1e）十目标 kernel 全部成功，含三个 Debian、三个 EL、四个 Ubuntu，Ubuntu22.04 同测 GA/HWE。
@@ -120,6 +127,11 @@ MODULE_VERSION/vermagic 后才报告成功；移除 CI 预先创建索引的补�
 （3f7f942）十个 kernel job 再次全部通过，含初装、同版本重装、卸载再安装以及全部离线门禁。
 完整机器可读结果和更新后的包哈希见
 [actions-run-36660297759.json](validation/actions-run-36660297759.json)。本地 dist/packages/ 已替换为这轮产物。
+
+最新代码 bfa992d 的
+[run 36661823555](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555)
+再次确认十个 kernel job 全部通过；baseline/desktop/gate 仍因缺 GUI 未通过，
+[结果摘要](validation/actions-run-36661823555.json)保留所有 job ID。
 
 每次修复保留失败 run；成功只能按具体源码 SHA、目标镜像和发行版包版本陈述。
 Actions artifacts 保留 7 天；实际 kernel release、包 hash 和运行链接应追加到 docs/validation。

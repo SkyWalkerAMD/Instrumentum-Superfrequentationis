@@ -2,10 +2,24 @@
 
 ## 2.0.1 — 2026-09-30（未发布，待完整 Linux/GUI 验证）
 
-### 仓库改名与首轮真实 Linux CI 修复
+### 仓库命名与多轮真实 Linux CI 验证
 
-- 审阅 Qt 上游 top-level configure 和 qt_configure.prf，确认 config.summary 位于
-  AT-SPI 宏位于版本化 private header，改为扫描安装后 QtGui 头目录核验该私有 feature。
+- bfa992d / Qt SDK run 36661824443 成功：EL8 GCC8.5/glibc2.28 实际完成 Qt5.15.18 静态
+  构建、安装、AT-SPI 私有宏和 libqxcb.a 检查、SDK 归档与上传。下载后 tar SHA-256 为
+  3aaa15077aa3c15989c6a0f7d40215d8210a1c6aa765d9e07590c16ca3823b55，与云端相同。
+  压缩包内检查确认 Wayland 静态插件存在；qmake ELF 的 GLIBC2.28/GLIBCXX3.4.15/CXXABI1.3.8
+  通过现有门禁。只证明 SDK 工具，不外推为 GUI 已链接/运行或 TLS 功能通过。
+  新增 docs/qt-sdk.md、完整配置摘要和机器可读 run 证据；SDK 保存在 dist/qt-sdk/。
+- 同一 bfa992d 的 portability run 36661823555 十个 kernel job 再次全绿。
+  新摘要保存 job ID/结论；逐路径 git diff 确认模块、ABI/HAL、自测和打包源码与 3f7f942 相同，
+  本地 dist/packages/ 保留第六轮已验证的十目标包并生成 SHA256SUMS，不冒充最新 artifact hash。
+  baseline 仍缺实际 GUI，desktop 未运行，总门禁保持失败；没有把 SDK 成功计入 GUI 验收。
+- 再次核对用户给定 Windows ZIP 路径，包括沙箱外查询，仍无此文件。
+  文档纠正“路径待提供”为“路径已提供但文件不可读”，避免继续索要已丢失的 Linux 源码。
+  源码交接包按 octool-2.0.1-src.tar.gz 重新生成，包含实际成功/失败证据与真机清单；
+  它仍不是通过完整 GUI 发布门禁的发行版。
+- 审阅 Qt 上游 top-level configure 和 qt_configure.prf，确认 AT-SPI 宏位于版本化 private header，
+  改为扫描安装后 QtGui 头目录核验该私有 feature。
   对 summary 位于 qtbase/ 的推断在 run 36661368766 被实际早期检查否定；不能根据 configure
   的 cd 推断顶层 qmake 的 OUT_PWD。现按实际文件选择 config.summary 或 qtbase/config.summary，
   打印所选路径，缺失在 make 前明确失败。该次 atspi 探测已实际为 yes。

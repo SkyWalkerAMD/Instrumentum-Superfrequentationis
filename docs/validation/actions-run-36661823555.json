@@ -1,0 +1,109 @@
+{
+  "databaseId": 36661823555,
+  "headSha": "bfa992d2114c4203b1fb4213cc46b7bc7eafbb18",
+  "status": "completed",
+  "conclusion": "failure",
+  "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555",
+  "kernel_matrix_passed": true,
+  "package_lifecycle_passed": true,
+  "gui": "blocked_source_recovery",
+  "hardware_acceptance": "not_run",
+  "jobs": [
+    {
+      "name": "matrix",
+      "databaseId": 109718060514,
+      "conclusion": "success",
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555/job/109718060514"
+    },
+    {
+      "name": "baseline",
+      "databaseId": 109718060563,
+      "conclusion": "failure",
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555/job/109718060563"
+    },
+    {
+      "name": "kernel (ubuntu24.04)",
+      "databaseId": 109718096962,
+      "conclusion": "success",
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555/job/109718096962"
+    },
+    {
+      "name": "kernel (ubuntu22.04)",
+      "databaseId": 109718096969,
+      "conclusion": "success",
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555/job/109718096969"
+    },
+    {
+      "name": "kernel (el10)",
+      "databaseId": 109718096978,
+      "conclusion": "success",
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555/job/109718096978"
+    },
+    {
+      "name": "kernel (el9)",
+      "databaseId": 109718096981,
+      "conclusion": "success",
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555/job/109718096981"
+    },
+    {
+      "name": "kernel (debian13)",
+      "databaseId": 109718096995,
+      "conclusion": "success",
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555/job/109718096995"
+    },
+    {
+      "name": "kernel (debian11)",
+      "databaseId": 109718097000,
+      "conclusion": "success",
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555/job/109718097000"
+    },
+    {
+      "name": "kernel (ubuntu20.04)",
+      "databaseId": 109718097012,
+      "conclusion": "success",
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555/job/109718097012"
+    },
+    {
+      "name": "kernel (el8)",
+      "databaseId": 109718097015,
+      "conclusion": "success",
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555/job/109718097015"
+    },
+    {
+      "name": "kernel (debian12)",
+      "databaseId": 109718097024,
+      "conclusion": "success",
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555/job/109718097024"
+    },
+    {
+      "name": "kernel (ubuntu26.04)",
+      "databaseId": 109718097064,
+      "conclusion": "success",
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555/job/109718097064"
+    },
+    {
+      "name": "desktop (${{ matrix.id }})",
+      "databaseId": 109718098544,
+      "conclusion": "skipped",
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555/job/109718098544"
+    },
+    {
+      "name": "gate",
+      "databaseId": 109718594402,
+      "conclusion": "failure",
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555/job/109718594402"
+    }
+  ],
+  "local_package_evidence": "actions-run-36660297759.json",
+  "package_payload_source_unchanged_from": "3f7f942fe40c50e3388838f0477c5c848756f8c8",
+  "compared_source_paths": [
+    "port/kmod",
+    "port/abi",
+    "port/hal",
+    "port/tests",
+    "port/packaging",
+    "port/tools/build_packages.py"
+  ],
+  "comparison_method": "git diff --exit-code between the two commits for the listed paths",
+  "note": "Detailed kernel/package hashes belong to run 36660297759; they are not asserted to be artifact hashes of this later run."
+}

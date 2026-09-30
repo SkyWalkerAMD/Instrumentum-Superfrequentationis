@@ -6,6 +6,7 @@ OCTool 多发行版移植。GitHub 仓库名为 `Instrumentum-Superfrequentation
 在用户已有 port/ 重构上扩展 EL8/9/10、Ubuntu20.04/22.04/24.04/26.04、Debian11/12/13。
 
 **十个目标的模块实编、离线自测和 DKMS 包安装/重装已通过真实 GitHub Actions。
+EL8 静态 Qt 5.15.18 SDK 也已构建成功。
 GUI 源码待恢复或重构，完整移植验证尚未完成，总门禁保持失败。**
 
 从 [docs/README.md](docs/README.md) 和 [CHANGELOG.md](CHANGELOG.md) 开始。
@@ -15,6 +16,7 @@ GUI 源码待恢复或重构，完整移植验证尚未完成，总门禁保持�
 - [OpenAI 托管云端接入状态](docs/cloud-access.md)
 - [Linux Docker 执行矩阵](docs/cloud-build.md)
 - [实际验证状态](docs/verification-status.md)
+- [EL8 静态 Qt SDK 实测与复用](docs/qt-sdk.md)
 - [真机验收与 MMIO 对拍](docs/hardware-acceptance.md)
 - [原始重构基础](port/docs/refactor-guide.md)
 

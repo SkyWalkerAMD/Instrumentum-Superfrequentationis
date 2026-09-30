@@ -1,0 +1,189 @@
+Build type: linux-g++ (x86_64, CPU features: mmx sse sse2)
+Compiler: gcc 8.5.0
+Configuration: sse2 aesni sse3 ssse3 sse4_1 sse4_2 avx avx2 avx512f avx512bw avx512cd avx512dq avx512er avx512ifma avx512pf avx512vbmi avx512vl compile_examples enable_new_dtags f16c largefile precompile_header rdrnd shani x86SimdAlways release c++11 c++14 c++17 c++1z concurrent dbus reduce_exports reduce_relocations static stl
+Build options:
+  Mode ................................... release
+  Optimize release build for size ........ no
+  Building shared libraries .............. no
+  Using C standard ....................... C11
+  Using C++ standard ..................... C++17
+  Using ccache ........................... no
+  Using new DTAGS ........................ yes
+  Relocatable ............................ no
+  Using precompiled headers .............. yes
+  Using LTCG ............................. no
+  Target compiler supports:
+    SSE .................................. SSE2 SSE3 SSSE3 SSE4.1 SSE4.2
+    AVX .................................. AVX AVX2
+    AVX512 ............................... F ER CD PF DQ BW VL IFMA VBMI
+    Other x86 ............................ AES F16C RDRAND SHA
+    Intrinsics without -mXXX option ...... yes
+  Build parts ............................ libs tools
+Qt modules and options:
+  Qt Concurrent .......................... yes
+  Qt D-Bus ............................... yes
+  Qt D-Bus directly linked to libdbus .... yes
+  Qt Gui ................................. yes
+  Qt Network ............................. yes
+  Qt Sql ................................. yes
+  Qt Testlib ............................. yes
+  Qt Widgets ............................. yes
+  Qt Xml ................................. yes
+Support enabled for:
+  Using pkg-config ....................... yes
+  udev ................................... yes
+  Using system zlib ...................... no
+  Zstandard support ...................... yes
+Qt Core:
+  DoubleConversion ....................... yes
+    Using system DoubleConversion ........ no
+  GLib ................................... yes
+  iconv .................................. yes
+  ICU .................................... no
+  Built-in copy of the MIME database ..... yes
+  Tracing backend ........................ <none>
+  Logging backends:
+    journald ............................. no
+    syslog ............................... no
+    slog2 ................................ no
+  PCRE2 .................................. yes
+    Using system PCRE2 ................... no
+Qt Network:
+  getifaddrs() ........................... yes
+  IPv6 ifname ............................ yes
+  libproxy ............................... no
+  Linux AF_NETLINK ....................... yes
+  OpenSSL ................................ no
+    Qt directly linked to OpenSSL ........ no
+  OpenSSL 1.1 ............................ no
+  DTLS ................................... no
+  OCSP-stapling .......................... no
+  SCTP ................................... no
+  Use system proxies ..................... yes
+  GSSAPI ................................. yes
+Qt Gui:
+  Accessibility .......................... yes
+  FreeType ............................... yes
+    Using system FreeType ................ yes
+  HarfBuzz ............................... yes
+    Using system HarfBuzz ................ no
+  Fontconfig ............................. yes
+  Image formats:
+    GIF .................................. yes
+    ICO .................................. yes
+    JPEG ................................. yes
+      Using system libjpeg ............... no
+    PNG .................................. yes
+      Using system libpng ................ no
+  Text formats:
+    HtmlParser ........................... yes
+    CssParser ............................ yes
+    OdfWriter ............................ yes
+    MarkdownReader ....................... yes
+      Using system libmd4c ............... no
+    MarkdownWriter ....................... yes
+  EGL .................................... yes
+  OpenVG ................................. no
+  OpenGL:
+    Desktop OpenGL ....................... yes
+    OpenGL ES 2.0 ........................ no
+    OpenGL ES 3.0 ........................ no
+    OpenGL ES 3.1 ........................ no
+    OpenGL ES 3.2 ........................ no
+  Vulkan ................................. no
+  Session Management ..................... yes
+Features used by QPA backends:
+  evdev .................................. yes
+  libinput ............................... no
+  INTEGRITY HID .......................... no
+  mtdev .................................. no
+  tslib .................................. no
+  xkbcommon .............................. yes
+  X11 specific:
+    XLib ................................. yes
+    XCB Xlib ............................. yes
+    EGL on X11 ........................... no
+    xkbcommon-x11 ........................ yes
+QPA backends:
+  DirectFB ............................... no
+  EGLFS .................................. yes
+  EGLFS details:
+    EGLFS OpenWFD ........................ no
+    EGLFS i.Mx6 .......................... no
+    EGLFS i.Mx6 Wayland .................. no
+    EGLFS RCAR ........................... no
+    EGLFS EGLDevice ...................... yes
+    EGLFS GBM ............................ no
+    EGLFS VSP2 ........................... no
+    EGLFS Mali ........................... no
+    EGLFS Raspberry Pi ................... no
+    EGLFS X11 ............................ no
+  LinuxFB ................................ yes
+  VNC .................................... yes
+  XCB:
+    Using system-provided xcb-xinput ..... yes
+    Native painting (experimental) ....... no
+    GL integrations:
+      GLX Plugin ......................... yes
+        XCB GLX .......................... yes
+      EGL-X11 Plugin ..................... no
+Qt Sql:
+  SQL item models ........................ yes
+Qt Widgets:
+  GTK+ ................................... no
+  Styles ................................. Fusion Windows
+Qt PrintSupport:
+  CUPS ................................... yes
+Qt Sql Drivers:
+  DB2 (IBM) .............................. no
+  InterBase .............................. no
+  MySql .................................. no
+  OCI (Oracle) ........................... no
+  ODBC ................................... no
+  PostgreSQL ............................. no
+  SQLite2 ................................ no
+  SQLite ................................. yes
+    Using system provided SQLite ......... no
+  TDS (Sybase) ........................... no
+Qt Testlib:
+  Tester for item models ................. yes
+Further Image Formats:
+  JasPer ................................. no
+  MNG .................................... no
+  TIFF ................................... yes
+    Using system libtiff ................. no
+  WEBP ................................... yes
+    Using system libwebp ................. no
+Qt Wayland Drivers:
+  EGL .................................... yes
+  Raspberry Pi ........................... no
+  XComposite EGL ......................... no
+  XComposite GLX ......................... yes
+  DRM EGL ................................ yes
+  libhybris EGL .......................... no
+  Linux dma-buf server buffer integration . yes
+  Vulkan-based server buffer integration . no
+  Shm emulation server buffer integration . yes
+Qt Wayland Client Shell Integrations:
+  xdg-shell .............................. yes
+  xdg-shell unstable v5 (deprecated) ..... yes
+  xdg-shell unstable v6 .................. yes
+  ivi-shell .............................. yes
+  wl-shell (deprecated) .................. yes
+Qt Wayland Client ........................ yes
+Qt Wayland Compositor .................... yes
+Qt Wayland Compositor Layer Plugins:
+  VSP2 hardware layer integration ........ no
+Qt Bluetooth:
+  BlueZ .................................. yes
+  BlueZ Low Energy ....................... yes
+  Linux Crypto API ....................... yes
+  Native Win32 Bluetooth ................. no
+  WinRT Bluetooth API (desktop & UWP) .... no
+  WinRT advanced bluetooth low energy API (desktop & UWP) . no
+
+Note: Also available for Linux: linux-clang linux-icc
+
+Note: Using static linking will disable the use of dynamically
+loaded plugins. Make sure to import all needed static plugins,
+or compile needed modules into the library.

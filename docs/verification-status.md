@@ -2,7 +2,11 @@
 
 日期：2026-09-30。状态分为“输入包已有记录”“本轮实际检查”“尚未运行”，不混用。
 
-GitHub Actions 已实际运行。第六轮提交 `3f7f942` 的
+GitHub Actions 已实际运行。最新代码提交 `bfa992d` 的
+[run 36661823555](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661823555)
+十个 kernel job 全部成功，baseline 缺 GUI 而失败，desktop 未执行，总门禁失败。
+[最新结果摘要](validation/actions-run-36661823555.json)记录每个 job ID 与结论。
+第六轮提交 `3f7f942` 的
 [run 36660297759](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36660297759)
 十个 kernel job 全部成功，覆盖 11 个实际 kernel release。每个目标的 HAL、C 离线自测、
 17 项 Python 测试、模块实编、签名试验、DKMS 原生包初装、同版本重装和卸载再安装通过；
@@ -11,6 +15,13 @@ GitHub Actions 已实际运行。第六轮提交 `3f7f942` 的
 [机器可读证据](validation/actions-run-36660297759.json)。首次十目标初装证据保留在
 [第四轮记录](validation/actions-run-36659550123.json)。失败到修复过程见
 [Actions 实测记录](actions-debugging.md)。
+模块、ABI/HAL、自测及打包源码在 `3f7f942` 到 `bfa992d` 间没有改变，比较路径记录在最新摘要。
+本地发行版模块包来自第六轮；其哈希不冒充最新 run 的 artifact 哈希。
+
+EL8 静态 Qt SDK 在同一 `bfa992d` 提交的
+[run 36661824443](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661824443)
+构建、安装、归档成功，下载后 SHA-256 一致，静态 xcb 与 AT-SPI bridge 已核验。
+详细配置和复用方式见 [qt-sdk.md](qt-sdk.md)。这是工具链证据，仍没有 OCTool GUI 编译/窗口证据。
 
 ## 输入包
 
@@ -64,7 +75,7 @@ GitHub Actions 已实际运行。第六轮提交 `3f7f942` 的
 | EL8 | 4.18.0-553.168.1.el8_10.x86_64 通过 | 待恢复/重构 | DKMS RPM 构建安装通过 | 未运行 |
 | EL9 | 5.14.0-687.52.1.el9_8.x86_64 通过 | 待恢复/重构 | DKMS RPM 构建安装通过 | 未运行 |
 | EL10 | 6.12.0-211.60.1.el10_2.x86_64 通过 | 待恢复/重构 | DKMS RPM 构建安装通过 | 未运行 |
-| Ubuntu20.04 | 5.4.0-216-generic 通过，含签名试验 | 缺 GUI 源码 | DKMS deb 安装通过；GUI 包未运行 | 未运行 |
+| Ubuntu20.04 | 5.4.0-216-generic 通过 | 待恢复/重构 | DKMS deb 构建安装通过 | 未运行 |
 | Ubuntu22.04 | 5.15.0-194、6.8.0-138 generic 均通过 | 待恢复/重构 | DKMS deb 构建安装通过 | 未运行 |
 | Ubuntu24.04 | 6.8.0-142-generic 通过 | 待恢复/重构 | DKMS deb 构建安装通过 | 未运行 |
 | Ubuntu26.04 | 7.0.0-34-generic 通过 | 待恢复/重构 | DKMS deb 构建安装通过 | 未运行 |
@@ -72,10 +83,11 @@ GitHub Actions 已实际运行。第六轮提交 `3f7f942` 的
 | Debian12 | 6.1.0-53-amd64 通过 | 待恢复/重构 | DKMS deb 构建安装通过 | 未运行 |
 | Debian13 | 6.12.111+deb13-amd64 通过 | 待恢复/重构 | DKMS deb 构建安装通过 | 未运行 |
 
-以上仅模块包；GUI 包未产出。全部 artifact 已下载，本地分发行版包保存在 dist/packages/。
+以上仅模块包；GUI 包未产出。第六轮全部 kernel artifact 已下载，本地分发行版包保存在 dist/packages/，
+该目录的 SHA256SUMS 可用于核对十份包。每个目标均完成临时证书签名试验及三种安装事务。
 MOK 固件登记、加载及真实 MMIO 对拍未运行；容器签名试验不等于 Secure Boot 验收。
 用户确认原 Linux GUI 源码丢失，授权检查 Windows 版后必要时重构。
-当前提供的 Windows ZIP 路径仍不存在；EL8 Qt SDK 的独立编译正在运行。
+当前提供的 Windows ZIP 路径仍不存在，包括沙箱外查询；EL8 Qt SDK 已独立编译通过。
 
 以下为接入 Actions 之前的环境核实历史：本机 WSL 未安装，未发现 Docker/Podman；
 当时当前工具没有远程 Linux 执行入口，Node 执行工具同样报告 win32。
@@ -89,8 +101,8 @@ MOK 固件登记、加载及真实 MMIO 对拍未运行；容器签名试验不�
 
 ## 后续验证顺序
 
-1. 使用已授权的公开 GitHub 仓库 Actions，修复并复测十项 kernel 任务。
-2. 接入实际 GUI 源码，核对 qmake 工程、模块列表、第三方库、资源和标题，再运行完整矩阵。
+1. 取得可读取的 Windows 包，按 [GUI 恢复流程](gui-recovery.md)检查源码/二进制和功能证据。
+2. 恢复或重构实际 GUI，核对 qmake 工程、模块列表、第三方库、资源和标题，再运行完整矩阵。
 3. 修复实测发现的包名/工具链/Qt 源码兼容问题，逐项记录日志，不豁免失败目标。
 4. 确认十目标 GUI 和包安装全绿后，执行 [真机清单](hardware-acceptance.md)。
 5. 收集每个目标实际日志，更新本表；没有真机证据的项目继续标未运行。
