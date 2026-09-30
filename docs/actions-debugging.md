@@ -88,6 +88,10 @@ accessibility=yes，但缺少 atspi-2 开发头，X11 AT-SPI bridge 被关闭。
 依据[Qt GUI configure.json](https://github.com/qt/qtbase/blob/v5.15.18-lts-lgpl/src/gui/configure.json)，
 bridge 需要 accessibility、xcb、D-Bus 和 atspi-2；补 Debian libatspi2.0-dev / EL at-spi2-core-devel，
 显式要求 feature 并核验安装后的宏。首轮作为失败配置的诊断证据保留，修复后重新构建。
+进一步依据 Qt 的 [top-level configure](https://github.com/qt/qt5/blob/v5.15.18-lts-lgpl/configure)
+与 [qt_configure.prf](https://github.com/qt/qtbase/blob/v5.15.18-lts-lgpl/mkspecs/features/qt_configure.prf)，
+修正 config.summary 的 qtbase/ 路径；AT-SPI 是 privateFeature，不能只查公开 qtgui-config.h。
+第二次诊断因发现这些安装后检查路径问题而停止，修正后重跑，避免已知错误直到长编译结束才暴露。
 OpenSSL 在首轮配置中为 no；完整网络/TLS 功能尚待恢复 GUI 后按实际需求实现并验收，
 不把单独 SDK 构建当作所有 GUI 功能和运行依赖均已解决。
 

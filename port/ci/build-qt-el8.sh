@@ -34,10 +34,13 @@ done
     -fontconfig -system-freetype -accessibility -feature-accessibility-atspi-bridge \
     -dbus-linked -xcb -xcb-xlib \
     -opengl desktop "${skip[@]}"
+# Qt's top-level configure delegates to qtbase (OUT_PWD is the qtbase build).
+test -s qtbase/config.summary
 make -j"${JOBS:-2}"
 make install
 grep -Eq '^#define QT_FEATURE_accessibility 1$' /opt/octool-qt/include/QtGui/qtgui-config.h
-grep -Eq '^#define QT_FEATURE_accessibility_atspi_bridge 1$' /opt/octool-qt/include/QtGui/qtgui-config*.h
+# AT-SPI is a private Qt feature; its header is in the versioned private tree.
+grep -REq '^#define QT_FEATURE_accessibility_atspi_bridge 1$' /opt/octool-qt/include/QtGui
 test -f /opt/octool-qt/plugins/platforms/libqxcb.a
 python3 - "$source_dir" <<'PY'
 import pathlib, shutil, sys
@@ -50,4 +53,4 @@ for p in src.rglob('*'):
         shutil.copy2(p, target)
 PY
 printf 'Qt %s\nsource sha256 %s\n' "$version" "$sha" > /opt/octool-qt/licenses/build-source.txt
-cp config.summary /opt/octool-qt/licenses/config.summary
+cp qtbase/config.summary /opt/octool-qt/licenses/config.summary

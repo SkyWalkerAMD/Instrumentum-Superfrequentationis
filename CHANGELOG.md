@@ -4,6 +4,9 @@
 
 ### 仓库改名与首轮真实 Linux CI 修复
 
+- 审阅 Qt 上游 top-level configure 和 qt_configure.prf，确认 config.summary 位于
+  qtbase/ 构建目录，AT-SPI 宏位于版本化 private header；修复原脚本的顶层 summary 路径，
+  并扫描安装后 QtGui 头目录核验该私有 feature。summary 存在性在 make 前检查。
 - EL8 Qt SDK 首轮 run 36659551087 确实进入 C++ 编译，官方 Qt 源 SHA 校验通过。
   实时 configure 日志显示 accessibility=yes 但 AT-SPI bridge 缺依赖而关闭。
   核对 Qt5.15.18 src/gui/configure.json 的 atspi-2 探测条件，补 libatspi2.0-dev /
