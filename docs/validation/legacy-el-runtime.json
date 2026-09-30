@@ -4577,6 +4577,33 @@
     },
     {
       "symbols": [
+        "_Z8isit_adlv"
+      ],
+      "address": 3640112,
+      "size": 112,
+      "code_sha256": "d4249c5e54aa482b71aa1fedbb4819366617b9550cfc30149af9372c5c86a78e",
+      "calls": [
+        {
+          "instruction": 3640124,
+          "kind": "call",
+          "target": 3852320,
+          "symbols": [
+            "_Z17ReadPciConfigWordjj"
+          ]
+        },
+        {
+          "instruction": 3640171,
+          "kind": "call",
+          "target": 3852320,
+          "symbols": [
+            "_Z17ReadPciConfigWordjj"
+          ]
+        }
+      ],
+      "literals": []
+    },
+    {
+      "symbols": [
         "_Z7getmoboB5cxx11v"
       ],
       "address": 3812336,
@@ -4651,6 +4678,438 @@
           "text": "basic_string::_M_construct null not valid"
         }
       ]
+    },
+    {
+      "symbols": [
+        "_Z13getmobo_brandB5cxx11v"
+      ],
+      "address": 3812576,
+      "size": 230,
+      "code_sha256": "b3b8680bc7037c433a9e8396451ccdfcc62110ab4041c6c84b33d3d23e203a53",
+      "calls": [
+        {
+          "instruction": 3812617,
+          "kind": "call",
+          "target": 3814288,
+          "symbols": [
+            "_Z15test_dmi_get_mbi"
+          ]
+        },
+        {
+          "instruction": 3812641,
+          "kind": "call",
+          "target": 1354576,
+          "symbols": [
+            "strlen@plt"
+          ]
+        },
+        {
+          "instruction": 3812725,
+          "kind": "jmp",
+          "target": 3812765,
+          "symbols": []
+        },
+        {
+          "instruction": 3812744,
+          "kind": "call",
+          "target": 1357280,
+          "symbols": [
+            "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm@plt"
+          ]
+        },
+        {
+          "instruction": 3812774,
+          "kind": "call",
+          "target": 1361424,
+          "symbols": [
+            "memcpy@plt"
+          ]
+        },
+        {
+          "instruction": 3812787,
+          "kind": "jmp",
+          "target": 3812674,
+          "symbols": []
+        },
+        {
+          "instruction": 3812789,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 3812801,
+          "kind": "call",
+          "target": 1361296,
+          "symbols": [
+            "_ZSt19__throw_logic_errorPKc@plt"
+          ]
+        }
+      ],
+      "literals": [
+        {
+          "instruction": 3812794,
+          "address": 22851584,
+          "text": "basic_string::_M_construct null not valid"
+        }
+      ]
+    },
+    {
+      "symbols": [
+        "_Z15test_dmi_get_mbi"
+      ],
+      "address": 3814288,
+      "size": 930,
+      "code_sha256": "2e3be1951255ba4fa17034916f5dac279b0d91b71263f75534ede83801ecd803",
+      "calls": [
+        {
+          "instruction": 3814382,
+          "kind": "call",
+          "target": 3815488,
+          "symbols": [
+            "_Z9read_filelPmPKc"
+          ]
+        },
+        {
+          "instruction": 3814472,
+          "kind": "call",
+          "target": 1360768,
+          "symbols": [
+            "fopen@plt"
+          ]
+        },
+        {
+          "instruction": 3814523,
+          "kind": "call",
+          "target": 1365328,
+          "symbols": [
+            "fgets@plt"
+          ]
+        },
+        {
+          "instruction": 3814545,
+          "kind": "call",
+          "target": 1364448,
+          "symbols": [
+            "strchr@plt"
+          ]
+        },
+        {
+          "instruction": 3814592,
+          "kind": "call",
+          "target": 1366720,
+          "symbols": [
+            "strtoull@plt"
+          ]
+        },
+        {
+          "instruction": 3814603,
+          "kind": "call",
+          "target": 1354800,
+          "symbols": [
+            "fclose@plt"
+          ]
+        },
+        {
+          "instruction": 3814628,
+          "kind": "call",
+          "target": 3815904,
+          "symbols": [
+            "_Z9mem_chunklmPKc"
+          ]
+        },
+        {
+          "instruction": 3814678,
+          "kind": "call",
+          "target": 3813504,
+          "symbols": [
+            "_ZL15smbios_decodemePhPKcji"
+          ]
+        },
+        {
+          "instruction": 3814683,
+          "kind": "jmp",
+          "target": 3814774,
+          "symbols": []
+        },
+        {
+          "instruction": 3814698,
+          "kind": "jmp",
+          "target": 3814440,
+          "symbols": []
+        },
+        {
+          "instruction": 3814707,
+          "kind": "call",
+          "target": 1354800,
+          "symbols": [
+            "fclose@plt"
+          ]
+        },
+        {
+          "instruction": 3814747,
+          "kind": "call",
+          "target": 1353632,
+          "symbols": [
+            "__fprintf_chk@plt"
+          ]
+        },
+        {
+          "instruction": 3814756,
+          "kind": "call",
+          "target": 1369912,
+          "symbols": [
+            "free@plt"
+          ]
+        },
+        {
+          "instruction": 3814766,
+          "kind": "call",
+          "target": 1367504,
+          "symbols": [
+            "malloc@plt"
+          ]
+        },
+        {
+          "instruction": 3814841,
+          "kind": "call",
+          "target": 3813872,
+          "symbols": [
+            "_ZL15legacy_decodemePhPKcji"
+          ]
+        },
+        {
+          "instruction": 3814846,
+          "kind": "jmp",
+          "target": 3814774,
+          "symbols": []
+        },
+        {
+          "instruction": 3814851,
+          "kind": "call",
+          "target": 1363008,
+          "symbols": [
+            "perror@plt"
+          ]
+        },
+        {
+          "instruction": 3814856,
+          "kind": "jmp",
+          "target": 3814720,
+          "symbols": []
+        },
+        {
+          "instruction": 3814889,
+          "kind": "call",
+          "target": 3814096,
+          "symbols": [
+            "_Z15smbios3_decode2PhPKcji"
+          ]
+        },
+        {
+          "instruction": 3814894,
+          "kind": "jmp",
+          "target": 3814774,
+          "symbols": []
+        },
+        {
+          "instruction": 3814899,
+          "kind": "call",
+          "target": 1363008,
+          "symbols": [
+            "perror@plt"
+          ]
+        },
+        {
+          "instruction": 3814904,
+          "kind": "jmp",
+          "target": 3814616,
+          "symbols": []
+        },
+        {
+          "instruction": 3814927,
+          "kind": "call",
+          "target": 3813504,
+          "symbols": [
+            "_ZL15smbios_decodemePhPKcji"
+          ]
+        },
+        {
+          "instruction": 3814932,
+          "kind": "jmp",
+          "target": 3814774,
+          "symbols": []
+        },
+        {
+          "instruction": 3814947,
+          "kind": "call",
+          "target": 1369912,
+          "symbols": [
+            "free@plt"
+          ]
+        },
+        {
+          "instruction": 3814952,
+          "kind": "jmp",
+          "target": 3814752,
+          "symbols": []
+        },
+        {
+          "instruction": 3814979,
+          "kind": "call",
+          "target": 3814096,
+          "symbols": [
+            "_Z15smbios3_decode2PhPKcji"
+          ]
+        },
+        {
+          "instruction": 3814984,
+          "kind": "jmp",
+          "target": 3814774,
+          "symbols": []
+        },
+        {
+          "instruction": 3814989,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 3815012,
+          "kind": "call",
+          "target": 1360768,
+          "symbols": [
+            "fopen@plt"
+          ]
+        },
+        {
+          "instruction": 3815043,
+          "kind": "call",
+          "target": 3815904,
+          "symbols": [
+            "_Z9mem_chunklmPKc"
+          ]
+        },
+        {
+          "instruction": 3815066,
+          "kind": "jmp",
+          "target": 3814752,
+          "symbols": []
+        },
+        {
+          "instruction": 3815104,
+          "kind": "call",
+          "target": 3814096,
+          "symbols": [
+            "_Z15smbios3_decode2PhPKcji"
+          ]
+        },
+        {
+          "instruction": 3815109,
+          "kind": "jmp",
+          "target": 3814774,
+          "symbols": []
+        },
+        {
+          "instruction": 3815122,
+          "kind": "jmp",
+          "target": 3815145,
+          "symbols": []
+        },
+        {
+          "instruction": 3815189,
+          "kind": "call",
+          "target": 3813872,
+          "symbols": [
+            "_ZL15legacy_decodemePhPKcji"
+          ]
+        },
+        {
+          "instruction": 3815194,
+          "kind": "jmp",
+          "target": 3814774,
+          "symbols": []
+        },
+        {
+          "instruction": 3815208,
+          "kind": "call",
+          "target": 3813504,
+          "symbols": [
+            "_ZL15smbios_decodemePhPKcji"
+          ]
+        },
+        {
+          "instruction": 3815213,
+          "kind": "jmp",
+          "target": 3814774,
+          "symbols": []
+        }
+      ],
+      "literals": [
+        {
+          "instruction": 3814294,
+          "address": 23214136,
+          "text": "/sys/firmware/dmi/tables/smbios_entry_point"
+        },
+        {
+          "instruction": 3814346,
+          "address": 23209388,
+          "text": "/dev/mem"
+        },
+        {
+          "instruction": 3814459,
+          "address": 23214055,
+          "text": "/sys/firmware/efi/systab"
+        },
+        {
+          "instruction": 3814735,
+          "address": 23214184,
+          "text": "%s: SMBIOS entry point missing\n"
+        },
+        {
+          "instruction": 3814834,
+          "address": 23214086,
+          "text": "/sys/firmware/dmi/tables/DMI"
+        },
+        {
+          "instruction": 3814882,
+          "address": 23214086,
+          "text": "/sys/firmware/dmi/tables/DMI"
+        },
+        {
+          "instruction": 3814920,
+          "address": 23214086,
+          "text": "/sys/firmware/dmi/tables/DMI"
+        },
+        {
+          "instruction": 3814994,
+          "address": 23214038,
+          "text": "/proc/efi/systab"
+        }
+      ]
+    },
+    {
+      "symbols": [
+        "_Z17ReadPciConfigWordjj"
+      ],
+      "address": 3852320,
+      "size": 174,
+      "code_sha256": "0d66947171ecc4f6c9434a877c77abf672aea8748a780002af88bfac3072df08",
+      "calls": [
+        {
+          "instruction": 3852416,
+          "kind": "call",
+          "target": 3597792,
+          "symbols": [
+            "_Z16libpci_read_wordiiii"
+          ]
+        }
+      ],
+      "literals": []
     },
     {
       "symbols": [
@@ -4859,6 +5318,25 @@
           "text": "GNR"
         }
       ]
+    },
+    {
+      "symbols": [
+        "_Z12check_if_amdv"
+      ],
+      "address": 4955664,
+      "size": 32,
+      "code_sha256": "1240a8b3f1f2c4f5bdac560493762b28396f36aa7ebf89ce00fe12654ed2e59e",
+      "calls": [
+        {
+          "instruction": 4955676,
+          "kind": "call",
+          "target": 3852320,
+          "symbols": [
+            "_Z17ReadPciConfigWordjj"
+          ]
+        }
+      ],
+      "literals": []
     },
     {
       "symbols": [
@@ -6676,6 +7154,7 @@
   "options": {
     "el8_focus": true,
     "site_limit": 8,
-    "functions": "^(main|_start|_ZN10MainWindowC[12]EP7QWidget|_Z23initilize_kernel_driverv|_Z9load_kmodPKc|_Z5RdmsrjPjS_|_Z5Wrmsrjjj|_Z7RdmsrTxjPjS_m|_Z7WrmsrTxjjjm|_Z15enable_all_ioplv|_Z10is_it_asusv|_Z7getmoboB5cxx11v|_Z14en_ec_decodingv|_Z20set_process_affinityi)$"
+    "functions": "^(main|_start|_ZN10MainWindowC[12]EP7QWidget|_Z23initilize_kernel_driverv|_Z9load_kmodPKc|_Z5RdmsrjPjS_|_Z5Wrmsrjjj|_Z7RdmsrTxjPjS_m|_Z7WrmsrTxjjjm|_Z15enable_all_ioplv|_Z10is_it_asusv|_Z7getmoboB5cxx11v|_Z14en_ec_decodingv|_Z20set_process_affinityi|_Z8isit_adlv|_Z12check_if_amdv|_Z15test_dmi_get_mbi|_Z13getmobo_brandB5cxx11v|_Z17ReadPciConfigWordjj)$",
+    "instructions": false
   }
 }

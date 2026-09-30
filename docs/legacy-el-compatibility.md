@@ -22,7 +22,7 @@ PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/elf-runtime-audit
 通过 PLT 指令中的 RIP 相对 GOT 重定位找导入项，不假定 PLT 顺序或固定项长。
 扫描 42,115 个去除地址/长度重复的函数范围，未出现解码不完整；共 1,195 个未定义动态符号。
 [证据](validation/legacy-el-runtime.json)保留 111 个相关导入、完整引用计数、每项最多 8 个位置，
-以及 14 个启动/硬件函数的地址、代码哈希、直接调用和字符串引用。
+以及 19 个启动/硬件函数的地址、代码哈希、直接调用和字符串引用（首轮为 14 个，随后补充识别路径）。
 省略 `--site-limit` 与 `--el8-focus` 可生成完整报告。
 直接引用不等于运行时可达；虚调用、函数指针、回调和运行中加载的库不据此推断。
 
@@ -93,6 +93,59 @@ EL8/9 还报告 `Fontconfig error: Cannot load default config file`，EL10 没�
 字体配置并设置应用内 FONTCONFIG_PATH/FONTCONFIG_FILE。三者都有 PCI 配置和 `/dev/mem`
 权限/设备错误。Error 的具体内容要由截图确认，不能只根据标题推断。
 后续诊断新增只读 XGetImage 截图，不发送按键/鼠标，不绕过硬件识别。
+
+## 云端实测 36674725439：字体修复、确定硬件检查分支
+
+[第二轮运行](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36674725439)
+使用提交 19d38f9，三个目标的 Fontconfig 错误均消失，加载器仍返回 0、无宿主 `.so` 混入。
+已查看三张真实截图，均为 **Not supported!**，主窗口门禁仍失败。
+
+![EL8 原版真实对话框](validation/legacy-el8-36674725439.png)
+![EL9 原版真实对话框](validation/legacy-el9-36674725439.png)
+![EL10 Xwayland 原版真实对话框](validation/legacy-el10-36674725439.png)
+
+| 运行库 | EL8 原生 | EL9 原生 | EL10 原生 | 三目标同一私有运行库 |
+|---|---|---|---|---|
+| glibc | 2.28-251.el8_10.40 | 2.34-275.el9_8 | 2.39-121.el10_2 | 2.35-0ubuntu3.15 |
+| libstdc++ | 8.5.0-20.el8 | 11.4.1-2.1.el9 | 14.3.1-4.4.el10 | 12.3.0-1ubuntu1~22.04.3 |
+| ICU / JPEG | 原生加载缺 ICU70/JPEG8 | 同左 | 同左 | libicu70 70.1-2 / libjpeg-turbo8 2.1.2-0ubuntu1 |
+
+原生诊断镜像只装显示环境，并非已安装原程序全部依赖；例如缺 hwloc/xcb 工具库可由发行版包补齐，
+不能把日志里所有 `not found` 都说成 soname 不兼容。glibc 版本与 ICU70/JPEG8 是另行验证的根本障碍。
+
+### 不能靠函数名判断硬件识别规则
+
+[带指令的证据](validation/legacy-platform-gate.json)保留 5 个函数的解码结果、地址和哈希。
+可复现命令：
+
+```sh
+PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/elf-runtime-audit.py \
+  build/input-audit/octool --el8-focus --site-limit 1 --instructions \
+  --functions '^(_Z12check_if_amdv|_Z8isit_adlv|_Z17ReadPciConfigWordjj|_Z16libpci_read_wordiiii|_ZN10MainWindowC2EP7QWidget)$' \
+  --output docs/validation/legacy-platform-gate.json
+```
+
+- `check_if_amdv` 位于 `0x4b9e10`，**不是 CPUID 检查**。它调用
+  `ReadPciConfigWord(0,0)`，对返回值做 `& 0xffdf` 后与 `0x1002` 比较。
+  `ReadPciConfigWord` 把第一个参数解成 bus/device/function，再调用内嵌 libpci，域固定为 0；
+  这里读取的是 `0000:00:00.0` 的 offset0 word。不能以函数名推断检测的是处理器厂商。
+- `isit_adlv` 位于 `0x378b30`，同样读取 PCI word。先要求 offset0 为 `0x8086`，随后检查 offset2：
+  `(id & 0xffdf) == 0x4648`、`id == 0x4660` 或 16 位运算 `(id + 0x5900) <= 0x80`。
+  这里只记录旧程序的数值条件；没有把这些 ID 推断成用户某款 CPU/主板，也没有用于新 GUI。
+- MainWindow 的 `0x8e4267` 调第一项，非匹配路径继续第二项；再调用 `is_it_asus`。
+  未通过时在 `0x8e42bd` 引用 `Not supported!`，`0x8e42f7` 显示 QMessageBox，关闭后 `exit(0)`。
+  因而“进程最后退出码 0”也不代表进入了主窗口。
+- `is_it_asus` 使用 DMI 主板字符串及部分 VRM 检查；`getmobo` 下游 `test_dmi_get_mbi`
+  读取 `/sys/firmware/dmi/tables/{smbios_entry_point,DMI}`，尝试 EFI systab 和 `/dev/mem`。
+  这条路径未采用 `/sys/devices/virtual/dmi/id/board_name` 这样的普通身份文本。
+- 云端日志中 PCI config 打开失败、`/dev/mem` 不可读，与上述启动路径相符。
+  继续采集原生 CPUID 与只读 sysfs PCI/DMI 身份，区分云端硬件不匹配和访问权限问题。
+  仅改变 QEMU 的 CPUID 型号不会改变 libpci 读取的宿主 PCI 配置，因此不把 CPU 仿真当作该检查的验证。
+
+原版保留了这些识别/权限要求，不通过修改它、伪造 PCI/DMI 或强制返回成功把测试变绿。
+作者四套目标平台必须实读 PCI/DMI/权限后才能判断该分支；Windows 截图不能代替旧 Linux 分支的验收。
+下一步真机证据应包含只读 `lspci -Dnn -s 0000:00:00.0`、`board_vendor`/`board_name`、lockdown 模式，
+不需要公开序列号/UUID。涉及访问方案的变化须继续保持旧 MMIO 线级协议。
 
 ## 相关原始资料
 

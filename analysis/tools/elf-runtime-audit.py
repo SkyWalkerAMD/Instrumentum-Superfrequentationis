@@ -23,11 +23,13 @@ DEFAULT_FUNCTIONS = (
     r"_Z23initilize_kernel_driverv|_Z9load_kmodPKc|_Z5RdmsrjPjS_|"
     r"_Z5Wrmsrjjj|_Z7RdmsrTxjPjS_m|_Z7WrmsrTxjjjm|"
     r"_Z15enable_all_ioplv|_Z10is_it_asusv|_Z7getmoboB5cxx11v|"
-    r"_Z14en_ec_decodingv|_Z20set_process_affinityi)$"
+    r"_Z14en_ec_decodingv|_Z20set_process_affinityi|_Z8isit_adlv|"
+    r"_Z12check_if_amdv|_Z15test_dmi_get_mbi|_Z13getmobo_brandB5cxx11v|"
+    r"_Z17ReadPciConfigWordjj)$"
 )
 
 
-def inspect(path, pattern):
+def inspect(path, pattern, include_instructions=False):
     data = path.read_bytes()
     elf = ELFFile(io.BytesIO(data))
     if elf.elfclass != 64 or not elf.little_endian or elf['e_machine'] != 'EM_X86_64':
@@ -126,9 +128,14 @@ def inspect(path, pattern):
         chosen = any(pattern.search(name) for name in aliases)
         row = {'symbols': sorted(aliases), 'address': address, 'size': size,
                'code_sha256': hashlib.sha256(code).hexdigest(), 'calls': [], 'literals': []}
+        if chosen and include_instructions:
+            row['instructions'] = []
         decoded = 0
         for pc, length, mnemonic, operands in lite.disasm_lite(code, address):
             decoded += length
+            if chosen and include_instructions:
+                row['instructions'].append({'address': pc, 'size': length,
+                                            'mnemonic': mnemonic, 'operands': operands})
             imported = None
             if mnemonic in ('call', 'jmp', 'bnd jmp') and operands.startswith('0x'):
                 target = int(operands, 16)
@@ -178,10 +185,11 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--el8-focus', action='store_true', help='keep ABI-floor and startup/hardware imports')
     parser.add_argument('--site-limit', type=int, default=0, help='limit examples per import; 0 keeps all')
+    parser.add_argument('--instructions', action='store_true', help='include decoded instructions of selected functions')
     args = parser.parse_args()
     if args.site_limit < 0:
         parser.error('--site-limit cannot be negative')
-    result = inspect(args.binary, re.compile(args.functions))
+    result = inspect(args.binary, re.compile(args.functions), args.instructions)
     result['total_imports'] = len(result['imports'])
     if args.el8_focus:
         def relevant(row):
@@ -198,7 +206,7 @@ def main():
         if args.site_limit:
             row['sites'] = row['sites'][:args.site_limit]
     result['options'] = {'el8_focus': args.el8_focus, 'site_limit': args.site_limit,
-                         'functions': args.functions}
+                         'functions': args.functions, 'instructions': args.instructions}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_bytes((json.dumps(result, ensure_ascii=False, indent=2) + '\n').encode())
     print('{} imports, {} functions, {} selected; {} partial decodes'.format(

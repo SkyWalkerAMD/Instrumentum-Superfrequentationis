@@ -42,11 +42,23 @@ def main():
                    if target == 'el10' else ['xvfb-run', '-a', '-s', '-screen 0 1600x1000x24'])
         return subprocess.call(['dbus-run-session', '--'] + display +
                                [sys.executable, __file__, target, '--session'])
-    result = {'target': target, 'original_sha256': expected,
+    result = {'target': target, 'execution_mode': 'native', 'original_sha256': expected,
               'os_release': Path('/etc/os-release').read_text(),
               'host_kernel': os.uname().release, 'uid': os.geteuid(),
               'display': 'Mutter/Xwayland' if target == 'el10' else 'Xvfb',
-              'hardware_access': False, 'status': 'pending'}
+              'hardware_devices_passed_to_container': False,
+              'hardware_register_tests_run': False, 'status': 'pending'}
+    result['cpuid'] = json.loads(subprocess.check_output(['/usr/local/bin/cpu-id'], universal_newlines=True))
+    result['sysfs_identity'] = {}
+    for path in ('/sys/bus/pci/devices/0000:00:00.0/vendor',
+                 '/sys/bus/pci/devices/0000:00:00.0/device',
+                 '/sys/devices/virtual/dmi/id/board_vendor',
+                 '/sys/devices/virtual/dmi/id/board_name'):
+        try:
+            value = {'value': Path(path).read_text().strip()}
+        except OSError as error:
+            value = {'errno': error.errno, 'error': error.strerror}
+        result['sysfs_identity'][path] = value
     native = subprocess.run(['ldd', str(runtime/'octool')], stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT, universal_newlines=True)
     (out/'native-loader.txt').write_text(native.stdout)

@@ -25,6 +25,13 @@
   配套库文件，maps 没有宿主 .so；三目标均出现 Error 对话框，主窗口门禁保持失败。
   新增截图采集以核实对话框内容；发现 ldd 报版本缺失也可能退出 0，补充错误文本记录。
   EL8/9 缺 Fontconfig 默认配置，补齐私有字体配置路径；没有修改旧 GUI/硬件调用或协议。
+- 19d38f9 / run 36674725439：三目标字体错误消失，截图确认均为 Not supported!，不是加载器
+  报错。进一步反汇编确认 check_if_amdv 实际取 PCI 00:00.0 offset0，非 CPUID；isit_adlv
+  取同设备 vendor/device ID，之后才是主板/DMI 判断。不能凭函数名选择 CPU 仿真来验证此分支。
+  新增 5 函数逐条指令证据及原生 CPUID、只读 PCI/DMI 身份采集，保留旧程序与失败门禁。
+  docs/legacy-el-compatibility.md 记录完整数值条件、私有/原生库版本和三张真实对话框截图。
+- 8854069 / portability run 36674187756 与 19d38f9 / run 36674723621 均完整 23 job 成功；
+  重构基础版十目标继续全绿。原版的独立 legacy 诊断是失败结果，未混入或冒充生产 GUI 成功证据。
 
 ### Windows 包取得与 GUI 第一阶段重构
 
