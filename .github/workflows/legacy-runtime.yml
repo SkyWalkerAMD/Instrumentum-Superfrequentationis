@@ -1,0 +1,81 @@
+name: legacy EL runtime diagnostic
+on:
+  workflow_dispatch:
+    inputs:
+      asset_id:
+        description: Authenticated draft-release asset ID containing the original ELF
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  audit-tool:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 -m pip install -r analysis/tools/requirements-reference.txt
+      - run: python3 -m unittest discover -s analysis/tests -v
+  legacy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    # Draft reference inputs require a repository writer. The token is passed
+    # only to the download step, never to the old executable or its containers.
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {target: el8, image: 'rockylinux:8'}
+          - {target: el9, image: 'rockylinux:9'}
+          - {target: el10, image: 'quay.io/rockylinux/rockylinux:10'}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Fetch and verify private reference input
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ASSET_ID: ${{ inputs.asset_id }}
+        run: |
+          [[ "$ASSET_ID" =~ ^[0-9]+$ ]]
+          mkdir -p build/legacy-input build/legacy-runtime build/legacy-evidence
+          gh api -H 'Accept: application/octet-stream' \
+            "repos/$GITHUB_REPOSITORY/releases/assets/$ASSET_ID" > build/legacy-input/octool
+          echo '44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10  build/legacy-input/octool' | sha256sum -c -
+      - name: Collect matched loader and full runtime closure
+        run: |
+          docker pull ubuntu:22.04
+          docker image inspect ubuntu:22.04 > build/legacy-evidence/builder-image.json
+          docker run --rm -e OCTOOL_DISPOSABLE_CONTAINER=1 -v "$PWD:/src:ro" \
+            -v "$PWD/build/legacy-runtime:/runtime" ubuntu:22.04 \
+            bash /src/port/legacy/build-runtime.sh /src/build/legacy-input/octool /runtime
+          cp build/legacy-runtime/{runtime.json,packages.tsv,elf-versions.txt} build/legacy-evidence/
+      - name: Build native EL display environment
+        env:
+          IMAGE: ${{ matrix.image }}
+          TARGET: ${{ matrix.target }}
+        run: |
+          docker pull "$IMAGE"
+          docker image inspect "$IMAGE" > build/legacy-evidence/target-image.json
+          docker build -f port/legacy/Containerfile.el --build-arg IMAGE="$IMAGE" \
+            --build-arg TARGET="$TARGET" -t octool-legacy-test .
+      - name: Run unchanged executable without devices or capabilities
+        env:
+          TARGET: ${{ matrix.target }}
+        run: |
+          sudo chown -R 10001:10001 build/legacy-evidence
+          docker run --rm --init --network none --cap-drop ALL \
+            --security-opt no-new-privileges:true --pids-limit 512 \
+            -v "$PWD/build/legacy-runtime:/opt/legacy:ro" \
+            -v "$PWD/build/legacy-evidence:/out" octool-legacy-test "$TARGET"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: legacy-${{ matrix.target }}-evidence
+          # No original ELF, runtime libraries, credentials, or core dumps.
+          path: build/legacy-evidence/
+          if-no-files-found: error
+          retention-days: 14

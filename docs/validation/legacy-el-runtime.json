@@ -1,0 +1,6681 @@
+{
+  "binary": "octool",
+  "sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "executed": false,
+  "entry": 2215248,
+  "needed": [
+    "ld-linux-x86-64.so.2",
+    "libEGL.so.1",
+    "libGL.so.1",
+    "libICE.so.6",
+    "libSM.so.6",
+    "libX11-xcb.so.1",
+    "libX11.so.6",
+    "libXcomposite.so.1",
+    "libc.so.6",
+    "libdbus-1.so.3",
+    "libdrm.so.2",
+    "libfontconfig.so.1",
+    "libfreetype.so.6",
+    "libgcc_s.so.1",
+    "libglib-2.0.so.0",
+    "libhwloc.so.15",
+    "libicui18n.so.70",
+    "libicuuc.so.70",
+    "libjpeg.so.8",
+    "libm.so.6",
+    "libpcre2-16.so.0",
+    "libpng16.so.16",
+    "libstdc++.so.6",
+    "libudev.so.1",
+    "libwayland-client.so.0",
+    "libwayland-cursor.so.0",
+    "libwayland-egl.so.1",
+    "libxcb-glx.so.0",
+    "libxcb-icccm.so.4",
+    "libxcb-image.so.0",
+    "libxcb-keysyms.so.1",
+    "libxcb-randr.so.0",
+    "libxcb-render-util.so.0",
+    "libxcb-render.so.0",
+    "libxcb-shape.so.0",
+    "libxcb-shm.so.0",
+    "libxcb-sync.so.1",
+    "libxcb-xfixes.so.0",
+    "libxcb-xinerama.so.0",
+    "libxcb-xinput.so.0",
+    "libxcb-xkb.so.1",
+    "libxcb.so.1",
+    "libxkbcommon-x11.so.0",
+    "libxkbcommon.so.0",
+    "libz.so.1"
+  ],
+  "dynamic_flags": [
+    {
+      "tag": "DT_FLAGS",
+      "value": 8
+    },
+    {
+      "tag": "DT_FLAGS_1",
+      "value": 134217729
+    }
+  ],
+  "scope": "Static direct calls / GOT data references only; no runtime reachability claim",
+  "functions_scanned": 42115,
+  "incomplete_decodes": [],
+  "imports": [
+    {
+      "symbol": "hwloc_get_nbobjs_by_depth",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN10proc_classC1Ev",
+          "function_address": 4928224,
+          "instruction": 4928415,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN18My_Processor_CoresC1Ev",
+          "function_address": 5036752,
+          "instruction": 5040361,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "hwloc_get_type_depth",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN10proc_classC1Ev",
+          "function_address": 4928224,
+          "instruction": 4928393,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN18My_Processor_CoresC1Ev",
+          "function_address": 5036752,
+          "instruction": 5040333,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "hwloc_topology_destroy",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN10proc_classC1Ev",
+          "function_address": 4928224,
+          "instruction": 4928426,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN18My_Processor_CoresC1Ev",
+          "function_address": 5036752,
+          "instruction": 5040372,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN18My_Processor_CoresC1Ev",
+          "function_address": 5036752,
+          "instruction": 5040780,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN18My_Processor_CoresC1Ev",
+          "function_address": 5036752,
+          "instruction": 5041127,
+          "kind": "call"
+        }
+      ],
+      "site_count": 4
+    },
+    {
+      "symbol": "hwloc_topology_init",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN10proc_classC1Ev",
+          "function_address": 4928224,
+          "instruction": 4928323,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN18My_Processor_CoresC1Ev",
+          "function_address": 5036752,
+          "instruction": 5037373,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "hwloc_topology_load",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN10proc_classC1Ev",
+          "function_address": 4928224,
+          "instruction": 4928372,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN18My_Processor_CoresC1Ev",
+          "function_address": 5036752,
+          "instruction": 5037393,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "u_errorName_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK9QIcuCodec12getConverterEPN10QTextCodec14ConverterStateE",
+          "function_address": 22377344,
+          "instruction": 22377532,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK9QIcuCodec12getConverterEPN10QTextCodec14ConverterStateE",
+          "function_address": 22377344,
+          "instruction": 22377690,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK9QIcuCodec18convertFromUnicodeEPK5QChariPN10QTextCodec14ConverterStateE",
+          "function_address": 22377744,
+          "instruction": 22378083,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK9QIcuCodec16convertToUnicodeEPKciPN10QTextCodec14ConverterStateE",
+          "function_address": 22378288,
+          "instruction": 22378686,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN9QIcuCodec20codecForNameUnlockedEPKc",
+          "function_address": 22378752,
+          "instruction": 22382364,
+          "kind": "call"
+        }
+      ],
+      "site_count": 5
+    },
+    {
+      "symbol": "ucal_clone_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate14isDaylightTimeEx",
+          "function_address": 21413616,
+          "instruction": 21413672,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate5cloneEv",
+          "function_address": 21414000,
+          "instruction": 21414091,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate18daylightTimeOffsetEx",
+          "function_address": 21415264,
+          "instruction": 21415315,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate18standardTimeOffsetEx",
+          "function_address": 21415520,
+          "instruction": 21415572,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate13offsetFromUtcEx",
+          "function_address": 21415776,
+          "instruction": 21415829,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate4dataEx",
+          "function_address": 21417456,
+          "instruction": 21417533,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate12abbreviationEx",
+          "function_address": 21419008,
+          "instruction": 21419069,
+          "kind": "call"
+        }
+      ],
+      "site_count": 7
+    },
+    {
+      "symbol": "ucal_close_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN19QIcuTimeZonePrivateD1Ev",
+          "function_address": 21413504,
+          "instruction": 21413526,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN19QIcuTimeZonePrivateD0Ev",
+          "function_address": 21413552,
+          "instruction": 21413574,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate14isDaylightTimeEx",
+          "function_address": 21413616,
+          "instruction": 21413762,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate18daylightTimeOffsetEx",
+          "function_address": 21415264,
+          "instruction": 21415413,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate18standardTimeOffsetEx",
+          "function_address": 21415520,
+          "instruction": 21415669,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate13offsetFromUtcEx",
+          "function_address": 21415776,
+          "instruction": 21415927,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate4dataEx",
+          "function_address": 21417456,
+          "instruction": 21417765,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate12abbreviationEx",
+          "function_address": 21419008,
+          "instruction": 21419282,
+          "kind": "call"
+        }
+      ],
+      "site_count": 9
+    },
+    {
+      "symbol": "ucal_getDSTSavings_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate15hasDaylightTimeEv",
+          "function_address": 21413888,
+          "instruction": 21413933,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate11displayNameEN9QTimeZone8TimeTypeENS0_8NameTypeERK7QLocale",
+          "function_address": 21417936,
+          "instruction": 21418890,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "ucal_getDefaultTimeZone_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL21ucalDefaultTimeZoneIdv",
+          "function_address": 21416992,
+          "instruction": 21417116,
+          "kind": "call"
+        },
+        {
+          "function": "_ZL21ucalDefaultTimeZoneIdv",
+          "function_address": 21416992,
+          "instruction": 21417342,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "ucal_getTimeZoneDisplayName_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate11displayNameEN9QTimeZone8TimeTypeENS0_8NameTypeERK7QLocale",
+          "function_address": 21417936,
+          "instruction": 21418183,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate11displayNameEN9QTimeZone8TimeTypeENS0_8NameTypeERK7QLocale",
+          "function_address": 21417936,
+          "instruction": 21418559,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "ucal_get_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate18daylightTimeOffsetEx",
+          "function_address": 21415264,
+          "instruction": 21415451,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate18daylightTimeOffsetEx",
+          "function_address": 21415264,
+          "instruction": 21415483,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate18standardTimeOffsetEx",
+          "function_address": 21415520,
+          "instruction": 21415707,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate18standardTimeOffsetEx",
+          "function_address": 21415520,
+          "instruction": 21415759,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate13offsetFromUtcEx",
+          "function_address": 21415776,
+          "instruction": 21415971,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate13offsetFromUtcEx",
+          "function_address": 21415776,
+          "instruction": 21416023,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate4dataEx",
+          "function_address": 21417456,
+          "instruction": 21417819,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate4dataEx",
+          "function_address": 21417456,
+          "instruction": 21417874,
+          "kind": "call"
+        }
+      ],
+      "site_count": 8
+    },
+    {
+      "symbol": "ucal_inDaylightTime_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate14isDaylightTimeEx",
+          "function_address": 21413616,
+          "instruction": 21413790,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate12abbreviationEx",
+          "function_address": 21419008,
+          "instruction": 21419310,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "ucal_openCountryTimeZones_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate20availableTimeZoneIdsEN7QLocale7CountryE",
+          "function_address": 21421600,
+          "instruction": 21421737,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "ucal_openTimeZoneIDEnumeration_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate20availableTimeZoneIdsEi",
+          "function_address": 21422000,
+          "instruction": 21422059,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "ucal_openTimeZones_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate20availableTimeZoneIdsEv",
+          "function_address": 21421408,
+          "instruction": 21421454,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN19QIcuTimeZonePrivateC1ERK10QByteArray",
+          "function_address": 21422208,
+          "instruction": 21422286,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "ucal_open_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN19QIcuTimeZonePrivate4initERK10QByteArray",
+          "function_address": 21419456,
+          "instruction": 21419615,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "ucal_setMillis_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate14isDaylightTimeEx",
+          "function_address": 21413616,
+          "instruction": 21413746,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate18daylightTimeOffsetEx",
+          "function_address": 21415264,
+          "instruction": 21415394,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate18standardTimeOffsetEx",
+          "function_address": 21415520,
+          "instruction": 21415653,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate13offsetFromUtcEx",
+          "function_address": 21415776,
+          "instruction": 21415911,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate4dataEx",
+          "function_address": 21417456,
+          "instruction": 21417719,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate12abbreviationEx",
+          "function_address": 21419008,
+          "instruction": 21419266,
+          "kind": "call"
+        }
+      ],
+      "site_count": 6
+    },
+    {
+      "symbol": "ucnv_close_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL18qIcuCodecStateFreePN10QTextCodec14ConverterStateE",
+          "function_address": 22377216,
+          "instruction": 22377224,
+          "kind": "jmp"
+        },
+        {
+          "function": "_ZNK9QIcuCodec18convertFromUnicodeEPK5QChariPN10QTextCodec14ConverterStateE",
+          "function_address": 22377744,
+          "instruction": 22378251,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK9QIcuCodec16convertToUnicodeEPKciPN10QTextCodec14ConverterStateE",
+          "function_address": 22378288,
+          "instruction": 22378723,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN9QIcuCodec20codecForNameUnlockedEPKc",
+          "function_address": 22378752,
+          "instruction": 22381838,
+          "kind": "call"
+        }
+      ],
+      "site_count": 4
+    },
+    {
+      "symbol": "ucnv_compareNames_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK9QIcuCodec7mibEnumEv",
+          "function_address": 22377056,
+          "instruction": 22377132,
+          "kind": "call"
+        },
+        {
+          "function": "_Z19qTextCodecNameMatchPKcS0_",
+          "function_address": 22377312,
+          "instruction": 22377320,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN9QIcuCodec20codecForNameUnlockedEPKc",
+          "function_address": 22378752,
+          "instruction": 22379323,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN9QIcuCodec20codecForNameUnlockedEPKc",
+          "function_address": 22378752,
+          "instruction": 22379447,
+          "kind": "call"
+        }
+      ],
+      "site_count": 4
+    },
+    {
+      "symbol": "ucnv_countAliases_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK9QIcuCodec7aliasesEv",
+          "function_address": 22383024,
+          "instruction": 22383089,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "ucnv_fromUnicode_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK9QIcuCodec18convertFromUnicodeEPK5QChariPN10QTextCodec14ConverterStateE",
+          "function_address": 22377744,
+          "instruction": 22378039,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "ucnv_getAlias_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK9QIcuCodec7aliasesEv",
+          "function_address": 22383024,
+          "instruction": 22383170,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "ucnv_getDefaultName_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN9QIcuCodec20defaultCodecUnlockedEv",
+          "function_address": 22382848,
+          "instruction": 22382880,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "ucnv_getMaxCharSize_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK9QIcuCodec18convertFromUnicodeEPK5QChariPN10QTextCodec14ConverterStateE",
+          "function_address": 22377744,
+          "instruction": 22377817,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "ucnv_getStandardName_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN9QIcuCodec20codecForNameUnlockedEPKc",
+          "function_address": 22378752,
+          "instruction": 22378880,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN9QIcuCodec20codecForNameUnlockedEPKc",
+          "function_address": 22378752,
+          "instruction": 22378967,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "ucnv_open_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK9QIcuCodec12getConverterEPN10QTextCodec14ConverterStateE",
+          "function_address": 22377344,
+          "instruction": 22377460,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK9QIcuCodec12getConverterEPN10QTextCodec14ConverterStateE",
+          "function_address": 22377344,
+          "instruction": 22377602,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN9QIcuCodec20codecForNameUnlockedEPKc",
+          "function_address": 22378752,
+          "instruction": 22381818,
+          "kind": "call"
+        }
+      ],
+      "site_count": 3
+    },
+    {
+      "symbol": "ucnv_setSubstChars_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK9QIcuCodec12getConverterEPN10QTextCodec14ConverterStateE",
+          "function_address": 22377344,
+          "instruction": 22377486,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK9QIcuCodec12getConverterEPN10QTextCodec14ConverterStateE",
+          "function_address": 22377344,
+          "instruction": 22377644,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "ucnv_toUnicode_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK9QIcuCodec16convertToUnicodeEPKciPN10QTextCodec14ConverterStateE",
+          "function_address": 22378288,
+          "instruction": 22378498,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "ucol_close_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN16QCollatorPrivate4initEv",
+          "function_address": 21233504,
+          "instruction": 21233546,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN16QCollatorPrivate7cleanupEv",
+          "function_address": 21234016,
+          "instruction": 21234033,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "ucol_open_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN16QCollatorPrivate4initEv",
+          "function_address": 21233504,
+          "instruction": 21233644,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "ucol_setAttribute_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN16QCollatorPrivate4initEv",
+          "function_address": 21233504,
+          "instruction": 21233681,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN16QCollatorPrivate4initEv",
+          "function_address": 21233504,
+          "instruction": 21233718,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN16QCollatorPrivate4initEv",
+          "function_address": 21233504,
+          "instruction": 21233762,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN16QCollatorPrivate4initEv",
+          "function_address": 21233504,
+          "instruction": 21233810,
+          "kind": "call"
+        }
+      ],
+      "site_count": 4
+    },
+    {
+      "symbol": "ucol_strcoll_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK9QCollator7compareE11QStringViewS0_",
+          "function_address": 21234048,
+          "instruction": 21234155,
+          "kind": "jmp"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "uenum_close_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate20availableTimeZoneIdsEv",
+          "function_address": 21421408,
+          "instruction": 21421484,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate20availableTimeZoneIdsEN7QLocale7CountryE",
+          "function_address": 21421600,
+          "instruction": 21421767,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QIcuTimeZonePrivate20availableTimeZoneIdsEi",
+          "function_address": 21422000,
+          "instruction": 21422089,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN19QIcuTimeZonePrivateC1ERK10QByteArray",
+          "function_address": 21422208,
+          "instruction": 21422324,
+          "kind": "call"
+        }
+      ],
+      "site_count": 4
+    },
+    {
+      "symbol": "uenum_next_70",
+      "provider": null,
+      "version": null,
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL13uenumToIdListP12UEnumeration",
+          "function_address": 21420032,
+          "instruction": 21420111,
+          "kind": "call"
+        },
+        {
+          "function": "_ZL13uenumToIdListP12UEnumeration",
+          "function_address": 21420032,
+          "instruction": 21420184,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "__libc_single_threaded",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.32",
+      "kind": "STT_OBJECT",
+      "sites": [
+        {
+          "function": "_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv",
+          "function_address": 3840480,
+          "instruction": 3840493,
+          "kind": "mov"
+        },
+        {
+          "function": "_ZN7MY_UART21find_usb_serial_portsERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_",
+          "function_address": 3846832,
+          "instruction": 3847052,
+          "kind": "mov"
+        },
+        {
+          "function": "_ZN7MY_UART21find_usb_serial_portsERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_",
+          "function_address": 3846832,
+          "instruction": 3847480,
+          "kind": "mov"
+        }
+      ],
+      "site_count": 3
+    },
+    {
+      "symbol": "__libc_start_main",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.34",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_start",
+          "function_address": 2215248,
+          "instruction": 2215279,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "chdir",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.2.5",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_Z23initilize_kernel_driverv",
+          "function_address": 3595936,
+          "instruction": 3596096,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN15QProcessPrivate9execChildEPKcPPcS3_",
+          "function_address": 21737344,
+          "instruction": 21737567,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN15QProcessPrivate13startDetachedEPx",
+          "function_address": 21741536,
+          "instruction": 21742718,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN15QProcessPrivate13startDetachedEPx",
+          "function_address": 21741536,
+          "instruction": 21744500,
+          "kind": "call"
+        }
+      ],
+      "site_count": 4
+    },
+    {
+      "symbol": "dlclose",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.34",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN15QLibraryPrivate10unload_sysEv",
+          "function_address": 22065872,
+          "instruction": 22065907,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "dlerror",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.34",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL8qdlerrorv",
+          "function_address": 22065584,
+          "instruction": 22065613,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "dlopen",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.34",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN15QLibraryPrivate8load_sysEv",
+          "function_address": 22067168,
+          "instruction": 22068554,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "dlsym",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.34",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN15QtWaylandClient17QWaylandGLContext14getProcAddressEPKc",
+          "function_address": 11046736,
+          "instruction": 11046774,
+          "kind": "jmp"
+        },
+        {
+          "function": "_ZN15QtWaylandClient28QWaylandXCompositeGLXContext14getProcAddressEPKc",
+          "function_address": 11058912,
+          "instruction": 11058950,
+          "kind": "jmp"
+        },
+        {
+          "function": "_ZN15QLibraryPrivate11resolve_sysEPKc",
+          "function_address": 22066448,
+          "instruction": 22066456,
+          "kind": "jmp"
+        }
+      ],
+      "site_count": 3
+    },
+    {
+      "symbol": "fstat",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.33",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_Z9load_kmodPKc",
+          "function_address": 3593696,
+          "instruction": 3594423,
+          "kind": "call"
+        },
+        {
+          "function": "_Z10mem_chunk2mmPKc",
+          "function_address": 3598912,
+          "instruction": 3598989,
+          "kind": "call"
+        },
+        {
+          "function": "_Z9read_filelPmPKc",
+          "function_address": 3815488,
+          "instruction": 3815561,
+          "kind": "call"
+        },
+        {
+          "function": "_Z9mem_chunklmPKc",
+          "function_address": 3815904,
+          "instruction": 3815981,
+          "kind": "call"
+        }
+      ],
+      "site_count": 4
+    },
+    {
+      "symbol": "fstat64",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.33",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN17QFileSystemEngine12fillMetaDataEiR19QFileSystemMetaData",
+          "function_address": 21818928,
+          "instruction": 21819386,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN17QFileSystemEngine2idEi",
+          "function_address": 21821088,
+          "instruction": 21821135,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN17QFileSystemEngine9cloneFileEiiRK19QFileSystemMetaData",
+          "function_address": 21825376,
+          "instruction": 21825431,
+          "kind": "call"
+        }
+      ],
+      "site_count": 3
+    },
+    {
+      "symbol": "iopl",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.2.5",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN10MainWindowC2EP7QWidget",
+          "function_address": 9322864,
+          "instruction": 9322967,
+          "kind": "call"
+        },
+        {
+          "function": "conf12_cleanup",
+          "function_address": 11028304,
+          "instruction": 11028424,
+          "kind": "call"
+        },
+        {
+          "function": "intel_setup_io.constprop.0",
+          "function_address": 11028464,
+          "instruction": 11028538,
+          "kind": "call"
+        }
+      ],
+      "site_count": 3
+    },
+    {
+      "symbol": "lseek",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.2.5",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_Z10mem_chunk2mmPKc",
+          "function_address": 3598912,
+          "instruction": 3599542,
+          "kind": "call"
+        },
+        {
+          "function": "_Z7WrmsrTxjjjm",
+          "function_address": 3602032,
+          "instruction": 3602134,
+          "kind": "call"
+        },
+        {
+          "function": "_Z5Wrmsrjjj",
+          "function_address": 3602208,
+          "instruction": 3602310,
+          "kind": "call"
+        },
+        {
+          "function": "_Z5RdmsrjPjS_",
+          "function_address": 3602384,
+          "instruction": 3602475,
+          "kind": "call"
+        },
+        {
+          "function": "_Z7RdmsrTxjPjS_m",
+          "function_address": 3602560,
+          "instruction": 3602651,
+          "kind": "call"
+        },
+        {
+          "function": "_Z9read_filelPmPKc",
+          "function_address": 3815488,
+          "instruction": 3815629,
+          "kind": "call"
+        },
+        {
+          "function": "_Z9mem_chunklmPKc",
+          "function_address": 3815904,
+          "instruction": 3816503,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN25QOpenGLProgramBinaryCache4loadERK10QByteArrayj",
+          "function_address": 19530768,
+          "instruction": 19531817,
+          "kind": "call"
+        }
+      ],
+      "site_count": 10
+    },
+    {
+      "symbol": "lstat64",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.33",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN17QFileSystemEngine12fillMetaDataERK16QFileSystemEntryR19QFileSystemMetaData6QFlagsINS3_12MetaDataFlagEE",
+          "function_address": 21822752,
+          "instruction": 21824683,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "mmap",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.2.5",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_Z23initilize_kernel_driverv",
+          "function_address": 3595936,
+          "instruction": 3596357,
+          "kind": "call"
+        },
+        {
+          "function": "_Z23initilize_kernel_driverv",
+          "function_address": 3595936,
+          "instruction": 3596404,
+          "kind": "call"
+        },
+        {
+          "function": "_Z10mem_chunk2mmPKc",
+          "function_address": 3598912,
+          "instruction": 3599196,
+          "kind": "call"
+        },
+        {
+          "function": "_Z9mem_chunklmPKc",
+          "function_address": 3815904,
+          "instruction": 3816207,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN21QXcbBackingStoreImage16createShmSegmentEm",
+          "function_address": 11165536,
+          "instruction": 11165958,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN15QtWaylandClient17QWaylandShmBufferC1EPNS_15QWaylandDisplayERK5QSizeN6QImage6FormatEi",
+          "function_address": 12242304,
+          "instruction": 12242608,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN15QtWaylandClient19QWaylandInputDevice8Keyboard15keyboard_keymapEjij",
+          "function_address": 12267712,
+          "instruction": 12267847,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN25QOpenGLProgramBinaryCache4loadERK10QByteArrayj",
+          "function_address": 19530768,
+          "instruction": 19531858,
+          "kind": "call"
+        }
+      ],
+      "site_count": 8
+    },
+    {
+      "symbol": "open",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.2.5",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_Z17virt_to_phys_userPmim",
+          "function_address": 3593424,
+          "instruction": 3593534,
+          "kind": "call"
+        },
+        {
+          "function": "_Z9load_kmodPKc",
+          "function_address": 3593696,
+          "instruction": 3594403,
+          "kind": "call"
+        },
+        {
+          "function": "_Z23initilize_kernel_driverv",
+          "function_address": 3595936,
+          "instruction": 3596149,
+          "kind": "call"
+        },
+        {
+          "function": "_Z10mem_chunk2mmPKc",
+          "function_address": 3598912,
+          "instruction": 3598966,
+          "kind": "call"
+        },
+        {
+          "function": "_Z11Write_MMIO8mh",
+          "function_address": 3600720,
+          "instruction": 3600862,
+          "kind": "call"
+        },
+        {
+          "function": "_Z10Write_MMIOmm",
+          "function_address": 3601168,
+          "instruction": 3601313,
+          "kind": "call"
+        },
+        {
+          "function": "_Z12Write_MMIO64mm",
+          "function_address": 3601632,
+          "instruction": 3601777,
+          "kind": "call"
+        },
+        {
+          "function": "_Z7WrmsrTxjjjm",
+          "function_address": 3602032,
+          "instruction": 3602120,
+          "kind": "call"
+        }
+      ],
+      "site_count": 17
+    },
+    {
+      "symbol": "open64",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.2.5",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN23QEglFSDeviceIntegration12platformInitEv",
+          "function_address": 12043056,
+          "instruction": 12043149,
+          "kind": "call"
+        },
+        {
+          "function": "_ZL12setTTYCursorb",
+          "function_address": 12058112,
+          "instruction": 12058253,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN20QGenericUnixServices12openDocumentERK4QUrl",
+          "function_address": 12796128,
+          "instruction": 12796601,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN20QGenericUnixServices7openUrlERK4QUrl",
+          "function_address": 12798352,
+          "instruction": 12800937,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN25QOpenGLProgramBinaryCache4loadERK10QByteArrayj",
+          "function_address": 19530768,
+          "instruction": 19531297,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN8QSysInfo15machineUniqueIdEv",
+          "function_address": 20694784,
+          "instruction": 20694866,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN8QSysInfo15machineUniqueIdEv",
+          "function_address": 20694784,
+          "instruction": 20695077,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN8QSysInfo12bootUniqueIdEv",
+          "function_address": 20695104,
+          "instruction": 20695177,
+          "kind": "call"
+        }
+      ],
+      "site_count": 16
+    },
+    {
+      "symbol": "pthread_attr_setstacksize",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.34",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN7QThread5startENS_8PriorityE",
+          "function_address": 20729344,
+          "instruction": 20729644,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "pthread_cancel",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.34",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN7QThread9terminateEv",
+          "function_address": 20729984,
+          "instruction": 20730052,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "pthread_condattr_setclock",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.34",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN14QWaitConditionC1Ev",
+          "function_address": 20751168,
+          "instruction": 20751336,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "pthread_create",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.34",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN7QThread5startENS_8PriorityE",
+          "function_address": 20729344,
+          "instruction": 20729678,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7QThread5startENS_8PriorityE",
+          "function_address": 20729344,
+          "instruction": 20729914,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "pthread_key_create",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.34",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL30create_current_thread_data_keyv",
+          "function_address": 20727984,
+          "instruction": 20728002,
+          "kind": "jmp"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "pthread_key_delete",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.34",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN12_GLOBAL__N_143destroy_current_thread_data_key_dtor_class_D2Ev",
+          "function_address": 20728016,
+          "instruction": 20728049,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "pthread_once",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.34",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN12_GLOBAL__N_143destroy_current_thread_data_key_dtor_class_D2Ev",
+          "function_address": 20728016,
+          "instruction": 20728038,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN11QThreadData7currentEb",
+          "function_address": 20728128,
+          "instruction": 20728283,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN14QThreadPrivate5startEPv",
+          "function_address": 20730672,
+          "instruction": 20730798,
+          "kind": "call"
+        },
+        {
+          "function": "forkfd",
+          "function_address": 21841312,
+          "instruction": 21841534,
+          "kind": "call"
+        }
+      ],
+      "site_count": 4
+    },
+    {
+      "symbol": "pthread_setspecific",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.34",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN11QThreadData7currentEb.cold",
+          "function_address": 1881334,
+          "instruction": 1881386,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN11QThreadData22clearCurrentThreadDataEv",
+          "function_address": 20728080,
+          "instruction": 20728123,
+          "kind": "jmp"
+        },
+        {
+          "function": "_ZN11QThreadData7currentEb",
+          "function_address": 20728128,
+          "instruction": 20728297,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN14QThreadPrivate5startEPv",
+          "function_address": 20730672,
+          "instruction": 20730812,
+          "kind": "call"
+        }
+      ],
+      "site_count": 4
+    },
+    {
+      "symbol": "pthread_testcancel",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.34",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN14QThreadPrivate5startEPv",
+          "function_address": 20730672,
+          "instruction": 20730978,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "read",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.2.5",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_Z9load_kmodPKc",
+          "function_address": 3593696,
+          "instruction": 3594455,
+          "kind": "call"
+        },
+        {
+          "function": "_Z23initilize_kernel_driverv",
+          "function_address": 3595936,
+          "instruction": 3596520,
+          "kind": "call"
+        },
+        {
+          "function": "_Z10mem_chunk2mmPKc",
+          "function_address": 3598912,
+          "instruction": 3599610,
+          "kind": "call"
+        },
+        {
+          "function": "_Z5RdmsrjPjS_",
+          "function_address": 3602384,
+          "instruction": 3602492,
+          "kind": "call"
+        },
+        {
+          "function": "_Z7RdmsrTxjPjS_m",
+          "function_address": 3602560,
+          "instruction": 3602668,
+          "kind": "call"
+        },
+        {
+          "function": "_ZL6myreadiPhmPKc",
+          "function_address": 3815232,
+          "instruction": 3815304,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART7rd_uartEPhi",
+          "function_address": 3841888,
+          "instruction": 3841908,
+          "kind": "call"
+        },
+        {
+          "function": "sysfs_get_string",
+          "function_address": 11020800,
+          "instruction": 11020925,
+          "kind": "call"
+        }
+      ],
+      "site_count": 22
+    },
+    {
+      "symbol": "readlink",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.2.5",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_Z9load_kmodPKc",
+          "function_address": 3593696,
+          "instruction": 3593798,
+          "kind": "call"
+        },
+        {
+          "function": "_Z23initilize_kernel_driverv",
+          "function_address": 3595936,
+          "instruction": 3596030,
+          "kind": "call"
+        },
+        {
+          "function": "sysfs_deref_link",
+          "function_address": 11021616,
+          "instruction": 11021693,
+          "kind": "call"
+        },
+        {
+          "function": "_Z11qt_readlinkPKc",
+          "function_address": 22331088,
+          "instruction": 22331199,
+          "kind": "call"
+        },
+        {
+          "function": "_Z11qt_readlinkPKc",
+          "function_address": 22331088,
+          "instruction": 22331270,
+          "kind": "call"
+        }
+      ],
+      "site_count": 5
+    },
+    {
+      "symbol": "sched_setaffinity",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.3.4",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_Z13clearAffinityv",
+          "function_address": 2404560,
+          "instruction": 2404688,
+          "kind": "call"
+        },
+        {
+          "function": "_Z20set_process_affinityi",
+          "function_address": 3603472,
+          "instruction": 3603554,
+          "kind": "call"
+        },
+        {
+          "function": "_Z16set_all_affinityv",
+          "function_address": 3603600,
+          "instruction": 3603709,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN30intel_vf_curve_Working_Thread23runEv",
+          "function_address": 9206592,
+          "instruction": 9206639,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN14intel_vf_curve12big_vid_doneEv",
+          "function_address": 9209872,
+          "instruction": 9210120,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN14intel_vf_curve21on_pushButton_clickedEv",
+          "function_address": 9213456,
+          "instruction": 9213724,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN14intel_vf_curve14get_vid_finishEv",
+          "function_address": 9240560,
+          "instruction": 9240722,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN14intel_vf_curve13ring_vid_doneEv",
+          "function_address": 9247376,
+          "instruction": 9247847,
+          "kind": "call"
+        }
+      ],
+      "site_count": 8
+    },
+    {
+      "symbol": "stat",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.33",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "pci_id_cache_flush",
+          "function_address": 11016432,
+          "instruction": 11016579,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "stat64",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.33",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK18QTzTimeZonePrivate16systemTimeZoneIdEv",
+          "function_address": 21406848,
+          "instruction": 21407079,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK18QTzTimeZonePrivate16systemTimeZoneIdEv",
+          "function_address": 21406848,
+          "instruction": 21407122,
+          "kind": "call"
+        },
+        {
+          "function": "_ZL26createDirectoryWithParentsRK10QByteArrayb",
+          "function_address": 21818112,
+          "instruction": 21818324,
+          "kind": "call"
+        },
+        {
+          "function": "_ZL26createDirectoryWithParentsRK10QByteArrayb",
+          "function_address": 21818112,
+          "instruction": 21818487,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN17QFileSystemEngine2idERK16QFileSystemEntry",
+          "function_address": 21820464,
+          "instruction": 21820628,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN17QFileSystemEngine12fillMetaDataERK16QFileSystemEntryR19QFileSystemMetaData6QFlagsINS3_12MetaDataFlagEE",
+          "function_address": 21822752,
+          "instruction": 21825188,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN17QFileSystemEngine15removeDirectoryERK16QFileSystemEntryb",
+          "function_address": 21826112,
+          "instruction": 21826386,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK13QMimeDatabase15mimeTypeForFileERK9QFileInfoNS_9MatchModeE",
+          "function_address": 22609488,
+          "instruction": 22609899,
+          "kind": "call"
+        }
+      ],
+      "site_count": 8
+    },
+    {
+      "symbol": "syscall",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.2.5",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_Z9load_kmodPKc",
+          "function_address": 3593696,
+          "instruction": 3594487,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN15QtWaylandClient17QWaylandShmBufferC1EPNS_15QWaylandDisplayERK5QSizeN6QImage6FormatEi",
+          "function_address": 12242304,
+          "instruction": 12242456,
+          "kind": "call"
+        },
+        {
+          "function": "_Z17qFormatLogMessage9QtMsgTypeRK18QMessageLogContextRK7QString",
+          "function_address": 20716720,
+          "instruction": 20718323,
+          "kind": "call"
+        },
+        {
+          "function": "_Z19lockInternal_helperILb0EEbR19QBasicAtomicPointerI10QMutexDataEiP13QElapsedTimer.constprop.0.isra.0",
+          "function_address": 20731328,
+          "instruction": 20731392,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN11QBasicMutex12lockInternalEv",
+          "function_address": 20731984,
+          "instruction": 20732048,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN11QBasicMutex12lockInternalEi",
+          "function_address": 20732096,
+          "instruction": 20732334,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN11QBasicMutex12lockInternalEi",
+          "function_address": 20732096,
+          "instruction": 20732440,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN11QBasicMutex14unlockInternalEv",
+          "function_address": 20732672,
+          "instruction": 20732718,
+          "kind": "call"
+        }
+      ],
+      "site_count": 13
+    },
+    {
+      "symbol": "system",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.2.5",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN15NVL_ADC_READER2C2EP18My_Processor_Cores",
+          "function_address": 3119648,
+          "instruction": 3121958,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "write",
+      "provider": "libc.so.6",
+      "version": "GLIBC_2.2.5",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_Z16Read_MMIO_kernelm",
+          "function_address": 3596560,
+          "instruction": 3596614,
+          "kind": "call"
+        },
+        {
+          "function": "_Z18Read_MMIO64_kernelm",
+          "function_address": 3596640,
+          "instruction": 3596694,
+          "kind": "call"
+        },
+        {
+          "function": "_Z17Read_MMIO8_kernelm",
+          "function_address": 3596720,
+          "instruction": 3596774,
+          "kind": "call"
+        },
+        {
+          "function": "_Z18Read_MMIO16_kernelm",
+          "function_address": 3596800,
+          "instruction": 3596854,
+          "kind": "call"
+        },
+        {
+          "function": "_Z17Write_MMIO_kernelmm",
+          "function_address": 3596880,
+          "instruction": 3596941,
+          "kind": "call"
+        },
+        {
+          "function": "_Z19Write_MMIO64_kernelmm",
+          "function_address": 3596976,
+          "instruction": 3597037,
+          "kind": "call"
+        },
+        {
+          "function": "_Z18Write_MMIO8_kernelmh",
+          "function_address": 3597072,
+          "instruction": 3597137,
+          "kind": "call"
+        },
+        {
+          "function": "_Z19Write_MMIO16_kernelmt",
+          "function_address": 3597168,
+          "instruction": 3597233,
+          "kind": "call"
+        }
+      ],
+      "site_count": 28
+    },
+    {
+      "symbol": "jpeg_CreateCompress",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL19do_write_jpeg_imageR20jpeg_compress_structPPhRK6QImageP9QIODeviceiRK7QStringbb.constprop.0",
+          "function_address": 11407792,
+          "instruction": 11408228,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "jpeg_CreateDecompress",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN19QJpegHandlerPrivate14readJpegHeaderEP9QIODevice",
+          "function_address": 11404352,
+          "instruction": 11404652,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "jpeg_calc_output_dimensions",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL15read_jpeg_imageP6QImage5QSize5QRectS2_iPFvPjPKhiEP22jpeg_decompress_structP12my_error_mgr",
+          "function_address": 11400080,
+          "instruction": 11400535,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN19QJpegHandlerPrivate14readJpegHeaderEP9QIODevice",
+          "function_address": 11404352,
+          "instruction": 11404794,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "jpeg_destroy_compress",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL19do_write_jpeg_imageR20jpeg_compress_structPPhRK6QImageP9QIODeviceiRK7QStringbb.constprop.0",
+          "function_address": 11407792,
+          "instruction": 11408185,
+          "kind": "call"
+        },
+        {
+          "function": "_ZL19do_write_jpeg_imageR20jpeg_compress_structPPhRK6QImageP9QIODeviceiRK7QStringbb.constprop.0",
+          "function_address": 11407792,
+          "instruction": 11410293,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "jpeg_destroy_decompress",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN12QJpegHandlerD1Ev",
+          "function_address": 11403008,
+          "instruction": 11403060,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "jpeg_finish_compress",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL19do_write_jpeg_imageR20jpeg_compress_structPPhRK6QImageP9QIODeviceiRK7QStringbb.constprop.0",
+          "function_address": 11407792,
+          "instruction": 11410285,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "jpeg_finish_decompress",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL15read_jpeg_imageP6QImage5QSize5QRectS2_iPFvPjPKhiEP22jpeg_decompress_structP12my_error_mgr",
+          "function_address": 11400080,
+          "instruction": 11402284,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "jpeg_read_header",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN19QJpegHandlerPrivate14readJpegHeaderEP9QIODevice",
+          "function_address": 11404352,
+          "instruction": 11404778,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "jpeg_read_scanlines",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL15read_jpeg_imageP6QImage5QSize5QRectS2_iPFvPjPKhiEP22jpeg_decompress_structP12my_error_mgr",
+          "function_address": 11400080,
+          "instruction": 11400981,
+          "kind": "call"
+        },
+        {
+          "function": "_ZL15read_jpeg_imageP6QImage5QSize5QRectS2_iPFvPjPKhiEP22jpeg_decompress_structP12my_error_mgr",
+          "function_address": 11400080,
+          "instruction": 11402008,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "jpeg_resync_to_restart",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN19QJpegHandlerPrivate14readJpegHeaderEP9QIODevice",
+          "function_address": 11404352,
+          "instruction": 11404528,
+          "kind": "mov"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "jpeg_save_markers",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN19QJpegHandlerPrivate14readJpegHeaderEP9QIODevice",
+          "function_address": 11404352,
+          "instruction": 11404729,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN19QJpegHandlerPrivate14readJpegHeaderEP9QIODevice",
+          "function_address": 11404352,
+          "instruction": 11404747,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN19QJpegHandlerPrivate14readJpegHeaderEP9QIODevice",
+          "function_address": 11404352,
+          "instruction": 11404765,
+          "kind": "call"
+        }
+      ],
+      "site_count": 3
+    },
+    {
+      "symbol": "jpeg_set_defaults",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL19do_write_jpeg_imageR20jpeg_compress_structPPhRK6QImageP9QIODeviceiRK7QStringbb.constprop.0",
+          "function_address": 11407792,
+          "instruction": 11408330,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "jpeg_set_quality",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL19do_write_jpeg_imageR20jpeg_compress_structPPhRK6QImageP9QIODeviceiRK7QStringbb.constprop.0",
+          "function_address": 11407792,
+          "instruction": 11409170,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "jpeg_simple_progression",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL19do_write_jpeg_imageR20jpeg_compress_structPPhRK6QImageP9QIODeviceiRK7QStringbb.constprop.0",
+          "function_address": 11407792,
+          "instruction": 11412806,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "jpeg_start_compress",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL19do_write_jpeg_imageR20jpeg_compress_structPPhRK6QImageP9QIODeviceiRK7QStringbb.constprop.0",
+          "function_address": 11407792,
+          "instruction": 11409183,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "jpeg_start_decompress",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL15read_jpeg_imageP6QImage5QSize5QRectS2_iPFvPjPKhiEP22jpeg_decompress_structP12my_error_mgr",
+          "function_address": 11400080,
+          "instruction": 11400861,
+          "kind": "call"
+        },
+        {
+          "function": "_ZL15read_jpeg_imageP6QImage5QSize5QRectS2_iPFvPjPKhiEP22jpeg_decompress_structP12my_error_mgr",
+          "function_address": 11400080,
+          "instruction": 11401940,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "jpeg_std_error",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN19QJpegHandlerPrivate14readJpegHeaderEP9QIODevice",
+          "function_address": 11404352,
+          "instruction": 11404597,
+          "kind": "call"
+        },
+        {
+          "function": "_ZL19do_write_jpeg_imageR20jpeg_compress_structPPhRK6QImageP9QIODeviceiRK7QStringbb.constprop.0",
+          "function_address": 11407792,
+          "instruction": 11408109,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "jpeg_write_marker",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL19do_write_jpeg_imageR20jpeg_compress_structPPhRK6QImageP9QIODeviceiRK7QStringbb.constprop.0",
+          "function_address": 11407792,
+          "instruction": 11409298,
+          "kind": "call"
+        },
+        {
+          "function": "_ZL19do_write_jpeg_imageR20jpeg_compress_structPPhRK6QImageP9QIODeviceiRK7QStringbb.constprop.0",
+          "function_address": 11407792,
+          "instruction": 11412125,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "jpeg_write_scanlines",
+      "provider": "libjpeg.so.8",
+      "version": "LIBJPEG_8.0",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZL19do_write_jpeg_imageR20jpeg_compress_structPPhRK6QImageP9QIODeviceiRK7QStringbb.constprop.0",
+          "function_address": 11407792,
+          "instruction": 11410251,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "exp",
+      "provider": "libm.so.6",
+      "version": "GLIBC_2.29",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "L16toY",
+          "function_address": 11604368,
+          "instruction": 11604454,
+          "kind": "call"
+        },
+        {
+          "function": "L16toGry",
+          "function_address": 11604512,
+          "instruction": 11604625,
+          "kind": "call"
+        },
+        {
+          "function": "LogLuv24toXYZ",
+          "function_address": 11606640,
+          "instruction": 11606762,
+          "kind": "call"
+        },
+        {
+          "function": "LogLuv32toXYZ",
+          "function_address": 11607760,
+          "instruction": 11607846,
+          "kind": "call"
+        },
+        {
+          "function": "TIFFInitPixarLog",
+          "function_address": 11634192,
+          "instruction": 11634801,
+          "kind": "call"
+        }
+      ],
+      "site_count": 5
+    },
+    {
+      "symbol": "hypot",
+      "provider": "libm.so.6",
+      "version": "GLIBC_2.35",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK6QLineF6lengthEv",
+          "function_address": 20945424,
+          "instruction": 20945447,
+          "kind": "jmp"
+        },
+        {
+          "function": "_ZNK6QLineF10unitVectorEv",
+          "function_address": 20945744,
+          "instruction": 20945795,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "log",
+      "provider": "libm.so.6",
+      "version": "GLIBC_2.29",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "LogL16fromY",
+          "function_address": 11605120,
+          "instruction": 11605208,
+          "kind": "call"
+        },
+        {
+          "function": "LogL16fromY",
+          "function_address": 11605120,
+          "instruction": 11605256,
+          "kind": "call"
+        },
+        {
+          "function": "LogLuv24fromXYZ",
+          "function_address": 11607216,
+          "instruction": 11607322,
+          "kind": "call"
+        },
+        {
+          "function": "PixarLogEncode",
+          "function_address": 11621024,
+          "instruction": 11622345,
+          "kind": "call"
+        },
+        {
+          "function": "PixarLogEncode",
+          "function_address": 11621024,
+          "instruction": 11623655,
+          "kind": "call"
+        },
+        {
+          "function": "PixarLogEncode",
+          "function_address": 11621024,
+          "instruction": 11623836,
+          "kind": "call"
+        },
+        {
+          "function": "PixarLogEncode",
+          "function_address": 11621024,
+          "instruction": 11625021,
+          "kind": "call"
+        },
+        {
+          "function": "PixarLogEncode",
+          "function_address": 11621024,
+          "instruction": 11625165,
+          "kind": "call"
+        }
+      ],
+      "site_count": 54
+    },
+    {
+      "symbol": "log2",
+      "provider": "libm.so.6",
+      "version": "GLIBC_2.29",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN7vrm192810wr_offset2Ed",
+          "function_address": 2317168,
+          "instruction": 2317304,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7vrm19289rd_offsetEv",
+          "function_address": 2744352,
+          "instruction": 2744893,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7vrm19289rd_offsetEv",
+          "function_address": 2744352,
+          "instruction": 2744987,
+          "kind": "call"
+        },
+        {
+          "function": "_Z10invertBitsIjEDtfp_ET_.part.0",
+          "function_address": 3608048,
+          "instruction": 3608061,
+          "kind": "call"
+        },
+        {
+          "function": "_Z10invertBitsIiEDtfp_ET_",
+          "function_address": 3724368,
+          "instruction": 3724389,
+          "kind": "call"
+        },
+        {
+          "function": "_Z24AVX_Voltage_Guardband_RDv",
+          "function_address": 3743840,
+          "instruction": 3744030,
+          "kind": "call"
+        },
+        {
+          "function": "_Z24AVX_Voltage_Guardband_RDv",
+          "function_address": 3743840,
+          "instruction": 3744141,
+          "kind": "call"
+        },
+        {
+          "function": "_Z24AVX_Voltage_Guardband_RDi",
+          "function_address": 3746096,
+          "instruction": 3746386,
+          "kind": "call"
+        }
+      ],
+      "site_count": 28
+    },
+    {
+      "symbol": "pow",
+      "provider": "libm.so.6",
+      "version": "GLIBC_2.29",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN12LT_PMBusMath14linear16_floatEij",
+          "function_address": 2286880,
+          "instruction": 2286924,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN12LT_PMBusMath14linear16_floatEij",
+          "function_address": 2286880,
+          "instruction": 2287014,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN12LT_PMBusMath14linear11_floatEij",
+          "function_address": 2287552,
+          "instruction": 2287596,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN12LT_PMBusMath14linear11_floatEij",
+          "function_address": 2287552,
+          "instruction": 2287701,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN12LT_PMBusMath14float_linear11Eif",
+          "function_address": 2288240,
+          "instruction": 2288282,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN12LT_PMBusMath14float_linear11Eif",
+          "function_address": 2288240,
+          "instruction": 2288341,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7vrm37005get_iEv",
+          "function_address": 2400832,
+          "instruction": 2400941,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7vrm37006get_i2Ev",
+          "function_address": 2401040,
+          "instruction": 2401152,
+          "kind": "call"
+        }
+      ],
+      "site_count": 166
+    },
+    {
+      "symbol": "_ZNKSt10filesystem7__cxx1118directory_iteratordeEv",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.26",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN7MY_UART21find_usb_serial_portsERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_",
+          "function_address": 3846832,
+          "instruction": 3847133,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "_ZNKSt10filesystem7__cxx114path11parent_pathEv",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.26",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842451,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "_ZNKSt10filesystem7__cxx114path15has_parent_pathEv",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.26",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842131,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842693,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "_ZNKSt10filesystem7__cxx114path5_List13_Impl_deleterclEPNS2_5_ImplE",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.26",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNSt10unique_ptrINSt10filesystem7__cxx114path5_List5_ImplENS3_13_Impl_deleterEED2Ev",
+          "function_address": 3842048,
+          "instruction": 3842060,
+          "kind": "jmp"
+        },
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842335,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842385,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842594,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842651,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3843012,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3843065,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART13match_vid_pidERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_S7_",
+          "function_address": 3843568,
+          "instruction": 3843944,
+          "kind": "call"
+        }
+      ],
+      "site_count": 19
+    },
+    {
+      "symbol": "_ZNKSt10filesystem7__cxx114path5_List3endEv",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.26",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN7MY_UART21find_usb_serial_portsERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_",
+          "function_address": 3846832,
+          "instruction": 3847192,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "_ZNSt10filesystem6statusERKNS_7__cxx114pathE",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.26",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842298,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842980,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "_ZNSt10filesystem7__cxx1118directory_iteratorC1ERKNS0_4pathENS_17directory_optionsEPSt10error_code",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.26",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN7MY_UART21find_usb_serial_portsERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_",
+          "function_address": 3846832,
+          "instruction": 3846983,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "_ZNSt10filesystem7__cxx1118directory_iteratorppEv",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.26",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN7MY_UART21find_usb_serial_portsERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_",
+          "function_address": 3846832,
+          "instruction": 3847451,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "_ZNSt10filesystem7__cxx114path14_M_split_cmptsEv",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.26",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842203,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842625,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842755,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842892,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3843309,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART13match_vid_pidERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_S7_",
+          "function_address": 3843568,
+          "instruction": 3843902,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART13match_vid_pidERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_S7_",
+          "function_address": 3843568,
+          "instruction": 3844440,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART13match_vid_pidERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_S7_",
+          "function_address": 3843568,
+          "instruction": 3845003,
+          "kind": "call"
+        }
+      ],
+      "site_count": 11
+    },
+    {
+      "symbol": "_ZNSt10filesystem7__cxx114path5_ListC1ERKS2_",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.26",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842279,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842959,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART13match_vid_pidERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_S7_",
+          "function_address": 3843568,
+          "instruction": 3844106,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART13match_vid_pidERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_S7_",
+          "function_address": 3843568,
+          "instruction": 3844499,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART13match_vid_pidERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_S7_",
+          "function_address": 3843568,
+          "instruction": 3845058,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART21find_usb_serial_portsERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_",
+          "function_address": 3846832,
+          "instruction": 3848015,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART21find_usb_serial_portsERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_",
+          "function_address": 3846832,
+          "instruction": 3848127,
+          "kind": "call"
+        }
+      ],
+      "site_count": 7
+    },
+    {
+      "symbol": "_ZNSt10filesystem7__cxx114path5_ListC1Ev",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.26",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842195,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842747,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842882,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART13match_vid_pidERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_S7_",
+          "function_address": 3843568,
+          "instruction": 3843886,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART13match_vid_pidERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_S7_",
+          "function_address": 3843568,
+          "instruction": 3844432,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART13match_vid_pidERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_S7_",
+          "function_address": 3843568,
+          "instruction": 3844995,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART21find_usb_serial_portsERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_",
+          "function_address": 3846832,
+          "instruction": 3846958,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART21find_usb_serial_portsERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_",
+          "function_address": 3846832,
+          "instruction": 3847248,
+          "kind": "call"
+        }
+      ],
+      "site_count": 12
+    },
+    {
+      "symbol": "_ZNSt10filesystem7__cxx114pathdVERKS1_",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.26",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842290,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART20find_usb_device_pathENSt10filesystem7__cxx114pathE",
+          "function_address": 3842080,
+          "instruction": 3842972,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART13match_vid_pidERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_S7_",
+          "function_address": 3843568,
+          "instruction": 3844510,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN7MY_UART13match_vid_pidERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_S7_",
+          "function_address": 3843568,
+          "instruction": 3845069,
+          "kind": "call"
+        }
+      ],
+      "site_count": 4
+    },
+    {
+      "symbol": "_ZNSt10filesystem9canonicalERKNS_7__cxx114pathE",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.26",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN7MY_UART13match_vid_pidERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_S7_",
+          "function_address": 3843568,
+          "instruction": 3843923,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1
+    },
+    {
+      "symbol": "_ZNSt10filesystem9file_sizeERKNS_7__cxx114pathE",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.26",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN6EC_NEW13read_bios_romENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE",
+          "function_address": 4980816,
+          "instruction": 4980931,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN6EC_NEW11read_ec_romENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE",
+          "function_address": 4981680,
+          "instruction": 4981793,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "_ZNSt3pmr20get_default_resourceEv",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.26",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNK19QFontconfigDatabase18fallbacksForFamilyERK7QStringN5QFont5StyleENS3_9StyleHintEN5QChar6ScriptE",
+          "function_address": 12442512,
+          "instruction": 12442976,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN9QtPrivate28QStringList_removeDuplicatesEP11QStringList",
+          "function_address": 21213424,
+          "instruction": 21213517,
+          "kind": "call"
+        }
+      ],
+      "site_count": 2
+    },
+    {
+      "symbol": "_ZNSt3pmr25monotonic_buffer_resource13_M_new_bufferEmm",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.26",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNSt3pmr25monotonic_buffer_resource11do_allocateEmm",
+          "function_address": 12430736,
+          "instruction": 12430862,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNSt10_HashtableI7QStringS0_NSt3pmr21polymorphic_allocatorIS0_EENSt8__detail9_IdentityESt8equal_toIS0_ESt4hashIS0_ENS4_18_Mod_range_hashingENS4_20_Default_ranged_hashENS4_20_Prime_rehash_policyENS4_17_Hashtable_traitsILb0ELb1ELb1EEEE13_M_rehash_auxEmSt17integral_constantIbLb1EE.isra.0",
+          "function_address": 12430960,
+          "instruction": 12431323,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNSt10_HashtableI7QStringS0_NSt3pmr21polymorphic_allocatorIS0_EENSt8__detail9_IdentityESt8equal_toIS0_ESt4hashIS0_ENS4_18_Mod_range_hashingENS4_20_Default_ranged_hashENS4_20_Prime_rehash_policyENS4_17_Hashtable_traitsILb0ELb1ELb1EEEE9_M_insertIRKS0_NS4_10_AllocNodeINS2_INS4_10_Hash_nodeIS0_Lb0EEEEEEEEESt4pairINS4_14_Node_iteratorIS0_Lb1ELb0EEEbEOT_RKT0_St17integral_constantIbLb1EE.isra.0",
+          "function_address": 12431504,
+          "instruction": 12432053,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNSt10_HashtableI7QStringS0_NSt3pmr21polymorphic_allocatorIS0_EENSt8__detail9_IdentityESt8equal_toIS0_ESt4hashIS0_ENS4_18_Mod_range_hashingENS4_20_Default_ranged_hashENS4_20_Prime_rehash_policyENS4_17_Hashtable_traitsILb0ELb1ELb1EEEE9_M_rehashEmRKm",
+          "function_address": 21212832,
+          "instruction": 21213195,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN9QtPrivate28QStringList_removeDuplicatesEP11QStringList",
+          "function_address": 21213424,
+          "instruction": 21214901,
+          "kind": "call"
+        }
+      ],
+      "site_count": 5
+    },
+    {
+      "symbol": "_ZNSt3pmr25monotonic_buffer_resourceD1Ev",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.28",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN9QtPrivate28QStringList_removeDuplicatesEP11QStringList.cold",
+          "function_address": 1893622,
+          "instruction": 1893653,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNK19QFontconfigDatabase18fallbacksForFamilyERK7QStringN5QFont5StyleENS3_9StyleHintEN5QChar6ScriptE",
+          "function_address": 12442512,
+          "instruction": 12442781,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN9QtPrivate28QStringList_removeDuplicatesEP11QStringList",
+          "function_address": 21213424,
+          "instruction": 21214661,
+          "kind": "call"
+        }
+      ],
+      "site_count": 3
+    },
+    {
+      "symbol": "_ZNSt7__cxx1118basic_stringstreamIcSt11char_traitsIcESaIcEEC1Ev",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.26",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZN14GNR_SP_MEM_CFG7get_pm1ER18My_Processor_CoresP17INTEL_SVID_VR_LIBRSt6vectorIiSaIiEES7_RS4_IS4_INSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaISD_EESaISF_EESI_",
+          "function_address": 3230800,
+          "instruction": 3244375,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN11NVL_MEM_CFG7get_pm1ER18My_Processor_CoresP17INTEL_SVID_VR_LIBRSt6vectorIiSaIiEES7_RS4_IS4_INSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaISD_EESaISF_EESI_",
+          "function_address": 3321184,
+          "instruction": 3331512,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN11svi_decoder6decodeEv",
+          "function_address": 5117824,
+          "instruction": 5121271,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN11svi_decoder6decodeEv",
+          "function_address": 5117824,
+          "instruction": 5121665,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN11svi_decoder6decodeEv",
+          "function_address": 5117824,
+          "instruction": 5121784,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN11svi_decoder6decodeEv",
+          "function_address": 5117824,
+          "instruction": 5123040,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN11svi_decoder6decodeEv",
+          "function_address": 5117824,
+          "instruction": 5123536,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN11svi_decoder6decodeEv",
+          "function_address": 5117824,
+          "instruction": 5125569,
+          "kind": "call"
+        }
+      ],
+      "site_count": 51
+    },
+    {
+      "symbol": "_ZSt28__throw_bad_array_new_lengthv",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.29",
+      "kind": "STT_FUNC",
+      "sites": [
+        {
+          "function": "_ZNSt6vectorIS_IdSaIdEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_",
+          "function_address": 2267184,
+          "instruction": 2267745,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN17AMD_Configuration15Get_PStates_VecERSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS6_EE",
+          "function_address": 2278480,
+          "instruction": 2279661,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS5_EEC2ERKS7_",
+          "function_address": 2281600,
+          "instruction": 2281979,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNSt6vectorIfSaIfEEaSERKS1_.isra.0",
+          "function_address": 2289552,
+          "instruction": 2289877,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNSt6vectorIiSaIiEEaSERKS1_.isra.0",
+          "function_address": 2289888,
+          "instruction": 2290213,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNSt6vectorIS_IiSaIiEESaIS1_EEC2ESt16initializer_listIS1_ERKS2_.constprop.0",
+          "function_address": 2426240,
+          "instruction": 2426565,
+          "kind": "call"
+        },
+        {
+          "function": "_ZN17intel_adl_memtime13write_profileESt6vectorIS0_IiSaIiEESaIS2_EE",
+          "function_address": 2426624,
+          "instruction": 2427045,
+          "kind": "call"
+        },
+        {
+          "function": "_ZNSt6vectorIS_IjSaIjEESaIS1_EEC2ESt16initializer_listIS1_ERKS2_",
+          "function_address": 2477600,
+          "instruction": 2477925,
+          "kind": "call"
+        }
+      ],
+      "site_count": 1087
+    },
+    {
+      "symbol": "_ZTVNSt3pmr25monotonic_buffer_resourceE",
+      "provider": "libstdc++.so.6",
+      "version": "GLIBCXX_3.4.28",
+      "kind": "STT_OBJECT",
+      "sites": [
+        {
+          "function": "_ZNK19QFontconfigDatabase18fallbacksForFamilyERK7QStringN5QFont5StyleENS3_9StyleHintEN5QChar6ScriptE",
+          "function_address": 12442512,
+          "instruction": 12443008,
+          "kind": "mov"
+        },
+        {
+          "function": "_ZN9QtPrivate28QStringList_removeDuplicatesEP11QStringList",
+          "function_address": 21213424,
+          "instruction": 21213467,
+          "kind": "mov"
+        }
+      ],
+      "site_count": 2
+    }
+  ],
+  "selected_functions": [
+    {
+      "symbols": [
+        "main"
+      ],
+      "address": 2194592,
+      "size": 296,
+      "code_sha256": "3636b92571a3aa05030bf149fb55d24517b0eed1df4de037bd1bbb0fd6f44411",
+      "calls": [
+        {
+          "instruction": 2194643,
+          "kind": "call",
+          "target": 22080848,
+          "symbols": [
+            "_ZN16QCoreApplication16setSetuidAllowedEb"
+          ]
+        },
+        {
+          "instruction": 2194669,
+          "kind": "call",
+          "target": 13701056,
+          "symbols": [
+            "_ZN12QApplicationC1ERiPPci",
+            "_ZN12QApplicationC2ERiPPci"
+          ]
+        },
+        {
+          "instruction": 2194677,
+          "kind": "call",
+          "target": 13674192,
+          "symbols": [
+            "_ZN12QApplication4fontEv"
+          ]
+        },
+        {
+          "instruction": 2194694,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 2194715,
+          "kind": "call",
+          "target": 17648048,
+          "symbols": [
+            "_ZN5QFont9setFamilyERK7QString"
+          ]
+        },
+        {
+          "instruction": 2194723,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 2194736,
+          "kind": "call",
+          "target": 17648288,
+          "symbols": [
+            "_ZN5QFont12setPointSizeEi"
+          ]
+        },
+        {
+          "instruction": 2194746,
+          "kind": "call",
+          "target": 13690464,
+          "symbols": [
+            "_ZN12QApplication7setFontERK5QFontPKc"
+          ]
+        },
+        {
+          "instruction": 2194756,
+          "kind": "call",
+          "target": 9322864,
+          "symbols": [
+            "_ZN10MainWindowC2EP7QWidget",
+            "_ZN10MainWindowC1EP7QWidget"
+          ]
+        },
+        {
+          "instruction": 2194764,
+          "kind": "call",
+          "target": 13893056,
+          "symbols": [
+            "_ZN7QWidget4showEv"
+          ]
+        },
+        {
+          "instruction": 2194769,
+          "kind": "call",
+          "target": 13676032,
+          "symbols": [
+            "_ZN12QApplication4execEv"
+          ]
+        },
+        {
+          "instruction": 2194780,
+          "kind": "call",
+          "target": 9327008,
+          "symbols": [
+            "_ZN10MainWindowD2Ev",
+            "_ZN10MainWindowD1Ev"
+          ]
+        },
+        {
+          "instruction": 2194788,
+          "kind": "call",
+          "target": 17645872,
+          "symbols": [
+            "_ZN5QFontD1Ev",
+            "_ZN5QFontD2Ev"
+          ]
+        },
+        {
+          "instruction": 2194796,
+          "kind": "call",
+          "target": 13669808,
+          "symbols": [
+            "_ZN12QApplicationD1Ev",
+            "_ZN12QApplicationD2Ev"
+          ]
+        },
+        {
+          "instruction": 2194835,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 2194847,
+          "kind": "jmp",
+          "target": 1740743,
+          "symbols": [
+            "main.cold"
+          ]
+        },
+        {
+          "instruction": 2194859,
+          "kind": "jmp",
+          "target": 1740778,
+          "symbols": []
+        },
+        {
+          "instruction": 2194871,
+          "kind": "jmp",
+          "target": 1740751,
+          "symbols": []
+        },
+        {
+          "instruction": 2194883,
+          "kind": "jmp",
+          "target": 1740762,
+          "symbols": []
+        }
+      ],
+      "literals": [
+        {
+          "instruction": 2194687,
+          "address": 23257602,
+          "text": "Ubuntu"
+        }
+      ]
+    },
+    {
+      "symbols": [
+        "_start"
+      ],
+      "address": 2215248,
+      "size": 38,
+      "code_sha256": "091150b05bb9292fd26f98914b2867fca6fcf92354f11d49a87ea605eeb2bc72",
+      "calls": [],
+      "literals": []
+    },
+    {
+      "symbols": [
+        "_Z9load_kmodPKc"
+      ],
+      "address": 3593696,
+      "size": 2233,
+      "code_sha256": "3f953a59845f9646228eb44c4ae6a1b7b1e8bb3a9368dc346d1830e8e7b26cfc",
+      "calls": [
+        {
+          "instruction": 3593798,
+          "kind": "call",
+          "target": 1353984,
+          "symbols": [
+            "readlink@plt"
+          ]
+        },
+        {
+          "instruction": 3593848,
+          "kind": "call",
+          "target": 1354576,
+          "symbols": [
+            "strlen@plt"
+          ]
+        },
+        {
+          "instruction": 3593931,
+          "kind": "call",
+          "target": 1364224,
+          "symbols": [
+            "_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE5rfindEcm@plt"
+          ]
+        },
+        {
+          "instruction": 3593973,
+          "kind": "call",
+          "target": 3592976,
+          "symbols": [
+            "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0"
+          ]
+        },
+        {
+          "instruction": 3594086,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 3594116,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 3594143,
+          "kind": "call",
+          "target": 1354576,
+          "symbols": [
+            "strlen@plt"
+          ]
+        },
+        {
+          "instruction": 3594268,
+          "kind": "call",
+          "target": 1367136,
+          "symbols": [
+            "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE7reserveEm@plt"
+          ]
+        },
+        {
+          "instruction": 3594312,
+          "kind": "call",
+          "target": 1366656,
+          "symbols": [
+            "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_appendEPKcm@plt"
+          ]
+        },
+        {
+          "instruction": 3594330,
+          "kind": "call",
+          "target": 1366656,
+          "symbols": [
+            "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_appendEPKcm@plt"
+          ]
+        },
+        {
+          "instruction": 3594359,
+          "kind": "call",
+          "target": 1366656,
+          "symbols": [
+            "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_appendEPKcm@plt"
+          ]
+        },
+        {
+          "instruction": 3594389,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 3594403,
+          "kind": "call",
+          "target": 1363904,
+          "symbols": [
+            "open@plt"
+          ]
+        },
+        {
+          "instruction": 3594423,
+          "kind": "call",
+          "target": 1358144,
+          "symbols": [
+            "fstat@plt"
+          ]
+        },
+        {
+          "instruction": 3594439,
+          "kind": "call",
+          "target": 1367504,
+          "symbols": [
+            "malloc@plt"
+          ]
+        },
+        {
+          "instruction": 3594455,
+          "kind": "call",
+          "target": 1366288,
+          "symbols": [
+            "read@plt"
+          ]
+        },
+        {
+          "instruction": 3594462,
+          "kind": "call",
+          "target": 1362432,
+          "symbols": [
+            "close@plt"
+          ]
+        },
+        {
+          "instruction": 3594487,
+          "kind": "call",
+          "target": 1353280,
+          "symbols": [
+            "syscall@plt"
+          ]
+        },
+        {
+          "instruction": 3594501,
+          "kind": "call",
+          "target": 1368672,
+          "symbols": [
+            "__errno_location@plt"
+          ]
+        },
+        {
+          "instruction": 3594537,
+          "kind": "call",
+          "target": 1369912,
+          "symbols": [
+            "free@plt"
+          ]
+        },
+        {
+          "instruction": 3594561,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 3594585,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 3594650,
+          "kind": "call",
+          "target": 1357280,
+          "symbols": [
+            "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm@plt"
+          ]
+        },
+        {
+          "instruction": 3594751,
+          "kind": "jmp",
+          "target": 3593899,
+          "symbols": []
+        },
+        {
+          "instruction": 3594782,
+          "kind": "call",
+          "target": 1359696,
+          "symbols": [
+            "_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@plt"
+          ]
+        },
+        {
+          "instruction": 3594787,
+          "kind": "call",
+          "target": 1368672,
+          "symbols": [
+            "__errno_location@plt"
+          ]
+        },
+        {
+          "instruction": 3594797,
+          "kind": "call",
+          "target": 1362992,
+          "symbols": [
+            "_ZNSolsEi@plt"
+          ]
+        },
+        {
+          "instruction": 3594856,
+          "kind": "call",
+          "target": 1364752,
+          "symbols": [
+            "_ZNSo3putEc@plt"
+          ]
+        },
+        {
+          "instruction": 3594864,
+          "kind": "call",
+          "target": 1364176,
+          "symbols": [
+            "_ZNSo5flushEv@plt"
+          ]
+        },
+        {
+          "instruction": 3594869,
+          "kind": "jmp",
+          "target": 3594418,
+          "symbols": []
+        },
+        {
+          "instruction": 3594902,
+          "kind": "call",
+          "target": 1359696,
+          "symbols": [
+            "_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@plt"
+          ]
+        },
+        {
+          "instruction": 3594907,
+          "kind": "call",
+          "target": 1368672,
+          "symbols": [
+            "__errno_location@plt"
+          ]
+        },
+        {
+          "instruction": 3594917,
+          "kind": "call",
+          "target": 1362992,
+          "symbols": [
+            "_ZNSolsEi@plt"
+          ]
+        },
+        {
+          "instruction": 3594968,
+          "kind": "call",
+          "target": 1364752,
+          "symbols": [
+            "_ZNSo3putEc@plt"
+          ]
+        },
+        {
+          "instruction": 3594976,
+          "kind": "call",
+          "target": 1364176,
+          "symbols": [
+            "_ZNSo5flushEv@plt"
+          ]
+        },
+        {
+          "instruction": 3595007,
+          "kind": "call",
+          "target": 1361296,
+          "symbols": [
+            "_ZSt19__throw_logic_errorPKc@plt"
+          ]
+        },
+        {
+          "instruction": 3595025,
+          "kind": "jmp",
+          "target": 3595067,
+          "symbols": []
+        },
+        {
+          "instruction": 3595044,
+          "kind": "call",
+          "target": 1357280,
+          "symbols": [
+            "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm@plt"
+          ]
+        },
+        {
+          "instruction": 3595073,
+          "kind": "call",
+          "target": 1361424,
+          "symbols": [
+            "memcpy@plt"
+          ]
+        },
+        {
+          "instruction": 3595088,
+          "kind": "jmp",
+          "target": 3594202,
+          "symbols": []
+        },
+        {
+          "instruction": 3595128,
+          "kind": "call",
+          "target": 1359696,
+          "symbols": [
+            "_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@plt"
+          ]
+        },
+        {
+          "instruction": 3595174,
+          "kind": "call",
+          "target": 1364752,
+          "symbols": [
+            "_ZNSo3putEc@plt"
+          ]
+        },
+        {
+          "instruction": 3595182,
+          "kind": "call",
+          "target": 1364176,
+          "symbols": [
+            "_ZNSo5flushEv@plt"
+          ]
+        },
+        {
+          "instruction": 3595187,
+          "kind": "jmp",
+          "target": 3594534,
+          "symbols": []
+        },
+        {
+          "instruction": 3595212,
+          "kind": "jmp",
+          "target": 3593899,
+          "symbols": []
+        },
+        {
+          "instruction": 3595229,
+          "kind": "call",
+          "target": 1355216,
+          "symbols": [
+            "_ZNKSt5ctypeIcE13_M_widen_initEv@plt"
+          ]
+        },
+        {
+          "instruction": 3595274,
+          "kind": "jmp",
+          "target": 3594853,
+          "symbols": []
+        },
+        {
+          "instruction": 3595283,
+          "kind": "call",
+          "target": 1355216,
+          "symbols": [
+            "_ZNKSt5ctypeIcE13_M_widen_initEv@plt"
+          ]
+        },
+        {
+          "instruction": 3595322,
+          "kind": "jmp",
+          "target": 3594965,
+          "symbols": []
+        },
+        {
+          "instruction": 3595382,
+          "kind": "jmp",
+          "target": 3594738,
+          "symbols": []
+        },
+        {
+          "instruction": 3595395,
+          "kind": "call",
+          "target": 1355216,
+          "symbols": [
+            "_ZNKSt5ctypeIcE13_M_widen_initEv@plt"
+          ]
+        },
+        {
+          "instruction": 3595434,
+          "kind": "jmp",
+          "target": 3595171,
+          "symbols": []
+        },
+        {
+          "instruction": 3595462,
+          "kind": "call",
+          "target": 1359696,
+          "symbols": [
+            "_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@plt"
+          ]
+        },
+        {
+          "instruction": 3595473,
+          "kind": "call",
+          "target": 1362992,
+          "symbols": [
+            "_ZNSolsEi@plt"
+          ]
+        },
+        {
+          "instruction": 3595524,
+          "kind": "call",
+          "target": 1364752,
+          "symbols": [
+            "_ZNSo3putEc@plt"
+          ]
+        },
+        {
+          "instruction": 3595532,
+          "kind": "call",
+          "target": 1364176,
+          "symbols": [
+            "_ZNSo5flushEv@plt"
+          ]
+        },
+        {
+          "instruction": 3595547,
+          "kind": "jmp",
+          "target": 3594534,
+          "symbols": []
+        },
+        {
+          "instruction": 3595570,
+          "kind": "call",
+          "target": 1361424,
+          "symbols": [
+            "memcpy@plt"
+          ]
+        },
+        {
+          "instruction": 3595599,
+          "kind": "jmp",
+          "target": 3594055,
+          "symbols": []
+        },
+        {
+          "instruction": 3595636,
+          "kind": "jmp",
+          "target": 3594055,
+          "symbols": []
+        },
+        {
+          "instruction": 3595651,
+          "kind": "call",
+          "target": 1355216,
+          "symbols": [
+            "_ZNKSt5ctypeIcE13_M_widen_initEv@plt"
+          ]
+        },
+        {
+          "instruction": 3595689,
+          "kind": "jmp",
+          "target": 3595521,
+          "symbols": []
+        },
+        {
+          "instruction": 3595728,
+          "kind": "call",
+          "target": 1359696,
+          "symbols": [
+            "_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@plt"
+          ]
+        },
+        {
+          "instruction": 3595757,
+          "kind": "call",
+          "target": 1354416,
+          "symbols": [
+            "_ZSt16__throw_bad_castv@plt"
+          ]
+        },
+        {
+          "instruction": 3595785,
+          "kind": "jmp",
+          "target": 3595585,
+          "symbols": []
+        },
+        {
+          "instruction": 3595814,
+          "kind": "jmp",
+          "target": 3594738,
+          "symbols": []
+        },
+        {
+          "instruction": 3595826,
+          "kind": "call",
+          "target": 1356432,
+          "symbols": [
+            "_ZSt20__throw_length_errorPKc@plt"
+          ]
+        },
+        {
+          "instruction": 3595831,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 3595836,
+          "kind": "call",
+          "target": 1354416,
+          "symbols": [
+            "_ZSt16__throw_bad_castv@plt"
+          ]
+        },
+        {
+          "instruction": 3595841,
+          "kind": "call",
+          "target": 1354416,
+          "symbols": [
+            "_ZSt16__throw_bad_castv@plt"
+          ]
+        },
+        {
+          "instruction": 3595846,
+          "kind": "call",
+          "target": 1354416,
+          "symbols": [
+            "_ZSt16__throw_bad_castv@plt"
+          ]
+        },
+        {
+          "instruction": 3595851,
+          "kind": "call",
+          "target": 1354416,
+          "symbols": [
+            "_ZSt16__throw_bad_castv@plt"
+          ]
+        },
+        {
+          "instruction": 3595859,
+          "kind": "jmp",
+          "target": 3594676,
+          "symbols": []
+        },
+        {
+          "instruction": 3595871,
+          "kind": "jmp",
+          "target": 1476124,
+          "symbols": [
+            "_Z9load_kmodPKc.cold"
+          ]
+        },
+        {
+          "instruction": 3595883,
+          "kind": "jmp",
+          "target": 1476137,
+          "symbols": []
+        },
+        {
+          "instruction": 3595895,
+          "kind": "jmp",
+          "target": 1476163,
+          "symbols": []
+        },
+        {
+          "instruction": 3595912,
+          "kind": "jmp",
+          "target": 1476147,
+          "symbols": []
+        },
+        {
+          "instruction": 3595924,
+          "kind": "jmp",
+          "target": 1476173,
+          "symbols": []
+        }
+      ],
+      "literals": [
+        {
+          "instruction": 3593772,
+          "address": 23209126,
+          "text": "/proc/self/exe"
+        },
+        {
+          "instruction": 3594772,
+          "address": 23209158,
+          "text": "fd failed "
+        },
+        {
+          "instruction": 3594892,
+          "address": 23209141,
+          "text": "readlink failed "
+        },
+        {
+          "instruction": 3595000,
+          "address": 22851584,
+          "text": "basic_string::_M_construct null not valid"
+        },
+        {
+          "instruction": 3595115,
+          "address": 23209212,
+          "text": "module loaded"
+        },
+        {
+          "instruction": 3595452,
+          "address": 23209191,
+          "text": "init_module failed! "
+        },
+        {
+          "instruction": 3595715,
+          "address": 23209169,
+          "text": "module already loaded"
+        },
+        {
+          "instruction": 3595819,
+          "address": 22864100,
+          "text": "basic_string::append"
+        }
+      ]
+    },
+    {
+      "symbols": [
+        "_Z23initilize_kernel_driverv"
+      ],
+      "address": 3595936,
+      "size": 615,
+      "code_sha256": "3d6f423f00b2bbad2c10d08d8dd605d40c29680b11307f24c5a646c1e8f7e8a3",
+      "calls": [
+        {
+          "instruction": 3596030,
+          "kind": "call",
+          "target": 1353984,
+          "symbols": [
+            "readlink@plt"
+          ]
+        },
+        {
+          "instruction": 3596072,
+          "kind": "call",
+          "target": 1352912,
+          "symbols": [
+            "strncpy@plt"
+          ]
+        },
+        {
+          "instruction": 3596088,
+          "kind": "call",
+          "target": 1368512,
+          "symbols": [
+            "dirname@plt"
+          ]
+        },
+        {
+          "instruction": 3596096,
+          "kind": "call",
+          "target": 1369712,
+          "symbols": [
+            "chdir@plt"
+          ]
+        },
+        {
+          "instruction": 3596127,
+          "kind": "call",
+          "target": 1364704,
+          "symbols": [
+            "sysconf@plt"
+          ]
+        },
+        {
+          "instruction": 3596149,
+          "kind": "call",
+          "target": 1363904,
+          "symbols": [
+            "open@plt"
+          ]
+        },
+        {
+          "instruction": 3596231,
+          "kind": "call",
+          "target": 3593696,
+          "symbols": [
+            "_Z9load_kmodPKc"
+          ]
+        },
+        {
+          "instruction": 3596249,
+          "kind": "call",
+          "target": 3593696,
+          "symbols": [
+            "_Z9load_kmodPKc"
+          ]
+        },
+        {
+          "instruction": 3596271,
+          "kind": "call",
+          "target": 3593696,
+          "symbols": [
+            "_Z9load_kmodPKc"
+          ]
+        },
+        {
+          "instruction": 3596282,
+          "kind": "jmp",
+          "target": 3596122,
+          "symbols": []
+        },
+        {
+          "instruction": 3596295,
+          "kind": "call",
+          "target": 1363008,
+          "symbols": [
+            "perror@plt"
+          ]
+        },
+        {
+          "instruction": 3596300,
+          "kind": "jmp",
+          "target": 3596109,
+          "symbols": []
+        },
+        {
+          "instruction": 3596319,
+          "kind": "call",
+          "target": 1363008,
+          "symbols": [
+            "perror@plt"
+          ]
+        },
+        {
+          "instruction": 3596324,
+          "kind": "jmp",
+          "target": 3596175,
+          "symbols": []
+        },
+        {
+          "instruction": 3596357,
+          "kind": "call",
+          "target": 1367664,
+          "symbols": [
+            "mmap@plt"
+          ]
+        },
+        {
+          "instruction": 3596404,
+          "kind": "call",
+          "target": 1367664,
+          "symbols": [
+            "mmap@plt"
+          ]
+        },
+        {
+          "instruction": 3596428,
+          "kind": "call",
+          "target": 1369280,
+          "symbols": [
+            "getpid@plt"
+          ]
+        },
+        {
+          "instruction": 3596441,
+          "kind": "call",
+          "target": 3593424,
+          "symbols": [
+            "_Z17virt_to_phys_userPmim"
+          ]
+        },
+        {
+          "instruction": 3596450,
+          "kind": "call",
+          "target": 1369280,
+          "symbols": [
+            "getpid@plt"
+          ]
+        },
+        {
+          "instruction": 3596463,
+          "kind": "call",
+          "target": 3593424,
+          "symbols": [
+            "_Z17virt_to_phys_userPmim"
+          ]
+        },
+        {
+          "instruction": 3596479,
+          "kind": "call",
+          "target": 1369280,
+          "symbols": [
+            "getpid@plt"
+          ]
+        },
+        {
+          "instruction": 3596492,
+          "kind": "call",
+          "target": 3593424,
+          "symbols": [
+            "_Z17virt_to_phys_userPmim"
+          ]
+        },
+        {
+          "instruction": 3596520,
+          "kind": "call",
+          "target": 1366288,
+          "symbols": [
+            "read@plt"
+          ]
+        },
+        {
+          "instruction": 3596541,
+          "kind": "jmp",
+          "target": 3596175,
+          "symbols": []
+        },
+        {
+          "instruction": 3596546,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ],
+      "literals": [
+        {
+          "instruction": 3595993,
+          "address": 23209126,
+          "text": "/proc/self/exe"
+        },
+        {
+          "instruction": 3596137,
+          "address": 23209297,
+          "text": "/dev/mydev"
+        },
+        {
+          "instruction": 3596224,
+          "address": 23209241,
+          "text": "peter_kernel.ko"
+        },
+        {
+          "instruction": 3596242,
+          "address": 23209257,
+          "text": "peter_kernel_old.ko"
+        },
+        {
+          "instruction": 3596264,
+          "address": 23209277,
+          "text": "peter_kernel_new.ko"
+        },
+        {
+          "instruction": 3596288,
+          "address": 23209235,
+          "text": "chdir"
+        },
+        {
+          "instruction": 3596312,
+          "address": 23209226,
+          "text": "readlink"
+        }
+      ]
+    },
+    {
+      "symbols": [
+        "_Z7WrmsrTxjjjm"
+      ],
+      "address": 3602032,
+      "size": 168,
+      "code_sha256": "1f20c2a6b3c4d815a61c137b2862447ad1dd9228fb1b4ced83cf1f5cc3bef641",
+      "calls": [
+        {
+          "instruction": 3602105,
+          "kind": "call",
+          "target": 1369888,
+          "symbols": [
+            "__sprintf_chk@plt"
+          ]
+        },
+        {
+          "instruction": 3602120,
+          "kind": "call",
+          "target": 1363904,
+          "symbols": [
+            "open@plt"
+          ]
+        },
+        {
+          "instruction": 3602134,
+          "kind": "call",
+          "target": 1353856,
+          "symbols": [
+            "lseek@plt"
+          ]
+        },
+        {
+          "instruction": 3602156,
+          "kind": "call",
+          "target": 1368208,
+          "symbols": [
+            "write@plt"
+          ]
+        },
+        {
+          "instruction": 3602163,
+          "kind": "call",
+          "target": 1362432,
+          "symbols": [
+            "close@plt"
+          ]
+        },
+        {
+          "instruction": 3602195,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ],
+      "literals": [
+        {
+          "instruction": 3602044,
+          "address": 23209397,
+          "text": "/dev/cpu/%d/msr"
+        }
+      ]
+    },
+    {
+      "symbols": [
+        "_Z5Wrmsrjjj"
+      ],
+      "address": 3602208,
+      "size": 168,
+      "code_sha256": "b03469be78618421a6e2043fd81568ea76a77dcbb4e5e2b890dc101ede8d02b5",
+      "calls": [
+        {
+          "instruction": 3602281,
+          "kind": "call",
+          "target": 1369888,
+          "symbols": [
+            "__sprintf_chk@plt"
+          ]
+        },
+        {
+          "instruction": 3602296,
+          "kind": "call",
+          "target": 1363904,
+          "symbols": [
+            "open@plt"
+          ]
+        },
+        {
+          "instruction": 3602310,
+          "kind": "call",
+          "target": 1353856,
+          "symbols": [
+            "lseek@plt"
+          ]
+        },
+        {
+          "instruction": 3602332,
+          "kind": "call",
+          "target": 1368208,
+          "symbols": [
+            "write@plt"
+          ]
+        },
+        {
+          "instruction": 3602339,
+          "kind": "call",
+          "target": 1362432,
+          "symbols": [
+            "close@plt"
+          ]
+        },
+        {
+          "instruction": 3602371,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ],
+      "literals": [
+        {
+          "instruction": 3602217,
+          "address": 23209397,
+          "text": "/dev/cpu/%d/msr"
+        }
+      ]
+    },
+    {
+      "symbols": [
+        "_Z5RdmsrjPjS_"
+      ],
+      "address": 3602384,
+      "size": 172,
+      "code_sha256": "fad7a6436c8ea2b45234a4ab406d59147fd8dd81d22db616a9fc69bb4c61b994",
+      "calls": [
+        {
+          "instruction": 3602450,
+          "kind": "call",
+          "target": 1369888,
+          "symbols": [
+            "__sprintf_chk@plt"
+          ]
+        },
+        {
+          "instruction": 3602462,
+          "kind": "call",
+          "target": 1363904,
+          "symbols": [
+            "open@plt"
+          ]
+        },
+        {
+          "instruction": 3602475,
+          "kind": "call",
+          "target": 1353856,
+          "symbols": [
+            "lseek@plt"
+          ]
+        },
+        {
+          "instruction": 3602492,
+          "kind": "call",
+          "target": 1366288,
+          "symbols": [
+            "read@plt"
+          ]
+        },
+        {
+          "instruction": 3602499,
+          "kind": "call",
+          "target": 1362432,
+          "symbols": [
+            "close@plt"
+          ]
+        },
+        {
+          "instruction": 3602551,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ],
+      "literals": [
+        {
+          "instruction": 3602393,
+          "address": 23209397,
+          "text": "/dev/cpu/%d/msr"
+        }
+      ]
+    },
+    {
+      "symbols": [
+        "_Z7RdmsrTxjPjS_m"
+      ],
+      "address": 3602560,
+      "size": 172,
+      "code_sha256": "9a1e82f71e39cd5f4904915ef1688e054157d5a3b3cff6599d5bc8c3c46cab99",
+      "calls": [
+        {
+          "instruction": 3602626,
+          "kind": "call",
+          "target": 1369888,
+          "symbols": [
+            "__sprintf_chk@plt"
+          ]
+        },
+        {
+          "instruction": 3602638,
+          "kind": "call",
+          "target": 1363904,
+          "symbols": [
+            "open@plt"
+          ]
+        },
+        {
+          "instruction": 3602651,
+          "kind": "call",
+          "target": 1353856,
+          "symbols": [
+            "lseek@plt"
+          ]
+        },
+        {
+          "instruction": 3602668,
+          "kind": "call",
+          "target": 1366288,
+          "symbols": [
+            "read@plt"
+          ]
+        },
+        {
+          "instruction": 3602675,
+          "kind": "call",
+          "target": 1362432,
+          "symbols": [
+            "close@plt"
+          ]
+        },
+        {
+          "instruction": 3602727,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ],
+      "literals": [
+        {
+          "instruction": 3602572,
+          "address": 23209397,
+          "text": "/dev/cpu/%d/msr"
+        }
+      ]
+    },
+    {
+      "symbols": [
+        "_Z20set_process_affinityi"
+      ],
+      "address": 3603472,
+      "size": 119,
+      "code_sha256": "0fc57f953ce9c55c97d29d1031ff1f298583d1872846b282dfed40bc9a6295b4",
+      "calls": [
+        {
+          "instruction": 3603554,
+          "kind": "call",
+          "target": 1356912,
+          "symbols": [
+            "sched_setaffinity@plt"
+          ]
+        },
+        {
+          "instruction": 3603586,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ],
+      "literals": []
+    },
+    {
+      "symbols": [
+        "_Z15enable_all_ioplv"
+      ],
+      "address": 3603760,
+      "size": 140,
+      "code_sha256": "4bc8ab782c6f8a76e513162352fc5ab9793e6eb174bc5d8c998fcd10dbef83fc",
+      "calls": [
+        {
+          "instruction": 3603775,
+          "kind": "call",
+          "target": 1364704,
+          "symbols": [
+            "sysconf@plt"
+          ]
+        },
+        {
+          "instruction": 3603786,
+          "kind": "call",
+          "target": 1357296,
+          "symbols": [
+            "__sched_cpualloc@plt"
+          ]
+        },
+        {
+          "instruction": 3603814,
+          "kind": "call",
+          "target": 1354016,
+          "symbols": [
+            "memset@plt"
+          ]
+        },
+        {
+          "instruction": 3603827,
+          "kind": "call",
+          "target": 1363248,
+          "symbols": [
+            "sched_getaffinity@plt"
+          ]
+        },
+        {
+          "instruction": 3603832,
+          "kind": "jmp",
+          "target": 3603868,
+          "symbols": []
+        },
+        {
+          "instruction": 3603845,
+          "kind": "call",
+          "target": 3603472,
+          "symbols": [
+            "_Z20set_process_affinityi"
+          ]
+        },
+        {
+          "instruction": 3603859,
+          "kind": "call",
+          "target": 10999504,
+          "symbols": [
+            "my_iopl"
+          ]
+        },
+        {
+          "instruction": 3603874,
+          "kind": "call",
+          "target": 1369504,
+          "symbols": [
+            "__sched_cpucount@plt"
+          ]
+        },
+        {
+          "instruction": 3603886,
+          "kind": "call",
+          "target": 1362416,
+          "symbols": [
+            "__sched_cpufree@plt"
+          ]
+        },
+        {
+          "instruction": 3603895,
+          "kind": "jmp",
+          "target": 3603600,
+          "symbols": [
+            "_Z16set_all_affinityv"
+          ]
+        }
+      ],
+      "literals": []
+    },
+    {
+      "symbols": [
+        "_Z7getmoboB5cxx11v"
+      ],
+      "address": 3812336,
+      "size": 230,
+      "code_sha256": "51e29aa3292fd781e4bccde37d4465bffa2b2d237e18befa0769a1d6e228c1e5",
+      "calls": [
+        {
+          "instruction": 3812380,
+          "kind": "call",
+          "target": 3814288,
+          "symbols": [
+            "_Z15test_dmi_get_mbi"
+          ]
+        },
+        {
+          "instruction": 3812404,
+          "kind": "call",
+          "target": 1354576,
+          "symbols": [
+            "strlen@plt"
+          ]
+        },
+        {
+          "instruction": 3812485,
+          "kind": "jmp",
+          "target": 3812525,
+          "symbols": []
+        },
+        {
+          "instruction": 3812504,
+          "kind": "call",
+          "target": 1357280,
+          "symbols": [
+            "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm@plt"
+          ]
+        },
+        {
+          "instruction": 3812534,
+          "kind": "call",
+          "target": 1361424,
+          "symbols": [
+            "memcpy@plt"
+          ]
+        },
+        {
+          "instruction": 3812547,
+          "kind": "jmp",
+          "target": 3812437,
+          "symbols": []
+        },
+        {
+          "instruction": 3812549,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 3812561,
+          "kind": "call",
+          "target": 1361296,
+          "symbols": [
+            "_ZSt19__throw_logic_errorPKc@plt"
+          ]
+        }
+      ],
+      "literals": [
+        {
+          "instruction": 3812554,
+          "address": 22851584,
+          "text": "basic_string::_M_construct null not valid"
+        }
+      ]
+    },
+    {
+      "symbols": [
+        "_Z10is_it_asusv"
+      ],
+      "address": 3874816,
+      "size": 659,
+      "code_sha256": "64ed95d5123221991a45161399b13fdbe92f988474a920a095cd9e7a40cbb720",
+      "calls": [
+        {
+          "instruction": 3874861,
+          "kind": "call",
+          "target": 3812336,
+          "symbols": [
+            "_Z7getmoboB5cxx11v"
+          ]
+        },
+        {
+          "instruction": 3874879,
+          "kind": "call",
+          "target": 1355328,
+          "symbols": [
+            "_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE4findEPKcmm@plt"
+          ]
+        },
+        {
+          "instruction": 3874919,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 3874980,
+          "kind": "call",
+          "target": 1355328,
+          "symbols": [
+            "_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE4findEPKcmm@plt"
+          ]
+        },
+        {
+          "instruction": 3875011,
+          "kind": "call",
+          "target": 1355328,
+          "symbols": [
+            "_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE4findEPKcmm@plt"
+          ]
+        },
+        {
+          "instruction": 3875043,
+          "kind": "call",
+          "target": 1355328,
+          "symbols": [
+            "_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE4findEPKcmm@plt"
+          ]
+        },
+        {
+          "instruction": 3875075,
+          "kind": "call",
+          "target": 1355328,
+          "symbols": [
+            "_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE4findEPKcmm@plt"
+          ]
+        },
+        {
+          "instruction": 3875107,
+          "kind": "call",
+          "target": 1355328,
+          "symbols": [
+            "_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE4findEPKcmm@plt"
+          ]
+        },
+        {
+          "instruction": 3875127,
+          "kind": "call",
+          "target": 3812576,
+          "symbols": [
+            "_Z13getmobo_brandB5cxx11v"
+          ]
+        },
+        {
+          "instruction": 3875248,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 3875266,
+          "kind": "call",
+          "target": 1355328,
+          "symbols": [
+            "_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE4findEPKcmm@plt"
+          ]
+        },
+        {
+          "instruction": 3875277,
+          "kind": "call",
+          "target": 4439056,
+          "symbols": [
+            "_Z8checkvrmv"
+          ]
+        },
+        {
+          "instruction": 3875288,
+          "kind": "jmp",
+          "target": 3874896,
+          "symbols": []
+        },
+        {
+          "instruction": 3875309,
+          "kind": "call",
+          "target": 1355328,
+          "symbols": [
+            "_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE4findEPKcmm@plt"
+          ]
+        },
+        {
+          "instruction": 3875333,
+          "kind": "call",
+          "target": 1355328,
+          "symbols": [
+            "_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE4findEPKcmm@plt"
+          ]
+        },
+        {
+          "instruction": 3875347,
+          "kind": "jmp",
+          "target": 3874896,
+          "symbols": []
+        },
+        {
+          "instruction": 3875374,
+          "kind": "call",
+          "target": 1361424,
+          "symbols": [
+            "memcpy@plt"
+          ]
+        },
+        {
+          "instruction": 3875402,
+          "kind": "jmp",
+          "target": 3875217,
+          "symbols": []
+        },
+        {
+          "instruction": 3875435,
+          "kind": "jmp",
+          "target": 3875217,
+          "symbols": []
+        },
+        {
+          "instruction": 3875456,
+          "kind": "jmp",
+          "target": 3875388,
+          "symbols": []
+        },
+        {
+          "instruction": 3875458,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 3875470,
+          "kind": "jmp",
+          "target": 1485914,
+          "symbols": [
+            "_Z10is_it_asusv.cold"
+          ]
+        }
+      ],
+      "literals": [
+        {
+          "instruction": 3874826,
+          "address": 22877951,
+          "text": "ASUS"
+        },
+        {
+          "instruction": 3874960,
+          "address": 23214788,
+          "text": "ROG"
+        },
+        {
+          "instruction": 3874991,
+          "address": 23214792,
+          "text": "STRIX"
+        },
+        {
+          "instruction": 3875033,
+          "address": 23214798,
+          "text": "MANGO"
+        },
+        {
+          "instruction": 3875065,
+          "address": 23214808,
+          "text": "OHTANI"
+        },
+        {
+          "instruction": 3875097,
+          "address": 23214804,
+          "text": "GNR"
+        }
+      ]
+    },
+    {
+      "symbols": [
+        "_Z14en_ec_decodingv"
+      ],
+      "address": 4955696,
+      "size": 200,
+      "code_sha256": "0c1de22c91c5426a3033bf027279a2ad5baa44cca008ade5a25534eb9953d2f3",
+      "calls": [
+        {
+          "instruction": 4955742,
+          "kind": "call",
+          "target": 3850544,
+          "symbols": [
+            "_Z17FindPciDeviceByIdtth"
+          ]
+        },
+        {
+          "instruction": 4955770,
+          "kind": "call",
+          "target": 3852144,
+          "symbols": [
+            "_Z18ReadPciConfigDwordjj"
+          ]
+        },
+        {
+          "instruction": 4955789,
+          "kind": "call",
+          "target": 3852496,
+          "symbols": [
+            "_Z18WritePciConfigBytejjh"
+          ]
+        },
+        {
+          "instruction": 4955804,
+          "kind": "call",
+          "target": 4929008,
+          "symbols": [
+            "_ZN3SIOC1Ev",
+            "_ZN3SIOC2Ev"
+          ]
+        },
+        {
+          "instruction": 4955822,
+          "kind": "call",
+          "target": 4928832,
+          "symbols": [
+            "_ZN3SIO12Rd_base_dataEhh"
+          ]
+        },
+        {
+          "instruction": 4955842,
+          "kind": "call",
+          "target": 4928720,
+          "symbols": [
+            "_ZN3SIO12Wr_base_dataEhhh"
+          ]
+        },
+        {
+          "instruction": 4955850,
+          "kind": "call",
+          "target": 4928512,
+          "symbols": [
+            "_ZN3SIOD2Ev",
+            "_ZN3SIOD1Ev"
+          ]
+        },
+        {
+          "instruction": 4955879,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 4955891,
+          "kind": "jmp",
+          "target": 1523786,
+          "symbols": [
+            "_Z14en_ec_decodingv.cold"
+          ]
+        }
+      ],
+      "literals": []
+    },
+    {
+      "symbols": [
+        "_ZN10MainWindowC1EP7QWidget",
+        "_ZN10MainWindowC2EP7QWidget"
+      ],
+      "address": 9322864,
+      "size": 4140,
+      "code_sha256": "e5779c007a56b79f5caec587b90eeff6b00aac70e0a25a1a7f31f0e5a0c7d60e",
+      "calls": [
+        {
+          "instruction": 9322906,
+          "kind": "call",
+          "target": 14588832,
+          "symbols": [
+            "_ZN11QMainWindowC1EP7QWidget6QFlagsIN2Qt10WindowTypeEE",
+            "_ZN11QMainWindowC2EP7QWidget6QFlagsIN2Qt10WindowTypeEE"
+          ]
+        },
+        {
+          "instruction": 9322948,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 9322957,
+          "kind": "call",
+          "target": 3603760,
+          "symbols": [
+            "_Z15enable_all_ioplv"
+          ]
+        },
+        {
+          "instruction": 9322967,
+          "kind": "call",
+          "target": 1363328,
+          "symbols": [
+            "iopl@plt"
+          ]
+        },
+        {
+          "instruction": 9322976,
+          "kind": "call",
+          "target": 10999248,
+          "symbols": [
+            "call_get_uid"
+          ]
+        },
+        {
+          "instruction": 9322981,
+          "kind": "call",
+          "target": 10999296,
+          "symbols": [
+            "call_get_gid"
+          ]
+        },
+        {
+          "instruction": 9322988,
+          "kind": "call",
+          "target": 10999632,
+          "symbols": [
+            "call_set_uid"
+          ]
+        },
+        {
+          "instruction": 9322995,
+          "kind": "call",
+          "target": 10999760,
+          "symbols": [
+            "call_set_gid"
+          ]
+        },
+        {
+          "instruction": 9323000,
+          "kind": "call",
+          "target": 10999344,
+          "symbols": [
+            "call_get_ppid"
+          ]
+        },
+        {
+          "instruction": 9323011,
+          "kind": "call",
+          "target": 10999440,
+          "symbols": [
+            "call_get_pgid"
+          ]
+        },
+        {
+          "instruction": 9323021,
+          "kind": "call",
+          "target": 10999696,
+          "symbols": [
+            "call_set_pgid"
+          ]
+        },
+        {
+          "instruction": 9323037,
+          "kind": "call",
+          "target": 9308640,
+          "symbols": [
+            "_ZN13Ui_MainWindow7setupUiEP11QMainWindow"
+          ]
+        },
+        {
+          "instruction": 9323054,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 9323073,
+          "kind": "call",
+          "target": 13842432,
+          "symbols": [
+            "_ZN7QWidget14setWindowTitleERK7QString"
+          ]
+        },
+        {
+          "instruction": 9323111,
+          "kind": "call",
+          "target": 4955664,
+          "symbols": [
+            "_Z12check_if_amdv"
+          ]
+        },
+        {
+          "instruction": 9323124,
+          "kind": "call",
+          "target": 3640224,
+          "symbols": [
+            "_Z8isit_arlv"
+          ]
+        },
+        {
+          "instruction": 9323138,
+          "kind": "call",
+          "target": 3736592,
+          "symbols": [
+            "_Z11isit_gnr_spv"
+          ]
+        },
+        {
+          "instruction": 9323152,
+          "kind": "call",
+          "target": 3640112,
+          "symbols": [
+            "_Z8isit_adlv"
+          ]
+        },
+        {
+          "instruction": 9323165,
+          "kind": "call",
+          "target": 3639968,
+          "symbols": [
+            "_Z8isit_nvlv"
+          ]
+        },
+        {
+          "instruction": 9323179,
+          "kind": "call",
+          "target": 3874816,
+          "symbols": [
+            "_Z10is_it_asusv"
+          ]
+        },
+        {
+          "instruction": 9323204,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 9323225,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 9323255,
+          "kind": "call",
+          "target": 15301280,
+          "symbols": [
+            "_ZN11QMessageBox7warningEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_"
+          ]
+        },
+        {
+          "instruction": 9323328,
+          "kind": "call",
+          "target": 1365616,
+          "symbols": [
+            "exit@plt"
+          ]
+        },
+        {
+          "instruction": 9323336,
+          "kind": "call",
+          "target": 2220688,
+          "symbols": [
+            "_Z10is_pheonixv"
+          ]
+        },
+        {
+          "instruction": 9323341,
+          "kind": "call",
+          "target": 2250000,
+          "symbols": [
+            "_Z10is_granitev"
+          ]
+        },
+        {
+          "instruction": 9323355,
+          "kind": "call",
+          "target": 2250080,
+          "symbols": [
+            "_Z10is_shimadav"
+          ]
+        },
+        {
+          "instruction": 9323369,
+          "kind": "call",
+          "target": 2250160,
+          "symbols": [
+            "_Z6is_gptv"
+          ]
+        },
+        {
+          "instruction": 9323391,
+          "kind": "call",
+          "target": 2215920,
+          "symbols": [
+            "_Z10set_to_gptv"
+          ]
+        },
+        {
+          "instruction": 9323396,
+          "kind": "jmp",
+          "target": 9323179,
+          "symbols": []
+        },
+        {
+          "instruction": 9323408,
+          "kind": "call",
+          "target": 4955664,
+          "symbols": [
+            "_Z12check_if_amdv"
+          ]
+        },
+        {
+          "instruction": 9323449,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9323467,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9323490,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9323508,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9323531,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9323549,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9323572,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9323590,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9323613,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9323631,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9323654,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9323672,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9323695,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9323713,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9323736,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9323754,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9323777,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9323795,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9323818,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9323836,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9323859,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9323877,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9323900,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9323923,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9323941,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9323959,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9323982,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324000,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324023,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324041,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324060,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324074,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324094,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324109,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324129,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324144,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324164,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324179,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324199,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324214,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324234,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324249,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324269,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324284,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324304,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324319,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324342,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324360,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324383,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324401,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324424,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324442,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324465,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324483,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324506,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324524,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324547,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324565,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324588,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324606,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324629,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324647,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324670,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324688,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324736,
+          "kind": "call",
+          "target": 14682192,
+          "symbols": [
+            "_ZNK5QMenu10menuActionEv"
+          ]
+        },
+        {
+          "instruction": 9324746,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324769,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324787,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324805,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324828,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324846,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324869,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324887,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9324910,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324933,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324953,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324973,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9324996,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325019,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325039,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325062,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325085,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325108,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325131,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325154,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325177,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325200,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325223,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325246,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325269,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325287,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325302,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325317,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325335,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325353,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325368,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325386,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325404,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325422,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325440,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325458,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325476,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325494,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325512,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325530,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325548,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325571,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325589,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325612,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325630,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325653,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325671,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325694,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325712,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325732,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325747,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325767,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325782,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325802,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325817,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325837,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325852,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325875,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325893,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325916,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325934,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325957,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9325975,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9325998,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326021,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326044,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326062,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326080,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326098,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326121,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326139,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326159,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326174,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326186,
+          "kind": "call",
+          "target": 3812336,
+          "symbols": [
+            "_Z7getmoboB5cxx11v"
+          ]
+        },
+        {
+          "instruction": 9326208,
+          "kind": "call",
+          "target": 1355328,
+          "symbols": [
+            "_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE4findEPKcmm@plt"
+          ]
+        },
+        {
+          "instruction": 9326244,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 9326288,
+          "kind": "call",
+          "target": 4955696,
+          "symbols": [
+            "_Z14en_ec_decodingv"
+          ]
+        },
+        {
+          "instruction": 9326293,
+          "kind": "jmp",
+          "target": 9323165,
+          "symbols": []
+        },
+        {
+          "instruction": 9326314,
+          "kind": "jmp",
+          "target": 9323431,
+          "symbols": []
+        },
+        {
+          "instruction": 9326330,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 9326359,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 9326366,
+          "kind": "call",
+          "target": 1365616,
+          "symbols": [
+            "exit@plt"
+          ]
+        },
+        {
+          "instruction": 9326386,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 9326391,
+          "kind": "jmp",
+          "target": 9323111,
+          "symbols": []
+        },
+        {
+          "instruction": 9326418,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326436,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326441,
+          "kind": "jmp",
+          "target": 9326223,
+          "symbols": []
+        },
+        {
+          "instruction": 9326457,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326480,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326498,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326521,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326544,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326564,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326587,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326610,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326633,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326656,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326679,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326702,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326725,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326748,
+          "kind": "call",
+          "target": 13860208,
+          "symbols": [
+            "_ZN7QWidget12removeActionEP7QAction"
+          ]
+        },
+        {
+          "instruction": 9326766,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326781,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326799,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326817,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326835,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326853,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326871,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326889,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326907,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326925,
+          "kind": "call",
+          "target": 13659600,
+          "symbols": [
+            "_ZN7QAction10setVisibleEb"
+          ]
+        },
+        {
+          "instruction": 9326934,
+          "kind": "jmp",
+          "target": 9324713,
+          "symbols": []
+        },
+        {
+          "instruction": 9326939,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 9326951,
+          "kind": "jmp",
+          "target": 1740788,
+          "symbols": [
+            "_ZN10MainWindowC2EP7QWidget.cold"
+          ]
+        },
+        {
+          "instruction": 9326963,
+          "kind": "jmp",
+          "target": 1740812,
+          "symbols": []
+        },
+        {
+          "instruction": 9326975,
+          "kind": "jmp",
+          "target": 1740833,
+          "symbols": []
+        },
+        {
+          "instruction": 9326987,
+          "kind": "jmp",
+          "target": 1740823,
+          "symbols": []
+        },
+        {
+          "instruction": 9326999,
+          "kind": "jmp",
+          "target": 1740796,
+          "symbols": []
+        }
+      ],
+      "literals": [
+        {
+          "instruction": 9323047,
+          "address": 23472738,
+          "text": "Work Tool"
+        },
+        {
+          "instruction": 9323197,
+          "address": 23380219,
+          "text": "Not supported!"
+        },
+        {
+          "instruction": 9323214,
+          "address": 23260004,
+          "text": "Error"
+        },
+        {
+          "instruction": 9326198,
+          "address": 23472748,
+          "text": "EDITION 20"
+        }
+      ]
+    }
+  ],
+  "total_imports": 1195,
+  "options": {
+    "el8_focus": true,
+    "site_limit": 8,
+    "functions": "^(main|_start|_ZN10MainWindowC[12]EP7QWidget|_Z23initilize_kernel_driverv|_Z9load_kmodPKc|_Z5RdmsrjPjS_|_Z5Wrmsrjjj|_Z7RdmsrTxjPjS_m|_Z7WrmsrTxjjjm|_Z15enable_all_ioplv|_Z10is_it_asusv|_Z7getmoboB5cxx11v|_Z14en_ec_decodingv|_Z20set_process_affinityi)$"
+  }
+}

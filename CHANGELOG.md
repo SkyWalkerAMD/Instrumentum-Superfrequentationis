@@ -2,6 +2,25 @@
 
 ## 2.0.1 — 2026-09-30（未发布，十目标 CI 通过，待真机验收和后续面板恢复）
 
+### 原版 ELF 的 EL8–EL10 兼容性继续分析
+
+- 按作者要求回到原 Linux ELF。新增只读 elf-runtime-audit.py，按 GNU 版本表、PLT/GOT
+  重定位与 Capstone 解码定位运行库依赖。42,115 个函数范围、1,195 个动态导入、0 个解码缺口；
+  docs/validation/legacy-el-runtime.json 保存 111 个相关导入及 14 个启动/硬件函数证据。
+- 把 hypot@GLIBC_2.35 追到静态 Qt 的 QLineF::length/unitVector；把 EL8 的
+  GLIBCXX_3.4.26/28 追到 filesystem 和 Qt PMR，3.4.29 异常函数有 1,087 处静态引用。
+  因此不采用替换 soname、改版本字符串或只补 hypot 的方案。
+- 原版通过 /proc/self/exe 定位模块和 chdir；新增私有加载器与原 ELF 同目录的运行库实验，
+  从 Ubuntu22.04 包取得配套加载器、glibc 与完整依赖闭包，不改原 ELF、不写宿主系统库，
+  不将 LD_LIBRARY_PATH 传给子程序。记录依赖闭包、库哈希、包版本和运行中 maps。
+- 新增独立 legacy EL runtime diagnostic 手动矩阵：Rocky8/9 Xvfb、Rocky10 Mutter/Xwayland，
+  UID10001、无 capabilities/设备/网络；固定旧 ELF 哈希，草稿附件鉴权取样且不公开原文件。
+  Work Tool 持续可见才通过，对话框不冒充成功。初始提交云端待跑，结果追加 docs 与本日志。
+- 新增真实 ELF fixture 测试 PLT、CET PLT、-fno-plt GOT 及版本化数据导入；协议和生产 GUI
+  均未改动，既有十目标门禁继续保留。详细路径和限制见 docs/legacy-el-compatibility.md。
+- 原 ELF 的 GitHub 草稿附件上传被自动审批拦截，文件尚未上传；已询问作者该具体文件的
+  外传授权。在答复前仅继续源码/文本证据和分析工具回归，不绕过拦截传送原文件。
+
 ### Windows 包取得与 GUI 第一阶段重构
 
 - c48a38f / run 36670288030 首次完整全绿，2026-09-30 04:53:35 UTC 完成：23 个 job 成功，

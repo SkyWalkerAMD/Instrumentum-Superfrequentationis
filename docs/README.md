@@ -16,6 +16,7 @@
 - [平台面板恢复](platform-recovery.md)：作者已选择继续；23 个原面板类的证据与待补硬件/字段规格。
 - [AMD PStates 只读页](amd-pstates.md)：CPU/能力探测、配置频率、原始值及旧算法核对边界。
 - [EL8 静态 Qt SDK](qt-sdk.md)：成功 run、产物哈希、依赖配置及复用边界。
+- [原版 ELF 的 EL8–EL10 兼容性](legacy-el-compatibility.md)：继续反汇编的调用点证据和私有运行库实验，区别于重构基础版。
 - [云端接入状态](cloud-access.md)：用户要求 OpenAI 托管云端；当前工具/CLI 的实际核实结果。
 - [Linux Docker 执行指南](cloud-build.md)：独立 runner、日志和失败判定。
 - [真机验收清单](hardware-acceptance.md)：安装、MOK、insmod/modprobe、MMIO 对拍、GUI。

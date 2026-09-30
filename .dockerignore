@@ -1,0 +1,9 @@
+# The diagnostic display image needs only these sources. In particular, do
+# not send original binaries, SDKs, keys, or previous artifacts as build context.
+**
+!port/
+!port/ci/
+!port/ci/window-probe.c
+!port/legacy/
+!port/legacy/Containerfile.el
+!port/legacy/smoke.py

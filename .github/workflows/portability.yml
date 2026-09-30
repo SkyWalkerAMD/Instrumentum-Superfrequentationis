@@ -26,6 +26,10 @@ jobs:
               f.write('targets=' + json.dumps({'include': targets}) + '\n')
           PY
       - run: python3 -m unittest discover -s port/tests -p 'test_*.py' -v
+      - name: Verify ELF disassembler against PLT, CET and GOT fixtures
+        run: |
+          python3 -m pip install --target build/reference-tools -r analysis/tools/requirements-reference.txt
+          PYTHONPATH="$PWD/build/reference-tools" python3 -m unittest discover -s analysis/tests -v
       - run: python3 port/ci/validate-local.py
       - run: find port -name '*.sh' -print0 | xargs -0 -n1 bash -n
   kernel:
