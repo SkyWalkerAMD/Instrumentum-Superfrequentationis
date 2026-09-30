@@ -28,6 +28,8 @@ push、pull_request 和 workflow_dispatch 触发 portability 工作流。
 
 上传的 Actions artifacts 保留 7 天；发布验收所需的日志/包应另行归档到正式交付记录。
 GUI 源码未出现前，先收敛十目标 kernel 阶段，保留完整工作流的失败状态。
+另提供手动 `Qt SDK diagnostic` 工作流，独立验证 EL8 静态 Qt 工具链并保留 SDK/配置/日志；
+它调用同一 `in-container.sh sdk el8`，不以 SDK 构建代替 GUI 窗口或总门禁。
 实际 run URL、提交 SHA、目标结果和修复记录写入 [Actions 实测记录](actions-debugging.md)、
 [验证状态](verification-status.md) 与根 CHANGELOG，不把配置文件当成运行成功证据。
 

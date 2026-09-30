@@ -9,7 +9,7 @@ out=/out
 mkdir -p "$out"
 case "$action" in
     runtime|kernel) mode=$action;;
-    baseline|desktop) mode=build;;
+    sdk|baseline|desktop) mode=build;;
     *) echo 'unknown action' >&2; exit 2;;
 esac
 cat /etc/os-release > "$out/os-release-$action.txt"
@@ -49,6 +49,13 @@ verify_dkms() {
     done
     [ "$n" -gt 0 ]
 }
+build_sdk() {
+    test "$target" = el8
+    bash port/ci/build-qt-el8.sh 2>&1 | tee "$out/qt-build.log"
+    tar -czf "$out/qt-sdk.tar.gz" -C /opt octool-qt
+    sha256sum "$out/qt-sdk.tar.gz" > "$out/qt-sdk.sha256"
+    cp /opt/octool-qt/licenses/config.summary "$out/qt-config-summary.txt"
+}
 case "$action" in
     kernel)
         make -C port/hal
@@ -59,13 +66,17 @@ case "$action" in
         install_packages
         verify_dkms
         ;;
+    sdk)
+        # Toolchain validation can proceed while GUI recovery is in progress.
+        # This action does not satisfy the GUI or complete-matrix gates.
+        build_sdk
+        ;;
     baseline)
         test "$target" = el8
         python3 port/tools/build_gui.py --preflight
-        bash port/ci/build-qt-el8.sh
+        build_sdk
         python3 port/tools/build_gui.py --stage "$out/gui-stage"
         python3 port/tools/check_elf.py "$out/gui-stage/opt/octool/bin/octool-real" > "$out/abi.json"
-        tar -czf "$out/qt-sdk.tar.gz" -C /opt octool-qt
         tar -czf "$out/gui-stage.tar.gz" -C "$out/gui-stage" .
         ;;
     desktop)

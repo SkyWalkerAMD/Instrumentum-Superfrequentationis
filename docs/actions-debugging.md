@@ -49,6 +49,13 @@ Ubuntu20.04 使用的工具链未触发该问题。补 flags 本身并未修复�
 现在用独立 `class_create_probe.c` 编译两种签名，避免在 Make 字符串内生成 C 源码。
 原生包和手工 DKMS 安装都必须携带该探测文件；它不会链接到最终模块。
 
+第三轮 [run 36659298597](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36659298597)
+（e530b51）中 Debian11、Ubuntu20.04 已通过；其余目标的 C 编译阶段也能探测正确签名，
+但 modpost 重新读取 Kbuild 时没有 try-run，误走“两个探测都失败”。
+现在只在 Makefile.build 的 C 编译上下文执行探测，clean/modpost 只读取对象列表。
+这是构建阶段检测，没有按内核版本分支。EL9 的 5.14 vendor 内核实测为单参数签名，
+进一步说明不能从上游版本号推断该 API。
+
 ## Debian11 安全源断档
 
 首轮 apt 获取 live `bullseye-security` 索引成功，但 perl、python、glibc、linux-libc-dev 等包 404。

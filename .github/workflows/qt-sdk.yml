@@ -1,0 +1,28 @@
+name: Qt SDK diagnostic
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: qt-sdk-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  el8-sdk:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p build/qt-sdk-artifacts
+          docker pull rockylinux:8
+          docker image inspect rockylinux:8 > build/qt-sdk-artifacts/container-image.json
+          docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -v "$PWD:/src" \
+            -v "$PWD/build/qt-sdk-artifacts:/out" -w /src \
+            rockylinux:8 bash port/ci/in-container.sh sdk el8
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: el8-qt-sdk-diagnostic
+          path: build/qt-sdk-artifacts/
+          if-no-files-found: error
+          retention-days: 7

@@ -4,6 +4,14 @@
 
 ### 仓库改名与首轮真实 Linux CI 修复
 
+- 第三轮 e530b51 / run 36659298597：Debian11 和 Ubuntu20.04 kernel job 通过；
+  其他目标 class_create 在 C 编译阶段通过，但 modpost 重读 Kbuild 时没有 try-run，触发误判。
+  探测限定到 Makefile.build 的实际 C 编译阶段；clean/modpost 不执行探测。
+  EL9 5.14 vendor 内核实际单参数，维持能力检测，不引入版本号分支。
+- 用户给出的 Windows 包仍为 F:\OpenAI\Codex\project\octool\OCTool0528.zip；
+  再次 Get-Item/目录枚举确认当前仍不存在。原 GUI 接口恢复还不能开始。
+  新增手动 Qt SDK diagnostic 工作流，允许在恢复 GUI 期间独立验证 EL8 静态 Qt；
+  与正常 baseline 共用构建函数，SDK 成功不计为 GUI 或完整矩阵成功。
 - 用户确认原 Linux GUI 源码已丢失，授权先检查 Windows 版本，必要时重构 GUI；
   Windows 包的实际路径仍待提供。ABI/MMIO 保持兼容，未知硬件字段/单位仍不得推断。
 - 第二轮 f2c494b / run 36658900518：Debian11 官方快照安装和离线测试通过；

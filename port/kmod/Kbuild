@@ -1,8 +1,9 @@
 obj-m := octool_hwio.o
 clean-files += .octool-class-1.log .octool-class-2.log
 
-# Kbuild also includes this file from Makefile.clean without a compiler setup.
-ifeq ($(filter Makefile.clean %/Makefile.clean,$(MAKEFILE_LIST)),)
+# Kbuild also reads this file during clean/modpost, without compiler helpers.
+# Probe only while Makefile.build prepares actual C compilation.
+ifneq ($(filter Makefile.build %/Makefile.build,$(MAKEFILE_LIST)),)
 # Compile with this kernel's flags and generated headers, including Debian's
 # split common/architecture headers. Never infer this API from kernel versions.
 # Makefile.lib normally adds these per-object flags after including this file.
