@@ -3,7 +3,7 @@
 ## 1. 目标与证据要求
 
 单一矩阵入口是 `port/ci/targets.json`。架构为 x86_64/amd64。
-以下为构建矩阵配置。十目标模块/离线测试/DKMS 包生命周期已实测通过；GUI 尚待恢复。
+以下为构建矩阵配置。十目标模块/离线测试/DKMS 包生命周期已实测通过；基础版 GUI 已实现。
 具体提交、kernel release 和实际状态见 [verification-status.md](verification-status.md)。
 
 | 目标 ID | 构建镜像 | 头文件包 | 无头 GUI 后端 | 包格式 |
@@ -31,24 +31,24 @@ kernel release、modinfo 和构建日志。发布时保存这些 artifacts，并
 
 ## 2. 源码接入
 
-将恢复或重构后的 GUI 源码保存在本源码树内，编辑 `port/gui/build.json`；
-作者已确认原 Linux 源码丢失，恢复边界见 [GUI 恢复说明](gui-recovery.md)：
+作者确认原 Linux 源码丢失后，已按选择重构基础版 `gui/octool.pro`，详细范围见
+[第一阶段](gui-phase1.md)。`port/gui/build.json` 管理以下真实构建输入，后续扩展按实际工程修改：
 
 - `project`：实际 qmake `.pro` 的仓库相对路径。
 - `binary`：shadow build 输出目录中的 ELF 相对路径。
-- `qmake_args`：原项目所需的附加参数，以数组保存，不做 shell 字符串拼接。
+- `test_project`：`gui/tests/regression.pro`，每次 GUI 编译后运行离线 Qt 控件/传输回归。
+- `qmake_args`：项目所需附加参数，以数组保存，不做 shell 字符串拼接。
 - `resources`：需要分发的额外资源路径，当前复制到 `/opt/octool/share/<原路径>`。
   必须根据真实 GUI 的资源查找方式核对后配置。
-- `license_file`：作者提供的分发许可文件。
-- `window_title_regex`：真实主窗口标题；默认 `(?i)octool` 仅为待核对配置。
+- `license_file`：新 GUI 的 GPLv2 文件 `gui/LICENSE`，与所链接 HAL 许可一致。
+- `window_title_regex`：匹配当前真实主窗口 `OCTool — Basic information and raw registers`。
 
 ```sh
 python3 port/tools/build_gui.py --preflight
 ```
 
-此检查在源码或许可证缺失时退出 2。没有自动创建空工程，没有用旧二进制补位。
-构建入口目前支持已知 Qt5 qmake 工程形态；拿到源码后如实际为 CMake，需据源码增加对应入口。
-不应猜测 `.pro` 文件名、第三方库或 GUI 硬件降级行为。
+此检查当前通过；源码或许可证缺失时仍退出 2。普通用户无模块时可查看基础信息，
+显式读取失败会显示实际错误，启动不会自动访问未知寄存器。
 
 ## 3. 内核构建与探测
 
@@ -75,8 +75,10 @@ EL 容器按 /usr/src/kernels 中的实际配置建立 build 链接；Debian11 �
 具体原因与修复证据见 [Actions 实测记录](actions-debugging.md)。
 
 DKMS 的源布局保留 `kmod/`、`abi/` 两级目录，模块包装头只引用 canonical ABI。
-`port/abi/octool_hwio_abi.h`、HAL 两个文件与输入包逐字节相同。
-没有修改 MMIO 操作码、96 字节请求、邮箱布局或模块 dispatch。
+`port/abi/octool_hwio_abi.h` 和 HAL 头文件与输入包逐字节相同。
+HAL C 修复了 CPU 编号被设备令牌覆盖及短传输误报成功；模块只调整非 MMIO 命令的
+无效 CPU 处理，返回 EINVAL，不回退到当前 CPU。MMIO 操作码、96 字节请求、邮箱和
+MMIO dispatch 不变。修正依据与新 HAL 哈希见 [第一阶段记录](gui-phase1.md)。
 
 编译器按头文件 `CONFIG_GCC_VERSION` 元数据选择已安装的 `gcc-N`，不用内核版本号猜测。
 Ubuntu HWE 对应 gcc-N 由 CI bootstrap 安装；本机升级内核时也需保证对应编译器已安装。
@@ -92,8 +94,10 @@ Qt 固定为 5.15.18，官方源码 SHA-256 固定在 `build-qt-el8.sh`，仍为
 主要构建选项：`-static -no-icu -qt-libjpeg -qt-libpng -qt-zlib -qt-pcre -qt-harfbuzz -qt-tiff -qt-webp`
 以及 `-accessibility -dbus-linked -xcb -xcb-xlib -opengl desktop`。
 QtBase/Charts/Connectivity/ImageFormats/Svg/Wayland 根据已有二进制分析作为初始 SDK 配置；
-源码若使用其他 Qt 模块，必须按实际依赖扩充，编译失败不能忽略。已把原分析提到的 NASM
-加入构建依赖；静态 Wayland 插件也保留在 SDK 中，但本轮矩阵默认走 xcb/Xwayland。
+后续源码若使用其他 Qt 模块，必须核对真实依赖和许可。基础版只链接 QtBase。
+静态 Wayland 插件保留在 SDK 中，但 GUI 通过 `QTPLUGIN.platforms = qxcb qoffscreen`
+排除自动导入的 Wayland 插件，避免 EL8 更新后的 wl_proxy_marshal_flags 需求传播到旧系统。
+正式窗口走 xcb/Xwayland，offscreen 只用于 Qt 控件回归。
 保留 Qt accessibility 和 D-Bus，安装 AT-SPI 运行时，不禁用辅助功能来绕过启动问题。
 Qt 的 X11 依赖依据：[Qt 5.15 X11 requirements](https://doc.qt.io/archives/qt-5.15/linux-requirements.html)。
 
@@ -130,7 +134,7 @@ RHEL10 移除了 Xorg server，仍支持 Xwayland；不依赖目标机上的 Xor
 EL10 与 Ubuntu26.04 的无头门禁运行：
 
 ```sh
-# 非 root 用户、有可写 HOME；依赖 xwayland-run、mutter、Xwayland、xwininfo/xprop。
+# 非 root 用户、有可写 HOME；依赖 xwayland-run、mutter、Xwayland、xauth、xwininfo/xprop。
 bash port/ci/headless-smoke.sh xwayland --log /tmp/octool-gui.log
 # 其余矩阵目标：
 bash port/ci/headless-smoke.sh xvfb --log /tmp/octool-gui.log
@@ -139,8 +143,8 @@ bash port/ci/headless-smoke.sh xvfb --log /tmp/octool-gui.log
 测试必须找到真实 GUI PID 所属、标题匹配、已映射的窗口，连续保持至少 5 秒。
 进程早退、崩溃、窗口缺失、显示服务无法启动均为失败，超时不算成功。
 普通用户运行，不挂载设备、不加载模块、不注入假硬件应答。
-如果原 GUI 在无权限/无模块环境中不能进入主窗口，该项会失败，需作者确认允许的解决方案。
-不通过修改 GUI 硬件调用或测试假设备让该项变绿。
+当前基础版正常主窗口无需硬件权限；访问失败显示实际错误，不伪造传感器值。
+CI 通过 OCTOOL_SMOKE_SCREENSHOT 指定路径保存四页窗口截图，正常启动不产生截图。
 
 ## 6. 原生打包
 
@@ -180,7 +184,8 @@ python3 port/tools/make_source.py --require-gui
 
 归档排除构建产物、旧 ZIP、签名私钥，统一源码权限和时间元数据。省略 `--require-gui`
 仅用于交接尚缺 GUI 的当前源码，不能把这种交接包称作可发布的完整 GUI 源码。
-GUI 作者/许可证元数据尚需确认；RPM LicenseRef-Octool 是指向作者随包许可文件的占位标识。
+新 GUI RPM 的 License 为 GPL-2.0-only，与 gui/LICENSE 一致；旧二进制许可不变。
+GUI release 重打包没有 DWARF，runtime spec 关闭 debug_package，仍保留自动依赖扫描。
 
 ## 7. CI 和本地 Linux runner 复现
 
@@ -196,10 +201,11 @@ Linux Docker 环境内的完整执行入口为 `python3 port/ci/run-matrix.py`�
 而非只存放 ZIP 的上一级目录。迁移到已有仓库时，需把本目录内容放到该仓库根，
 或按实际布局调整所有 workflow 相对路径。
 
-1. 矩阵校验及 Python 发布门禁测试、ABI/HAL 冻结检查、文档链接与源码归档一致性检查。
-2. 十个独立 kernel job：HAL、loopback、parity selftest、真实 Kbuild/modpost、测试证书签名、
+1. 矩阵校验及 Python 发布门禁测试、ABI/HAL 已审阅哈希检查、文档链接与源码归档一致性检查。
+2. 十个独立 kernel job：HAL、loopback、transport、parity selftest、真实 Kbuild/modpost、测试证书签名、
    DKMS 包构建/安装、同版本重装、卸载再安装、installed/vermagic 核对。Ubuntu22.04 还覆盖当前 GA/HWE。
-3. EL8 baseline job：原 GUI 源码 preflight、静态 Qt SDK、真实 GUI、EL8 ABI 门禁。
+3. EL8 baseline job：实际 GUI 源码 preflight、静态 Qt SDK、GUI/Qt 控件回归、EL8 ABI 门禁。
+   SDK 按 Qt/依赖脚本哈希缓存并校验归档，GUI 每次重编；配方改变使旧 seed/cache 失效。
 4. 十个 desktop job：使用 baseline SDK 在各目标重新编 GUI、生成 native rpm/deb；
    第二个全新容器安装发行包，检查 ldd，运行发行/本地重编两种 GUI，卸载再安装并核对 DKMS。
 5. `gate` 在所有 job 成功时才成功；失败、取消、跳过均不能过门禁。
@@ -207,7 +213,7 @@ Linux Docker 环境内的完整执行入口为 `python3 port/ci/run-matrix.py`�
 kernel job 不依赖 GUI baseline，因此 GUI 缺失时仍可收集 Debian 内核和离线测试失败点。
 矩阵 `fail-fast: false` 保留所有目标的失败结果；没有 `continue-on-error`。
 仓库管理员应把 `portability / gate` 设为受保护分支必需检查。
-当前源码目录已配置公开仓库 origin 并多轮实际运行；十目标 kernel job 均通过，GUI 缺失使总 gate 失败。
+当前源码目录已配置公开仓库 origin 并多轮实际运行；以验证文档对应 run 的实际结果为准。
 
 Linux Docker 中复现 Debian12 的内核/模块包阶段：
 

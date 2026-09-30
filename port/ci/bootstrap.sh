@@ -118,14 +118,14 @@ print(next(t for t in json.load(open(sys.argv[1])) if t['id'] == sys.argv[2])['d
 PY
 )
     if command -v apt-get >/dev/null; then
-        apt-get install -y --no-install-recommends x11-utils dbus-x11
+        apt-get install -y --no-install-recommends dbus-x11
         if [ "$display" = xwayland ]; then
             apt-get install -y --no-install-recommends xwayland-run mutter xwayland xauth
         else
             apt-get install -y --no-install-recommends xvfb xauth
         fi
     else
-        dnf install -y /usr/bin/xwininfo /usr/bin/xprop /usr/bin/dbus-run-session
+        dnf install -y /usr/bin/dbus-run-session
         if [ "$display" = xwayland ]; then
             dnf install -y xwayland-run mutter xorg-x11-server-Xwayland /usr/bin/xauth
         else

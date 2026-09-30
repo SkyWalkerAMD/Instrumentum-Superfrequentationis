@@ -12,7 +12,7 @@
 本源码目录是 Git 根，`.github/workflows/portability.yml` 位于根目录。
 GUI 程序名、模块名、96 字节 ABI、MMIO 协议、源码包名沿用原名称。
 不把 ZIP 中的旧可执行文件或 build/dist 临时产物作为原始源码上传。
-现有许可头保留；创建公开仓库不擅自给尚未收到的 GUI 源码添加许可证。
+现有许可头保留；新 GUI 沿用已链接 HAL 的 GPLv2，旧二进制/第三方许可没有改动。
 
 ## Actions 执行方式
 
@@ -20,14 +20,17 @@ push、pull_request 和 workflow_dispatch 触发 portability 工作流。
 仅使用标准 `ubuntu-24.04` GitHub 托管 runner，内部运行十种目标发行版容器。
 这条 GitHub Actions 路径不要求 Codex Cloud 环境或用户提供 Linux 服务器。
 
-- matrix：本地可执行的发布门禁、源码归档一致性与冻结 ABI/HAL 检查。
-- kernel：十个独立目标，真实编译模块、运行 C 离线测试、签名试验、构建并安装 DKMS 包。
-- baseline：EL8 重编原 GUI；当前缺原 GUI 源码，会明确失败。
-- desktop：依赖 baseline，分别重编 GUI、打包，在新容器做安装和窗口冒烟。
+- matrix：本地可执行的发布门禁、源码归档一致性与已审阅 ABI/HAL 哈希检查。
+- kernel：十个独立目标，编译模块、loopback/transport/parity selftest、签名、DKMS 包生命周期。
+- baseline：EL8 构建静态 Qt SDK 和当前 GUI，执行 Qt 控件回归与 ELF ABI 下限检查。
+  SDK 按配方哈希缓存、恢复时校验 SHA-256；每次重新编 GUI。SDK 失败不放行 desktop。
+- desktop：依赖 baseline，分别重编 GUI/Qt 回归、打包，在新容器安装并冒烟测试发行与 native 窗口。
+  四页截图、显示日志和安装后 ldd 与 DKMS 记录一同上传；EL10/Ubuntu26 使用 Xwayland。
 - gate：任何必需阶段失败、取消或跳过都失败；不豁免 GUI 缺失来制造全绿。
 
 上传的 Actions artifacts 保留 7 天；发布验收所需的日志/包应另行归档到正式交付记录。
-GUI 源码未出现前，先收敛十目标 kernel 阶段，保留完整工作流的失败状态。
+早期 GUI 缺失时总门禁保持失败；现已接入作者选择的基础信息及原始寄存器 GUI，
+该范围成功不代表后续平台监控/调参面板或真机已验收。
 另提供手动 `Qt SDK diagnostic` 工作流，独立验证 EL8 静态 Qt 工具链并保留 SDK/配置/日志；
 它调用同一 `in-container.sh sdk el8`，不以 SDK 构建代替 GUI 窗口或总门禁。
 实际 run URL、提交 SHA、目标结果和修复记录写入 [Actions 实测记录](actions-debugging.md)、

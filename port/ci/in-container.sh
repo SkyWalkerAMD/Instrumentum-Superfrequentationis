@@ -111,6 +111,7 @@ case "$action" in
         tar -czf "$out/gui-stage.tar.gz" -C "$out/gui-stage" .
         ;;
     desktop)
+        gcc -std=c11 -O2 -Wall -Wextra -Werror port/ci/window-probe.c -lX11 -o "$out/window-probe"
         (cd /inputs && sha256sum -c qt-sdk.sha256)
         tar -xzf /inputs/qt-sdk.tar.gz -C /opt
         mkdir -p /tmp/octool-release-stage

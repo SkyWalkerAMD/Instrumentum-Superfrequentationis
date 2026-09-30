@@ -136,7 +136,8 @@ sudo sh port/packaging/dkms-sign.sh "$(uname -r)" port/kmod/octool_hwio.ko
 - [ ] key 只保留在本机受控路径；发行包和源包没有私钥。
 
 “模块已签名/能加载”和“旧 GUI 所有硬件功能在 lockdown 下可用”是不同验收项。
-本轮保持 GUI 调用点，不能据此承诺 iopl、MSR 写或 /dev/mem 直接路径可用。
+旧 GUI 调用点保持不变，不能据此承诺其 iopl、MSR 写或 /dev/mem 直接路径可用。
+新基础版 GUI 通过 HAL 访问；必须在已签名模块真实加载后单独验证各族后端及错误处理。
 
 ## 3. 模块与 HAL 真机闭环
 
@@ -153,6 +154,8 @@ sudo ./port/tests/hwio_smoke
 - [ ] `hwio_smoke` 各族后端都为 module；fallback 不能算模块通过。
 - [ ] CPUID leaf0 与本地指令一致，在线逻辑 CPU 数与 sysconf 一致。
 - [ ] MSR 读的返回码单独记录；某 CPU 不实现指定寄存器时，不从失败推断电压/温度含义。
+- [ ] 选择两个确实在线的逻辑 CPU，核对请求 CPU 不被 per-open token 覆盖；对不存在的 CPU
+  发起只读 CPU 命令，必须 EINVAL，不能返回其他 CPU 的值。不要为测试强制下线生产 CPU。
 - [ ] `journalctl -k -b` 无 oops、锁错误等异常。
 - [ ] 没有因为设备权限问题而放宽 udev 到 0666 或移除 capability 检查。
 
@@ -173,12 +176,15 @@ make -C port/kmod KDIR="/lib/modules/$(uname -r)/build"
 # 有 Secure Boot 时，先按第 2 节签名这里的新 .ko。
 
 sudo env DISPLAY="$DISPLAY" XAUTHORITY="${XAUTHORITY:-}" \
-  OCTOOL=/opt/octool/bin/octool-real \
+  OCTOOL=/实际路径/原Linux发行包/octool \
   NEW_KO="$PWD/port/kmod/octool_hwio.ko" \
   CORPUS="$PWD/octool-corpus.bin" \
   sh port/tests/parity-run.sh
 ```
 
+这里 OCTOOL 必须指向保留的旧 Linux GUI，用它验证原有调用序列；不能误填新基础版的安装路径。
+旧 GUI 的 Ubuntu22.04 运行依赖和旧 .ko 的 vermagic 必须同时满足，可用参考测试系统采集。
+只有新基础版采集的手工地址不等于旧面板覆盖；可作附加诊断，但需分别标明来源。
 采集需要能在授权桌面会话运行 GUI；如果显示认证失败，按该桌面的认证方式排查，
 不要使用 `xhost +` 放开所有客户端。
 采集阶段正常查看所需面板然后退出；观察库不另发写请求，但 GUI 自身的操作仍可能写硬件。
@@ -212,12 +218,20 @@ sudo CORPUS="$PWD/octool-corpus.bin" \
 - [ ] EL10 在真实 Wayland 会话和 `headless-smoke.sh xwayland` 均通过；不以 Xvfb 结果代替。
 - [ ] 日志可写、字体/图片正常，AT-SPI 可从实际使用的自动化客户端访问。
 - [ ] 硬件读取所需的权限在当前会话明确授予；不能把窗口出现当作传感器或超频成功。
+- [ ] 基础版 Information 页的 CPU 型号/在线 CPU 数/OS/内核与系统工具一致；无模块普通用户
+  也可进入窗口，读取失败清空旧结果并显示错误码，不能显示伪造零值。
+- [ ] MSR 的 CPU 为十进制，寄存器/值为十六进制；MMIO/PCI 宽度与输入范围明确，完整 64 位
+  输入不被截断。PCI 仅 domain 0000、首 256 字节，不把扩展 offset 截断。
+- [ ] 只用作者确认可读且非 read-to-clear 的寄存器比较原始结果；更换目标/宽度后旧结果清空。
+  具体地址、BDF、MSR 编号和语义填入测试记录，本清单不提供猜测地址。
+- [ ] 写入先由作者确认目标、值、范围和恢复方法；检查取消不发请求、确认后只写一次，
+  UI 不自动回读。没有批准的硬件写用例时，该项标未验收，不用 CI 内存 transport 代替。
 - [ ] 面板名称、单位和关键数值由作者确认，未确认项留空，不创造容差或换算关系。
 - [ ] 卸载 GUI 和模块包，再安装，DKMS 状态与设备权限正确。
 - [ ] 升级内核后有新版本的已签名模块；旧内核仍可启动和加载。
 
 GUI 如需 root，使用该机器的合法本地显示认证，在已授权的会话中保留所需 DISPLAY/XAUTHORITY；
-这一步须在目标桌面验收。当前包没有加入新的提权代理，也没有更改 GUI 的权限模型。
+这一步须在目标桌面验收。当前包没有加入提权代理，设备 capability 检查和 root:root 0600 保留。
 
 ## 6. 单目标验收记录模板
 

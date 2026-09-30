@@ -10,8 +10,8 @@
 - 已进入可用的 Linux 构建环境，源码已在该环境中。
 - 已确定构建目录，Docker 已安装且当前账号可访问该环境内的 Docker daemon。
   Actions 的 Linux/Docker 能力已实测；这个独立 runner 本身不创建云资源、不自动安装 Docker。
-- 恢复或重构后的 GUI 源码。作者确认原 Linux GUI 源码丢失；现有 octool-linux.zip 是二进制，OCTool0528.zip
-  尚未在指定目录找到；不能拿旧 Ubuntu ELF 代替 EL8 重编。
+- 当前基础版 GUI 源码已在 gui/，manifest 已接入；原两个 ZIP 只有二进制。
+  适用功能和后续平台面板范围见 [第一阶段](gui-phase1.md)。
 
 宿主要求：Linux x86_64、Python 3.8 或更新、可用的本机 Linux/amd64 Docker daemon，
 能够访问目标镜像仓库、各发行版软件源及 Qt 官方下载。构建目录必须能保存 Qt 源码/
@@ -45,7 +45,7 @@ kernel 模式不再安装 Qt、X11、Wayland 的开发包。
 
 ## 全矩阵
 
-接入 GUI 并按 [构建指南](multi-distro.md#2-源码接入) 核对 manifest 后：
+在包含实际 gui/ 工程的源码根目录，按 [构建指南](multi-distro.md#2-源码接入) 核对 manifest 后：
 
 ```sh
 python3 port/tools/build_gui.py --preflight

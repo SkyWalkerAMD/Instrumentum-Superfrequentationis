@@ -1,6 +1,7 @@
 # EL8 静态 Qt SDK 实测记录
 
-更新：2026-09-30。SDK 是 GUI 构建工具链；本记录不代表 OCTool GUI 已恢复或运行。
+更新：2026-09-30。本页保留首个成功 SDK 的构建证据；新 GUI 的实测结果见
+[第一阶段](gui-phase1.md)和[验证状态](verification-status.md)。SDK 成功不能单独代替应用验收。
 
 ## 已成功的构建
 
@@ -47,9 +48,13 @@ SDK tar 大小 56,674,389 字节，SHA-256：
 
 在一次性 EL8 构建容器中，安装现有 bootstrap 声明的开发依赖，校验哈希后解到 `/opt`，
 使 qmake 位于 `/opt/octool-qt/bin/qmake`。该 SDK 配置为不可重定位，不应任意改安装前缀。
-后续代码更新时，正式 baseline 仍从固定官方源码重新构建，不以旧 SDK 掩盖构建失败。
+正式 baseline 对相同配方使用带 SHA-256 校验的 SDK 缓存，每次重新编 GUI/测试；
+缓存键包含 Qt 构建脚本和 bootstrap 依赖脚本哈希，配方改变会从固定官方源码重建。
+历史成功 artifact 只在配方哈希和 SDK SHA-256 均匹配时可以 seed；不使用过期配方缓存。
 需独立重跑时使用仓库 Actions 页的 `Qt SDK diagnostic` workflow_dispatch。
 
 SDK 带源码许可文件副本和 Qt 来源记录；最终 OCTool 的第三方许可、Qt 静态链接交付要求及
 重链接材料，仍需结合恢复后的实际 GUI 工程完成，SDK 归档本身不是完整应用发布包。
-原 GUI 源码已丢失，目前 Windows 包路径不可读，后续步骤见 [GUI 恢复流程](gui-recovery.md)。
+原 GUI 源码已丢失，现已检查可读取的 Windows 包并重构基础版；详细输入见
+[GUI 恢复流程](gui-recovery.md)。基础版只链接 QtBase，不能把 SDK 中 Charts 等模块的许可
+或存在状态当作当前 GUI 的已链接依赖。

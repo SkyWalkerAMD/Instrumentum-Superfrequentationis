@@ -12,17 +12,13 @@ import time
 from pathlib import Path
 
 
-def visible_window(pid, title):
-    tree = subprocess.check_output(["xwininfo", "-root", "-tree"], text=True)
-    for match in re.finditer(r'^\s*(0x[0-9a-fA-F]+)\s+"([^"\n]*)"', tree, re.M):
-        window, name = match.groups()
-        if not title.search(name):
-            continue
-        prop = subprocess.check_output(["xprop", "-id", window, "_NET_WM_PID"], text=True)
-        if re.search(r'=\s*' + str(pid) + r'\s*$', prop) is None:
-            continue
-        info = subprocess.check_output(["xwininfo", "-id", window], text=True)
-        if "Map State: IsViewable" in info:
+def visible_window(probe, pid, title):
+    tree = subprocess.check_output([str(probe), str(pid)], text=True)
+    for line in tree.splitlines():
+        window, encoded = line.split("\t", 1)
+        int(window, 16)
+        name = bytes.fromhex(encoded).decode("utf-8")
+        if title.search(name):
             return name
     return None
 
@@ -32,6 +28,7 @@ def main():
     parser.add_argument("--binary", default="/usr/bin/octool")
     parser.add_argument("--config", type=Path, default=Path("/opt/octool/build.json"))
     parser.add_argument("--log", type=Path, required=True)
+    parser.add_argument("--probe", type=Path, default=Path("/out/window-probe"))
     args = parser.parse_args()
     if os.geteuid() == 0:
         parser.error("run the GUI smoke as an unprivileged user")
@@ -47,11 +44,15 @@ def main():
             while time.monotonic() - start < 30:
                 if proc.poll() is not None:
                     raise RuntimeError("GUI exited before smoke completed, rc=" + str(proc.returncode))
-                window = visible_window(proc.pid, title)
+                window = visible_window(args.probe, proc.pid, title)
                 if window:
                     if seen is None:
                         seen = time.monotonic()
                     if time.monotonic() - seen >= 5:
+                        # The shell/probe PID cannot own the GUI's window. Check
+                        # that the observer does not accept title alone.
+                        if visible_window(args.probe, os.getpid(), title):
+                            raise RuntimeError("window ownership negative control failed")
                         print("GUI SMOKE PASS: visible window, pid={}, title={!r}".format(proc.pid, window))
                         return 0
                 else:

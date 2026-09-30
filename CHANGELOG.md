@@ -4,6 +4,22 @@
 
 ### Windows 包取得与 GUI 第一阶段重构
 
+- 作者确认四套 CPU：Z790/i9-14900KS、W790 ACE/w5-2565X（18 核，明确纠正先前笔误）、
+  W890E-SAGE SE/Xeon 658X、TRX50 SAGE/Threadripper PRO 9995WX；BIOS 均未知。
+  写入 docs/platform-recovery.md 及独立 JSON，不把型号确认等同于 CPUID/拓扑/寄存器实测。
+- 18c18c5 / run 36666985989：十个 kernel job 和九个 desktop job 成功；新 Qt SDK 从源码重建成功，
+  GUI 最高 GLIBC_2.28、GLIBCXX_3.4.15、CXXABI_1.3.9，7 项 Qt 测试结果全部通过。
+  EL10 在 fresh runtime 安装阶段发现仓库不提供 xwininfo；总门禁按设计失败。
+  用独立 Xlib window-probe 替代 xwininfo/xprop，仍要求 IsViewable、实际 GUI PID 与窗口标题匹配，
+  并加入错误 PID 的负向检查；辅助程序仅 CI 编译，不进入产品包。继续使用 Mutter/Xwayland，无 Xvfb 回退。
+- 作者新增四组参考图：Z790 7 张、W790 ACE 2 张、W890E-SAGE SE 2 张、TRX50 SAGE 6 张。
+  已全部逐图查看，2,173,180 字节原样纳入 docs/references/platforms，清单与 SHA 写入 docs/validation。
+  记录 Intel Controls 电压域差异、AMD Per CCX OC/PStates 标签；不把样本值用作写入默认值。
+  新增 ELF UI 字面量分析器，静态交叉核对 12 函数/1064 引用，补全 Frequency in MHz 等截断标签。
+  截图不含 CPU 商品型号/BIOS，已具体补问；原 PStates 的 VID=306mv 只记为旧显示证据，未推导算法。
+- 作者进一步选择继续恢复平台面板；已请求 CPU/主板/BIOS/优先面板，尚未收到具体信息。
+  静态整理两平台共有的 23 个代表面板类及元对象槽，写入 docs/platform-recovery.md 和 JSON 证据。
+  不从类名推出 CPU 支持范围、寄存器地址或单位；基础版构建验收继续独立推进。
 - c63582b / run 36666155701：十个 kernel job 全部通过；Ubuntu24 的 fortified pread
   实际命中 1 次，transport 修复获得验证。EL8 GUI/测试程序链接、7 项 Qt 测试结果和 ABI 下限门禁通过。
   Ubuntu22/24、Debian12/13 的 native GUI、安装包与两个真实窗口冒烟通过。

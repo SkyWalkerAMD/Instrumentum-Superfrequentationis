@@ -96,4 +96,5 @@ RPM 配置见 [Red Hat 打包指南](https://docs.redhat.com/en-us/documentation
 
 尚未恢复 Intel/AMD 传感器解码、温度/电压/频率换算、平台供电/时序/曲线、压力测试、自动调参。
 后续需要作者给出 CPU/主板/BIOS 与优先面板；不根据数值相近或类名推断硬件语义。
+作者现已选择继续恢复平台面板，入口清单和待确认规格见 [后续面板记录](platform-recovery.md)。
 实际 MSR/MMIO/PCI 读写、MOK 加载和旧模块 live 对拍继续按 [真机清单](hardware-acceptance.md)验收。
