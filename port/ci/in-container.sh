@@ -51,9 +51,15 @@ verify_dkms() {
 }
 build_sdk() {
     test "$target" = el8
-    bash port/ci/build-qt-el8.sh 2>&1 | tee "$out/qt-build.log"
-    tar -czf "$out/qt-sdk.tar.gz" -C /opt octool-qt
-    sha256sum "$out/qt-sdk.tar.gz" > "$out/qt-sdk.sha256"
+    if [ -s "$out/qt-sdk.tar.gz" ] && [ -s "$out/qt-sdk.sha256" ]; then
+        (cd "$out" && sha256sum -c qt-sdk.sha256)
+        tar -xzf "$out/qt-sdk.tar.gz" -C /opt
+        echo 'Reusing verified EL8 Qt SDK cache' | tee "$out/qt-build.log"
+    else
+        bash port/ci/build-qt-el8.sh 2>&1 | tee "$out/qt-build.log"
+        tar -czf "$out/qt-sdk.tar.gz" -C /opt octool-qt
+        (cd "$out" && sha256sum qt-sdk.tar.gz) > "$out/qt-sdk.sha256"
+    fi
     cp /opt/octool-qt/licenses/config.summary "$out/qt-config-summary.txt"
 }
 case "$action" in
@@ -93,14 +99,17 @@ case "$action" in
         python3 port/tools/build_gui.py --preflight
         build_sdk
         python3 port/tools/build_gui.py --stage "$out/gui-stage"
+        cp build/gui/regression/gui-tests.txt "$out/gui-tests.txt"
         python3 port/tools/check_elf.py "$out/gui-stage/opt/octool/bin/octool-real" > "$out/abi.json"
         tar -czf "$out/gui-stage.tar.gz" -C "$out/gui-stage" .
         ;;
     desktop)
+        (cd /inputs && sha256sum -c qt-sdk.sha256)
         tar -xzf /inputs/qt-sdk.tar.gz -C /opt
         mkdir -p /tmp/octool-release-stage
         tar -xzf /inputs/gui-stage.tar.gz -C /tmp/octool-release-stage
         python3 port/tools/build_gui.py --build-dir "$root/build/gui-$target" --stage "$out/native-stage"
+        cp "build/gui-$target/regression/gui-tests.txt" "$out/gui-tests.txt"
         python3 port/tools/check_elf.py --inspect "$out/native-stage/opt/octool/bin/octool-real" > "$out/native-abi.json"
         make -C port/tests check 2>&1 | tee "$out/offline.log"
         python3 port/tools/build_packages.py --format "$family" --gui-stage /tmp/octool-release-stage --output "$out/packages"

@@ -55,14 +55,28 @@ jobs:
     timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
-      - name: Require original GUI source
+      - name: Require actual GUI source
         run: python3 port/tools/build_gui.py --preflight
+      - uses: actions/cache/restore@v4
+        id: qt-cache
+        with:
+          path: |
+            build/baseline/qt-sdk.tar.gz
+            build/baseline/qt-sdk.sha256
+          key: el8-qt-sdk-v1-${{ hashFiles('port/ci/build-qt-el8.sh', 'port/ci/bootstrap.sh') }}
       - run: |
           mkdir -p build/baseline
           docker pull rockylinux:8
           docker image inspect rockylinux:8 > build/baseline/container-image.json
-          docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -v "$PWD:/src" -v "$PWD/build/baseline:/out" -w /src \
+          docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -e JOBS=4 -v "$PWD:/src" -v "$PWD/build/baseline:/out" -w /src \
             rockylinux:8 bash port/ci/in-container.sh baseline el8
+      - uses: actions/cache/save@v4
+        if: always() && steps.qt-cache.outputs.cache-hit != 'true' && hashFiles('build/baseline/qt-sdk.sha256') != ''
+        with:
+          path: |
+            build/baseline/qt-sdk.tar.gz
+            build/baseline/qt-sdk.sha256
+          key: ${{ steps.qt-cache.outputs.cache-primary-key }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -71,6 +85,8 @@ jobs:
             build/baseline/*.tar.gz
             build/baseline/*.json
             build/baseline/*.txt
+            build/baseline/*.sha256
+            build/baseline/*.log
           if-no-files-found: error
           retention-days: 7
   desktop:

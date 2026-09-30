@@ -2,7 +2,7 @@ Name:           octool
 Version:        @VERSION@
 Release:        1%{?dist}
 Summary:        OCTool Intel and AMD hardware monitor
-License:        LicenseRef-Octool
+License:        GPL-2.0-only
 Source0:        octool-%{version}-runtime.tar.gz
 ExclusiveArch:  x86_64
 Requires:       octool-hwio-dkms = %{version}-%{release}

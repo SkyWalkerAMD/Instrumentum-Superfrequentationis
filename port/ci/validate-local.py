@@ -18,11 +18,11 @@ def main():
     scripts = list((ROOT / "port").rglob("*.py"))
     for path in scripts:
         ast.parse(path.read_text(encoding="utf-8"), filename=str(path), feature_version=(3, 8))
-    # These values are from the supplied refactor archive. Only tests/build and
-    # packaging changed; the HAL and MMIO request layout are frozen for this work.
+    # ABI and HAL header match the input archive. The HAL implementation hash
+    # records the CPU-token/short-I/O fixes described in docs/gui-phase1.md.
     expected = {
         "port/abi/octool_hwio_abi.h": "5f07bfefd2a96519756cad1567dfdf4b0c878db142f670e1b208cf39523800d8",
-        "port/hal/octool_hwio.c": "ad7940bedb280ec1789831d360611ab473febb13cff1458c10aff1b1d3e45d29",
+        "port/hal/octool_hwio.c": "ba115e258a3d2d346902a9da70c8139424fb5c603dd4a6c9f76a7d38f2ef6ea9",
         "port/hal/octool_hwio.h": "d80a19e0e0551ba162e55653bde7975c50b74a1e811a08f6776071af43762dc1",
     }
     # Normalize only CRLF introduced by a checkout, not any source tokens.
@@ -49,7 +49,7 @@ def main():
             for entry in tar:
                 if entry.name.endswith(".sh"):
                     assert entry.mode == 0o755, entry.name
-    print(json.dumps({"python_files": len(scripts), "abi_hal_unchanged": True,
+    print(json.dumps({"python_files": len(scripts), "abi_unchanged_hal_fix_pinned": True,
                       "docs_links": "pass", "source_archive": "deterministic"}, indent=2))
 
 

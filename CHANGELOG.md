@@ -2,6 +2,24 @@
 
 ## 2.0.1 — 2026-09-30（未发布，待完整 Linux/GUI 验证）
 
+### Windows 包取得与 GUI 第一阶段重构
+
+- 用户新提供 E:/Download/Edge/ 两个 ZIP；Windows 包 79,363,256 字节、158 项，SHA-256
+  02a50088a94000f651f8783b32bf1ff63a48fd4e6a3909983c7c1ed0a5a417a3；Linux 包与此前相同。
+  Windows 无工程/C++/.ui/PDB，Tool.exe 的 debug 项只有类型 13；静态读取 Qt 元对象确认
+  rw_msr/rw_memory/rw_pci 和相应菜单入口。没有执行任何附带程序、驱动或 BIOS。
+- 用户选择首批“基础信息、MSR/MMIO/PCI 原始读写，随后恢复平台面板”。新增 gui/ Qt5 qmake
+  工程，复用 HAL/ABI；严格整数/宽度/范围验证、后台串行访问、具体目标写入确认及错误展示。
+  启动无寄存器访问，写后不擅自回读，输入变化清空读结果。PCI 限于原后端支持的 0000 域/256 字节。
+- 接入发现 HAL 真实设备传输把 CPU user_id 覆盖为 per-open token，旧 loopback 未覆盖该层。
+  保留 CPU 命令目标编号，MMIO 仍回填旧令牌；模块对无效 CPU 返回 EINVAL，不回退到另一个 CPU。
+  修复设备/MSR/PCI 短传输错误误报成功。ABI/HAL header 未变，HAL C 新哈希写入门禁和 docs。
+- 新增 syscall-wrap transport 离线回归，以及真实 Qt 控件/请求编码测试；后者在每个目标 GUI
+  编译后运行，失败停止打包。正常窗口冒烟仍要求无假设备的真实可见主窗口。
+- 为 EL8 SDK 增加按 Qt/依赖脚本哈希的 Actions 缓存与 SHA-256 恢复校验，GUI 仍每次实编。
+  首批新 GUI 沿用已有 HAL 的 GPLv2，未改变旧二进制/第三方许可；详细范围见 docs/gui-phase1.md。
+  此提交尚待首次真实 GUI/打包/窗口矩阵，不预先标全绿。
+
 ### 仓库命名与多轮真实 Linux CI 验证
 
 - bfa992d / Qt SDK run 36661824443 成功：EL8 GCC8.5/glibc2.28 实际完成 Qt5.15.18 静态

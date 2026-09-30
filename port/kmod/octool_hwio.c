@@ -242,8 +242,16 @@ static void dispatch(struct hwio_ctx *ctx, struct octool_hwio_req *r)
 	u64 res = 0;
 	int rc = 0;
 
-	if (cpu >= nr_cpu_ids || !cpu_online(cpu))
-		cpu = raw_smp_processor_id();
+	/* Reject an invalid CPU for CPU-specific requests. Falling back to the
+	 * caller's CPU could write an MSR on a different processor. MMIO keeps
+	 * accepting the legacy per-open token in this field, as before. */
+	if ((r->cmd == OCTOOL_OP_RD_MSR || r->cmd == OCTOOL_OP_WR_MSR ||
+	     r->cmd == OCTOOL_OP_CPUID || r->cmd == OCTOOL_OP_RD_TSC) &&
+	    (r->user_id >= nr_cpu_ids || !cpu_online(cpu))) {
+		rc = -EINVAL;
+		mbox[OCTOOL_MBOX_RESULT] = 0;
+		goto done;
+	}
 
 	switch (r->cmd) {
 	/* MMIO - verified wire-compatible */

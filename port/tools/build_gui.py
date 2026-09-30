@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the author's qmake project unchanged. Missing GUI input is an error."""
+"""Build the configured OCTool qmake project and its offline GUI regressions."""
 import argparse
 import json
 import os
@@ -24,7 +24,7 @@ def config():
     cfg = json.loads((ROOT / "port/gui/build.json").read_text(encoding="utf-8"))
     project = source_path(cfg["project"])
     if not project.is_file():
-        raise ValueError("GUI source missing: {}. Supply the original source and set "
+        raise ValueError("GUI source missing: {}. Supply restored/reconstructed source and set "
                          "port/gui/build.json; prebuilt octool-linux.zip is not source.".format(project))
     if not source_path(cfg["license_file"]).is_file():
         raise ValueError("GUI distribution license file missing: " + cfg["license_file"])
@@ -58,6 +58,16 @@ def main():
                     "QMAKE_CXXFLAGS+=-march=x86-64 -mtune=generic", *cfg["qmake_args"]],
                    cwd=args.build_dir, check=True)
     subprocess.run(["make", "-j" + os.environ.get("JOBS", "2")], cwd=args.build_dir, check=True)
+    if cfg.get("test_project"):
+        tests = args.build_dir / "regression"
+        tests.mkdir(exist_ok=True)
+        subprocess.run([args.qmake, str(source_path(cfg["test_project"])), "CONFIG+=release"],
+                       cwd=tests, check=True)
+        subprocess.run(["make", "-j" + os.environ.get("JOBS", "2")], cwd=tests, check=True)
+        env = dict(os.environ, QT_QPA_PLATFORM="offscreen")
+        subprocess.run([str((tests / "gui-regression").resolve()), "-o", "gui-tests.txt,txt"],
+                       cwd=tests, env=env, check=True, timeout=120)
+        print((tests / "gui-tests.txt").read_text())
     binary = (args.build_dir / cfg["binary"]).resolve()
     if args.build_dir.resolve() not in binary.parents or not binary.is_file():
         parser.error("configured GUI binary was not produced: " + str(binary))

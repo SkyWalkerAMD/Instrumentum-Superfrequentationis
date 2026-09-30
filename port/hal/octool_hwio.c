@@ -69,12 +69,18 @@ static int mod_submit(void *vctx, const void *req96, uint64_t *out, size_t words
 	const struct octool_hwio_req *rq = req96;
 	struct octool_hwio_req r = *rq;
 	size_t i;
+	ssize_t written;
 	long spins = 0;
 
-	r.user_id = c->id;			/* echo per-open token */
+	/* CPU operations use user_id as the requested CPU, not the open token.
+	 * Keep the legacy token unchanged on the MMIO wire path. */
+	if (r.cmd != OCTOOL_OP_RD_MSR && r.cmd != OCTOOL_OP_WR_MSR &&
+	    r.cmd != OCTOOL_OP_CPUID && r.cmd != OCTOOL_OP_RD_TSC)
+		r.user_id = c->id;
 	c->mbox[OCTOOL_MBOX_DONE] = 0;
-	if (write(c->fd, &r, sizeof(r)) != (ssize_t)sizeof(r))
-		return -errno;
+	written = write(c->fd, &r, sizeof(r));
+	if (written != (ssize_t)sizeof(r))
+		return written < 0 ? -errno : -EIO;
 	/* module fills the mailbox from inside write(); poll defensively */
 	while (c->mbox[OCTOOL_MBOX_DONE] == 0) {
 		if (++spins > 100000000L)
@@ -155,13 +161,15 @@ static int direct_rdmsr(unsigned cpu, uint32_t reg, uint64_t *val)
 {
 	char p[64];
 	int fd, rc = 0;
+	ssize_t n;
 
 	snprintf(p, sizeof(p), "/dev/cpu/%u/msr", cpu);
 	fd = open(p, O_RDONLY | O_CLOEXEC);
 	if (fd < 0)
 		return -errno;
-	if (pread(fd, val, 8, reg) != 8)
-		rc = -errno;
+	n = pread(fd, val, 8, reg);
+	if (n != 8)
+		rc = n < 0 ? -errno : -EIO;
 	close(fd);
 	return rc;
 }
@@ -170,13 +178,15 @@ static int direct_wrmsr(unsigned cpu, uint32_t reg, uint64_t val)
 {
 	char p[64];
 	int fd, rc = 0;
+	ssize_t n;
 
 	snprintf(p, sizeof(p), "/dev/cpu/%u/msr", cpu);
 	fd = open(p, O_WRONLY | O_CLOEXEC);
 	if (fd < 0)
 		return -errno;
-	if (pwrite(fd, &val, 8, reg) != 8)
-		rc = -errno;
+	n = pwrite(fd, &val, 8, reg);
+	if (n != 8)
+		rc = n < 0 ? -errno : -EIO;
 	close(fd);
 	return rc;
 }
@@ -224,15 +234,18 @@ static int direct_pci_read(uint8_t bus, uint8_t dev, uint8_t fn,
 	char p[96];
 	int fd;
 	uint32_t v = 0;
+	ssize_t n;
 
 	snprintf(p, sizeof(p), "/sys/bus/pci/devices/0000:%02x:%02x.%u/config",
 		 bus, dev, fn);
 	fd = open(p, O_RDONLY | O_CLOEXEC);
 	if (fd < 0)
 		return -errno;
-	if (pread(fd, &v, width, off) != width) {
+	n = pread(fd, &v, width, off);
+	if (n != width) {
+		int rc = n < 0 ? -errno : -EIO;
 		close(fd);
-		return -errno;
+		return rc;
 	}
 	close(fd);
 	*val = v;
@@ -244,14 +257,16 @@ static int direct_pci_write(uint8_t bus, uint8_t dev, uint8_t fn,
 {
 	char p[96];
 	int fd, rc = 0;
+	ssize_t n;
 
 	snprintf(p, sizeof(p), "/sys/bus/pci/devices/0000:%02x:%02x.%u/config",
 		 bus, dev, fn);
 	fd = open(p, O_WRONLY | O_CLOEXEC);
 	if (fd < 0)
 		return -errno;
-	if (pwrite(fd, &val, width, off) != width)
-		rc = -errno;
+	n = pwrite(fd, &val, width, off);
+	if (n != width)
+		rc = n < 0 ? -errno : -EIO;
 	close(fd);
 	return rc;
 }
