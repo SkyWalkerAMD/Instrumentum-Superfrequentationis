@@ -4,10 +4,10 @@
 
 ## 授权与项目命名
 
-用户明确要求在 GitHub 创建公开仓库 `Instrumentum Super-accelerandi`，立即用于构建测试；
-开发完成后计划改为私密。仓库标识使用 `Instrumentum-Super-accelerandi`，标题保留空格。
+用户明确要求在 GitHub 创建公开仓库 `Instrumentum Superfrequentationis`，立即用于构建测试；
+开发完成后计划改为私密。仓库标识使用 `Instrumentum-Superfrequentationis`，标题保留空格。
 已通过 GitHub CLI 和连接器双重确认当前账号为 `SkyWalkerAMD`。
-仓库地址：<https://github.com/SkyWalkerAMD/Instrumentum-Super-accelerandi>。
+仓库地址：<https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis>。
 
 本源码目录是 Git 根，`.github/workflows/portability.yml` 位于根目录。
 GUI 程序名、模块名、96 字节 ABI、MMIO 协议、源码包名沿用原名称。
@@ -28,7 +28,7 @@ push、pull_request 和 workflow_dispatch 触发 portability 工作流。
 
 上传的 Actions artifacts 保留 7 天；发布验收所需的日志/包应另行归档到正式交付记录。
 GUI 源码未出现前，先收敛十目标 kernel 阶段，保留完整工作流的失败状态。
-本文件随首次推送进入仓库；实际 run URL、提交 SHA、目标结果和修复记录随后写入
+实际 run URL、提交 SHA、目标结果和修复记录写入 [Actions 实测记录](actions-debugging.md)、
 [验证状态](verification-status.md) 与根 CHANGELOG，不把配置文件当成运行成功证据。
 
 ## 计费和以后转为私密

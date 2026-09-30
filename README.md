@@ -1,11 +1,11 @@
-# Instrumentum Super-accelerandi
+# Instrumentum Superfrequentationis
 
-OCTool 多发行版移植。GitHub 仓库名为 `Instrumentum-Super-accelerandi`，
+OCTool 多发行版移植。GitHub 仓库名为 `Instrumentum-Superfrequentationis`，
 程序、模块、协议及 `octool-x.y.z-src.tar.gz` 的命名继续沿用 octool。
 
 在用户已有 port/ 重构上扩展 EL8/9/10、Ubuntu20.04/22.04/24.04/26.04、Debian11/12/13。
 
-**当前尚缺 GUI 源码，完整移植验证未完成。GitHub Actions 将执行真实 Linux 构建，
+**当前尚缺 GUI 源码，完整移植验证未完成。GitHub Actions 已开始执行真实 Linux 构建，
 失败和缺输入不会被标为通过。**
 
 从 [docs/README.md](docs/README.md) 和 [CHANGELOG.md](CHANGELOG.md) 开始。

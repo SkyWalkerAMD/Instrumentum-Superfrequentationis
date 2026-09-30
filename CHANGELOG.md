@@ -2,6 +2,27 @@
 
 ## 2.0.1 — 2026-09-30（未发布，待完整 Linux/GUI 验证）
 
+### 仓库改名与首轮真实 Linux CI 修复
+
+- 按用户后续要求，将公开仓库改名为 Instrumentum-Superfrequentationis，展示标题为
+  Instrumentum Superfrequentationis；已核实 GitHub 新地址、公开状态并同步 origin。
+- 首次提交 22d0ea0 的 Actions run 36657953069 实际完成：Ubuntu20.04 的 5.4.0-216-generic
+  模块实编、C 离线自测、17 项 Python 测试、临时证书签名、deb 构建和 DKMS 安装通过。
+  十目标总门禁失败；baseline 因缺原 GUI 源码失败，desktop 未执行，不将其豁免。
+- EL8/9/10 离线测试通过，kernel-devel 安装后没有 /lib/modules/<release>/build，导致目标枚举为空。
+  在一次性容器 bootstrap 中从 /usr/src/kernels 的配置读取 release 并补链接；
+  校验已有链接目的地，禁止以宿主 uname 或推测版本代替目标头文件。
+- Debian12/13、Ubuntu22.04/24.04/26.04 的 class_create 两种签名探测都失败。
+  对照上游 Makefile.lib，补齐 parse-time 探测缺失的 compiler_types.h 强制包含与 module flags；
+  保留每个签名的编译器 stderr，两种均失败时打印原始错误，避免仅看到通用失败。
+  仍是编译能力探测，没有新增内核版本判断；实际修复结果由下一轮云端验证决定。
+- Debian11 尚未进入编译：live security 索引引用的包返回 404。核实 Debian bug #1147093、
+  archive.debian.org 尚无该 security Release；官方 20260831T235959Z 快照的签名索引和
+  两个原来 404 的实际包均返回 200。仅在 Debian11 测试容器固定 main/security 快照；
+  仅该历史源使用 check-valid-until=no，继续要求 APT 签名，不用 trusted=yes。
+- bootstrap 日志从安装开始写入 artifact，安装失败也有完整证据。
+  首轮结果与后续修复依据见 docs/actions-debugging.md、docs/verification-status.md。
+
 ### 公开 GitHub 仓库与实际 Actions 接入
 
 - 用户明确授权创建公开仓库 Instrumentum Super-accelerandi，立即用 Actions 测试，
@@ -63,7 +84,7 @@
 - 源码归档入口生成 octool-2.0.1-src.tar.gz 与 SHA-256；不使用下划线版本名，
   排除二进制、旧 ZIP 和私钥。完整发布归档要求 GUI preflight 通过。
 
-### 本轮实际验证与限制
+### 首次本地验证与当时限制（后续 Actions 结果见本版本首节）
 
 - 第一轮 Python 回归 9 通过、1 个需 Linux 编译产物的测试跳过；Python compileall 通过。
 - Git Bash 对 10 个 shell 脚本、DKMS conf、launcher 的语法检查通过。

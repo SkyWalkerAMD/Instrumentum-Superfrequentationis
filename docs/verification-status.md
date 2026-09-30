@@ -2,6 +2,11 @@
 
 日期：2026-09-30。状态分为“输入包已有记录”“本轮实际检查”“尚未运行”，不混用。
 
+GitHub Actions 已实际运行。首轮为提交 `22d0ea0` 的
+[run 36657953069](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36657953069)，
+Ubuntu20.04 kernel job 成功，总门禁失败。当前改名、失败原因与修复见
+[Actions 实测记录](actions-debugging.md)。下表按这轮结果填写，修复后尚待复测。
+
 ## 输入包
 
 | 输入 | SHA-256 | 内容 |
@@ -51,19 +56,19 @@
 
 | 目标 | 本轮内核实编 | 本轮 GUI 编译/窗口 | 本轮 rpm/deb 安装 | 真机 MOK/对拍 |
 |---|---|---|---|---|
-| EL8 | 未运行 | 缺 GUI 源码/runner | 未运行 | 未运行 |
-| EL9 | 未运行 | 缺 GUI 源码/runner | 未运行 | 未运行 |
-| EL10 | 未运行 | 缺 GUI 源码/runner | 未运行 | 未运行 |
-| Ubuntu20.04 | 未运行 | 缺 GUI 源码/runner | 未运行 | 未运行 |
-| Ubuntu22.04 | 未运行 | 缺 GUI 源码/runner | 未运行 | 未运行 |
-| Ubuntu24.04 | 未运行 | 缺 GUI 源码/runner | 未运行 | 未运行 |
-| Ubuntu26.04 | 未运行 | 缺 GUI 源码/runner | 未运行 | 未运行 |
-| Debian11 | 未运行 | 缺 GUI 源码/runner | 未运行 | 未运行 |
-| Debian12 | 未运行 | 缺 GUI 源码/runner | 未运行 | 未运行 |
-| Debian13 | 未运行 | 缺 GUI 源码/runner | 未运行 | 未运行 |
+| EL8 | headers 路径发现失败；离线测试通过 | 缺 GUI 源码 | 未运行 | 未运行 |
+| EL9 | headers 路径发现失败；离线测试通过 | 缺 GUI 源码 | 未运行 | 未运行 |
+| EL10 | headers 路径发现失败；离线测试通过 | 缺 GUI 源码 | 未运行 | 未运行 |
+| Ubuntu20.04 | 5.4.0-216-generic 通过，含签名试验 | 缺 GUI 源码 | DKMS deb 安装通过；GUI 包未运行 | 未运行 |
+| Ubuntu22.04 | class_create 探测失败 | 缺 GUI 源码 | 未运行 | 未运行 |
+| Ubuntu24.04 | class_create 探测失败 | 缺 GUI 源码 | 未运行 | 未运行 |
+| Ubuntu26.04 | class_create 探测失败 | 缺 GUI 源码 | 未运行 | 未运行 |
+| Debian11 | security 包下载 404，尚未编译 | 缺 GUI 源码 | 未运行 | 未运行 |
+| Debian12 | class_create 探测失败 | 缺 GUI 源码 | 未运行 | 未运行 |
+| Debian13 | class_create 探测失败 | 缺 GUI 源码 | 未运行 | 未运行 |
 
-本机 WSL 未安装，未发现 Docker/Podman；当前工具没有远程 Linux 执行入口，
-Node 执行工具同样报告 win32。没有可用的云端 CI 运行链接，不能声称 CI 全绿。
+以下为接入 Actions 之前的环境核实历史：本机 WSL 未安装，未发现 Docker/Podman；
+当时当前工具没有远程 Linux 执行入口，Node 执行工具同样报告 win32。
 用户随后明确纠正：要求使用 OpenAI/Codex 自带托管云端；此前按自有服务器索要 SSH 有误。
 本轮进一步实测 Cloud CLI：可连接服务，任务列表为空，环境选择器没有具体环境可选。
 没有提交云端任务、上传源码或创建云资源；详情见 [cloud-access.md](cloud-access.md)。
@@ -74,7 +79,7 @@ Node 执行工具同样报告 win32。没有可用的云端 CI 运行链接，�
 
 ## 后续验证顺序
 
-1. 接入用户要求的 OpenAI 托管云环境，核实执行能力；先运行 Debian 三项真实 Kbuild。
+1. 使用已授权的公开 GitHub 仓库 Actions，修复并复测十项 kernel 任务。
 2. 接入实际 GUI 源码，核对 qmake 工程、模块列表、第三方库、资源和标题，再运行完整矩阵。
 3. 修复实测发现的包名/工具链/Qt 源码兼容问题，逐项记录日志，不豁免失败目标。
 4. 确认十目标 GUI 和包安装全绿后，执行 [真机清单](hardware-acceptance.md)。

@@ -28,6 +28,20 @@ esac
 test "$(uname -m)" = x86_64
 export DEBIAN_FRONTEND=noninteractive
 if command -v apt-get >/dev/null; then
+    if [ "$target" = debian11 ]; then
+        # The live security index still references removed packages (Debian
+        # #1147093). Use the last LTS day's official snapshot in CI only.
+        # HTTP bootstraps without ca-certificates; APT signatures stay required.
+        cat > /etc/apt/octool-bullseye-snapshot.list <<'EOF'
+deb [check-valid-until=no] http://snapshot.debian.org/archive/debian/20260831T235959Z/ bullseye main
+deb [check-valid-until=no] http://snapshot.debian.org/archive/debian-security/20260831T235959Z/ bullseye-security main
+EOF
+        cat > /etc/apt/apt.conf.d/99octool-snapshot <<'EOF'
+Dir::Etc::sourcelist "/etc/apt/octool-bullseye-snapshot.list";
+Dir::Etc::sourceparts "-";
+Acquire::Retries "3";
+EOF
+    fi
     apt-get update
     apt-get install -y --no-install-recommends ca-certificates python3 gcc g++ make \
         dkms kmod libelf-dev libc6-dev openssl mokutil util-linux passwd
@@ -68,6 +82,22 @@ if command -v apt-get >/dev/null; then
     done
 else
     dnf install -y "${kernels[@]}"
+    # kernel-devel alone supplies /usr/src/kernels, whereas the /lib/modules
+    # link may be supplied by kernel-core. No host kernel is installed or used.
+    for tree in /usr/src/kernels/*; do
+        [ -f "$tree/Makefile" ] && [ -s "$tree/include/config/kernel.release" ] || continue
+        kernel=$(cat "$tree/include/config/kernel.release")
+        [[ "$kernel" =~ ^[a-zA-Z0-9._+-]+$ ]] || { echo "invalid kernel release: $kernel" >&2; exit 1; }
+        test -s "$tree/include/generated/autoconf.h"
+        mkdir -p "/lib/modules/$kernel"
+        link=/lib/modules/$kernel/build
+        if [ -e "$link" ] || [ -L "$link" ]; then
+            test "$(readlink -f "$link")" = "$(readlink -f "$tree")"
+        else
+            ln -s "$tree" "$link"
+        fi
+        printf 'Target headers: %s -> %s\n' "$link" "$tree"
+    done
 fi
 if [ "$mode" = kernel ]; then
     if command -v apt-get >/dev/null; then

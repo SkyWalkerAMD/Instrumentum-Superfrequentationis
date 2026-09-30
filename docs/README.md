@@ -7,6 +7,7 @@
 
 - [多发行版构建、运行和打包](multi-distro.md)：十目标、构建入口、依赖方案、CI 门禁。
 - [GitHub 仓库与 Actions](github-actions.md)：当前测试路径、公开状态与计费边界。
+- [Actions 实测修复记录](actions-debugging.md)：软件源、Kbuild 探测与 EL headers 的实际失败及处理。
 - [云端接入状态](cloud-access.md)：用户要求 OpenAI 托管云端；当前工具/CLI 的实际核实结果。
 - [Linux Docker 执行指南](cloud-build.md)：独立 runner、日志和失败判定。
 - [真机验收清单](hardware-acceptance.md)：安装、MOK、insmod/modprobe、MMIO 对拍、GUI。

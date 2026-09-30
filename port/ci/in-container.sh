@@ -12,7 +12,8 @@ case "$action" in
     baseline|desktop) mode=build;;
     *) echo 'unknown action' >&2; exit 2;;
 esac
-bash port/ci/bootstrap.sh "$target" "$mode"
+cat /etc/os-release > "$out/os-release-$action.txt"
+bash port/ci/bootstrap.sh "$target" "$mode" 2>&1 | tee "$out/bootstrap-$action.log"
 family=$(python3 - "$target" <<'PY'
 import json, sys
 print(next(t for t in json.load(open('port/ci/targets.json')) if t['id'] == sys.argv[1])['family'])
