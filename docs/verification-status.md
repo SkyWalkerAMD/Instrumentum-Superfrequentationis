@@ -14,6 +14,10 @@ EL10 改用独立 Xlib 检查器后通过 Mutter/Xwayland；新增 PStates 页�
 详细记录见 [actions-run-36670288030.json](validation/actions-run-36670288030.json)。
 后续文档提交仍运行同一矩阵，最新状态可从仓库 Actions 查看；本页保留这一完整验收的精确源码版本。
 
+原版二进制的独立 EL 诊断见 [legacy-el-compatibility.md](legacy-el-compatibility.md)：
+配套私有运行库已在 EL8/9/10 越过装载并显示真实 Qt 对话框，但旧硬件检查显示 Not supported，
+其主窗口门禁仍失败。此结果不替换上面的重构基础版全绿记录。新打包另增加 GNU_STACK 非执行门禁。
+
 ## 验证范围
 
 | 层次 | 已取得的证据 | 尚不能推出的结论 |

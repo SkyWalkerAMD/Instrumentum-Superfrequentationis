@@ -13,21 +13,24 @@ from build_packages import module_stage, version
 from build_gui import source_path
 
 
-def minimal_elf(path, requirement="GLIBC_2.28", library="libc.so.6"):
+def minimal_elf(path, requirement="GLIBC_2.28", library="libc.so.6", stack_flags=6):
     """A real ELF64 layout; requirements are in .gnu.version_r, not strings."""
     strings = b"\0" + library.encode() + b"\0" + requirement.encode() + b"\0"
     index = len(library) + 2
     dynamic = struct.pack("<qQqQ", 1, 1, 0, 0)
     verneed = struct.pack("<HHIII", 1, 1, 1, 16, 0) + struct.pack("<IHHII", 0, 0, 2, index, 0)
     content = [b"", strings, dynamic, verneed]
-    offset, blocks, sections = 64, bytearray(), []
+    program = (struct.pack("<IIQQQQQQ", 0x6474e551, stack_flags, 0, 0, 0, 0, 0, 16)
+               if stack_flags is not None else b"")
+    offset, blocks, sections = 64 + len(program), bytearray(), []
     for kind, link, entry, block in zip([0, 3, 6, 0x6ffffffe], [0, 0, 1, 1], [0, 0, 16, 0], content):
         sections.append(struct.pack("<IIQQQQIIQQ", 0, kind, 0, 0, offset, len(block), link, 0, 1, entry))
         blocks.extend(block)
         offset += len(block)
     ident = b"\x7fELF\x02\x01\x01" + b"\0" * 9
-    header = struct.pack("<16sHHIQQQIHHHHHH", ident, 3, 62, 1, 0, 0, offset, 0, 64, 0, 0, 64, 4, 0)
-    path.write_bytes(header + blocks + b"".join(sections))
+    header = struct.pack("<16sHHIQQQIHHHHHH", ident, 3, 62, 1, 0, 64, offset, 0, 64, 56,
+                         int(bool(program)), 64, 4, 0)
+    path.write_bytes(header + program + blocks + b"".join(sections))
 
 
 class ReleaseGates(unittest.TestCase):
@@ -53,14 +56,26 @@ class ReleaseGates(unittest.TestCase):
 
     def test_cpp_floor_and_private_versions(self):
         for requirement in ["GLIBCXX_3.4.26", "CXXABI_1.3.12", "GLIBC_PRIVATE"]:
-            info = {"needed": ["libc.so.6"], "versions": [requirement], "rpaths": []}
+            info = {"needed": ["libc.so.6"], "versions": [requirement], "rpaths": [], "gnu_stack_flags": [6]}
             self.assertTrue(violations(info), requirement)
 
     def test_numeric_version_comparison_and_build_rpath(self):
-        info = {"needed": ["libc.so.6"], "versions": ["GLIBC_2.9"], "rpaths": []}
+        info = {"needed": ["libc.so.6"], "versions": ["GLIBC_2.9"], "rpaths": [], "gnu_stack_flags": [6]}
         self.assertFalse(violations(info))
         info["rpaths"] = ["/home/author/qt/lib"]
         self.assertTrue(violations(info))
+
+    def test_executable_or_undeclared_stack_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            binary = Path(tmp) / "gui"
+            minimal_elf(binary, stack_flags=7)
+            info = elf_info(binary)
+            self.assertEqual(info['gnu_stack_flags'], [7])
+            self.assertIn('executable GNU_STACK is not allowed in the portable GUI', violations(info))
+            minimal_elf(binary, stack_flags=None)
+            self.assertIn('expected exactly one PT_GNU_STACK declaration', violations(elf_info(binary)))
+            minimal_elf(binary, stack_flags=6)
+            self.assertEqual(violations(elf_info(binary)), [])
 
     def test_non_elf_is_not_accepted(self):
         with tempfile.TemporaryDirectory() as tmp:

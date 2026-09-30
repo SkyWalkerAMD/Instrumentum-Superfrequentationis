@@ -147,6 +147,33 @@ PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/elf-runtime-audit
 下一步真机证据应包含只读 `lspci -Dnn -s 0000:00:00.0`、`board_vendor`/`board_name`、lockdown 模式，
 不需要公开序列号/UUID。涉及访问方案的变化须继续保持旧 MMIO 线级协议。
 
+### 原生环境进一步核对（36675803213）
+
+[第三轮证据](validation/legacy-el-run-36675803213.json)：EL9 的实际 CPUID 是
+`AuthenticAMD / EAX=00a10f11`，EL10 为 `GenuineIntel / EAX=000a06d1`，两者仍然 Not supported。
+两台云端机器均没有 `/sys/bus/pci/devices/0000:00:00.0/{vendor,device}`，DMI 文本为
+`Microsoft Corporation / Virtual Machine`。这进一步说明 AMD CPUID 本身不会通过旧程序的 PCI 判断。
+没有据这些值推断用户四套真机的结果。
+
+此轮 EL8 在构建显示镜像时失败，尚未执行 GUI：DNF 镜像的 AppStream 提供了 gcc-8.5.0-29，
+但所选 BaseOS 元数据缺少匹配 libgcc/libgomp。官方 `dl.rockylinux.org` 上这三个确切 RPM 的 HEAD
+均返回 200。诊断 Containerfile 将 BaseOS/AppStream 指向同一官方入口并刷新元数据；不使用
+`--skip-broken` 绕过必需依赖，不把这次仓库失败归因于 OCTool 或计为窗口通过。
+
+## ELF 可执行栈与 EL 策略验收
+
+又一项实际发现：原 ELF 的 `PT_GNU_STACK.p_flags=7`（RWE），十个已归档重构版原生 GUI 均为
+6（RW），见[逐文件哈希与标志](validation/gnu-stack-audit.json)。这属于 ELF 属性，不是源码重编推测。
+EL 目标机是否因其 SELinux 域/策略拒绝原程序的 execstack，仍需真实 AVC 日志确认；容器窗口不验证
+该策略。不能从缺少原汇编源码就假定 executable-stack 标志可以直接清掉。
+
+生产打包的 [check_elf.py](../port/tools/check_elf.py)现解析程序头表，要求唯一 PT_GNU_STACK 且无 PF_X，
+防止后续恢复 NASM/汇编功能时把旧属性重新带入新 GUI。新增真实 ELF 布局的 RWE/缺失标记负例；
+不修改原文件，也不建议关闭目标机 SELinux。
+属性含义参考 [GNU ld 的栈选项](https://sourceware.org/binutils/docs/ld/Options.html)，
+策略拒绝示例见 [Red Hat execstack 诊断](https://access.redhat.com/solutions/43215)；示例是另一程序的
+受限域，不作为 OCTool 在默认 EL 桌面必然被拒绝的证据。
+
 ## 相关原始资料
 
 - [glibc：显式启动动态加载器](https://sourceware.org/glibc/manual/2.39/html_node/Dynamic-Linker-Invocation.html)。

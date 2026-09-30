@@ -32,6 +32,14 @@
   docs/legacy-el-compatibility.md 记录完整数值条件、私有/原生库版本和三张真实对话框截图。
 - 8854069 / portability run 36674187756 与 19d38f9 / run 36674723621 均完整 23 job 成功；
   重构基础版十目标继续全绿。原版的独立 legacy 诊断是失败结果，未混入或冒充生产 GUI 成功证据。
+- e573b19 / legacy run 36675803213：EL9 实际为 AuthenticAMD、EL10 为 GenuineIntel，均没有
+  00:00.0 sysfs 节点、DMI 为 Microsoft Virtual Machine，仍是 Not supported。EL8 此轮在 dnf
+  阶段遇到跨仓库镜像元数据不一致（gcc29 缺 libgcc/libgomp29），没有运行 GUI；官方确切 RPM
+  HEAD 均 200。诊断镜像改为同一官方 BaseOS/AppStream 入口并清理元数据，待复测。
+- 原样本 PT_GNU_STACK=7(RWE)，十目标已归档重构 GUI 均为 6(RW)。生产 ELF 检查新增程序头
+  解析、唯一栈声明及禁止 PF_X 门禁，避免后续汇编恢复引入 EL 策略兼容性问题；未修改原 ELF。
+  Windows 离线测试 18 项中 17 通过、1 项 Linux-only 跳过，实际 EL8 GUI 新门禁通过。
+  SELinux 是否拒绝旧程序需真机 AVC，已补充身份/权限/策略验收步骤，未据此宣称默认 EL 必然拒绝。
 
 ### Windows 包取得与 GUI 第一阶段重构
 

@@ -172,6 +172,7 @@ def inspect(path, pattern, include_instructions=False):
             flags.append({'tag': tag.entry.d_tag, 'value': tag.entry.d_val})
     return {'binary': path.name, 'sha256': hashlib.sha256(data).hexdigest(), 'executed': False,
             'entry': elf['e_entry'], 'needed': sorted(needed), 'dynamic_flags': flags,
+            'gnu_stack_flags': [s['p_flags'] for s in elf.iter_segments() if s['p_type'] == 'PT_GNU_STACK'],
             'scope': 'Static direct calls / GOT data references only; no runtime reachability claim',
             'functions_scanned': function_count, 'incomplete_decodes': undecoded,
             'imports': sorted(imports.values(), key=lambda x: (x['provider'] or '', x['symbol'])),

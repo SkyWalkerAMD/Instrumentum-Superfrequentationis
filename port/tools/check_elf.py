@@ -22,6 +22,16 @@ def elf_info(path):
     header = struct.unpack_from("<16sHHIQQQIHHHHHH", data)
     if header[2] != 62:
         raise ValueError("expected x86-64 ELF")
+    program_offset, program_size, program_count = header[5], header[9], header[10]
+    if program_count and (program_size != 56 or program_count == 0xffff):
+        raise ValueError("unsupported ELF program table")
+    if program_offset + program_size * program_count > len(data):
+        raise ValueError("truncated ELF program table")
+    stack_flags = []
+    for i in range(program_count):
+        program = struct.unpack_from("<IIQQQQQQ", data, program_offset + i * program_size)
+        if program[0] == 0x6474e551:  # PT_GNU_STACK; PF_X = 1
+            stack_flags.append(program[1])
     offset, size, count = header[6], header[11], header[12]
     if size != 64 or count == 0:
         raise ValueError("missing or unsupported ELF section table")
@@ -75,11 +85,17 @@ def elf_info(path):
                 pos += nxt
     if not needed:
         raise ValueError("expected dynamically linked glibc with static Qt")
-    return {"needed": sorted(needed), "versions": sorted(versions), "rpaths": paths}
+    return {"needed": sorted(needed), "versions": sorted(versions), "rpaths": paths,
+            "gnu_stack_flags": stack_flags}
 
 
 def violations(info):
     errors = []
+    stacks = info.get("gnu_stack_flags", [])
+    if len(stacks) != 1:
+        errors.append("expected exactly one PT_GNU_STACK declaration")
+    elif stacks[0] & 1:
+        errors.append("executable GNU_STACK is not allowed in the portable GUI")
     for requirement in info["versions"]:
         for namespace, limit in LIMITS.items():
             if requirement.startswith(namespace + "_"):

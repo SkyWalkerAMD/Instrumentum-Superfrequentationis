@@ -254,6 +254,23 @@ GUI 如需 root，使用该机器的合法本地显示认证，在已授权的�
 
 ## 6. 单目标验收记录模板
 
+原版 GUI 使用单独的[旧 ELF 兼容性记录](legacy-el-compatibility.md)，不能只签重构版的结果。
+验收原版时还须保存以下只读信息，确认旧程序的实际 PCI/DMI 判断和策略环境：
+
+```sh
+lspci -Dnn -s 0000:00:00.0
+cat /sys/devices/virtual/dmi/id/board_vendor
+cat /sys/devices/virtual/dmi/id/board_name
+cat /sys/kernel/security/lockdown  # 不存在/不可读也记录原错误
+getenforce                     # 如已安装 SELinux 工具
+readelf -W -l /实际路径/octool  # 原版 GNU_STACK 当前是 RWE
+```
+
+没有 00:00.0、无权限、Not supported 对话框、只启动后退出，分别记录，不能计为 Work Tool 主窗口通过。
+若有 execstack/SELinux 拒绝，保存相应 AVC 后再分析，不通过关掉策略或改原 ELF 标志来签验收。
+不采集序列号/UUID。实验 `port/legacy/run.sh` 只用于普通用户窗口诊断，硬件访问仍按前面已授权的
+真机步骤单独验收；私有加载器/库不等于已签名模块或已解决旧 iopl/直接 MSR 路径。
+
 | 项目 | 结果/证据路径 |
 |---|---|
 | OS 品牌/版本/架构 | |

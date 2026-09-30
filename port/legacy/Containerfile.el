@@ -1,7 +1,11 @@
-ARG IMAGE
+ARG IMAGE=rockylinux:8
 FROM ${IMAGE}
-ARG TARGET
+ARG TARGET=el8
 RUN dnf install -y dnf-plugins-core epel-release && \
+    dnf config-manager --save --setopt=baseos.mirrorlist= --setopt=appstream.mirrorlist= \
+      --setopt="baseos.baseurl=https://dl.rockylinux.org/pub/rocky/${TARGET#el}/BaseOS/x86_64/os/" \
+      --setopt="appstream.baseurl=https://dl.rockylinux.org/pub/rocky/${TARGET#el}/AppStream/x86_64/os/" && \
+    dnf clean metadata && \
     if dnf repolist --all | awk '{print $1}' | grep -qx crb; then dnf config-manager --set-enabled crb; fi && \
     if dnf repolist --all | awk '{print $1}' | grep -qx powertools; then dnf config-manager --set-enabled powertools; fi && \
     dnf install -y gcc libX11-devel python3 shadow-utils util-linux dejavu-sans-fonts \
