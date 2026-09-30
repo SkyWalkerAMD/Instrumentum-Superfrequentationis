@@ -5,8 +5,8 @@ OCTool 多发行版移植。GitHub 仓库名为 `Instrumentum-Superfrequentation
 
 在用户已有 port/ 重构上扩展 EL8/9/10、Ubuntu20.04/22.04/24.04/26.04、Debian11/12/13。
 
-**当前尚缺 GUI 源码，完整移植验证未完成。GitHub Actions 已开始执行真实 Linux 构建，
-失败和缺输入不会被标为通过。**
+**十个目标的模块实编、离线自测和 DKMS 包安装/重装已通过真实 GitHub Actions。
+GUI 源码待恢复或重构，完整移植验证尚未完成，总门禁保持失败。**
 
 从 [docs/README.md](docs/README.md) 和 [CHANGELOG.md](CHANGELOG.md) 开始。
 

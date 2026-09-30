@@ -1,15 +1,16 @@
 # 在 Linux Docker 环境运行矩阵
 
-更新：2026-09-30。用户要求使用 OpenAI/Codex 托管云端；此前理解为用户提供服务器有误，
-已在 [云端接入状态](cloud-access.md) 纠正。本页是通用 Linux Docker runner 的执行说明，
-不要求用户提供 SSH。这份文档和 runner 是执行入口，**不是已经产生的云端构建结果**。
+更新：2026-09-30。当前实际测试使用用户明确选择的公开 GitHub 仓库 Actions，
+见 [Actions 接入](github-actions.md) 和 [实测结果](verification-status.md)。
+此前把 OpenAI 托管云端理解为用户提供服务器有误，历史纠正保存在 [云端接入状态](cloud-access.md)。
+本页是通用 Linux Docker runner 的独立复现说明，不要求用户提供 SSH。
 
 ## 执行前提
 
-- 已进入可用的 Linux 构建环境，源码已在该环境中；优先采用用户要求的 OpenAI 托管环境。
+- 已进入可用的 Linux 构建环境，源码已在该环境中。
 - 已确定构建目录，Docker 已安装且当前账号可访问该环境内的 Docker daemon。
-  这项能力尚未在托管云端核实。runner 本身不创建云资源、不自动安装 Docker。
-- 原 GUI 源码的真实路径或仓库。现有 octool-linux.zip 是二进制，OCTool0528.zip
+  Actions 的 Linux/Docker 能力已实测；这个独立 runner 本身不创建云资源、不自动安装 Docker。
+- 恢复或重构后的 GUI 源码。作者确认原 Linux GUI 源码丢失；现有 octool-linux.zip 是二进制，OCTool0528.zip
   尚未在指定目录找到；不能拿旧 Ubuntu ELF 代替 EL8 重编。
 
 宿主要求：Linux x86_64、Python 3.8 或更新、可用的本机 Linux/amd64 Docker daemon，

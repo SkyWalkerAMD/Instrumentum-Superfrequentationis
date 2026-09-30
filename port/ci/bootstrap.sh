@@ -140,6 +140,7 @@ if command -v apt-get >/dev/null; then
         libxcb-util0-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-render-util0-dev \
         libxcb-icccm4-dev libxcb-xinerama0-dev libxcb-xkb-dev libxkbcommon-dev \
         libxkbcommon-x11-dev libfontconfig1-dev libfreetype6-dev libdbus-1-dev \
+        libatspi2.0-dev \
         libglib2.0-dev libudev-dev libhwloc-dev libbluetooth-dev libcups2-dev \
         libwayland-dev libxcomposite-dev libdrm-dev
 else
@@ -148,5 +149,6 @@ else
         libxcb-devel xcb-util-devel xcb-util-image-devel xcb-util-keysyms-devel \
         xcb-util-renderutil-devel xcb-util-wm-devel libxkbcommon-devel libxkbcommon-x11-devel \
         fontconfig-devel freetype-devel dbus-devel glib2-devel systemd-devel hwloc-devel \
+        at-spi2-core-devel \
         bluez-libs-devel cups-devel wayland-devel libXcomposite-devel libdrm-devel
 fi

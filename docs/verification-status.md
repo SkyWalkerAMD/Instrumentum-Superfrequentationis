@@ -2,12 +2,14 @@
 
 日期：2026-09-30。状态分为“输入包已有记录”“本轮实际检查”“尚未运行”，不混用。
 
-GitHub Actions 已实际运行。第四轮提交 `a8a5f1e` 的
-[run 36659550123](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36659550123)
+GitHub Actions 已实际运行。第六轮提交 `3f7f942` 的
+[run 36660297759](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36660297759)
 十个 kernel job 全部成功，覆盖 11 个实际 kernel release。每个目标的 HAL、C 离线自测、
-17 项 Python 测试、模块实编、签名试验和 DKMS 原生包安装通过；总门禁因 GUI 缺失仍失败。
+17 项 Python 测试、模块实编、签名试验、DKMS 原生包初装、同版本重装和卸载再安装通过；
+总门禁因 GUI 缺失仍失败。
 镜像 digest、kernel release、API 探测分支与包 SHA-256 见
-[机器可读证据](validation/actions-run-36659550123.json)。失败到修复过程见
+[机器可读证据](validation/actions-run-36660297759.json)。首次十目标初装证据保留在
+[第四轮记录](validation/actions-run-36659550123.json)。失败到修复过程见
 [Actions 实测记录](actions-debugging.md)。
 
 ## 输入包

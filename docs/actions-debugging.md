@@ -80,6 +80,17 @@ deb [check-valid-until=no] http://snapshot.debian.org/archive/debian-security/20
 
 ## 证据保留和后续
 
+### EL8 静态 Qt 独立诊断
+
+[run 36659551087](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36659551087)
+实际校验官方 Qt5.15.18 源码并进入静态 C++ 编译。实时 configure 报告 ICU=no、内置 JPEG/TIFF/WebP、
+accessibility=yes，但缺少 atspi-2 开发头，X11 AT-SPI bridge 被关闭。
+依据[Qt GUI configure.json](https://github.com/qt/qtbase/blob/v5.15.18-lts-lgpl/src/gui/configure.json)，
+bridge 需要 accessibility、xcb、D-Bus 和 atspi-2；补 Debian libatspi2.0-dev / EL at-spi2-core-devel，
+显式要求 feature 并核验安装后的宏。首轮作为失败配置的诊断证据保留，修复后重新构建。
+OpenSSL 在首轮配置中为 no；完整网络/TLS 功能尚待恢复 GUI 后按实际需求实现并验收，
+不把单独 SDK 构建当作所有 GUI 功能和运行依赖均已解决。
+
 第四轮 [run 36659550123](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36659550123)
 （a8a5f1e）十目标 kernel 全部成功，含三个 Debian、三个 EL、四个 Ubuntu，Ubuntu22.04 同测 GA/HWE。
 EL8 的 RPM 安装索引问题已解决，所有目标均通过按模块名 modinfo 和版本/vermagic 检查。
@@ -96,6 +107,11 @@ safe-upgrade 锁已实际生效（旧包 preun 正确取消 remove）；问题�
 改由发行包的 dkms-register 在每次安装后实际 `depmod -a <target>`，再按模块名核对
 MODULE_VERSION/vermagic 后才报告成功；移除 CI 预先创建索引的补丁。
 这项修复也覆盖真实 headers-only 目标树，无需修改用户全局 DKMS 配置。
+
+第六轮 [run 36660297759](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36660297759)
+（3f7f942）十个 kernel job 再次全部通过，含初装、同版本重装、卸载再安装以及全部离线门禁。
+完整机器可读结果和更新后的包哈希见
+[actions-run-36660297759.json](validation/actions-run-36660297759.json)。本地 dist/packages/ 已替换为这轮产物。
 
 每次修复保留失败 run；成功只能按具体源码 SHA、目标镜像和发行版包版本陈述。
 Actions artifacts 保留 7 天；实际 kernel release、包 hash 和运行链接应追加到 docs/validation。

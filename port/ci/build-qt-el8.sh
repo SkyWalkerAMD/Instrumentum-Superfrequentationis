@@ -31,11 +31,13 @@ done
     -opensource -confirm-license -nomake examples -nomake tests \
     -no-icu -qt-libjpeg -qt-libpng -qt-zlib -qt-pcre -qt-harfbuzz \
     -qt-tiff -qt-webp \
-    -fontconfig -system-freetype -accessibility -dbus-linked -xcb -xcb-xlib \
+    -fontconfig -system-freetype -accessibility -feature-accessibility-atspi-bridge \
+    -dbus-linked -xcb -xcb-xlib \
     -opengl desktop "${skip[@]}"
 make -j"${JOBS:-2}"
 make install
 grep -Eq '^#define QT_FEATURE_accessibility 1$' /opt/octool-qt/include/QtGui/qtgui-config.h
+grep -Eq '^#define QT_FEATURE_accessibility_atspi_bridge 1$' /opt/octool-qt/include/QtGui/qtgui-config*.h
 test -f /opt/octool-qt/plugins/platforms/libqxcb.a
 python3 - "$source_dir" <<'PY'
 import pathlib, shutil, sys

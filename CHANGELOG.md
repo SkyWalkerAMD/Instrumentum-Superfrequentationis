@@ -4,6 +4,16 @@
 
 ### 仓库改名与首轮真实 Linux CI 修复
 
+- EL8 Qt SDK 首轮 run 36659551087 确实进入 C++ 编译，官方 Qt 源 SHA 校验通过。
+  实时 configure 日志显示 accessibility=yes 但 AT-SPI bridge 缺依赖而关闭。
+  核对 Qt5.15.18 src/gui/configure.json 的 atspi-2 探测条件，补 libatspi2.0-dev /
+  at-spi2-core-devel，并显式要求该 feature，安装后检查生成头的 bridge 宏。
+  首轮日志保留为诊断，修复后重跑；诊断 runner 使用 JOBS=4，常规构建默认仍为 2。
+  同一配置还显示 OpenSSL=no；原 GUI 网络功能缺源码无法确认，未把 SDK 声称为完整 GUI 验收。
+- 第六轮 3f7f942 / run 36660297759：十目标完整 kernel job 全部通过，包含初装、同版本重装、
+  卸载再安装；所有目标最终版本/vermagic 查询通过。回归确认每次安装刷新 depmod 修复有效。
+  新证据写入 docs/validation/actions-run-36660297759.json；dist/packages/ 更新为这轮包。
+  README、构建指南与云端指南同步当前状态，保留早期失败记录，GUI 总门禁依然失败。
 - 第五轮 818af54 / run 36659952626 的生命周期测试找出 EL 三项和 Ubuntu26.04 重装缺模块索引问题。
   rpm_safe_upgrade 锁已生效；DKMS force rebuild 删除最后一个模块时清掉 modules.dep，
   随后 install 又跳过 depmod。将索引建立收敛到包内 dkms-register：每次安装后实际 depmod，
