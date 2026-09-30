@@ -12,6 +12,8 @@ RUN dnf install -y dnf-plugins-core epel-release && \
     useradd -u 10001 -m smoke
 COPY port/ci/window-probe.c /tmp/window-probe.c
 RUN gcc -std=c11 -O2 -Wall -Wextra -Werror /tmp/window-probe.c -lX11 -o /usr/local/bin/window-probe
+COPY port/legacy/capture-window.c /tmp/capture-window.c
+RUN gcc -std=c11 -O2 -Wall -Wextra -Werror /tmp/capture-window.c -lX11 -o /usr/local/bin/capture-window
 COPY port/legacy/smoke.py /opt/legacy-smoke.py
 USER 10001
 ENV HOME=/home/smoke XDG_RUNTIME_DIR=/tmp/legacy-xdg

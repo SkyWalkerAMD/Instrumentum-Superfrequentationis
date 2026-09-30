@@ -5,10 +5,28 @@ import json
 import os
 import re
 import signal
+import struct
 import subprocess
 import sys
 import time
+import zlib
 from pathlib import Path
+
+
+def capture(window, output):
+    ppm = output.with_suffix('.ppm')
+    subprocess.check_call(['/usr/local/bin/capture-window', window, str(ppm)])
+    data = ppm.read_bytes().split(b'\n', 3)
+    assert data[0] == b'P6' and data[2] == b'255'
+    width, height = map(int, data[1].split())
+    assert len(data[3]) == width * height * 3
+    def chunk(kind, payload):
+        return struct.pack('>I', len(payload)) + kind + payload + struct.pack('>I', zlib.crc32(kind+payload) & 0xffffffff)
+    scanlines = b''.join(b'\0' + data[3][y*width*3:(y+1)*width*3] for y in range(height))
+    output.write_bytes(b'\x89PNG\r\n\x1a\n' +
+                       chunk(b'IHDR', struct.pack('>IIBBBBB', width, height, 8, 2, 0, 0, 0)) +
+                       chunk(b'IDAT', zlib.compress(scanlines)) + chunk(b'IEND', b''))
+    ppm.unlink()
 
 
 def main():
@@ -33,6 +51,9 @@ def main():
                             stderr=subprocess.STDOUT, universal_newlines=True)
     (out/'native-loader.txt').write_text(native.stdout)
     result['native_loader_returncode'] = native.returncode
+    # glibc's ldd may return zero while printing unresolved versions/SONAMEs.
+    result['native_loader_problems'] = [line.strip() for line in native.stdout.splitlines() if 'not found' in line]
+    result['native_packages'] = subprocess.check_output(['rpm', '-q', 'glibc', 'libstdc++'], universal_newlines=True).splitlines()
     loader = [str(runtime/'ld-linux-x86-64.so.2'), '--inhibit-cache',
               '--library-path', str(runtime/'lib'), '--list', str(runtime/'octool')]
     trace = subprocess.run(loader, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
@@ -70,6 +91,8 @@ def main():
             else:
                 result['status'] = 'no-window'
             result['windows'], result['pid'] = windows, proc.pid
+            for number, window in enumerate(windows):
+                capture(window['id'], out/'window-{}.png'.format(number))
             if proc.poll() is None:
                 maps = Path('/proc/{}/maps'.format(proc.pid)).read_text()
                 (out/'maps.txt').write_text(maps)

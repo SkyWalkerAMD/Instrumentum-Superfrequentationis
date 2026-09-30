@@ -54,6 +54,9 @@ shutil.copy2(out/'lib/ld-linux-x86-64.so.2', out/'ld-linux-x86-64.so.2')
 gconv = Path('/usr/lib/x86_64-linux-gnu/gconv')
 if gconv.exists():
     shutil.copytree(gconv, out/'lib/gconv')
+# EL8/9 display-only installations may have fonts but no /etc/fonts at all.
+# Materialize Ubuntu's config links and resolve them inside this application.
+shutil.copytree('/etc/fonts', out/'etc/fonts', symlinks=False)
 (out/'packages.tsv').write_bytes(subprocess.check_output(
     ['dpkg-query', '-W', '-f=${binary:Package}\t${Version}\n']))
 manifest = {'original_sha256': hashlib.sha256((out/'octool').read_bytes()).hexdigest(),

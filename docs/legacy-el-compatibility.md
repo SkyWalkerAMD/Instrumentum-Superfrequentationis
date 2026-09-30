@@ -54,20 +54,45 @@ PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/elf-runtime-audit
   采用原版已有的 xcb 插件，禁用本实验中的 GL 集成，EL10 通过 Mutter/Xwayland。
 - [独立诊断 workflow](../.github/workflows/legacy-runtime.yml)手动触发，三条 Rocky 容器各自执行。
   旧 ELF 经仓库的**未发布草稿附件**鉴权下载，原文件 SHA 固定，令牌不传入容器。
-  仅上传文本证据；原 ELF、运行库、核心转储和凭证都不上传公开 artifact。
+  仅上传文本证据和实际窗口截图；原 ELF、运行库、核心转储和凭证都不上传公开 artifact。
 - 测试进程 UID10001，无任何 capabilities、无宿主硬件设备、禁止网络、不模拟寄存器。
   校验 DT_NEEDED 全部来自私有目录，再检查实际 `/proc/PID/maps` 中没有混入宿主 `.so`。
   记录 loader/Qt 输出、窗口所有者 PID、标题、OS、镜像、宿主内核和实际可执行路径。
 - `Work Tool` 主窗口持续可见 5 秒才算窗口门禁通过。只显示 Error 等对话框会单独记录为
   `dialog-only` 并使任务失败，不能把不支持硬件的提示当作主窗口成功。
 
-初始提交时这条实验尚未取得云端结果，不能称原版已经兼容。实测结果随后追加在本页。
 原 ELF 草稿附件上传曾被自动审批拒绝，理由是云端测试授权未明确涵盖该文件外传；
-已经向作者提交具体上传范围的选择。未经该项明确授权不执行上传；源码和分析工具验证可继续。
+作者随后明确选择“允许上传并测试”。已上传到 draft release 399746966 / asset 600130240，
+GitHub asset digest 与原文件一致；匿名 HEAD 查询 release 和 asset 均为 404。
+保持草稿状态，不发布这份输入。
 私有库只解决用户态装载；没有解决 iopl/MSR、硬件寄存器正确性、Secure Boot 或原全部页面。
 字体/区域设置、OpenGL、外部程序、动态 NSS/驱动模块还需逐项验证。容器使用云端宿主内核，
 不能把 EL8 容器窗口成功描述成已在 EL8 的 4.18 内核完成硬件验收。
 正式重构版仍走 EL8 静态 Qt 基线与系统 glibc，不把这套实验运行库塞进已有 RPM/DEB。
+
+## 云端实测 36674306980：装载通过，主窗口未通过
+
+[首轮运行](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36674306980)
+使用提交 8854069。真实 ELF fixture 测试成功；三个旧 GUI 任务均因 `dialog-only` 失败，
+没有放宽窗口门禁或修改原 ELF。
+
+| 目标 | `/etc/os-release` | 私有加载器 | 实际 Qt 窗口 | 结果 |
+|---|---|---|---|---|
+| EL8 | Rocky8.9 基础镜像 | 72 个库文件，返回 0，无外部 `.so` | Error，Xvfb | 主窗口未通过 |
+| EL9 | Rocky9.3 基础镜像 | 同上 | Error，Xvfb | 主窗口未通过 |
+| EL10 | Rocky10.2 | 同上 | Error，Mutter/Xwayland | 主窗口未通过 |
+
+容器部分包会由 dnf 更新，基础镜像 OS 字符串不能代替每个包的版本；后续补充 rpm 版本记录。
+宿主内核均为 `6.17.0-1022-azure`，UID10001，实际 `/proc/PID/exe` 为私有目录里的加载器。
+三目标的私有 libc/libm/libstdc++ 哈希相同，所有可见映射的 `.so` 都在私有目录。
+这证明原始 ELF 已跨过装载/Qt 显示阶段，**尚未证明进入主窗口或任何硬件功能**。
+
+原生日志保留缺失的 GLIBC/GLIBCXX/SONAME；此处发现 `ldd` 在打印这些错误时也可能返回 0，
+因此诊断新增错误行检查，不把 `ldd` 零退出码当作依赖通过。
+EL8/9 还报告 `Fontconfig error: Cannot load default config file`，EL10 没有；新增随运行库复制
+字体配置并设置应用内 FONTCONFIG_PATH/FONTCONFIG_FILE。三者都有 PCI 配置和 `/dev/mem`
+权限/设备错误。Error 的具体内容要由截图确认，不能只根据标题推断。
+后续诊断新增只读 XGetImage 截图，不发送按键/鼠标，不绕过硬件识别。
 
 ## 相关原始资料
 
