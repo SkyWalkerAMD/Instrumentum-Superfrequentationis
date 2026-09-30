@@ -4,6 +4,17 @@
 
 ### Windows 包取得与 GUI 第一阶段重构
 
+- c63582b / run 36666155701：十个 kernel job 全部通过；Ubuntu24 的 fortified pread
+  实际命中 1 次，transport 修复获得验证。EL8 GUI/测试程序链接、7 项 Qt 测试结果和 ABI 下限门禁通过。
+  Ubuntu22/24、Debian12/13 的 native GUI、安装包与两个真实窗口冒烟通过。
+- 同轮真实 GUI 矩阵发现四类差异：EL8/10 release payload 没有 DWARF，RPM debugsource 空清单失败，
+  仅 GUI runtime spec 关闭自动 debug_package；EL9 curl-minimal 与 curl 冲突，按 /usr/bin/curl
+  能力安装；Ubuntu20/Debian11 缺 wl_proxy_marshal_flags，qmake 明确限定平台插件为 xcb/offscreen，
+  Wayland 桌面通过 Xwayland；Ubuntu26 xwfb-run 缺 xauth，显式加入两类 Xwayland runtime 依赖。
+  bootstrap 配方改变会使 SDK 缓存/旧 seed 失效，下一轮真实重建 Qt，不能冒用旧配方的验证。
+- 可见窗口冒烟增加四页截图，便于检查真实渲染。新增可复用 PE/ELF Qt 元对象静态分析器与输入
+  SHA/清单证据；ELF 720 个 Qt 字符串表、Tool.exe 358 个，两者共有 243 个类名。
+  分析器不还原 C++ 源码、不推断寄存器语义，不执行输入二进制。
 - run 36665814220 实际完成 EL8 GUI 与测试程序链接，SDK seed/cache 校验成功；GUI 回归退出 1。
   首轮日志在失败时未打印测试文件，现用 finally 保留失败细节；修正模拟确认只调用 dialog.done
   而不点击按钮的问题，并清理误导缩进告警。未把这次链接成功当作窗口/功能验收成功。

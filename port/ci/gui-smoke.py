@@ -39,7 +39,8 @@ def main():
     title = re.compile(cfg["window_title_regex"])
     args.log.parent.mkdir(parents=True, exist_ok=True)
     with args.log.open("w") as log:
-        proc = subprocess.Popen([args.binary], stdout=log, stderr=subprocess.STDOUT,
+        env = dict(os.environ, OCTOOL_SMOKE_SCREENSHOT=str(args.log.with_suffix("")))
+        proc = subprocess.Popen([args.binary], stdout=log, stderr=subprocess.STDOUT, env=env,
                                 start_new_session=True)
         seen, start = None, time.monotonic()
         try:

@@ -68,7 +68,29 @@ EL8 Qt SDK 添加构建脚本/依赖脚本哈希缓存，每次恢复先核对�
 首次缓存缺失时，可从已验证的 run 36661824443 引导：qt-sdk-seed.json 同时固定
 SDK SHA-256 和两份 Qt/依赖构建脚本 SHA-256。配方改变或 artifact 到期则回退源码构建；
 下载内容哈希不符直接失败。此机制只复用 EL8 Qt SDK，不复用 GUI 或测试结论。
-首轮 Linux GUI 构建结果尚待 Actions 实测，不能把本页的实现清单当成已通过的验收结果。
+run [36666155701](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36666155701)
+实际通过 EL8 GUI/7 项 Qt 测试/ABI 门禁、十目标 kernel job，以及 Ubuntu22/24、Debian12/13
+的 desktop job。其余六目标失败，总门禁为红，修复后必须重新验证。
+
+## 第一轮完整 GUI 矩阵发现的运行时差异
+
+- EL8/10 的 GUI RPM 是对 EL8 release payload 的重打包，没有 DWARF 源记录；自动 debugsource
+  的文件清单为空导致失败。只在 GUI runtime spec 设置 `%global debug_package %{nil}`，
+  保留自动共享库依赖分析，不影响源码 DKMS 包。
+- EL9 基础镜像已有 curl-minimal；直接要求 curl 产生冲突。构建依赖改为 `/usr/bin/curl`
+  文件能力，允许发行版选择可提供该命令的包，不使用 skip-broken。
+- Ubuntu20.04/Debian11 的 Wayland client 库不提供 EL8 更新后生成代码所需的
+  `wl_proxy_marshal_flags`。Qt 静态构建中 `QTPLUGIN += qxcb` 不会排除默认自动导入的
+  Wayland 平台插件，必须设置 `QTPLUGIN.platforms = qxcb qoffscreen` 覆盖平台组。
+  正式窗口使用 xcb；EL10/Ubuntu26 的 Wayland 会话通过 Xwayland。这不是原生 Qt Wayland
+  插件验收，也不需要给旧发行版捆绑新 Wayland 客户端库。
+- Ubuntu26 的 xwfb-run 在创建 Xauthority 时需要 xauth；即使采用 Wayland compositor，
+  也必须显式安装 xauth。EL 的同类 runtime 依赖按 `/usr/bin/xauth` 能力补齐。
+
+qmake 行为已核对实际 SDK 的 mkspecs/features/qt.prf，也可查
+[Qt5.15.18 源码](https://github.com/qt/qtbase/blob/v5.15.18-lts-lgpl/mkspecs/features/qt.prf)；
+RPM 配置见 [Red Hat 打包指南](https://docs.redhat.com/en-us/documentation/red_hat_software_collections/3/pdf/packaging_guide/Red_Hat_Software_Collections-3-Packaging_Guide-en-US.pdf)。
+依赖脚本变化会使旧 SDK seed/cache 失效；按新配方重建后才能生成新的证据。
 
 ## 后续范围
 

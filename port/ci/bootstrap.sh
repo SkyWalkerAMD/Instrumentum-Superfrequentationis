@@ -120,14 +120,14 @@ PY
     if command -v apt-get >/dev/null; then
         apt-get install -y --no-install-recommends x11-utils dbus-x11
         if [ "$display" = xwayland ]; then
-            apt-get install -y --no-install-recommends xwayland-run mutter xwayland
+            apt-get install -y --no-install-recommends xwayland-run mutter xwayland xauth
         else
             apt-get install -y --no-install-recommends xvfb xauth
         fi
     else
         dnf install -y /usr/bin/xwininfo /usr/bin/xprop /usr/bin/dbus-run-session
         if [ "$display" = xwayland ]; then
-            dnf install -y xwayland-run mutter xorg-x11-server-Xwayland
+            dnf install -y xwayland-run mutter xorg-x11-server-Xwayland /usr/bin/xauth
         else
             dnf install -y xorg-x11-server-Xvfb xorg-x11-xauth
         fi
@@ -144,7 +144,8 @@ if command -v apt-get >/dev/null; then
         libglib2.0-dev libudev-dev libhwloc-dev libbluetooth-dev libcups2-dev \
         libwayland-dev libxcomposite-dev libdrm-dev
 else
-    dnf install -y rpm-build binutils pkgconf-pkg-config curl xz perl nasm \
+    # Accept curl-minimal when it already provides the required executable.
+    dnf install -y rpm-build binutils pkgconf-pkg-config /usr/bin/curl xz perl nasm \
         mesa-libGL-devel mesa-libEGL-devel libX11-devel libXext-devel libXrender-devel \
         libxcb-devel xcb-util-devel xcb-util-image-devel xcb-util-keysyms-devel \
         xcb-util-renderutil-devel xcb-util-wm-devel libxkbcommon-devel libxkbcommon-x11-devel \

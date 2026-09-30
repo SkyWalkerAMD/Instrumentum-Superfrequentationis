@@ -5,8 +5,10 @@
 #include <QFormLayout>
 #include <QLabel>
 #include <QMainWindow>
+#include <QPixmap>
 #include <QSysInfo>
 #include <QTabWidget>
+#include <QTimer>
 #include <QVBoxLayout>
 #include <unistd.h>
 
@@ -46,7 +48,8 @@ int main(int argc, char **argv)
         text->setTextInteractionFlags(Qt::TextSelectableByMouse); form->addRow(label, text);
     };
     row("CPU", cpuModel());
-    row("Online logical CPUs", QString::number(sysconf(_SC_NPROCESSORS_ONLN)));
+    const long cpuCount = sysconf(_SC_NPROCESSORS_ONLN);
+    row("Online logical CPUs", cpuCount > 0 ? QString::number(cpuCount) : "Unavailable");
     row("Operating system", QSysInfo::prettyProductName());
     row("Kernel", QSysInfo::kernelVersion());
     row("Architecture", QSysInfo::currentCpuArchitecture());
@@ -65,5 +68,15 @@ int main(int argc, char **argv)
     tabs->addTab(new RegisterPanel(Space::Pci, access, tabs), "PCI");
     window.setCentralWidget(tabs);
     window.show();
+    // CI requests snapshots of these real windows for visual inspection.
+    // Normal launches have no screenshot path and create no image files.
+    const QString capture = qEnvironmentVariable("OCTOOL_SMOKE_SCREENSHOT");
+    if (!capture.isEmpty()) QTimer::singleShot(1000, &window, [&window, tabs, capture] {
+        for (int page = 0; page < tabs->count(); ++page) {
+            tabs->setCurrentIndex(page);
+            window.grab().save(capture + QString("-%1.png").arg(page));
+        }
+        tabs->setCurrentIndex(0);
+    });
     return app.exec();
 }

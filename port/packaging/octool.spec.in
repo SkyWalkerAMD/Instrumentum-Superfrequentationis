@@ -1,3 +1,7 @@
+# The runtime payload is an EL8 release build without DWARF source records.
+# Repackaging it cannot produce a meaningful debuginfo/debugsource package.
+%global debug_package %{nil}
+
 Name:           octool
 Version:        @VERSION@
 Release:        1%{?dist}
@@ -10,7 +14,7 @@ Requires:       /usr/bin/Xwayland, at-spi2-core, /usr/bin/dbus-run-session, deja
 
 %description
 Static Qt GUI built on EL8. Uses the target system glibc and display stack.
-The author's distribution license and Qt license inventory are in /opt/octool/licenses.
+The reconstructed GUI license and Qt license inventory are in /opt/octool/licenses.
 
 %prep
 %setup -q -n octool-%{version}

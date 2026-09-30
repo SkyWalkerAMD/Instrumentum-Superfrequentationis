@@ -1,0 +1,1765 @@
+{
+  "date": "2026-09-30",
+  "method": "Static ZIP directory, PE headers/debug/imports, Linux ELF symbols and Qt5 QByteArrayData tables; PE tables additionally cross-checked through relocated QMetaObject pointers and revision 7/8 descriptors.",
+  "linux_archive": {
+    "input": "E:\\Download\\Edge\\octool-linux.zip",
+    "sha256": "02fd2ae0534c86aed23cb5470fb2520b0772f4421c6ed1c966665d171313b53b",
+    "bytes": 54688888,
+    "files": [
+      {
+        "name": "octool-linux/aptinstalls.sh",
+        "size": 1755,
+        "compressed": 374
+      },
+      {
+        "name": "octool-linux/com.octool.qt.policy",
+        "size": 936,
+        "compressed": 452
+      },
+      {
+        "name": "octool-linux/mylib/",
+        "size": 0,
+        "compressed": 0
+      },
+      {
+        "name": "octool-linux/mylib/libbrotlicommon.so.1",
+        "size": 137560,
+        "compressed": 62517
+      },
+      {
+        "name": "octool-linux/mylib/libbrotlidec.so.1",
+        "size": 51512,
+        "compressed": 21725
+      },
+      {
+        "name": "octool-linux/mylib/libbsd.so.0",
+        "size": 89096,
+        "compressed": 37677
+      },
+      {
+        "name": "octool-linux/mylib/libc.so.6",
+        "size": 2216304,
+        "compressed": 958840
+      },
+      {
+        "name": "octool-linux/mylib/libEGL.so.1",
+        "size": 72352,
+        "compressed": 27035
+      },
+      {
+        "name": "octool-linux/mylib/libexpat.so.1",
+        "size": 194872,
+        "compressed": 73685
+      },
+      {
+        "name": "octool-linux/mylib/libfontconfig.so.1",
+        "size": 298120,
+        "compressed": 137145
+      },
+      {
+        "name": "octool-linux/mylib/libfreetype.so.6",
+        "size": 813128,
+        "compressed": 409534
+      },
+      {
+        "name": "octool-linux/mylib/libgcc_s.so.1",
+        "size": 125488,
+        "compressed": 56407
+      },
+      {
+        "name": "octool-linux/mylib/libGL.so.1",
+        "size": 543056,
+        "compressed": 121453
+      },
+      {
+        "name": "octool-linux/mylib/libGLdispatch.so.0",
+        "size": 715200,
+        "compressed": 89399
+      },
+      {
+        "name": "octool-linux/mylib/libGLX.so.0",
+        "size": 141896,
+        "compressed": 41446
+      },
+      {
+        "name": "octool-linux/mylib/libhwloc.so",
+        "size": 44,
+        "compressed": 41
+      },
+      {
+        "name": "octool-linux/mylib/libhwloc.so.15",
+        "size": 44,
+        "compressed": 41
+      },
+      {
+        "name": "octool-linux/mylib/libhwloc.so.15.6.2",
+        "size": 1677320,
+        "compressed": 751809
+      },
+      {
+        "name": "octool-linux/mylib/libICE.so.6",
+        "size": 102080,
+        "compressed": 42021
+      },
+      {
+        "name": "octool-linux/mylib/libicudata.so.70",
+        "size": 29476472,
+        "compressed": 11768047
+      },
+      {
+        "name": "octool-linux/mylib/libicui18n.so.70",
+        "size": 3328472,
+        "compressed": 1325759
+      },
+      {
+        "name": "octool-linux/mylib/libicuuc.so.70",
+        "size": 2062664,
+        "compressed": 856120
+      },
+      {
+        "name": "octool-linux/mylib/libjpeg.so.8",
+        "size": 522960,
+        "compressed": 142632
+      },
+      {
+        "name": "octool-linux/mylib/libm.so.6",
+        "size": 940560,
+        "compressed": 500668
+      },
+      {
+        "name": "octool-linux/mylib/libmd.so.0",
+        "size": 47472,
+        "compressed": 19213
+      },
+      {
+        "name": "octool-linux/mylib/libopencv_core.so.414",
+        "size": 16603792,
+        "compressed": 6333277
+      },
+      {
+        "name": "octool-linux/mylib/libopencv_imgcodecs.so.414",
+        "size": 3786592,
+        "compressed": 1436526
+      },
+      {
+        "name": "octool-linux/mylib/libopencv_imgproc.so.414",
+        "size": 31059864,
+        "compressed": 13665525
+      },
+      {
+        "name": "octool-linux/mylib/libpng16.so.16",
+        "size": 235592,
+        "compressed": 115778
+      },
+      {
+        "name": "octool-linux/mylib/libSM.so.6",
+        "size": 39296,
+        "compressed": 14173
+      },
+      {
+        "name": "octool-linux/mylib/libstdc++.so.6",
+        "size": 2252096,
+        "compressed": 777144
+      },
+      {
+        "name": "octool-linux/mylib/libuuid.so.1",
+        "size": 30920,
+        "compressed": 13520
+      },
+      {
+        "name": "octool-linux/mylib/libX11.so.6",
+        "size": 1306280,
+        "compressed": 765897
+      },
+      {
+        "name": "octool-linux/mylib/libX11-xcb.so.1",
+        "size": 14048,
+        "compressed": 1387
+      },
+      {
+        "name": "octool-linux/mylib/libXau.so.6",
+        "size": 18720,
+        "compressed": 4861
+      },
+      {
+        "name": "octool-linux/mylib/libxcb.so.1",
+        "size": 166504,
+        "compressed": 48488
+      },
+      {
+        "name": "octool-linux/mylib/libxcb-glx.so.0",
+        "size": 112856,
+        "compressed": 24380
+      },
+      {
+        "name": "octool-linux/mylib/libxcb-icccm.so.4",
+        "size": 22616,
+        "compressed": 6071
+      },
+      {
+        "name": "octool-linux/mylib/libxcb-image.so.0",
+        "size": 18688,
+        "compressed": 7281
+      },
+      {
+        "name": "octool-linux/mylib/libxcb-keysyms.so.1",
+        "size": 14488,
+        "compressed": 3691
+      },
+      {
+        "name": "octool-linux/mylib/libxcb-randr.so.0",
+        "size": 71912,
+        "compressed": 16316
+      },
+      {
+        "name": "octool-linux/mylib/libxcb-render.so.0",
+        "size": 55544,
+        "compressed": 14394
+      },
+      {
+        "name": "octool-linux/mylib/libxcb-render-util.so.0",
+        "size": 22864,
+        "compressed": 5414
+      },
+      {
+        "name": "octool-linux/mylib/libxcb-shape.so.0",
+        "size": 14552,
+        "compressed": 3749
+      },
+      {
+        "name": "octool-linux/mylib/libxcb-shm.so.0",
+        "size": 14568,
+        "compressed": 3383
+      },
+      {
+        "name": "octool-linux/mylib/libxcb-sync.so.1",
+        "size": 35064,
+        "compressed": 7244
+      },
+      {
+        "name": "octool-linux/mylib/libxcb-util.so.1",
+        "size": 31096,
+        "compressed": 7369
+      },
+      {
+        "name": "octool-linux/mylib/libxcb-xfixes.so.0",
+        "size": 35032,
+        "compressed": 7813
+      },
+      {
+        "name": "octool-linux/mylib/libxcb-xinerama.so.0",
+        "size": 14552,
+        "compressed": 2994
+      },
+      {
+        "name": "octool-linux/mylib/libxcb-xinput.so.0",
+        "size": 141576,
+        "compressed": 35450
+      },
+      {
+        "name": "octool-linux/mylib/libxcb-xkb.so.1",
+        "size": 116984,
+        "compressed": 31466
+      },
+      {
+        "name": "octool-linux/mylib/libXdmcp.so.6",
+        "size": 26800,
+        "compressed": 8361
+      },
+      {
+        "name": "octool-linux/mylib/libxkbcommon.so.0",
+        "size": 285232,
+        "compressed": 130282
+      },
+      {
+        "name": "octool-linux/mylib/libxkbcommon-x11.so.0",
+        "size": 39864,
+        "compressed": 12331
+      },
+      {
+        "name": "octool-linux/mylib/libz.so.1",
+        "size": 108936,
+        "compressed": 56664
+      },
+      {
+        "name": "octool-linux/octool",
+        "size": 34184360,
+        "compressed": 13243420
+      },
+      {
+        "name": "octool-linux/peter_kernel.ko",
+        "size": 495968,
+        "compressed": 144772
+      },
+      {
+        "name": "octool-linux/peter_kernel_new.ko",
+        "size": 531808,
+        "compressed": 155685
+      },
+      {
+        "name": "octool-linux/peter_kernel_old.ko",
+        "size": 442312,
+        "compressed": 129676
+      },
+      {
+        "name": "octool-linux/readme.txt",
+        "size": 1625,
+        "compressed": 591
+      },
+      {
+        "name": "octool-linux/run_lib.sh",
+        "size": 5916,
+        "compressed": 793
+      }
+    ]
+  },
+  "windows_archive": {
+    "input": "E:\\Download\\Edge\\OCTool0528.zip",
+    "sha256": "02a50088a94000f651f8783b32bf1ff63a48fd4e6a3909983c7c1ed0a5a417a3",
+    "bytes": 79363256,
+    "files": [
+      {
+        "name": "OCTool0528/all_round_bench.exe",
+        "size": 359424,
+        "compressed": 170548
+      },
+      {
+        "name": "OCTool0528/amigendrv.dll",
+        "size": 48640,
+        "compressed": 18284
+      },
+      {
+        "name": "OCTool0528/auto_tuner/",
+        "size": 0,
+        "compressed": 0
+      },
+      {
+        "name": "OCTool0528/auto_tuner/arrowlake_timing_template.bin",
+        "size": 3200,
+        "compressed": 780
+      },
+      {
+        "name": "OCTool0528/auto_tuner/curve_optimizer_template.bin",
+        "size": 1191,
+        "compressed": 350
+      },
+      {
+        "name": "OCTool0528/auto_tuner/cyberpunk_timing_template.bin",
+        "size": 2167,
+        "compressed": 474
+      },
+      {
+        "name": "OCTool0528/auto_tuner/dawntrail_timing_template.bin",
+        "size": 2273,
+        "compressed": 525
+      },
+      {
+        "name": "OCTool0528/auto_tuner/octvb_trl_template.bin",
+        "size": 1091,
+        "compressed": 306
+      },
+      {
+        "name": "OCTool0528/auto_tuner/ratio_amd_template.bin",
+        "size": 514,
+        "compressed": 254
+      },
+      {
+        "name": "OCTool0528/auto_tuner/ratio_pcore_template.bin",
+        "size": 581,
+        "compressed": 269
+      },
+      {
+        "name": "OCTool0528/auto_tuner/turbo_ratio_pcore_template.bin",
+        "size": 1505,
+        "compressed": 326
+      },
+      {
+        "name": "OCTool0528/auto_tuner/vf_pt_offset_template.bin",
+        "size": 1289,
+        "compressed": 390
+      },
+      {
+        "name": "OCTool0528/auto_tuner/vid_amd_template.bin",
+        "size": 315,
+        "compressed": 135
+      },
+      {
+        "name": "OCTool0528/auto_tuner/vid_pcore_template.bin",
+        "size": 374,
+        "compressed": 147
+      },
+      {
+        "name": "OCTool0528/auto_tuner/vid_percore_template.bin",
+        "size": 360,
+        "compressed": 146
+      },
+      {
+        "name": "OCTool0528/auto_tuner/vrmloadline_template.bin",
+        "size": 250,
+        "compressed": 110
+      },
+      {
+        "name": "OCTool0528/auto_tuner/vrmvoltage_template.bin",
+        "size": 491,
+        "compressed": 244
+      },
+      {
+        "name": "OCTool0528/auto_tuner/wukong_timing_template.bin",
+        "size": 2110,
+        "compressed": 501
+      },
+      {
+        "name": "OCTool0528/BIOS.CAP",
+        "size": 33558528,
+        "compressed": 9682633
+      },
+      {
+        "name": "OCTool0528/CB_Aggressive.exe",
+        "size": 289792,
+        "compressed": 147319
+      },
+      {
+        "name": "OCTool0528/CB_Gentle.exe",
+        "size": 289792,
+        "compressed": 147317
+      },
+      {
+        "name": "OCTool0528/Clk_Stretch_detect.exe",
+        "size": 350720,
+        "compressed": 168474
+      },
+      {
+        "name": "OCTool0528/ControlLib.dll",
+        "size": 215552,
+        "compressed": 102279
+      },
+      {
+        "name": "OCTool0528/ControlLib32.dll",
+        "size": 169472,
+        "compressed": 84062
+      },
+      {
+        "name": "OCTool0528/D3Dcompiler_47.dll",
+        "size": 4173928,
+        "compressed": 1767625
+      },
+      {
+        "name": "OCTool0528/Default.exe",
+        "size": 289792,
+        "compressed": 147317
+      },
+      {
+        "name": "OCTool0528/Device.dll",
+        "size": 562688,
+        "compressed": 188699
+      },
+      {
+        "name": "OCTool0528/disocmode.exe",
+        "size": 270336,
+        "compressed": 135297
+      },
+      {
+        "name": "OCTool0528/GB_BIAS.exe",
+        "size": 289792,
+        "compressed": 147385
+      },
+      {
+        "name": "OCTool0528/gif.dll",
+        "size": 36352,
+        "compressed": 18489
+      },
+      {
+        "name": "OCTool0528/Heat_FIVR.exe",
+        "size": 2501744,
+        "compressed": 660528
+      },
+      {
+        "name": "OCTool0528/Heat_FIVR_Custom.exe",
+        "size": 2502768,
+        "compressed": 660697
+      },
+      {
+        "name": "OCTool0528/heat_gnr.exe",
+        "size": 1378304,
+        "compressed": 468312
+      },
+      {
+        "name": "OCTool0528/heatarl.exe",
+        "size": 781824,
+        "compressed": 309486
+      },
+      {
+        "name": "OCTool0528/heatarl_if_svid_dis.exe",
+        "size": 753152,
+        "compressed": 299879
+      },
+      {
+        "name": "OCTool0528/heats.exe",
+        "size": 1342464,
+        "compressed": 452186
+      },
+      {
+        "name": "OCTool0528/iconengines/",
+        "size": 0,
+        "compressed": 0
+      },
+      {
+        "name": "OCTool0528/iconengines/qsvgicon.dll",
+        "size": 45744,
+        "compressed": 21819
+      },
+      {
+        "name": "OCTool0528/image_txt.dll",
+        "size": 2278400,
+        "compressed": 1131390
+      },
+      {
+        "name": "OCTool0528/imageformats/",
+        "size": 0,
+        "compressed": 0
+      },
+      {
+        "name": "OCTool0528/imageformats/qgif.dll",
+        "size": 41648,
+        "compressed": 21847
+      },
+      {
+        "name": "OCTool0528/imageformats/qicns.dll",
+        "size": 50864,
+        "compressed": 25369
+      },
+      {
+        "name": "OCTool0528/imageformats/qico.dll",
+        "size": 42160,
+        "compressed": 21106
+      },
+      {
+        "name": "OCTool0528/imageformats/qjpeg.dll",
+        "size": 458416,
+        "compressed": 125891
+      },
+      {
+        "name": "OCTool0528/imageformats/qsvg.dll",
+        "size": 34992,
+        "compressed": 17289
+      },
+      {
+        "name": "OCTool0528/imageformats/qtga.dll",
+        "size": 34480,
+        "compressed": 16790
+      },
+      {
+        "name": "OCTool0528/imageformats/qtiff.dll",
+        "size": 398512,
+        "compressed": 142989
+      },
+      {
+        "name": "OCTool0528/imageformats/qwbmp.dll",
+        "size": 33456,
+        "compressed": 16351
+      },
+      {
+        "name": "OCTool0528/imageformats/qwebp.dll",
+        "size": 530608,
+        "compressed": 259162
+      },
+      {
+        "name": "OCTool0528/inpout32.dll",
+        "size": 98304,
+        "compressed": 40685
+      },
+      {
+        "name": "OCTool0528/inpoutx64.dll",
+        "size": 98304,
+        "compressed": 43352
+      },
+      {
+        "name": "OCTool0528/IntelControlLib.dll",
+        "size": 732800,
+        "compressed": 342509
+      },
+      {
+        "name": "OCTool0528/IntelControlLib32.dll",
+        "size": 363008,
+        "compressed": 177072
+      },
+      {
+        "name": "OCTool0528/ipf_lf.sys",
+        "size": 504912,
+        "compressed": 222122
+      },
+      {
+        "name": "OCTool0528/jpeg62.dll",
+        "size": 675840,
+        "compressed": 210090
+      },
+      {
+        "name": "OCTool0528/leptonica-1.84.1.dll",
+        "size": 2708480,
+        "compressed": 1343377
+      },
+      {
+        "name": "OCTool0528/lexbor.dll",
+        "size": 3081216,
+        "compressed": 689802
+      },
+      {
+        "name": "OCTool0528/libcurl.dll",
+        "size": 692736,
+        "compressed": 347155
+      },
+      {
+        "name": "OCTool0528/libEGL.dll",
+        "size": 27824,
+        "compressed": 12814
+      },
+      {
+        "name": "OCTool0528/libgcc_s_seh-1.dll",
+        "size": 76288,
+        "compressed": 36495
+      },
+      {
+        "name": "OCTool0528/libGLESV2.dll",
+        "size": 3578032,
+        "compressed": 1344955
+      },
+      {
+        "name": "OCTool0528/libgmp-10.dll",
+        "size": 1085185,
+        "compressed": 391355
+      },
+      {
+        "name": "OCTool0528/libhwloc-5.dll",
+        "size": 1515031,
+        "compressed": 487356
+      },
+      {
+        "name": "OCTool0528/liblzma.dll",
+        "size": 187904,
+        "compressed": 99316
+      },
+      {
+        "name": "OCTool0528/libpng16.dll",
+        "size": 198656,
+        "compressed": 103239
+      },
+      {
+        "name": "OCTool0528/libsharpyuv.dll",
+        "size": 26112,
+        "compressed": 13780
+      },
+      {
+        "name": "OCTool0528/libstdc++-6.dll",
+        "size": 1417216,
+        "compressed": 428074
+      },
+      {
+        "name": "OCTool0528/libwebp.dll",
+        "size": 368640,
+        "compressed": 187082
+      },
+      {
+        "name": "OCTool0528/libwebpmux.dll",
+        "size": 40448,
+        "compressed": 21056
+      },
+      {
+        "name": "OCTool0528/libwinpthread-1.dll",
+        "size": 52224,
+        "compressed": 23863
+      },
+      {
+        "name": "OCTool0528/license.txt",
+        "size": 2159,
+        "compressed": 1167
+      },
+      {
+        "name": "OCTool0528/local.txt",
+        "size": 352,
+        "compressed": 189
+      },
+      {
+        "name": "OCTool0528/msvcp140.dll",
+        "size": 625808,
+        "compressed": 202946
+      },
+      {
+        "name": "OCTool0528/msvcp140_1d.dll",
+        "size": 38176,
+        "compressed": 16235
+      },
+      {
+        "name": "OCTool0528/msvcp140_2d.dll",
+        "size": 384800,
+        "compressed": 114745
+      },
+      {
+        "name": "OCTool0528/msvcp140d.dll",
+        "size": 938776,
+        "compressed": 247999
+      },
+      {
+        "name": "OCTool0528/numcores_gnr_sp.exe",
+        "size": 1386496,
+        "compressed": 449032
+      },
+      {
+        "name": "OCTool0528/ocp_dll.dll",
+        "size": 1267712,
+        "compressed": 421818
+      },
+      {
+        "name": "OCTool0528/opengl32sw.dll",
+        "size": 20923392,
+        "compressed": 7850179
+      },
+      {
+        "name": "OCTool0528/openjp2.dll",
+        "size": 354304,
+        "compressed": 155555
+      },
+      {
+        "name": "OCTool0528/Platform.dll",
+        "size": 58880,
+        "compressed": 24310
+      },
+      {
+        "name": "OCTool0528/platforms/",
+        "size": 0,
+        "compressed": 0
+      },
+      {
+        "name": "OCTool0528/platforms/cap_header.bin",
+        "size": 4096,
+        "compressed": 1335
+      },
+      {
+        "name": "OCTool0528/platforms/qwindows.dll",
+        "size": 1473200,
+        "compressed": 736033
+      },
+      {
+        "name": "OCTool0528/prime.txt",
+        "size": 1178,
+        "compressed": 412
+      },
+      {
+        "name": "OCTool0528/prime95.exe",
+        "size": 26114560,
+        "compressed": 4364830
+      },
+      {
+        "name": "OCTool0528/prime95avx.exe",
+        "size": 34314240,
+        "compressed": 6254571
+      },
+      {
+        "name": "OCTool0528/python27.dll",
+        "size": 3429376,
+        "compressed": 1461263
+      },
+      {
+        "name": "OCTool0528/Qt5Bluetooth.dll",
+        "size": 437424,
+        "compressed": 166981
+      },
+      {
+        "name": "OCTool0528/Qt5Charts.dll",
+        "size": 1412784,
+        "compressed": 472676
+      },
+      {
+        "name": "OCTool0528/Qt5Core.dll",
+        "size": 5979824,
+        "compressed": 2714725
+      },
+      {
+        "name": "OCTool0528/Qt5Gui.dll",
+        "size": 6504624,
+        "compressed": 2386984
+      },
+      {
+        "name": "OCTool0528/Qt5OpenGL.dll",
+        "size": 328312,
+        "compressed": 129511
+      },
+      {
+        "name": "OCTool0528/Qt5Svg.dll",
+        "size": 344752,
+        "compressed": 139784
+      },
+      {
+        "name": "OCTool0528/Qt5Widgets.dll",
+        "size": 5575856,
+        "compressed": 2530195
+      },
+      {
+        "name": "OCTool0528/qwt.dll",
+        "size": 968192,
+        "compressed": 379020
+      },
+      {
+        "name": "OCTool0528/resources/",
+        "size": 0,
+        "compressed": 0
+      },
+      {
+        "name": "OCTool0528/resources/AS64.dll",
+        "size": 2521272,
+        "compressed": 1116920
+      },
+      {
+        "name": "OCTool0528/resources/AS64.sys",
+        "size": 28480,
+        "compressed": 16461
+      },
+      {
+        "name": "OCTool0528/resources/cpuidsdk.dll",
+        "size": 1914584,
+        "compressed": 709159
+      },
+      {
+        "name": "OCTool0528/resources/cpuidsdk64.dll",
+        "size": 2363096,
+        "compressed": 792016
+      },
+      {
+        "name": "OCTool0528/resources/Driver_Engine_x64.dll",
+        "size": 2521272,
+        "compressed": 1116920
+      },
+      {
+        "name": "OCTool0528/resources/loadall.exe",
+        "size": 269312,
+        "compressed": 136245
+      },
+      {
+        "name": "OCTool0528/resources/loadall2.exe",
+        "size": 269312,
+        "compressed": 136547
+      },
+      {
+        "name": "OCTool0528/resources/NTIOLib_X64.sys",
+        "size": 28480,
+        "compressed": 16461
+      },
+      {
+        "name": "OCTool0528/stress.exe",
+        "size": 323072,
+        "compressed": 160763
+      },
+      {
+        "name": "OCTool0528/Stress_by_Group.exe",
+        "size": 386560,
+        "compressed": 177178
+      },
+      {
+        "name": "OCTool0528/Stress_Group1.exe",
+        "size": 309760,
+        "compressed": 142225
+      },
+      {
+        "name": "OCTool0528/styles/",
+        "size": 0,
+        "compressed": 0
+      },
+      {
+        "name": "OCTool0528/styles/qwindowsvistastyle.dll",
+        "size": 145584,
+        "compressed": 69320
+      },
+      {
+        "name": "OCTool0528/sync.exe",
+        "size": 143512,
+        "compressed": 71336
+      },
+      {
+        "name": "OCTool0528/tdata.dll",
+        "size": 4113088,
+        "compressed": 2009591
+      },
+      {
+        "name": "OCTool0528/tiff.dll",
+        "size": 467456,
+        "compressed": 173890
+      },
+      {
+        "name": "OCTool0528/Tool.exe",
+        "size": 72948688,
+        "compressed": 9166297
+      },
+      {
+        "name": "OCTool0528/Tool_Win7.exe",
+        "size": 15836112,
+        "compressed": 5218420
+      },
+      {
+        "name": "OCTool0528/translations/",
+        "size": 0,
+        "compressed": 0
+      },
+      {
+        "name": "OCTool0528/translations/qt_ar.qm",
+        "size": 160010,
+        "compressed": 49177
+      },
+      {
+        "name": "OCTool0528/translations/qt_bg.qm",
+        "size": 165327,
+        "compressed": 48654
+      },
+      {
+        "name": "OCTool0528/translations/qt_ca.qm",
+        "size": 184024,
+        "compressed": 52575
+      },
+      {
+        "name": "OCTool0528/translations/qt_cs.qm",
+        "size": 174691,
+        "compressed": 51478
+      },
+      {
+        "name": "OCTool0528/translations/qt_da.qm",
+        "size": 174098,
+        "compressed": 50997
+      },
+      {
+        "name": "OCTool0528/translations/qt_de.qm",
+        "size": 200848,
+        "compressed": 56095
+      },
+      {
+        "name": "OCTool0528/translations/qt_en.qm",
+        "size": 23,
+        "compressed": 23
+      },
+      {
+        "name": "OCTool0528/translations/qt_es.qm",
+        "size": 165160,
+        "compressed": 48167
+      },
+      {
+        "name": "OCTool0528/translations/qt_fa.qm",
+        "size": 148146,
+        "compressed": 44979
+      },
+      {
+        "name": "OCTool0528/translations/qt_fi.qm",
+        "size": 179934,
+        "compressed": 52021
+      },
+      {
+        "name": "OCTool0528/translations/qt_fr.qm",
+        "size": 166157,
+        "compressed": 47615
+      },
+      {
+        "name": "OCTool0528/translations/qt_gd.qm",
+        "size": 189570,
+        "compressed": 52429
+      },
+      {
+        "name": "OCTool0528/translations/qt_he.qm",
+        "size": 138680,
+        "compressed": 43612
+      },
+      {
+        "name": "OCTool0528/translations/qt_hu.qm",
+        "size": 160484,
+        "compressed": 47603
+      },
+      {
+        "name": "OCTool0528/translations/qt_it.qm",
+        "size": 161123,
+        "compressed": 46260
+      },
+      {
+        "name": "OCTool0528/translations/qt_ja.qm",
+        "size": 129904,
+        "compressed": 43647
+      },
+      {
+        "name": "OCTool0528/translations/qt_ko.qm",
+        "size": 131255,
+        "compressed": 43843
+      },
+      {
+        "name": "OCTool0528/translations/qt_lv.qm",
+        "size": 153598,
+        "compressed": 46026
+      },
+      {
+        "name": "OCTool0528/translations/qt_nl.qm",
+        "size": 179946,
+        "compressed": 52265
+      },
+      {
+        "name": "OCTool0528/translations/qt_pl.qm",
+        "size": 162972,
+        "compressed": 47883
+      },
+      {
+        "name": "OCTool0528/translations/qt_pt_BR.qm",
+        "size": 210280,
+        "compressed": 59692
+      },
+      {
+        "name": "OCTool0528/translations/qt_ru.qm",
+        "size": 186226,
+        "compressed": 54829
+      },
+      {
+        "name": "OCTool0528/translations/qt_sk.qm",
+        "size": 125753,
+        "compressed": 37840
+      },
+      {
+        "name": "OCTool0528/translations/qt_uk.qm",
+        "size": 158231,
+        "compressed": 47592
+      },
+      {
+        "name": "OCTool0528/translations/qt_zh_CN.qm",
+        "size": 133909,
+        "compressed": 47800
+      },
+      {
+        "name": "OCTool0528/translations/qt_zh_TW.qm",
+        "size": 117813,
+        "compressed": 42407
+      },
+      {
+        "name": "OCTool0528/v.txt",
+        "size": 64,
+        "compressed": 40
+      },
+      {
+        "name": "OCTool0528/vcruntime140.dll",
+        "size": 87200,
+        "compressed": 48356
+      },
+      {
+        "name": "OCTool0528/vcruntime140_1.dll",
+        "size": 44320,
+        "compressed": 22274
+      },
+      {
+        "name": "OCTool0528/vcruntime140_1d.dll",
+        "size": 60192,
+        "compressed": 24741
+      },
+      {
+        "name": "OCTool0528/vcruntime140d.dll",
+        "size": 166688,
+        "compressed": 64148
+      },
+      {
+        "name": "OCTool0528/while.exe",
+        "size": 507392,
+        "compressed": 194707
+      },
+      {
+        "name": "OCTool0528/whileall.exe",
+        "size": 406016,
+        "compressed": 185812
+      },
+      {
+        "name": "OCTool0528/whilecore.exe",
+        "size": 436224,
+        "compressed": 199194
+      },
+      {
+        "name": "OCTool0528/WinRing0.dll",
+        "size": 65536,
+        "compressed": 27305
+      },
+      {
+        "name": "OCTool0528/WinRing0.sys",
+        "size": 14416,
+        "compressed": 8749
+      },
+      {
+        "name": "OCTool0528/WinRing0x64.dll",
+        "size": 62976,
+        "compressed": 29183
+      },
+      {
+        "name": "OCTool0528/WinRing0x64.sys",
+        "size": 14544,
+        "compressed": 8059
+      },
+      {
+        "name": "OCTool0528/winspy.exe",
+        "size": 231936,
+        "compressed": 105432
+      },
+      {
+        "name": "OCTool0528/wsri.dll",
+        "size": 894016,
+        "compressed": 507963
+      },
+      {
+        "name": "OCTool0528/z.dll",
+        "size": 91136,
+        "compressed": 51716
+      },
+      {
+        "name": "OCTool0528/zlib1.dll",
+        "size": 89600,
+        "compressed": 49393
+      }
+    ]
+  },
+  "linux_binary_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "windows_binary_sha256": "04a6a6043b9b653737a3e7030ded0cd3f67289575f6959ef8096b0b1a2a1c609",
+  "windows7_binary_sha256": "faa61aa4e3be33b368750b03d06cf83ff09cb93fd47f23a30beeaf4a7ac941b4",
+  "counts": {
+    "linux_parsed_qt_tables_including_static_qt": 720,
+    "windows_verified_qt_objects": 358,
+    "windows7_verified_qt_objects": 298,
+    "shared_linux_windows_class_names": 243
+  },
+  "shared_class_names": [
+    "AMD_PMIC_Working_Thread",
+    "AMD_PMIC_Working_Thread2",
+    "AMD_VF_Group_Thread",
+    "AMD_VF_Working_Thread",
+    "AMD_VF_Working_Thread2",
+    "AMD_VF_percore_Reading_Thread",
+    "AMD_VF_percore_Reading_Thread2",
+    "Affinity_Thread1",
+    "Affinity_Thread2",
+    "Chart",
+    "Chat",
+    "ChatClient",
+    "ChatServer",
+    "FontControlWidget",
+    "GraphicsView",
+    "GraphicsView2",
+    "Graphics_view_zoom",
+    "Hotkey_Thread",
+    "MainWindow",
+    "PMIC_Working_Thread",
+    "PMIC_Working_Thread2",
+    "Plot_2",
+    "Plot_3",
+    "PressureChartWidget",
+    "Reader_Thread",
+    "Reader_Thread_aff",
+    "RemoteSelector2",
+    "SpreadSheet",
+    "SpreadSheetDelegate",
+    "Trace_Thread",
+    "Working_Thread",
+    "Working_Thread_aff",
+    "adl_mb",
+    "adl_timings",
+    "adl_xoc",
+    "affinity",
+    "am5_mb3",
+    "am5_mb4",
+    "am5_tuners",
+    "am5_vrm_module",
+    "am5vrm_Reader_Thread",
+    "amd_am3",
+    "amd_am4",
+    "amd_am5",
+    "amd_bycore",
+    "amd_pm0_vermeer",
+    "amd_pm1_vermeer",
+    "amd_pm2_vermeer",
+    "amd_umc",
+    "amdvf",
+    "arc_oc",
+    "arc_pm0",
+    "arl_mb",
+    "arl_memtime",
+    "arl_perf_bias",
+    "arl_xoc",
+    "asusvrm",
+    "bios",
+    "clkgen",
+    "clkstretch",
+    "cpufunctions",
+    "ddr5_spd",
+    "diesense",
+    "dimm_flex",
+    "dimm_flex2",
+    "dimm_flex2_Reader_Thread",
+    "dimm_flex3",
+    "dimm_flex3_Reader_Thread",
+    "dimm_flex_Reader_Thread",
+    "dimm_rgb",
+    "dimm_rgb_Working_Thread",
+    "dos",
+    "dram_tuners",
+    "dyn_edc",
+    "ecsmb_window",
+    "eff_cal",
+    "ezvalues",
+    "fan_control",
+    "fan_control_Working_Thread",
+    "filter",
+    "fivr_vtargets",
+    "flashec",
+    "freq_valid",
+    "gnr_dram_tuners",
+    "gnr_memtime",
+    "gnr_sp_perf_bias",
+    "gnr_vidtable",
+    "gnr_xoc",
+    "heavy_dos",
+    "hedt_query",
+    "i3c_bus_characteristics",
+    "i3c_i2c_slave",
+    "i3c_i2c_slave_Working_Thread",
+    "i3c_i2c_slave_activity",
+    "i3c_select_wizard",
+    "i3c_select_wizard_Conclusion_end_page",
+    "i3c_select_wizard_master",
+    "i3c_select_wizard_master_config_page",
+    "i3c_select_wizard_master_init_page",
+    "i3c_select_wizard_slave",
+    "i3c_select_wizard_slave_config_page",
+    "i3c_select_wizard_slave_imitate_page",
+    "i3c_select_wizard_slave_or_master_page",
+    "i3c_slave_characteristics",
+    "intel_client",
+    "intel_cryo_cooler",
+    "intel_ctl",
+    "intel_ctl2",
+    "intel_ctl2_Working_Thread",
+    "intel_ctl2_Working_Thread2",
+    "intel_ctl3",
+    "intel_ctl3_Working_Thread",
+    "intel_ctl3_Working_Thread2",
+    "intel_ctl5",
+    "intel_ctl5_Working_Thread",
+    "intel_ctl5_Working_Thread2",
+    "intel_ctl6",
+    "intel_ctl6_Working_Thread",
+    "intel_ctl6_Working_Thread2",
+    "intel_ctl_Working_Thread",
+    "intel_ctl_left",
+    "intel_ctl_left2",
+    "intel_hedt_window",
+    "intel_hgs",
+    "intel_mainstream",
+    "intel_memtime",
+    "intel_perf_metric",
+    "intel_perfbias",
+    "intel_pm0",
+    "intel_pm2",
+    "intel_pm2_worker",
+    "intel_pm2_worker2",
+    "intel_pm3",
+    "intel_pm3_worker",
+    "intel_pm3_worker2",
+    "intel_report_ui",
+    "intel_vf_Trace_Thread",
+    "intel_vf_curve",
+    "intel_vf_curve_Working_Thread",
+    "intel_vf_curve_Working_Thread2",
+    "intel_vf_curve_helper",
+    "intelvf",
+    "mainwindow2",
+    "mainwindow4",
+    "mps2971",
+    "mwindow4",
+    "mwindow5",
+    "mwindow6",
+    "mwindow7",
+    "nct_sio",
+    "nvl_dram_tuners",
+    "nvl_mb",
+    "nvl_mb2",
+    "nvl_memtime",
+    "nvl_tuners",
+    "nvl_vrm_module",
+    "nvl_xoc",
+    "octvb",
+    "octvb3",
+    "octvb4",
+    "octvb5",
+    "osc_clamp2",
+    "pchsmbus",
+    "peci",
+    "percore_cppc",
+    "pmic",
+    "pmic_amd",
+    "pmic_raw",
+    "pressure_worker",
+    "proposed_vfpt",
+    "rawvrm_window3",
+    "rawvrm_window4",
+    "ringdos",
+    "rw_biosmb",
+    "rw_ecram",
+    "rw_ioport",
+    "rw_memory",
+    "rw_msr",
+    "rw_ocmb",
+    "rw_ocmb_gnr",
+    "rw_pci",
+    "sbrmi2",
+    "serial_mon",
+    "serial_mon_printer",
+    "slip",
+    "slipstream_ec",
+    "specific_core_widget",
+    "target_diesense",
+    "tr5_mb",
+    "tr5_mb2",
+    "true_i3c_master",
+    "true_i3c_master_I3C_CCC_NONE",
+    "true_i3c_master_i2c_Block",
+    "true_i3c_master_i2c_Byte",
+    "true_i3c_master_i2c_Word",
+    "true_i3c_master_i3c_Block",
+    "true_i3c_master_i3c_Broadcast_Header",
+    "true_i3c_master_i3c_Byte",
+    "true_i3c_master_i3c_Reset_num_static_slaves",
+    "true_i3c_master_i3c_Word",
+    "true_i3c_master_i3c_ccctype_DefiningByte_Broadcast",
+    "true_i3c_master_i3c_ccctype_DefiningByte_Direct",
+    "true_i3c_master_i3c_ccctype_bus_init",
+    "true_i3c_master_i3c_ccctype_entdaa",
+    "true_i3c_master_i3c_ccctype_fc",
+    "true_i3c_master_i3c_ccctype_fc_direct",
+    "true_i3c_master_i3c_ccctype_fc_direct_just_addr",
+    "true_i3c_master_i3c_ccctype_hdr_ddr",
+    "true_i3c_master_i3c_ccctype_reset",
+    "true_i3c_master_i3c_ccctype_setaasa",
+    "true_i3c_master_role_handover",
+    "ui_ddr5_ckd",
+    "ui_ddr5_rcd",
+    "ui_ddr5_rcd_Working_Thread",
+    "ui_ddr5_rcd_Writing_Thread",
+    "ui_ddr5_rcd_dumper_Thread",
+    "ui_ddr5_rcd_error",
+    "ui_ddr5_rcd_error_Thread",
+    "ui_ibi_Working_Thread",
+    "v_clamp2",
+    "v_clamp3",
+    "vf_points_arl",
+    "vf_points_nvl",
+    "vfpoints",
+    "vfpoints_ring",
+    "vlatch",
+    "vrm1_Reader_Thread",
+    "vrm_free_Reader_Thread",
+    "vrm_free_Reader_Thread2",
+    "vrm_free_ecram_Reader_Thread",
+    "vrmread",
+    "vrmread_am5",
+    "vrmread_free",
+    "vrmread_free_ecram",
+    "vrmread_sa",
+    "vrmzenith",
+    "w790_mb",
+    "w790_vrm_module",
+    "w890_mb",
+    "w890_vrm_module",
+    "whea_monitor",
+    "xfr_sim",
+    "zenithsoc"
+  ],
+  "windows_only_metaobject_names": [
+    "Action_Page_Hotkey_Thread",
+    "Action_Page_Select",
+    "Action_Page_crop_image_Sel",
+    "Action_Page_delay_Sel",
+    "Action_Page_execute_file_Sel",
+    "Action_Page_flag_as_fail_Sel",
+    "Action_Page_flag_get_caption_Sel",
+    "Action_Page_flag_get_value_Sel",
+    "Action_Page_flag_screen_text_Sel",
+    "Action_Page_focus_window_Sel",
+    "Action_Page_grab_screenshot_Sel",
+    "Action_Page_image_txt_Sel",
+    "Action_Page_keyboard_button",
+    "Action_Page_keyboard_input_Sel",
+    "Action_Page_kill_process_Sel",
+    "Action_Page_mouse_input_Sel",
+    "Action_Page_parse_txt_Sel",
+    "Action_Page_process_affinity_Sel",
+    "Action_Page_remove_file_Sel",
+    "Action_Page_repeat_actions_Sel",
+    "Action_Page_wait_cpuutil_Sel",
+    "Action_Page_wait_process_Sel",
+    "Action_Page_wait_window_Sel",
+    "Knob",
+    "Plot",
+    "RemoteSelector",
+    "SamplingThread",
+    "SamplingThread2",
+    "SamplingThread3",
+    "TreeModel",
+    "Trigger_Page_Conclusion",
+    "Trigger_Page_I2c_Block_St",
+    "Trigger_Page_I2c_St",
+    "Trigger_Page_Select",
+    "Trigger_Page_amdvid_Sel",
+    "Trigger_Page_co_Sel",
+    "Trigger_Page_cpu_Sel",
+    "Trigger_Page_ecram_Sel",
+    "Trigger_Page_ecsmb_Sel",
+    "Trigger_Page_loadline_Sel",
+    "Trigger_Page_mmio_Sel",
+    "Trigger_Page_msr_Ran",
+    "Trigger_Page_msr_Sel",
+    "Trigger_Page_pci_Sel",
+    "Trigger_Page_ratio_Sel",
+    "Trigger_Page_smu_Sel",
+    "Trigger_Page_timing_Sel",
+    "Trigger_Page_turbo_ratio_Sel",
+    "Trigger_Page_tvb_Sel",
+    "Trigger_Page_vf_pt_Sel",
+    "Trigger_Page_vid_Sel",
+    "Trigger_Page_vrm_Sel",
+    "WheelBox",
+    "ai_agent",
+    "ai_agent_stats",
+    "am5_es_pm",
+    "am5_mb",
+    "amd_am0",
+    "amd_am1",
+    "amd_am2",
+    "amd_gen",
+    "amd_gen_controller",
+    "amd_gnr0",
+    "amd_gnr1",
+    "amd_gnr2",
+    "amd_gpt0",
+    "amd_gpt1",
+    "amd_pm0",
+    "amd_pm0_pinnacle",
+    "amd_pm1",
+    "amd_pm1_pinnacle",
+    "amd_pm2",
+    "amd_pm3",
+    "arl_tuners",
+    "auto_tuner",
+    "auto_tuner_wdt",
+    "auto_tuner_worker",
+    "bell_curve",
+    "bios_save",
+    "bios_save_Thread",
+    "bios_save_Thread2",
+    "cloud_widget",
+    "ebox_widget",
+    "fabricbox_widget",
+    "fan_control_Working_Thread2",
+    "gnr_odt",
+    "gnr_tuners",
+    "intel_ctl4",
+    "intel_ctl4_Working_Thread",
+    "intel_ctl4_Working_Thread2",
+    "intel_ipf",
+    "intel_pm1",
+    "intervene_widget",
+    "json_creator",
+    "kvm_messenger",
+    "kvm_worker",
+    "mainwindow5",
+    "msr_setting_widget",
+    "nvl_mb3",
+    "octvb2",
+    "osc_clamp",
+    "rawvrm",
+    "rawvrm_window2",
+    "rw_ecram_Reader_Thread",
+    "serial_mon_drawer",
+    "stress_mem",
+    "stress_mem_worker",
+    "synchall_widget",
+    "tr5vrm_Reader_Thread",
+    "trigger_wizard",
+    "v_clamp",
+    "vfpoints_arc",
+    "vfpoints_general",
+    "vrmread2",
+    "vrmread_tr5"
+  ],
+  "selected_panels": {
+    "linux": [
+      {
+        "class": "MainWindow",
+        "offset": 23589536,
+        "strings": [
+          "MainWindow",
+          "on_actionECSMBUS_triggered",
+          "",
+          "on_actionVRM_triggered",
+          "on_AMDcpu_triggered",
+          "on_actionIntel_HEDT_triggered",
+          "on_actionIntel_HEDT_2_triggered",
+          "on_actionIntel_Mainstream_triggered",
+          "on_actionASP1405_1400_triggered",
+          "on_actionFIVR_VTargets_triggered",
+          "on_actionASUS_ClockGen_triggered",
+          "on_actionVF_Points_triggered",
+          "on_actionZenith_SOC_VRM_triggered",
+          "on_actionRaw_SA_VRM_triggered",
+          "on_actionSet_Affinity_triggered",
+          "on_actionBIOS_triggered",
+          "on_actionNCT_SIO_triggered",
+          "on_actionPCH_SMBUS_triggered",
+          "on_actionPECI_triggered",
+          "on_actionSB_RMI_triggered",
+          "on_actionEZValues_triggered",
+          "on_actionAMD_Monitor_triggered",
+          "on_actionAMD_By_Core_Use_triggered",
+          "on_actionAMD_XFR_Simulator_triggered",
+          "on_actionAMD_OC_Slipper_triggered",
+          "on_actionDie_Sense_Predict_triggered",
+          "on_actionAMD_V_F_triggered",
+          "on_actionPower_Freq_Chart_triggered",
+          "i3c_sel_done",
+          "r",
+          "on_actionEff_Eval_triggered",
+          "on_actionIntel_VF_triggered",
+          "on_actionIR3520_on_PCH_triggered",
+          "on_actionMPS_on_ECSMB_triggered",
+          "on_actionAMD_Vermeer_PM_triggered",
+          "on_actionDOS_Items_triggered",
+          "on_actionOCTVB_triggered",
+          "on_actionV_LATCH_triggered",
+          "on_actionClk_Stretch_Detect_triggered",
+          "on_actionIntel_Perf_Bais_triggered",
+          "on_actionMemory_Timings_triggered",
+          "on_actionMonitoring_triggered",
+          "on_actionControls_triggered",
+          "on_actionVF_Curve_triggered",
+          "on_actionCommon_DRAM_Tuners_triggered",
+          "on_actionIntel_Client_triggered",
+          "on_actionDDR5_PMIC_triggered",
+          "on_actionADL_MB_triggered",
+          "on_actionFreq_Validation_triggered",
+          "on_actionV_Clamp_triggered",
+          "on_actionWHEA_Monitor_triggered",
+          "on_actionOSC_Clamp_triggered",
+          "on_actionUSB_OSC2_triggered",
+          "on_actionHGS_triggered",
+          "on_actionPerf_Metrics_triggered",
+          "on_actionDDR5_SPD_triggered",
+          "on_actionAMD_UMC_triggered",
+          "on_actionAM5_MB_2_triggered",
+          "on_actionDDR5_PMIC_2_triggered",
+          "on_actionGet_AC_LL_triggered",
+          "on_actionBT_Control_triggered",
+          "on_actionVar_EDC_triggered",
+          "on_actionW790_MB_triggered",
+          "on_actionRing_DOS_triggered",
+          "on_actionARC_OC_triggered",
+          "on_actionARC_Monitor_triggered",
+          "on_actionSerial_Mon_triggered",
+          "on_actionDRAM_RGB_triggered",
+          "on_actionFan_Control_triggered",
+          "on_actionCryo_Cooler_triggered",
+          "on_actionRW_MSR_triggered",
+          "on_actionRW_Memory_triggered",
+          "on_actionRW_PCI_triggered",
+          "on_actionRW_ECRAM_triggered",
+          "on_actionDIMM_Flex_triggered",
+          "on_actionCPU_Report_triggered",
+          "on_actionRW_OCMB_triggered",
+          "on_actionRW_PCODE_MB_triggered",
+          "on_actionHeavy_DOS_triggered",
+          "on_actionSlip_Stream_EC_triggered",
+          "on_actionDDR5_CKD_triggered",
+          "on_actionRW_IOPort_triggered",
+          "on_actionFlash_EC_triggered",
+          "on_actionI3C_Master_Slave_triggered",
+          "on_actionForce_Sensor_triggered",
+          "on_actionCustom_Harness_triggered",
+          "on_actionFont_Size_triggered"
+        ]
+      },
+      {
+        "class": "rw_memory",
+        "offset": 23625248,
+        "strings": [
+          "rw_memory",
+          "refreshit",
+          "",
+          "on_pushButton_clicked",
+          "on_pushButton_2_clicked",
+          "closeEvent",
+          "QCloseEvent*"
+        ]
+      },
+      {
+        "class": "rw_msr",
+        "offset": 23625728,
+        "strings": [
+          "rw_msr",
+          "refreshit",
+          "",
+          "on_pushButton_clicked",
+          "on_pushButton_2_clicked",
+          "closeEvent",
+          "QCloseEvent*"
+        ]
+      },
+      {
+        "class": "rw_pci",
+        "offset": 23628032,
+        "strings": [
+          "rw_pci",
+          "refreshit",
+          "",
+          "on_pushButton_2_clicked",
+          "closeEvent",
+          "QCloseEvent*"
+        ]
+      }
+    ],
+    "windows": [
+      {
+        "class": "MainWindow",
+        "offset": 72401584,
+        "strings": [
+          "MainWindow",
+          "on_actionECSMBUS_triggered",
+          "",
+          "on_actionVRM_triggered",
+          "on_AMDcpu_triggered",
+          "on_actionIntel_HEDT_triggered",
+          "on_actionIntel_HEDT_2_triggered",
+          "on_actionIntel_Mainstream_triggered",
+          "on_actionASP1405_1400_triggered",
+          "on_actionFIVR_VTargets_triggered",
+          "on_actionASUS_ClockGen_triggered",
+          "on_actionVF_Points_triggered",
+          "on_actionZenith_SOC_VRM_triggered",
+          "on_actionRaw_SA_VRM_triggered",
+          "on_actionSet_Affinity_triggered",
+          "on_actionBIOS_triggered",
+          "on_actionNCT_SIO_triggered",
+          "on_actionPCH_SMBUS_triggered",
+          "on_actionPECI_triggered",
+          "on_actionSB_RMI_triggered",
+          "on_actionEZValues_triggered",
+          "on_actionAMD_Monitor_triggered",
+          "on_actionAMD_By_Core_Use_triggered",
+          "on_actionAMD_XFR_Simulator_triggered",
+          "on_actionAMD_OC_Slipper_triggered",
+          "on_actionDie_Sense_Predict_triggered",
+          "on_actionAMD_V_F_triggered",
+          "on_actionPower_Freq_Chart_triggered",
+          "i3c_sel_done",
+          "r",
+          "on_actionEff_Eval_triggered",
+          "on_actionIntel_VF_triggered",
+          "on_actionIR3520_on_PCH_triggered",
+          "on_actionMPS_on_ECSMB_triggered",
+          "on_actionAMD_Vermeer_PM_triggered",
+          "on_actionDOS_Items_triggered",
+          "on_actionOCTVB_triggered",
+          "on_actionV_LATCH_triggered",
+          "on_actionClk_Stretch_Detect_triggered",
+          "on_actionIntel_Perf_Bais_triggered",
+          "on_actionMemory_Timings_triggered",
+          "on_actionMonitoring_triggered",
+          "on_actionControls_triggered",
+          "on_actionVF_Curve_triggered",
+          "on_actionCommon_DRAM_Tuners_triggered",
+          "on_actionIntel_Client_triggered",
+          "on_actionDDR5_PMIC_triggered",
+          "on_actionADL_MB_triggered",
+          "on_actionFreq_Validation_triggered",
+          "on_actionV_Clamp_triggered",
+          "on_actionWHEA_Monitor_triggered",
+          "on_actionOSC_Clamp_triggered",
+          "on_actionUSB_OSC2_triggered",
+          "on_actionHGS_triggered",
+          "on_actionPerf_Metrics_triggered",
+          "on_actionDDR5_SPD_triggered",
+          "on_actionAMD_UMC_triggered",
+          "on_actionAM5_MB_2_triggered",
+          "on_actionDDR5_PMIC_2_triggered",
+          "on_actionGet_AC_LL_triggered",
+          "on_actionBT_Control_triggered",
+          "on_actionVar_EDC_triggered",
+          "on_actionW790_MB_triggered",
+          "on_actionRing_DOS_triggered",
+          "on_actionARC_OC_triggered",
+          "on_actionARC_Monitor_triggered",
+          "on_actionSerial_Mon_triggered",
+          "on_actionDRAM_RGB_triggered",
+          "on_actionFan_Control_triggered",
+          "on_actionCryo_Cooler_triggered",
+          "on_actionRW_MSR_triggered",
+          "on_actionRW_IOPort_triggered",
+          "on_actionRW_PCI_triggered",
+          "on_actionRW_Memory_triggered",
+          "on_actionRW_ECRAM_triggered",
+          "on_actionDIMM_Flex_triggered",
+          "on_actionStress_Mem_triggered",
+          "on_actionFlash_EC_triggered",
+          "on_actionCPU_Report_triggered",
+          "on_actionRW_OCMB_triggered",
+          "on_actionRW_PCODE_MB_triggered",
+          "on_actionHeavy_DOS_triggered",
+          "on_actionSlip_Stream_EC_triggered",
+          "on_actionBIOS_Save_triggered",
+          "on_actionAuto_Tuner_triggered",
+          "on_actionCKD_triggered",
+          "on_actionGNR_ODT_triggered",
+          "on_actionI3C_Master_Slave_triggered",
+          "on_actionIPF_triggered",
+          "on_actionForce_Sensor_triggered",
+          "on_actionCustom_Harness_triggered",
+          "on_actionFont_Size_triggered"
+        ]
+      },
+      {
+        "class": "rw_memory",
+        "offset": 72430416,
+        "strings": [
+          "rw_memory",
+          "refreshit",
+          "",
+          "on_pushButton_clicked",
+          "on_pushButton_2_clicked",
+          "closeEvent",
+          "QCloseEvent*"
+        ]
+      },
+      {
+        "class": "rw_msr",
+        "offset": 72430736,
+        "strings": [
+          "rw_msr",
+          "refreshit",
+          "",
+          "on_pushButton_clicked",
+          "on_pushButton_2_clicked",
+          "closeEvent",
+          "QCloseEvent*"
+        ]
+      },
+      {
+        "class": "rw_pci",
+        "offset": 72432320,
+        "strings": [
+          "rw_pci",
+          "refreshit",
+          "",
+          "on_pushButton_2_clicked",
+          "closeEvent",
+          "QCloseEvent*"
+        ]
+      }
+    ]
+  },
+  "no_source_candidates": true,
+  "no_executables_run": true,
+  "license_txt_scope": "GIMPS/Prime95, not OCTool",
+  "limitations": [
+    "Qt metadata names do not restore C++ implementations or hardware units.",
+    "Windows import opencv_world4140.dll is not present in supplied ZIP; original Windows launch not attempted.",
+    "Counts describe metadata tables, not vtable count or complete functional parity."
+  ]
+}
