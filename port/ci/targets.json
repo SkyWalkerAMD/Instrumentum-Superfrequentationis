@@ -1,0 +1,12 @@
+[
+  {"id":"el8","image":"rockylinux:8","family":"rpm","kernel_packages":["kernel-devel"],"display":"xvfb"},
+  {"id":"el9","image":"rockylinux:9","family":"rpm","kernel_packages":["kernel-devel"],"display":"xvfb"},
+  {"id":"el10","image":"quay.io/rockylinux/rockylinux:10","family":"rpm","kernel_packages":["kernel-devel"],"display":"xwayland"},
+  {"id":"ubuntu20.04","image":"ubuntu:20.04","family":"deb","kernel_packages":["linux-headers-generic"],"display":"xvfb"},
+  {"id":"ubuntu22.04","image":"ubuntu:22.04","family":"deb","kernel_packages":["linux-headers-generic","linux-headers-generic-hwe-22.04"],"display":"xvfb"},
+  {"id":"ubuntu24.04","image":"ubuntu:24.04","family":"deb","kernel_packages":["linux-headers-generic"],"display":"xvfb"},
+  {"id":"ubuntu26.04","image":"ubuntu:26.04","family":"deb","kernel_packages":["linux-headers-generic"],"display":"xwayland"},
+  {"id":"debian11","image":"debian:11","family":"deb","kernel_packages":["linux-headers-amd64"],"display":"xvfb"},
+  {"id":"debian12","image":"debian:12","family":"deb","kernel_packages":["linux-headers-amd64"],"display":"xvfb"},
+  {"id":"debian13","image":"debian:13","family":"deb","kernel_packages":["linux-headers-amd64"],"display":"xvfb"}
+]

@@ -1,0 +1,2 @@
+# /dev/mydev is created by the module via its class; lock it to root.
+SUBSYSTEM=="octool_hwio", KERNEL=="mydev*", MODE="0600", OWNER="root", GROUP="root"

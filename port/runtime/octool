@@ -1,0 +1,12 @@
+#!/bin/sh
+# Static Qt's xcb platform works in X11 and in a Wayland session via Xwayland.
+# An explicit platform choice (including diagnostic offscreen) is respected.
+set -eu
+if [ -z "${QT_QPA_PLATFORM:-}" ]; then
+    if [ -z "${DISPLAY:-}" ]; then
+        echo 'octool: DISPLAY is absent; enable Xwayland in your Wayland session.' >&2
+        exit 2
+    fi
+    export QT_QPA_PLATFORM=xcb
+fi
+exec /opt/octool/bin/octool-real "$@"

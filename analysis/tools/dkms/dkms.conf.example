@@ -1,0 +1,13 @@
+# DKMS configuration for the peter_kernel module shipped by octool.
+# Identical, apart from names, to the pkprobe configuration that was built and
+# installed with dkms 2.8.1 / 2.8.7 / 3.0.11 / 3.2.2 against eight Ubuntu kernels
+# (5.4 -> 7.0) without any warning. Install the module sources (peter_kernel.c +
+# Kbuild with the class_create probe, see tools/kmod-probe/Kbuild) to
+# /usr/src/octool-kmod-<version>/ together with this file renamed to dkms.conf.
+PACKAGE_NAME="octool-kmod"
+PACKAGE_VERSION="@VERSION@"
+BUILT_MODULE_NAME[0]="peter_kernel"
+DEST_MODULE_LOCATION[0]="/updates/dkms"
+MAKE[0]="make -C ${kernel_source_dir} M=${dkms_tree}/${PACKAGE_NAME}/${PACKAGE_VERSION}/build modules"
+CLEAN="make -C ${kernel_source_dir} M=${dkms_tree}/${PACKAGE_NAME}/${PACKAGE_VERSION}/build clean"
+AUTOINSTALL="yes"

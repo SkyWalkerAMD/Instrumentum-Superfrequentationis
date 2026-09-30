@@ -1,0 +1,18 @@
+obj-m := octool_hwio.o
+
+# Kbuild also includes this file from Makefile.clean without a compiler setup.
+ifeq ($(filter Makefile.clean %/Makefile.clean,$(MAKEFILE_LIST)),)
+# Compile with this kernel's flags and generated headers, including Debian's
+# split common/architecture headers. Never infer this API from kernel versions.
+pk-class-probe = $(call try-run,printf '%s\n' '\#include <linux/module.h>' '\#include <linux/device.h>' 'static inline struct class *pk_probe(void) { return class_create($(1)); }' | $(CC) $(NOSTDINC_FLAGS) $(LINUXINCLUDE) $(KBUILD_CPPFLAGS) $(KBUILD_CFLAGS) -Werror -x c -c -o "$$TMP" -,y,n)
+PK_CLASS_CREATE_ONE := $(call pk-class-probe,"octool-probe")
+ifeq ($(PK_CLASS_CREATE_ONE),y)
+ccflags-y += -DPK_CLASS_CREATE_1ARG
+else
+pk-comma := ,
+PK_CLASS_CREATE_TWO := $(call pk-class-probe,THIS_MODULE$(pk-comma) "octool-probe")
+ifneq ($(PK_CLASS_CREATE_TWO),y)
+$(error octool: neither class_create signature compiles; check CC and complete configured kernel headers)
+endif
+endif
+endif

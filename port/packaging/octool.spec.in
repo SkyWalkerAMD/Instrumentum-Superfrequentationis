@@ -1,0 +1,28 @@
+Name:           octool
+Version:        @VERSION@
+Release:        1%{?dist}
+Summary:        OCTool Intel and AMD hardware monitor
+License:        LicenseRef-Octool
+Source0:        octool-%{version}-runtime.tar.gz
+ExclusiveArch:  x86_64
+Requires:       octool-hwio-dkms = %{version}-%{release}
+Requires:       /usr/bin/Xwayland, at-spi2-core, /usr/bin/dbus-run-session, dejavu-sans-fonts, mesa-dri-drivers
+
+%description
+Static Qt GUI built on EL8. Uses the target system glibc and display stack.
+The author's distribution license and Qt license inventory are in /opt/octool/licenses.
+
+%prep
+%setup -q -n octool-%{version}
+
+%build
+
+%install
+mkdir -p %{buildroot}
+cp -a opt usr %{buildroot}/
+
+%files
+/opt/octool
+/usr/bin/octool
+/usr/share/applications/octool.desktop
+/usr/share/doc/octool

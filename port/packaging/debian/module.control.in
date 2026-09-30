@@ -1,0 +1,10 @@
+Package: octool-hwio-dkms
+Version: @VERSION@-1
+Section: kernel
+Priority: optional
+Architecture: amd64
+Maintainer: OCTool maintainers <octool@example.invalid>
+Depends: dkms (>= 2.8), gcc, make, kmod, libc6-dev, libelf-dev, linux-headers-amd64 | linux-headers-generic | linux-headers
+Recommends: mokutil, openssl
+Description: OCTool hardware access module sources for DKMS
+ Rebuilds against installed target kernel headers; preserves /dev/mydev MMIO ABI.

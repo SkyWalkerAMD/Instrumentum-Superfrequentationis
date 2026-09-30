@@ -1,0 +1,51 @@
+{
+  "date": "2026-09-30",
+  "environment": "Windows / Python 3.14.7 / Git Bash",
+  "python_regressions": {
+    "passed": 16,
+    "skipped": 1,
+    "failed": 0,
+    "skipped_reason": "Linux-built octool_parity is unavailable"
+  },
+  "shell_syntax": {
+    "scripts": 10,
+    "dkms_conf": "pass",
+    "launcher": "pass",
+    "rpm_scriptlets_passed": 2
+  },
+  "python_3_8_syntax": "pass",
+  "workflow_yaml_structure": "pass",
+  "documentation_links": "pass",
+  "source_archive_repeated_hash": "pass",
+  "canonical_abi_and_hal_unchanged": true,
+  "module_c_change": "MODULE_VERSION only, 2.0 -> 2.0.1",
+  "original_gui_elf_release_gate": {
+    "exit_code": 1,
+    "expected": "reject Ubuntu binary as EL8 release"
+  },
+  "gui_source_preflight": {
+    "exit_code": 2,
+    "expected": "missing original GUI source"
+  },
+  "linux_c_offline_tests": "not_run",
+  "linux_kernel_builds": "not_run",
+  "gui_build_and_launch": "not_run",
+  "rpm_deb_build_and_install": "not_run",
+  "secure_boot_and_mmio_parity": "not_run",
+  "cloud_ci": "not_run",
+  "cloud_runner": {
+    "selected_method": "OpenAI/Codex-hosted cloud, clarified by user; not a user-owned SSH server",
+    "connection": "Cloud CLI reachable; no concrete environment listed by its selector",
+    "cloud_cli_tasks": 0,
+    "cloud_task_submitted": false,
+    "planned_phases": 31,
+    "plan_cli": "pass; full=31, Debian-only=3, invalid target exits 2",
+    "state_and_archive_regressions_passed": 7,
+    "execution": "not_run; only plan and mocked scheduling tests"
+  },
+  "completion": "incomplete: GUI source and usable Linux runner missing",
+  "connected_github_repository_search": {
+    "query": "octool",
+    "matching_repositories": 0
+  }
+}

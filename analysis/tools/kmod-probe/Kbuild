@@ -1,0 +1,9 @@
+obj-m := pk_probe.o
+PK_VARIANT ?= compat
+ccflags-y += -DPK_VARIANT_$(shell echo $(PK_VARIANT) | tr a-z A-Z)
+# Capability probe, not a version check: RHEL 9 backported the one-argument
+# class_create() into its 5.14 kernels, so LINUX_VERSION_CODE < 6.4 is wrong there.
+PK_CLASS_H := $(firstword $(wildcard $(srctree)/include/linux/device/class.h) $(srctree)/include/linux/device.h)
+ifeq ($(shell grep -Eqs 'class_create\(const char \*name\)' $(PK_CLASS_H) && echo y),y)
+ccflags-y += -DPK_CLASS_CREATE_1ARG
+endif

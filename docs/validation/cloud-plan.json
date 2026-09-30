@@ -1,0 +1,245 @@
+{
+  "scope": "all",
+  "targets": [
+    "el8",
+    "el9",
+    "el10",
+    "ubuntu20.04",
+    "ubuntu22.04",
+    "ubuntu24.04",
+    "ubuntu26.04",
+    "debian11",
+    "debian12",
+    "debian13"
+  ],
+  "jobs": [
+    {
+      "name": "kernel-el8",
+      "action": "kernel",
+      "target": "el8",
+      "needs": []
+    },
+    {
+      "name": "kernel-el9",
+      "action": "kernel",
+      "target": "el9",
+      "needs": []
+    },
+    {
+      "name": "kernel-el10",
+      "action": "kernel",
+      "target": "el10",
+      "needs": []
+    },
+    {
+      "name": "kernel-ubuntu20.04",
+      "action": "kernel",
+      "target": "ubuntu20.04",
+      "needs": []
+    },
+    {
+      "name": "kernel-ubuntu22.04",
+      "action": "kernel",
+      "target": "ubuntu22.04",
+      "needs": []
+    },
+    {
+      "name": "kernel-ubuntu24.04",
+      "action": "kernel",
+      "target": "ubuntu24.04",
+      "needs": []
+    },
+    {
+      "name": "kernel-ubuntu26.04",
+      "action": "kernel",
+      "target": "ubuntu26.04",
+      "needs": []
+    },
+    {
+      "name": "kernel-debian11",
+      "action": "kernel",
+      "target": "debian11",
+      "needs": []
+    },
+    {
+      "name": "kernel-debian12",
+      "action": "kernel",
+      "target": "debian12",
+      "needs": []
+    },
+    {
+      "name": "kernel-debian13",
+      "action": "kernel",
+      "target": "debian13",
+      "needs": []
+    },
+    {
+      "name": "baseline-el8",
+      "action": "baseline",
+      "target": "el8",
+      "needs": []
+    },
+    {
+      "name": "desktop-el8",
+      "action": "desktop",
+      "target": "el8",
+      "needs": [
+        "baseline-el8"
+      ]
+    },
+    {
+      "name": "runtime-el8",
+      "action": "runtime",
+      "target": "el8",
+      "needs": [
+        "desktop-el8"
+      ]
+    },
+    {
+      "name": "desktop-el9",
+      "action": "desktop",
+      "target": "el9",
+      "needs": [
+        "baseline-el8"
+      ]
+    },
+    {
+      "name": "runtime-el9",
+      "action": "runtime",
+      "target": "el9",
+      "needs": [
+        "desktop-el9"
+      ]
+    },
+    {
+      "name": "desktop-el10",
+      "action": "desktop",
+      "target": "el10",
+      "needs": [
+        "baseline-el8"
+      ]
+    },
+    {
+      "name": "runtime-el10",
+      "action": "runtime",
+      "target": "el10",
+      "needs": [
+        "desktop-el10"
+      ]
+    },
+    {
+      "name": "desktop-ubuntu20.04",
+      "action": "desktop",
+      "target": "ubuntu20.04",
+      "needs": [
+        "baseline-el8"
+      ]
+    },
+    {
+      "name": "runtime-ubuntu20.04",
+      "action": "runtime",
+      "target": "ubuntu20.04",
+      "needs": [
+        "desktop-ubuntu20.04"
+      ]
+    },
+    {
+      "name": "desktop-ubuntu22.04",
+      "action": "desktop",
+      "target": "ubuntu22.04",
+      "needs": [
+        "baseline-el8"
+      ]
+    },
+    {
+      "name": "runtime-ubuntu22.04",
+      "action": "runtime",
+      "target": "ubuntu22.04",
+      "needs": [
+        "desktop-ubuntu22.04"
+      ]
+    },
+    {
+      "name": "desktop-ubuntu24.04",
+      "action": "desktop",
+      "target": "ubuntu24.04",
+      "needs": [
+        "baseline-el8"
+      ]
+    },
+    {
+      "name": "runtime-ubuntu24.04",
+      "action": "runtime",
+      "target": "ubuntu24.04",
+      "needs": [
+        "desktop-ubuntu24.04"
+      ]
+    },
+    {
+      "name": "desktop-ubuntu26.04",
+      "action": "desktop",
+      "target": "ubuntu26.04",
+      "needs": [
+        "baseline-el8"
+      ]
+    },
+    {
+      "name": "runtime-ubuntu26.04",
+      "action": "runtime",
+      "target": "ubuntu26.04",
+      "needs": [
+        "desktop-ubuntu26.04"
+      ]
+    },
+    {
+      "name": "desktop-debian11",
+      "action": "desktop",
+      "target": "debian11",
+      "needs": [
+        "baseline-el8"
+      ]
+    },
+    {
+      "name": "runtime-debian11",
+      "action": "runtime",
+      "target": "debian11",
+      "needs": [
+        "desktop-debian11"
+      ]
+    },
+    {
+      "name": "desktop-debian12",
+      "action": "desktop",
+      "target": "debian12",
+      "needs": [
+        "baseline-el8"
+      ]
+    },
+    {
+      "name": "runtime-debian12",
+      "action": "runtime",
+      "target": "debian12",
+      "needs": [
+        "desktop-debian12"
+      ]
+    },
+    {
+      "name": "desktop-debian13",
+      "action": "desktop",
+      "target": "debian13",
+      "needs": [
+        "baseline-el8"
+      ]
+    },
+    {
+      "name": "runtime-debian13",
+      "action": "runtime",
+      "target": "debian13",
+      "needs": [
+        "desktop-debian13"
+      ]
+    }
+  ],
+  "executed": false,
+  "full_matrix_passed": false
+}

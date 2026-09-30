@@ -1,0 +1,9 @@
+Package: octool
+Version: @VERSION@-1
+Section: utils
+Priority: optional
+Architecture: amd64
+Maintainer: OCTool maintainers <octool@example.invalid>
+Depends: octool-hwio-dkms (= @VERSION@-1), @SHLIBS@, xwayland, at-spi2-core, dbus-x11, fonts-dejavu-core, libgl1-mesa-dri
+Description: OCTool Intel and AMD hardware monitor
+ Static Qt GUI built on EL8, with the system glibc and display stack.

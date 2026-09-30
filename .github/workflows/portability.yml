@@ -1,0 +1,131 @@
+name: portability
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: portability-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  matrix:
+    runs-on: ubuntu-24.04
+    outputs:
+      targets: ${{ steps.targets.outputs.targets }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: targets
+        run: |
+          python3 - <<'PY'
+          import json, os
+          targets = json.load(open('port/ci/targets.json'))
+          assert len(targets) == 10 and len({x['id'] for x in targets}) == 10
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write('targets=' + json.dumps({'include': targets}) + '\n')
+          PY
+      - run: python3 -m unittest discover -s port/tests -p 'test_*.py' -v
+      - run: python3 port/ci/validate-local.py
+      - run: find port -name '*.sh' -print0 | xargs -0 -n1 bash -n
+  kernel:
+    name: kernel (${{ matrix.id }})
+    needs: matrix
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.matrix.outputs.targets) }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p build/artifacts
+          docker pull '${{ matrix.image }}'
+          docker image inspect '${{ matrix.image }}' > build/artifacts/container-image.json
+          docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -v "$PWD:/src" -v "$PWD/build/artifacts:/out" -w /src \
+            '${{ matrix.image }}' bash port/ci/in-container.sh kernel '${{ matrix.id }}'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kernel-${{ matrix.id }}
+          path: build/artifacts/
+          if-no-files-found: error
+          retention-days: 7
+  baseline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require original GUI source
+        run: python3 port/tools/build_gui.py --preflight
+      - run: |
+          mkdir -p build/baseline
+          docker pull rockylinux:8
+          docker image inspect rockylinux:8 > build/baseline/container-image.json
+          docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -v "$PWD:/src" -v "$PWD/build/baseline:/out" -w /src \
+            rockylinux:8 bash port/ci/in-container.sh baseline el8
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: el8-baseline
+          path: |
+            build/baseline/*.tar.gz
+            build/baseline/*.json
+            build/baseline/*.txt
+          if-no-files-found: error
+          retention-days: 7
+  desktop:
+    name: desktop (${{ matrix.id }})
+    needs: [matrix, baseline]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.matrix.outputs.targets) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: el8-baseline
+          path: build/inputs
+      - name: Native GUI compile and distro packages
+        run: |
+          mkdir -p build/artifacts
+          docker pull '${{ matrix.image }}'
+          docker image inspect '${{ matrix.image }}' > build/artifacts/container-image.json
+          docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -v "$PWD:/src" -v "$PWD/build/inputs:/inputs:ro" \
+            -v "$PWD/build/artifacts:/out" -w /src '${{ matrix.image }}' \
+            bash port/ci/in-container.sh desktop '${{ matrix.id }}'
+      - name: Install and smoke in fresh target image
+        run: |
+          docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -v "$PWD:/src:ro" -v "$PWD/build/artifacts:/out" \
+            -w /src '${{ matrix.image }}' bash port/ci/in-container.sh runtime '${{ matrix.id }}'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: desktop-${{ matrix.id }}
+          path: build/artifacts/
+          if-no-files-found: error
+          retention-days: 7
+  gate:
+    if: always()
+    needs: [matrix, kernel, baseline, desktop]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: All ten targets must pass
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          results = json.loads(os.environ['RESULTS'])
+          failed = {k: v['result'] for k, v in results.items() if v['result'] != 'success'}
+          assert not failed, failed
+          PY
+      - uses: actions/checkout@v4
+      - run: python3 port/tools/make_source.py --require-gui
+      - uses: actions/upload-artifact@v4
+        with:
+          name: octool-source
+          path: dist/octool-*-src.tar.gz*
+          if-no-files-found: error
+          retention-days: 7
