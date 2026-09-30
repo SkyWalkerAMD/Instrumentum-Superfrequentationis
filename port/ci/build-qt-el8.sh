@@ -34,8 +34,19 @@ done
     -fontconfig -system-freetype -accessibility -feature-accessibility-atspi-bridge \
     -dbus-linked -xcb -xcb-xlib \
     -opengl desktop "${skip[@]}"
-# Qt's top-level configure delegates to qtbase (OUT_PWD is the qtbase build).
-test -s qtbase/config.summary
+# Top-level and standalone QtBase builds can put the summary in different
+# directories. Select an actual generated file, never infer it from a script's
+# working-directory change (top-level qmake can change OUT_PWD again).
+summary=
+for candidate in config.summary qtbase/config.summary; do
+    if [ -s "$candidate" ]; then summary=$candidate; break; fi
+done
+if [ -z "$summary" ]; then
+    echo 'Qt configure produced no config.summary in the supported build layouts' >&2
+    find . -maxdepth 3 -name config.summary -print >&2
+    exit 1
+fi
+printf 'Qt configuration summary: %s\n' "$summary"
 make -j"${JOBS:-2}"
 make install
 grep -Eq '^#define QT_FEATURE_accessibility 1$' /opt/octool-qt/include/QtGui/qtgui-config.h
@@ -53,4 +64,4 @@ for p in src.rglob('*'):
         shutil.copy2(p, target)
 PY
 printf 'Qt %s\nsource sha256 %s\n' "$version" "$sha" > /opt/octool-qt/licenses/build-source.txt
-cp qtbase/config.summary /opt/octool-qt/licenses/config.summary
+cp "$summary" /opt/octool-qt/licenses/config.summary
