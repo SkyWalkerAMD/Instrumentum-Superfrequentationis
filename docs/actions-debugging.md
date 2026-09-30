@@ -24,6 +24,14 @@ bootstrap 现在读取配置树的 `include/config/kernel.release`，建立相�
 链接。发现已有链接必须核对目的地一致；缺配置仍报错。源树、DKMS 和签名 helper 使用同一目标路径。
 不通过安装/使用 runner 的宿主 headers 回避问题，不按内核版本号选择 API。
 
+第二轮 EL8 已完成实编、签名、RPM 构建和 DKMS 安装，但最后按模块名查询失败。
+核对[DKMS 3.4.3 的 do_depmod](https://github.com/dkms-project/dkms/blob/v3.4.3/dkms.in)：
+它在目标目录没有 modules.dep 时认为未安装内核映像，跳过创建索引。
+headers-only 容器现在在安装 OCTool 包之前对目标 release 执行 depmod 初始化索引，
+之后仍由真实 DKMS 安装更新索引，并通过 modinfo 按名称检验，不改成仅检查 .ko 文件存在。
+此外 EPEL 的 dracut post_transaction 在无 boot image 的容器中失败，容器 bootstrap
+明确禁用该启动映像钩子；配置不进入发行包。真实内核升级/启动映像和 MOK 仍必须在 VM/真机验收。
+
 ## class_create 编译探测
 
 Debian12/13 和 Ubuntu22.04/24.04/26.04 均在 Kbuild 中报告两种签名都不能编译。
@@ -34,7 +42,12 @@ Debian12/13 和 Ubuntu22.04/24.04/26.04 均在 Kbuild 中报告两种签名都�
 两种签名仍分别实际编译，均失败则打印 `.octool-class-1.log` 和 `.octool-class-2.log` 的原始错误。
 日志写在模块构建目录并由 Kbuild clean 清理，不写入内核 headers。
 
-此调整须由下一轮矩阵核实；不能把代码审阅当作十目标修复成功。
+第二轮 [run 36658900518](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36658900518)
+（提交 f2c494b）的原始 stderr 揭示直接失败原因是 `<stdin>:1:1: error: stray '\\' in program`。
+GNU Make 对函数参数内 `\#` 的处理存在差异，导致生成的 `#include` 前留下反斜杠；
+Ubuntu20.04 使用的工具链未触发该问题。补 flags 本身并未修复它，不能把它写成已验证根因。
+现在用独立 `class_create_probe.c` 编译两种签名，避免在 Make 字符串内生成 C 源码。
+原生包和手工 DKMS 安装都必须携带该探测文件；它不会链接到最终模块。
 
 ## Debian11 安全源断档
 
@@ -55,6 +68,8 @@ deb [check-valid-until=no] http://snapshot.debian.org/archive/debian-security/20
 因此 APT 使用 HTTP 和发行版签名验证。`check-valid-until=no` 仅用于这两个固定历史源，
 不是全局关闭校验；用法依据 [Debian snapshot 文档](https://snapshot.debian.org/#usage)。
 此配置仅属于可丢弃测试容器，不随 octool 软件包安装到用户系统。
+第二轮中该快照配置已实际安装完成，Debian11 的 HAL、C 离线自测和 17 项 Python 测试通过，
+随后进入 5.10.0-46 headers 的编译探测并触发上述 Make 转义问题。
 
 ## 证据保留和后续
 

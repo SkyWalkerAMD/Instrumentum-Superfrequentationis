@@ -4,6 +4,16 @@
 
 ### 仓库改名与首轮真实 Linux CI 修复
 
+- 用户确认原 Linux GUI 源码已丢失，授权先检查 Windows 版本，必要时重构 GUI；
+  Windows 包的实际路径仍待提供。ABI/MMIO 保持兼容，未知硬件字段/单位仍不得推断。
+- 第二轮 f2c494b / run 36658900518：Debian11 官方快照安装和离线测试通过；
+  诊断日志确认 class_create 探测失败的直接原因是 GNU Make 将 `\#include` 反斜杠传入 C。
+  改用独立 class_create_probe.c，随两条 DKMS staging 路径携带；不再用 Make 字符串生成 C。
+  前轮添加的 flags 完整性保留，但不把它误记为已证实的直接根因。
+- 第二轮 EL8 实编/签名/RPM 构建完成且 DKMS installed，但按名称 modinfo 失败。
+  核实 DKMS 3.4.3 在没有 modules.dep 时跳过 depmod；headers-only 容器先初始化目标索引。
+  EPEL dracut 钩子也不适用于没有启动映像的容器，仅在 bootstrap 禁用 post_transaction，
+  不改发行包/用户 DKMS 设置；真机清单继续要求实际内核升级、签名和加载。
 - 按用户后续要求，将公开仓库改名为 Instrumentum-Superfrequentationis，展示标题为
   Instrumentum Superfrequentationis；已核实 GitHub 新地址、公开状态并同步 origin。
 - 首次提交 22d0ea0 的 Actions run 36657953069 实际完成：Ubuntu20.04 的 5.4.0-216-generic

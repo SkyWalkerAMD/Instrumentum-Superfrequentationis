@@ -25,6 +25,8 @@
 
 ## 当前缺失输入
 
+- 用户随后确认原 Linux GUI 源码已经丢失，授权先检查 Windows 版，必要时重构。
+  Windows 版实际路径待提供；重构不得猜测硬件字段、单位或面板含义。
 - 原 GUI 源码：当前树没有 `.pro`/GUI C++ 源码。`port/gui/build.json` 的
   `gui/octool.pro` 是明确的接入位置，**不是已经存在的工程**。
 - 用户最初提到的 `OCTool0528.zip` 不在给定工作目录；已读取的 Linux ZIP 只有二进制。

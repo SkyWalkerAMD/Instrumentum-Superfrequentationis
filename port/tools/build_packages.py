@@ -36,7 +36,7 @@ def copy(source, target, mode=0o644):
 
 def module_stage(stage, ver):
     src = stage / ("usr/src/octool-hwio-" + ver)
-    for name in ("octool_hwio.c", "octool_hwio_abi.h", "Kbuild", "Makefile"):
+    for name in ("octool_hwio.c", "octool_hwio_abi.h", "class_create_probe.c", "Kbuild", "Makefile"):
         copy(ROOT / "port/kmod" / name, src / "kmod" / name)
     copy(ROOT / "port/abi/octool_hwio_abi.h", src / "abi/octool_hwio_abi.h")
     conf = (PACK / "dkms.conf").read_text()

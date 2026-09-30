@@ -53,6 +53,10 @@ else
         fi
     done
     dnf install -y gcc gcc-c++ make dkms kmod elfutils-libelf-devel openssl mokutil util-linux shadow-utils
+    # A headers-only container has no bootable kernel or initramfs. EPEL's
+    # dracut post-transaction hook is for booted installations, checked on VMs.
+    # This local CI setting is never included in OCTool's packages.
+    printf '\n# OCTool disposable container: no boot images\npost_transaction=""\n' >> /etc/dkms/framework.conf
     if [ "$target" = el8 ]; then
         dnf install -y python39
         # Container-local interpreter; EL8's default Python 3.6 is too old.
@@ -99,6 +103,16 @@ else
         printf 'Target headers: %s -> %s\n' "$link" "$tree"
     done
 fi
+# Modern DKMS intentionally skips depmod when modules.dep is absent (no kernel
+# image installed). Initialize the target container's indexes before testing
+# module installation; never pass the runner's uname release to depmod.
+for tree in /lib/modules/*/build; do
+    [ -f "$tree/Makefile" ] || continue
+    kernel=${tree%/build}; kernel=${kernel##*/}
+    if [ ! -f "/lib/modules/$kernel/modules.dep" ]; then
+        depmod -a "$kernel"
+    fi
+done
 if [ "$mode" = kernel ]; then
     if command -v apt-get >/dev/null; then
         apt-get install -y --no-install-recommends dpkg-dev binutils

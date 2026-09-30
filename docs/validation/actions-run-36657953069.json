@@ -1,0 +1,99 @@
+{
+  "databaseId": 36657953069,
+  "headSha": "22d0ea0a019e6686e283db05f5be05691b34fa00",
+  "status": "completed",
+  "conclusion": "failure",
+  "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36657953069",
+  "jobs": [
+    {
+      "name": "matrix",
+      "databaseId": 109706241833,
+      "conclusion": "success"
+    },
+    {
+      "name": "baseline",
+      "databaseId": 109706242033,
+      "conclusion": "failure"
+    },
+    {
+      "name": "kernel (el9)",
+      "databaseId": 109706275913,
+      "conclusion": "failure"
+    },
+    {
+      "name": "kernel (ubuntu24.04)",
+      "databaseId": 109706275917,
+      "conclusion": "failure"
+    },
+    {
+      "name": "kernel (debian11)",
+      "databaseId": 109706275922,
+      "conclusion": "failure"
+    },
+    {
+      "name": "kernel (ubuntu20.04)",
+      "databaseId": 109706275925,
+      "conclusion": "success"
+    },
+    {
+      "name": "kernel (debian13)",
+      "databaseId": 109706275962,
+      "conclusion": "failure"
+    },
+    {
+      "name": "kernel (ubuntu22.04)",
+      "databaseId": 109706275966,
+      "conclusion": "failure"
+    },
+    {
+      "name": "kernel (el8)",
+      "databaseId": 109706275968,
+      "conclusion": "failure"
+    },
+    {
+      "name": "kernel (debian12)",
+      "databaseId": 109706275983,
+      "conclusion": "failure"
+    },
+    {
+      "name": "kernel (ubuntu26.04)",
+      "databaseId": 109706276000,
+      "conclusion": "failure"
+    },
+    {
+      "name": "kernel (el10)",
+      "databaseId": 109706276014,
+      "conclusion": "failure"
+    },
+    {
+      "name": "desktop (${{ matrix.id }})",
+      "databaseId": 109706277442,
+      "conclusion": "skipped"
+    },
+    {
+      "name": "gate",
+      "databaseId": 109706705691,
+      "conclusion": "failure"
+    }
+  ],
+  "artifacts": {
+    "packages/octool-hwio-dkms-2.0.1-1.amd64.deb": {
+      "size": 8804,
+      "sha256": "f7af9aa2264113ad54bf48c2437a5875873aebb31374ee315ea3461ae07a1d2d"
+    },
+    "kernels/5.4.0-216-generic/octool_hwio.ko": {
+      "size": 17392,
+      "sha256": "276b25e814393273eb1efbffaca74a486aec996748b4da7719ae880cfdb19786"
+    },
+    "kernels/5.4.0-216-generic/octool_hwio.test-signed.ko": {
+      "size": 17841,
+      "sha256": "12d97faeebd8b770d924f137391e53382b2fc6df891324e7cbeb3e5f9f518838"
+    },
+    "container-image.json": {
+      "size": 2153,
+      "sha256": "d49f253ec20e8dc486c79d6b43c5f59e0ece0d5cb269bc29c05819b5d7176fe6"
+    }
+  },
+  "hardware_acceptance": "not_run",
+  "gui": "blocked_missing_source"
+}
