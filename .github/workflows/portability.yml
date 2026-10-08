@@ -40,12 +40,22 @@ jobs:
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/emulate-legacy-dispatch.py \
             --output build/dispatch-emulation.json
+      - name: Resolve original Qt callback indices before callback bodies
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/qt-callback-map.py \
+            --fixture analysis/fixtures/legacy-qt-callbacks.json --output build/qt-callbacks.json
+      - name: Characterize original MSR syscall errors and polling loops
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/emulate-legacy-msr.py \
+            --output build/msr-emulation.json
       - uses: actions/upload-artifact@v4
         with:
           name: mailbox-contract-evidence
           path: |
             build/mailbox-emulation.json
             build/dispatch-emulation.json
+            build/qt-callbacks.json
+            build/msr-emulation.json
           if-no-files-found: error
           retention-days: 14
       - run: python3 port/ci/validate-local.py

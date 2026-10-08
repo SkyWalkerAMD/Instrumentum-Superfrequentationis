@@ -1,0 +1,644 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "scope": "Two original MSR leaves and two complete UI slots; all libc/Qt I/O boundaries synthetic",
+  "functions": [
+    {
+      "symbol": "_Z5Wrmsrjjj",
+      "address": 3602208,
+      "size": 168,
+      "code_hex": "f30f1efa41554531c0488d0d852e2b014189fd41544189f4be01000000555389d3ba4000000048c1e3204c09e34883ec6864488b042528000000488944245831c0488d6c24104889efe8b2efddff4889efbe0100000031c0e843d8ddff31d24489ee89c589c7e8f5b0ddff89ef488d742408ba0800000048895c2408e8efe8ddff89efe858d2ddff488b44245864482b042528000000750b4883c4685b5d415c415dc3e848b1ddff",
+      "code_sha256": "b03469be78618421a6e2043fd81568ea76a77dcbb4e5e2b890dc101ede8d02b5",
+      "calls": [
+        {
+          "instruction": 3602281,
+          "kind": "call",
+          "target": 1369888,
+          "symbols": [
+            "__sprintf_chk@plt"
+          ]
+        },
+        {
+          "instruction": 3602296,
+          "kind": "call",
+          "target": 1363904,
+          "symbols": [
+            "open@plt"
+          ]
+        },
+        {
+          "instruction": 3602310,
+          "kind": "call",
+          "target": 1353856,
+          "symbols": [
+            "lseek@plt"
+          ]
+        },
+        {
+          "instruction": 3602332,
+          "kind": "call",
+          "target": 1368208,
+          "symbols": [
+            "write@plt"
+          ]
+        },
+        {
+          "instruction": 3602339,
+          "kind": "call",
+          "target": 1362432,
+          "symbols": [
+            "close@plt"
+          ]
+        },
+        {
+          "instruction": 3602371,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z5RdmsrjPjS_",
+      "address": 3602384,
+      "size": 172,
+      "code_hex": "f30f1efa41554531c0488d0dd52d2b014989d54154ba400000004989f4be01000000555389fb4883ec6864488b042528000000488944245831c0488d6c24104889efe809efddff4889ef31f631c0e89dd7ddff89de31d289c589c7e850b0ddffba08000000488d74240889efe8cfe0ddff89efe8b8d1ddff488b4424084889c248c1ea204189550041890424488b44245864482b042528000000750b4883c4685b5d415c415dc3e894b0ddff",
+      "code_sha256": "fad7a6436c8ea2b45234a4ab406d59147fd8dd81d22db616a9fc69bb4c61b994",
+      "calls": [
+        {
+          "instruction": 3602450,
+          "kind": "call",
+          "target": 1369888,
+          "symbols": [
+            "__sprintf_chk@plt"
+          ]
+        },
+        {
+          "instruction": 3602462,
+          "kind": "call",
+          "target": 1363904,
+          "symbols": [
+            "open@plt"
+          ]
+        },
+        {
+          "instruction": 3602475,
+          "kind": "call",
+          "target": 1353856,
+          "symbols": [
+            "lseek@plt"
+          ]
+        },
+        {
+          "instruction": 3602492,
+          "kind": "call",
+          "target": 1366288,
+          "symbols": [
+            "read@plt"
+          ]
+        },
+        {
+          "instruction": 3602499,
+          "kind": "call",
+          "target": 1362432,
+          "symbols": [
+            "close@plt"
+          ]
+        },
+        {
+          "instruction": 3602551,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl610gt_clickedEv",
+      "address": 6377360,
+      "size": 847,
+      "code_hex": "f30f1efa4156415541544989fc55534883ec6064488b042528000000488944245831c0488b4730488d6c24204889ef488b4030488bb088000000e801777c00488b7c24208b5f048b0785c00f848702000083f8ff740ff0832f01488b7c24200f847302000085db0f849b010000498b4424304889ef488b4030488bb088000000e8bb767c00ba0a00000031f64889efe87cc7e100488b7c24204189c68b0785c00f841a02000083f8ff740ff0832f01488b7c24200f8406020000ba1001008031f6bf50010000c744240800000000c744240c100100804c8d6c240c488d5c2408e8aba6d5ff0f1f004c89ea4889debf50010000e848a7d5ff8b44240c85c078e88b442408410fb6f630c009c685c0750681ce00660200ba11010080bf5001000089742408c744240c11010080e85fa6d5ff31f64889efe8e5198800ba58020000be580200004889efe833857100be08000000488d3d14920101e8a29be100be05000000488d3dea50fd004889442418e88c9be1004c8d6c24184c8d7424104531c04c89e7b9000400004c89ea4c89f64889442410e837298800488b7c24108b0785c00f85d7000000ba08000000be02000000e8495edb00488b7c24188b0785c00f84e000000083f8ff740ff0832f01488b7c24180f84cc0000004889efe85eeb8700488b44245864482b0425280000000f85f60000004883c4605b5d415c415d415ec30f1f44000031f64889efe80e198800ba58020000be580200004889efe85c847100be11000000488d3d5e270201e8cb9ae100be05000000488d3d939901014889442418e8b59ae1004c8d6c24184c8d7424104531c04c89e7b9000400004c89ea4c89f64889442410e8a0288800488b7c24108b0785c00f8429ffffff83f8ff0f842ffffffff0832f01488b7c24100f8411ffffff488b7c24188b0785c00f8520ffffffba08000000be02000000e84b5ddb00e920ffffff660f1f440000ba08000000be02000000e8315ddb00e9e6fdffff0f1f4000ba08000000be02000000e8195ddb00e979fdffffe88f56b3fff30f1efa4989c4e9394ab7fff30f1efa4989c4e93d4ab7fff30f1efa4989c44c8d6c2418e9344ab7fff30f1efa4989c4e9304ab7fff30f1efa4989c4e9444ab7fff30f1efa4989c44c8d6c2418e92b4ab7fff30f1efa4989c4e9174ab7ff",
+      "code_sha256": "391ea8f73ad7f9d7f901ac87a4f496d60c1f0a648c71b77823cca9bc5bf28c3c",
+      "calls": [
+        {
+          "instruction": 6377418,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6377488,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6377503,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6377584,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6377603,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6377660,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6377670,
+          "kind": "call",
+          "target": 15297200,
+          "symbols": [
+            "_ZN11QMessageBoxC1EP7QWidget",
+            "_ZN11QMessageBoxC2EP7QWidget"
+          ]
+        },
+        {
+          "instruction": 6377688,
+          "kind": "call",
+          "target": 13817360,
+          "symbols": [
+            "_ZN7QWidget11setBaseSizeEii"
+          ]
+        },
+        {
+          "instruction": 6377705,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6377727,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6377764,
+          "kind": "call",
+          "target": 15301216,
+          "symbols": [
+            "_ZN11QMessageBox11informationEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_"
+          ]
+        },
+        {
+          "instruction": 6377794,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6377837,
+          "kind": "call",
+          "target": 15285456,
+          "symbols": [
+            "_ZN11QMessageBoxD1Ev",
+            "_ZN11QMessageBoxD2Ev"
+          ]
+        },
+        {
+          "instruction": 6377885,
+          "kind": "call",
+          "target": 15297200,
+          "symbols": [
+            "_ZN11QMessageBoxC1EP7QWidget",
+            "_ZN11QMessageBoxC2EP7QWidget"
+          ]
+        },
+        {
+          "instruction": 6377903,
+          "kind": "call",
+          "target": 13817360,
+          "symbols": [
+            "_ZN7QWidget11setBaseSizeEii"
+          ]
+        },
+        {
+          "instruction": 6377920,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6377942,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6377979,
+          "kind": "call",
+          "target": 15301280,
+          "symbols": [
+            "_ZN11QMessageBox7warningEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_"
+          ]
+        },
+        {
+          "instruction": 6378048,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6378053,
+          "kind": "jmp",
+          "target": 6377834,
+          "symbols": []
+        },
+        {
+          "instruction": 6378074,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6378079,
+          "kind": "jmp",
+          "target": 6377546,
+          "symbols": []
+        },
+        {
+          "instruction": 6378098,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6378103,
+          "kind": "jmp",
+          "target": 6377461,
+          "symbols": []
+        },
+        {
+          "instruction": 6378108,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 6378120,
+          "kind": "jmp",
+          "target": 1612998,
+          "symbols": [
+            "_ZN10intel_ctl610gt_clickedEv.cold"
+          ]
+        },
+        {
+          "instruction": 6378132,
+          "kind": "jmp",
+          "target": 1613014,
+          "symbols": []
+        },
+        {
+          "instruction": 6378149,
+          "kind": "jmp",
+          "target": 1613022,
+          "symbols": []
+        },
+        {
+          "instruction": 6378161,
+          "kind": "jmp",
+          "target": 1613030,
+          "symbols": []
+        },
+        {
+          "instruction": 6378173,
+          "kind": "jmp",
+          "target": 1613062,
+          "symbols": []
+        },
+        {
+          "instruction": 6378190,
+          "kind": "jmp",
+          "target": 1613054,
+          "symbols": []
+        },
+        {
+          "instruction": 6378202,
+          "kind": "jmp",
+          "target": 1613046,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl611npu_clickedEv",
+      "address": 6378208,
+      "size": 847,
+      "code_hex": "f30f1efa4156415541544989fc55534883ec6064488b042528000000488944245831c0488b4730488d6c24204889ef488b4030488bb068020000e8b1737c00488b7c24208b5f048b0785c00f848702000083f8ff740ff0832f01488b7c24200f847302000085db0f849b010000498b4424304889ef488b4030488bb068020000e86b737c00ba0a00000031f64889efe82cc4e100488b7c24204189c68b0785c00f841a02000083f8ff740ff0832f01488b7c24200f8406020000ba1008008031f6bf50010000c744240800000000c744240c100800804c8d6c240c488d5c2408e85ba3d5ff0f1f004c89ea4889debf50010000e8f8a3d5ff8b44240c85c078e88b442408410fb6f630c009c685c0750681ce00660200ba11010080bf5001000089742408c744240c11010080e80fa3d5ff31f64889efe895168800ba58020000be580200004889efe8e3817100be08000000488d3dc48e0101e85298e100be05000000488d3d9a4dfd004889442418e83c98e1004c8d6c24184c8d7424104531c04c89e7b9000400004c89ea4c89f64889442410e8e7258800488b7c24108b0785c00f85d7000000ba08000000be02000000e8f95adb00488b7c24188b0785c00f84e000000083f8ff740ff0832f01488b7c24180f84cc0000004889efe80ee88700488b44245864482b0425280000000f85f60000004883c4605b5d415c415d415ec30f1f44000031f64889efe8be158800ba58020000be580200004889efe80c817100be11000000488d3d0e240201e87b97e100be05000000488d3d439601014889442418e86597e1004c8d6c24184c8d7424104531c04c89e7b9000400004c89ea4c89f64889442410e850258800488b7c24108b0785c00f8429ffffff83f8ff0f842ffffffff0832f01488b7c24100f8411ffffff488b7c24188b0785c00f8520ffffffba08000000be02000000e8fb59db00e920ffffff660f1f440000ba08000000be02000000e8e159db00e9e6fdffff0f1f4000ba08000000be02000000e8c959db00e979fdffffe83f53b3fff30f1efa4989c4e93947b7fff30f1efa4989c4e93d47b7fff30f1efa4989c44c8d6c2418e93447b7fff30f1efa4989c4e93047b7fff30f1efa4989c4e94447b7fff30f1efa4989c44c8d6c2418e92b47b7fff30f1efa4989c4e91747b7ff",
+      "code_sha256": "b18b17f0467e2b8f2636987a89807ab1a28888df5f8317ee59b58a253786b0bf",
+      "calls": [
+        {
+          "instruction": 6378266,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6378336,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6378351,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6378432,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6378451,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6378508,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6378518,
+          "kind": "call",
+          "target": 15297200,
+          "symbols": [
+            "_ZN11QMessageBoxC1EP7QWidget",
+            "_ZN11QMessageBoxC2EP7QWidget"
+          ]
+        },
+        {
+          "instruction": 6378536,
+          "kind": "call",
+          "target": 13817360,
+          "symbols": [
+            "_ZN7QWidget11setBaseSizeEii"
+          ]
+        },
+        {
+          "instruction": 6378553,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6378575,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6378612,
+          "kind": "call",
+          "target": 15301216,
+          "symbols": [
+            "_ZN11QMessageBox11informationEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_"
+          ]
+        },
+        {
+          "instruction": 6378642,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6378685,
+          "kind": "call",
+          "target": 15285456,
+          "symbols": [
+            "_ZN11QMessageBoxD1Ev",
+            "_ZN11QMessageBoxD2Ev"
+          ]
+        },
+        {
+          "instruction": 6378733,
+          "kind": "call",
+          "target": 15297200,
+          "symbols": [
+            "_ZN11QMessageBoxC1EP7QWidget",
+            "_ZN11QMessageBoxC2EP7QWidget"
+          ]
+        },
+        {
+          "instruction": 6378751,
+          "kind": "call",
+          "target": 13817360,
+          "symbols": [
+            "_ZN7QWidget11setBaseSizeEii"
+          ]
+        },
+        {
+          "instruction": 6378768,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6378790,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6378827,
+          "kind": "call",
+          "target": 15301280,
+          "symbols": [
+            "_ZN11QMessageBox7warningEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_"
+          ]
+        },
+        {
+          "instruction": 6378896,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6378901,
+          "kind": "jmp",
+          "target": 6378682,
+          "symbols": []
+        },
+        {
+          "instruction": 6378922,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6378927,
+          "kind": "jmp",
+          "target": 6378394,
+          "symbols": []
+        },
+        {
+          "instruction": 6378946,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6378951,
+          "kind": "jmp",
+          "target": 6378309,
+          "symbols": []
+        },
+        {
+          "instruction": 6378956,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 6378968,
+          "kind": "jmp",
+          "target": 1613078,
+          "symbols": [
+            "_ZN10intel_ctl611npu_clickedEv.cold"
+          ]
+        },
+        {
+          "instruction": 6378980,
+          "kind": "jmp",
+          "target": 1613094,
+          "symbols": []
+        },
+        {
+          "instruction": 6378997,
+          "kind": "jmp",
+          "target": 1613102,
+          "symbols": []
+        },
+        {
+          "instruction": 6379009,
+          "kind": "jmp",
+          "target": 1613110,
+          "symbols": []
+        },
+        {
+          "instruction": 6379021,
+          "kind": "jmp",
+          "target": 1613142,
+          "symbols": []
+        },
+        {
+          "instruction": 6379038,
+          "kind": "jmp",
+          "target": 1613134,
+          "symbols": []
+        },
+        {
+          "instruction": 6379050,
+          "kind": "jmp",
+          "target": 1613126,
+          "symbols": []
+        }
+      ]
+    }
+  ],
+  "objects": {},
+  "literals": [
+    {
+      "address": 22979044,
+      "text": "Write"
+    },
+    {
+      "address": 23209397,
+      "text": "/dev/cpu/%d/msr"
+    },
+    {
+      "address": 23257853,
+      "text": "Applied!"
+    },
+    {
+      "address": 23260004,
+      "text": "Error"
+    },
+    {
+      "address": 23296286,
+      "text": "Nothing to Write!"
+    }
+  ]
+}

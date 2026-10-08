@@ -72,6 +72,8 @@ class Machine:
                     self.symbols[call['target']] = call['symbols']
         for target in self.symbols:
             self.map(target, 1)
+            if target not in self.instructions:
+                self.uc.mem_write(target, b'\xc3')  # stop translation before any synthetic boundary body
         for row in fixture['literals']:
             value = row['text'].encode('utf-8') + b'\0'
             self.map(row['address'], len(value))
@@ -81,9 +83,11 @@ class Machine:
             self.map(row['address'], row['size'])
             self.uc.mem_write(row['address'], bytes(row['size']))
         for name, key in [('GLOBAL_IS_NVL', 'nvl'), ('GLOBAL_IS_GNR_SP', 'gnr'), ('IS_ARL_GLOBAL', 'arl')]:
-            self.uc.mem_write(self.objects[name], bytes([bool(inputs.get(key, False))]))
+            if name in self.objects:
+                self.uc.mem_write(self.objects[name], bytes([bool(inputs.get(key, False))]))
         # Synthetic Qt shared-null descriptor. No original Qt instructions run.
-        self.put32(self.objects['_ZN10QArrayData11shared_nullE'], -1)
+        if '_ZN10QArrayData11shared_nullE' in self.objects:
+            self.put32(self.objects['_ZN10QArrayData11shared_nullE'], -1)
         self.map(STACK, 0x10000)
         self.map(HEAP, 0x100000)
         self.map(TLS, 4096)
@@ -278,7 +282,10 @@ class Machine:
         else:
             raise ValueError('execution escaped allowlisted instructions: ' + hex(pc))
 
-    def run(self, symbol):
+    def prepare(self, symbol):
+        pass
+
+    def run(self, symbol, instruction_limit=LIMIT, allow_instruction_bound=False):
         sp = STACK + 0xfff8
         self.reg('rsp', sp)
         self.put64(sp, STOP)
@@ -287,9 +294,12 @@ class Machine:
         if symbol == '_Z9get_oc_okRbS_S_':
             self.reg('rsi', self.output+1)
             self.reg('rdx', self.output+2)
-        self.uc.emu_start(self.entries[symbol], STOP+1, timeout=1000000, count=LIMIT)
+        self.prepare(symbol)
+        self.uc.emu_start(self.entries[symbol], STOP+1, timeout=1000000, count=instruction_limit)
         if self.outcome is None:
-            raise ValueError('instruction/time limit reached without a known boundary')
+            if not allow_instruction_bound or self.steps != instruction_limit:
+                raise ValueError('instruction/time limit reached without a known boundary')
+            self.outcome = 'instruction-limit'
         return {'outcome': self.outcome, 'return_al': self.reg('rax') & 255 if self.outcome == 'returned' else None,
                 'steps': self.steps, 'panel': self.panel, 'panel_flag': self.panel_flag,
                 'calls': self.calls, 'searches': self.searches, 'events': self.events,
