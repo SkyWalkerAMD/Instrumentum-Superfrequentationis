@@ -88,3 +88,6 @@ PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-amd-initia
 CPUID包装器、PCI枚举的边界全为合成；连宿主CPUID指令也未执行，更没有SMU/MSR/MMIO硬件写入。
 入口采用原ELF数据初值，外加明确的PHX状态变体；未模拟构造之前所有修改，不把它当作完整启动实测。
 目前恢复了软件表选择行为，真实消息定义、单位、固件返回和写入效果仍需独立证据。
+
+`fa4c541 / 37766384139`完整23/23成功，Linux385项与Windows除environment完全一致；
+分析23项测试无跳过，详见[云端记录](validation/legacy-initialization-ci-fa4c541.json)。

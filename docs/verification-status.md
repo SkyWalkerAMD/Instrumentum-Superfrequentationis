@@ -4,7 +4,14 @@
 
 ## 当前结果
 
-最新[采集完整性修正](capture-integrity.md)已在`3920018 / portability37749651590`完整23/23通过：
+离线平台/UI/AMD初始化研究在`fa4c541 / portability37766384139`完整23/23成功，
+十目标模块、重构GUI、包安装/窗口及总门禁通过，独立模块探针37766384207成功。
+Linux23项分析测试无跳过，2501项原指令实验与Windows除environment全部一致，
+见[逐项证据与哈希](validation/legacy-initialization-ci-fa4c541.json)。
+后续[AMD命令传输448项](legacy-amd-transport.md)已在本地验证并接入下一轮门禁，不混入上述run。
+这批改动只扩展分析工具、CI与文档；未改GUI/HAL/模块/96字节ABI，也未完成原版全部功能。
+
+[采集完整性修正](capture-integrity.md)已在`3920018 / portability37749651590`完整23/23通过：
 每目标46项采集、21项Python无跳过，十份采集报告逐字节一致；每目标QtTest12项及发行/native窗口通过。
 原GUI/HAL/kmod/96字节设备ABI未改；新增的是对拍文件v2、生命周期失效和错误拒绝。
 `probe37749651635`元数据/重复加载/卸载也成功。20个包与11套模块已下载，

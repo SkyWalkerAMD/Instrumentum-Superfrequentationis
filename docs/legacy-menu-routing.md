@@ -83,3 +83,6 @@ PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/emulate-legacy-me
 show/属性调用及警告文字。所有面板构造器均是明确的空合成边界，便于继续观察第二/第三窗口；
 没有执行Qt库、真实窗口、EC/VRM/MSR/PCI硬件访问。也未把未运行的构造函数视为“支持/初始化成功”。
 原GUI/模块/96字节协议保持原样，报告作为恢复规格而非启动平台伪装器。
+
+`fa4c541 / 37766384139`已包含本页改动并完整23/23通过，Linux592项观测与Windows除environment一致；
+见[完整云端记录](validation/legacy-initialization-ci-fa4c541.json)。

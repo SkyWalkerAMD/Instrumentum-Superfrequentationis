@@ -1,0 +1,472 @@
+{
+  "schema": 1,
+  "recorded_date": "2026-10-08",
+  "run": {
+    "id": 37766384139,
+    "head_sha": "fa4c5416a0ec3a20afc147176c602c55e91be2d9",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37766384139",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "probe": {
+    "id": 37766384207,
+    "head_sha": "fa4c5416a0ec3a20afc147176c602c55e91be2d9",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37766384207",
+    "conclusion": "success"
+  },
+  "scope": "Ten-target reconstructed GUI/module/package installation and window smoke, plus 2501 original-instruction characterization cases. Not original GUI full recovery, hardware I/O, MOK or live parity acceptance.",
+  "jobs": [
+    {
+      "id": 113275327978,
+      "name": "baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113275328342,
+      "name": "matrix",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113275790579,
+      "name": "kernel (el8)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113275790611,
+      "name": "kernel (debian12)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113275790613,
+      "name": "kernel (el10)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113275790626,
+      "name": "kernel (debian13)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113275790662,
+      "name": "kernel (ubuntu24.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113275790666,
+      "name": "kernel (ubuntu22.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113275790674,
+      "name": "kernel (ubuntu20.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113275790683,
+      "name": "kernel (debian11)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113275790693,
+      "name": "kernel (el9)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113275790721,
+      "name": "kernel (ubuntu26.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113276442735,
+      "name": "desktop (ubuntu24.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113276442782,
+      "name": "desktop (el10)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113276442818,
+      "name": "desktop (ubuntu20.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113276442830,
+      "name": "desktop (debian11)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113276442846,
+      "name": "desktop (debian13)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113276442990,
+      "name": "desktop (el8)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113276443057,
+      "name": "desktop (ubuntu22.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113276443063,
+      "name": "desktop (debian12)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113276443067,
+      "name": "desktop (el9)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113276443198,
+      "name": "desktop (ubuntu26.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113284145785,
+      "name": "gate",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "analysis_unit_tests": {
+    "passed": 23,
+    "skipped": 0
+  },
+  "log_evidence": [
+    "2026-10-08T10:54:01.0205479Z capture lifecycle: 46 cases passed (15 finalized, 31 rejected), no hardware",
+    "2026-10-08T10:54:01.1506122Z Ran 21 tests in 0.031s",
+    "2026-10-08T10:54:09.6477938Z Ran 23 tests in 6.066s",
+    "2026-10-08T10:54:10.0309297Z 56 caller-contract cases passed; synthetic replies, no hardware",
+    "2026-10-08T10:54:24.8488056Z 550 bounded decision cases passed; no hardware or GUI executed",
+    "2026-10-08T10:54:27.0654587Z 39 classes; 607 bounded cases; 0 metadata/target mismatches",
+    "2026-10-08T10:54:30.6630705Z 148 cases characterized; 24 expected bounded busy loops; no hardware executed",
+    "2026-10-08T10:54:36.8973341Z 163 bounded UI experiments; 157 names, 67 translations, 28/27 conditional connections; no hardware",
+    "2026-10-08T10:54:56.2372423Z 592 bounded menu scenarios passed; no original panel body or hardware executed",
+    "2026-10-08T10:55:04.3307112Z 385 AMD initialization cases; no hardware, actual CPUID or GUI executed"
+  ],
+  "artifacts": [
+    {
+      "id": 11546937939,
+      "name": "octool-source",
+      "size_in_bytes": 2706838,
+      "digest": "sha256:1b6d73a224550d66113a995a0cae4a6fe545f082d154377601904fcad02b3dcd",
+      "expires_at": "2026-10-15T11:18:50Z"
+    },
+    {
+      "id": 11546155104,
+      "name": "kernel-ubuntu26.04",
+      "size_in_bytes": 341254,
+      "digest": "sha256:bee334d7d917798bc533125769e0310c20bbee819551c9b93c36b474d89aef1f",
+      "expires_at": "2026-10-15T10:56:57Z"
+    },
+    {
+      "id": 11546146145,
+      "name": "desktop-el9",
+      "size_in_bytes": 22019737,
+      "digest": "sha256:2d9fb230a62e4b1f72228ad2612a1ab63bc3db2e52d94b4297283e44f4d10c20",
+      "expires_at": "2026-10-15T11:03:11Z"
+    },
+    {
+      "id": 11546108499,
+      "name": "desktop-el8",
+      "size_in_bytes": 22269127,
+      "digest": "sha256:453fb2f3f4744c5a3068b0fd1995c0fc5452e9605d5b1b6994ec3fa61bf9b501",
+      "expires_at": "2026-10-15T11:18:17Z"
+    },
+    {
+      "id": 11546055217,
+      "name": "kernel-ubuntu22.04",
+      "size_in_bytes": 543198,
+      "digest": "sha256:12f4add7731d26897545316937c412fb0e5bab9a0d942d78c030f6eba3ace069",
+      "expires_at": "2026-10-15T10:57:18Z"
+    },
+    {
+      "id": 11545975743,
+      "name": "desktop-ubuntu22.04",
+      "size_in_bytes": 25682055,
+      "digest": "sha256:0d178b08086ac8c43573cced438e1df988680e417969b0932deced665ef3240b",
+      "expires_at": "2026-10-15T10:59:57Z"
+    },
+    {
+      "id": 11545975376,
+      "name": "kernel-el8",
+      "size_in_bytes": 374855,
+      "digest": "sha256:96295afb40e4b3feef66c5c8e81ae5baab392a0153cf1fcf4bf442b5f7c6c9a2",
+      "expires_at": "2026-10-15T10:57:44Z"
+    },
+    {
+      "id": 11545915243,
+      "name": "el8-baseline",
+      "size_in_bytes": 67058512,
+      "digest": "sha256:0b31ee39e5a5d5f561779f70e84a91c1590faae4d63fe7e0f6f154d20afe5baa",
+      "expires_at": "2026-10-15T10:56:51Z"
+    },
+    {
+      "id": 11545725518,
+      "name": "kernel-ubuntu20.04",
+      "size_in_bytes": 61359,
+      "digest": "sha256:5491d0c7aaed839973991b3571fac0f12021e4bafdbc5734de2143c307029d99",
+      "expires_at": "2026-10-15T10:57:44Z"
+    },
+    {
+      "id": 11545700791,
+      "name": "desktop-debian11",
+      "size_in_bytes": 25675251,
+      "digest": "sha256:857f93e5569805c6c93748e99a291b08d8ee721f5ccf03136348982ea59f5fbd",
+      "expires_at": "2026-10-15T10:59:25Z"
+    },
+    {
+      "id": 11545645502,
+      "name": "kernel-debian13",
+      "size_in_bytes": 318926,
+      "digest": "sha256:a091d6cc67032f8501992265a03f7f04586fe1265dd003b9315486c72680322a",
+      "expires_at": "2026-10-15T10:57:46Z"
+    },
+    {
+      "id": 11545400108,
+      "name": "desktop-ubuntu24.04",
+      "size_in_bytes": 25728745,
+      "digest": "sha256:92e72c67e1904f10bcd44e5577ed8ec3ebfabf9d52b7c23f7867eb2a7e31a719",
+      "expires_at": "2026-10-15T10:59:22Z"
+    },
+    {
+      "id": 11545155458,
+      "name": "desktop-debian12",
+      "size_in_bytes": 25681961,
+      "digest": "sha256:eabef1e22ba478a3c91f381d866cab632317dd513c7a2bb0d94f19baa0340fbc",
+      "expires_at": "2026-10-15T10:58:53Z"
+    },
+    {
+      "id": 11545101539,
+      "name": "desktop-el10",
+      "size_in_bytes": 21995285,
+      "digest": "sha256:2151e5e67a1d00602935bc9c1553f8bd16c0ca234c3af450a8d7788da83d50b1",
+      "expires_at": "2026-10-15T11:03:49Z"
+    },
+    {
+      "id": 11545030468,
+      "name": "kernel-ubuntu24.04",
+      "size_in_bytes": 311149,
+      "digest": "sha256:927a2fd771cd2467dd89f34acc0ceb8fe1296befb9826a937fc610e46b1164a1",
+      "expires_at": "2026-10-15T10:56:44Z"
+    },
+    {
+      "id": 11544752912,
+      "name": "kernel-el9",
+      "size_in_bytes": 335912,
+      "digest": "sha256:87ecce1d7dbcd3cb07d1e56172a6c322f493f5bc8fe87cd02e09d1775ec01cb2",
+      "expires_at": "2026-10-15T10:58:21Z"
+    },
+    {
+      "id": 11544727788,
+      "name": "kernel-debian11",
+      "size_in_bytes": 272539,
+      "digest": "sha256:cfe0f47aa2a17cfc6a35ef4cc99030b3cb12982697281994cb5087faceb84a8b",
+      "expires_at": "2026-10-15T10:56:44Z"
+    },
+    {
+      "id": 11544717865,
+      "name": "kernel-el10",
+      "size_in_bytes": 328107,
+      "digest": "sha256:434d97effa95090e04728f2fffbf4dd953c8ba3d655aa662347f47fe0bdbd166",
+      "expires_at": "2026-10-15T10:57:21Z"
+    },
+    {
+      "id": 11544514410,
+      "name": "desktop-ubuntu20.04",
+      "size_in_bytes": 25685979,
+      "digest": "sha256:6c3556e27bcb6be3b043b524c3362199894bfdf276fb3a89e80a0569b731850a",
+      "expires_at": "2026-10-15T10:59:54Z"
+    },
+    {
+      "id": 11544474609,
+      "name": "desktop-ubuntu26.04",
+      "size_in_bytes": 25729959,
+      "digest": "sha256:3badd08a749090615a1b528182c1c5f723dd20e735d1e8a0547921c658e0c141",
+      "expires_at": "2026-10-15T10:59:39Z"
+    },
+    {
+      "id": 11544409718,
+      "name": "desktop-debian13",
+      "size_in_bytes": 25681713,
+      "digest": "sha256:a73e46589d3a29f9cc55ca5698b9adc37ae35892f70a284c3611ea1086d0803c",
+      "expires_at": "2026-10-15T11:00:09Z"
+    },
+    {
+      "id": 11544329266,
+      "name": "mailbox-contract-evidence",
+      "size_in_bytes": 75285,
+      "digest": "sha256:fe4a5e1fbcd2d37e1b722fe6dc42e37da44e1c7ee9b42591d2ff97d78b2e19bb",
+      "expires_at": "2026-10-22T10:55:04Z"
+    },
+    {
+      "id": 11544319361,
+      "name": "kernel-debian12",
+      "size_in_bytes": 284609,
+      "digest": "sha256:8056902a5ab536c70b19e88df3f66600f0ac3dd3c855bb2adc36768282fd424d",
+      "expires_at": "2026-10-15T10:56:40Z"
+    }
+  ],
+  "cross_environment": [
+    {
+      "experiment": "mailbox-emulation",
+      "cases": 56,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "4142e96873c19cc89b5d4107e8001740abfe1048e1e26e8328d46b9baf334726",
+      "local_sha256": "b7489d54621cee52978a48c7eb13e1bb83b1e77807dda38a61005275f5adfe94",
+      "environment": {
+        "cloud": {
+          "python": "3.12.3",
+          "system": "Linux",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "python": "3.14.8",
+          "system": "Windows",
+          "unicorn": "2.1.4"
+        }
+      }
+    },
+    {
+      "experiment": "dispatch-emulation",
+      "cases": 550,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "1880a797bf48c530f68d7743fa6bf55f24df5ccda49109a518452cf398cf936f",
+      "local_sha256": "02bd88ddb04e8aa5e2476fcf28648f85b971c72e118ac50830532cbdc4b8e88c",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    },
+    {
+      "experiment": "qt-callbacks",
+      "cases": 607,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "bcd756afc46b93e7f06c491761c0a7ad67df440d51322635a4b2d158d976a792",
+      "local_sha256": "94bd74e824dc73e7e8a63fa8e139a1dc8f91baedc284d3ab1f5d7013af49e07d",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    },
+    {
+      "experiment": "msr-emulation",
+      "cases": 148,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "0fde83942ba6cd76fa1ddbaacbe34988fca04960a06cc4abfe597c5114989c38",
+      "local_sha256": "5904ca3e5395dad612428e453cfbd3d6290dbd4226cac82ddc4179e48c2c4069",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    },
+    {
+      "experiment": "ui-connections",
+      "cases": 163,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "459871a6714c2ae0e48debaa4cdd3f0d4fb210b873aad2e2dc402b9c2599dbc2",
+      "local_sha256": "85577ccb4c2907ae434b70a8ebddb48e27445261fc4ce9faaedb39fecd9e4716",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    },
+    {
+      "experiment": "menu-routing",
+      "cases": 592,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "04e31a21fab2dff3e9aaad1898d63a90afb1cd518ff3c2635d7d86f7beb9a310",
+      "local_sha256": "789e7ed8984b62e45fa3a90557f9e45110e6258072a41448b202f23c14a74911",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    },
+    {
+      "experiment": "amd-initialization",
+      "cases": 385,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "2614fc52a5f84cfabed3a2610cfcadeaf4fd8a53041d76660a31c9845da138b0",
+      "local_sha256": "8abd9f7d8a702eada48339270a80b506babe92d692db72a6f1a492c5ed70dec7",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    }
+  ]
+}

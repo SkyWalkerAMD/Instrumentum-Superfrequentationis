@@ -5,7 +5,11 @@
 
 ## 完整通过的构建
 
-最新代码验证为[3920018 / run37749651590](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37749651590)，
+后续研究代码`fa4c541`已完成[run37766384139](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37766384139)
+23/23验证；原指令2501项、GUI/包与模块范围详见[证据](validation/legacy-initialization-ci-fa4c541.json)。
+该轮包在对应Actions artifact中，未把其文件哈希混用于下述已保存的3920018包。
+
+已完整下载保存的安装包来自[3920018 / run37749651590](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37749651590)，
 23/23成功，包含采集生命周期/v2完整提交、每目标46项合成采集和21项Python，以及原有GUI/模块门禁。
 十目标20份安装包保存到`dist/packages-3920018/<目标>/`，附`SHA256SUMS`；名称仍沿用2.0.1。
 [最新文件哈希记录](validation/deliverables-3920018.json)包含11套kernel release、包SHA与100张截图SHA；
