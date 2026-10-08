@@ -22,6 +22,8 @@
   backport、旧 GUI、真实 mailbox 或物理硬件验证；这些范围继续列为待验。
 - 更正探针首步记录：初版 JSON 将 `insmod` 标签写成 `finit_module`，但没有 syscall trace 支持该具体名称；
   文档和归档 JSON 现只记录可证实的命令成功。第二次 `init_module` 是 C 探针直接调用并实测 errno=17。
+- 更正后的 `a1b0e61 / kmod probe 37733259162` 复跑成功，内核与模块 SHA 保持不变，明确记录首步 syscall
+  未 trace，第二步仍为 errno17；artifact digest 为 `sha256:27c66da4371c5500ac41063d6cd0d0377604357214579f5debb80524ea974e14`。
 
 ## 未发布 — 2026-10-08（原机器码原生执行与错误保护层）
 

@@ -28,6 +28,8 @@
 调用 `init_module` 返回 `-1/EEXIST`，job 成功；模块未签名且没有硬件访问。它验证真实内核重复加载，
 不验证 EL vendor kernel、Secure Boot/MOK、旧 GUI 启动或真机 mailbox。见
 [探针证据](legacy-module-handoff.md)和[机器记录](validation/legacy-kmod-eexist-run-37732862984.json)。
+更正首步 syscall 标签后的[复跑 37733259162](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37733259162)
+仍通过，归档的机器记录同时保留两次运行 ID、artifact digest 与观测结果。
 
 原 GUI 源码丢失后，作者已授权重构，并先选择基础信息与 MSR/MMIO/PCI，随后提供四套平台截图。
 可编译的真实 Qt5 GUI 已接入。作者进一步选择先恢复 AMD PStates 的只读频率和完整原始值。

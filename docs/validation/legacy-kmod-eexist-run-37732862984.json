@@ -52,5 +52,20 @@
     "artifact_size_bytes": 452,
     "artifact_expires_at": "2026-11-07T05:32:20Z"
   },
+  "corrected_script_repeat": {
+    "run_id": 37733259162,
+    "run_url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37733259162",
+    "job_id": 113166979377,
+    "head_sha": "a1b0e614501a7c539849f29f22ee9e4824552be5",
+    "conclusion": "success",
+    "kernel_release": "6.17.0-1022-azure",
+    "module_sha256": "271908a2cdbc914fbf5b2d37a0b4800dca97ac548d2ba44eab408842aa7fca3d",
+    "initial_load_syscall_traced": false,
+    "duplicate_init_module_errno": 17,
+    "device_class_and_devnode_present": true,
+    "artifact_id": 11530628326,
+    "artifact_digest": "sha256:27c66da4371c5500ac41063d6cd0d0377604357214579f5debb80524ea974e14",
+    "artifact_expires_at": "2026-11-07T05:37:12Z"
+  },
   "conclusion_scope": "The real project module loaded on the GitHub runner kernel; a second init_module call with the same raw module bytes returned EEXIST, and the device class/node existed. This does not establish Secure Boot/MOK acceptance, vendor-patched EL behavior, or the old GUI's complete hardware handshake."
 }

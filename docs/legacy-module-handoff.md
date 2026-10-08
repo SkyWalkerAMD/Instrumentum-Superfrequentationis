@@ -91,6 +91,13 @@ artifact ID 为 `11529992803`、digest `sha256:b0c69a81f46dcf63b239046ceaa232a23
 原始脚本 JSON 把首次 `insmod` 标注成 `finit_module`，但没有跟踪该 syscall；归档记录已纠正为只确认
 `insmod` 命令成功。第二次 `init_module` 是探针直接调用，返回码与 errno 有明确记录。
 
+更正后脚本在提交 `a1b0e614501a7c539849f29f22ee9e4824552be5` 上再次运行：
+[run 37733259162](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37733259162)
+成功，仍为同一 `6.17.0-1022-azure` kernel 和模块 SHA，`initial_load_syscall_traced=false`，
+第二次 `init_module` errno 17，设备 class/node 均存在。artifact digest 为
+`sha256:27c66da4371c5500ac41063d6cd0d0377604357214579f5debb80524ea974e14`；其 run/job/artifact
+元数据已并入上方验证 JSON。此复跑确认更正标签没有改变探针实测结果。
+
 这是真实内核、真实项目模块和真实第二次 `init_module` 调用，不是 syscall mock；它验证了旧 GUI 所需的
 内核 `EEXIST` 语义与新模块内部名兼容。该构建未签名（signer 为空），runner 不执行强制签名/MOK 验收；
 运行内核也不是 EL8/9/10。原 GUI 没有被执行，旧 loader 选择哪个候选 `.ko`、目标机调用权限、签名
