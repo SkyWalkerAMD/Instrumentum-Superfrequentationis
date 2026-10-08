@@ -30,6 +30,14 @@
 [探针证据](legacy-module-handoff.md)和[机器记录](validation/legacy-kmod-eexist-run-37732862984.json)。
 更正首步 syscall 标签后的[复跑 37733259162](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37733259162)
 仍通过，归档的机器记录同时保留两次运行 ID、artifact digest 与观测结果。
+随后文档提交 `0f01f2e` 的[探针复测 37733967112](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37733967112)
+也成功，仍为同一 runner kernel/module SHA，第二次 `init_module` 精确返回 EEXIST；本轮 artifact digest
+和机器字段归档在[独立 JSON](validation/legacy-kmod-eexist-run-37733967112.json)。
+同一提交的[完整回归 37733967175](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37733967175)
+23/23 job 成功，包含十目标内核、GUI、包安装及窗口冒烟、EL8 基线、离线自测和反汇编/mailbox 门禁。
+该提交只有文档与验证记录改动；逐 job 状态和 23 份 artifact 元数据见
+[actions-run-37733967175.json](validation/actions-run-37733967175.json)。云端包安装/窗口冒烟不等于作者真机的
+模块加载、MOK、硬件寄存器或旧 ELF 全功能验收。
 
 原 GUI 源码丢失后，作者已授权重构，并先选择基础信息与 MSR/MMIO/PCI，随后提供四套平台截图。
 可编译的真实 Qt5 GUI 已接入。作者进一步选择先恢复 AMD PStates 的只读频率和完整原始值。

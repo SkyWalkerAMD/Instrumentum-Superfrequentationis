@@ -98,6 +98,15 @@ artifact ID 为 `11529992803`、digest `sha256:b0c69a81f46dcf63b239046ceaa232a23
 `sha256:27c66da4371c5500ac41063d6cd0d0377604357214579f5debb80524ea974e14`；其 run/job/artifact
 元数据已并入上方验证 JSON。此复跑确认更正标签没有改变探针实测结果。
 
+研究分支归档文档的提交 `0f01f2e4e113822458c0b37a34cdee2343b9b7af` 再次触发探针：
+[run 37733967112](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37733967112)
+成功。日志确认 Ubuntu 24.04.5 runner、内核仍为 `6.17.0-1022-azure`，项目模块 SHA/vermagic 未变，
+首次 `insmod` 成功且明确标注底层 syscall 未跟踪；第二次直接 `init_module` 返回 `-1/errno 17`，
+class 和 `/dev/mydev` 存在，没有硬件 IO。artifact ID `11531185654`、digest
+`sha256:da879d5d88ca7abae12e75879851f86ae9b7d123cf688901d6e1803a93fa22fd`，完整逐字段记录见
+[run 37733967112 JSON](validation/legacy-kmod-eexist-run-37733967112.json)。这是同一 Linux runner 环境的
+独立复测，不扩大到 EL vendor kernel、MOK 或旧 GUI 运行结果。
+
 这是真实内核、真实项目模块和真实第二次 `init_module` 调用，不是 syscall mock；它验证了旧 GUI 所需的
 内核 `EEXIST` 语义与新模块内部名兼容。该构建未签名（signer 为空），runner 不执行强制签名/MOK 验收；
 运行内核也不是 EL8/9/10。原 GUI 没有被执行，旧 loader 选择哪个候选 `.ko`、目标机调用权限、签名

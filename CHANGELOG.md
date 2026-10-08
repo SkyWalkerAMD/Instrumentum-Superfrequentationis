@@ -24,6 +24,14 @@
   文档和归档 JSON 现只记录可证实的命令成功。第二次 `init_module` 是 C 探针直接调用并实测 errno=17。
 - 更正后的 `a1b0e61 / kmod probe 37733259162` 复跑成功，内核与模块 SHA 保持不变，明确记录首步 syscall
   未 trace，第二步仍为 errno17；artifact digest 为 `sha256:27c66da4371c5500ac41063d6cd0d0377604357214579f5debb80524ea974e14`。
+- 文档归档提交 `0f01f2e` 后再次触发 `kmod probe 37733967112`，真实 runner 重复加载探针仍通过；
+  保持同一 kernel/module SHA，明确输出 `insmod` 底层调用未跟踪、第二次 `init_module` 返回 errno17。
+  artifact `11531185654` / digest `sha256:da879d5d88ca7abae12e75879851f86ae9b7d123cf688901d6e1803a93fa22fd`，
+  逐字段结果归档于 `docs/validation/legacy-kmod-eexist-run-37733967112.json`。
+- 同一提交的 [portability run 37733967175](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37733967175)
+  23/23 job 成功：十目标内核/DKMS、十目标 GUI/包安装/窗口冒烟、EL8 GUI 基线、离线与 ELF/mailbox 门禁均通过。
+  本次提交只增加研究结果文档/JSON，没有修改 GUI、ABI、HAL、模块或生产打包源码。完整 job ID、结论、
+  artifact 名称/ID/digest/到期时间已归档于 `docs/validation/actions-run-37733967175.json`。
 
 ## 未发布 — 2026-10-08（原机器码原生执行与错误保护层）
 

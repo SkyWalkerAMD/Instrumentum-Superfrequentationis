@@ -1,0 +1,385 @@
+{
+  "id": 37733967175,
+  "html_url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37733967175",
+  "head_branch": "research/kmod-eexist-probe",
+  "head_sha": "0f01f2e4e113822458c0b37a34cdee2343b9b7af",
+  "event": "push",
+  "status": "completed",
+  "conclusion": "success",
+  "created_at": "2026-10-08T05:45:18Z",
+  "updated_at": "2026-10-08T05:52:12Z",
+  "full_matrix_passed": true,
+  "hardware_acceptance": "not_run",
+  "scope": "This commit archived the corrected duplicate-load probe result and related documentation. No production GUI, ABI, HAL, kernel module, or packaging source changed in the commit.",
+  "targets": [
+    "el8",
+    "el9",
+    "el10",
+    "ubuntu20.04",
+    "ubuntu22.04",
+    "ubuntu24.04",
+    "ubuntu26.04",
+    "debian11",
+    "debian12",
+    "debian13"
+  ],
+  "gates": [
+    "EL8 GUI baseline build",
+    "offline port/tests including loopback and MMIO parity selftest",
+    "ELF fixture audit",
+    "original MMIO caller 56-case bounded simulation",
+    "ten kernel builds and DKMS/package jobs",
+    "ten native GUI builds and package install/window smoke jobs",
+    "aggregate gate"
+  ],
+  "jobs": [
+    {
+      "id": 113169203450,
+      "name": "baseline",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:45:22Z",
+      "completed_at": "2026-10-08T05:47:21Z"
+    },
+    {
+      "id": 113169203467,
+      "name": "matrix",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:45:22Z",
+      "completed_at": "2026-10-08T05:45:34Z"
+    },
+    {
+      "id": 113169273371,
+      "name": "kernel (debian11)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:45:37Z",
+      "completed_at": "2026-10-08T05:47:13Z"
+    },
+    {
+      "id": 113169273375,
+      "name": "kernel (el10)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:45:36Z",
+      "completed_at": "2026-10-08T05:47:41Z"
+    },
+    {
+      "id": 113169273389,
+      "name": "kernel (ubuntu22.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:45:36Z",
+      "completed_at": "2026-10-08T05:47:37Z"
+    },
+    {
+      "id": 113169273392,
+      "name": "kernel (debian12)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:45:36Z",
+      "completed_at": "2026-10-08T05:47:10Z"
+    },
+    {
+      "id": 113169273407,
+      "name": "kernel (ubuntu20.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:45:36Z",
+      "completed_at": "2026-10-08T05:47:28Z"
+    },
+    {
+      "id": 113169273415,
+      "name": "kernel (ubuntu24.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:45:37Z",
+      "completed_at": "2026-10-08T05:47:16Z"
+    },
+    {
+      "id": 113169273418,
+      "name": "kernel (el9)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:45:37Z",
+      "completed_at": "2026-10-08T05:47:55Z"
+    },
+    {
+      "id": 113169273420,
+      "name": "kernel (el8)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:45:36Z",
+      "completed_at": "2026-10-08T05:48:03Z"
+    },
+    {
+      "id": 113169273431,
+      "name": "kernel (debian13)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:45:36Z",
+      "completed_at": "2026-10-08T05:48:10Z"
+    },
+    {
+      "id": 113169273446,
+      "name": "kernel (ubuntu26.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:45:37Z",
+      "completed_at": "2026-10-08T05:47:29Z"
+    },
+    {
+      "id": 113169753350,
+      "name": "desktop (debian13)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:47:24Z",
+      "completed_at": "2026-10-08T05:50:33Z"
+    },
+    {
+      "id": 113169753354,
+      "name": "desktop (el10)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:47:25Z",
+      "completed_at": "2026-10-08T05:52:03Z"
+    },
+    {
+      "id": 113169753371,
+      "name": "desktop (ubuntu22.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:47:24Z",
+      "completed_at": "2026-10-08T05:50:17Z"
+    },
+    {
+      "id": 113169753424,
+      "name": "desktop (el8)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:47:24Z",
+      "completed_at": "2026-10-08T05:51:39Z"
+    },
+    {
+      "id": 113169753425,
+      "name": "desktop (ubuntu20.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:47:24Z",
+      "completed_at": "2026-10-08T05:50:19Z"
+    },
+    {
+      "id": 113169753441,
+      "name": "desktop (el9)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:47:25Z",
+      "completed_at": "2026-10-08T05:51:21Z"
+    },
+    {
+      "id": 113169753450,
+      "name": "desktop (debian11)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:47:24Z",
+      "completed_at": "2026-10-08T05:49:19Z"
+    },
+    {
+      "id": 113169753455,
+      "name": "desktop (ubuntu26.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:47:25Z",
+      "completed_at": "2026-10-08T05:50:41Z"
+    },
+    {
+      "id": 113169753464,
+      "name": "desktop (ubuntu24.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:47:24Z",
+      "completed_at": "2026-10-08T05:50:03Z"
+    },
+    {
+      "id": 113169753472,
+      "name": "desktop (debian12)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:47:24Z",
+      "completed_at": "2026-10-08T05:49:18Z"
+    },
+    {
+      "id": 113170993991,
+      "name": "gate",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-08T05:52:06Z",
+      "completed_at": "2026-10-08T05:52:11Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 11531510092,
+      "name": "desktop-el9",
+      "size_in_bytes": 21812831,
+      "digest": "sha256:f037496e13ced070f0feca198ea5de1b09acb2ac142d2bf5490c0f7a8e9ea418",
+      "expires_at": "2026-10-15T05:51:16Z"
+    },
+    {
+      "id": 11531420270,
+      "name": "kernel-ubuntu22.04",
+      "size_in_bytes": 532029,
+      "digest": "sha256:75d4a8c59d17ef82de9f81c07b70a20be7e8cccff5cf125b544678b8a5bb3f7b",
+      "expires_at": "2026-10-15T05:47:34Z"
+    },
+    {
+      "id": 11531316193,
+      "name": "octool-source",
+      "size_in_bytes": 2267652,
+      "digest": "sha256:2c9ed216dfd15b5a24da71b79938ad45de3a67cca32987549209b5db5830936a",
+      "expires_at": "2026-10-15T05:52:08Z"
+    },
+    {
+      "id": 11531261415,
+      "name": "desktop-el10",
+      "size_in_bytes": 21787927,
+      "digest": "sha256:7fb3a81f2303a6331d5101d9fcc2e35b16df98e341fb069c0cecfb35059fb2bb",
+      "expires_at": "2026-10-15T05:51:58Z"
+    },
+    {
+      "id": 11531245770,
+      "name": "kernel-el10",
+      "size_in_bytes": 316329,
+      "digest": "sha256:591f50f54113c8fb81bc5ce4f8e0cb1e986f7aeb9c4f1358965e53482869c939",
+      "expires_at": "2026-10-15T05:47:38Z"
+    },
+    {
+      "id": 11531181285,
+      "name": "desktop-ubuntu20.04",
+      "size_in_bytes": 25366509,
+      "digest": "sha256:b5280e23c33b55e3ae294a20efecb93dd70638cd18358f2c3bdd7280e0603177",
+      "expires_at": "2026-10-15T05:50:14Z"
+    },
+    {
+      "id": 11531131909,
+      "name": "desktop-el8",
+      "size_in_bytes": 22014042,
+      "digest": "sha256:dea703746ce5636a579f07d65426cfbe8d2307a54725970849e3f17beb38b1c5",
+      "expires_at": "2026-10-15T05:51:35Z"
+    },
+    {
+      "id": 11531126610,
+      "name": "desktop-debian12",
+      "size_in_bytes": 25363881,
+      "digest": "sha256:9c7e81eb80e9957d79f10cf8893ca953c98989c1d303f91e3fca75bf41eae5f4",
+      "expires_at": "2026-10-15T05:49:14Z"
+    },
+    {
+      "id": 11531126301,
+      "name": "kernel-ubuntu24.04",
+      "size_in_bytes": 309018,
+      "digest": "sha256:3ea515c434eb42c015fc63bf3b080d9b31d3a06b5ef420b63a6c4a4f33013889",
+      "expires_at": "2026-10-15T05:47:13Z"
+    },
+    {
+      "id": 11531121596,
+      "name": "desktop-ubuntu24.04",
+      "size_in_bytes": 25408838,
+      "digest": "sha256:7f84edfc501823f6cd6476d7f77eed5d06b1ade13665aa170aeea2f3f691d12b",
+      "expires_at": "2026-10-15T05:49:57Z"
+    },
+    {
+      "id": 11531037253,
+      "name": "desktop-ubuntu26.04",
+      "size_in_bytes": 25409585,
+      "digest": "sha256:ea913cf9faa6b3894a757893b61ed85138f810c5533d879a822bfa125011d10b",
+      "expires_at": "2026-10-15T05:50:35Z"
+    },
+    {
+      "id": 11530928235,
+      "name": "kernel-debian11",
+      "size_in_bytes": 261224,
+      "digest": "sha256:3f1b74e40f573b5b19eda8a9ffbabde7f6a15bb329527fb9e7d00d2e21083ccf",
+      "expires_at": "2026-10-15T05:47:09Z"
+    },
+    {
+      "id": 11530918173,
+      "name": "el8-baseline",
+      "size_in_bytes": 67054877,
+      "digest": "sha256:2a71f431d01311520ecdfbf888a82d536e77e01687b17ccd336b6cc4bd627a5c",
+      "expires_at": "2026-10-15T05:47:16Z"
+    },
+    {
+      "id": 11530878909,
+      "name": "desktop-ubuntu22.04",
+      "size_in_bytes": 25364373,
+      "digest": "sha256:0cf90d219bdd074b281882288d11fc855a8342ab86588bf6580190474625610a",
+      "expires_at": "2026-10-15T05:50:11Z"
+    },
+    {
+      "id": 11530858310,
+      "name": "mailbox-contract-evidence",
+      "size_in_bytes": 2026,
+      "digest": "sha256:cd89e04e4b89ae7bda169566699d61bb584ba68d62e12c45b940944486874ff7",
+      "expires_at": "2026-10-22T05:45:30Z"
+    },
+    {
+      "id": 11530827621,
+      "name": "kernel-debian13",
+      "size_in_bytes": 316016,
+      "digest": "sha256:5a6835f6e9b017150100f998ae6b5773ab51896497bc658a58ef9b9f203d0348",
+      "expires_at": "2026-10-15T05:48:08Z"
+    },
+    {
+      "id": 11530824160,
+      "name": "kernel-el9",
+      "size_in_bytes": 323642,
+      "digest": "sha256:96b05734a201868dbe0c647c9c69a46f5086bd269c929e60df525b65ba7c1587",
+      "expires_at": "2026-10-15T05:47:51Z"
+    },
+    {
+      "id": 11530784356,
+      "name": "kernel-ubuntu20.04",
+      "size_in_bytes": 58598,
+      "digest": "sha256:63d8c52e367bd56982c6b7b29be688b30ff656c795a696be6fa621d4a2d75ec9",
+      "expires_at": "2026-10-15T05:47:24Z"
+    },
+    {
+      "id": 11530759557,
+      "name": "kernel-el8",
+      "size_in_bytes": 348769,
+      "digest": "sha256:4a244ba5f8a562da786df8a8b3d9c0d7bd809b3a1e84daea4e2f659bc3d35f89",
+      "expires_at": "2026-10-15T05:48:01Z"
+    },
+    {
+      "id": 11530748358,
+      "name": "desktop-debian13",
+      "size_in_bytes": 25363534,
+      "digest": "sha256:dae4cad1a91ff94972bb59e730ad733e83f10ac1313fa0d602a699990e624255",
+      "expires_at": "2026-10-15T05:50:28Z"
+    },
+    {
+      "id": 11530694929,
+      "name": "desktop-debian11",
+      "size_in_bytes": 25357108,
+      "digest": "sha256:25cba6da39fdc15ec6ca7b389258f7cd30fcabef027d85e1cae84a409bfbbe6b",
+      "expires_at": "2026-10-15T05:49:15Z"
+    },
+    {
+      "id": 11530159169,
+      "name": "kernel-debian12",
+      "size_in_bytes": 273594,
+      "digest": "sha256:7001e7f3426dc9812de3437a745174994287137b9882d6b0dba57be250dc5ea1",
+      "expires_at": "2026-10-15T05:47:06Z"
+    },
+    {
+      "id": 11529929534,
+      "name": "kernel-ubuntu26.04",
+      "size_in_bytes": 328396,
+      "digest": "sha256:c5f2b70d07e193fc46fdea8e83f6d20c97d7ad5f8d39037896a2a364a2bb8bd5",
+      "expires_at": "2026-10-15T05:47:25Z"
+    }
+  ],
+  "artifact_count": 23
+}
