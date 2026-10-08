@@ -96,6 +96,20 @@ def section_bytes(path, name):
 
 
 def verify_bodies(binary, data):
+    elf = binary.read_bytes()
+    elf_type = struct.unpack_from('<H', elf, 16)[0]
+    phoff = struct.unpack_from('<Q', elf, 32)[0]
+    stride, count = struct.unpack_from('<HH', elf, 54)
+    stack = []
+    for i in range(count):
+        p = struct.unpack_from('<IIQQQQQQ', elf, phoff + i * stride)
+        if p[0] == 1:  # PT_LOAD
+            assert (p[1] & 3) != 3, 'test ELF must not contain a writable executable segment'
+            if elf_type == 2:  # ET_EXEC: fixed addresses, unlike a relocated PIE
+                assert p[3] >= 0x10000, 'test ELF would request a null/low-page mapping'
+        if p[0] == 0x6474e551:  # PT_GNU_STACK
+            stack.append(p[1])
+    assert stack == [6], 'test ELF must declare a non-executable stack'
     start, raw = section_bytes(binary, '.legacy_wrappers')
     for f in data['functions']:
         expected = bytes.fromhex(f['code_hex'])
@@ -116,7 +130,14 @@ def build(directory, data, external_guard):
         '-Wl,-z,noexecstack', '-o', str(directory / 'libfake-mailbox.so')])
     for kind, mode in [('pie', '-pie'), ('exec', '-no-pie')]:
         binary = directory / ('caller-' + kind)
-        subprocess.check_call(flags + ['-fPIE', mode,
+        # binutils 2.30's default ET_EXEC text starts at 0x400000. Placing
+        # original lower-address sections before it otherwise creates a LOAD
+        # at address zero. Choose a nonzero header/text segment BELOW all of
+        # our pinned sections; do not change mmap_min_addr or the old bytes.
+        layout = ['-Wl,-z,max-page-size=0x1000']
+        if kind == 'exec':
+            layout += ['-Wl,-Ttext-segment=0x10000']
+        subprocess.check_call(flags + layout + ['-fPIE', mode,
             str(ROOT / 'analysis/tests/legacy-guard-harness.c'), str(directory / 'wrappers.S'),
             '-Wl,--section-start=.legacy_wrappers=0x%x' % data['functions'][0]['address'],
             '-Wl,--section-start=.legacy_write=0x%x' % data['functions'][0]['write_plt'],
@@ -213,12 +234,14 @@ def run(directory, guard, data, output, target):
     assert Path(loader).exists()
     try:
         modes = [('unguarded-pie', [str(directory / 'caller-pie')], False),
+                 ('unguarded-exec', [str(directory / 'caller-exec')], False),
                  ('guarded-pie', [str(directory / 'caller-pie')], True),
                  ('guarded-exec', [str(directory / 'caller-exec')], True),
                  ('guarded-loader', [loader, str(directory / 'caller-pie')], True)]
         for mode, prefix, guarded in modes:
             for i, f in enumerate(data['functions']):
-                for case in CASES:
+                cases = ('success', 'delayed_success') if mode == 'unguarded-exec' else CASES
+                for case in cases:
                     row = child(prefix + [str(i), case], guard if guarded else None,
                                 4 if guarded else 0.5)
                     row.update(mode=mode, function=f['symbol'], case=case)

@@ -49,18 +49,19 @@ python3 analysis/tools/test-legacy-guard.py --build-dir build/native-guard \
 gh workflow run legacy-guard.yml --ref main
 ```
 
-每次执行核查291项：72项未保护的PIE基线（8函数×9条件），216项保护层测试
+每次执行核查307项：72项未保护的PIE基线（8函数×9条件）、16项未保护非PIE成功/异步基线，216项保护层测试
 （PIE、非PIE、显式ld.so三种入口），3项无关调用者透传。
 九个条件包括正常、真实异步完成、无完成、ENOMEM、EINVAL、write失败、短写、
 write失败但done=1、非法完成字2。未保护分支的外部超时是已知缺陷的观察，不计为兼容成功。
 成功请求的保留字段、令牌和写宽度截断都核验；失败分支要求74和对应诊断，不能仅凭“不挂”通过。
 
-[独立 workflow](../.github/workflows/legacy-guard.yml)计划在 EL8 编译一次，并把相同文件送到
+[独立 workflow](../.github/workflows/legacy-guard.yml)在 EL8 编译一次，并把相同文件送到
 EL8、EL9、EL10、Ubuntu22.04（私有运行库的 glibc 来源）原生执行，核对产物哈希和 GLIBC<=2.28。
 执行容器 UID10001、无网络、无capabilities、只读根文件系统，只有证据输出目录可写。
-权限 contents:read，无草稿下载或 token 传入容器。
-正式 portability 的十目标 kernel 阶段另以 nobody 编译/执行同一门禁，继续保留 loopback、
-transport、parity selftest、模块/DKMS和GUI门禁。新保护层不自动装入现有RPM/DEB或旧GUI启动器。
+权限 contents:read，无草稿下载或 token 传入容器。工作流在 main 推送、PR 和手动触发时运行；
+它把同一份 EL8 构建产物放到四种原生 glibc 上测试。portability 的十目标 kernel 阶段也以
+nobody 编译/执行该门禁，继续保留 loopback、transport、parity selftest、模块/DKMS和GUI门禁。
+新保护层不自动装入现有RPM/DEB或旧GUI启动器。
 
 ## 尚未解决的边界
 
@@ -77,3 +78,17 @@ transport、parity selftest、模块/DKMS和GUI门禁。新保护层不自动装
 原理依据：[RTLD_NEXT/dlsym](https://man7.org/linux/man-pages/man3/dlsym.3.html)、
 [glibc 显式加载器启动](https://sourceware.org/glibc/manual/latest/html_node/Dynamic-Linker-Invocation.html)。
 具体原版适用性来自函数指令和实际测试，不由通用文档推断。
+
+## 首轮失败定位
+
+独立运行37730137601的EL8编译/GLIBC上限核查完成，随后runner对已转交UID10001的
+目录写镜像JSON失败，未上传构建产物。修正为先写镜像记录、再chown，不增加容器权限。
+
+正式运行37730136773中，EL8的未保护PIE及保护PIE已完成，但非PIE首例在后端调用前SIGSEGV。
+下载实际产物后发现EL8 binutils2.30把自定义低地址段与默认0x400000文本混排，生成
+PT_LOAD.p_vaddr=0、PT_PHDR.p_vaddr=0x40。失败对象是新造的测试ELF，不能归因原GUI或保护层。
+链接现在显式选非PIE text-segment=0x10000、max-page-size=0x1000，保持八个原函数偏移及字节不变；
+新增程序头检查，拒绝非PIE低地址LOAD、W+X段和可执行栈，并补上非PIE未保护基线。
+实际修复是否生效以后续重跑为准，不改宿主mmap_min_addr。
+布局选项见 [GNU ld](https://sourceware.org/binutils/docs/ld/Options.html)，
+低地址映射限制见 [Linux mmap_min_addr](https://www.kernel.org/doc/html/latest/admin-guide/sysctl/vm.html)。

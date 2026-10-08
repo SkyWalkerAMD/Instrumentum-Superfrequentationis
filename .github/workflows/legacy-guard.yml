@@ -1,5 +1,22 @@
 name: legacy native mailbox guard
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/legacy-guard.yml'
+      - 'port/legacy/mailbox-guard.c'
+      - 'port/legacy/Containerfile.guard'
+      - 'analysis/tools/test-legacy-guard.py'
+      - 'analysis/fixtures/legacy-mmio-wrappers.json'
+      - 'analysis/tests/legacy-guard-*.c'
+  pull_request:
+    paths:
+      - '.github/workflows/legacy-guard.yml'
+      - 'port/legacy/mailbox-guard.c'
+      - 'port/legacy/Containerfile.guard'
+      - 'analysis/tools/test-legacy-guard.py'
+      - 'analysis/fixtures/legacy-mmio-wrappers.json'
+      - 'analysis/tests/legacy-guard-*.c'
   workflow_dispatch:
 permissions:
   contents: read
@@ -14,14 +31,14 @@ jobs:
       - name: Compile the guard and small native caller fixture on EL8
         run: |
           mkdir -p build/legacy-guard
-          sudo chown 10001:10001 build/legacy-guard
           docker build -f port/legacy/Containerfile.guard -t octool-guard-el8 .
+          docker image inspect octool-guard-el8 > build/legacy-guard/builder-image.json
+          sudo chown 10001:10001 build/legacy-guard
           docker run --rm --network none --cap-drop ALL --read-only \
             --security-opt no-new-privileges:true --pids-limit 64 --memory 512m \
             --tmpfs /tmp:rw,nosuid,nodev -v "$PWD:/src:ro" -v "$PWD/build/legacy-guard:/out" \
             octool-guard-el8 python3 /src/analysis/tools/test-legacy-guard.py \
             --build-dir /out --build-only --max-glibc 2.28
-          docker image inspect octool-guard-el8 > build/legacy-guard/builder-image.json
       - uses: actions/upload-artifact@v4
         with:
           name: legacy-guard-el8-build
@@ -56,11 +73,11 @@ jobs:
           IMAGE: ${{ matrix.image }}
         run: |
           mkdir -p build/guard-evidence
-          sudo chown 10001:10001 build/guard-evidence
           chmod +x build/legacy-guard/caller-*
           docker build -f port/legacy/Containerfile.guard --build-arg IMAGE="$IMAGE" \
             --build-arg TARGET="$TARGET" -t octool-guard-test .
           docker image inspect octool-guard-test > build/guard-evidence/image.json
+          sudo chown 10001:10001 build/guard-evidence
           docker run --rm --network none --cap-drop ALL --read-only \
             --security-opt no-new-privileges:true --pids-limit 64 --memory 512m \
             -v "$PWD:/src:ro" -v "$PWD/build/guard-evidence:/out" \
