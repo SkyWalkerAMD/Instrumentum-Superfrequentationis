@@ -8,7 +8,7 @@ RUN dnf install -y dnf-plugins-core epel-release && \
     dnf clean metadata && \
     if dnf repolist --all | awk '{print $1}' | grep -qx crb; then dnf config-manager --set-enabled crb; fi && \
     if dnf repolist --all | awk '{print $1}' | grep -qx powertools; then dnf config-manager --set-enabled powertools; fi && \
-    dnf install -y gcc libX11-devel python3 shadow-utils util-linux dejavu-sans-fonts \
+    dnf install -y gcc libX11-devel python3 shadow-utils util-linux dejavu-sans-fonts strace \
       /usr/bin/dbus-run-session /usr/bin/xauth && \
     if [ "$TARGET" = el10 ]; then \
       dnf install -y xwayland-run mutter xorg-x11-server-Xwayland; \

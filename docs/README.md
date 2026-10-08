@@ -1,6 +1,6 @@
 # 项目知识入口
 
-更新日期：2026-09-30。接手时先读这里，再读根目录 `CHANGELOG.md`。
+更新日期：2026-10-08。接手时先读这里，再读根目录 `CHANGELOG.md`。
 
 本轮在用户提供的 `octool-linux-refactor.tar.gz` 上继续扩展。作者确认旧 GUI 源码丢失后，
 授权按 Windows/Linux 二进制证据重构，首批选择基础信息和 MSR/MMIO/PCI 原始读写。
@@ -17,6 +17,7 @@
 - [AMD PStates 只读页](amd-pstates.md)：CPU/能力探测、配置频率、原始值及旧算法核对边界。
 - [EL8 静态 Qt SDK](qt-sdk.md)：成功 run、产物哈希、依赖配置及复用边界。
 - [原版 ELF 的 EL8–EL10 兼容性](legacy-el-compatibility.md)：继续反汇编的调用点证据和私有运行库实验，区别于重构基础版。
+- [原版启动权限与失败路径](legacy-el-privilege-analysis.md)：NASM 直接 syscall/端口、模块握手、MSR 错误处理与对拍入口限制。
 - [云端接入状态](cloud-access.md)：用户要求 OpenAI 托管云端；当前工具/CLI 的实际核实结果。
 - [Linux Docker 执行指南](cloud-build.md)：独立 runner、日志和失败判定。
 - [真机验收清单](hardware-acceptance.md)：安装、MOK、insmod/modprobe、MMIO 对拍、GUI。

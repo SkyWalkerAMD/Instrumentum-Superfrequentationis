@@ -6,6 +6,11 @@ on:
         description: Authenticated draft-release asset ID containing the original ELF
         required: true
         type: string
+      trace_syscalls:
+        description: Observe startup syscalls with strace (no fault injection)
+        required: false
+        default: false
+        type: boolean
 permissions:
   contents: read
 jobs:
@@ -65,10 +70,12 @@ jobs:
       - name: Run unchanged executable without devices or capabilities
         env:
           TARGET: ${{ matrix.target }}
+          TRACE_SYSCALLS: ${{ inputs.trace_syscalls }}
         run: |
           sudo chown -R 10001:10001 build/legacy-evidence
           docker run --rm --init --network none --cap-drop ALL \
             --security-opt no-new-privileges:true --pids-limit 512 \
+            -e OCTOOL_TRACE_SYSCALLS="$TRACE_SYSCALLS" \
             -v "$PWD/build/legacy-runtime:/opt/legacy:ro" \
             -v "$PWD/build/legacy-evidence:/out" octool-legacy-test "$TARGET"
       - uses: actions/upload-artifact@v4

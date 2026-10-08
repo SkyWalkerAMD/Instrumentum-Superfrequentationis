@@ -137,6 +137,8 @@ sudo sh port/packaging/dkms-sign.sh "$(uname -r)" port/kmod/octool_hwio.ko
 
 “模块已签名/能加载”和“旧 GUI 所有硬件功能在 lockdown 下可用”是不同验收项。
 旧 GUI 调用点保持不变，不能据此承诺其 iopl、MSR 写或 /dev/mem 直接路径可用。
+原 ELF 还需要验证内部模块加载标志与实际 `/dev/mydev` 打开/映射；仅预载 DKMS 模块不足以证明接入。
+详见 [2026-10-08 启动路径证据](legacy-el-privilege-analysis.md)。
 新基础版 GUI 通过 HAL 访问；必须在已签名模块真实加载后单独验证各族后端及错误处理。
 
 ## 3. 模块与 HAL 真机闭环
@@ -183,6 +185,7 @@ sudo env DISPLAY="$DISPLAY" XAUTHORITY="${XAUTHORITY:-}" \
 ```
 
 这里 OCTOOL 必须指向保留的旧 Linux GUI，用它验证原有调用序列；不能误填新基础版的安装路径。
+也不能填 `port/legacy/run.sh`：它是拒绝 root/LD_PRELOAD 的桌面诊断入口，与本采集脚本不兼容。
 旧 GUI 的 Ubuntu22.04 运行依赖和旧 .ko 的 vermagic 必须同时满足，可用参考测试系统采集。
 只有新基础版采集的手工地址不等于旧面板覆盖；可作附加诊断，但需分别标明来源。
 采集需要能在授权桌面会话运行 GUI；如果显示认证失败，按该桌面的认证方式排查，

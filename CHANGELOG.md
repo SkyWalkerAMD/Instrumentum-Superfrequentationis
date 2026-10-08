@@ -1,5 +1,26 @@
 # CHANGELOG
 
+## 未发布 — 2026-10-08（EL8–EL10 原版启动/权限研究）
+
+- 接续 9 月 30 日结果，校验原 ELF SHA 不变。扩充只读 ELF 审计：显式选择零长度 NASM
+  STT_NOTYPE 标签，按同节下一符号/节末报告有界字节跨度，不把它们当作推导出的函数边界；
+  增加命名对象 BSS 初值与函数内 RIP 相对基址引用。原有 42,115 函数统计口径不变。
+- 新增可复现 audit-legacy-privileges.py 和 docs/validation/legacy-privilege-analysis.json，
+  20 个函数、15 个汇编区间、MY_KMOD_LOADED 的 13 处引用。新增不执行的真实汇编 ELF fixture，
+  覆盖同址别名、边界、节末、截断指令、数据节拒绝和对象初值/引用。
+- 确认 my_iopl 使用内联 syscall 172，原端口访问是直接 IN/OUT，MainWindow 不检查 iopl 返回；
+  setuid/setgid 也有直接 syscall 路径。仅替换 libc 符号不能迁移全部硬件访问。
+- 确认原 MSR 包装不检查 open/lseek/read/write，读取失败会继续使用未初始化的栈缓冲区；
+  不据失败数值恢复传感器单位。启动中的 en_ec_decoding/SIO 分支含实际写调用，不能称为只读冒烟。
+- 确认原模块握手依赖 BSS 标志及旧 .ko 文件名；只有 init_module 成功/EEXIST 后才打开设备。
+  修正历史文档把“MMIO 兼容”直接外推为“预载新模块后原 GUI 必然接入”的表述。
+  当前内核签名模块按旧文件名提供只是待真机验证候选，未增加自动加载或修改生产包。
+- 根据 Linux 上游源码区分 MSR 读/写 lockdown 路径与 HAL 项目策略；不是新增版本号条件。
+  记录私有普通用户 launcher 与 root/LD_PRELOAD parity 捕获流程不能直接拼接，真机清单同步。
+- 为独立 EL 诊断添加可选 strace 系统调用观察，保持 UID10001、零 capabilities、无设备/网络、
+  原 ELF 不变和严格主窗口门禁；增加实际权限/CPU 掩码记录。初次提交时云端新结果尚待执行。
+  本轮没有改 GUI、ABI/HAL、内核模块或其打包源码；详细结论见 docs/legacy-el-privilege-analysis.md。
+
 ## 2.0.1 — 2026-09-30（未发布，十目标 CI 通过，待真机验收和后续面板恢复）
 
 ### 原版 ELF 的 EL8–EL10 兼容性继续分析

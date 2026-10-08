@@ -29,7 +29,61 @@ DEFAULT_FUNCTIONS = (
 )
 
 
-def inspect(path, pattern, include_instructions=False):
+def assembly_spans(elf, data, pattern, names, plt, imports):
+    """Explicitly requested zero-sized labels, bounded by section/next symbol.
+
+    These are byte spans, NOT inferred function extents or reachability. Keep
+    them separate from the declared STT_FUNC inventory and its counts.
+    """
+    symbols = list(elf.get_section_by_name('.symtab').iter_symbols())
+    groups = {}
+    for symbol in symbols:
+        if not pattern.search(symbol.name):
+            continue
+        index = symbol['st_shndx']
+        if not isinstance(index, int):
+            raise ValueError('assembly label is not section-defined: ' + symbol.name)
+        section = elf.get_section(index)
+        if (symbol['st_size'] or symbol['st_info']['type'] != 'STT_NOTYPE'
+                or section['sh_type'] != 'SHT_PROGBITS' or not section['sh_flags'] & 4):
+            raise ValueError('expected zero-sized NOTYPE label in executable section: ' + symbol.name)
+        groups.setdefault((index, symbol['st_value']), []).append(symbol.name)
+    rows = []
+    decoder = Cs(CS_ARCH_X86, CS_MODE_64)
+    for (index, start), aliases in sorted(groups.items()):
+        section = elf.get_section(index)
+        limit = section['sh_addr'] + section['sh_size']
+        if not section['sh_addr'] <= start < limit:
+            raise ValueError('assembly label outside section: ' + aliases[0])
+        following = [s['st_value'] for s in symbols if s['st_shndx'] == index
+                     and start < s['st_value'] < limit]
+        end = min(following) if following else limit
+        begin = section['sh_offset'] + start - section['sh_addr']
+        code = data[begin:begin + end - start]
+        if len(code) != end - start:
+            raise ValueError('truncated assembly span: ' + aliases[0])
+        row = {'symbols': sorted(aliases), 'address': start, 'end': end,
+               'section': section.name, 'declared_size': 0,
+               'extent_rule': 'next symbol in same section, otherwise section end; not a function boundary',
+               'boundary_symbols': names.get(end, []) if following else [],
+               'code_sha256': hashlib.sha256(code).hexdigest(), 'instructions': []}
+        decoded = 0
+        for pc, size, mnemonic, operands in decoder.disasm_lite(code, start):
+            decoded += size
+            instruction = {'address': pc, 'size': size, 'mnemonic': mnemonic, 'operands': operands}
+            if mnemonic in ('call', 'jmp') and operands.startswith('0x'):
+                target = int(operands, 16)
+                imported = plt.get(target)
+                instruction['target_symbols'] = ([imports[imported]['symbol'] + '@plt']
+                                                  if imported is not None else names.get(target, []))
+            row['instructions'].append(instruction)
+        row['decoded_bytes'] = decoded
+        row['complete_decode'] = decoded == len(code)
+        rows.append(row)
+    return rows
+
+
+def inspect(path, pattern, include_instructions=False, assembly_pattern=None, object_pattern=None):
     data = path.read_bytes()
     elf = ELFFile(io.BytesIO(data))
     if elf.elfclass != 64 or not elf.little_endian or elf['e_machine'] != 'EM_X86_64':
@@ -112,12 +166,26 @@ def inspect(path, pattern, include_instructions=False):
 
     functions = {}
     names = {}
+    objects = {}
     for symbol in symtab.iter_symbols():
         if symbol['st_value']:
             names.setdefault(symbol['st_value'], []).append(symbol.name)
         if symbol['st_info']['type'] == 'STT_FUNC' and symbol['st_size'] and offset(symbol['st_value']) is not None:
             key = (symbol['st_value'], symbol['st_size'])
             functions.setdefault(key, []).append(symbol.name)
+        if object_pattern and object_pattern.search(symbol.name):
+            if symbol['st_info']['type'] != 'STT_OBJECT' or not isinstance(symbol['st_shndx'], int):
+                raise ValueError('expected section-defined object: ' + symbol.name)
+            section = elf.get_section(symbol['st_shndx'])
+            relative = symbol['st_value'] - section['sh_addr']
+            size = symbol['st_size']
+            if not 0 <= relative <= relative + size <= section['sh_size']:
+                raise ValueError('object outside section: ' + symbol.name)
+            objects[symbol['st_value']] = {
+                'symbol': symbol.name, 'address': symbol['st_value'], 'size': size,
+                'section': section.name, 'zero_initialized': section['sh_type'] == 'SHT_NOBITS',
+                'initial_bytes_hex': section.data()[relative:relative + min(size, 64)].hex(),
+                'references': []}
     selected, function_count, undecoded = [], 0, []
     # disasm_lite avoids allocating detailed instruction objects for millions
     # of arithmetic instructions. Decode details only for PC-relative operands.
@@ -150,6 +218,10 @@ def inspect(path, pattern, include_instructions=False):
                     if op.type == X86_OP_MEM and op.mem.base == X86_REG_RIP:
                         target = pc + length + op.mem.disp
                         imported = got.get(target, imported)
+                        if target in objects:
+                            objects[target]['references'].append({
+                                'function': aliases[0], 'function_address': address,
+                                'instruction': pc, 'mnemonic': mnemonic, 'operands': operands})
                         if chosen and mnemonic == 'lea':
                             text = literal(target)
                             if text is not None:
@@ -176,7 +248,11 @@ def inspect(path, pattern, include_instructions=False):
             'scope': 'Static direct calls / GOT data references only; no runtime reachability claim',
             'functions_scanned': function_count, 'incomplete_decodes': undecoded,
             'imports': sorted(imports.values(), key=lambda x: (x['provider'] or '', x['symbol'])),
-            'selected_functions': selected}
+            'selected_functions': selected,
+            'selected_objects': sorted(objects.values(), key=lambda x: x['address']),
+            'object_reference_scope': 'Exact RIP-relative object base references in declared functions only; no alias analysis',
+            'assembly_spans': (assembly_spans(elf, data, assembly_pattern, names, plt, imports)
+                               if assembly_pattern else [])}
 
 
 def main():
@@ -187,10 +263,14 @@ def main():
     parser.add_argument('--el8-focus', action='store_true', help='keep ABI-floor and startup/hardware imports')
     parser.add_argument('--site-limit', type=int, default=0, help='limit examples per import; 0 keeps all')
     parser.add_argument('--instructions', action='store_true', help='include decoded instructions of selected functions')
+    parser.add_argument('--assembly-symbols', help='regex selecting zero-sized NOTYPE labels; report bounded spans separately')
+    parser.add_argument('--objects', help='regex selecting objects and exact RIP-relative base references')
     args = parser.parse_args()
     if args.site_limit < 0:
         parser.error('--site-limit cannot be negative')
-    result = inspect(args.binary, re.compile(args.functions), args.instructions)
+    result = inspect(args.binary, re.compile(args.functions), args.instructions,
+                     re.compile(args.assembly_symbols) if args.assembly_symbols else None,
+                     re.compile(args.objects) if args.objects else None)
     result['total_imports'] = len(result['imports'])
     if args.el8_focus:
         def relevant(row):
@@ -207,7 +287,8 @@ def main():
         if args.site_limit:
             row['sites'] = row['sites'][:args.site_limit]
     result['options'] = {'el8_focus': args.el8_focus, 'site_limit': args.site_limit,
-                         'functions': args.functions, 'instructions': args.instructions}
+                         'functions': args.functions, 'instructions': args.instructions,
+                         'assembly_symbols': args.assembly_symbols, 'objects': args.objects}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_bytes((json.dumps(result, ensure_ascii=False, indent=2) + '\n').encode())
     print('{} imports, {} functions, {} selected; {} partial decodes'.format(

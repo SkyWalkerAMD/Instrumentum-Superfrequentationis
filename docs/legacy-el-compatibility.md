@@ -1,5 +1,8 @@
 # 原版 ELF 的 EL8–EL10 兼容性追踪
 
+2026-10-08 后续：[启动权限、模块接入与失败路径](legacy-el-privilege-analysis.md)。
+新证据区分 MMIO 线级兼容与旧 GUI 的模块初始化握手；不能仅凭预载模块和设备节点存在判定接入成功。
+
 更新：2026-09-30。作者本轮要求继续反汇编并解决 EL8–EL10 兼容性。
 本页专门记录**源码已丢失的原版 GUI**。基础版重构 GUI 的十目标全绿记录仍见
 [verification-status.md](verification-status.md)，不能用它代替原版验证。

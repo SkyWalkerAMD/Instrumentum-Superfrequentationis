@@ -74,8 +74,19 @@ def main():
     assert trace.returncode == 0, trace.stdout
     external = [line for line in trace.stdout.splitlines() if '=> /' in line and '=> /opt/legacy/' not in line]
     assert not external, 'host dependencies mixed with private libc: '+repr(external)
+    trace_enabled = os.environ.get('OCTOOL_TRACE_SYSCALLS', 'false') == 'true'
+    result['syscall_trace_enabled'] = trace_enabled
+    command = [str(runtime/'run.sh')]
+    if trace_enabled:
+        result['strace_version'] = subprocess.check_output(['strace', '-V'], universal_newlines=True).splitlines()[0]
+        # -D preserves the tracee's parent and PID, so ownership checks still
+        # refer to the actual GUI. No injection, extra capabilities or devices.
+        # Record paths/return codes, never read/write buffers or environments.
+        command = ['strace', '-D', '-f', '-qq', '-i', '-s', '256',
+                   '-e', 'trace=iopl,ioperm,setuid,setgid,setpgid,sched_setaffinity,init_module,finit_module,open,openat,readlink',
+                   '-o', str(out/'syscalls.log')] + command
     with (out/'gui.log').open('w') as log:
-        proc = subprocess.Popen([str(runtime/'run.sh')], stdout=log, stderr=subprocess.STDOUT,
+        proc = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT,
                                 start_new_session=True)
         seen, windows, stable = None, [], False
         try:
@@ -109,6 +120,12 @@ def main():
                 maps = Path('/proc/{}/maps'.format(proc.pid)).read_text()
                 (out/'maps.txt').write_text(maps)
                 result['proc_self_exe'] = os.readlink('/proc/{}/exe'.format(proc.pid))
+                process_status = Path('/proc/{}/status'.format(proc.pid)).read_text().splitlines()
+                result['process_status'] = dict(line.split(':', 1) for line in process_status
+                                                if line.split(':', 1)[0] in
+                                                ('CapEff', 'CapBnd', 'NoNewPrivs', 'Seccomp',
+                                                 'TracerPid', 'Cpus_allowed_list'))
+                result['process_status'] = {k: v.strip() for k, v in result['process_status'].items()}
                 result['foreign_libraries'] = sorted(set(
                     p for p in re.findall(r'(/\S+)', maps)
                     if '.so' in p and not p.startswith('/opt/legacy/')))
@@ -117,6 +134,12 @@ def main():
                 wrong = subprocess.check_output(['/usr/local/bin/window-probe', str(os.getpid())],
                                                 universal_newlines=True)
                 assert not wrong.strip(), 'window ownership negative control failed'
+            if trace_enabled:
+                trace_path = out/'syscalls.log'
+                trace_text = trace_path.read_text() if trace_path.exists() else ''
+                result['syscall_trace_has_iopl'] = bool(re.search(r'\biopl\(', trace_text))
+                if not result['syscall_trace_has_iopl']:
+                    raise RuntimeError('requested syscall trace did not observe startup iopl; inspect gui.log')
             print(json.dumps(result, indent=2))
             # An unsupported-hardware dialog demonstrates Qt/loader success,
             # but must NOT make this GUI acceptance gate green.
