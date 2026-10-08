@@ -2,6 +2,10 @@
 
 # MMIO 对拍验证（新模块 vs 旧 .ko）
 
+> 2026-10-08 补充：本历史指南的“兼容”尚不覆盖错误应答。原版等待完整 done=1，当前模块的 errno
+> 高位会导致它持续等待，采集器非零判定又可能记为 completed。旧模块之间也有先 done 后 result 的
+> 顺序差异；详见 [原字节证据与 56 组模拟](../../docs/legacy-mailbox-contract.md)。
+
 本文档说明 `tests/octool_capture.c` + `tests/octool_parity.c` + `tests/parity-run.sh`
 这套“对拍”工具：**在不改动 octool 一行代码的前提下，用现有 octool 二进制作为负载，
 验证新的 `octool_hwio` 模块在真实硬件上的 MMIO 读结果与原 `.ko` 逐一致。**

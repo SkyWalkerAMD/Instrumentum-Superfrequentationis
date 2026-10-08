@@ -1,7 +1,8 @@
 > 2026-09-30 更新：本文保留输入包的历史设计与验证记录。当前范围、修正、构建方式与实际状态见 [../../docs/README.md](../../docs/README.md)。历史 HAL 接入建议不代表本轮已改 GUI；本轮不承诺旧 GUI 全部直接硬件访问在 lockdown 下可用。对拍无稳定可读地址时返回 2，采集会影响时序，不能把易失项当成等价证明。
 
 > 2026-10-08 校正：原 GUI 的模块初始化还依赖自身 MY_KMOD_LOADED 标志及程序目录的旧 .ko 查找流程，
-> 不能由提前 modprobe 与 /dev/mydev 存在推断它已采用新模块。MMIO ABI 兼容结论不变。
+> 不能由提前 modprobe 与 /dev/mydev 存在推断它已采用新模块。请求布局与成功应答已核对；后续发现
+> 当前 errno 高位完成字不满足原版完整 done=1 的条件，见 [邮箱失败分支](../../docs/legacy-mailbox-contract.md)。
 > 下文“后三条全部被拦”也过于笼统：MSR 读、写的权限检查不同，须区分目标内核与 HAL 自身策略。
 > 新的指令证据和边界见 [启动权限分析](../../docs/legacy-el-privilege-analysis.md)。
 

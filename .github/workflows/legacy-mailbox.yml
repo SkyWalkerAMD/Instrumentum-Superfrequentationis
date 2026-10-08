@@ -1,0 +1,50 @@
+name: legacy mailbox investigation
+on:
+  workflow_dispatch:
+    inputs:
+      asset_id:
+        description: Authenticated draft asset containing the pinned original ELF
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  original-caller:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Fetch the previously authorized reference sample
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ASSET_ID: ${{ inputs.asset_id }}
+        run: |
+          [[ "$ASSET_ID" =~ ^[0-9]+$ ]]
+          mkdir -p build/legacy-input build/mailbox-evidence
+          gh api -H 'Accept: application/octet-stream' \
+            "repos/$GITHUB_REPOSITORY/releases/assets/$ASSET_ID" > build/legacy-input/octool
+          echo '44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10  build/legacy-input/octool' | sha256sum -c -
+      - name: Prepare isolated emulator dependencies
+        run: |
+          docker run --rm -v "$PWD:/src:ro" -v "$PWD/build/emulator:/deps" python:3.12-slim \
+            python -m pip install --only-binary=:all: --target /deps -r /src/analysis/tools/requirements-emulation.txt
+          docker image inspect python:3.12-slim > build/mailbox-evidence/image.json
+      - name: Emulate only the original MMIO wrappers with synthetic responses
+        run: |
+          sudo chown -R 10001:10001 build/mailbox-evidence
+          docker run --rm --user 10001:10001 --network none --cap-drop ALL --read-only \
+            --security-opt no-new-privileges:true --pids-limit 64 --memory 512m \
+            -e PYTHONPATH=/deps -e PYTHONDONTWRITEBYTECODE=1 \
+            -v "$PWD:/src:ro" -v "$PWD/build/emulator:/deps:ro" \
+            -v "$PWD/build/mailbox-evidence:/out" python:3.12-slim \
+            python /src/analysis/tools/emulate-legacy-mailbox.py /src/build/legacy-input/octool \
+            --output /out/emulation.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: legacy-mailbox-evidence
+          path: build/mailbox-evidence/
+          if-no-files-found: error
+          retention-days: 14
