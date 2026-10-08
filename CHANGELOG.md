@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 未发布 — 2026-10-08（AMD命令传输与原libpci失败传播）
+
+- 从三套SMU软件表继续追踪，公开16函数1,876字节原指令及固定SHA；包含SMU发送/返回、BDF位拼接、
+  两种ABI桥、libpci typed访问和PCI对象字段赋值。TSC写入函数另留静态证据，不执行其硬件路径。
+- 448项Windows原指令实验确认默认路径固定domain0/BDF0，find_pci_dev2并不查找设备；端口0x4d0
+  连续11次忙仍写1并继续，最多10次2000微秒等待；命令完成后写0释放。
+- 完整命令18次PCI写、2次读、19次1000微秒延迟，未检查写返回或轮询状态。retrieve_message2总是
+  把第二次读放入输出，retrieve_message丢弃第一次读；保留低8位命令/64位参数拆分及四种配置表。
+- 后端返回0且不写缓冲时，原pci_read_long自行返回ffffffff，继续透传至命令返回/输出；模拟写失败、
+  零状态、单次读失败和sleep失败都不提前终止。所有真实I/O均停在明确合成边界，未赋予状态新含义。
+- 新增3项故障传播回归，CI收集amd-transport.json；知识/地址/复现/未覆盖范围在docs/legacy-amd-transport.md。
+  原GUI、内核模块、HAL、96字节协议均未改。云端结果完成后另附可追溯记录。
+
 ## 未发布 — 2026-10-08（AMD判断返回域与全局配置表）
 
 - 继续追踪Shimada来源，恢复FamilyType、is_granite/is_shimada/is_gpt/is_pheonix、三个set_to函数及

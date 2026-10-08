@@ -1,0 +1,687 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "scope": "Original SMU/PCI wrappers including libpci typed access; synthetic PCI backend, port, TSC, allocation and sleep boundaries",
+  "profile_fixture_sha256": "ea27159591a37b7513a721e9eedca1edbe4a59629a4911f00d539d52432399bb",
+  "functions": [
+    {
+      "symbol": "_Z8smu_cmd2hmRj",
+      "address": 2224944,
+      "size": 174,
+      "code_hex": "f30f1efa41544989d45589fd534889f3e8bbf6ffffe8161f1500e831f8ffff488d058220a50189de48c1eb208b38e84df7ffff488d056620a5014889de8b38e83cf7ffff488d054d20a50131f68b38e82cf7ffff488d053520a50131f68b38e81cf7ffff488d051d20a50131f68b38e80cf7ffff488d050520a50131f68b38e8fcf6ffff488d05e51fa501400fb6f58b38e8eaf6ffff4c89e7e872f8ffff4189c4e8fa1e15004489e05b5d415cc3",
+      "code_sha256": "d64235e5da87970d229ced21dee77fedb50da6bc39a8a3228df04b9e75ce2ac8",
+      "calls": [
+        {
+          "instruction": 2224960,
+          "kind": "call",
+          "target": 2222592,
+          "symbols": [
+            "_Z8lock_tscv"
+          ]
+        },
+        {
+          "instruction": 2224965,
+          "kind": "call",
+          "target": 3609184,
+          "symbols": [
+            "_Z14lock_amd_mutexv"
+          ]
+        },
+        {
+          "instruction": 2224970,
+          "kind": "call",
+          "target": 2222976,
+          "symbols": [
+            "_Z14reset_responsev"
+          ]
+        },
+        {
+          "instruction": 2224990,
+          "kind": "call",
+          "target": 2222768,
+          "symbols": [
+            "_Z10Wr_SMU_argjj"
+          ]
+        },
+        {
+          "instruction": 2225007,
+          "kind": "call",
+          "target": 2222768,
+          "symbols": [
+            "_Z10Wr_SMU_argjj"
+          ]
+        },
+        {
+          "instruction": 2225023,
+          "kind": "call",
+          "target": 2222768,
+          "symbols": [
+            "_Z10Wr_SMU_argjj"
+          ]
+        },
+        {
+          "instruction": 2225039,
+          "kind": "call",
+          "target": 2222768,
+          "symbols": [
+            "_Z10Wr_SMU_argjj"
+          ]
+        },
+        {
+          "instruction": 2225055,
+          "kind": "call",
+          "target": 2222768,
+          "symbols": [
+            "_Z10Wr_SMU_argjj"
+          ]
+        },
+        {
+          "instruction": 2225071,
+          "kind": "call",
+          "target": 2222768,
+          "symbols": [
+            "_Z10Wr_SMU_argjj"
+          ]
+        },
+        {
+          "instruction": 2225089,
+          "kind": "call",
+          "target": 2222768,
+          "symbols": [
+            "_Z10Wr_SMU_argjj"
+          ]
+        },
+        {
+          "instruction": 2225097,
+          "kind": "call",
+          "target": 2223168,
+          "symbols": [
+            "_Z17retrieve_message2Rj"
+          ]
+        },
+        {
+          "instruction": 2225105,
+          "kind": "call",
+          "target": 3609296,
+          "symbols": [
+            "_Z17release_amd_mutexv"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z16retrieve_messagev",
+      "address": 2223008,
+      "size": 157,
+      "code_hex": "f30f1efa415431f631ff31d2e8dfefffffbaf80000004883ec204189c4488d05e427a5014489e1448b00e8e1da1800bfe80300004883c420e8c3d4f2ff4489e1bafc0000004883ec20e882db1800bfe80300004883c420e8a4d4f2ff488d05d527a5014489e14883ec20baf8000000448b00e899da18004883c420bfe8030000e87bd4f2ff4883ec204489e1bafc000000e83adb18004883c420415cc3",
+      "code_sha256": "b3395ec8551fac733e2c281fdf6fe532c68300bd9ceffd94e133c7ceab2d7ef6",
+      "calls": [
+        {
+          "instruction": 2223020,
+          "kind": "call",
+          "target": 2218896,
+          "symbols": [
+            "_Z13find_pci_dev2jjj"
+          ]
+        },
+        {
+          "instruction": 2223050,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2223064,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2223081,
+          "kind": "call",
+          "target": 3852144,
+          "symbols": [
+            "_Z18ReadPciConfigDwordjj"
+          ]
+        },
+        {
+          "instruction": 2223095,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2223122,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2223136,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2223153,
+          "kind": "call",
+          "target": 3852144,
+          "symbols": [
+            "_Z18ReadPciConfigDwordjj"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z17retrieve_message2Rj",
+      "address": 2223168,
+      "size": 174,
+      "code_hex": "f30f1efa415531f631d24154534889fb31ffe839efffffbaf80000004883ec204189c4488d053e27a5014489e1448b00e83bda1800bfe80300004883c420e81dd4f2ff4489e1bafc0000004883ec20e8dcda1800bfe80300004883c4204189c5e8fbd3f2ff488d052c27a5014489e14883ec20baf8000000448b00e8f0d918004883c420bfe8030000e8d2d3f2ff4883ec204489e1bafc000000e891da18004883c42089034489e85b415c415dc3",
+      "code_sha256": "fae870c626b905899fa9abcef0b77827857cb88352ccdc962b3afe26b9b50ade",
+      "calls": [
+        {
+          "instruction": 2223186,
+          "kind": "call",
+          "target": 2218896,
+          "symbols": [
+            "_Z13find_pci_dev2jjj"
+          ]
+        },
+        {
+          "instruction": 2223216,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2223230,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2223247,
+          "kind": "call",
+          "target": 3852144,
+          "symbols": [
+            "_Z18ReadPciConfigDwordjj"
+          ]
+        },
+        {
+          "instruction": 2223264,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2223291,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2223305,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2223322,
+          "kind": "call",
+          "target": 3852144,
+          "symbols": [
+            "_Z18ReadPciConfigDwordjj"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z14lock_amd_mutexv",
+      "address": 3609184,
+      "size": 105,
+      "code_hex": "f30f1efa53b9d004000031db4883ec20e8bbc270004883c42084c0741c0f1f004883ec20b9d004000083c301e89fc270004883c42084c0751f4883ec20ba01000000b9d0040000e894c270004883c4205bc3660f1f440000bfd0070000e8deadddff83fb0a75b9ebd0",
+      "code_sha256": "d6173dc600c9d3fa1143eef59d3cfa6ee4fdf671443a51e75e7545d71768dc49",
+      "calls": [
+        {
+          "instruction": 3609200,
+          "kind": "call",
+          "target": 10999088,
+          "symbols": [
+            "ReadIoPortByte"
+          ]
+        },
+        {
+          "instruction": 3609228,
+          "kind": "call",
+          "target": 10999088,
+          "symbols": [
+            "ReadIoPortByte"
+          ]
+        },
+        {
+          "instruction": 3609255,
+          "kind": "call",
+          "target": 10999104,
+          "symbols": [
+            "WriteIoPortByte"
+          ]
+        },
+        {
+          "instruction": 3609277,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 3609287,
+          "kind": "jmp",
+          "target": 3609241,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "_Z17release_amd_mutexv",
+      "address": 3609296,
+      "size": 25,
+      "code_hex": "f30f1efa4883ec2831d2b9d0040000e85cc270004883c428c3",
+      "code_sha256": "df5d5fb76c46c29ec95bce4d1a941733509308956d304d4c8aa7d491e7509f28",
+      "calls": [
+        {
+          "instruction": 3609311,
+          "kind": "call",
+          "target": 10999104,
+          "symbols": [
+            "WriteIoPortByte"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z13find_pci_dev2jjj",
+      "address": 2218896,
+      "size": 25,
+      "code_hex": "f30f1efac1e60383e207c1e708400fb6c60fb7ff09d009f8c3",
+      "code_sha256": "cc5e59daf420f453f8fc5d325daa0133887c2e6696fcd1cea0cac7a38803fdaa",
+      "calls": []
+    },
+    {
+      "symbol": "_Z10Wr_SMU_argjj",
+      "address": 2222768,
+      "size": 97,
+      "code_hex": "f30f1efa415431d25589fd31ff5389f331f6e8c9f0ffff4189e8baf80000004883ec2089c14189c4e8d3db1800bfe80300004883c420e8b5d5f2ff4883ec204189d84489e1bafc000000e8b1db18004883c420bfe80300005b5d415ce98fd5f2ff",
+      "code_sha256": "34d8311a63da43b83df408f9740ab0cd563a3b8af633aeb0da03ff5126e37511",
+      "calls": [
+        {
+          "instruction": 2222786,
+          "kind": "call",
+          "target": 2218896,
+          "symbols": [
+            "_Z13find_pci_dev2jjj"
+          ]
+        },
+        {
+          "instruction": 2222808,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2222822,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2222842,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2222860,
+          "kind": "jmp",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z10Wr_SMU_argjjj",
+      "address": 2222880,
+      "size": 83,
+      "code_hex": "f30f1efa41544189d44189f8baf8000000534489e189f34883ec28e870db1800bfe80300004883c420e852d5f2ff4883ec204189d84489e1bafc000000e84edb18004883c428bfe80300005b415ce92dd5f2ff",
+      "code_sha256": "7d1c6785abce3eaa343b87573d0272d37d6111b78833fd17b031382d7f20c771",
+      "calls": [
+        {
+          "instruction": 2222907,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2222921,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2222941,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2222958,
+          "kind": "jmp",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z14reset_responsev",
+      "address": 2222976,
+      "size": 20,
+      "code_hex": "f30f1efa488d051d28a50131f68b38e91cffffff",
+      "code_sha256": "be3f9071f991bccb7e2b8d5996fbbcc37eb714a1a9a0f9a642a2faf78f28bac7",
+      "calls": [
+        {
+          "instruction": 2222991,
+          "kind": "jmp",
+          "target": 2222768,
+          "symbols": [
+            "_Z10Wr_SMU_argjj"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z19WritePciConfigDwordjjj",
+      "address": 3851952,
+      "size": 177,
+      "code_hex": "f30f1efa574189c90fb6fd5689ce4183e10789d1c1ee034489ca83e61f4881eca80000000f2934240f297c2410440f29442420440f294c2430440f29542440440f295c2450440f29642460440f296c2470440f29b42480000000440f29bc2490000000e8e820fcff0f2834240f287c2410440f28442420440f284c2430440f28542440440f285c2450440f28642460440f286c2470440f28b42480000000440f28bc24900000004881c4a80000005e5fc3",
+      "code_sha256": "ed4856e86fe76d0b62bf5822906615dd0008197dda96cf73f99e7261c467ff1a",
+      "calls": [
+        {
+          "instruction": 3852051,
+          "kind": "call",
+          "target": 3598336,
+          "symbols": [
+            "_Z18libpci_write_dwordiiiij"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z18ReadPciConfigDwordjj",
+      "address": 3852144,
+      "size": 174,
+      "code_hex": "f30f1efa5789c889d15689c689c20fb6fcc1ee0383e20783e61f4881eca80000000f2934240f297c2410440f29442420440f294c2430440f29542440440f295c2450440f29642460440f296c2470440f29b42480000000440f29bc2490000000e8bb1efcff0f2834240f287c2410440f28442420440f284c2430440f28542440440f285c2450440f28642460440f286c2470440f28b42480000000440f28bc24900000004881c4a80000005e5fc3",
+      "code_sha256": "77f0edf45ed879431ceaf3fa206bde29ac2adf66fa14f7755f1c572e29447d44",
+      "calls": [
+        {
+          "instruction": 3852240,
+          "kind": "call",
+          "target": 3597968,
+          "symbols": [
+            "_Z17libpci_read_dwordiiii"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z18libpci_write_dwordiiiij",
+      "address": 3598336,
+      "size": 170,
+      "code_hex": "f30f1efa488d05a5dd900141564189fe41554589c541544189f45589cd5380380089d3747b488b3d8cdd900181fbffff00000f94c04885ff0f95c221d04181fcffff00000f94c284d074094181feffff00007429488d054ddd90014189d84489e14489f231f6488b38e87214710048890543dd90014889c74885c074135b4489ea89ee5d415c415d415ee9a1177100905b5d415c415d415ec30f1f8000000000e82bfbffffe97bffffff",
+      "code_sha256": "cd6ea5ae387d5b075a1d93d602947b4cb0be0464c6fe973c278453daadc277c9",
+      "calls": [
+        {
+          "instruction": 3598441,
+          "kind": "call",
+          "target": 11009248,
+          "symbols": [
+            "pci_get_dev"
+          ]
+        },
+        {
+          "instruction": 3598474,
+          "kind": "jmp",
+          "target": 11010096,
+          "symbols": [
+            "pci_write_long"
+          ]
+        },
+        {
+          "instruction": 3598496,
+          "kind": "call",
+          "target": 3597264,
+          "symbols": [
+            "_Z17libpci_initializev"
+          ]
+        },
+        {
+          "instruction": 3598501,
+          "kind": "jmp",
+          "target": 3598373,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "_Z17libpci_read_dwordiiii",
+      "address": 3597968,
+      "size": 170,
+      "code_hex": "f30f1efa41554189fd41544189f45589cd5389d34883ec08488d0501df9001803800747c488b3dfdde900181fbffff00000f94c04885ff0f95c221d04181fcffff00000f94c284d074094181fdffff00007429488d05bede90014189d84489e14489ea31f6488b38e8e3157100488905b4de90014889c74885c074144883c40889ee5b5d415c415de9731771000f1f004883c40831c05b5d415c415dc30f1f00e89bfcffffe97affffff",
+      "code_sha256": "e5c1e9158785b39bba4ff282ed5b0bc3523a8073d1a5ecbb3dc86ba8c6a74b40",
+      "calls": [
+        {
+          "instruction": 3598072,
+          "kind": "call",
+          "target": 11009248,
+          "symbols": [
+            "pci_get_dev"
+          ]
+        },
+        {
+          "instruction": 3598104,
+          "kind": "jmp",
+          "target": 11009680,
+          "symbols": [
+            "pci_read_long"
+          ]
+        },
+        {
+          "instruction": 3598128,
+          "kind": "call",
+          "target": 3597264,
+          "symbols": [
+            "_Z17libpci_initializev"
+          ]
+        },
+        {
+          "instruction": 3598133,
+          "kind": "jmp",
+          "target": 3598004,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "pci_get_dev",
+      "address": 11009248,
+      "size": 59,
+      "code_hex": "f30f1efa41554189f541544189d45589cd534489c34883ec08e822ffffff4489a8f00000004488600a4088680b88580c4883c4085b5d415c415dc3",
+      "code_sha256": "49c7bbfb79fbc7047ea516b321b94508092c8cec0b9c7ae62f04b6591ed80743",
+      "calls": [
+        {
+          "instruction": 11009273,
+          "kind": "call",
+          "target": 11009056,
+          "symbols": [
+            "pci_alloc_dev"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "pci_read_long",
+      "address": 11009680,
+      "size": 133,
+      "code_hex": "f30f1efa4883ec1864488b042528000000488944240831c040f6c60375518d46043b87900100007e37488b8780010000488d542404b904000000ff504085c0b8ffffffff0f45442404488b54240864482b14252800000075274883c418c36690488b87880100004863f68b0430ebda488bbf78010000ba04000000e8e0fcffffe8fba96cff",
+      "code_sha256": "c95adf31df25f61ce72aef7a484c1df89ca5e823c913b8b002a39c468389d774",
+      "calls": [
+        {
+          "instruction": 11009789,
+          "kind": "jmp",
+          "target": 11009753,
+          "symbols": []
+        },
+        {
+          "instruction": 11009803,
+          "kind": "call",
+          "target": 11009008,
+          "symbols": [
+            "pci_read_data.part.0.isra.0"
+          ]
+        },
+        {
+          "instruction": 11009808,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "pci_write_long",
+      "address": 11010096,
+      "size": 133,
+      "code_hex": "f30f1efa4883ec1864488b042528000000488944240831c08954240440f6c603754d8d46043b87900100007e33488b8780010000488d542404b904000000ff5048488b54240864482b142528000000752f4883c418c3662e0f1f840000000000488b8f880100004863c6891401ebbe488bbf78010000ba04000000e820fbffffe85ba86cff",
+      "code_sha256": "4a89299139c49b80192ce4f06f088d567a1a1c0c9269a88d02f3a986d1adc23e",
+      "calls": [
+        {
+          "instruction": 11010205,
+          "kind": "jmp",
+          "target": 11010141,
+          "symbols": []
+        },
+        {
+          "instruction": 11010219,
+          "kind": "call",
+          "target": 11008976,
+          "symbols": [
+            "pci_write_data.part.0.isra.0"
+          ]
+        },
+        {
+          "instruction": 11010224,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    }
+  ],
+  "objects": {
+    "SMU_ARG0": {
+      "address": 29823960,
+      "size": 8,
+      "source_initial_hex": "c409b10300000000"
+    },
+    "SMU_ARG1": {
+      "address": 29823952,
+      "size": 8,
+      "source_initial_hex": "c809b10300000000"
+    },
+    "SMU_ARG2": {
+      "address": 29823944,
+      "size": 8,
+      "source_initial_hex": "cc09b10300000000"
+    },
+    "SMU_ARG3": {
+      "address": 29823936,
+      "size": 8,
+      "source_initial_hex": "d009b10300000000"
+    },
+    "SMU_ARG4": {
+      "address": 29823928,
+      "size": 8,
+      "source_initial_hex": "d409b10300000000"
+    },
+    "SMU_ARG5": {
+      "address": 29823920,
+      "size": 8,
+      "source_initial_hex": "d809b10300000000"
+    },
+    "SMU_DATAPORT": {
+      "address": 29823904,
+      "size": 8,
+      "source_initial_hex": "3005b10300000000"
+    },
+    "SMU_IOPORT": {
+      "address": 29823912,
+      "size": 8,
+      "source_initial_hex": "7c05b10300000000"
+    },
+    "MY_PCI_LIB_INIT": {
+      "address": 29869488,
+      "size": 1,
+      "source_initial_hex": "00"
+    },
+    "_ZL14current_device": {
+      "address": 29869496,
+      "size": 8,
+      "source_initial_hex": "0000000000000000"
+    },
+    "pacc_pci": {
+      "address": 29869480,
+      "size": 8,
+      "source_initial_hex": "0000000000000000"
+    }
+  },
+  "literals": []
+}
