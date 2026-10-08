@@ -74,6 +74,14 @@ case "$action" in
         make -C port/hal
         make -C port/tests check hwio_smoke 2>&1 | tee "$out/offline.log"
         python3 -m unittest discover -s port/tests -p 'test_*.py' -v
+        # Execute only eight pinned original wrapper bodies, with a fake
+        # userspace mailbox and no device access. Every target checks the
+        # optional guard as well as the unchanged caller's known failures.
+        mkdir -p "$out/legacy-guard"
+        chown nobody "$out/legacy-guard"
+        runuser -u nobody -- python3 analysis/tools/test-legacy-guard.py \
+            --build-dir "$out/legacy-guard" --target "$target" \
+            --output "$out/legacy-guard/results.json"
         bash port/ci/build-kernels.sh "$out/kernels"
         python3 port/tools/build_packages.py --format "$family" --module-only --output "$out/packages"
         install_packages

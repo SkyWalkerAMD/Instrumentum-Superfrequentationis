@@ -1,0 +1,16 @@
+ARG IMAGE=rockylinux:8
+FROM ${IMAGE}
+ARG TARGET=el8
+# A disposable build/test image. No driver, GUI, graphics stack or device mount.
+RUN if [ "$TARGET" = ubuntu22.04 ]; then \
+      apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends gcc libc6-dev binutils python3; \
+    else \
+      if [ "$TARGET" = el8 ]; then py=python39; else py=python3; fi; \
+      dnf --setopt=baseos.mirrorlist= --setopt=appstream.mirrorlist= \
+        --setopt="baseos.baseurl=https://dl.rockylinux.org/pub/rocky/${TARGET#el}/BaseOS/x86_64/os/" \
+        --setopt="appstream.baseurl=https://dl.rockylinux.org/pub/rocky/${TARGET#el}/AppStream/x86_64/os/" \
+        install -y gcc glibc-devel binutils "$py" && \
+      if [ "$TARGET" = el8 ]; then ln -s /usr/bin/python3.9 /usr/local/bin/python3; fi; \
+    fi
+ENV PYTHONDONTWRITEBYTECODE=1
+USER 10001:10001

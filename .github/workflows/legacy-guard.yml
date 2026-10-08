@@ -1,0 +1,76 @@
+name: legacy native mailbox guard
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build-el8:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Compile the guard and small native caller fixture on EL8
+        run: |
+          mkdir -p build/legacy-guard
+          sudo chown 10001:10001 build/legacy-guard
+          docker build -f port/legacy/Containerfile.guard -t octool-guard-el8 .
+          docker run --rm --network none --cap-drop ALL --read-only \
+            --security-opt no-new-privileges:true --pids-limit 64 --memory 512m \
+            --tmpfs /tmp:rw,nosuid,nodev -v "$PWD:/src:ro" -v "$PWD/build/legacy-guard:/out" \
+            octool-guard-el8 python3 /src/analysis/tools/test-legacy-guard.py \
+            --build-dir /out --build-only --max-glibc 2.28
+          docker image inspect octool-guard-el8 > build/legacy-guard/builder-image.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: legacy-guard-el8-build
+          # Newly compiled guard/test ELFs plus 664 approved original instruction bytes.
+          # No full original GUI, original module, runtime closure or credential.
+          path: build/legacy-guard/
+          if-no-files-found: error
+          retention-days: 14
+  native:
+    needs: build-el8
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {target: el8, image: 'rockylinux:8'}
+          - {target: el9, image: 'rockylinux:9'}
+          - {target: el10, image: 'quay.io/rockylinux/rockylinux:10'}
+          - {target: ubuntu22.04, image: 'ubuntu:22.04'}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: legacy-guard-el8-build
+          path: build/legacy-guard
+      - name: Execute the same EL8-built bytes with native target glibc
+        env:
+          TARGET: ${{ matrix.target }}
+          IMAGE: ${{ matrix.image }}
+        run: |
+          mkdir -p build/guard-evidence
+          sudo chown 10001:10001 build/guard-evidence
+          chmod +x build/legacy-guard/caller-*
+          docker build -f port/legacy/Containerfile.guard --build-arg IMAGE="$IMAGE" \
+            --build-arg TARGET="$TARGET" -t octool-guard-test .
+          docker image inspect octool-guard-test > build/guard-evidence/image.json
+          docker run --rm --network none --cap-drop ALL --read-only \
+            --security-opt no-new-privileges:true --pids-limit 64 --memory 512m \
+            -v "$PWD:/src:ro" -v "$PWD/build/guard-evidence:/out" \
+            octool-guard-test python3 /src/analysis/tools/test-legacy-guard.py \
+            --build-dir /src/build/legacy-guard --run-only --max-glibc 2.28 \
+            --target "$TARGET" --output /out/results.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: legacy-guard-${{ matrix.target }}-evidence
+          path: build/guard-evidence/
+          if-no-files-found: error
+          retention-days: 14
