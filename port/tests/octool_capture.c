@@ -56,7 +56,10 @@ static void reject(const char *reason)
         /* A later DSO destructor may still issue device operations. Keep our
          * fd open until process teardown and revoke an already written marker
          * before forwarding any such request. Never write through a replaced fd. */
-        if (positional(&zero, sizeof(zero), 0)) (void)ftruncate(output, 0);
+        if (positional(&zero, sizeof(zero), 0) && ftruncate(output, 0)) {
+            static const char message[] = "[octool_capture] INCOMPLETE: cannot revoke finalized file; discard it\n";
+            (void)syscall(SYS_write, STDERR_FILENO, message, sizeof(message)-1);
+        }
         finalized = 0;
     }
     if (!invalid) {
