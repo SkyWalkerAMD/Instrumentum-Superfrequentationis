@@ -208,6 +208,31 @@ gh run download RUN_ID --pattern 'legacy-*-evidence' --dir build/legacy-evidence
 当前仍需作者的真实目标平台完成[硬件验收](hardware-acceptance.md)中的 PCI/DMI、权限、MOK、
 主窗口及 MMIO live 对拍；本轮没有拿到这些真机结果。
 
+## 2026-10-08 离线逆向对兼容性的补充
+
+原版ELF、重构基础版、原包装器实验分别记录，不能共用一个“GUI通过”的结论。
+当前作者暂不能采集四机身份，已选择继续离线研究；以下结论不要求现在再次采集。
+
+| 层次/问题 | 已查明或已验证 | 尚未完成 |
+|---|---|---|
+| 原ELF库依赖 | 私有loader/库闭包使EL8–10实际到达Qt提示框 | 原Work Tool主窗口及所有动态路径 |
+| 重构基础GUI | EL8静态Qt基线；十目标编译/装包/窗口，EL10为Mutter/Xwayland | 原全部调参面板恢复、真机硬件读写 |
+| 平台识别 | [原PCI/DMI分派550项](legacy-platform-dispatch.md)、[主板菜单592项](legacy-menu-routing.md) | 四机实际进入分支；营销型号不代替原谓词 |
+| 原直接MSR | [两槽148项](legacy-msr-failures.md)证实写命令栈字节被失败读复用，保留busy位 | 其余407处静态形状的调用上下文及原GUI恢复策略 |
+| 原MMIO错误 | [56项](legacy-mailbox-contract.md)确认完整done=1条件；[可选guard](legacy-mailbox-guard.md)有界退出 | 完整GUI的错误提示/继续运行、与capture组合及真机对拍 |
+| AMD配置选择 | [385项](legacy-amd-initialization.md)确认返回域、不可达比较及部分表覆盖 | 真实CPUID/PCI状态、消息含义和单位 |
+| AMD命令传输 | [448项](legacy-amd-transport.md)确认固定BDF、端口等待耗尽仍发送、libpci错误值透传 | 上层完整业务、真实PCI后端、权限和固件时序 |
+| Qt业务恢复 | 39类451个元方法入口及NVL控件绑定已核对 | 451个函数体的业务含义与全部面板，不以入口数量算完成率 |
+
+这批研究没有修改原GUI调用点或MMIO协议。直接MSR、I/O端口和内嵌libpci没有因安装新`/dev/mydev`
+模块而被重定向；相应错误等待也不能靠换glibc/ICU/JPEG库消除。下一步实现须分别处理访问错误、
+完成条件、上层反馈与平台范围，不能把错误返回伪装成成功应答。新GUI可以通过已有HAL恢复已核实的
+只读/原始访问，未核实的传感器单位和固件命令仍保留为原始证据。
+
+`fa4c541 / 37766384139`的十目标23/23结果包含2501项原指令实验及新GUI回归，
+[详细证据](validation/legacy-initialization-ci-fa4c541.json)已保存；后续AMD传输448项单独回归。
+完整工作量与真机缺口以[覆盖台账](reverse-engineering-status.md)为准，仍不能签“逆向完毕”。
+
 ## 相关原始资料
 
 - [glibc：显式启动动态加载器](https://sourceware.org/glibc/manual/2.39/html_node/Dynamic-Linker-Invocation.html)。

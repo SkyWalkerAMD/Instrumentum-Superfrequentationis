@@ -99,6 +99,9 @@ BDF位运算是`((bus & 255)<<8) | ((device & 31)<<3) | (function & 7)`。
   若解析结果为-1，静态指令应送`0xffffffffffffffff`，而非只给低32位；未执行真实Qt解析，未定义单位。
 
 后续验证应补这些槽的原指令实验、控件连接及MP1分支，再决定重构界面的错误反馈。
+两个完整短槽的[反汇编文本](validation/legacy-amd-short-callers.txt)一并保留，合计339+272字节；
+可用已有`analysis/tools/elf-runtime-audit.py`的`--instructions --functions`选这两个完整符号复核，
+实际SHA须与本页输入一致。调用上下文JSON和完整文本都只是静态证据。
 
 ## 复现、门禁与未决项
 
@@ -124,5 +127,7 @@ PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-amd-transp
 
 [静态地址/指令](validation/legacy-amd-transport-analysis.json)和
 [Windows原指令观测](validation/legacy-amd-transport-windows.json)随源码保存，接入portability前置门禁。
+`ac0ed66 / 37769633840`中Linux448项已通过且与Windows除environment完全一致，分析26项无跳过；
+该轮Debian11显示连接失败，所以这里只签[原指令门禁证据](validation/legacy-transport-gate-ac0ed66.json)。
 还未恢复所有SMU调用者、消息的硬件定义、原上层错误提示、并发竞争、实际PCI后端、真实权限失败
 以及用户TRX50平台上的完成时序。不可把本轮结果称作整页恢复或真机兼容验收。

@@ -162,3 +162,22 @@ c48a38f / [run 36670288030](https://github.com/SkyWalkerAMD/Instrumentum-Superfr
 的五项回归也在十个目标通过，QtTest 各 12 项结果无失败/跳过。保存 20 个发行版安装包与 SHA256SUMS，
 下载核对源码包和 SDK SHA；Debian11/EL10/Ubuntu26 的新增页截图均已目视核查。
 逐目标记录见 [完整证据](validation/actions-run-36670288030.json)。
+
+## 2026-10-08：显示可连接性与Xvfb reset
+
+`ac0ed66 / 37769633840`的Debian11作业113286476637完成GUI编译、装包、DKMS和ldd；
+发行GUI可见窗口检查通过，接着native GUI以SIGABRT退出。Qt报告xcb插件已找到，但不能连接`:99`。
+[原失败日志](validation/debian11-native-display-failure-ac0ed66.log)及
+[作业/原指令门禁记录](validation/legacy-transport-gate-ac0ed66.json)保存准确范围和哈希。
+
+当时Xvfb输出默认被xvfb-run丢到/dev/null，无法证明服务器死亡、启动未就绪或reset哪一种是根因。
+我们的window-probe会在Qt启动时频繁开关X连接，存在最后一个客户端退出后自动reset的候选竞态。
+[Debian上游讨论](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1095028)在2025-08-31进一步区分了
+启动信号等待与最后客户端断开后的reset；该报告针对其他版本/程序，不能当作本次复现证明。
+
+修正只作用于测试环境：Xvfb加`-noreset`，server stderr保留；启动GUI前用现有Xlib探针做最多10秒
+的连接前置检查。只有明确的cannot-open-DISPLAY或探针超时可在此前置阶段等待，其他探针错误直接失败。
+随后GUI只启动一次；若退出、标题/PID/可见性不满足，门禁仍失败。没有用offscreen、反复重启GUI或
+跳过native检查掩盖崩溃。EL10仍使用Mutter/Xwayland，没有Xvfb回退。
+
+3项本地回归通过；十目标修正后的实际结果须另记，不把此轮红色状态改写成绿色。

@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 未发布 — 2026-10-08（显示连接失败与冒烟环境门禁）
+
+- `ac0ed66 / 37769633840`的2949项原指令门禁通过，Linux26项分析测试、21项port测试无跳过，
+  下载的8份原指令报告与Windows除environment完全一致；AMD传输448项已有云端证据。
+- 该轮Debian11发行GUI可见窗口通过，native GUI随后SIGABRT，原日志明确为xcb插件已找到但连接
+  DISPLAY :99失败；该轮不能签完整矩阵通过。失败日志及artifact哈希随docs/validation归档。
+- 根据实际连接错误及窗口探针短连接模式，给测试Xvfb添加-noreset并保留server stderr；增加启动GUI
+  之前最多10秒的实际XOpenDisplay探测。启动后的GUI崩溃不重试，PID/标题/可见性/5秒持续门禁均保留。
+  原失败未保留Xserver日志，reset/启动竞态仍是候选原因，未把上游不同版本的缺陷当作本次确定根因。
+- 新增3项有意义的门禁回归：延迟连接、一直不可连接不启动GUI、真正SIGABRT不得重试，本地全部通过。
+  Windows整套port测试另有原有tarfile ALLOW_MISSING的沙箱WinError5，4项Linux对拍测试跳过；没有
+  关闭解包路径保护或把这些项算成功，完整Linux结果以修正后的CI为准。
+- 整理EL8–10各层已知/未决问题及AMD两个短槽完整静态指令，修正真机清单和guard页面的历史状态措辞。
+  未改原GUI、生产GUI、HAL、模块或96字节ABI，代码改动仅为CI显示准备及负向门禁。
+
 ## 未发布 — 2026-10-08（平台/UI/AMD初始化完整云端核验）
 
 - `fa4c541 / portability37766384139`已完整23/23成功，十目标内核、重构GUI、装包及窗口均通过；

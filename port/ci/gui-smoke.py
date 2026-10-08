@@ -23,6 +23,33 @@ def visible_window(probe, pid, title):
     return None
 
 
+def wait_for_display(probe, timeout=10):
+    """Wait for an actual XOpenDisplay, only before starting the GUI.
+
+    An unavailable display is an infrastructure failure. Do not retry a failed
+    GUI or relax the later PID/title/dwell assertions.
+    """
+    deadline = time.monotonic() + timeout
+    attempts, last = 0, "display probe not attempted"
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise RuntimeError("DISPLAY did not become connectable: " + last)
+        attempts += 1
+        try:
+            result = subprocess.run([str(probe), str(os.getpid())],
+                                    capture_output=True, text=True, timeout=min(2, remaining))
+        except subprocess.TimeoutExpired:
+            last = "display probe timed out"
+        else:
+            if result.returncode == 0:
+                return attempts
+            last = result.stderr.strip()
+            if result.returncode != 1 or last != "window-probe: cannot open DISPLAY":
+                raise RuntimeError("display probe failed: rc={}, {}".format(result.returncode, last))
+        time.sleep(min(0.1, max(0, deadline - time.monotonic())))
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--binary", default="/usr/bin/octool")
@@ -36,6 +63,13 @@ def main():
     title = re.compile(cfg["window_title_regex"])
     args.log.parent.mkdir(parents=True, exist_ok=True)
     with args.log.open("w") as log:
+        try:
+            attempts = wait_for_display(args.probe)
+        except RuntimeError as exc:
+            log.write("DISPLAY PRECONDITION FAILED: " + str(exc) + "\n")
+            raise
+        log.write("DISPLAY READY: {} after {} probe(s)\n".format(os.environ.get("DISPLAY"), attempts))
+        log.flush()
         env = dict(os.environ, OCTOOL_SMOKE_SCREENSHOT=str(args.log.with_suffix("")))
         proc = subprocess.Popen([args.binary], stdout=log, stderr=subprocess.STDOUT, env=env,
                                 start_new_session=True)

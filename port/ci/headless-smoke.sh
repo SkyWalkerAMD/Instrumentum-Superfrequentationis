@@ -11,7 +11,9 @@ chmod 700 "$XDG_RUNTIME_DIR"
 export QT_QPA_PLATFORM=xcb LIBGL_ALWAYS_SOFTWARE=1 QT_LINUX_ACCESSIBILITY_ALWAYS_ON=1
 case "$backend" in
     xvfb)
-        dbus-run-session -- xvfb-run -a -s '-screen 0 1600x1000x24' \
+        # The observer connects before/during Qt startup. A last-client reset
+        # can briefly close the listener between the observer and the GUI.
+        dbus-run-session -- xvfb-run -a -e /dev/stderr -s '-screen 0 1600x1000x24 -noreset' \
             python3 "$root/port/ci/gui-smoke.py" "$@"
         ;;
     xwayland)

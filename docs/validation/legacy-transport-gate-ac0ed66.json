@@ -1,0 +1,203 @@
+{
+  "schema": 1,
+  "recorded_date": "2026-10-08",
+  "run_id": 37769633840,
+  "commit": "ac0ed667eaca4d2afbbe5a3b5c904f055953f804",
+  "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37769633840",
+  "scope": "Offline analysis gate passed; complete matrix failed at Debian 11 native GUI display connection. This is not full-matrix acceptance.",
+  "analysis_unit_tests": {
+    "passed": 26,
+    "skipped": 0
+  },
+  "port_python_tests": {
+    "passed": 21,
+    "skipped": 0
+  },
+  "original_instruction_cases": 2949,
+  "log_evidence": [
+    "2026-10-08T11:22:50.8917637Z capture lifecycle: 46 cases passed (15 finalized, 31 rejected), no hardware",
+    "2026-10-08T11:22:51.0221437Z Ran 21 tests in 0.036s",
+    "2026-10-08T11:23:01.1337740Z Ran 26 tests in 7.859s",
+    "2026-10-08T11:23:01.5499952Z 56 caller-contract cases passed; synthetic replies, no hardware",
+    "2026-10-08T11:23:19.9703377Z 550 bounded decision cases passed; no hardware or GUI executed",
+    "2026-10-08T11:23:22.2309073Z 39 classes; 607 bounded cases; 0 metadata/target mismatches",
+    "2026-10-08T11:23:26.6854572Z 148 cases characterized; 24 expected bounded busy loops; no hardware executed",
+    "2026-10-08T11:23:34.7546728Z 163 bounded UI experiments; 157 names, 67 translations, 28/27 conditional connections; no hardware",
+    "2026-10-08T11:23:59.3052997Z 592 bounded menu scenarios passed; no original panel body or hardware executed",
+    "2026-10-08T11:24:09.5722275Z 385 AMD initialization cases; no hardware, actual CPUID or GUI executed",
+    "2026-10-08T11:24:22.6664906Z 448 original AMD transport cases; synthetic I/O only"
+  ],
+  "failed_job": {
+    "id": 113286476637,
+    "name": "desktop (debian11)",
+    "conclusion": "failure",
+    "phase": "Install and smoke in fresh target image",
+    "release_gui": "visible-window gate passed",
+    "native_gui": "SIGABRT; xcb plugin present but DISPLAY :99 not connectable",
+    "native_log": "debian11-native-display-failure-ac0ed66.log",
+    "native_log_sha256": "b74e32dd5bc7d681e6900c544094673ef461de076774af99ee354a39859808bd",
+    "artifact_id": 11547355265,
+    "artifact_zip_sha256": "7c251733f1ae4328ac123f2a97f6807efef9732843441bb060452ba1acb62720"
+  },
+  "failure_log_evidence": [
+    "2026-10-08T11:26:58.1836448Z GUI SMOKE PASS: visible window, pid=6314, title='OCTool — Hardware information and registers'",
+    "2026-10-08T11:26:58.4751741Z     raise RuntimeError(\"GUI exited before smoke completed, rc=\" + str(proc.returncode))",
+    "2026-10-08T11:26:58.4752358Z RuntimeError: GUI exited before smoke completed, rc=-6",
+    "2026-10-08T11:27:03.5293334Z ##[error]Process completed with exit code 1."
+  ],
+  "hypothesis": "X display startup/reset lifecycle race; no X server log was retained, so exact cause not proven. Add -noreset, bounded connection preflight and retained server stderr; never retry a GUI crash.",
+  "cross_environment": [
+    {
+      "experiment": "mailbox-emulation",
+      "cases": 56,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "4142e96873c19cc89b5d4107e8001740abfe1048e1e26e8328d46b9baf334726",
+      "local_sha256": "b7489d54621cee52978a48c7eb13e1bb83b1e77807dda38a61005275f5adfe94",
+      "environment": {
+        "cloud": {
+          "python": "3.12.3",
+          "system": "Linux",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "python": "3.14.8",
+          "system": "Windows",
+          "unicorn": "2.1.4"
+        }
+      }
+    },
+    {
+      "experiment": "dispatch-emulation",
+      "cases": 550,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "1880a797bf48c530f68d7743fa6bf55f24df5ccda49109a518452cf398cf936f",
+      "local_sha256": "02bd88ddb04e8aa5e2476fcf28648f85b971c72e118ac50830532cbdc4b8e88c",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    },
+    {
+      "experiment": "qt-callbacks",
+      "cases": 607,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "bcd756afc46b93e7f06c491761c0a7ad67df440d51322635a4b2d158d976a792",
+      "local_sha256": "94bd74e824dc73e7e8a63fa8e139a1dc8f91baedc284d3ab1f5d7013af49e07d",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    },
+    {
+      "experiment": "msr-emulation",
+      "cases": 148,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "0fde83942ba6cd76fa1ddbaacbe34988fca04960a06cc4abfe597c5114989c38",
+      "local_sha256": "5904ca3e5395dad612428e453cfbd3d6290dbd4226cac82ddc4179e48c2c4069",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    },
+    {
+      "experiment": "ui-connections",
+      "cases": 163,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "459871a6714c2ae0e48debaa4cdd3f0d4fb210b873aad2e2dc402b9c2599dbc2",
+      "local_sha256": "85577ccb4c2907ae434b70a8ebddb48e27445261fc4ce9faaedb39fecd9e4716",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    },
+    {
+      "experiment": "menu-routing",
+      "cases": 592,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "04e31a21fab2dff3e9aaad1898d63a90afb1cd518ff3c2635d7d86f7beb9a310",
+      "local_sha256": "789e7ed8984b62e45fa3a90557f9e45110e6258072a41448b202f23c14a74911",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    },
+    {
+      "experiment": "amd-initialization",
+      "cases": 385,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "2614fc52a5f84cfabed3a2610cfcadeaf4fd8a53041d76660a31c9845da138b0",
+      "local_sha256": "8abd9f7d8a702eada48339270a80b506babe92d692db72a6f1a492c5ed70dec7",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    },
+    {
+      "experiment": "amd-transport",
+      "cases": 448,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "77402b87f7b3e3c165f55558e274ccb2ecf99395c2af9232faf863725054162f",
+      "local_sha256": "8d60e397485263770f07b630b4868d7f326af674765fe86e4154a9977fc731dc",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    }
+  ]
+}

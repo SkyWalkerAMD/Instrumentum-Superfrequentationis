@@ -1,0 +1,159 @@
+FUNCTION 0x750170 339 ['_ZN12cpufunctions29on_per_ccx_oc_apply_3_clickedEv']
+00750170 endbr64
+00750174 push     r13
+00750176 push     r12
+00750178 push     rbp
+00750179 mov      rbp, rdi
+0075017c sub      rsp, 0x20
+00750180 mov      rax, qword ptr fs:[0x28]
+00750189 mov      qword ptr [rsp + 0x18], rax
+0075018e xor      eax, eax
+00750190 cmp      byte ptr [rdi + 0xf88], 0
+00750197 mov      dword ptr [rsp + 4], 0
+0075019f je       0x750288
+007501a5 lea      r12, [rsp + 0x10]
+007501aa mov      esi, 1
+007501af mov      edi, 0x18
+007501b4 mov      rdx, r12
+007501b7 call     0x21f700                               _Z10MP1_C2PMSGjjRj
+007501bc mov      esi, 8
+007501c1 lea      rdi, [rip + 0xede135]                   0x162e2fd  'Applied!'
+007501c8 call     0x142ec90                              _ZN7QString16fromAscii_helperEPKci
+007501cd mov      esi, 6
+007501d2 lea      rdi, [rip + 0xe9c79f]                   0x15ec978  'Status'
+007501d9 mov      qword ptr [rsp + 0x10], rax
+007501de call     0x142ec90                              _ZN7QString16fromAscii_helperEPKci
+007501e3 lea      r13, [rsp + 8]
+007501e8 xor      r8d, r8d
+007501eb mov      ecx, 0x400
+007501f0 mov      rdx, r12
+007501f3 mov      rsi, r13
+007501f6 mov      rdi, rbp
+007501f9 mov      qword ptr [rsp + 8], rax
+007501fe call     0xe97a60                               _ZN11QMessageBox11informationEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_
+00750203 mov      rdi, qword ptr [rsp + 8]
+00750208 mov      eax, dword ptr [rdi]
+0075020a test     eax, eax
+0075020c je       0x750258
+0075020e cmp      eax, -1
+00750211 je       0x75021e
+00750213 lock sub dword ptr [rdi], 1
+00750217 mov      rdi, qword ptr [rsp + 8]
+0075021c je       0x750258
+0075021e mov      rdi, qword ptr [rsp + 0x10]
+00750223 mov      eax, dword ptr [rdi]
+00750225 test     eax, eax
+00750227 je       0x750272
+00750229 cmp      eax, -1
+0075022c je       0x750239
+0075022e lock sub dword ptr [rdi], 1
+00750232 mov      rdi, qword ptr [rsp + 0x10]
+00750237 je       0x750272
+00750239 mov      rax, qword ptr [rsp + 0x18]
+0075023e sub      rax, qword ptr fs:[0x28]
+00750247 jne      0x7502a6
+00750249 add      rsp, 0x20
+0075024d pop      rbp
+0075024e pop      r12
+00750250 pop      r13
+00750252 ret
+00750253 nop      dword ptr [rax + rax]
+00750258 mov      edx, 8
+0075025d mov      esi, 2
+00750262 call     0x13caf90                              _ZN10QArrayData10deallocateEPS_mm
+00750267 mov      rdi, qword ptr [rsp + 0x10]
+0075026c mov      eax, dword ptr [rdi]
+0075026e test     eax, eax
+00750270 jne      0x750229
+00750272 mov      edx, 8
+00750277 mov      esi, 2
+0075027c call     0x13caf90                              _ZN10QArrayData10deallocateEPS_mm
+00750281 jmp      0x750239
+00750283 nop      dword ptr [rax + rax]
+00750288 lea      rdx, [rsp + 4]
+0075028d mov      esi, 1
+00750292 mov      edi, 0x25
+00750297 call     0x21f330                               _Z8smu_cmd2hmRj
+0075029c lea      r12, [rsp + 0x10]
+007502a1 jmp      0x7501bc
+007502a6 call     0x14a910                               __stack_chk_fail@plt
+007502ab endbr64
+007502af mov      rbp, rax
+007502b2 jmp      0x199a70                               _ZN12cpufunctions29on_per_ccx_oc_apply_3_clickedEv.cold
+007502b7 endbr64
+007502bb mov      rbp, rax
+007502be jmp      0x199a78
+
+FUNCTION 0x7520b0 272 ['_ZN12cpufunctions30on_per_ccx_oc_apply_19_clickedEv']
+007520b0 endbr64
+007520b4 push     r12
+007520b6 push     rbp
+007520b7 push     rbx
+007520b8 mov      rbx, rdi
+007520bb sub      rsp, 0x20
+007520bf mov      rax, qword ptr fs:[0x28]
+007520c8 mov      qword ptr [rsp + 0x18], rax
+007520cd xor      eax, eax
+007520cf mov      rax, qword ptr [rdi + 0x1008]
+007520d6 lea      rbp, [rsp + 0x10]
+007520db mov      rdi, rbp
+007520de mov      rsi, qword ptr [rax + 0x268]
+007520e5 call     0xddc6d0                               _ZNK9QLineEdit4textEv
+007520ea mov      edx, 0xa
+007520ef xor      esi, esi
+007520f1 mov      rdi, rbp
+007520f4 call     0x1431730                              _ZNK7QString5toIntEPbi
+007520f9 mov      rdi, qword ptr [rsp + 0x10]
+007520fe mov      r12d, eax
+00752101 mov      eax, dword ptr [rdi]
+00752103 test     eax, eax
+00752105 je       0x752170
+00752107 cmp      eax, -1
+0075210a je       0x752117
+0075210c lock sub dword ptr [rdi], 1
+00752110 mov      rdi, qword ptr [rsp + 0x10]
+00752115 je       0x752170
+00752117 mov      rax, qword ptr [rbx + 0x1008]
+0075211e mov      rdi, rbp
+00752121 mov      dword ptr [rsp + 0xc], 0
+00752129 mov      rsi, qword ptr [rax + 0x268]
+00752130 call     0xddc6d0                               _ZNK9QLineEdit4textEv
+00752135 mov      rdi, qword ptr [rsp + 0x10]
+0075213a mov      ebx, dword ptr [rdi + 4]
+0075213d mov      eax, dword ptr [rdi]
+0075213f test     eax, eax
+00752141 je       0x752188
+00752143 cmp      eax, -1
+00752146 je       0x752153
+00752148 lock sub dword ptr [rdi], 1
+0075214c mov      rdi, qword ptr [rsp + 0x10]
+00752151 je       0x752188
+00752153 test     ebx, ebx
+00752155 jne      0x75219b
+00752157 mov      rax, qword ptr [rsp + 0x18]
+0075215c sub      rax, qword ptr fs:[0x28]
+00752165 jne      0x7521af
+00752167 add      rsp, 0x20
+0075216b pop      rbx
+0075216c pop      rbp
+0075216d pop      r12
+0075216f ret
+00752170 mov      edx, 8
+00752175 mov      esi, 2
+0075217a call     0x13caf90                              _ZN10QArrayData10deallocateEPS_mm
+0075217f jmp      0x752117
+00752181 nop      dword ptr [rax]
+00752188 mov      edx, 8
+0075218d mov      esi, 2
+00752192 call     0x13caf90                              _ZN10QArrayData10deallocateEPS_mm
+00752197 test     ebx, ebx
+00752199 je       0x752157
+0075219b lea      rdx, [rsp + 0xc]
+007521a0 movsxd   rsi, r12d
+007521a3 mov      edi, 0x56
+007521a8 call     0x21f330                               _Z8smu_cmd2hmRj
+007521ad jmp      0x752157
+007521af call     0x14a910                               __stack_chk_fail@plt
+007521b4 endbr64
+007521b8 mov      r12, rax
+007521bb jmp      0x199c90                               _ZN12cpufunctions30on_per_ccx_oc_apply_19_clickedEv.cold
