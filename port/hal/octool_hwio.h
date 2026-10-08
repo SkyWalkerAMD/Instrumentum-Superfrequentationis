@@ -16,8 +16,8 @@
  *
  * Thread-safety: open one hwio handle per thread, or serialize calls on a
  * shared handle. The kernel module supports concurrent opens (one mailbox per
- * open); a single hwio handle owns one open. Direct port I/O currently caches
- * iopl state per handle: that handle must remain on the same OS thread.
+ * open); a single hwio handle owns one open. Direct port I/O establishes the
+ * calling thread's permission on every operation; it is not cached on a handle.
  */
 #ifndef OCTOOL_HWIO_H
 #define OCTOOL_HWIO_H
@@ -100,7 +100,9 @@ int hwio_pci_read(hwio_t *h, uint8_t bus, uint8_t dev, uint8_t fn,
 int hwio_pci_write(hwio_t *h, uint8_t bus, uint8_t dev, uint8_t fn,
 		   uint16_t off, int width, uint32_t val);
 
-/* Embedded controller (ACPI EC index space). */
+/* Embedded controller: first EC registered with Linux ACPI, not an arbitrary
+ * board-specific port pair. No device => -ENODEV; no ACPI => -EOPNOTSUPP.
+ * Register meanings must be confirmed for the actual target before use. */
 int hwio_ec_read(hwio_t *h, uint8_t index, uint8_t *val);
 int hwio_ec_write(hwio_t *h, uint8_t index, uint8_t val);
 

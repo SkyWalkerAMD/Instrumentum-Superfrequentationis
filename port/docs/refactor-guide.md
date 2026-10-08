@@ -69,7 +69,7 @@
 - MMIO：`ioremap(phys, width)`→单次 `readX/writeX`→`iounmap`，映射覆盖整个访问范围。
   2026-10-08 修正了跨页访问只映射第一页的问题；真实设备有效地址/宽度仍需确认。
 - MSR/CPUID/TSC：`rdmsr_safe_on_cpu`/`wrmsr_safe_on_cpu` 和 `smp_call_function_single` 在 `user_id` 指定的 CPU 上执行。
-- 端口/PCI/EC：模块内直接 `inX/outX`（内核态不受 lockdown 限制）；PCI 走 0xCF8/0xCFC（intel-conf1），EC 走 0x62/0x66 标准时序。
+- 端口扩展仍使用 `inX/outX`。2026-10-08接续修正将PCI改为核心配置API与配置阻塞锁，EC改为ACPI驱动的第一个EC及其事务锁，移除本模块独立CF8/CFC和固定0x62/0x66序列。当前实现/错误/验证范围见[系统协调说明](../../docs/bus-coordination.md)；不能由模块内执行推断目标硬件与lockdown策略已验收。
 - `Kbuild` 探测 `class_create` 签名（不是看版本号——RHEL 9 在 9.2 双参数、9.4 起单参数，版本号都是 5.14）。
 
 构建（真机）：

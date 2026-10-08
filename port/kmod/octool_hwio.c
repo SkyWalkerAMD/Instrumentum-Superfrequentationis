@@ -42,15 +42,16 @@
 #include <linux/uaccess.h>
 #include <linux/io.h>
 #include <linux/capability.h>
-#include <linux/spinlock.h>
+#include <linux/pci.h>
+#include <linux/acpi.h>
 #include <linux/smp.h>
 #include <linux/cpumask.h>
 #include <linux/atomic.h>
-#include <linux/delay.h>
 #include <asm/msr.h>
 #include <asm/processor.h>
 #include <asm/io.h>
 #include "octool_hwio_abi.h"
+#include "octool_bus_access.h"
 
 #define DRV_NAME	"octool_hwio"
 #define DEFAULT_DEVNAME	"mydev"		/* octool opens /dev/mydev */
@@ -82,9 +83,6 @@ static dev_t hwio_devt;
 static struct cdev hwio_cdev;
 static struct class *hwio_class;
 static atomic64_t id_ctr = ATOMIC64_INIT(1);
-
-static DEFINE_RAW_SPINLOCK(pci_lock);
-static DEFINE_RAW_SPINLOCK(ec_lock);
 
 /* ---- MMIO --------------------------------------------------------------- */
 static int mmio_read(u64 phys, int width, u64 *out)
@@ -138,99 +136,6 @@ struct tsc_arg { u64 v; };
 static void do_rdtsc(void *p)
 {
 	((struct tsc_arg *)p)->v = rdtsc();
-}
-
-/* ---- PCI config via 0xCF8/0xCFC (intel-conf1) --------------------------- */
-static u32 pci_conf_read(u32 bus, u32 dev, u32 fn, u32 off, int width)
-{
-	u32 addr = 0x80000000u | (bus << 16) | (dev << 11) | (fn << 8) | (off & 0xfc);
-	unsigned long flags;
-	u32 v;
-
-	raw_spin_lock_irqsave(&pci_lock, flags);
-	outl(addr, 0xCF8);
-	switch (width) {
-	case 1: v = inb(0xCFC + (off & 3)); break;
-	case 2: v = inw(0xCFC + (off & 2)); break;
-	default: v = inl(0xCFC); break;
-	}
-	raw_spin_unlock_irqrestore(&pci_lock, flags);
-	return v;
-}
-
-static void pci_conf_write(u32 bus, u32 dev, u32 fn, u32 off, int width, u32 val)
-{
-	u32 addr = 0x80000000u | (bus << 16) | (dev << 11) | (fn << 8) | (off & 0xfc);
-	unsigned long flags;
-
-	raw_spin_lock_irqsave(&pci_lock, flags);
-	outl(addr, 0xCF8);
-	switch (width) {
-	case 1: outb((u8)val, 0xCFC + (off & 3)); break;
-	case 2: outw((u16)val, 0xCFC + (off & 2)); break;
-	default: outl(val, 0xCFC); break;
-	}
-	raw_spin_unlock_irqrestore(&pci_lock, flags);
-}
-
-/* ---- ACPI EC (0x62 data / 0x66 cmd+status) ------------------------------ */
-#define EC_DATA		0x62
-#define EC_CMD		0x66
-#define EC_SC_IBF	0x02
-#define EC_SC_OBF	0x01
-#define EC_RD_CMD	0x80
-#define EC_WR_CMD	0x81
-
-static int ec_wait(u8 mask, u8 want)
-{
-	int i;
-
-	for (i = 0; i < 100000; i++) {
-		if ((inb(EC_CMD) & mask) == want)
-			return 0;
-		udelay(1);
-	}
-	return -ETIMEDOUT;
-}
-
-static int ec_read(u8 index, u8 *out)
-{
-	unsigned long flags;
-	int rc;
-
-	raw_spin_lock_irqsave(&ec_lock, flags);
-	rc = ec_wait(EC_SC_IBF, 0);
-	if (rc) goto out;
-	outb(EC_RD_CMD, EC_CMD);
-	rc = ec_wait(EC_SC_IBF, 0);
-	if (rc) goto out;
-	outb(index, EC_DATA);
-	rc = ec_wait(EC_SC_OBF, EC_SC_OBF);
-	if (rc) goto out;
-	*out = inb(EC_DATA);
-out:
-	raw_spin_unlock_irqrestore(&ec_lock, flags);
-	return rc;
-}
-
-static int ec_write(u8 index, u8 val)
-{
-	unsigned long flags;
-	int rc;
-
-	raw_spin_lock_irqsave(&ec_lock, flags);
-	rc = ec_wait(EC_SC_IBF, 0);
-	if (rc) goto out;
-	outb(EC_WR_CMD, EC_CMD);
-	rc = ec_wait(EC_SC_IBF, 0);
-	if (rc) goto out;
-	outb(index, EC_DATA);
-	rc = ec_wait(EC_SC_IBF, 0);
-	if (rc) goto out;
-	outb(val, EC_DATA);
-out:
-	raw_spin_unlock_irqrestore(&ec_lock, flags);
-	return rc;
 }
 
 /* ---- request dispatch --------------------------------------------------- */
@@ -302,40 +207,18 @@ static void dispatch(struct hwio_ctx *ctx, struct octool_hwio_req *r)
 	case OCTOOL_OP_OUT_16: outw((u16)r->data1, (u16)r->data0); break;
 	case OCTOOL_OP_OUT_32: outl((u32)r->data1, (u16)r->data0); break;
 
-	/* PCI config */
+	/* PCI config through the core; domain 0, conventional 256-byte space. */
 	case OCTOOL_OP_PCI_RD:
-		if (r->data0 > 255 || r->data1 > 31 || r->data2 > 7 ||
-		    r->data3 > 255 ||
-		    (r->data4 != 1 && r->data4 != 2 && r->data4 != 4) ||
-		    (r->data3 & (r->data4 - 1))) {
-			rc = -EINVAL;
-			break;
-		}
-		res = pci_conf_read((u32)r->data0, (u32)r->data1, (u32)r->data2,
-				    (u32)r->data3, (int)r->data4);
-		break;
 	case OCTOOL_OP_PCI_WR:
-		if (r->data0 > 255 || r->data1 > 31 || r->data2 > 7 ||
-		    r->data3 > 255 ||
-		    (r->data4 != 1 && r->data4 != 2 && r->data4 != 4) ||
-		    (r->data3 & (r->data4 - 1))) {
-			rc = -EINVAL;
-			break;
-		}
-		pci_conf_write((u32)r->data0, (u32)r->data1, (u32)r->data2,
-			       (u32)r->data3, (int)r->data4, (u32)r->data5);
+		rc = octool_pci_access(r->data0, r->data1, r->data2, r->data3,
+				       r->data4, r->data5, r->cmd == OCTOOL_OP_PCI_WR, &res);
 		break;
 
-	/* Embedded controller */
-	case OCTOOL_OP_EC_RD: {
-		u8 v = 0;
-
-		rc = ec_read((u8)r->data0, &v);
-		res = v;
-		break;
-	}
+	/* First EC registered by the ACPI subsystem; never raw fixed ports. */
+	case OCTOOL_OP_EC_RD:
 	case OCTOOL_OP_EC_WR:
-		rc = ec_write((u8)r->data0, (u8)r->data1);
+		rc = octool_ec_access(r->data0, r->data1,
+				      r->cmd == OCTOOL_OP_EC_WR, &res);
 		break;
 
 	case OCTOOL_OP_CPU_CORES:

@@ -35,7 +35,6 @@ struct hwio {
 
 	/* direct-path state (lazily set up) */
 	int mem_fd;			/* /dev/mem */
-	int io_ready;			/* iopl() done */
 };
 
 /* ---- lockdown detection ------------------------------------------------- */
@@ -283,13 +282,12 @@ static int direct_pci_write(uint8_t bus, uint8_t dev, uint8_t fn,
 }
 
 #ifdef HAVE_PORT_IO
-static int ensure_iopl(hwio_t *h)
+static int ensure_iopl(void)
 {
-	if (h->io_ready)
-		return 0;
+	/* I/O permission is per OS thread and may have been revoked since a
+	 * previous call. A serialized handle may move between threads. */
 	if (iopl(3) != 0)
 		return -errno;
-	h->io_ready = 1;
 	return 0;
 }
 #endif
@@ -457,7 +455,7 @@ int hwio_io_read(hwio_t *h, uint16_t port, int width, uint32_t *val)
 	}
 #ifdef HAVE_PORT_IO
 	if (h->be[HWIO_FAM_IO] == HWIO_BE_DIRECT) {
-		int rc = ensure_iopl(h);
+		int rc = ensure_iopl();
 		if (rc) return rc;
 		switch (width) { case 1: *val = inb(port); break; case 2: *val = inw(port); break;
 		default: *val = inl(port); } return 0;
@@ -479,7 +477,7 @@ int hwio_io_write(hwio_t *h, uint16_t port, int width, uint32_t val)
 	}
 #ifdef HAVE_PORT_IO
 	if (h->be[HWIO_FAM_IO] == HWIO_BE_DIRECT) {
-		int rc = ensure_iopl(h);
+		int rc = ensure_iopl();
 		if (rc) return rc;
 		switch (width) { case 1: outb((uint8_t)val, port); break;
 		case 2: outw((uint16_t)val, port); break; default: outl(val, port); }

@@ -10,7 +10,8 @@ from build_packages import ROOT, version
 
 SKIP_DIRS = {".git", "build", "dist", "__pycache__", ".tmp_versions"}
 SKIP_SUFFIXES = {".pyc", ".o", ".a", ".so", ".ko", ".mod", ".zip", ".key", ".der", ".pem"}
-SKIP_NAMES = {"loopback", "transport", "octool_parity", "hwio_smoke", "gui-regression", "Module.symvers", "modules.order"}
+SKIP_NAMES = {"loopback", "transport", "bus-acpi", "bus-noacpi", "port-thread",
+              "octool_parity", "hwio_smoke", "gui-regression", "Module.symvers", "modules.order"}
 
 
 def create(output):

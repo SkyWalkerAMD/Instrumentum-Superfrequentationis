@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## 未发布 — 2026-10-08（接续修复 PCI/EC 协调与端口线程权限）
+
+- 接续全面复查R7/R9：PCI自有CF8/CFC锁无法协调系统访问；改用公开pci_get_domain_bus_and_slot、
+  pci_cfg_access_trylock及pci_read/write_config_*，访问忙返回EBUSY，不存在返回ENODEV；转换PCIBIOS
+  状态并平衡unlock/put，错误不发布读值。pci_user_*无公共头声明，未复制私有原型。
+- EC删除固定端口和关中断长轮询，使用ACPI ec_read/ec_write（第一个已注册EC）；请求index/value
+  在u64域验证，CONFIG_ACPI关闭返回EOPNOTSUPP、无设备/事务错误如实传递。使用Kconfig能力宏和
+  实际headers/modpost门禁，不新添内核版本判断；class_create探测不变。四主板EC定义仍未推断。
+- HAL移除handle级io_ready缓存，直接端口操作每次在当前线程iopl，失败不发IN/OUT；更新线程约定。
+  旧GUI的直接访问、96字节请求与MMIO成功邮箱协议保持原样。
+- 新增生产PCI/EC适配器替身测试（含无ACPI构建）、真实HAL跨线程/撤权端口替身测试；接入原有
+  make check和十目标CI。DKMS/rpm/deb/独立安装脚本携带新适配头，源包/Git排除新增测试二进制。
+- 原因、内核源链接、API边界、验证方法详记docs/bus-coordination.md；真机清单与知识入口同步。
+  本轮Linux实编/运行尚待云端执行，不将此前全绿结果冒作新代码通过。
+- Windows静态ABI/文档/可重复源包检查通过；19项Python为16通过、2项Linux工具跳过、1项已知
+  Python3.14 tarfile沙箱路径PermissionError，未禁用安全filter。C回归以云端实际执行为准。
+
 ## 未发布 — 2026-10-08（全面复查与边界修正）
 
 - 按作者“先全部复查”的要求暂停新增加载路径研究，以 `30423b7` 为基线审阅 ABI/kmod/HAL、GUI、
