@@ -29,6 +29,7 @@
 - [原 MSR 失败传播](legacy-msr-failures.md)：两个完整槽到文件接口、栈缓冲复用、148项有界实验和407处忙循环。
 - [原 NVL 控件连接](legacy-ui-connections.md)：157个对象名、67项文字赋值、GT/NPU链及XOC双连接证据。
 - [原主板与时序菜单](legacy-menu-routing.md)：W790/W890、TRX50/WRX90、客户端与多窗口分派的592项实验。
+- [原AMD初始化](legacy-amd-initialization.md)：FamilyType不可达比较、Shimada来源、三套SMU软件表及385项实验。
 - [逆向覆盖台账](reverse-engineering-status.md)：清单、算法、模拟和真机证据的区别与尚未完成范围。
 - [原版模块重复加载握手](legacy-module-handoff.md)：同名 `.ko` 的真实 EEXIST 路径、runner 探针与 Secure Boot 边界。
 - [原版 MMIO 邮箱契约](legacy-mailbox-contract.md)：56 组原指令模拟、三份旧模块映射、错误完成字导致的兼容缺口。

@@ -1,7 +1,22 @@
 # CHANGELOG
 
+## 未发布 — 2026-10-08（AMD判断返回域与全局配置表）
+
+- 继续追踪Shimada来源，恢复FamilyType、is_granite/is_shimada/is_gpt/is_pheonix、三个set_to函数及
+  主窗口65字节调用区域，固定3,461字节原代码与117个相关全局对象初值/宽度。
+- 385项本地实验确认FamilyType只能返回0/0x0f/0x11/0x13，后续0x1a及0x0b比较不可达；保留原始
+  CPUID EAX位运算和PCI查询，未根据函数名/用户CPU营销型号推断实机结果。
+- 恢复pheonix64项、shimada81项、gpt64项纯软件全局赋值；初始化不是互斥判断，会依次部分覆盖。
+  合成多设备输入确认Shimada→GPT保留GPT未赋值的49项Shimada值，且多个缓存标志可同时为真。
+- PHX探测失败不会清除已有GLOBAL_IS_PHX；新增返回域、部分覆盖、重复探测3项针对性回归。
+  模拟CPUID/PCI边界，没有执行宿主CPUID、SMU/MSR/MMIO或完整构造，也未擅自修正消息值/单位。
+- 详情、原地址、软件赋值表、复现和未决硬件定义详记docs/legacy-amd-initialization.md，接入CI门禁。
+
 ## 未发布 — 2026-10-08（四平台相关主板与时序分派）
 
+- `b15a005 / 37764509798`前置离线门禁成功：Linux20项分析测试无跳过，新增UI163项/菜单592项通过，
+  与Windows观测除environment完全一致；十个模块作业也已成功。记录时EL8基线GUI任务仍运行，
+  不声称这一轮完整23/23。证据/日志摘要/下载SHA在docs/validation/legacy-ui-menu-gate-b15a005.json。
 - 再跟进4个完整MainWindow槽及2个PCI/DMI谓词，导出3,038原指令字节；复用已固定的原PCI谓词。
   592项Windows原指令实验通过，覆盖分支优先级、未知vendor、字符串大小写/长度、合成PCI与缓存标志。
 - W790菜单仅AMD拒绝后按GLOBAL_IS_GNR_SP选W790/W890各两窗口，不读主板型号；AMD主板优先查

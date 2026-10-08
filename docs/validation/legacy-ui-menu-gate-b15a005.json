@@ -1,0 +1,136 @@
+{
+  "schema": 1,
+  "recorded_date": "2026-10-08",
+  "commit": "b15a005a648e6c946202661d1b62a254b4c80e8f",
+  "run_id": 37764509798,
+  "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37764509798",
+  "scope": "Completed matrix/offline gate and ten module jobs; full GUI/package matrix was still running at recording and is not claimed complete.",
+  "analysis_unit_tests": {
+    "passed": 20,
+    "skipped": 0
+  },
+  "jobs": [
+    {
+      "id": 113268730680,
+      "name": "matrix",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113268731081,
+      "name": "baseline",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 113269413982,
+      "name": "kernel (ubuntu26.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113269414030,
+      "name": "kernel (el9)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113269414064,
+      "name": "kernel (ubuntu20.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113269414077,
+      "name": "kernel (ubuntu22.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113269414109,
+      "name": "kernel (el8)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113269414120,
+      "name": "kernel (debian12)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113269414125,
+      "name": "kernel (ubuntu24.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113269414137,
+      "name": "kernel (debian11)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113269414138,
+      "name": "kernel (el10)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113269414200,
+      "name": "kernel (debian13)",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "log_evidence": [
+    "2026-10-08T10:36:34.3784102Z Ran 21 tests in 0.033s",
+    "2026-10-08T10:36:37.6470103Z Ran 20 tests in 1.079s",
+    "2026-10-08T10:36:37.9994137Z 56 caller-contract cases passed; synthetic replies, no hardware",
+    "2026-10-08T10:36:56.5257477Z 550 bounded decision cases passed; no hardware or GUI executed",
+    "2026-10-08T10:36:58.7632941Z 39 classes; 607 bounded cases; 0 metadata/target mismatches",
+    "2026-10-08T10:37:03.2818584Z 148 cases characterized; 24 expected bounded busy loops; no hardware executed",
+    "2026-10-08T10:37:11.4967694Z 163 bounded UI experiments; 157 names, 67 translations, 28/27 conditional connections; no hardware",
+    "2026-10-08T10:37:36.2430686Z 592 bounded menu scenarios passed; no original panel body or hardware executed"
+  ],
+  "cross_environment": [
+    {
+      "experiment": "ui-connections",
+      "cases": 163,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "459871a6714c2ae0e48debaa4cdd3f0d4fb210b873aad2e2dc402b9c2599dbc2",
+      "local_sha256": "85577ccb4c2907ae434b70a8ebddb48e27445261fc4ce9faaedb39fecd9e4716",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    },
+    {
+      "experiment": "menu-routing",
+      "cases": 592,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "04e31a21fab2dff3e9aaad1898d63a90afb1cd518ff3c2635d7d86f7beb9a310",
+      "local_sha256": "789e7ed8984b62e45fa3a90557f9e45110e6258072a41448b202f23c14a74911",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    }
+  ]
+}

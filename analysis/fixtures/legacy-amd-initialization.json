@@ -1,0 +1,2099 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "scope": "AMD family predicates and global software table stores; synthetic CPUID/PCI; partial constructor with explicit boundary",
+  "functions": [
+    {
+      "symbol": "_Z10FamilyTypev",
+      "address": 2221328,
+      "size": 156,
+      "code_hex": "f30f1efa4883ec28b90100008064488b042528000000488944241831c0488d542408c7442410000000006a00488d44241c504883ec204c8d4c24404c8d44243ce8dbd718008b4424384883c430c1e8143c06742c0fb6d083fa08743431c083fa0aba130000000f44c2488b54241864482b142528000000751e4883c428c36690b80f000000ebe2660f1f840000000000b811000000ebd2e864c3f2ff",
+      "code_sha256": "5f2abab9e25f04030cb96bcf847fd524652274fbae2c7821aabdae9c06915cf7",
+      "calls": [
+        {
+          "instruction": 2221392,
+          "kind": "call",
+          "target": 3849520,
+          "symbols": [
+            "_Z7CpuidTxjPjS_S_S_m"
+          ]
+        },
+        {
+          "instruction": 2221461,
+          "kind": "jmp",
+          "target": 2221433,
+          "symbols": []
+        },
+        {
+          "instruction": 2221477,
+          "kind": "jmp",
+          "target": 2221433,
+          "symbols": []
+        },
+        {
+          "instruction": 2221479,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z10is_pheonixv",
+      "address": 2220688,
+      "size": 61,
+      "code_hex": "f30f1efa4883ec0831d2bee8140000bf22100000e807f9ffff4189c031c04183f8ff7414e847f5ffff488d0580e3a501c60001b8010000004883c408c3",
+      "code_sha256": "e800cb8d39c86f184f679e7d72168f2913aaff8ac52fdc73ceaf36488be5f4ac",
+      "calls": [
+        {
+          "instruction": 2220708,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2220724,
+          "kind": "call",
+          "target": 2217984,
+          "symbols": [
+            "_Z14set_to_pheonixv"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z10is_granitev",
+      "address": 2250000,
+      "size": 80,
+      "code_hex": "f30f1efa4883ec08e8f38fffff41b8010000003c1a74074531c084c074124489c04883c408c3662e0f1f84000000000031d2bed8140000bf22100000e85f86ffff83f8ff410f95c04883c4084489c0c3",
+      "code_sha256": "d4a70c713d7ac812fa377cb1661e3ea95b97b1de9657a94757b3e9638e8ad0e2",
+      "calls": [
+        {
+          "instruction": 2250008,
+          "kind": "call",
+          "target": 2221328,
+          "symbols": [
+            "_Z10FamilyTypev"
+          ]
+        },
+        {
+          "instruction": 2250060,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z10is_shimadav",
+      "address": 2250080,
+      "size": 69,
+      "code_hex": "f30f1efa4883ec08e8a38fffff84c0740f31c04883c408c30f1f84000000000031d2be3a150000bf22100000e81f86ffff83f8ff74dbe8e57dffffb8010000004883c408c3",
+      "code_sha256": "587405074c6a3d2ee3df97fec36bc780169356d98d9f551e36163bc0b1569a2f",
+      "calls": [
+        {
+          "instruction": 2250088,
+          "kind": "call",
+          "target": 2221328,
+          "symbols": [
+            "_Z10FamilyTypev"
+          ]
+        },
+        {
+          "instruction": 2250124,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2250134,
+          "kind": "call",
+          "target": 2216832,
+          "symbols": [
+            "_Z14set_to_shimadav"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z6is_gptv",
+      "address": 2250160,
+      "size": 89,
+      "code_hex": "f30f1efa4883ec0831d2be22110000bf22100000e8e785ffff4189c0b8010000004183f8ff74094883c408c30f1f4000e82b8fffff4189c031c04180f80b75e731d2be22110000bf22100000e8af85ffff83f8ff0f95c0ebce",
+      "code_sha256": "f7adbd6f985f54e9eb0e5d996699f0cf6fd79ceadaf848784607f23936c19846",
+      "calls": [
+        {
+          "instruction": 2250180,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2250208,
+          "kind": "call",
+          "target": 2221328,
+          "symbols": [
+            "_Z10FamilyTypev"
+          ]
+        },
+        {
+          "instruction": 2250236,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2250247,
+          "kind": "jmp",
+          "target": 2250199,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "_Z14set_to_pheonixv",
+      "address": 2217984,
+      "size": 901,
+      "code_hex": "f30f1efa488d05cd3ba50148c7009809b103488d05b73ba50148c7009c09b103488d05a13ba50148c700a009b103488d058b3ba50148c700a409b103488d05753ba50148c700a809b103488d055f3ba50148c700ac09b103488d05493ba50148c7007805b103488d05333ba50148c7002805b103488d051d3ba50148c70001000000488d05af3aa50148c70004000000488d05f13aa50148c70005000000488d05db3aa50148c70007000000488d05953aa50148c7000b000000488d05b73aa50148c7000d000000488d05a13aa50148c7000e000000488d057337a50148c70010000000488d057537a50148c70011000000488d055f37a50148c70012000000488d05d938a50148c70013000000488d051338a50148c70014000000488d058537a50148c70016000000488d056737a50148c70017000000488d05f137a50148c70018000000488d055b38a50148c70019000000488d054537a50148c70023000000488d052737a50148c70024000000488d051137a50148c70025000000488d05fb36a50148c70026000000488d05dd36a50148c70027000000488d05c736a50148c70028000000488d05a139a50148c7002b000000488d054b39a50148c7002c000000488d05a537a50148c7002d000000488d054737a50148c70031000000488d053137a50148c70032000000488d051b37a50148c70033000000488d050537a50148c70034000000488d05ef36a50148c70035000000488d05d936a50148c70036000000488d05c336a50148c70037000000488d05ad36a50148c70038000000488d059736a50148c70039000000488d058136a50148c7003a000000488d056b36a50148c7003b000000488d055536a50148c7003c000000488d053f36a50148c7003d000000488d052936a50148c7003e000000488d05ab36a50148c70046000000488d052d37a50148c70047000000488d051737a50148c70048000000488d05d936a50148c70049000000488d05db35a50148c7004a000000488d057536a50148c7004e000000488d05f736a50148c7004f000000488d057935a50148c70051000000488d057336a50148c70053000000488d056d36a50148c70054000000488d051f35a50148c70055000000488d050935a50148c70056000000488d053b37a50148c70057000000488d052537a50148c70058000000488d05df36a50148c7005e000000488d05d135a50148c70062000000488d05ab34a50148c70068000000c3",
+      "code_sha256": "cba49f885e010421b40252fac4be9d6e5fc73ff919786f7ace202a1cc36552ae",
+      "calls": []
+    },
+    {
+      "symbol": "_Z14set_to_shimadav",
+      "address": 2216832,
+      "size": 1139,
+      "code_hex": "f30f1efa488d054d40a50148c700c409b103488d053740a50148c700c809b103488d052140a50148c700cc09b103488d050b40a50148c700d009b103488d05f53fa50148c700d409b103488d05df3fa50148c700d809b103488d05c93fa50148c7007c09b103488d05b33fa50148c7003009b103488d059d3fa50148c70001000000488d05873fa50148c70002000000488d05713fa50148c70003000000488d055b3fa50148c70004000000488d05453fa50148c70005000000488d052f3fa50148c70006000000488d05193fa50148c70007000000488d05033fa50148c70008000000488d05e53ea50148c7000a000000488d05cf3ea50148c7000b000000488d05b13ea50148c7000d000000488d059b3ea50148c7000e000000488d05853ea50148c7000f000000488d056f3ea50148c70010000000488d05493ea50148c70013000000488d05333ea50148c70014000000488d051d3ea50148c70015000000488d05ff3da50148c70012000000488d05e93da50148c70016000000488d05d33da50148c70017000000488d05bd3da50148c70018000000488d05a73da50148c70019000000488d05913da50148c7001a000000488d057b3da50148c7001b000000488d05653da50148c7001c000000488d054f3da50148c7001d000000488d05393da50148c7001e000000488d05233da50148c70021000000488d050d3da50148c70022000000488d05f73ca50148c70023000000488d05e13ca50148c70024000000488d05cb3ca50148c70025000000488d05b53ca50148c70026000000488d059f3ca50148c70027000000488d05893ca50148c70028000000488d05733ca50148c70029000000488d055d3ca50148c7001f000000488d05473ca50148c7002b000000488d05313ca50148c7002c000000488d051b3ca50148c70020000000488d05053ca50148c7002a000000488d05ef3ba50148c7002f000000488d05d93ba50148c7002d000000488d05c33ba50148c7002e000000488d05ad3ba50148c70030000000488d058f3ba50148c70034000000488d05793ba50148c70035000000488d05633ba50148c70036000000488d054d3ba50148c70037000000488d052f3ba50148c70039000000488d05193ba50148c7003a000000488d05033ba50148c7003b000000488d05ed3aa50148c7003c000000488d05d73aa50148c7003d000000488d05c13aa50148c7003e000000488d05ab3aa50148c7003f000000488d05953aa50148c70040000000488d057f3aa50148c70041000000488d05693aa50148c70042000000488d05533aa50148c70043000000488d053d3aa50148c70044000000488d05273aa50148c70032000000488d05113aa50148c70046000000488d05fb39a50148c70047000000488d05e539a50148c70048000000488d05cf39a50148c70049000000488d05a139a50148c7004a000000488d05a338a50148c70055000000488d058d38a50148c70054000000488d056738a50148c70057000000488d055138a50148c70033000000488d053338a50148c70011000000488d051d38a50148c70011000000c3",
+      "code_sha256": "657c7a5ff2910666b6a60657982e53d762f6e8a5dedf344b42c3875373169318",
+      "calls": []
+    },
+    {
+      "symbol": "_Z10set_to_gptv",
+      "address": 2215920,
+      "size": 901,
+      "code_hex": "f30f1efa488d05dd43a50148c7009809b103488d05c743a50148c7009c09b103488d05b143a50148c700a009b103488d059b43a50148c700a409b103488d058543a50148c700a809b103488d056f43a50148c700ac09b103488d055943a50148c7007809b103488d054343a50148c7002809b103488d052d43a50148c70001000000488d05bf42a50148c70004000000488d050143a50148c70005000000488d05eb42a50148c70007000000488d05a542a50148c7000b000000488d05c742a50148c7000d000000488d05b142a50148c7000e000000488d05833fa50148c70010000000488d05853fa50148c70011000000488d056f3fa50148c70012000000488d05e940a50148c70013000000488d052340a50148c70014000000488d05953fa50148c70016000000488d05773fa50148c70017000000488d050140a50148c70018000000488d056b40a50148c70019000000488d05553fa50148c70023000000488d05373fa50148c70024000000488d05213fa50148c70025000000488d050b3fa50148c70026000000488d05ed3ea50148c70027000000488d05d73ea50148c70028000000488d05b141a50148c7002b000000488d055b41a50148c7002c000000488d05b53fa50148c7002d000000488d05573fa50148c70031000000488d05413fa50148c70032000000488d052b3fa50148c70033000000488d05153fa50148c70034000000488d05ff3ea50148c70035000000488d05e93ea50148c70036000000488d05d33ea50148c70037000000488d05bd3ea50148c70038000000488d05a73ea50148c70039000000488d05913ea50148c7003a000000488d057b3ea50148c7003b000000488d05653ea50148c7003c000000488d054f3ea50148c7003d000000488d05393ea50148c7003e000000488d05bb3ea50148c70045000000488d053d3fa50148c70047000000488d05273fa50148c70048000000488d05e93ea50148c70049000000488d05eb3da50148c7004a000000488d05853ea50148c7004e000000488d05073fa50148c7004f000000488d05893da50148c70051000000488d05833ea50148c70053000000488d057d3ea50148c70054000000488d052f3da50148c70055000000488d05193da50148c70056000000488d054b3fa50148c70057000000488d05353fa50148c70058000000488d05ef3ea50148c7005e000000488d05e13da50148c70062000000488d05bb3ca50148c70071000000c3",
+      "code_sha256": "3e3f246449eb553d1cfcc1f6a441f702d006200de5c47f1b0716904c066a905d",
+      "calls": []
+    },
+    {
+      "symbol": "MainWindow.constructor.amd-profile-selection",
+      "address": 9323336,
+      "size": 65,
+      "code_hex": "e8439f93ffe8be1194ff488d15aa8139018802e8001294ff488d159b8139018802e8421294ff488d158c813901880284c00f842cffffffe86c8c93ffe922ffffff",
+      "code_sha256": "f95f75aa76bbdf77091cc6426de2780665339e65f7095b74f5637d37a9787648",
+      "calls": [
+        {
+          "instruction": 9323336,
+          "kind": "call",
+          "target": 2220688,
+          "symbols": [
+            "_Z10is_pheonixv"
+          ]
+        },
+        {
+          "instruction": 9323341,
+          "kind": "call",
+          "target": 2250000,
+          "symbols": [
+            "_Z10is_granitev"
+          ]
+        },
+        {
+          "instruction": 9323355,
+          "kind": "call",
+          "target": 2250080,
+          "symbols": [
+            "_Z10is_shimadav"
+          ]
+        },
+        {
+          "instruction": 9323369,
+          "kind": "call",
+          "target": 2250160,
+          "symbols": [
+            "_Z6is_gptv"
+          ]
+        },
+        {
+          "instruction": 9323391,
+          "kind": "call",
+          "target": 2215920,
+          "symbols": [
+            "_Z10set_to_gptv"
+          ]
+        },
+        {
+          "instruction": 9323396,
+          "kind": "jmp",
+          "target": 9323179,
+          "symbols": []
+        }
+      ],
+      "parent_symbol": "_ZN10MainWindowC2EP7QWidget",
+      "parent_function_sha256": "e5779c007a56b79f5caec587b90eeff6b00aac70e0a25a1a7f31f0e5a0c7d60e",
+      "stop_address": 9323179,
+      "preconditions": "Enter the original constructor region after prior initialization; stop at join before UI setup"
+    }
+  ],
+  "objects": {
+    "GLOBAL_IS_PHX": {
+      "address": 29869632,
+      "size": 1,
+      "source_initial_hex": "00"
+    },
+    "SMU_ARG0": {
+      "address": 29823960,
+      "size": 8,
+      "source_initial_hex": "c409b10300000000"
+    },
+    "SMU_ARG1": {
+      "address": 29823952,
+      "size": 8,
+      "source_initial_hex": "c809b10300000000"
+    },
+    "SMU_ARG2": {
+      "address": 29823944,
+      "size": 8,
+      "source_initial_hex": "cc09b10300000000"
+    },
+    "SMU_ARG3": {
+      "address": 29823936,
+      "size": 8,
+      "source_initial_hex": "d009b10300000000"
+    },
+    "SMU_ARG4": {
+      "address": 29823928,
+      "size": 8,
+      "source_initial_hex": "d409b10300000000"
+    },
+    "SMU_ARG5": {
+      "address": 29823920,
+      "size": 8,
+      "source_initial_hex": "d809b10300000000"
+    },
+    "SMU_IOPORT": {
+      "address": 29823912,
+      "size": 8,
+      "source_initial_hex": "7c05b10300000000"
+    },
+    "SMU_DATAPORT": {
+      "address": 29823904,
+      "size": 8,
+      "source_initial_hex": "3005b10300000000"
+    },
+    "BIOSSMC_MSG_TestMessage": {
+      "address": 29823896,
+      "size": 8,
+      "source_initial_hex": "0100000000000000"
+    },
+    "BIOSSMC_MSG_GetNameString": {
+      "address": 29823800,
+      "size": 8,
+      "source_initial_hex": "0d00000000000000"
+    },
+    "BIOSSMC_MSG_EnableSmuFeatures": {
+      "address": 29823880,
+      "size": 8,
+      "source_initial_hex": "0300000000000000"
+    },
+    "BIOSSMC_MSG_DisableSmuFeatures": {
+      "address": 29823872,
+      "size": 8,
+      "source_initial_hex": "0400000000000000"
+    },
+    "BIOSSMC_MSG_SleepEntry": {
+      "address": 29823816,
+      "size": 8,
+      "source_initial_hex": "0b00000000000000"
+    },
+    "BIOSSMC_MSG_SetBiosDramAddr": {
+      "address": 29823864,
+      "size": 8,
+      "source_initial_hex": "0500000000000000"
+    },
+    "BIOSSMC_MSG_SetToolsDramAddr": {
+      "address": 29823856,
+      "size": 8,
+      "source_initial_hex": "0600000000000000"
+    },
+    "BIOSSMC_MSG_TransferTableDram2Smu": {
+      "address": 29823056,
+      "size": 8,
+      "source_initial_hex": "6a00000000000000"
+    },
+    "BIOSSMC_MSG_PowerSourceAC": {
+      "address": 29823072,
+      "size": 8,
+      "source_initial_hex": "6800000000000000"
+    },
+    "BIOSSMC_MSG_PowerSourceDC": {
+      "address": 29823064,
+      "size": 8,
+      "source_initial_hex": "6900000000000000"
+    },
+    "BIOSSMC_MSG_DcBtc": {
+      "address": 29823456,
+      "size": 8,
+      "source_initial_hex": "3800000000000000"
+    },
+    "BIOSSMC_MSG_SetSustainedPowerLimit": {
+      "address": 29823272,
+      "size": 8,
+      "source_initial_hex": "4f00000000000000"
+    },
+    "BIOSSMC_MSG_SetSlowPPTLimit": {
+      "address": 29823144,
+      "size": 8,
+      "source_initial_hex": "5f00000000000000"
+    },
+    "BIOSSMC_MSG_SetSlowPPTTimeConstant": {
+      "address": 29823128,
+      "size": 8,
+      "source_initial_hex": "6100000000000000"
+    },
+    "BIOSSMC_MSG_SetStapmTimeConstant": {
+      "address": 29823280,
+      "size": 8,
+      "source_initial_hex": "4e00000000000000"
+    },
+    "BIOSSMC_MSG_SetTjMax": {
+      "address": 29823400,
+      "size": 8,
+      "source_initial_hex": "3f00000000000000"
+    },
+    "BIOSSMC_MSG_SetSlowPPTLimitApuOnly": {
+      "address": 29823136,
+      "size": 8,
+      "source_initial_hex": "6000000000000000"
+    },
+    "BIOSSMC_MSG_SetGpuDeviceId": {
+      "address": 29823120,
+      "size": 8,
+      "source_initial_hex": "6200000000000000"
+    },
+    "BIOSSMC_MSG_SetGpuApertureLow": {
+      "address": 29823112,
+      "size": 8,
+      "source_initial_hex": "6300000000000000"
+    },
+    "BIOSSMC_MSG_SetGpuApertureHigh": {
+      "address": 29823104,
+      "size": 8,
+      "source_initial_hex": "6400000000000000"
+    },
+    "BIOSSMC_MSG_StartGpuLink": {
+      "address": 29823088,
+      "size": 8,
+      "source_initial_hex": "6600000000000000"
+    },
+    "BIOSSMC_MSG_StopGpuLink": {
+      "address": 29823080,
+      "size": 8,
+      "source_initial_hex": "6700000000000000"
+    },
+    "BIOSSMC_MSG_UsbInit": {
+      "address": 29823824,
+      "size": 8,
+      "source_initial_hex": "0a00000000000000"
+    },
+    "BIOSSMC_MSG_UsbConfigUpdate": {
+      "address": 29823752,
+      "size": 8,
+      "source_initial_hex": "1300000000000000"
+    },
+    "BIOSSMC_MSG_UsbControllerDisabled": {
+      "address": 29823344,
+      "size": 8,
+      "source_initial_hex": "4600000000000000"
+    },
+    "BIOSSMC_MSG_Set_STT_ALPHA_APU": {
+      "address": 29823264,
+      "size": 8,
+      "source_initial_hex": "5000000000000000"
+    },
+    "BIOSSMC_MSG_Set_STT_ALPHA_HS2": {
+      "address": 29823256,
+      "size": 8,
+      "source_initial_hex": "5100000000000000"
+    },
+    "BIOSSMC_MSG_Set_STT_SKIN_TEMPERATURE_LIMIT_APU": {
+      "address": 29823248,
+      "size": 8,
+      "source_initial_hex": "5200000000000000"
+    },
+    "BIOSSMC_MSG_Set_STT_SKIN_TEMPERATURE_LIMIT_HS2": {
+      "address": 29823240,
+      "size": 8,
+      "source_initial_hex": "5300000000000000"
+    },
+    "BIOSSMC_MSG_Set_STT_ERROR_COEFF": {
+      "address": 29823232,
+      "size": 8,
+      "source_initial_hex": "5400000000000000"
+    },
+    "BIOSSMC_MSG_Set_STT_ERROR_RATE_COEFF": {
+      "address": 29823224,
+      "size": 8,
+      "source_initial_hex": "5500000000000000"
+    },
+    "BIOSSMC_MSG_Set_STT_M1_COEFF": {
+      "address": 29823216,
+      "size": 8,
+      "source_initial_hex": "5600000000000000"
+    },
+    "BIOSSMC_MSG_Set_STT_M2_COEFF": {
+      "address": 29823208,
+      "size": 8,
+      "source_initial_hex": "5700000000000000"
+    },
+    "BIOSSMC_MSG_Set_STT_M3_COEFF": {
+      "address": 29823200,
+      "size": 8,
+      "source_initial_hex": "5800000000000000"
+    },
+    "BIOSSMC_MSG_Set_STT_M4_COEFF": {
+      "address": 29823192,
+      "size": 8,
+      "source_initial_hex": "5900000000000000"
+    },
+    "BIOSSMC_MSG_Set_STT_M5_COEFF": {
+      "address": 29823184,
+      "size": 8,
+      "source_initial_hex": "5a00000000000000"
+    },
+    "BIOSSMC_MSG_Set_STT_M6_COEFF": {
+      "address": 29823176,
+      "size": 8,
+      "source_initial_hex": "5b00000000000000"
+    },
+    "BIOSSMC_MSG_Set_STT_C_APU_COEFF": {
+      "address": 29823168,
+      "size": 8,
+      "source_initial_hex": "5c00000000000000"
+    },
+    "BIOSSMC_MSG_Set_STT_C_HS2_COEFF": {
+      "address": 29823160,
+      "size": 8,
+      "source_initial_hex": "5d00000000000000"
+    },
+    "BIOSSMC_MSG_SetVddOffVid": {
+      "address": 29823304,
+      "size": 8,
+      "source_initial_hex": "4b00000000000000"
+    },
+    "BIOSSMC_MSG_GetCPPCSupportedRegisters": {
+      "address": 29823448,
+      "size": 8,
+      "source_initial_hex": "3900000000000000"
+    },
+    "BIOSSMC_MSG_GetCPPCNominalFrequency": {
+      "address": 29823440,
+      "size": 8,
+      "source_initial_hex": "3a00000000000000"
+    },
+    "BIOSSMC_MSG_GetCPPCLowestFrequency": {
+      "address": 29823392,
+      "size": 8,
+      "source_initial_hex": "4000000000000000"
+    },
+    "BIOSSMC_MSG_SetSttMinLimit": {
+      "address": 29823152,
+      "size": 8,
+      "source_initial_hex": "5e00000000000000"
+    },
+    "BIOSSMC_MSG_PowerGateMmHub": {
+      "address": 29823320,
+      "size": 8,
+      "source_initial_hex": "4900000000000000"
+    },
+    "BIOSSMC_MSG_FllBootTimeCalibration": {
+      "address": 29823464,
+      "size": 8,
+      "source_initial_hex": "3700000000000000"
+    },
+    "BIOSSMC_MSG_SetExternalPcieBuses": {
+      "address": 29823096,
+      "size": 8,
+      "source_initial_hex": "6500000000000000"
+    },
+    "BIOSSMC_MSG_SetStbLogDramAddr": {
+      "address": 29823360,
+      "size": 8,
+      "source_initial_hex": "4400000000000000"
+    },
+    "BIOSSMC_MSG_SetS0i3PmeTurnOffDelay": {
+      "address": 29823368,
+      "size": 8,
+      "source_initial_hex": "4300000000000000"
+    },
+    "BIOSSMC_MSG_GetSwSciGpeTriggerInfo": {
+      "address": 29823048,
+      "size": 8,
+      "source_initial_hex": "6b00000000000000"
+    },
+    "BIOSSMC_MSG_CoreCountControl": {
+      "address": 29823040,
+      "size": 8,
+      "source_initial_hex": "6c00000000000000"
+    },
+    "BIOSSMC_MSG_EnableOverclocking": {
+      "address": 29823616,
+      "size": 8,
+      "source_initial_hex": "2400000000000000"
+    },
+    "BIOSSMC_MSG_DisableOverclocking": {
+      "address": 29823608,
+      "size": 8,
+      "source_initial_hex": "2500000000000000"
+    },
+    "BIOSSMC_MSG_GetOverclockCapability": {
+      "address": 29823552,
+      "size": 8,
+      "source_initial_hex": "2c00000000000000"
+    },
+    "BIOSSMC_MSG_S0i3ResumeStatusForNvmeUnlock": {
+      "address": 29823296,
+      "size": 8,
+      "source_initial_hex": "4c00000000000000"
+    },
+    "BIOSSMC_Message_Count": {
+      "address": 29823016,
+      "size": 8,
+      "source_initial_hex": "7200000000000000"
+    },
+    "BIOSSMC_MSG_GetSmuVersion": {
+      "address": 29823888,
+      "size": 8,
+      "source_initial_hex": "0200000000000000"
+    },
+    "BIOSSMC_MSG_SetDebugDramAddr": {
+      "address": 29823848,
+      "size": 8,
+      "source_initial_hex": "0700000000000000"
+    },
+    "BIOSSMC_MSG_CxlSpeedNotification": {
+      "address": 29823840,
+      "size": 8,
+      "source_initial_hex": "0800000000000000"
+    },
+    "BIOSSMC_MSG_GetClusterOnDieMode": {
+      "address": 29823792,
+      "size": 8,
+      "source_initial_hex": "0e00000000000000"
+    },
+    "BIOSSMC_MSG_GetPerSrcBistPF": {
+      "address": 29823784,
+      "size": 8,
+      "source_initial_hex": "0f00000000000000"
+    },
+    "BIOSSMC_MSG_TransferBiosIfTableToSmu": {
+      "address": 29823776,
+      "size": 8,
+      "source_initial_hex": "1000000000000000"
+    },
+    "BIOSSMC_MSG_UsbS3Entry": {
+      "address": 29823744,
+      "size": 8,
+      "source_initial_hex": "1400000000000000"
+    },
+    "BIOSSMC_MSG_UsbS3Exit": {
+      "address": 29823736,
+      "size": 8,
+      "source_initial_hex": "1500000000000000"
+    },
+    "BIOSSMC_MSG_spare4": {
+      "address": 29823720,
+      "size": 8,
+      "source_initial_hex": "1700000000000000"
+    },
+    "BIOSSMC_MSG_spare5": {
+      "address": 29823712,
+      "size": 8,
+      "source_initial_hex": "1800000000000000"
+    },
+    "BIOSSMC_MSG_spare6": {
+      "address": 29823704,
+      "size": 8,
+      "source_initial_hex": "1900000000000000"
+    },
+    "BIOSSMC_MSG_spare7": {
+      "address": 29823696,
+      "size": 8,
+      "source_initial_hex": "1a00000000000000"
+    },
+    "BIOSSMC_MSG_spare8": {
+      "address": 29823688,
+      "size": 8,
+      "source_initial_hex": "1b00000000000000"
+    },
+    "BIOSSMC_MSG_spare9": {
+      "address": 29823680,
+      "size": 8,
+      "source_initial_hex": "1c00000000000000"
+    },
+    "BIOSSMC_MSG_spare10": {
+      "address": 29823672,
+      "size": 8,
+      "source_initial_hex": "1d00000000000000"
+    },
+    "BIOSSMC_MSG_spare11": {
+      "address": 29823664,
+      "size": 8,
+      "source_initial_hex": "1e00000000000000"
+    },
+    "BIOSSMC_MSG_spare12": {
+      "address": 29823656,
+      "size": 8,
+      "source_initial_hex": "1f00000000000000"
+    },
+    "BIOSSMC_MSG_spare13": {
+      "address": 29823648,
+      "size": 8,
+      "source_initial_hex": "2000000000000000"
+    },
+    "BIOSSMC_MSG_ColdResetEntry": {
+      "address": 29823640,
+      "size": 8,
+      "source_initial_hex": "2100000000000000"
+    },
+    "BIOSSMC_MSG_EnableSCM": {
+      "address": 29823632,
+      "size": 8,
+      "source_initial_hex": "2200000000000000"
+    },
+    "BIOSSMC_MSG_TDP_TJMAX": {
+      "address": 29823624,
+      "size": 8,
+      "source_initial_hex": "2300000000000000"
+    },
+    "BIOSSMC_MSG_SetOverclockFreqAllCores": {
+      "address": 29823600,
+      "size": 8,
+      "source_initial_hex": "2600000000000000"
+    },
+    "BIOSSMC_MSG_SetOverclockFreqPerCore": {
+      "address": 29823592,
+      "size": 8,
+      "source_initial_hex": "2700000000000000"
+    },
+    "BIOSSMC_MSG_SetOverclockVID": {
+      "address": 29823584,
+      "size": 8,
+      "source_initial_hex": "2800000000000000"
+    },
+    "BIOSSMC_MSG_SetBoostLimitFrequency": {
+      "address": 29823576,
+      "size": 8,
+      "source_initial_hex": "2900000000000000"
+    },
+    "BIOSSMC_MSG_spare14": {
+      "address": 29823568,
+      "size": 8,
+      "source_initial_hex": "2a00000000000000"
+    },
+    "BIOSSMC_MSG_SetBoostLimitFrequencyAllCores": {
+      "address": 29823560,
+      "size": 8,
+      "source_initial_hex": "2b00000000000000"
+    },
+    "BIOSSMC_MSG_spare15": {
+      "address": 29823544,
+      "size": 8,
+      "source_initial_hex": "2d00000000000000"
+    },
+    "BIOSSMC_MSG_spare16": {
+      "address": 29823536,
+      "size": 8,
+      "source_initial_hex": "2e00000000000000"
+    },
+    "BIOSSMC_MSG_SetFITLimitScalar": {
+      "address": 29823528,
+      "size": 8,
+      "source_initial_hex": "2f00000000000000"
+    },
+    "BIOSSMC_MSG_spare17": {
+      "address": 29823520,
+      "size": 8,
+      "source_initial_hex": "3000000000000000"
+    },
+    "BIOSSMC_MSG_spare18": {
+      "address": 29823512,
+      "size": 8,
+      "source_initial_hex": "3100000000000000"
+    },
+    "BIOSSMC_MSG_spare19": {
+      "address": 29823504,
+      "size": 8,
+      "source_initial_hex": "3200000000000000"
+    },
+    "BIOSSMC_MSG_SetLclkDpmLevelRange": {
+      "address": 29823488,
+      "size": 8,
+      "source_initial_hex": "3400000000000000"
+    },
+    "BIOSSMC_MSG_SetDldoPsmMargin": {
+      "address": 29823480,
+      "size": 8,
+      "source_initial_hex": "3500000000000000"
+    },
+    "BIOSSMC_MSG_SetAllDldoPsmMargin": {
+      "address": 29823472,
+      "size": 8,
+      "source_initial_hex": "3600000000000000"
+    },
+    "BIOSSMC_MSG_SetResetCpuOnSyncFlood": {
+      "address": 29823432,
+      "size": 8,
+      "source_initial_hex": "3b00000000000000"
+    },
+    "BIOSSMC_MSG_SetTDCLimit": {
+      "address": 29823424,
+      "size": 8,
+      "source_initial_hex": "3c00000000000000"
+    },
+    "BIOSSMC_MSG_SetEDCLimit": {
+      "address": 29823416,
+      "size": 8,
+      "source_initial_hex": "3d00000000000000"
+    },
+    "BIOSSMC_MSG_SetPPTLimit": {
+      "address": 29823408,
+      "size": 8,
+      "source_initial_hex": "3e00000000000000"
+    },
+    "BIOSSMC_MSG_EnableHSMPInterrupts": {
+      "address": 29823384,
+      "size": 8,
+      "source_initial_hex": "4100000000000000"
+    },
+    "BIOSSMC_MSG_SetSyncFloodToApml": {
+      "address": 29823376,
+      "size": 8,
+      "source_initial_hex": "4200000000000000"
+    },
+    "BIOSSMC_MSG_spare21": {
+      "address": 29823352,
+      "size": 8,
+      "source_initial_hex": "4500000000000000"
+    },
+    "BIOSSMC_MSG_StartDimmTelemetryReading": {
+      "address": 29823336,
+      "size": 8,
+      "source_initial_hex": "4700000000000000"
+    },
+    "BIOSSMC_MSG_StopDimmTelemetryReading": {
+      "address": 29823328,
+      "size": 8,
+      "source_initial_hex": "4800000000000000"
+    },
+    "BIOSSMC_MSG_SetEdcExcursionReporting": {
+      "address": 29823288,
+      "size": 8,
+      "source_initial_hex": "4d00000000000000"
+    },
+    "BIOSSMC_MSG_PBO_EN": {
+      "address": 29823008,
+      "size": 8,
+      "source_initial_hex": "3300000000000000"
+    },
+    "BIOSSMC_MSG_WriteSviRegister": {
+      "address": 29822992,
+      "size": 8,
+      "source_initial_hex": "7000000000000000"
+    },
+    "BIOSSMC_MSG_RunCpoAgingBtc": {
+      "address": 29822984,
+      "size": 8,
+      "source_initial_hex": "7000000000000000"
+    },
+    "GLOBAL_IS_GRANITE": {
+      "address": 29869315,
+      "size": 1,
+      "source_initial_hex": "00"
+    },
+    "GLOBAL_IS_SHIMADA": {
+      "address": 29869314,
+      "size": 1,
+      "source_initial_hex": "00"
+    },
+    "GLOBAL_IS_GPT": {
+      "address": 29869313,
+      "size": 1,
+      "source_initial_hex": "00"
+    }
+  },
+  "literals": [],
+  "profiles": {
+    "pheonix": [
+      {
+        "instruction": 2217995,
+        "object": "SMU_ARG0",
+        "address": 29823960,
+        "value": 61933976
+      },
+      {
+        "instruction": 2218009,
+        "object": "SMU_ARG1",
+        "address": 29823952,
+        "value": 61933980
+      },
+      {
+        "instruction": 2218023,
+        "object": "SMU_ARG2",
+        "address": 29823944,
+        "value": 61933984
+      },
+      {
+        "instruction": 2218037,
+        "object": "SMU_ARG3",
+        "address": 29823936,
+        "value": 61933988
+      },
+      {
+        "instruction": 2218051,
+        "object": "SMU_ARG4",
+        "address": 29823928,
+        "value": 61933992
+      },
+      {
+        "instruction": 2218065,
+        "object": "SMU_ARG5",
+        "address": 29823920,
+        "value": 61933996
+      },
+      {
+        "instruction": 2218079,
+        "object": "SMU_IOPORT",
+        "address": 29823912,
+        "value": 61932920
+      },
+      {
+        "instruction": 2218093,
+        "object": "SMU_DATAPORT",
+        "address": 29823904,
+        "value": 61932840
+      },
+      {
+        "instruction": 2218107,
+        "object": "BIOSSMC_MSG_TestMessage",
+        "address": 29823896,
+        "value": 1
+      },
+      {
+        "instruction": 2218121,
+        "object": "BIOSSMC_MSG_GetNameString",
+        "address": 29823800,
+        "value": 4
+      },
+      {
+        "instruction": 2218135,
+        "object": "BIOSSMC_MSG_EnableSmuFeatures",
+        "address": 29823880,
+        "value": 5
+      },
+      {
+        "instruction": 2218149,
+        "object": "BIOSSMC_MSG_DisableSmuFeatures",
+        "address": 29823872,
+        "value": 7
+      },
+      {
+        "instruction": 2218163,
+        "object": "BIOSSMC_MSG_SleepEntry",
+        "address": 29823816,
+        "value": 11
+      },
+      {
+        "instruction": 2218177,
+        "object": "BIOSSMC_MSG_SetBiosDramAddr",
+        "address": 29823864,
+        "value": 13
+      },
+      {
+        "instruction": 2218191,
+        "object": "BIOSSMC_MSG_SetToolsDramAddr",
+        "address": 29823856,
+        "value": 14
+      },
+      {
+        "instruction": 2218205,
+        "object": "BIOSSMC_MSG_TransferTableDram2Smu",
+        "address": 29823056,
+        "value": 16
+      },
+      {
+        "instruction": 2218219,
+        "object": "BIOSSMC_MSG_PowerSourceAC",
+        "address": 29823072,
+        "value": 17
+      },
+      {
+        "instruction": 2218233,
+        "object": "BIOSSMC_MSG_PowerSourceDC",
+        "address": 29823064,
+        "value": 18
+      },
+      {
+        "instruction": 2218247,
+        "object": "BIOSSMC_MSG_DcBtc",
+        "address": 29823456,
+        "value": 19
+      },
+      {
+        "instruction": 2218261,
+        "object": "BIOSSMC_MSG_SetSustainedPowerLimit",
+        "address": 29823272,
+        "value": 20
+      },
+      {
+        "instruction": 2218275,
+        "object": "BIOSSMC_MSG_SetSlowPPTLimit",
+        "address": 29823144,
+        "value": 22
+      },
+      {
+        "instruction": 2218289,
+        "object": "BIOSSMC_MSG_SetSlowPPTTimeConstant",
+        "address": 29823128,
+        "value": 23
+      },
+      {
+        "instruction": 2218303,
+        "object": "BIOSSMC_MSG_SetStapmTimeConstant",
+        "address": 29823280,
+        "value": 24
+      },
+      {
+        "instruction": 2218317,
+        "object": "BIOSSMC_MSG_SetTjMax",
+        "address": 29823400,
+        "value": 25
+      },
+      {
+        "instruction": 2218331,
+        "object": "BIOSSMC_MSG_SetSlowPPTLimitApuOnly",
+        "address": 29823136,
+        "value": 35
+      },
+      {
+        "instruction": 2218345,
+        "object": "BIOSSMC_MSG_SetGpuDeviceId",
+        "address": 29823120,
+        "value": 36
+      },
+      {
+        "instruction": 2218359,
+        "object": "BIOSSMC_MSG_SetGpuApertureLow",
+        "address": 29823112,
+        "value": 37
+      },
+      {
+        "instruction": 2218373,
+        "object": "BIOSSMC_MSG_SetGpuApertureHigh",
+        "address": 29823104,
+        "value": 38
+      },
+      {
+        "instruction": 2218387,
+        "object": "BIOSSMC_MSG_StartGpuLink",
+        "address": 29823088,
+        "value": 39
+      },
+      {
+        "instruction": 2218401,
+        "object": "BIOSSMC_MSG_StopGpuLink",
+        "address": 29823080,
+        "value": 40
+      },
+      {
+        "instruction": 2218415,
+        "object": "BIOSSMC_MSG_UsbInit",
+        "address": 29823824,
+        "value": 43
+      },
+      {
+        "instruction": 2218429,
+        "object": "BIOSSMC_MSG_UsbConfigUpdate",
+        "address": 29823752,
+        "value": 44
+      },
+      {
+        "instruction": 2218443,
+        "object": "BIOSSMC_MSG_UsbControllerDisabled",
+        "address": 29823344,
+        "value": 45
+      },
+      {
+        "instruction": 2218457,
+        "object": "BIOSSMC_MSG_Set_STT_ALPHA_APU",
+        "address": 29823264,
+        "value": 49
+      },
+      {
+        "instruction": 2218471,
+        "object": "BIOSSMC_MSG_Set_STT_ALPHA_HS2",
+        "address": 29823256,
+        "value": 50
+      },
+      {
+        "instruction": 2218485,
+        "object": "BIOSSMC_MSG_Set_STT_SKIN_TEMPERATURE_LIMIT_APU",
+        "address": 29823248,
+        "value": 51
+      },
+      {
+        "instruction": 2218499,
+        "object": "BIOSSMC_MSG_Set_STT_SKIN_TEMPERATURE_LIMIT_HS2",
+        "address": 29823240,
+        "value": 52
+      },
+      {
+        "instruction": 2218513,
+        "object": "BIOSSMC_MSG_Set_STT_ERROR_COEFF",
+        "address": 29823232,
+        "value": 53
+      },
+      {
+        "instruction": 2218527,
+        "object": "BIOSSMC_MSG_Set_STT_ERROR_RATE_COEFF",
+        "address": 29823224,
+        "value": 54
+      },
+      {
+        "instruction": 2218541,
+        "object": "BIOSSMC_MSG_Set_STT_M1_COEFF",
+        "address": 29823216,
+        "value": 55
+      },
+      {
+        "instruction": 2218555,
+        "object": "BIOSSMC_MSG_Set_STT_M2_COEFF",
+        "address": 29823208,
+        "value": 56
+      },
+      {
+        "instruction": 2218569,
+        "object": "BIOSSMC_MSG_Set_STT_M3_COEFF",
+        "address": 29823200,
+        "value": 57
+      },
+      {
+        "instruction": 2218583,
+        "object": "BIOSSMC_MSG_Set_STT_M4_COEFF",
+        "address": 29823192,
+        "value": 58
+      },
+      {
+        "instruction": 2218597,
+        "object": "BIOSSMC_MSG_Set_STT_M5_COEFF",
+        "address": 29823184,
+        "value": 59
+      },
+      {
+        "instruction": 2218611,
+        "object": "BIOSSMC_MSG_Set_STT_M6_COEFF",
+        "address": 29823176,
+        "value": 60
+      },
+      {
+        "instruction": 2218625,
+        "object": "BIOSSMC_MSG_Set_STT_C_APU_COEFF",
+        "address": 29823168,
+        "value": 61
+      },
+      {
+        "instruction": 2218639,
+        "object": "BIOSSMC_MSG_Set_STT_C_HS2_COEFF",
+        "address": 29823160,
+        "value": 62
+      },
+      {
+        "instruction": 2218653,
+        "object": "BIOSSMC_MSG_SetVddOffVid",
+        "address": 29823304,
+        "value": 70
+      },
+      {
+        "instruction": 2218667,
+        "object": "BIOSSMC_MSG_GetCPPCSupportedRegisters",
+        "address": 29823448,
+        "value": 71
+      },
+      {
+        "instruction": 2218681,
+        "object": "BIOSSMC_MSG_GetCPPCNominalFrequency",
+        "address": 29823440,
+        "value": 72
+      },
+      {
+        "instruction": 2218695,
+        "object": "BIOSSMC_MSG_GetCPPCLowestFrequency",
+        "address": 29823392,
+        "value": 73
+      },
+      {
+        "instruction": 2218709,
+        "object": "BIOSSMC_MSG_SetSttMinLimit",
+        "address": 29823152,
+        "value": 74
+      },
+      {
+        "instruction": 2218723,
+        "object": "BIOSSMC_MSG_PowerGateMmHub",
+        "address": 29823320,
+        "value": 78
+      },
+      {
+        "instruction": 2218737,
+        "object": "BIOSSMC_MSG_FllBootTimeCalibration",
+        "address": 29823464,
+        "value": 79
+      },
+      {
+        "instruction": 2218751,
+        "object": "BIOSSMC_MSG_SetExternalPcieBuses",
+        "address": 29823096,
+        "value": 81
+      },
+      {
+        "instruction": 2218765,
+        "object": "BIOSSMC_MSG_SetStbLogDramAddr",
+        "address": 29823360,
+        "value": 83
+      },
+      {
+        "instruction": 2218779,
+        "object": "BIOSSMC_MSG_SetS0i3PmeTurnOffDelay",
+        "address": 29823368,
+        "value": 84
+      },
+      {
+        "instruction": 2218793,
+        "object": "BIOSSMC_MSG_GetSwSciGpeTriggerInfo",
+        "address": 29823048,
+        "value": 85
+      },
+      {
+        "instruction": 2218807,
+        "object": "BIOSSMC_MSG_CoreCountControl",
+        "address": 29823040,
+        "value": 86
+      },
+      {
+        "instruction": 2218821,
+        "object": "BIOSSMC_MSG_EnableOverclocking",
+        "address": 29823616,
+        "value": 87
+      },
+      {
+        "instruction": 2218835,
+        "object": "BIOSSMC_MSG_DisableOverclocking",
+        "address": 29823608,
+        "value": 88
+      },
+      {
+        "instruction": 2218849,
+        "object": "BIOSSMC_MSG_GetOverclockCapability",
+        "address": 29823552,
+        "value": 94
+      },
+      {
+        "instruction": 2218863,
+        "object": "BIOSSMC_MSG_S0i3ResumeStatusForNvmeUnlock",
+        "address": 29823296,
+        "value": 98
+      },
+      {
+        "instruction": 2218877,
+        "object": "BIOSSMC_Message_Count",
+        "address": 29823016,
+        "value": 104
+      }
+    ],
+    "shimada": [
+      {
+        "instruction": 2216843,
+        "object": "SMU_ARG0",
+        "address": 29823960,
+        "value": 61934020
+      },
+      {
+        "instruction": 2216857,
+        "object": "SMU_ARG1",
+        "address": 29823952,
+        "value": 61934024
+      },
+      {
+        "instruction": 2216871,
+        "object": "SMU_ARG2",
+        "address": 29823944,
+        "value": 61934028
+      },
+      {
+        "instruction": 2216885,
+        "object": "SMU_ARG3",
+        "address": 29823936,
+        "value": 61934032
+      },
+      {
+        "instruction": 2216899,
+        "object": "SMU_ARG4",
+        "address": 29823928,
+        "value": 61934036
+      },
+      {
+        "instruction": 2216913,
+        "object": "SMU_ARG5",
+        "address": 29823920,
+        "value": 61934040
+      },
+      {
+        "instruction": 2216927,
+        "object": "SMU_IOPORT",
+        "address": 29823912,
+        "value": 61933948
+      },
+      {
+        "instruction": 2216941,
+        "object": "SMU_DATAPORT",
+        "address": 29823904,
+        "value": 61933872
+      },
+      {
+        "instruction": 2216955,
+        "object": "BIOSSMC_MSG_TestMessage",
+        "address": 29823896,
+        "value": 1
+      },
+      {
+        "instruction": 2216969,
+        "object": "BIOSSMC_MSG_GetSmuVersion",
+        "address": 29823888,
+        "value": 2
+      },
+      {
+        "instruction": 2216983,
+        "object": "BIOSSMC_MSG_EnableSmuFeatures",
+        "address": 29823880,
+        "value": 3
+      },
+      {
+        "instruction": 2216997,
+        "object": "BIOSSMC_MSG_DisableSmuFeatures",
+        "address": 29823872,
+        "value": 4
+      },
+      {
+        "instruction": 2217011,
+        "object": "BIOSSMC_MSG_SetBiosDramAddr",
+        "address": 29823864,
+        "value": 5
+      },
+      {
+        "instruction": 2217025,
+        "object": "BIOSSMC_MSG_SetToolsDramAddr",
+        "address": 29823856,
+        "value": 6
+      },
+      {
+        "instruction": 2217039,
+        "object": "BIOSSMC_MSG_SetDebugDramAddr",
+        "address": 29823848,
+        "value": 7
+      },
+      {
+        "instruction": 2217053,
+        "object": "BIOSSMC_MSG_CxlSpeedNotification",
+        "address": 29823840,
+        "value": 8
+      },
+      {
+        "instruction": 2217067,
+        "object": "BIOSSMC_MSG_UsbInit",
+        "address": 29823824,
+        "value": 10
+      },
+      {
+        "instruction": 2217081,
+        "object": "BIOSSMC_MSG_SleepEntry",
+        "address": 29823816,
+        "value": 11
+      },
+      {
+        "instruction": 2217095,
+        "object": "BIOSSMC_MSG_GetNameString",
+        "address": 29823800,
+        "value": 13
+      },
+      {
+        "instruction": 2217109,
+        "object": "BIOSSMC_MSG_GetClusterOnDieMode",
+        "address": 29823792,
+        "value": 14
+      },
+      {
+        "instruction": 2217123,
+        "object": "BIOSSMC_MSG_GetPerSrcBistPF",
+        "address": 29823784,
+        "value": 15
+      },
+      {
+        "instruction": 2217137,
+        "object": "BIOSSMC_MSG_TransferBiosIfTableToSmu",
+        "address": 29823776,
+        "value": 16
+      },
+      {
+        "instruction": 2217151,
+        "object": "BIOSSMC_MSG_UsbConfigUpdate",
+        "address": 29823752,
+        "value": 19
+      },
+      {
+        "instruction": 2217165,
+        "object": "BIOSSMC_MSG_UsbS3Entry",
+        "address": 29823744,
+        "value": 20
+      },
+      {
+        "instruction": 2217179,
+        "object": "BIOSSMC_MSG_UsbS3Exit",
+        "address": 29823736,
+        "value": 21
+      },
+      {
+        "instruction": 2217193,
+        "object": "BIOSSMC_MSG_spare4",
+        "address": 29823720,
+        "value": 18
+      },
+      {
+        "instruction": 2217207,
+        "object": "BIOSSMC_MSG_spare5",
+        "address": 29823712,
+        "value": 22
+      },
+      {
+        "instruction": 2217221,
+        "object": "BIOSSMC_MSG_spare6",
+        "address": 29823704,
+        "value": 23
+      },
+      {
+        "instruction": 2217235,
+        "object": "BIOSSMC_MSG_spare7",
+        "address": 29823696,
+        "value": 24
+      },
+      {
+        "instruction": 2217249,
+        "object": "BIOSSMC_MSG_spare8",
+        "address": 29823688,
+        "value": 25
+      },
+      {
+        "instruction": 2217263,
+        "object": "BIOSSMC_MSG_spare9",
+        "address": 29823680,
+        "value": 26
+      },
+      {
+        "instruction": 2217277,
+        "object": "BIOSSMC_MSG_spare10",
+        "address": 29823672,
+        "value": 27
+      },
+      {
+        "instruction": 2217291,
+        "object": "BIOSSMC_MSG_spare11",
+        "address": 29823664,
+        "value": 28
+      },
+      {
+        "instruction": 2217305,
+        "object": "BIOSSMC_MSG_spare12",
+        "address": 29823656,
+        "value": 29
+      },
+      {
+        "instruction": 2217319,
+        "object": "BIOSSMC_MSG_spare13",
+        "address": 29823648,
+        "value": 30
+      },
+      {
+        "instruction": 2217333,
+        "object": "BIOSSMC_MSG_ColdResetEntry",
+        "address": 29823640,
+        "value": 33
+      },
+      {
+        "instruction": 2217347,
+        "object": "BIOSSMC_MSG_EnableSCM",
+        "address": 29823632,
+        "value": 34
+      },
+      {
+        "instruction": 2217361,
+        "object": "BIOSSMC_MSG_TDP_TJMAX",
+        "address": 29823624,
+        "value": 35
+      },
+      {
+        "instruction": 2217375,
+        "object": "BIOSSMC_MSG_EnableOverclocking",
+        "address": 29823616,
+        "value": 36
+      },
+      {
+        "instruction": 2217389,
+        "object": "BIOSSMC_MSG_DisableOverclocking",
+        "address": 29823608,
+        "value": 37
+      },
+      {
+        "instruction": 2217403,
+        "object": "BIOSSMC_MSG_SetOverclockFreqAllCores",
+        "address": 29823600,
+        "value": 38
+      },
+      {
+        "instruction": 2217417,
+        "object": "BIOSSMC_MSG_SetOverclockFreqPerCore",
+        "address": 29823592,
+        "value": 39
+      },
+      {
+        "instruction": 2217431,
+        "object": "BIOSSMC_MSG_SetOverclockVID",
+        "address": 29823584,
+        "value": 40
+      },
+      {
+        "instruction": 2217445,
+        "object": "BIOSSMC_MSG_SetBoostLimitFrequency",
+        "address": 29823576,
+        "value": 41
+      },
+      {
+        "instruction": 2217459,
+        "object": "BIOSSMC_MSG_spare14",
+        "address": 29823568,
+        "value": 31
+      },
+      {
+        "instruction": 2217473,
+        "object": "BIOSSMC_MSG_SetBoostLimitFrequencyAllCores",
+        "address": 29823560,
+        "value": 43
+      },
+      {
+        "instruction": 2217487,
+        "object": "BIOSSMC_MSG_GetOverclockCapability",
+        "address": 29823552,
+        "value": 44
+      },
+      {
+        "instruction": 2217501,
+        "object": "BIOSSMC_MSG_spare15",
+        "address": 29823544,
+        "value": 32
+      },
+      {
+        "instruction": 2217515,
+        "object": "BIOSSMC_MSG_spare16",
+        "address": 29823536,
+        "value": 42
+      },
+      {
+        "instruction": 2217529,
+        "object": "BIOSSMC_MSG_SetFITLimitScalar",
+        "address": 29823528,
+        "value": 47
+      },
+      {
+        "instruction": 2217543,
+        "object": "BIOSSMC_MSG_spare17",
+        "address": 29823520,
+        "value": 45
+      },
+      {
+        "instruction": 2217557,
+        "object": "BIOSSMC_MSG_spare18",
+        "address": 29823512,
+        "value": 46
+      },
+      {
+        "instruction": 2217571,
+        "object": "BIOSSMC_MSG_spare19",
+        "address": 29823504,
+        "value": 48
+      },
+      {
+        "instruction": 2217585,
+        "object": "BIOSSMC_MSG_SetLclkDpmLevelRange",
+        "address": 29823488,
+        "value": 52
+      },
+      {
+        "instruction": 2217599,
+        "object": "BIOSSMC_MSG_SetDldoPsmMargin",
+        "address": 29823480,
+        "value": 53
+      },
+      {
+        "instruction": 2217613,
+        "object": "BIOSSMC_MSG_SetAllDldoPsmMargin",
+        "address": 29823472,
+        "value": 54
+      },
+      {
+        "instruction": 2217627,
+        "object": "BIOSSMC_MSG_FllBootTimeCalibration",
+        "address": 29823464,
+        "value": 55
+      },
+      {
+        "instruction": 2217641,
+        "object": "BIOSSMC_MSG_GetCPPCSupportedRegisters",
+        "address": 29823448,
+        "value": 57
+      },
+      {
+        "instruction": 2217655,
+        "object": "BIOSSMC_MSG_GetCPPCNominalFrequency",
+        "address": 29823440,
+        "value": 58
+      },
+      {
+        "instruction": 2217669,
+        "object": "BIOSSMC_MSG_SetResetCpuOnSyncFlood",
+        "address": 29823432,
+        "value": 59
+      },
+      {
+        "instruction": 2217683,
+        "object": "BIOSSMC_MSG_SetTDCLimit",
+        "address": 29823424,
+        "value": 60
+      },
+      {
+        "instruction": 2217697,
+        "object": "BIOSSMC_MSG_SetEDCLimit",
+        "address": 29823416,
+        "value": 61
+      },
+      {
+        "instruction": 2217711,
+        "object": "BIOSSMC_MSG_SetPPTLimit",
+        "address": 29823408,
+        "value": 62
+      },
+      {
+        "instruction": 2217725,
+        "object": "BIOSSMC_MSG_SetTjMax",
+        "address": 29823400,
+        "value": 63
+      },
+      {
+        "instruction": 2217739,
+        "object": "BIOSSMC_MSG_GetCPPCLowestFrequency",
+        "address": 29823392,
+        "value": 64
+      },
+      {
+        "instruction": 2217753,
+        "object": "BIOSSMC_MSG_EnableHSMPInterrupts",
+        "address": 29823384,
+        "value": 65
+      },
+      {
+        "instruction": 2217767,
+        "object": "BIOSSMC_MSG_SetSyncFloodToApml",
+        "address": 29823376,
+        "value": 66
+      },
+      {
+        "instruction": 2217781,
+        "object": "BIOSSMC_MSG_SetS0i3PmeTurnOffDelay",
+        "address": 29823368,
+        "value": 67
+      },
+      {
+        "instruction": 2217795,
+        "object": "BIOSSMC_MSG_SetStbLogDramAddr",
+        "address": 29823360,
+        "value": 68
+      },
+      {
+        "instruction": 2217809,
+        "object": "BIOSSMC_MSG_spare21",
+        "address": 29823352,
+        "value": 50
+      },
+      {
+        "instruction": 2217823,
+        "object": "BIOSSMC_MSG_UsbControllerDisabled",
+        "address": 29823344,
+        "value": 70
+      },
+      {
+        "instruction": 2217837,
+        "object": "BIOSSMC_MSG_StartDimmTelemetryReading",
+        "address": 29823336,
+        "value": 71
+      },
+      {
+        "instruction": 2217851,
+        "object": "BIOSSMC_MSG_StopDimmTelemetryReading",
+        "address": 29823328,
+        "value": 72
+      },
+      {
+        "instruction": 2217865,
+        "object": "BIOSSMC_MSG_PowerGateMmHub",
+        "address": 29823320,
+        "value": 73
+      },
+      {
+        "instruction": 2217879,
+        "object": "BIOSSMC_MSG_SetEdcExcursionReporting",
+        "address": 29823288,
+        "value": 74
+      },
+      {
+        "instruction": 2217893,
+        "object": "BIOSSMC_MSG_GetSwSciGpeTriggerInfo",
+        "address": 29823048,
+        "value": 85
+      },
+      {
+        "instruction": 2217907,
+        "object": "BIOSSMC_MSG_CoreCountControl",
+        "address": 29823040,
+        "value": 84
+      },
+      {
+        "instruction": 2217921,
+        "object": "BIOSSMC_Message_Count",
+        "address": 29823016,
+        "value": 87
+      },
+      {
+        "instruction": 2217935,
+        "object": "BIOSSMC_MSG_PBO_EN",
+        "address": 29823008,
+        "value": 51
+      },
+      {
+        "instruction": 2217949,
+        "object": "BIOSSMC_MSG_WriteSviRegister",
+        "address": 29822992,
+        "value": 17
+      },
+      {
+        "instruction": 2217963,
+        "object": "BIOSSMC_MSG_RunCpoAgingBtc",
+        "address": 29822984,
+        "value": 17
+      }
+    ],
+    "gpt": [
+      {
+        "instruction": 2215931,
+        "object": "SMU_ARG0",
+        "address": 29823960,
+        "value": 61933976
+      },
+      {
+        "instruction": 2215945,
+        "object": "SMU_ARG1",
+        "address": 29823952,
+        "value": 61933980
+      },
+      {
+        "instruction": 2215959,
+        "object": "SMU_ARG2",
+        "address": 29823944,
+        "value": 61933984
+      },
+      {
+        "instruction": 2215973,
+        "object": "SMU_ARG3",
+        "address": 29823936,
+        "value": 61933988
+      },
+      {
+        "instruction": 2215987,
+        "object": "SMU_ARG4",
+        "address": 29823928,
+        "value": 61933992
+      },
+      {
+        "instruction": 2216001,
+        "object": "SMU_ARG5",
+        "address": 29823920,
+        "value": 61933996
+      },
+      {
+        "instruction": 2216015,
+        "object": "SMU_IOPORT",
+        "address": 29823912,
+        "value": 61933944
+      },
+      {
+        "instruction": 2216029,
+        "object": "SMU_DATAPORT",
+        "address": 29823904,
+        "value": 61933864
+      },
+      {
+        "instruction": 2216043,
+        "object": "BIOSSMC_MSG_TestMessage",
+        "address": 29823896,
+        "value": 1
+      },
+      {
+        "instruction": 2216057,
+        "object": "BIOSSMC_MSG_GetNameString",
+        "address": 29823800,
+        "value": 4
+      },
+      {
+        "instruction": 2216071,
+        "object": "BIOSSMC_MSG_EnableSmuFeatures",
+        "address": 29823880,
+        "value": 5
+      },
+      {
+        "instruction": 2216085,
+        "object": "BIOSSMC_MSG_DisableSmuFeatures",
+        "address": 29823872,
+        "value": 7
+      },
+      {
+        "instruction": 2216099,
+        "object": "BIOSSMC_MSG_SleepEntry",
+        "address": 29823816,
+        "value": 11
+      },
+      {
+        "instruction": 2216113,
+        "object": "BIOSSMC_MSG_SetBiosDramAddr",
+        "address": 29823864,
+        "value": 13
+      },
+      {
+        "instruction": 2216127,
+        "object": "BIOSSMC_MSG_SetToolsDramAddr",
+        "address": 29823856,
+        "value": 14
+      },
+      {
+        "instruction": 2216141,
+        "object": "BIOSSMC_MSG_TransferTableDram2Smu",
+        "address": 29823056,
+        "value": 16
+      },
+      {
+        "instruction": 2216155,
+        "object": "BIOSSMC_MSG_PowerSourceAC",
+        "address": 29823072,
+        "value": 17
+      },
+      {
+        "instruction": 2216169,
+        "object": "BIOSSMC_MSG_PowerSourceDC",
+        "address": 29823064,
+        "value": 18
+      },
+      {
+        "instruction": 2216183,
+        "object": "BIOSSMC_MSG_DcBtc",
+        "address": 29823456,
+        "value": 19
+      },
+      {
+        "instruction": 2216197,
+        "object": "BIOSSMC_MSG_SetSustainedPowerLimit",
+        "address": 29823272,
+        "value": 20
+      },
+      {
+        "instruction": 2216211,
+        "object": "BIOSSMC_MSG_SetSlowPPTLimit",
+        "address": 29823144,
+        "value": 22
+      },
+      {
+        "instruction": 2216225,
+        "object": "BIOSSMC_MSG_SetSlowPPTTimeConstant",
+        "address": 29823128,
+        "value": 23
+      },
+      {
+        "instruction": 2216239,
+        "object": "BIOSSMC_MSG_SetStapmTimeConstant",
+        "address": 29823280,
+        "value": 24
+      },
+      {
+        "instruction": 2216253,
+        "object": "BIOSSMC_MSG_SetTjMax",
+        "address": 29823400,
+        "value": 25
+      },
+      {
+        "instruction": 2216267,
+        "object": "BIOSSMC_MSG_SetSlowPPTLimitApuOnly",
+        "address": 29823136,
+        "value": 35
+      },
+      {
+        "instruction": 2216281,
+        "object": "BIOSSMC_MSG_SetGpuDeviceId",
+        "address": 29823120,
+        "value": 36
+      },
+      {
+        "instruction": 2216295,
+        "object": "BIOSSMC_MSG_SetGpuApertureLow",
+        "address": 29823112,
+        "value": 37
+      },
+      {
+        "instruction": 2216309,
+        "object": "BIOSSMC_MSG_SetGpuApertureHigh",
+        "address": 29823104,
+        "value": 38
+      },
+      {
+        "instruction": 2216323,
+        "object": "BIOSSMC_MSG_StartGpuLink",
+        "address": 29823088,
+        "value": 39
+      },
+      {
+        "instruction": 2216337,
+        "object": "BIOSSMC_MSG_StopGpuLink",
+        "address": 29823080,
+        "value": 40
+      },
+      {
+        "instruction": 2216351,
+        "object": "BIOSSMC_MSG_UsbInit",
+        "address": 29823824,
+        "value": 43
+      },
+      {
+        "instruction": 2216365,
+        "object": "BIOSSMC_MSG_UsbConfigUpdate",
+        "address": 29823752,
+        "value": 44
+      },
+      {
+        "instruction": 2216379,
+        "object": "BIOSSMC_MSG_UsbControllerDisabled",
+        "address": 29823344,
+        "value": 45
+      },
+      {
+        "instruction": 2216393,
+        "object": "BIOSSMC_MSG_Set_STT_ALPHA_APU",
+        "address": 29823264,
+        "value": 49
+      },
+      {
+        "instruction": 2216407,
+        "object": "BIOSSMC_MSG_Set_STT_ALPHA_HS2",
+        "address": 29823256,
+        "value": 50
+      },
+      {
+        "instruction": 2216421,
+        "object": "BIOSSMC_MSG_Set_STT_SKIN_TEMPERATURE_LIMIT_APU",
+        "address": 29823248,
+        "value": 51
+      },
+      {
+        "instruction": 2216435,
+        "object": "BIOSSMC_MSG_Set_STT_SKIN_TEMPERATURE_LIMIT_HS2",
+        "address": 29823240,
+        "value": 52
+      },
+      {
+        "instruction": 2216449,
+        "object": "BIOSSMC_MSG_Set_STT_ERROR_COEFF",
+        "address": 29823232,
+        "value": 53
+      },
+      {
+        "instruction": 2216463,
+        "object": "BIOSSMC_MSG_Set_STT_ERROR_RATE_COEFF",
+        "address": 29823224,
+        "value": 54
+      },
+      {
+        "instruction": 2216477,
+        "object": "BIOSSMC_MSG_Set_STT_M1_COEFF",
+        "address": 29823216,
+        "value": 55
+      },
+      {
+        "instruction": 2216491,
+        "object": "BIOSSMC_MSG_Set_STT_M2_COEFF",
+        "address": 29823208,
+        "value": 56
+      },
+      {
+        "instruction": 2216505,
+        "object": "BIOSSMC_MSG_Set_STT_M3_COEFF",
+        "address": 29823200,
+        "value": 57
+      },
+      {
+        "instruction": 2216519,
+        "object": "BIOSSMC_MSG_Set_STT_M4_COEFF",
+        "address": 29823192,
+        "value": 58
+      },
+      {
+        "instruction": 2216533,
+        "object": "BIOSSMC_MSG_Set_STT_M5_COEFF",
+        "address": 29823184,
+        "value": 59
+      },
+      {
+        "instruction": 2216547,
+        "object": "BIOSSMC_MSG_Set_STT_M6_COEFF",
+        "address": 29823176,
+        "value": 60
+      },
+      {
+        "instruction": 2216561,
+        "object": "BIOSSMC_MSG_Set_STT_C_APU_COEFF",
+        "address": 29823168,
+        "value": 61
+      },
+      {
+        "instruction": 2216575,
+        "object": "BIOSSMC_MSG_Set_STT_C_HS2_COEFF",
+        "address": 29823160,
+        "value": 62
+      },
+      {
+        "instruction": 2216589,
+        "object": "BIOSSMC_MSG_SetVddOffVid",
+        "address": 29823304,
+        "value": 69
+      },
+      {
+        "instruction": 2216603,
+        "object": "BIOSSMC_MSG_GetCPPCSupportedRegisters",
+        "address": 29823448,
+        "value": 71
+      },
+      {
+        "instruction": 2216617,
+        "object": "BIOSSMC_MSG_GetCPPCNominalFrequency",
+        "address": 29823440,
+        "value": 72
+      },
+      {
+        "instruction": 2216631,
+        "object": "BIOSSMC_MSG_GetCPPCLowestFrequency",
+        "address": 29823392,
+        "value": 73
+      },
+      {
+        "instruction": 2216645,
+        "object": "BIOSSMC_MSG_SetSttMinLimit",
+        "address": 29823152,
+        "value": 74
+      },
+      {
+        "instruction": 2216659,
+        "object": "BIOSSMC_MSG_PowerGateMmHub",
+        "address": 29823320,
+        "value": 78
+      },
+      {
+        "instruction": 2216673,
+        "object": "BIOSSMC_MSG_FllBootTimeCalibration",
+        "address": 29823464,
+        "value": 79
+      },
+      {
+        "instruction": 2216687,
+        "object": "BIOSSMC_MSG_SetExternalPcieBuses",
+        "address": 29823096,
+        "value": 81
+      },
+      {
+        "instruction": 2216701,
+        "object": "BIOSSMC_MSG_SetStbLogDramAddr",
+        "address": 29823360,
+        "value": 83
+      },
+      {
+        "instruction": 2216715,
+        "object": "BIOSSMC_MSG_SetS0i3PmeTurnOffDelay",
+        "address": 29823368,
+        "value": 84
+      },
+      {
+        "instruction": 2216729,
+        "object": "BIOSSMC_MSG_GetSwSciGpeTriggerInfo",
+        "address": 29823048,
+        "value": 85
+      },
+      {
+        "instruction": 2216743,
+        "object": "BIOSSMC_MSG_CoreCountControl",
+        "address": 29823040,
+        "value": 86
+      },
+      {
+        "instruction": 2216757,
+        "object": "BIOSSMC_MSG_EnableOverclocking",
+        "address": 29823616,
+        "value": 87
+      },
+      {
+        "instruction": 2216771,
+        "object": "BIOSSMC_MSG_DisableOverclocking",
+        "address": 29823608,
+        "value": 88
+      },
+      {
+        "instruction": 2216785,
+        "object": "BIOSSMC_MSG_GetOverclockCapability",
+        "address": 29823552,
+        "value": 94
+      },
+      {
+        "instruction": 2216799,
+        "object": "BIOSSMC_MSG_S0i3ResumeStatusForNvmeUnlock",
+        "address": 29823296,
+        "value": 98
+      },
+      {
+        "instruction": 2216813,
+        "object": "BIOSSMC_Message_Count",
+        "address": 29823016,
+        "value": 113
+      }
+    ]
+  }
+}

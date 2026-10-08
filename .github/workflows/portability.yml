@@ -56,6 +56,10 @@ jobs:
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/emulate-legacy-menu-routing.py \
             --output build/menu-routing.json
+      - name: Verify original AMD initialization return domains and table stores
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-amd-initialization.py \
+            --fixture analysis/fixtures/legacy-amd-initialization.json --output build/amd-initialization.json
       - uses: actions/upload-artifact@v4
         with:
           name: mailbox-contract-evidence
@@ -66,6 +70,7 @@ jobs:
             build/msr-emulation.json
             build/ui-connections.json
             build/menu-routing.json
+            build/amd-initialization.json
           if-no-files-found: error
           retention-days: 14
       - run: python3 port/ci/validate-local.py

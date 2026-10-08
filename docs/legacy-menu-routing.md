@@ -38,7 +38,8 @@ W790 ACE / w5-2565X与W890E-SAGE SE / 658X的作者身份保留，但不能用�
 返回值不等于-1即真。函数名中的ES不是本报告额外确认的CPU工程样品语义。
 `is_it_ayw_oc`（`0x3b22a0`，193字节）依次查找`850`、`AYW`、`OC`，没有要求相邻或固定顺序。
 第三个原字符串只有两个字节；本次从引用地址直接读出`OC`，未依赖早期“至少3字符”的清单。
-`GLOBAL_IS_SHIMADA`初始化来源还未在本次恢复，报告明确作为合成缓存输入。
+本次菜单实验中`GLOBAL_IS_SHIMADA`明确作为合成缓存输入；随后已在
+[AMD初始化报告](legacy-amd-initialization.md)恢复其赋值链、CPUID返回域与表更新副作用。
 
 TRX50名称匹配优先于14a4查找及Shimada；其分支不额外打开两个VRM窗口。
 在另一个TR5分支里，两个VRM对象分别设置标题`TR5 VCore0 Tuners`/`TR5 VCore1 Tuners`，
