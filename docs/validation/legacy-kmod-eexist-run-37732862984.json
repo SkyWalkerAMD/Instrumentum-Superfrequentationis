@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "repository": "SkyWalkerAMD/Instrumentum-Superfrequentationis",
+  "workflow": "controlled kmod duplicate-load probe",
+  "run_id": 37732862984,
+  "run_url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37732862984",
+  "job_id": 113165734296,
+  "job_url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37732862984/job/113165734296",
+  "head_branch": "research/kmod-eexist-probe",
+  "head_sha": "05535742a705a40ad0f550e360452404bc5033c2",
+  "conclusion": "success",
+  "runner": {
+    "os": "Ubuntu 24.04.5 LTS",
+    "image": "ubuntu-24.04",
+    "image_version": "20261004.327.1",
+    "kernel_release": "6.17.0-1022-azure",
+    "architecture": "x86_64"
+  },
+  "module": {
+    "name": "octool_hwio",
+    "sha256": "271908a2cdbc914fbf5b2d37a0b4800dca97ac548d2ba44eab408842aa7fca3d",
+    "vermagic": "6.17.0-1022-azure SMP mod_unload modversions ",
+    "signer": "",
+    "signature_hash": ""
+  },
+  "first_load": {
+    "method": "insmod",
+    "succeeded": true,
+    "underlying_syscall_traced": false,
+    "record_correction": "The initial probe artifact labeled this finit_module, but no syscall trace was captured for insmod. This archive records only the observed command."
+  },
+  "duplicate_load": {
+    "method": "init_module with bytes read from the same .ko file",
+    "return_value": -1,
+    "errno": 17,
+    "errno_name": "EEXIST",
+    "probe_exit_code": 0
+  },
+  "device_registration": {
+    "sysfs_class_device_present": true,
+    "dev_mydev_character_device_present": true
+  },
+  "hardware_io_attempted": false,
+  "legacy_gui_executed": false,
+  "secure_boot_or_mok_tested": false,
+  "target_el_kernel_tested": false,
+  "evidence": {
+    "source": "workflow job log JSON printed by test-kmod-eexist.sh",
+    "artifact_id": 11529992803,
+    "artifact_name": "kmod-eexist-37732862984",
+    "artifact_digest": "sha256:b0c69a81f46dcf63b239046ceaa232a231fb468ccf03fbafa929d80eec662354",
+    "artifact_size_bytes": 452,
+    "artifact_expires_at": "2026-11-07T05:32:20Z"
+  },
+  "conclusion_scope": "The real project module loaded on the GitHub runner kernel; a second init_module call with the same raw module bytes returned EEXIST, and the device class/node existed. This does not establish Secure Boot/MOK acceptance, vendor-patched EL behavior, or the old GUI's complete hardware handshake."
+}

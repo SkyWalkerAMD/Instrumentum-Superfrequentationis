@@ -74,6 +74,28 @@ sudo bash analysis/tools/test-kmod-eexist.sh \
   "$PWD/port/kmod/octool_hwio.ko" "$PWD/build/kmod-eexist/result.json"
 ```
 
+### 云端实测 37732862984
+
+[真实内核探针 run 37732862984](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37732862984)
+基于 `05535742a705a40ad0f550e360452404bc5033c2`，`duplicate-load` 单 job 成功。Actions runner 为
+Ubuntu 24.04.5 / `ubuntu-24.04` image `20261004.327.1`，运行内核 `6.17.0-1022-azure`。
+目标模块以当前内核 headers 实编，Kbuild `class_create(name)` 能力探测通过；实际加载字节 SHA-256 为
+`271908a2cdbc914fbf5b2d37a0b4800dca97ac548d2ba44eab408842aa7fca3d`，vermagic 匹配该内核。
+
+脚本首次 `insmod` 成功（该步骤未 trace kmod 使用的底层 syscall），实际出现
+`/sys/class/octool_hwio/mydev` 和字符设备 `/dev/mydev`；随后把同一个
+未压缩 `.ko` 文件读入内存，直接执行 `init_module(image, length, "")`，观察到精确结果 `-1`、errno 17
+（EEXIST），探针退出码 0。整个过程没有 open `/dev/mydev`、发送设备请求或触碰物理硬件。结构化结果和
+Actions artifact 元数据保存在[本次验证 JSON](validation/legacy-kmod-eexist-run-37732862984.json)，
+artifact ID 为 `11529992803`、digest `sha256:b0c69a81f46dcf63b239046ceaa232a231fb468ccf03fbafa929d80eec662354`。
+原始脚本 JSON 把首次 `insmod` 标注成 `finit_module`，但没有跟踪该 syscall；归档记录已纠正为只确认
+`insmod` 命令成功。第二次 `init_module` 是探针直接调用，返回码与 errno 有明确记录。
+
+这是真实内核、真实项目模块和真实第二次 `init_module` 调用，不是 syscall mock；它验证了旧 GUI 所需的
+内核 `EEXIST` 语义与新模块内部名兼容。该构建未签名（signer 为空），runner 不执行强制签名/MOK 验收；
+运行内核也不是 EL8/9/10。原 GUI 没有被执行，旧 loader 选择哪个候选 `.ko`、目标机调用权限、签名
+策略、旧 mailbox/token 初始化和主板识别仍待真机步骤确认。不要把本结果表述为 EL 启动或 Secure Boot 已通过。
+
 原版 GUI 的程序目录联动只有在真机做：取当前内核已签名、未压缩的 DKMS `.ko`，确认 `modinfo`
 内部名是 `octool_hwio`，再以只读 symlink/copy 暴露为旧 loader 经跟踪确认的文件名；记录源/目标 SHA、
 签名者、vermagic。不要在签名后 strip、压缩或改写模块。用原版 ELF 的系统调用跟踪核对其

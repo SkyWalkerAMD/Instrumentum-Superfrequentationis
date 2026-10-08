@@ -23,6 +23,12 @@
 仍只出现 Not supported 对话框，主窗口门禁继续失败；
 详见[启动权限与模块握手分析](legacy-el-privilege-analysis.md)。本轮未改 GUI、ABI/HAL、模块或生产包代码。
 
+后续 `0553574 / kmod probe 37732862984` 在 GitHub Ubuntu 24.04.5 runner 的 Linux
+`6.17.0-1022-azure` 内核实载项目 `octool_hwio.ko`。内核创建 `/dev/mydev` 后，用同文件字节再次
+调用 `init_module` 返回 `-1/EEXIST`，job 成功；模块未签名且没有硬件访问。它验证真实内核重复加载，
+不验证 EL vendor kernel、Secure Boot/MOK、旧 GUI 启动或真机 mailbox。见
+[探针证据](legacy-module-handoff.md)和[机器记录](validation/legacy-kmod-eexist-run-37732862984.json)。
+
 原 GUI 源码丢失后，作者已授权重构，并先选择基础信息与 MSR/MMIO/PCI，随后提供四套平台截图。
 可编译的真实 Qt5 GUI 已接入。作者进一步选择先恢复 AMD PStates 的只读频率和完整原始值。
 

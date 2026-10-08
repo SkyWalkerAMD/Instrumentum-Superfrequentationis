@@ -14,7 +14,14 @@
   并采集内核、vermagic、SHA、class/devnode 状态。workflow 只支持手动触发或专用研究分支 push，不接入
   普通主分支 push/PR，避免自动把 PR 模块装进 runner。
 - 接入候选、脚本、复现方法、内核源链接、权限条件与真机步骤见 `docs/legacy-module-handoff.md`；
-  更新启动分析、验收清单与 docs 索引。云端实测结果及 EL 发行版内核补丁/MOK/硬件待确认范围后续追加。
+  更新启动分析、验收清单与 docs 索引。
+- `0553574 / kmod probe 37732862984` 实测通过：Ubuntu24.04.5 runner / Linux6.17.0-1022-azure
+  实编并加载 `octool_hwio`，class/devnode 注册可见；相同 `.ko` 字节第二次 `init_module` 返回 errno17
+  EEXIST。模块 SHA、vermagic、runner、artifact digest 归档于
+  `docs/validation/legacy-kmod-eexist-run-37732862984.json`。镜像未签名，无 Secure Boot/MOK、EL vendor
+  backport、旧 GUI、真实 mailbox 或物理硬件验证；这些范围继续列为待验。
+- 更正探针首步记录：初版 JSON 将 `insmod` 标签写成 `finit_module`，但没有 syscall trace 支持该具体名称；
+  文档和归档 JSON 现只记录可证实的命令成功。第二次 `init_module` 是 C 探针直接调用并实测 errno=17。
 
 ## 未发布 — 2026-10-08（原机器码原生执行与错误保护层）
 
