@@ -17,14 +17,14 @@ ROOT = Path(__file__).resolve().parent
 GOOD = (
     "success", "double-map", "read-protect", "dup-same", "dup-fail",
     "reuse", "dup-replace", "reopen-alias", "openat-alias", "openat64-alias",
-    "mutate-request", "trace-short", "trace-eintr", "delayed",
+    "mutate-request", "trace-short", "trace-eintr", "delayed", "unmap-tail",
 )
 BAD = (
     "munmap", "mprotect", "mremap", "fixed", "small-map", "private-map",
     "dup", "dup2", "dup3", "fcntl-alias", "unmap-during", "close-during", "overlap",
     "write-fail", "short-write", "bad-pointer", "bad-count", "timeout",
     "driver-error", "bad-done", "trace-fail", "trace-partial-fail",
-    "finalize-fail", "marker-partial", "sync-fail", "abrupt", "signal", "fork",
+    "finalize-fail", "marker-partial", "sync-fail", "abrupt", "signal", "fork", "exec-child",
 )
 
 

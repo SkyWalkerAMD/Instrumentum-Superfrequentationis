@@ -2,7 +2,7 @@
 
 ## 未发布 — 2026-10-08（对拍采集生命周期与完整性）
 
-- 接续 R10 修正采集器失效 mmap 指针及“半份日志仍有效”问题：同步跟踪 munmap/mprotect/mremap/
+- 接续 R9 修正采集器失效 mmap 指针及“半份日志仍有效”问题：同步跟踪 munmap/mprotect/mremap/
   MAP_FIXED，open 族按设备身份辨认别名，close/复用分配新代际；无法归属的 dup/fcntl 别名、重叠请求
   和请求期间生命周期变化拒绝整份采集，不串行化原设备请求、不改 GUI/96 字节协议/模块/HAL。
 - 请求在调用前保存；坏请求指针安全拒绝，原 write 只调用一次且 errno 保留。明确拒绝失败/短写、
@@ -13,6 +13,10 @@
   接入十目标离线门禁并导出 capture-results.json。补充 v2 计数及失败重复地址输入负例。
 - 设计、API 依据、限制、复现步骤详记 docs/capture-integrity.md；尚未支持直接 syscall、close_range、
   pkey_mprotect、取消/异步信号、完整并发及 capture/guard 混用。云端结果将在实跑后追加。
+- `51e7b12 / 37747451242`的首个matrix门禁42例实际通过，EL8 kernel也通过42例和20项Python；
+  续查发现exec子进程可能继承preload并截断父日志、输出失败可能复用旧文件。增加截断前flock和
+  mktemp采集/预检/替换，新增exec子进程与尾页解除映射，现44例；真实脚本负例保证不触发模块命令。
+  这两项追加修正尚待新提交回归，不用前一提交的成功替代。
 
 ## 未发布 — 2026-10-08（模块能力握手与旧节点隔离）
 

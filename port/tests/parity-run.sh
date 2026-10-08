@@ -30,6 +30,13 @@ OLD_DEV=${OLD_DEV:-/dev/mydev}
 NEW_DEV=${NEW_DEV:-mydev_v2}
 NEW_KO=${NEW_KO:-$HERE/../kmod/octool_hwio.ko}
 CORPUS=${CORPUS:-$HERE/octool_corpus.bin}
+CAPTURE_FILE=
+CLEANUP_MOD=0
+cleanup() {
+	[ -z "$CAPTURE_FILE" ] || rm -f -- "$CAPTURE_FILE"
+	[ "$CLEANUP_MOD" = 0 ] || rmmod octool_hwio 2>/dev/null || true
+}
+trap cleanup EXIT
 
 [ "$(id -u)" = 0 ] || { echo "run as root (needs insmod + CAP_SYS_RAWIO)"; exit 2; }
 case "$NEW_DEV" in ''|*[!a-zA-Z0-9_-]*) echo 'NEW_DEV must be a device basename' >&2; exit 2;; esac
@@ -56,8 +63,13 @@ else
 	[ -n "${OCTOOL:-}" ] || { echo "set OCTOOL=/path/to/octool (or CORPUS=...)"; exit 2; }
 	echo ">> capturing octool's reads against the ORIGINAL module ($OLD_DEV)"
 	echo "   (use octool normally; exit it when you've exercised the panels you care about)"
-	OCTOOL_CAP_DEV="$OLD_DEV" OCTOOL_CAP_OUT="$CORPUS" \
+	# A failed/missing preload must never cause reuse of a previous valid file.
+	CAPTURE_FILE=$(mktemp "$CORPUS.capture.XXXXXX")
+	OCTOOL_CAP_DEV="$OLD_DEV" OCTOOL_CAP_OUT="$CAPTURE_FILE" \
 		LD_PRELOAD="$HERE/octool_capture.so" "$OCTOOL" ${OCTOOL_ARGS:-}
+	"$HERE/octool_parity" --check-trace --trace "$CAPTURE_FILE"
+	mv -f -- "$CAPTURE_FILE" "$CORPUS"
+	CAPTURE_FILE=
 	echo ">> captured -> $CORPUS"
 fi
 
@@ -73,7 +85,6 @@ else
 	echo ">> /dev/$NEW_DEV already present, using it"
 	CLEANUP_MOD=0
 fi
-trap '[ "${CLEANUP_MOD:-0}" = 1 ] && rmmod octool_hwio 2>/dev/null || true' EXIT
 
 # 4. diff
 echo ">> comparing (live, back-to-back reads)"

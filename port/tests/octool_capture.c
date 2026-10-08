@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
+#include <sys/file.h>
 #include <sys/stat.h>
 #include <sys/syscall.h>
 #include <sys/uio.h>
@@ -113,8 +114,12 @@ static void resolve(void)
     if (path && *path) device = path;
     path = getenv("OCTOOL_CAP_OUT");
     if (!path || !*path) path = "octool_trace.bin";
-    output = next_open(path, O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC | O_NOFOLLOW, 0644);
+    /* Lock before truncating: an exec'd child inherits LD_PRELOAD/environment
+     * but must not destroy its parent's trace. Callers use a fresh temp path
+     * so initialization failure can never be mistaken for an old capture. */
+    output = next_open(path, O_WRONLY | O_CREAT | O_CLOEXEC | O_NOFOLLOW, 0644);
     if (output < 0 || fstat(output, &st) || !S_ISREG(st.st_mode) ||
+        flock(output, LOCK_EX | LOCK_NB) || ftruncate(output, 0) ||
         append_bytes(&h, sizeof(h))) reject("cannot initialize regular trace file");
     if (pthread_atfork(fork_prepare, fork_parent, fork_child))
         reject("cannot register fork boundary");
@@ -190,7 +195,7 @@ static void note_map(int fd, size_t len, int prot, int flags, off64_t off, void 
     }
     if (active) reject("mailbox mapping changed during request");
     if (off || len < MBOX_BYTES || !(prot & PROT_READ) ||
-        (flags & MAP_TYPE) == MAP_PRIVATE) {
+        ((flags & MAP_TYPE) != MAP_SHARED && (flags & MAP_TYPE) != MAP_SHARED_VALIDATE)) {
         reject("unsupported mailbox mapping"); return;
     }
     slots[fd].mbox = p;

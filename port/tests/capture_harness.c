@@ -55,13 +55,17 @@ int main(int argc, char **argv)
 
     if (mode("abrupt")) _exit(0);
     if (mode("signal")) { raise(SIGTERM); return 90; }
-    if (mode("fork")) {
+    if (mode("fork") || mode("exec-child")) {
         pid_t child = fork(); int status;
         assert(child >= 0);
-        if (!child) exit(0);
+        if (!child) {
+            if (mode("exec-child")) { execl(argv[0], argv[0], "success", (char *)NULL); _exit(91); }
+            exit(0);
+        }
         assert(waitpid(child, &status, 0) == child && WIFEXITED(status));
     }
     if (mode("munmap")) assert(munmap(mapping, 1) == 0);
+    if (mode("unmap-tail")) assert(munmap((char *)mapping+page, page) == 0);
     if (mode("mprotect")) assert(mprotect(mapping, page, PROT_NONE) == 0);
     if (mode("read-protect")) assert(mprotect(mapping, page, PROT_READ) == 0);
     if (mode("mremap")) {

@@ -1,6 +1,6 @@
 # 对拍采集完整性与映射生命周期
 
-日期：2026-10-08。接续全面复查 R10。本轮只修改 `port/tests/` 的采集/对拍工具及门禁；
+日期：2026-10-08。接续全面复查 R9 的 capture 边界。本轮只修改采集/对拍工具及门禁；
 旧 GUI、96 字节设备协议、HAL、模块、寄存器定义均不改动。
 
 ## 发现与处理
@@ -35,7 +35,8 @@ MAP_FIXED 覆盖。解除映射后再写设备，采集器可能读到失效地�
 开始时 magic=0；所有记录完整写入，正常退出且没有不确定观察后，才写确切 nrec、同步已有数据，
 最后写有效 magic。短日志写可以重试剩余文件字节；设备请求绝不重试。
 
-输出非普通文件、ENOSPC/EIO、同步或提交失败，均不产生有效提交。信号、`_exit`、正在进行的请求
+输出在截断前取得独占非阻塞 flock，防止继承 LD_PRELOAD 的 exec 子进程截断父进程日志。
+输出非普通文件、锁冲突、ENOSPC/EIO、同步或提交失败，均不产生本次有效提交。信号、`_exit`、正在进行的请求
 或 fork 也不提交；fork 子进程关闭自己的日志 fd，不能替父进程提交共享文件。最终标记未承诺断电
 持久化；丢失标记时拒绝文件。输出文件应由操作者独占，不支持其他进程修改或替换其内容。
 
@@ -49,7 +50,9 @@ port/tests/octool_parity --check-trace --trace /实际路径/corpus.bin
 ```
 
 `--check-trace` 不打开设备，仅检查文件与已采集读记录；退出 0 不代表硬件对拍成功。
-`parity-run.sh` 已在 insmod 前调用它，未完成采集不会进入模块加载/重放阶段。
+`parity-run.sh` 每次新采集使用 mktemp 独立文件，通过预检后才替换正式 corpus；退出时清理临时文件。
+这避免输出初始化失败或 preload 未加载时误用以前的有效文件。手工启动也应给每次运行新的输出路径，
+并保存 stderr 与 GUI 退出状态。脚本在 insmod 前预检，未完成采集不会进入模块加载/重放阶段。
 
 ## 无硬件回归
 
@@ -57,14 +60,16 @@ port/tests/octool_parity --check-trace --trace /实际路径/corpus.bin
 执行真实生产采集库和对拍读取器，不启动原 GUI、不访问 `/dev/mydev`、不装模块。
 每例先成功记录一次，然后制造第二次访问的条件，以检验“已有好记录也不能掩盖后续失败”。
 
-当前 42 例：14 例正常提交、28 例明确拒绝。覆盖双重映射、三种 open 别名、只读保护、fd 复用、
+当前 44 例：15 例正常提交、29 例明确拒绝。覆盖双重映射、三种 open 别名、只读保护、fd 复用、
 dup2 替换/无操作/失败、dup 三入口、fcntl 别名、解除/移动/覆盖映射、并发解除映射和关闭 fd、
 重叠请求、异步完成、请求缓冲返回后被改写、无效指针/长度、失败/短设备写、驱动错误/非法完成/超时，
-以及日志短写/EINTR/部分写后失败、提交/同步失败、信号/_exit/fork。核对所有请求字段、邮箱五字、
+以及日志短写/EINTR/部分写后失败、提交/同步失败、信号/_exit/fork/exec 子进程、只解除非邮箱尾页。
+核对所有请求字段、邮箱五字、
 序号、原 errno 与下游调用次数；非法场景既不能信号崩溃，也不能被文件检查器接受。
 
 已接入 `make -C port/tests check`，十目标 kernel job 导出 `capture-results.json`。
-另外 Python 对拍输入回归覆盖 v2 计数、零 magic、尾部记录缺失和失败重复地址。
+另外 Python 对拍输入回归覆盖 v2 计数、零 magic、尾部记录缺失和失败重复地址；真实 shell 脚本回归
+以 /bin/true 制造未采集场景，必须拒绝、保留旧 corpus 且不触及替身模块命令。
 **本节描述代码与门禁；实际云端运行结果须在执行后记录，不能沿用上一轮全绿。**
 
 ## 仍然不支持或不能证明的范围
@@ -83,4 +88,7 @@ pkey_mprotect、writev/io_uring、exec、异步信号处理器内调用、线程
 [dup](https://man7.org/linux/man-pages/man2/dup.2.html)、
 [close](https://man7.org/linux/man-pages/man2/close.2.html)、
 [正常退出的清理范围](https://man7.org/linux/man-pages/man3/exit.3.html)。
+请求复制使用的 [process_vm_readv](https://man7.org/linux/man-pages/man2/process_vm_readv.2.html)
+会经 [pin_user_pages_remote](https://raw.githubusercontent.com/torvalds/linux/v6.12/mm/process_vm_access.c)；
+[GUP](https://raw.githubusercontent.com/torvalds/linux/v6.12/mm/gup.c) 拒绝 VM_IO/VM_PFNMAP，故未用于邮箱。
 具体项目行为以源码与下述实际测试为准。

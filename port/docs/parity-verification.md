@@ -6,7 +6,7 @@
 > 高位会导致它持续等待。本次复查已把采集器 completed 收紧为完整 done==1；旧模块之间仍有先 done 后 result 的
 > 顺序差异；详见 [原字节证据与 56 组模拟](../../docs/legacy-mailbox-contract.md)。
 > 后续采集器已增加映射生命周期失效和 v2 完整提交门禁，脚本在 insmod 前检查文件。
-> 下文采集实现描述为历史设计；当前支持范围与 42 项无硬件回归见
+> 下文采集实现描述为历史设计；当前支持范围与 44 项无硬件回归见
 > [采集完整性说明](../../docs/capture-integrity.md)，不以历史局限描述替代当前状态。
 
 本文档说明 `tests/octool_capture.c` + `tests/octool_parity.c` + `tests/parity-run.sh`

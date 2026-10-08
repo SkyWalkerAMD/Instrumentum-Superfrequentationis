@@ -25,9 +25,9 @@ jobs:
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
               f.write('targets=' + json.dumps({'include': targets}) + '\n')
           PY
-      - run: python3 -m unittest discover -s port/tests -p 'test_*.py' -v
       - name: Gate capture lifetime and incomplete traces before distro fan-out
         run: make -C port/tests capture-check CAPTURE_RESULTS="$PWD/build/capture-host.json"
+      - run: python3 -m unittest discover -s port/tests -p 'test_*.py' -v
       - name: Verify ELF disassembler against PLT, CET and GOT fixtures
         run: |
           python3 -m pip install --target build/reference-tools -r analysis/tools/requirements-emulation.txt

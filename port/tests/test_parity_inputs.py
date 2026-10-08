@@ -62,6 +62,39 @@ class BadTrace(unittest.TestCase):
                     self.assertEqual(run.returncode, 2)
                     self.assertIn(message, run.stderr)
 
+    def test_empty_capture_cannot_reuse_previous_valid_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)
+            request = struct.pack("<12Q", 0x0c, 71, 0x1000, *([0] * 9))
+            old_data = (struct.pack("<4Q", 0x4f43545250520002, 96, 5, 1) + request +
+                        struct.pack("<5QQii", 1, 0, 0, 0, 0, 0, 96, 1))
+            corpus = path / "corpus.bin"
+            corpus.write_bytes(old_data)
+            device = path / "device-file"
+            device.touch()
+            # Exercise the real shell script up to its preflight, without root,
+            # driver loading or a GUI. A module attempt would leave a marker.
+            for command, body in {
+                "id": "echo 0\n", "make": "exit 0\n",
+                "insmod": 'touch "$MODULE_ATTEMPT"\nexit 99\n',
+                "rmmod": 'touch "$MODULE_ATTEMPT"\nexit 99\n',
+            }.items():
+                stub = path / command
+                stub.write_text("#!/bin/sh\n" + body, encoding="ascii")
+                stub.chmod(0o755)
+            marker = path / "module-attempt"
+            env = os.environ.copy()
+            env.update(PATH=str(path) + os.pathsep + env["PATH"], CORPUS=str(corpus),
+                       OLD_DEV=str(device), NEW_DEV="octool-test-" + path.name,
+                       OCTOOL="/bin/true", OCTOOL_ARGS="", MODULE_ATTEMPT=str(marker))
+            run = subprocess.run(["sh", str(BINARY.parent / "parity-run.sh")], env=env,
+                                 capture_output=True, text=True, timeout=10)
+            self.assertEqual(run.returncode, 2, run.stdout + run.stderr)
+            self.assertIn("capture incomplete", run.stderr)
+            self.assertFalse(marker.exists())
+            self.assertEqual(corpus.read_bytes(), old_data)
+            self.assertEqual(list(path.glob("*.capture.*")), [])
+
 
 if __name__ == "__main__":
     unittest.main()
