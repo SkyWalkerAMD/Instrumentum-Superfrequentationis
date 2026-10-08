@@ -24,6 +24,14 @@
 - `47a843d / 37749289855`的matrix严格编译门禁失败：`ftruncate`回退结果只转void仍触发
   glibc的warn_unused_result。没有执行46例，不计通过；改为检查返回值，撤销写和截断均失败时
   显式输出必须丢弃该文件的诊断，保留-Werror门禁。
+- `3920018 / portability37749651590`完整23/23成功。十目标每个46项采集和21项Python无跳过，
+  460项采集的十份原始报告逐字节相同；旧56项模拟、各目标307项guard及所有离线门禁继续通过。
+  每目标QtTest12项、GUI装包/发行与native窗口、11套内核和DKMS生命周期通过，EL10双窗口由
+  Mutter/Xwayland承载且发行截图已查看。`probe37749651635`元数据/EEXIST/卸载成功，无硬件IO。
+- 已下载20个rpm/deb、11套模块、100张截图与源码，逐文件SHA记录docs/validation/deliverables-3920018.json，
+  完整job/artifact/共同采集观测/Python/探针记录在capture-integrity-3920018.json。安装包保存到
+  dist/packages-3920018/，cloud源码SHA为1e149d3d85602456a96c2c32aa93be7a55c66166d1a33c6634aaf4938dd184ea。
+  本地最新源码包另含收尾归档；不混同已测试cloud字节。原GUI错误恢复、真实MMIO与MOK仍未验收。
 
 ## 未发布 — 2026-10-08（模块能力握手与旧节点隔离）
 

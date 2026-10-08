@@ -4,6 +4,13 @@
 
 ## 当前结果
 
+最新[采集完整性修正](capture-integrity.md)已在`3920018 / portability37749651590`完整23/23通过：
+每目标46项采集、21项Python无跳过，十份采集报告逐字节一致；每目标QtTest12项及发行/native窗口通过。
+原GUI/HAL/kmod/96字节设备ABI未改；新增的是对拍文件v2、生命周期失效和错误拒绝。
+`probe37749651635`元数据/重复加载/卸载也成功。20个包与11套模块已下载，
+见[测试证据](validation/capture-integrity-3920018.json)和[交付哈希](validation/deliverables-3920018.json)。
+旧GUI主窗口、错误恢复、live MMIO与MOK仍未验收；完整边界在上述报告中列明。
+
 接续修正`60b6975 / portability37740064106`已23/23全绿，PCI/EC核心接口、线程权限及新增负例
 在十目标实际执行，真实加载/重复加载/卸载探针也通过。见[系统协调与证据](bus-coordination.md)。
 新增[模块能力查询](module-capabilities.md)在`f2142e4 / portability37741335600`单独23/23全绿，

@@ -77,7 +77,7 @@ dup2 替换/无操作/失败、dup 三入口、fcntl 别名、解除/移动/覆�
 已接入 `make -C port/tests check`，十目标 kernel job 导出 `capture-results.json`。
 另外 Python 对拍输入回归覆盖 v2 计数、零 magic、尾部记录缺失和失败重复地址；真实 shell 脚本回归
 以 /bin/true 制造未采集场景，必须拒绝、保留旧 corpus 且不触及替身模块命令。
-**本节描述代码与门禁；实际云端运行结果须在执行后记录，不能沿用上一轮全绿。**
+本节描述代码与门禁，实际云端结果见下文；不沿用上一轮全绿。
 
 ## 仍然不支持或不能证明的范围
 
@@ -99,3 +99,44 @@ pkey_mprotect、writev/io_uring、exec、异步信号处理器内调用、线程
 会经 [pin_user_pages_remote](https://raw.githubusercontent.com/torvalds/linux/v6.12/mm/process_vm_access.c)；
 [GUP](https://raw.githubusercontent.com/torvalds/linux/v6.12/mm/gup.c) 拒绝 VM_IO/VM_PFNMAP，故未用于邮箱。
 具体项目行为以源码与下述实际测试为准。
+
+## 本轮云端证据
+
+`3920018c7e045786684cf28b332bde3956e2376f` 的
+[portability37749651590](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37749651590)
+23/23 job已全部通过。十个 kernel job各46项采集、21项Python（零跳过）、307项原指令guard观测、
+loopback/transport/PCI/EC/线程权限/parity selftest及DKMS安装生命周期。合计460项采集结果，
+下载后十份 `capture-results.json` 的SHA逐字节一致；Ubuntu22.04的GA/HWE使内核实编共11套。
+
+| 目标 | 实际 glibc | 本地编译器主版本 | 采集提交/拒绝 |
+|---|---|---|---|
+| Rocky EL8 | 2.28 | GCC8.5 | 15/31，符合预期 |
+| Rocky EL9 | 2.34 | GCC11.5 | 15/31，符合预期 |
+| Rocky EL10 | 2.39 | GCC14.3 | 15/31，符合预期 |
+| Ubuntu20.04 | 2.31 | GCC9.4 | 15/31，符合预期 |
+| Ubuntu22.04 | 2.35 | GCC11.4 | 15/31，符合预期 |
+| Ubuntu24.04 | 2.39 | GCC13.3 | 15/31，符合预期 |
+| Ubuntu26.04 | 2.43 | GCC15.2 | 15/31，符合预期 |
+| Debian11 | 2.31 | GCC10.2 | 15/31，符合预期 |
+| Debian12 | 2.36 | GCC12.2 | 15/31，符合预期 |
+| Debian13 | 2.41 | GCC14.2 | 15/31，符合预期 |
+
+这是每个目标原生编译后的执行，不是同一capture.so跨全部glibc运行的验证；容器共享runner内核。
+本轮十目标GUI构建、装包、DKMS生命周期、发行/native窗口门禁均成功；各QtTest12项、零失败/跳过。
+EL10由Mutter/Xwayland承载，窗口PID分别19385/19452，发行AMD PStates页截图已人工检查：未读值为空，
+没有伪造传感器数据。原GUI和真实MMIO不在此次执行范围。
+同提交的[元数据与重复加载探针37749651635](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37749651635)
+成功，模块SHA与此前f2142e4相同，仍无硬件IO/固件MOK验证。
+
+完整job/step/artifact、460项采集的共同原始观测与逐目标哈希、Python及探针结果归档于
+[回归证据](validation/capture-integrity-3920018.json)；实际20个安装包、11套模块、100张截图和源码包
+哈希见[交付记录](validation/deliverables-3920018.json)。十份采集报告的共同SHA为
+`7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2`。
+安装包保存于`dist/packages-3920018/`并附SHA256SUMS，cloud源包在`dist/cloud-3920018/`，
+源码SHA为`1e149d3d85602456a96c2c32aa93be7a55c66166d1a33c6634aaf4938dd184ea`。
+收尾归档仅增改文档和证据；本地重新生成的源码包含最新归档，不冒充cloud字节相同。
+
+首个42例提交及44例追加提交的matrix已实际成功，随后被后继提交取消完整流水线；不计成23项全绿。
+`47a843d / 37749289855`在严格编译发现未检查ftruncate回退结果，46例未执行；修正后才形成上述结果。
+Windows静态ABI/文档链接/可重复源包检查通过；Python3.14解包的沙箱路径权限限制未绕过，
+Linux上述21项实际执行弥补测试覆盖，不将本地跳过或失败记作通过。

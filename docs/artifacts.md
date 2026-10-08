@@ -5,12 +5,16 @@
 
 ## 完整通过的构建
 
-最新代码验证为[f2142e4 / run37741335600](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37741335600)，
-23/23成功，包含PCI/EC协调、线程权限和模块能力查询修正。十目标20份安装包已保存到
-`dist/packages-f2142e4/<目标>/`，附`SHA256SUMS`；下表名称沿用2.0.1，但必须使用此次构建。
-[最新文件哈希记录](validation/deliverables-f2142e4.json)包含11套kernel release、实际包SHA与截图SHA；
-[Actions记录](validation/module-capabilities-f2142e4.json)另外保存artifact ZIP digest，二者不混用。
-原始下载目录为`build/actions/37741335600/`，保留日志、截图、模块和签名测试输出。
+最新代码验证为[3920018 / run37749651590](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37749651590)，
+23/23成功，包含采集生命周期/v2完整提交、每目标46项合成采集和21项Python，以及原有GUI/模块门禁。
+十目标20份安装包保存到`dist/packages-3920018/<目标>/`，附`SHA256SUMS`；名称仍沿用2.0.1。
+[最新文件哈希记录](validation/deliverables-3920018.json)包含11套kernel release、包SHA与100张截图SHA；
+[Actions记录](validation/capture-integrity-3920018.json)另存artifact ZIP digest，二者不混用。
+原始下载目录为`build/actions/37749651590/`。本轮未改GUI/HAL/kmod生产代码，GUI包内的docs会更新。
+
+之前[f2142e4 / run37741335600](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37741335600)
+的PCI/EC、线程权限、模块能力查询结果及`dist/packages-f2142e4/`仍保留，
+见[先前交付记录](validation/deliverables-f2142e4.json)，勿混淆不同构建的文件哈希。
 
 以下是历史构建，不能用它的旧包验证新能力查询：
 [run 36670288030](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36670288030)
@@ -36,18 +40,18 @@ Actions artifacts 保留 7 天，需及时保存。每个 `desktop-<目标>` 的
 `kernel-<目标>` 含编译日志、原始和临时测试签名模块。不要将 CI 测试证书当作本机可信 MOK。
 
 ```sh
-gh run download 37741335600 --repo SkyWalkerAMD/Instrumentum-Superfrequentationis \
-  --pattern 'desktop-*' --pattern 'kernel-*' --pattern 'octool-source' --dir build/actions/37741335600
+gh run download 37749651590 --repo SkyWalkerAMD/Instrumentum-Superfrequentationis \
+  --pattern 'desktop-*' --pattern 'kernel-*' --pattern 'octool-source' --dir build/actions/37749651590
 ```
 
-Windows工作副本的`dist/packages-f2142e4/<目标>/`是最新验证副本；旧`dist/packages/`保留历史版本。
+Windows工作副本的`dist/packages-3920018/<目标>/`是最新验证副本；旧目录保留历史版本。
 后续若仅更新文档并重新构建，新的包/源码哈希也可能改变，必须按实际run核对，不能混用记录。
 
 Linux 上安装（先满足当前内核头文件和 DKMS 依赖，完整步骤见真机清单）：
 
 ```sh
 # 举例：Debian12，当前目录是源代码根目录
-cd dist/packages-f2142e4/debian12
+cd dist/packages-3920018/debian12
 sudo apt-get install ./octool-hwio-dkms-2.0.1-1.amd64.deb ./octool-2.0.1-1.amd64.deb
 # EL 对应目录使用 sudo dnf install ./octool-hwio-dkms-*.rpm ./octool-2.0.1-*.rpm
 ```
@@ -55,8 +59,8 @@ sudo apt-get install ./octool-hwio-dkms-2.0.1-1.amd64.deb ./octool-2.0.1-1.amd64
 ## 源码
 
 `octool-source` artifact 只在总门禁成功后生成，名称为 `octool-2.0.1-src.tar.gz`，有同名 `.sha256`。
-本轮cloud源包存于`dist/cloud-f2142e4/`，SHA为`8395496120c37862893a01b848deef6297470e103b3056de778fb487e2205d1f`。
-它精确对应已验证f2142e4；下列命令生成的`dist/octool-2.0.1-src.tar.gz`另含最新文档/静态研究归档。
+本轮cloud源包存于`dist/cloud-3920018/`，SHA为`1e149d3d85602456a96c2c32aa93be7a55c66166d1a33c6634aaf4938dd184ea`。
+它精确对应已验证3920018；下列命令生成的`dist/octool-2.0.1-src.tar.gz`另含最新文档/证据归档。
 本地重新归档当前源码及最新文档：
 
 ```sh

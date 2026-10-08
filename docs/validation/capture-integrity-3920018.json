@@ -1,0 +1,2679 @@
+{
+  "commit": "3920018c7e045786684cf28b332bde3956e2376f",
+  "branch": "research/kmod-eexist-probe",
+  "run_id": 37749651590,
+  "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37749651590",
+  "status": "completed",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "id": 113219469422,
+      "name": "baseline",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Require actual GUI source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run actions/cache/restore@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Seed SDK cache from validated EL8 artifact",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "Run mkdir -p build/baseline",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run actions/cache/save@v4",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        }
+      ]
+    },
+    {
+      "id": 113219469739,
+      "name": "matrix",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run python3 - <<'PY'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Gate capture lifetime and incomplete traces before distro fan-out",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run python3 -m unittest discover -s port/tests -p 'test_*.py' -v",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Verify ELF disassembler against PLT, CET and GOT fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Check original MMIO caller with 56 bounded synthetic responses",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Run python3 port/ci/validate-local.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Run find port -name '*.sh' -print0 | xargs -0 -n1 bash -n",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        }
+      ]
+    },
+    {
+      "id": 113219573923,
+      "name": "kernel (ubuntu22.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run mkdir -p build/artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 113219573951,
+      "name": "kernel (el8)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run mkdir -p build/artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 113219573965,
+      "name": "kernel (el9)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run mkdir -p build/artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 113219573988,
+      "name": "kernel (ubuntu20.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run mkdir -p build/artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 113219574036,
+      "name": "kernel (ubuntu26.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run mkdir -p build/artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 113219574045,
+      "name": "kernel (el10)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run mkdir -p build/artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 113219574051,
+      "name": "kernel (ubuntu24.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run mkdir -p build/artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 113219574071,
+      "name": "kernel (debian11)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run mkdir -p build/artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 113219574166,
+      "name": "kernel (debian13)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run mkdir -p build/artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 113219574208,
+      "name": "kernel (debian12)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run mkdir -p build/artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 113223337423,
+      "name": "desktop (ubuntu20.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Native GUI compile and distro packages",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install and smoke in fresh target image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 113223337454,
+      "name": "desktop (el8)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Native GUI compile and distro packages",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install and smoke in fresh target image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 113223337497,
+      "name": "desktop (el9)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Native GUI compile and distro packages",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install and smoke in fresh target image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 113223337519,
+      "name": "desktop (ubuntu26.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Native GUI compile and distro packages",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install and smoke in fresh target image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 113223337537,
+      "name": "desktop (debian12)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Native GUI compile and distro packages",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install and smoke in fresh target image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 113223337580,
+      "name": "desktop (el10)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Native GUI compile and distro packages",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install and smoke in fresh target image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 113223337599,
+      "name": "desktop (ubuntu24.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Native GUI compile and distro packages",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install and smoke in fresh target image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 113223337626,
+      "name": "desktop (debian13)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Native GUI compile and distro packages",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install and smoke in fresh target image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 113223337764,
+      "name": "desktop (debian11)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Native GUI compile and distro packages",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install and smoke in fresh target image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 113223337767,
+      "name": "desktop (ubuntu22.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Native GUI compile and distro packages",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install and smoke in fresh target image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 113227330611,
+      "name": "gate",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "All ten targets must pass",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run python3 port/tools/make_source.py --require-gui",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 11538655019,
+      "name": "desktop-ubuntu22.04",
+      "size_in_bytes": 25420602,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538655019",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538655019/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:37:47Z",
+      "expires_at": "2026-10-15T08:37:45Z",
+      "updated_at": "2026-10-08T08:37:47Z",
+      "digest": "sha256:26b68507b066b04e8233776e97a6c0723247fedb84c6138ae700455018751a9e",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11538491771,
+      "name": "desktop-el9",
+      "size_in_bytes": 21852166,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538491771",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538491771/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:43:58Z",
+      "expires_at": "2026-10-15T08:43:56Z",
+      "updated_at": "2026-10-08T08:43:58Z",
+      "digest": "sha256:f7aeed7f4cca1159628adedcb7d58a7d8534ee8ee7da68439065770fa136b8c3",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11538390693,
+      "name": "el8-baseline",
+      "size_in_bytes": 67057347,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538390693",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538390693/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:35:17Z",
+      "expires_at": "2026-10-15T08:35:15Z",
+      "updated_at": "2026-10-08T08:35:17Z",
+      "digest": "sha256:2efcbf5c724e91ae62fe0293c2e36fbe063362149600705b68f62dc40d72f62e",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11538377494,
+      "name": "desktop-el8",
+      "size_in_bytes": 22056156,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538377494",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538377494/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:46:03Z",
+      "expires_at": "2026-10-15T08:46:00Z",
+      "updated_at": "2026-10-08T08:46:03Z",
+      "digest": "sha256:e41dd8b453c6c4389fbaa91e7541ac7d841bfc1bfde3743e1cfff55d503487af",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11538336310,
+      "name": "desktop-ubuntu26.04",
+      "size_in_bytes": 25467928,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538336310",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538336310/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:38:35Z",
+      "expires_at": "2026-10-15T08:38:33Z",
+      "updated_at": "2026-10-08T08:38:35Z",
+      "digest": "sha256:dc28abc98e7816924740f67f8c83f1723de8d10677a15c1479f8839669e1aedb",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11538330968,
+      "name": "desktop-ubuntu24.04",
+      "size_in_bytes": 25467259,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538330968",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538330968/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:37:42Z",
+      "expires_at": "2026-10-15T08:37:39Z",
+      "updated_at": "2026-10-08T08:37:42Z",
+      "digest": "sha256:57a4c7844ab880576570f9b58e9b7e7552bb76e0b81c138791a61ed4ecdca7d7",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11538272532,
+      "name": "octool-source",
+      "size_in_bytes": 2336482,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538272532",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538272532/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:46:12Z",
+      "expires_at": "2026-10-15T08:46:11Z",
+      "updated_at": "2026-10-08T08:46:12Z",
+      "digest": "sha256:99235daf33faa8b70dc56f0a737943d3cf28cd94819b34f1e3b643d241cc6162",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11538271116,
+      "name": "desktop-debian11",
+      "size_in_bytes": 25418554,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538271116",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538271116/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:37:42Z",
+      "expires_at": "2026-10-15T08:37:39Z",
+      "updated_at": "2026-10-08T08:37:42Z",
+      "digest": "sha256:a853e736113ccbc964ff7d1bfc1979ada029602e847500d73dc601a01132e16c",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11538216909,
+      "name": "desktop-debian13",
+      "size_in_bytes": 25419922,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538216909",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538216909/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:38:34Z",
+      "expires_at": "2026-10-15T08:38:31Z",
+      "updated_at": "2026-10-08T08:38:34Z",
+      "digest": "sha256:9cfde0ab5799faa573e5abe83679c764ca7b60acbbed3636c62895fe5a508ff3",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11538117207,
+      "name": "desktop-el10",
+      "size_in_bytes": 21827007,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538117207",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538117207/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:39:45Z",
+      "expires_at": "2026-10-15T08:39:43Z",
+      "updated_at": "2026-10-08T08:39:45Z",
+      "digest": "sha256:a809f06e526bcf8edb0128962b3871a6ccda92ec34572b8d20a0ab13024a0b2c",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11538111802,
+      "name": "desktop-debian12",
+      "size_in_bytes": 25421351,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538111802",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11538111802/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:37:26Z",
+      "expires_at": "2026-10-15T08:37:22Z",
+      "updated_at": "2026-10-08T08:37:26Z",
+      "digest": "sha256:884c39e7d4ea4446a8a313fc8308d6b0083aec8b774b8aa3048c053f5b74e8a4",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11537867373,
+      "name": "desktop-ubuntu20.04",
+      "size_in_bytes": 25424028,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537867373",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537867373/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:38:09Z",
+      "expires_at": "2026-10-15T08:38:06Z",
+      "updated_at": "2026-10-08T08:38:09Z",
+      "digest": "sha256:ef3672aaf8e16f88525968c44bd972ddfdc8c01e679ae23c76e7e13948c8bccf",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11537735571,
+      "name": "kernel-el8",
+      "size_in_bytes": 373693,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537735571",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537735571/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:27:30Z",
+      "expires_at": "2026-10-15T08:27:30Z",
+      "updated_at": "2026-10-08T08:27:30Z",
+      "digest": "sha256:583316e1fbc0f498f466da6f90522ff21c567eb9759c6233b6643f3127093b46",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11537715597,
+      "name": "kernel-ubuntu20.04",
+      "size_in_bytes": 61319,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537715597",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537715597/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:26:57Z",
+      "expires_at": "2026-10-15T08:26:56Z",
+      "updated_at": "2026-10-08T08:26:57Z",
+      "digest": "sha256:8eb7736cd8cfb48c50473b7f452fcc74745932eed41833c4ff5e1bf2cc94c261",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11537655765,
+      "name": "kernel-ubuntu22.04",
+      "size_in_bytes": 543200,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537655765",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537655765/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:27:15Z",
+      "expires_at": "2026-10-15T08:27:14Z",
+      "updated_at": "2026-10-08T08:27:15Z",
+      "digest": "sha256:760ef397e4eaae2a3d88b5d3319291412141529934e04e318d67a2b28abb67ce",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11537590970,
+      "name": "kernel-debian13",
+      "size_in_bytes": 318975,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537590970",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537590970/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:27:40Z",
+      "expires_at": "2026-10-15T08:27:39Z",
+      "updated_at": "2026-10-08T08:27:40Z",
+      "digest": "sha256:636557fd32ee821122767a97396f79d2ce104c6aabfbdd9c607d2b42addbe6ef",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11537576039,
+      "name": "kernel-ubuntu26.04",
+      "size_in_bytes": 341282,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537576039",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537576039/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:26:48Z",
+      "expires_at": "2026-10-15T08:26:47Z",
+      "updated_at": "2026-10-08T08:26:48Z",
+      "digest": "sha256:a59c5f268199f033c8b48cb0374d2bfe2063bcb259db0f487c96e9f7d5093628",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11537327985,
+      "name": "kernel-ubuntu24.04",
+      "size_in_bytes": 311062,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537327985",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537327985/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:26:48Z",
+      "expires_at": "2026-10-15T08:26:47Z",
+      "updated_at": "2026-10-08T08:26:48Z",
+      "digest": "sha256:ba4f6e8acc25283a655a2848822805b3edfd5f6eacdff468b405126b5bb1c1ad",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11537228565,
+      "name": "kernel-debian11",
+      "size_in_bytes": 272471,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537228565",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537228565/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:26:43Z",
+      "expires_at": "2026-10-15T08:26:42Z",
+      "updated_at": "2026-10-08T08:26:43Z",
+      "digest": "sha256:77be1c65e3148f371eebbf3f2ad4a40d89e5d3e98fd07b1b5d6e00c094011c77",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11536924582,
+      "name": "kernel-el9",
+      "size_in_bytes": 335766,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11536924582",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11536924582/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:27:32Z",
+      "expires_at": "2026-10-15T08:27:32Z",
+      "updated_at": "2026-10-08T08:27:32Z",
+      "digest": "sha256:015b65ae3b90d66439843d4e15bb8b4fe6bb1664862d36359d4e6893b39d8493",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11536834456,
+      "name": "kernel-el10",
+      "size_in_bytes": 327649,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11536834456",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11536834456/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:27:23Z",
+      "expires_at": "2026-10-15T08:27:22Z",
+      "updated_at": "2026-10-08T08:27:23Z",
+      "digest": "sha256:2b6eca2a98ed71794e0df7fb5f8c3f0be68d1657369b7fa4eaab48de98421b47",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11536799662,
+      "name": "mailbox-contract-evidence",
+      "size_in_bytes": 2026,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11536799662",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11536799662/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:24:57Z",
+      "expires_at": "2026-10-22T08:24:57Z",
+      "updated_at": "2026-10-08T08:24:57Z",
+      "digest": "sha256:2593dbc5a59771ef5561fc7832ad5271c76b0637b450b90328a5538a103d236f",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    },
+    {
+      "id": 11536744495,
+      "name": "kernel-debian12",
+      "size_in_bytes": 284549,
+      "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11536744495",
+      "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11536744495/zip",
+      "expired": false,
+      "created_at": "2026-10-08T08:26:38Z",
+      "expires_at": "2026-10-15T08:26:37Z",
+      "updated_at": "2026-10-08T08:26:38Z",
+      "digest": "sha256:54bea3305c0265b2e1f89d1ddfc3c6ae26c25d00e08d0449f4cd82c665535734",
+      "workflow_run": {
+        "id": 37749651590,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+      }
+    }
+  ],
+  "matrix": {
+    "capture_cases": 46,
+    "accepted": 15,
+    "rejected": 31,
+    "python_tests": 21,
+    "python_skipped": 0,
+    "elf_compiler_fixtures": 3,
+    "legacy_wrapper_observations": 56
+  },
+  "kernel_python": [
+    {
+      "target": "ubuntu22.04",
+      "job_id": 113219573923,
+      "python": {
+        "tests": 21,
+        "skipped": 0,
+        "passed": true
+      },
+      "proof": [
+        "2026-10-08T08:25:55.7654687Z Ran 21 tests in 0.100s",
+        "2026-10-08T08:25:55.7654989Z ",
+        "2026-10-08T08:25:55.7655141Z OK",
+        "2026-10-08T08:26:20.5449207Z unguarded-pie passed"
+      ]
+    },
+    {
+      "target": "el8",
+      "job_id": 113219573951,
+      "python": {
+        "tests": 21,
+        "skipped": 0,
+        "passed": true
+      },
+      "proof": [
+        "2026-10-08T08:26:19.9541718Z Ran 21 tests in 0.053s",
+        "2026-10-08T08:26:19.9541957Z ",
+        "2026-10-08T08:26:19.9542079Z OK",
+        "2026-10-08T08:26:44.5905823Z unguarded-pie passed"
+      ]
+    },
+    {
+      "target": "el9",
+      "job_id": 113219573965,
+      "python": {
+        "tests": 21,
+        "skipped": 0,
+        "passed": true
+      },
+      "proof": [
+        "2026-10-08T08:26:26.5888973Z Ran 21 tests in 0.051s",
+        "2026-10-08T08:26:26.5889186Z ",
+        "2026-10-08T08:26:26.5889303Z OK",
+        "2026-10-08T08:26:51.2206033Z unguarded-pie passed"
+      ]
+    },
+    {
+      "target": "ubuntu20.04",
+      "job_id": 113219573988,
+      "python": {
+        "tests": 21,
+        "skipped": 0,
+        "passed": true
+      },
+      "proof": [
+        "2026-10-08T08:25:44.4942257Z Ran 21 tests in 0.037s",
+        "2026-10-08T08:25:44.4942379Z ",
+        "2026-10-08T08:25:44.4942443Z OK",
+        "2026-10-08T08:26:09.0813176Z unguarded-pie passed"
+      ]
+    },
+    {
+      "target": "ubuntu26.04",
+      "job_id": 113219574036,
+      "python": {
+        "tests": 21,
+        "skipped": 0,
+        "passed": true
+      },
+      "proof": [
+        "2026-10-08T08:25:39.6801642Z Ran 21 tests in 0.040s",
+        "2026-10-08T08:25:39.6801933Z ",
+        "2026-10-08T08:25:39.6802074Z OK",
+        "2026-10-08T08:26:04.3148127Z unguarded-pie passed"
+      ]
+    },
+    {
+      "target": "el10",
+      "job_id": 113219574045,
+      "python": {
+        "tests": 21,
+        "skipped": 0,
+        "passed": true
+      },
+      "proof": [
+        "2026-10-08T08:26:14.5217516Z Ran 21 tests in 0.041s",
+        "2026-10-08T08:26:14.5217662Z ",
+        "2026-10-08T08:26:14.5217752Z OK",
+        "2026-10-08T08:26:39.0937644Z unguarded-pie passed"
+      ]
+    },
+    {
+      "target": "ubuntu24.04",
+      "job_id": 113219574051,
+      "python": {
+        "tests": 21,
+        "skipped": 0,
+        "passed": true
+      },
+      "proof": [
+        "2026-10-08T08:25:42.6004928Z Ran 21 tests in 0.034s",
+        "2026-10-08T08:25:42.6005184Z ",
+        "2026-10-08T08:25:42.6005293Z OK",
+        "2026-10-08T08:26:07.1893580Z unguarded-pie passed"
+      ]
+    },
+    {
+      "target": "debian11",
+      "job_id": 113219574071,
+      "python": {
+        "tests": 21,
+        "skipped": 0,
+        "passed": true
+      },
+      "proof": [
+        "2026-10-08T08:25:38.3992266Z Ran 21 tests in 0.035s",
+        "2026-10-08T08:25:38.3992390Z ",
+        "2026-10-08T08:25:38.3992454Z OK",
+        "2026-10-08T08:26:02.9483220Z unguarded-pie passed"
+      ]
+    },
+    {
+      "target": "debian13",
+      "job_id": 113219574166,
+      "python": {
+        "tests": 21,
+        "skipped": 0,
+        "passed": true
+      },
+      "proof": [
+        "2026-10-08T08:25:56.8153317Z Ran 21 tests in 0.035s",
+        "2026-10-08T08:25:56.8153543Z ",
+        "2026-10-08T08:25:56.8153668Z OK",
+        "2026-10-08T08:26:21.4098636Z unguarded-pie passed"
+      ]
+    },
+    {
+      "target": "debian12",
+      "job_id": 113219574208,
+      "python": {
+        "tests": 21,
+        "skipped": 0,
+        "passed": true
+      },
+      "proof": [
+        "2026-10-08T08:25:34.0251755Z Ran 21 tests in 0.034s",
+        "2026-10-08T08:25:34.0251981Z ",
+        "2026-10-08T08:25:34.0252104Z OK",
+        "2026-10-08T08:25:58.6030786Z unguarded-pie passed"
+      ]
+    }
+  ],
+  "el10_windows": [
+    "2026-10-08T08:37:24.3920118Z Totals: 12 passed, 0 failed, 0 skipped, 0 blacklisted, 103ms",
+    "2026-10-08T08:39:27.5701076Z GUI SMOKE PASS: visible window, pid=19385, title='OCTool \u2014 Hardware information and registers'",
+    "2026-10-08T08:39:33.1001160Z GUI SMOKE PASS: visible window, pid=19452, title='OCTool \u2014 Hardware information and registers'"
+  ],
+  "baseline_qt": [
+    "2026-10-08T08:35:07.5319676Z Totals: 12 passed, 0 failed, 0 skipped, 0 blacklisted, 198ms"
+  ],
+  "probe": {
+    "run_id": 37749651635,
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37749651635",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 113219469543,
+        "name": "duplicate-load",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 37749651635,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Check runner kernel headers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Build module for the ephemeral runner kernel",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Check duplicate load and read-only capabilities, then unload",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13
+          }
+        ]
+      }
+    ],
+    "artifacts": [
+      {
+        "id": 11537352245,
+        "name": "kmod-eexist-37749651635",
+        "size_in_bytes": 565,
+        "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537352245",
+        "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/11537352245/zip",
+        "expired": false,
+        "created_at": "2026-10-08T08:25:02Z",
+        "expires_at": "2026-11-07T08:25:01Z",
+        "updated_at": "2026-10-08T08:25:02Z",
+        "digest": "sha256:2ef19280076394f03769661d55d509b84bd19503a7daaf6ff757946fd9d53b71",
+        "workflow_run": {
+          "id": 37749651635,
+          "repository_id": 1396820807,
+          "head_repository_id": 1396820807,
+          "head_branch": "research/kmod-eexist-probe",
+          "head_sha": "3920018c7e045786684cf28b332bde3956e2376f"
+        }
+      }
+    ],
+    "result": {
+      "kernel_release": "6.17.0-1022-azure",
+      "module_name": "octool_hwio",
+      "module_sha256": "c798b85824914e9c67ae75f006ced4e460139224bf6b2e49972ccf45c9dc011f",
+      "module_vermagic": "6.17.0-1022-azure SMP mod_unload modversions ",
+      "module_signer": "",
+      "module_signature_hash": "",
+      "initial_load": "insmod",
+      "initial_load_syscall_traced": false,
+      "probe_exit_code": 0,
+      "module_class_device_present_after_probe": true,
+      "dev_mydev_present_after_probe": true,
+      "module_unload_succeeded": true,
+      "hardware_io_attempted": false,
+      "metadata_query": {
+        "caps_valid": true,
+        "magic": "0x4f435432",
+        "version": 1,
+        "size": 32,
+        "features": "0x000000000000003f",
+        "unknown_command_enotty": true,
+        "bad_pointer_efault": true,
+        "close_succeeded": true
+      },
+      "probe": {
+        "second_syscall": "init_module",
+        "second_rc": -1,
+        "second_errno": 17
+      }
+    }
+  },
+  "attempts": [
+    {
+      "commit": "51e7b12",
+      "run_id": 37747451242,
+      "full_run": "cancelled by successor",
+      "verified": "matrix 42 capture; EL8 kernel 42 capture and 20 Python"
+    },
+    {
+      "commit": "66c6416",
+      "run_id": 37748466169,
+      "full_run": "cancelled by successor",
+      "verified": "matrix 44 capture and 21 Python"
+    },
+    {
+      "commit": "47a843d",
+      "run_id": 37749289855,
+      "full_run": "failure",
+      "reason": "-Werror unused ftruncate fallback return; 46 cases not executed"
+    }
+  ],
+  "limits": [
+    "Native target userspace shares runner kernel; target modules built against distro headers.",
+    "Synthetic capture mailboxes, no hardware access or original full GUI execution.",
+    "Rocky tested; Alma/RHEL not separately executed.",
+    "Original GUI error recovery/main window, live MMIO parity and Secure Boot/MOK remain unverified.",
+    "Capture scope and unsupported paths are defined in docs/capture-integrity.md."
+  ],
+  "capture_reference_observations": [
+    {
+      "case": "success",
+      "process_exit": 0,
+      "trace_accepted": true,
+      "trace_bytes": 336,
+      "diagnostic": ""
+    },
+    {
+      "case": "double-map",
+      "process_exit": 0,
+      "trace_accepted": true,
+      "trace_bytes": 336,
+      "diagnostic": ""
+    },
+    {
+      "case": "read-protect",
+      "process_exit": 0,
+      "trace_accepted": true,
+      "trace_bytes": 336,
+      "diagnostic": ""
+    },
+    {
+      "case": "dup-same",
+      "process_exit": 0,
+      "trace_accepted": true,
+      "trace_bytes": 336,
+      "diagnostic": ""
+    },
+    {
+      "case": "dup-fail",
+      "process_exit": 0,
+      "trace_accepted": true,
+      "trace_bytes": 336,
+      "diagnostic": ""
+    },
+    {
+      "case": "reuse",
+      "process_exit": 0,
+      "trace_accepted": true,
+      "trace_bytes": 184,
+      "diagnostic": ""
+    },
+    {
+      "case": "dup-replace",
+      "process_exit": 0,
+      "trace_accepted": true,
+      "trace_bytes": 184,
+      "diagnostic": ""
+    },
+    {
+      "case": "reopen-alias",
+      "process_exit": 0,
+      "trace_accepted": true,
+      "trace_bytes": 336,
+      "diagnostic": ""
+    },
+    {
+      "case": "openat-alias",
+      "process_exit": 0,
+      "trace_accepted": true,
+      "trace_bytes": 336,
+      "diagnostic": ""
+    },
+    {
+      "case": "openat64-alias",
+      "process_exit": 0,
+      "trace_accepted": true,
+      "trace_bytes": 336,
+      "diagnostic": ""
+    },
+    {
+      "case": "mutate-request",
+      "process_exit": 0,
+      "trace_accepted": true,
+      "trace_bytes": 336,
+      "diagnostic": ""
+    },
+    {
+      "case": "trace-short",
+      "process_exit": 0,
+      "trace_accepted": true,
+      "trace_bytes": 336,
+      "diagnostic": ""
+    },
+    {
+      "case": "trace-eintr",
+      "process_exit": 0,
+      "trace_accepted": true,
+      "trace_bytes": 336,
+      "diagnostic": ""
+    },
+    {
+      "case": "delayed",
+      "process_exit": 0,
+      "trace_accepted": true,
+      "trace_bytes": 336,
+      "diagnostic": ""
+    },
+    {
+      "case": "unmap-tail",
+      "process_exit": 0,
+      "trace_accepted": true,
+      "trace_bytes": 336,
+      "diagnostic": ""
+    },
+    {
+      "case": "munmap",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: no readable tracked mailbox"
+    },
+    {
+      "case": "mprotect",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: no readable tracked mailbox"
+    },
+    {
+      "case": "mremap",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: no readable tracked mailbox"
+    },
+    {
+      "case": "fixed",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: no readable tracked mailbox"
+    },
+    {
+      "case": "small-map",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: unsupported mailbox mapping"
+    },
+    {
+      "case": "private-map",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: unsupported mailbox mapping"
+    },
+    {
+      "case": "dup",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: device descriptor duplication unsupported"
+    },
+    {
+      "case": "dup2",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: device descriptor duplication unsupported"
+    },
+    {
+      "case": "dup3",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: device descriptor duplication unsupported"
+    },
+    {
+      "case": "fcntl-alias",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: write through untracked descriptor alias"
+    },
+    {
+      "case": "unmap-during",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: mailbox mapping changed during request"
+    },
+    {
+      "case": "close-during",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: descriptor changed during request"
+    },
+    {
+      "case": "overlap",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: overlapping device requests"
+    },
+    {
+      "case": "write-fail",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: failed or short device write"
+    },
+    {
+      "case": "short-write",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: failed or short device write"
+    },
+    {
+      "case": "bad-pointer",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: request snapshot unavailable"
+    },
+    {
+      "case": "bad-count",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: device request is not 96 bytes"
+    },
+    {
+      "case": "timeout",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: mailbox completion timeout"
+    },
+    {
+      "case": "driver-error",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: error or invalid mailbox completion"
+    },
+    {
+      "case": "bad-done",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: error or invalid mailbox completion"
+    },
+    {
+      "case": "trace-fail",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: trace record write failed"
+    },
+    {
+      "case": "trace-partial-fail",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 191,
+      "diagnostic": "[octool_capture] INCOMPLETE: trace record write failed"
+    },
+    {
+      "case": "finalize-fail",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 336,
+      "diagnostic": "[octool_capture] INCOMPLETE: trace finalization failed"
+    },
+    {
+      "case": "marker-partial",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 336,
+      "diagnostic": "[octool_capture] INCOMPLETE: trace finalization failed"
+    },
+    {
+      "case": "sync-fail",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 336,
+      "diagnostic": "[octool_capture] INCOMPLETE: trace finalization failed"
+    },
+    {
+      "case": "abrupt",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": ""
+    },
+    {
+      "case": "signal",
+      "process_exit": -15,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": ""
+    },
+    {
+      "case": "fork",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: forked capture is unsupported"
+    },
+    {
+      "case": "exec-child",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 184,
+      "diagnostic": "[octool_capture] INCOMPLETE: forked capture is unsupported\n[octool_capture] INCOMPLETE: cannot initialize regular trace file"
+    },
+    {
+      "case": "late-write",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 336,
+      "diagnostic": "[octool_capture] INCOMPLETE: device request after trace finalization"
+    },
+    {
+      "case": "late-error",
+      "process_exit": 0,
+      "trace_accepted": false,
+      "trace_bytes": 336,
+      "diagnostic": "[octool_capture] INCOMPLETE: device request after trace finalization"
+    }
+  ],
+  "kernel_validation": {
+    "el8": {
+      "capture": {
+        "file": "kernel-el8/capture-results.json",
+        "bytes": 8542,
+        "sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+      },
+      "accepted": 15,
+      "rejected": 31,
+      "offline_log": {
+        "file": "kernel-el8/offline.log",
+        "bytes": 2324,
+        "sha256": "18fceb42c4a1b9dbd054877718371b9b30ae187a43571958763322446d367e53"
+      },
+      "guard": {
+        "file": {
+          "file": "kernel-el8/legacy-guard/results.json",
+          "bytes": 191540,
+          "sha256": "a186a22fd2e4517dc1c891a4e3ca3ff1d1ee10fceacfa69a1d9fbb3683c19ba2"
+        },
+        "observations": 307
+      },
+      "glibc": "ldd (GNU libc) 2.28",
+      "compiler": "gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-29)",
+      "kernels": {
+        "4.18.0-553.171.1.el8_10.x86_64": [
+          {
+            "file": "kernel-el8/kernels/4.18.0-553.171.1.el8_10.x86_64/octool_hwio.ko",
+            "bytes": 496136,
+            "sha256": "ec79058375d96f848249896f44036ccf13928c06181f69bcf76147d7dad2229a"
+          },
+          {
+            "file": "kernel-el8/kernels/4.18.0-553.171.1.el8_10.x86_64/octool_hwio.test-signed.ko",
+            "bytes": 496585,
+            "sha256": "ce8a5105a29fa567954424f0cc253c6f9b71fdc59d6b60fff5225e897c711c1f"
+          }
+        ]
+      }
+    },
+    "el9": {
+      "capture": {
+        "file": "kernel-el9/capture-results.json",
+        "bytes": 8542,
+        "sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+      },
+      "accepted": 15,
+      "rejected": 31,
+      "offline_log": {
+        "file": "kernel-el9/offline.log",
+        "bytes": 2324,
+        "sha256": "18fceb42c4a1b9dbd054877718371b9b30ae187a43571958763322446d367e53"
+      },
+      "guard": {
+        "file": {
+          "file": "kernel-el9/legacy-guard/results.json",
+          "bytes": 191546,
+          "sha256": "8b48fa8313a3a56d57ccaf2b018594daec9729a0d6c12a5ecf0300ad02c1dfe1"
+        },
+        "observations": 307
+      },
+      "glibc": "ldd (GNU libc) 2.34",
+      "compiler": "gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-14)",
+      "kernels": {
+        "5.14.0-687.54.1.el9_8.x86_64": [
+          {
+            "file": "kernel-el9/kernels/5.14.0-687.54.1.el9_8.x86_64/octool_hwio.ko",
+            "bytes": 426232,
+            "sha256": "c19a360e148fd2fa492e87e77a3999f08e6061dfba3415cbe23104f15449ee61"
+          },
+          {
+            "file": "kernel-el9/kernels/5.14.0-687.54.1.el9_8.x86_64/octool_hwio.test-signed.ko",
+            "bytes": 426681,
+            "sha256": "2a10f0dd55bbf3b4b9a57cc0639c0f542c466c241cf3d87daed4ec1ced6b984c"
+          }
+        ]
+      }
+    },
+    "el10": {
+      "capture": {
+        "file": "kernel-el10/capture-results.json",
+        "bytes": 8542,
+        "sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+      },
+      "accepted": 15,
+      "rejected": 31,
+      "offline_log": {
+        "file": "kernel-el10/offline.log",
+        "bytes": 2324,
+        "sha256": "18fceb42c4a1b9dbd054877718371b9b30ae187a43571958763322446d367e53"
+      },
+      "guard": {
+        "file": {
+          "file": "kernel-el10/legacy-guard/results.json",
+          "bytes": 191634,
+          "sha256": "07fe3908a8831e50856d984990f25b8c09b040a86edf2b7af5548401858c1cc1"
+        },
+        "observations": 307
+      },
+      "glibc": "ldd (GNU libc) 2.39",
+      "compiler": "gcc (GCC) 14.3.1 20251022 (Red Hat 14.3.1-4)",
+      "kernels": {
+        "6.12.0-211.62.1.el10_2.x86_64": [
+          {
+            "file": "kernel-el10/kernels/6.12.0-211.62.1.el10_2.x86_64/octool_hwio.ko",
+            "bytes": 424736,
+            "sha256": "e7311c5eb669a656fd3f8257d03024b69657e5aa63d89debd909b5331a506024"
+          },
+          {
+            "file": "kernel-el10/kernels/6.12.0-211.62.1.el10_2.x86_64/octool_hwio.test-signed.ko",
+            "bytes": 425185,
+            "sha256": "6ff1e49fd14bfeeb4fced0e9154d386eee4f0d89e470ef2bce184a1683572dfa"
+          }
+        ]
+      }
+    },
+    "ubuntu20.04": {
+      "capture": {
+        "file": "kernel-ubuntu20.04/capture-results.json",
+        "bytes": 8542,
+        "sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+      },
+      "accepted": 15,
+      "rejected": 31,
+      "offline_log": {
+        "file": "kernel-ubuntu20.04/offline.log",
+        "bytes": 2324,
+        "sha256": "18fceb42c4a1b9dbd054877718371b9b30ae187a43571958763322446d367e53"
+      },
+      "guard": {
+        "file": {
+          "file": "kernel-ubuntu20.04/legacy-guard/results.json",
+          "bytes": 191423,
+          "sha256": "23905bb19cb36638aadb15883cd9989ae499c126fdbeb5af7bbe166e85216969"
+        },
+        "observations": 307
+      },
+      "glibc": "ldd (Ubuntu GLIBC 2.31-0ubuntu9.17) 2.31",
+      "compiler": "gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0",
+      "kernels": {
+        "5.4.0-216-generic": [
+          {
+            "file": "kernel-ubuntu20.04/kernels/5.4.0-216-generic/octool_hwio.ko",
+            "bytes": 18264,
+            "sha256": "b28ffc18c890f3c39dbfd2894dd00da00bb850f10c15d49528d08a06b95c261b"
+          },
+          {
+            "file": "kernel-ubuntu20.04/kernels/5.4.0-216-generic/octool_hwio.test-signed.ko",
+            "bytes": 18713,
+            "sha256": "6f073bf4505453d21a9911f2c0e04e874f8ed89e3992389ae6411d24267d1f6c"
+          }
+        ]
+      }
+    },
+    "ubuntu22.04": {
+      "capture": {
+        "file": "kernel-ubuntu22.04/capture-results.json",
+        "bytes": 8542,
+        "sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+      },
+      "accepted": 15,
+      "rejected": 31,
+      "offline_log": {
+        "file": "kernel-ubuntu22.04/offline.log",
+        "bytes": 2324,
+        "sha256": "80046b4a8d3ba44fce731264b01e0601c8b788353fe440c1571890e594d915b2"
+      },
+      "guard": {
+        "file": {
+          "file": "kernel-ubuntu22.04/legacy-guard/results.json",
+          "bytes": 191441,
+          "sha256": "ecb82e5a7206083131b5ace6583c35127494ee1fb6828bfbf42c4691f8904ced"
+        },
+        "observations": 307
+      },
+      "glibc": "ldd (Ubuntu GLIBC 2.35-0ubuntu3.15) 2.35",
+      "compiler": "gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0",
+      "kernels": {
+        "5.15.0-198-generic": [
+          {
+            "file": "kernel-ubuntu22.04/kernels/5.15.0-198-generic/octool_hwio.ko",
+            "bytes": 344504,
+            "sha256": "11ba48722faca8e5e051d40b1d6459daa920fe58628d72b77f77401bc59953bc"
+          },
+          {
+            "file": "kernel-ubuntu22.04/kernels/5.15.0-198-generic/octool_hwio.test-signed.ko",
+            "bytes": 344953,
+            "sha256": "d0ba912af0f447f1b5bdc42f4ad62599b2a409c088f58c4a87661798423c2f5b"
+          }
+        ],
+        "6.8.0-138-generic": [
+          {
+            "file": "kernel-ubuntu22.04/kernels/6.8.0-138-generic/octool_hwio.ko",
+            "bytes": 404376,
+            "sha256": "ee8cd2475fd1e7c24dccb22130257053a444adc9db808684bad44a00297494bb"
+          },
+          {
+            "file": "kernel-ubuntu22.04/kernels/6.8.0-138-generic/octool_hwio.test-signed.ko",
+            "bytes": 404825,
+            "sha256": "3766e0d7a96e5a331c809bc12b4f7d07eb18c1271debc5618d7f8100a2256666"
+          }
+        ]
+      }
+    },
+    "ubuntu24.04": {
+      "capture": {
+        "file": "kernel-ubuntu24.04/capture-results.json",
+        "bytes": 8542,
+        "sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+      },
+      "accepted": 15,
+      "rejected": 31,
+      "offline_log": {
+        "file": "kernel-ubuntu24.04/offline.log",
+        "bytes": 2324,
+        "sha256": "18fceb42c4a1b9dbd054877718371b9b30ae187a43571958763322446d367e53"
+      },
+      "guard": {
+        "file": {
+          "file": "kernel-ubuntu24.04/legacy-guard/results.json",
+          "bytes": 191452,
+          "sha256": "e2634cf2f8da76be59cde0e946f360f63419a7e3c02ef94f06881f49cf088d4b"
+        },
+        "observations": 307
+      },
+      "glibc": "ldd (Ubuntu GLIBC 2.39-0ubuntu8.9) 2.39",
+      "compiler": "gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "kernels": {
+        "6.8.0-146-generic": [
+          {
+            "file": "kernel-ubuntu24.04/kernels/6.8.0-146-generic/octool_hwio.ko",
+            "bytes": 402880,
+            "sha256": "9214c5560954f3d1cadee11b8d77f923048b9b41e336e986531a0c36c0e3a97d"
+          },
+          {
+            "file": "kernel-ubuntu24.04/kernels/6.8.0-146-generic/octool_hwio.test-signed.ko",
+            "bytes": 403329,
+            "sha256": "3c42799ce2845d92e569ab39f886aa7c10aeeb47d8c51d3cf7fddc9ca4647329"
+          }
+        ]
+      }
+    },
+    "ubuntu26.04": {
+      "capture": {
+        "file": "kernel-ubuntu26.04/capture-results.json",
+        "bytes": 8542,
+        "sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+      },
+      "accepted": 15,
+      "rejected": 31,
+      "offline_log": {
+        "file": "kernel-ubuntu26.04/offline.log",
+        "bytes": 2324,
+        "sha256": "18fceb42c4a1b9dbd054877718371b9b30ae187a43571958763322446d367e53"
+      },
+      "guard": {
+        "file": {
+          "file": "kernel-ubuntu26.04/legacy-guard/results.json",
+          "bytes": 191470,
+          "sha256": "92ecc4d7573c1409124d07db0efc5f945cf23918eb431f9950f0ddcd9eba6042"
+        },
+        "observations": 307
+      },
+      "glibc": "ldd (Ubuntu GLIBC 2.43-2ubuntu2.4) 2.43",
+      "compiler": "gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+      "kernels": {
+        "7.0.0-38-generic": [
+          {
+            "file": "kernel-ubuntu26.04/kernels/7.0.0-38-generic/octool_hwio.ko",
+            "bytes": 446184,
+            "sha256": "60e4a9e6f9c9362dabc05e1df8e89e5c69e5ecbb21d7e490e762f4df9636b71a"
+          },
+          {
+            "file": "kernel-ubuntu26.04/kernels/7.0.0-38-generic/octool_hwio.test-signed.ko",
+            "bytes": 446633,
+            "sha256": "073108be8be1d11feadc6556d7e42fc5dc5ab644c2f9586349bad123566da17d"
+          }
+        ]
+      }
+    },
+    "debian11": {
+      "capture": {
+        "file": "kernel-debian11/capture-results.json",
+        "bytes": 8542,
+        "sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+      },
+      "accepted": 15,
+      "rejected": 31,
+      "offline_log": {
+        "file": "kernel-debian11/offline.log",
+        "bytes": 2324,
+        "sha256": "18fceb42c4a1b9dbd054877718371b9b30ae187a43571958763322446d367e53"
+      },
+      "guard": {
+        "file": {
+          "file": "kernel-debian11/legacy-guard/results.json",
+          "bytes": 191274,
+          "sha256": "8b2a35d2903520afa8f6b001bfe859d616ab827dd9b632d418019e9733b1c2dc"
+        },
+        "observations": 307
+      },
+      "glibc": "ldd (Debian GLIBC 2.31-13+deb11u14) 2.31",
+      "compiler": "gcc (Debian 10.2.1-6) 10.2.1 20210110",
+      "kernels": {
+        "5.10.0-46-amd64": [
+          {
+            "file": "kernel-debian11/kernels/5.10.0-46-amd64/octool_hwio.ko",
+            "bytes": 357752,
+            "sha256": "afb0de05ae56d3823f32259a1d46ee1d1dc9feb99266a37e5b6cd20cb57a3333"
+          },
+          {
+            "file": "kernel-debian11/kernels/5.10.0-46-amd64/octool_hwio.test-signed.ko",
+            "bytes": 358201,
+            "sha256": "e44a55eb25aa536ab35c92b2b515baced0c4f8c114af2a62aceeb315ef3ea63a"
+          }
+        ]
+      }
+    },
+    "debian12": {
+      "capture": {
+        "file": "kernel-debian12/capture-results.json",
+        "bytes": 8542,
+        "sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+      },
+      "accepted": 15,
+      "rejected": 31,
+      "offline_log": {
+        "file": "kernel-debian12/offline.log",
+        "bytes": 2324,
+        "sha256": "18fceb42c4a1b9dbd054877718371b9b30ae187a43571958763322446d367e53"
+      },
+      "guard": {
+        "file": {
+          "file": "kernel-debian12/legacy-guard/results.json",
+          "bytes": 191271,
+          "sha256": "ee073532927015ba44a54a6ce3a820d8402ff2e4e5c318f70ee489ebaf09692d"
+        },
+        "observations": 307
+      },
+      "glibc": "ldd (Debian GLIBC 2.36-9+deb12u14) 2.36",
+      "compiler": "gcc (Debian 12.2.0-14+deb12u1) 12.2.0",
+      "kernels": {
+        "6.1.0-53-amd64": [
+          {
+            "file": "kernel-debian12/kernels/6.1.0-53-amd64/octool_hwio.ko",
+            "bytes": 357000,
+            "sha256": "7fc256dc67c263a8f82a65c0550ddcc9b03852f481a65b110eddc32496696258"
+          },
+          {
+            "file": "kernel-debian12/kernels/6.1.0-53-amd64/octool_hwio.test-signed.ko",
+            "bytes": 357449,
+            "sha256": "06b2db10a69fbb760a674049001f0417fb4f56a348ca6a9298aaae2e5a8305b2"
+          }
+        ]
+      }
+    },
+    "debian13": {
+      "capture": {
+        "file": "kernel-debian13/capture-results.json",
+        "bytes": 8542,
+        "sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+      },
+      "accepted": 15,
+      "rejected": 31,
+      "offline_log": {
+        "file": "kernel-debian13/offline.log",
+        "bytes": 2324,
+        "sha256": "18fceb42c4a1b9dbd054877718371b9b30ae187a43571958763322446d367e53"
+      },
+      "guard": {
+        "file": {
+          "file": "kernel-debian13/legacy-guard/results.json",
+          "bytes": 191294,
+          "sha256": "61cd662a2628213c7057267188833ccceb64448865e12935a7c3f2f0dfed54f4"
+        },
+        "observations": 307
+      },
+      "glibc": "ldd (Debian GLIBC 2.41-12+deb13u4) 2.41",
+      "compiler": "gcc (Debian 14.2.0-19) 14.2.0",
+      "kernels": {
+        "6.12.111+deb13-amd64": [
+          {
+            "file": "kernel-debian13/kernels/6.12.111+deb13-amd64/octool_hwio.ko",
+            "bytes": 421224,
+            "sha256": "5a22c7337d1cb3e52c5c8b0f96ef3665550f26f8e223036fc98ac688d3b84d23"
+          },
+          {
+            "file": "kernel-debian13/kernels/6.12.111+deb13-amd64/octool_hwio.test-signed.ko",
+            "bytes": 421673,
+            "sha256": "122921e443e3de138a70dcae1512158297b59ad3b852439c4dd44f39baf84d99"
+          }
+        ]
+      }
+    }
+  },
+  "capture_total_observations": 460,
+  "capture_reports_byte_identical": true
+}

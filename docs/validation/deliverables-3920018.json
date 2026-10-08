@@ -1,0 +1,965 @@
+{
+  "commit": "3920018c7e045786684cf28b332bde3956e2376f",
+  "run_id": 37749651590,
+  "targets": {
+    "el8": {
+      "packages": [
+        {
+          "file": "desktop-el8/packages/octool-2.0.1-1.el8.x86_64.rpm",
+          "bytes": 9790080,
+          "sha256": "7b3200216221a1a9d177de68b653422ae6ad357c7597338c81320d3b599f7377"
+        },
+        {
+          "file": "desktop-el8/packages/octool-hwio-dkms-2.0.1-1.el8.noarch.rpm",
+          "bytes": 19072,
+          "sha256": "0cb8eff8e8fae287b1ce4e32439b2e2205f960934b72251a67603a5a0d589bc1"
+        }
+      ],
+      "kernel_trees": {
+        "4.18.0-553.171.1.el8_10.x86_64": [
+          {
+            "file": "kernel-el8/kernels/4.18.0-553.171.1.el8_10.x86_64/octool_hwio.ko",
+            "bytes": 496136,
+            "sha256": "ec79058375d96f848249896f44036ccf13928c06181f69bcf76147d7dad2229a"
+          },
+          {
+            "file": "kernel-el8/kernels/4.18.0-553.171.1.el8_10.x86_64/octool_hwio.test-signed.ko",
+            "bytes": 496585,
+            "sha256": "ce8a5105a29fa567954424f0cc253c6f9b71fdc59d6b60fff5225e897c711c1f"
+          }
+        ]
+      },
+      "gui_tests": {
+        "file": {
+          "file": "desktop-el8/gui-tests.txt",
+          "bytes": 1502,
+          "sha256": "12d9edf27c7009e75e446c01923ebd97529e7d34df989154e47bdd405a382949"
+        },
+        "passed": 12,
+        "failed": 0,
+        "skipped": 0
+      },
+      "screenshots": [
+        {
+          "file": "desktop-el8/smoke/native-0.png",
+          "bytes": 44304,
+          "sha256": "2c647f07d339046433fe9f2113b59ae70f0ec5bf7c209596a8420648fed62d79"
+        },
+        {
+          "file": "desktop-el8/smoke/native-1.png",
+          "bytes": 28163,
+          "sha256": "9aa00694c462ec6b4138f4e0a29d8731ba79e533e518698695b68563b87461bb"
+        },
+        {
+          "file": "desktop-el8/smoke/native-2.png",
+          "bytes": 26025,
+          "sha256": "9b1b879cb164788d85ff7518d232ab07a4890bff89f4369ac91f2dc6a5884ba6"
+        },
+        {
+          "file": "desktop-el8/smoke/native-3.png",
+          "bytes": 29641,
+          "sha256": "d47511ff5fe043aa00c62547e98bc8f4850047f27b350baf335f426c50f1412c"
+        },
+        {
+          "file": "desktop-el8/smoke/native-4.png",
+          "bytes": 62733,
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        },
+        {
+          "file": "desktop-el8/smoke/release-0.png",
+          "bytes": 44304,
+          "sha256": "2c647f07d339046433fe9f2113b59ae70f0ec5bf7c209596a8420648fed62d79"
+        },
+        {
+          "file": "desktop-el8/smoke/release-1.png",
+          "bytes": 28163,
+          "sha256": "9aa00694c462ec6b4138f4e0a29d8731ba79e533e518698695b68563b87461bb"
+        },
+        {
+          "file": "desktop-el8/smoke/release-2.png",
+          "bytes": 26025,
+          "sha256": "9b1b879cb164788d85ff7518d232ab07a4890bff89f4369ac91f2dc6a5884ba6"
+        },
+        {
+          "file": "desktop-el8/smoke/release-3.png",
+          "bytes": 29641,
+          "sha256": "d47511ff5fe043aa00c62547e98bc8f4850047f27b350baf335f426c50f1412c"
+        },
+        {
+          "file": "desktop-el8/smoke/release-4.png",
+          "bytes": 62733,
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        }
+      ],
+      "image_digests": [
+        "rockylinux@sha256:9794037624aaa6212aeada1d28861ef5e0a935adaf93e4ef79837119f2a2d04c"
+      ],
+      "capture_result_sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+    },
+    "el9": {
+      "packages": [
+        {
+          "file": "desktop-el9/packages/octool-2.0.1-1.el9.x86_64.rpm",
+          "bytes": 9585226,
+          "sha256": "78f20b50185aecf3c492176fda3085e0f430459e43e98df124b526a3c2d57cae"
+        },
+        {
+          "file": "desktop-el9/packages/octool-hwio-dkms-2.0.1-1.el9.noarch.rpm",
+          "bytes": 19057,
+          "sha256": "cdbebc7e69d7b0e46a0ef843d72e1ed50b247049aa9fc4581115cb833e236bd4"
+        }
+      ],
+      "kernel_trees": {
+        "5.14.0-687.54.1.el9_8.x86_64": [
+          {
+            "file": "kernel-el9/kernels/5.14.0-687.54.1.el9_8.x86_64/octool_hwio.ko",
+            "bytes": 426232,
+            "sha256": "c19a360e148fd2fa492e87e77a3999f08e6061dfba3415cbe23104f15449ee61"
+          },
+          {
+            "file": "kernel-el9/kernels/5.14.0-687.54.1.el9_8.x86_64/octool_hwio.test-signed.ko",
+            "bytes": 426681,
+            "sha256": "2a10f0dd55bbf3b4b9a57cc0639c0f542c466c241cf3d87daed4ec1ced6b984c"
+          }
+        ]
+      },
+      "gui_tests": {
+        "file": {
+          "file": "desktop-el9/gui-tests.txt",
+          "bytes": 1502,
+          "sha256": "d2e48b3f55da54eaf0b9783631a3c4cf37e287c9ffa4929ef0a6060be991cad9"
+        },
+        "passed": 12,
+        "failed": 0,
+        "skipped": 0
+      },
+      "screenshots": [
+        {
+          "file": "desktop-el9/smoke/native-0.png",
+          "bytes": 44049,
+          "sha256": "63fb3453e578dd97c8e5407f1ea8df6dcce1ee8bf2fa3aa6c7cfc8102788e88a"
+        },
+        {
+          "file": "desktop-el9/smoke/native-1.png",
+          "bytes": 28163,
+          "sha256": "9aa00694c462ec6b4138f4e0a29d8731ba79e533e518698695b68563b87461bb"
+        },
+        {
+          "file": "desktop-el9/smoke/native-2.png",
+          "bytes": 26025,
+          "sha256": "9b1b879cb164788d85ff7518d232ab07a4890bff89f4369ac91f2dc6a5884ba6"
+        },
+        {
+          "file": "desktop-el9/smoke/native-3.png",
+          "bytes": 29641,
+          "sha256": "d47511ff5fe043aa00c62547e98bc8f4850047f27b350baf335f426c50f1412c"
+        },
+        {
+          "file": "desktop-el9/smoke/native-4.png",
+          "bytes": 62733,
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        },
+        {
+          "file": "desktop-el9/smoke/release-0.png",
+          "bytes": 44049,
+          "sha256": "63fb3453e578dd97c8e5407f1ea8df6dcce1ee8bf2fa3aa6c7cfc8102788e88a"
+        },
+        {
+          "file": "desktop-el9/smoke/release-1.png",
+          "bytes": 28163,
+          "sha256": "9aa00694c462ec6b4138f4e0a29d8731ba79e533e518698695b68563b87461bb"
+        },
+        {
+          "file": "desktop-el9/smoke/release-2.png",
+          "bytes": 26025,
+          "sha256": "9b1b879cb164788d85ff7518d232ab07a4890bff89f4369ac91f2dc6a5884ba6"
+        },
+        {
+          "file": "desktop-el9/smoke/release-3.png",
+          "bytes": 29641,
+          "sha256": "d47511ff5fe043aa00c62547e98bc8f4850047f27b350baf335f426c50f1412c"
+        },
+        {
+          "file": "desktop-el9/smoke/release-4.png",
+          "bytes": 62733,
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        }
+      ],
+      "image_digests": [
+        "rockylinux@sha256:d7be1c094cc5845ee815d4632fe377514ee6ebcf8efaed6892889657e5ddaaa6"
+      ],
+      "capture_result_sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+    },
+    "el10": {
+      "packages": [
+        {
+          "file": "desktop-el10/packages/octool-2.0.1-1.el10.x86_64.rpm",
+          "bytes": 9585652,
+          "sha256": "d4bb6b5645a52201769335c7d10ec6b39b28090398b6156e74cc23bba242b6bb"
+        },
+        {
+          "file": "desktop-el10/packages/octool-hwio-dkms-2.0.1-1.el10.noarch.rpm",
+          "bytes": 19164,
+          "sha256": "96e55691c5ea85b162e97d00c61b8729188036be9f5efe9e36e6517c4d753be9"
+        }
+      ],
+      "kernel_trees": {
+        "6.12.0-211.62.1.el10_2.x86_64": [
+          {
+            "file": "kernel-el10/kernels/6.12.0-211.62.1.el10_2.x86_64/octool_hwio.ko",
+            "bytes": 424736,
+            "sha256": "e7311c5eb669a656fd3f8257d03024b69657e5aa63d89debd909b5331a506024"
+          },
+          {
+            "file": "kernel-el10/kernels/6.12.0-211.62.1.el10_2.x86_64/octool_hwio.test-signed.ko",
+            "bytes": 425185,
+            "sha256": "6ff1e49fd14bfeeb4fced0e9154d386eee4f0d89e470ef2bce184a1683572dfa"
+          }
+        ]
+      },
+      "gui_tests": {
+        "file": {
+          "file": "desktop-el10/gui-tests.txt",
+          "bytes": 1504,
+          "sha256": "77e8318a148811c177f2b80b60c173e94e2a68150966979528b58ece7753b49e"
+        },
+        "passed": 12,
+        "failed": 0,
+        "skipped": 0
+      },
+      "screenshots": [
+        {
+          "file": "desktop-el10/smoke/native-0.png",
+          "bytes": 40535,
+          "sha256": "1fed8568e9bc7355a1e3d5c1918bd04a5280bba235d66f4279fdef36910d9386"
+        },
+        {
+          "file": "desktop-el10/smoke/native-1.png",
+          "bytes": 26589,
+          "sha256": "37223313755459abffb375bd264bdb869bc1660a4b37a29d56fb298908f10e0b"
+        },
+        {
+          "file": "desktop-el10/smoke/native-2.png",
+          "bytes": 24691,
+          "sha256": "7d3d80e04810c388648e36fc42decd7b133a768f648b6fa5028fc5c9e99ea393"
+        },
+        {
+          "file": "desktop-el10/smoke/native-3.png",
+          "bytes": 27970,
+          "sha256": "3dc66fbb8640e351f21483fd217107e4af033c7a5383eadd31b67a257161a81c"
+        },
+        {
+          "file": "desktop-el10/smoke/native-4.png",
+          "bytes": 59569,
+          "sha256": "8e9dd47bd43e7fa90b3df13251ff1e4891abf0690bd774380de758c26e7a3a57"
+        },
+        {
+          "file": "desktop-el10/smoke/release-0.png",
+          "bytes": 40535,
+          "sha256": "1fed8568e9bc7355a1e3d5c1918bd04a5280bba235d66f4279fdef36910d9386"
+        },
+        {
+          "file": "desktop-el10/smoke/release-1.png",
+          "bytes": 26589,
+          "sha256": "37223313755459abffb375bd264bdb869bc1660a4b37a29d56fb298908f10e0b"
+        },
+        {
+          "file": "desktop-el10/smoke/release-2.png",
+          "bytes": 24691,
+          "sha256": "7d3d80e04810c388648e36fc42decd7b133a768f648b6fa5028fc5c9e99ea393"
+        },
+        {
+          "file": "desktop-el10/smoke/release-3.png",
+          "bytes": 27970,
+          "sha256": "3dc66fbb8640e351f21483fd217107e4af033c7a5383eadd31b67a257161a81c"
+        },
+        {
+          "file": "desktop-el10/smoke/release-4.png",
+          "bytes": 59569,
+          "sha256": "8e9dd47bd43e7fa90b3df13251ff1e4891abf0690bd774380de758c26e7a3a57"
+        }
+      ],
+      "image_digests": [
+        "quay.io/rockylinux/rockylinux@sha256:827d37bc128288ccf160ee318bb3cb92d591164cb217e92f8bc61e3982ae1834"
+      ],
+      "capture_result_sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+    },
+    "ubuntu20.04": {
+      "packages": [
+        {
+          "file": "desktop-ubuntu20.04/packages/octool-2.0.1-1.amd64.deb",
+          "bytes": 12734632,
+          "sha256": "f4e8e3c31d7ed4c8c60c11472748eab4d625e48f8eadb9afeebb5155000c5287"
+        },
+        {
+          "file": "desktop-ubuntu20.04/packages/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10672,
+          "sha256": "72473c70ecc33525914ebd8af5463aec51914afb0addf4a26b5d3ceaf9173f40"
+        }
+      ],
+      "kernel_trees": {
+        "5.4.0-216-generic": [
+          {
+            "file": "kernel-ubuntu20.04/kernels/5.4.0-216-generic/octool_hwio.ko",
+            "bytes": 18264,
+            "sha256": "b28ffc18c890f3c39dbfd2894dd00da00bb850f10c15d49528d08a06b95c261b"
+          },
+          {
+            "file": "kernel-ubuntu20.04/kernels/5.4.0-216-generic/octool_hwio.test-signed.ko",
+            "bytes": 18713,
+            "sha256": "6f073bf4505453d21a9911f2c0e04e874f8ed89e3992389ae6411d24267d1f6c"
+          }
+        ]
+      },
+      "gui_tests": {
+        "file": {
+          "file": "desktop-ubuntu20.04/gui-tests.txt",
+          "bytes": 1506,
+          "sha256": "7db47e68bf0f77c43141ccf4abdaf6e9ae63c8614319731cf7958df9f86d354c"
+        },
+        "passed": 12,
+        "failed": 0,
+        "skipped": 0
+      },
+      "screenshots": [
+        {
+          "file": "desktop-ubuntu20.04/smoke/native-0.png",
+          "bytes": 43550,
+          "sha256": "f11db4ac1373fc2bf0a13696a98f8fa18a188d1297fd9e776973a18448994303"
+        },
+        {
+          "file": "desktop-ubuntu20.04/smoke/native-1.png",
+          "bytes": 28163,
+          "sha256": "9aa00694c462ec6b4138f4e0a29d8731ba79e533e518698695b68563b87461bb"
+        },
+        {
+          "file": "desktop-ubuntu20.04/smoke/native-2.png",
+          "bytes": 26025,
+          "sha256": "9b1b879cb164788d85ff7518d232ab07a4890bff89f4369ac91f2dc6a5884ba6"
+        },
+        {
+          "file": "desktop-ubuntu20.04/smoke/native-3.png",
+          "bytes": 29641,
+          "sha256": "d47511ff5fe043aa00c62547e98bc8f4850047f27b350baf335f426c50f1412c"
+        },
+        {
+          "file": "desktop-ubuntu20.04/smoke/native-4.png",
+          "bytes": 62733,
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        },
+        {
+          "file": "desktop-ubuntu20.04/smoke/release-0.png",
+          "bytes": 43550,
+          "sha256": "f11db4ac1373fc2bf0a13696a98f8fa18a188d1297fd9e776973a18448994303"
+        },
+        {
+          "file": "desktop-ubuntu20.04/smoke/release-1.png",
+          "bytes": 28163,
+          "sha256": "9aa00694c462ec6b4138f4e0a29d8731ba79e533e518698695b68563b87461bb"
+        },
+        {
+          "file": "desktop-ubuntu20.04/smoke/release-2.png",
+          "bytes": 26025,
+          "sha256": "9b1b879cb164788d85ff7518d232ab07a4890bff89f4369ac91f2dc6a5884ba6"
+        },
+        {
+          "file": "desktop-ubuntu20.04/smoke/release-3.png",
+          "bytes": 29641,
+          "sha256": "d47511ff5fe043aa00c62547e98bc8f4850047f27b350baf335f426c50f1412c"
+        },
+        {
+          "file": "desktop-ubuntu20.04/smoke/release-4.png",
+          "bytes": 62733,
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        }
+      ],
+      "image_digests": [
+        "ubuntu@sha256:8feb4d8ca5354def3d8fce243717141ce31e2c428701f6682bd2fafe15388214"
+      ],
+      "capture_result_sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+    },
+    "ubuntu22.04": {
+      "packages": [
+        {
+          "file": "desktop-ubuntu22.04/packages/octool-2.0.1-1.amd64.deb",
+          "bytes": 12734634,
+          "sha256": "7dd64cce07c444d086a4680089128856a568bd5dcf89b5a74ac3966c1739f6bd"
+        },
+        {
+          "file": "desktop-ubuntu22.04/packages/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10670,
+          "sha256": "cd3b464083b500366cafbfa15e5d7477c99a8ac51cd3747f70fe91c3bd6b0c23"
+        }
+      ],
+      "kernel_trees": {
+        "5.15.0-198-generic": [
+          {
+            "file": "kernel-ubuntu22.04/kernels/5.15.0-198-generic/octool_hwio.ko",
+            "bytes": 344504,
+            "sha256": "11ba48722faca8e5e051d40b1d6459daa920fe58628d72b77f77401bc59953bc"
+          },
+          {
+            "file": "kernel-ubuntu22.04/kernels/5.15.0-198-generic/octool_hwio.test-signed.ko",
+            "bytes": 344953,
+            "sha256": "d0ba912af0f447f1b5bdc42f4ad62599b2a409c088f58c4a87661798423c2f5b"
+          }
+        ],
+        "6.8.0-138-generic": [
+          {
+            "file": "kernel-ubuntu22.04/kernels/6.8.0-138-generic/octool_hwio.ko",
+            "bytes": 404376,
+            "sha256": "ee8cd2475fd1e7c24dccb22130257053a444adc9db808684bad44a00297494bb"
+          },
+          {
+            "file": "kernel-ubuntu22.04/kernels/6.8.0-138-generic/octool_hwio.test-signed.ko",
+            "bytes": 404825,
+            "sha256": "3766e0d7a96e5a331c809bc12b4f7d07eb18c1271debc5618d7f8100a2256666"
+          }
+        ]
+      },
+      "gui_tests": {
+        "file": {
+          "file": "desktop-ubuntu22.04/gui-tests.txt",
+          "bytes": 1505,
+          "sha256": "f739d7021ada60a61fba9b682be558a73783803f434ccdcfe7ec7cf647570e48"
+        },
+        "passed": 12,
+        "failed": 0,
+        "skipped": 0
+      },
+      "screenshots": [
+        {
+          "file": "desktop-ubuntu22.04/smoke/native-0.png",
+          "bytes": 43005,
+          "sha256": "562914bfafcf38f27646c67487641f4d43c3c8c860bbdc73d9f32d60db1e83b5"
+        },
+        {
+          "file": "desktop-ubuntu22.04/smoke/native-1.png",
+          "bytes": 28163,
+          "sha256": "9aa00694c462ec6b4138f4e0a29d8731ba79e533e518698695b68563b87461bb"
+        },
+        {
+          "file": "desktop-ubuntu22.04/smoke/native-2.png",
+          "bytes": 26025,
+          "sha256": "9b1b879cb164788d85ff7518d232ab07a4890bff89f4369ac91f2dc6a5884ba6"
+        },
+        {
+          "file": "desktop-ubuntu22.04/smoke/native-3.png",
+          "bytes": 29641,
+          "sha256": "d47511ff5fe043aa00c62547e98bc8f4850047f27b350baf335f426c50f1412c"
+        },
+        {
+          "file": "desktop-ubuntu22.04/smoke/native-4.png",
+          "bytes": 62733,
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        },
+        {
+          "file": "desktop-ubuntu22.04/smoke/release-0.png",
+          "bytes": 43005,
+          "sha256": "562914bfafcf38f27646c67487641f4d43c3c8c860bbdc73d9f32d60db1e83b5"
+        },
+        {
+          "file": "desktop-ubuntu22.04/smoke/release-1.png",
+          "bytes": 28163,
+          "sha256": "9aa00694c462ec6b4138f4e0a29d8731ba79e533e518698695b68563b87461bb"
+        },
+        {
+          "file": "desktop-ubuntu22.04/smoke/release-2.png",
+          "bytes": 26025,
+          "sha256": "9b1b879cb164788d85ff7518d232ab07a4890bff89f4369ac91f2dc6a5884ba6"
+        },
+        {
+          "file": "desktop-ubuntu22.04/smoke/release-3.png",
+          "bytes": 29641,
+          "sha256": "d47511ff5fe043aa00c62547e98bc8f4850047f27b350baf335f426c50f1412c"
+        },
+        {
+          "file": "desktop-ubuntu22.04/smoke/release-4.png",
+          "bytes": 62733,
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        }
+      ],
+      "image_digests": [
+        "ubuntu@sha256:5ec03bb3441e8b0bf3b4f9cd4629a1ae763010dc3035bb8da3ae6cf026486401"
+      ],
+      "capture_result_sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+    },
+    "ubuntu24.04": {
+      "packages": [
+        {
+          "file": "desktop-ubuntu24.04/packages/octool-2.0.1-1.amd64.deb",
+          "bytes": 12734636,
+          "sha256": "62d2943c1ed7e1f5f1cd22ce0b9ea59d2cd19b090db783bed39a688811af7815"
+        },
+        {
+          "file": "desktop-ubuntu24.04/packages/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10672,
+          "sha256": "b4d3e26e2246a9aac947d0285fa30d1b3064e6f761314a22d6430b6a5c7f29b7"
+        }
+      ],
+      "kernel_trees": {
+        "6.8.0-146-generic": [
+          {
+            "file": "kernel-ubuntu24.04/kernels/6.8.0-146-generic/octool_hwio.ko",
+            "bytes": 402880,
+            "sha256": "9214c5560954f3d1cadee11b8d77f923048b9b41e336e986531a0c36c0e3a97d"
+          },
+          {
+            "file": "kernel-ubuntu24.04/kernels/6.8.0-146-generic/octool_hwio.test-signed.ko",
+            "bytes": 403329,
+            "sha256": "3c42799ce2845d92e569ab39f886aa7c10aeeb47d8c51d3cf7fddc9ca4647329"
+          }
+        ]
+      },
+      "gui_tests": {
+        "file": {
+          "file": "desktop-ubuntu24.04/gui-tests.txt",
+          "bytes": 1506,
+          "sha256": "7bd85eb425b5a61e99af958b16afac3ba5baf2c84d0884732bc52af6a2ce1b42"
+        },
+        "passed": 12,
+        "failed": 0,
+        "skipped": 0
+      },
+      "screenshots": [
+        {
+          "file": "desktop-ubuntu24.04/smoke/native-0.png",
+          "bytes": 49501,
+          "sha256": "14498773d7b2de18ba95e1a8e13f683923ffa4f9a06307f9b08f124969fee484"
+        },
+        {
+          "file": "desktop-ubuntu24.04/smoke/native-1.png",
+          "bytes": 30698,
+          "sha256": "a5243cfcc2ef21c95552a7047cbf7918e76178834703f23cce1bfdc7b87747e8"
+        },
+        {
+          "file": "desktop-ubuntu24.04/smoke/native-2.png",
+          "bytes": 28605,
+          "sha256": "69285ad80c6b01611cc981bba0f0d3e6d6ec169e37c1b5241eb0319cd2177c6b"
+        },
+        {
+          "file": "desktop-ubuntu24.04/smoke/native-3.png",
+          "bytes": 32285,
+          "sha256": "5db6c91272f610fb7912fe896d31add29e679b50f778ab6d029e62900c2ccf1a"
+        },
+        {
+          "file": "desktop-ubuntu24.04/smoke/native-4.png",
+          "bytes": 70872,
+          "sha256": "c319f51628d27c6a9316bbb000f8d692467b8513ec495bc88a2db61d13d37deb"
+        },
+        {
+          "file": "desktop-ubuntu24.04/smoke/release-0.png",
+          "bytes": 49501,
+          "sha256": "14498773d7b2de18ba95e1a8e13f683923ffa4f9a06307f9b08f124969fee484"
+        },
+        {
+          "file": "desktop-ubuntu24.04/smoke/release-1.png",
+          "bytes": 30698,
+          "sha256": "a5243cfcc2ef21c95552a7047cbf7918e76178834703f23cce1bfdc7b87747e8"
+        },
+        {
+          "file": "desktop-ubuntu24.04/smoke/release-2.png",
+          "bytes": 28605,
+          "sha256": "69285ad80c6b01611cc981bba0f0d3e6d6ec169e37c1b5241eb0319cd2177c6b"
+        },
+        {
+          "file": "desktop-ubuntu24.04/smoke/release-3.png",
+          "bytes": 32285,
+          "sha256": "5db6c91272f610fb7912fe896d31add29e679b50f778ab6d029e62900c2ccf1a"
+        },
+        {
+          "file": "desktop-ubuntu24.04/smoke/release-4.png",
+          "bytes": 70872,
+          "sha256": "c319f51628d27c6a9316bbb000f8d692467b8513ec495bc88a2db61d13d37deb"
+        }
+      ],
+      "image_digests": [
+        "ubuntu@sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55"
+      ],
+      "capture_result_sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+    },
+    "ubuntu26.04": {
+      "packages": [
+        {
+          "file": "desktop-ubuntu26.04/packages/octool-2.0.1-1.amd64.deb",
+          "bytes": 12734600,
+          "sha256": "b1bea38de17537681c6be1dd74c44cb06a27b7c4b8980613ebf68d1a61098ff7"
+        },
+        {
+          "file": "desktop-ubuntu26.04/packages/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10668,
+          "sha256": "05b2139b07fe0900fa279ca6cbd5b4826dfa983b2cbd47106a96b04b10950f3b"
+        }
+      ],
+      "kernel_trees": {
+        "7.0.0-38-generic": [
+          {
+            "file": "kernel-ubuntu26.04/kernels/7.0.0-38-generic/octool_hwio.ko",
+            "bytes": 446184,
+            "sha256": "60e4a9e6f9c9362dabc05e1df8e89e5c69e5ecbb21d7e490e762f4df9636b71a"
+          },
+          {
+            "file": "kernel-ubuntu26.04/kernels/7.0.0-38-generic/octool_hwio.test-signed.ko",
+            "bytes": 446633,
+            "sha256": "073108be8be1d11feadc6556d7e42fc5dc5ab644c2f9586349bad123566da17d"
+          }
+        ]
+      },
+      "gui_tests": {
+        "file": {
+          "file": "desktop-ubuntu26.04/gui-tests.txt",
+          "bytes": 1505,
+          "sha256": "bb8395de415e5dc7f6ae153dd993c2e71ddddd6cbac7865fb9ea81d6c94201dd"
+        },
+        "passed": 12,
+        "failed": 0,
+        "skipped": 0
+      },
+      "screenshots": [
+        {
+          "file": "desktop-ubuntu26.04/smoke/native-0.png",
+          "bytes": 48258,
+          "sha256": "31bf387c0d3eacf5708c703a097ebf56c2f53a51dc0cda4023f20d6b14569119"
+        },
+        {
+          "file": "desktop-ubuntu26.04/smoke/native-1.png",
+          "bytes": 29364,
+          "sha256": "ca2ce4a7a5ebca02f385f732d468392ca26b5430d57659b65d0561ef588262dd"
+        },
+        {
+          "file": "desktop-ubuntu26.04/smoke/native-2.png",
+          "bytes": 26900,
+          "sha256": "298ebd15cf5cbcce3130acca0439f121875a52f23258261491abca9ea7fad939"
+        },
+        {
+          "file": "desktop-ubuntu26.04/smoke/native-3.png",
+          "bytes": 30889,
+          "sha256": "81f2018a69a424196e92bbcc52eb8ee1de21a36d2b76486f0749f66138955684"
+        },
+        {
+          "file": "desktop-ubuntu26.04/smoke/native-4.png",
+          "bytes": 68466,
+          "sha256": "567d060a7d1139df9a84c4ef1e5117fe78bcfad4e9117075c44bed2532a673b9"
+        },
+        {
+          "file": "desktop-ubuntu26.04/smoke/release-0.png",
+          "bytes": 48258,
+          "sha256": "31bf387c0d3eacf5708c703a097ebf56c2f53a51dc0cda4023f20d6b14569119"
+        },
+        {
+          "file": "desktop-ubuntu26.04/smoke/release-1.png",
+          "bytes": 29364,
+          "sha256": "ca2ce4a7a5ebca02f385f732d468392ca26b5430d57659b65d0561ef588262dd"
+        },
+        {
+          "file": "desktop-ubuntu26.04/smoke/release-2.png",
+          "bytes": 26900,
+          "sha256": "298ebd15cf5cbcce3130acca0439f121875a52f23258261491abca9ea7fad939"
+        },
+        {
+          "file": "desktop-ubuntu26.04/smoke/release-3.png",
+          "bytes": 30889,
+          "sha256": "81f2018a69a424196e92bbcc52eb8ee1de21a36d2b76486f0749f66138955684"
+        },
+        {
+          "file": "desktop-ubuntu26.04/smoke/release-4.png",
+          "bytes": 68466,
+          "sha256": "567d060a7d1139df9a84c4ef1e5117fe78bcfad4e9117075c44bed2532a673b9"
+        }
+      ],
+      "image_digests": [
+        "ubuntu@sha256:f144425ff09be612d6d9ad965196e9cdc23dae1f42110a8a11a3e9a8198759f7"
+      ],
+      "capture_result_sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+    },
+    "debian11": {
+      "packages": [
+        {
+          "file": "desktop-debian11/packages/octool-2.0.1-1.amd64.deb",
+          "bytes": 12734632,
+          "sha256": "b832851177ed4c8091724a4d8e3c29e0cb03f0b2d80469f19e91ec4c623a8ddb"
+        },
+        {
+          "file": "desktop-debian11/packages/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10670,
+          "sha256": "0474038fefd3be1abd7be55bffed4ad24f0108822e1813ff9c4578fb54448d1c"
+        }
+      ],
+      "kernel_trees": {
+        "5.10.0-46-amd64": [
+          {
+            "file": "kernel-debian11/kernels/5.10.0-46-amd64/octool_hwio.ko",
+            "bytes": 357752,
+            "sha256": "afb0de05ae56d3823f32259a1d46ee1d1dc9feb99266a37e5b6cd20cb57a3333"
+          },
+          {
+            "file": "kernel-debian11/kernels/5.10.0-46-amd64/octool_hwio.test-signed.ko",
+            "bytes": 358201,
+            "sha256": "e44a55eb25aa536ab35c92b2b515baced0c4f8c114af2a62aceeb315ef3ea63a"
+          }
+        ]
+      },
+      "gui_tests": {
+        "file": {
+          "file": "desktop-debian11/gui-tests.txt",
+          "bytes": 1503,
+          "sha256": "943b15354baec0649bf5ab169be66673cbd7ccbcafe617a12cbf9721f3891e65"
+        },
+        "passed": 12,
+        "failed": 0,
+        "skipped": 0
+      },
+      "screenshots": [
+        {
+          "file": "desktop-debian11/smoke/native-0.png",
+          "bytes": 45631,
+          "sha256": "9009599e01f6cee50e30860ff0658b3131c5340c5785f616797b4d9ef43797bf"
+        },
+        {
+          "file": "desktop-debian11/smoke/native-1.png",
+          "bytes": 28163,
+          "sha256": "9aa00694c462ec6b4138f4e0a29d8731ba79e533e518698695b68563b87461bb"
+        },
+        {
+          "file": "desktop-debian11/smoke/native-2.png",
+          "bytes": 26025,
+          "sha256": "9b1b879cb164788d85ff7518d232ab07a4890bff89f4369ac91f2dc6a5884ba6"
+        },
+        {
+          "file": "desktop-debian11/smoke/native-3.png",
+          "bytes": 29641,
+          "sha256": "d47511ff5fe043aa00c62547e98bc8f4850047f27b350baf335f426c50f1412c"
+        },
+        {
+          "file": "desktop-debian11/smoke/native-4.png",
+          "bytes": 62733,
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        },
+        {
+          "file": "desktop-debian11/smoke/release-0.png",
+          "bytes": 45631,
+          "sha256": "9009599e01f6cee50e30860ff0658b3131c5340c5785f616797b4d9ef43797bf"
+        },
+        {
+          "file": "desktop-debian11/smoke/release-1.png",
+          "bytes": 28163,
+          "sha256": "9aa00694c462ec6b4138f4e0a29d8731ba79e533e518698695b68563b87461bb"
+        },
+        {
+          "file": "desktop-debian11/smoke/release-2.png",
+          "bytes": 26025,
+          "sha256": "9b1b879cb164788d85ff7518d232ab07a4890bff89f4369ac91f2dc6a5884ba6"
+        },
+        {
+          "file": "desktop-debian11/smoke/release-3.png",
+          "bytes": 29641,
+          "sha256": "d47511ff5fe043aa00c62547e98bc8f4850047f27b350baf335f426c50f1412c"
+        },
+        {
+          "file": "desktop-debian11/smoke/release-4.png",
+          "bytes": 62733,
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        }
+      ],
+      "image_digests": [
+        "debian@sha256:6f519a81440354a85eb592c5f32109ab80605f6b892455983a6f618bf87fabe9"
+      ],
+      "capture_result_sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+    },
+    "debian12": {
+      "packages": [
+        {
+          "file": "desktop-debian12/packages/octool-2.0.1-1.amd64.deb",
+          "bytes": 12734630,
+          "sha256": "99e78f3aab2ea38994b4c9415aecb5ecdd7df07bfb5f222d351d7ab5da38bb8c"
+        },
+        {
+          "file": "desktop-debian12/packages/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10672,
+          "sha256": "aa3615924a2dc6b7d91cf5fb8417b9c4c44114c221803bfa827b53bbe7e489f3"
+        }
+      ],
+      "kernel_trees": {
+        "6.1.0-53-amd64": [
+          {
+            "file": "kernel-debian12/kernels/6.1.0-53-amd64/octool_hwio.ko",
+            "bytes": 357000,
+            "sha256": "7fc256dc67c263a8f82a65c0550ddcc9b03852f481a65b110eddc32496696258"
+          },
+          {
+            "file": "kernel-debian12/kernels/6.1.0-53-amd64/octool_hwio.test-signed.ko",
+            "bytes": 357449,
+            "sha256": "06b2db10a69fbb760a674049001f0417fb4f56a348ca6a9298aaae2e5a8305b2"
+          }
+        ]
+      },
+      "gui_tests": {
+        "file": {
+          "file": "desktop-debian12/gui-tests.txt",
+          "bytes": 1503,
+          "sha256": "7ea96403a21cb8d89f0974ce62ecd6f6af0b46cf272c7bbc35ba4d92f60b8326"
+        },
+        "passed": 12,
+        "failed": 0,
+        "skipped": 0
+      },
+      "screenshots": [
+        {
+          "file": "desktop-debian12/smoke/native-0.png",
+          "bytes": 44541,
+          "sha256": "fcd47518a6c7c354bf6bc9e4f9e3d1ce0d25908b63949ccd0149f615c844a60f"
+        },
+        {
+          "file": "desktop-debian12/smoke/native-1.png",
+          "bytes": 28163,
+          "sha256": "9aa00694c462ec6b4138f4e0a29d8731ba79e533e518698695b68563b87461bb"
+        },
+        {
+          "file": "desktop-debian12/smoke/native-2.png",
+          "bytes": 26025,
+          "sha256": "9b1b879cb164788d85ff7518d232ab07a4890bff89f4369ac91f2dc6a5884ba6"
+        },
+        {
+          "file": "desktop-debian12/smoke/native-3.png",
+          "bytes": 29641,
+          "sha256": "d47511ff5fe043aa00c62547e98bc8f4850047f27b350baf335f426c50f1412c"
+        },
+        {
+          "file": "desktop-debian12/smoke/native-4.png",
+          "bytes": 62733,
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        },
+        {
+          "file": "desktop-debian12/smoke/release-0.png",
+          "bytes": 44541,
+          "sha256": "fcd47518a6c7c354bf6bc9e4f9e3d1ce0d25908b63949ccd0149f615c844a60f"
+        },
+        {
+          "file": "desktop-debian12/smoke/release-1.png",
+          "bytes": 28163,
+          "sha256": "9aa00694c462ec6b4138f4e0a29d8731ba79e533e518698695b68563b87461bb"
+        },
+        {
+          "file": "desktop-debian12/smoke/release-2.png",
+          "bytes": 26025,
+          "sha256": "9b1b879cb164788d85ff7518d232ab07a4890bff89f4369ac91f2dc6a5884ba6"
+        },
+        {
+          "file": "desktop-debian12/smoke/release-3.png",
+          "bytes": 29641,
+          "sha256": "d47511ff5fe043aa00c62547e98bc8f4850047f27b350baf335f426c50f1412c"
+        },
+        {
+          "file": "desktop-debian12/smoke/release-4.png",
+          "bytes": 62733,
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        }
+      ],
+      "image_digests": [
+        "debian@sha256:2c037a04925515fdd6ea85ea14a682d0e79931f5e9f5d07b6dbfc6ba12f9e858"
+      ],
+      "capture_result_sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+    },
+    "debian13": {
+      "packages": [
+        {
+          "file": "desktop-debian13/packages/octool-2.0.1-1.amd64.deb",
+          "bytes": 12734632,
+          "sha256": "cde8cb1af08e892563f764c8fc8944d7da5e8ce6b1e9116795f018f225fa6ae1"
+        },
+        {
+          "file": "desktop-debian13/packages/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10672,
+          "sha256": "72473c70ecc33525914ebd8af5463aec51914afb0addf4a26b5d3ceaf9173f40"
+        }
+      ],
+      "kernel_trees": {
+        "6.12.111+deb13-amd64": [
+          {
+            "file": "kernel-debian13/kernels/6.12.111+deb13-amd64/octool_hwio.ko",
+            "bytes": 421224,
+            "sha256": "5a22c7337d1cb3e52c5c8b0f96ef3665550f26f8e223036fc98ac688d3b84d23"
+          },
+          {
+            "file": "kernel-debian13/kernels/6.12.111+deb13-amd64/octool_hwio.test-signed.ko",
+            "bytes": 421673,
+            "sha256": "122921e443e3de138a70dcae1512158297b59ad3b852439c4dd44f39baf84d99"
+          }
+        ]
+      },
+      "gui_tests": {
+        "file": {
+          "file": "desktop-debian13/gui-tests.txt",
+          "bytes": 1503,
+          "sha256": "77c303144126da01f2248351fd7b164e54b216c3c84e4f4889476756bfa66102"
+        },
+        "passed": 12,
+        "failed": 0,
+        "skipped": 0
+      },
+      "screenshots": [
+        {
+          "file": "desktop-debian13/smoke/native-0.png",
+          "bytes": 44127,
+          "sha256": "10a66143b18f99864811cf5b58b035ec07e4fc57e78ff4617790976f8b2ece72"
+        },
+        {
+          "file": "desktop-debian13/smoke/native-1.png",
+          "bytes": 28163,
+          "sha256": "9aa00694c462ec6b4138f4e0a29d8731ba79e533e518698695b68563b87461bb"
+        },
+        {
+          "file": "desktop-debian13/smoke/native-2.png",
+          "bytes": 26025,
+          "sha256": "9b1b879cb164788d85ff7518d232ab07a4890bff89f4369ac91f2dc6a5884ba6"
+        },
+        {
+          "file": "desktop-debian13/smoke/native-3.png",
+          "bytes": 29641,
+          "sha256": "d47511ff5fe043aa00c62547e98bc8f4850047f27b350baf335f426c50f1412c"
+        },
+        {
+          "file": "desktop-debian13/smoke/native-4.png",
+          "bytes": 62733,
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        },
+        {
+          "file": "desktop-debian13/smoke/release-0.png",
+          "bytes": 44127,
+          "sha256": "10a66143b18f99864811cf5b58b035ec07e4fc57e78ff4617790976f8b2ece72"
+        },
+        {
+          "file": "desktop-debian13/smoke/release-1.png",
+          "bytes": 28163,
+          "sha256": "9aa00694c462ec6b4138f4e0a29d8731ba79e533e518698695b68563b87461bb"
+        },
+        {
+          "file": "desktop-debian13/smoke/release-2.png",
+          "bytes": 26025,
+          "sha256": "9b1b879cb164788d85ff7518d232ab07a4890bff89f4369ac91f2dc6a5884ba6"
+        },
+        {
+          "file": "desktop-debian13/smoke/release-3.png",
+          "bytes": 29641,
+          "sha256": "d47511ff5fe043aa00c62547e98bc8f4850047f27b350baf335f426c50f1412c"
+        },
+        {
+          "file": "desktop-debian13/smoke/release-4.png",
+          "bytes": 62733,
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        }
+      ],
+      "image_digests": [
+        "debian@sha256:913f6706df59a68922d1dd08f78c2476560a8d367897200a6005b00e5f67c2d5"
+      ],
+      "capture_result_sha256": "7b5dc95730f1fa2cba7ac149d814475c69edc1379b63e883564e699372f6bdd2"
+    }
+  },
+  "cloud_source": {
+    "file": "octool-source/octool-2.0.1-src.tar.gz",
+    "bytes": 2337061,
+    "sha256": "1e149d3d85602456a96c2c32aa93be7a55c66166d1a33c6634aaf4938dd184ea"
+  },
+  "local_packages": "dist/packages-3920018/",
+  "local_cloud_source": "dist/cloud-3920018/octool-2.0.1-src.tar.gz"
+}
