@@ -26,7 +26,7 @@ octool_capture.so: octool_capture.c $(HEADERS)
 	$(CC) $(CFLAGS) -Werror -fPIC -shared -o $@ $< -ldl -lpthread
 
 capture_backend.so: capture_backend.c capture_test.h
-	$(CC) $(CFLAGS) -Werror -fPIC -shared -o $@ $< -pthread
+	$(CC) $(CFLAGS) -Werror -fPIC -shared -o $@ $< -ldl -pthread
 
 capture-harness: capture_harness.c capture_test.h
 	$(CC) $(CFLAGS) -Werror -rdynamic -o $@ $< -ldl -pthread

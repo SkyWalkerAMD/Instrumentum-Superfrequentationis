@@ -30,7 +30,7 @@ static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 static __thread int inside;
 static const char *device = "/dev/mydev";
-static int output = -1, initialized, invalid, active;
+static int output = -1, initialized, invalid, active, finalized;
 static uint64_t next_cookie, records;
 static int (*next_open)(const char *, int, ...);
 static int (*next_open64)(const char *, int, ...);
@@ -46,10 +46,19 @@ static void *(*next_mmap64)(void *, size_t, int, int, int, off64_t);
 static int (*next_munmap)(void *, size_t);
 static int (*next_mprotect)(void *, size_t, int);
 static void *(*next_mremap)(void *, size_t, size_t, int, ...);
+static int positional(const void *, size_t, off_t);
 
 /* Caller holds lock (or initializes). Diagnostic cannot recurse into write. */
 static void reject(const char *reason)
 {
+    if (finalized && output >= 0) {
+        const uint64_t zero = 0;
+        /* A later DSO destructor may still issue device operations. Keep our
+         * fd open until process teardown and revoke an already written marker
+         * before forwarding any such request. Never write through a replaced fd. */
+        if (positional(&zero, sizeof(zero), 0)) (void)ftruncate(output, 0);
+        finalized = 0;
+    }
     if (!invalid) {
         char line[192];
         int n = snprintf(line, sizeof(line), "[octool_capture] INCOMPLETE: %s\n", reason);
@@ -259,6 +268,10 @@ static int duplicate(int oldfd, int newfd, int flags, int which)
 {
     int r, saved;
     ensure(); pthread_mutex_lock(&lock); inside = 1;
+    if (which != 1 && newfd == output && oldfd != newfd) {
+        reject("trace descriptor replacement attempted");
+        output = -1;
+    }
     r = which == 1 ? next_dup(oldfd) : which == 2 ? next_dup2(oldfd, newfd)
                                                 : next_dup3(oldfd, newfd, flags);
     saved = errno;
@@ -286,6 +299,7 @@ ssize_t write(int fd, const void *buf, size_t count)
     if (inside) return next_write ? next_write(fd, buf, count) : syscall(SYS_write, fd, buf, count);
     ensure(); pthread_mutex_lock(&lock); inside = 1;
     if (watched(fd)) {
+        if (finalized) reject("device request after trace finalization");
         if (!is_target(fd)) { reject("device descriptor identity changed"); forget(fd); }
         else if (!invalid) {
             struct iovec local = {rec.req, sizeof(rec.req)}, remote = {(void *)buf, sizeof(rec.req)};
@@ -363,10 +377,12 @@ __attribute__((destructor)) static void finish(void)
     /* Publish marker LAST, after all complete records and exact count sync.
      * _exit/signals/I/O failure leave invalid magic. No claim of final marker
      * durability against power loss; a missing marker simply rejects capture. */
-    if (!invalid && output >= 0 &&
-        (positional(&h, sizeof(h), 0) || fdatasync(output) ||
-         positional(&magic, sizeof(magic), 0))) reject("trace finalization failed");
-    if (output >= 0) (void)next_close(output);
-    output = -1;
+    if (!invalid && output >= 0) {
+        if (positional(&h, sizeof(h), 0) || fdatasync(output) ||
+            positional(&magic, sizeof(magic), 0)) reject("trace finalization failed");
+        else finalized = 1;
+    }
+    /* Kernel process teardown closes this private fd/lock. Keeping it open
+     * lets later DSO destructors invalidate a provisional successful marker. */
     inside = 0; pthread_mutex_unlock(&lock);
 }

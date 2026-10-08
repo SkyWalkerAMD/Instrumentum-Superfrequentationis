@@ -2,7 +2,10 @@
 /* Synthetic downstream write. Ordinary mmap file, no device/hardware I/O. */
 #define _GNU_SOURCE
 #include "capture_test.h"
+#include <assert.h>
+#include <dlfcn.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
@@ -84,4 +87,28 @@ int fdatasync(int fd)
 {
     if (mode("sync-fail")) { errno = EIO; return -1; }
     return (int)syscall(SYS_fdatasync, fd);
+}
+
+__attribute__((destructor)) static void late_device_request(void)
+{
+    if (mode("late-write") || mode("late-error")) {
+        uint64_t magic = 0, req[12] = {0x0c, 71, 0x3000};
+        int fail = mode("late-error"), fd;
+        ssize_t r;
+        ssize_t (*send)(int, const void *, size_t) = dlsym(RTLD_DEFAULT, "write");
+        fd = open(getenv("OCTOOL_CAP_OUT"), O_RDONLY);
+        assert(fd >= 0 && read(fd, &magic, 8) == 8);
+        assert(close(fd) == 0);
+        /* Verify actual loader order: this fixture runs AFTER capture's DSO
+         * destructor. Otherwise it cannot claim to test late finalization. */
+        assert(magic == UINT64_C(0x4f43545250520002));
+        fd = open(getenv("OCTOOL_CAP_DEV"), O_RDWR);
+        assert(fd >= 0);
+        __atomic_store_n(capture_test.mailbox, 0, __ATOMIC_RELEASE);
+        if (fail) capture_test.mode = "write-fail";
+        r = send(fd, req, sizeof(req));
+        assert(fail ? (r == -1 && errno == EIO) : (r == 96 && errno == EUCLEAN));
+        assert(atomic_load(&capture_test.calls) == 3);
+        assert(close(fd) == 0);
+    }
 }

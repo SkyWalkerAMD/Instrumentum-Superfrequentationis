@@ -25,6 +25,7 @@ BAD = (
     "write-fail", "short-write", "bad-pointer", "bad-count", "timeout",
     "driver-error", "bad-done", "trace-fail", "trace-partial-fail",
     "finalize-fail", "marker-partial", "sync-fail", "abrupt", "signal", "fork", "exec-child",
+    "late-write", "late-error",
 )
 
 
