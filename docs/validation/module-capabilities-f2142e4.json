@@ -1,0 +1,632 @@
+{
+  "date": "2026-10-08",
+  "sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176",
+  "scope": "Module capability query plus retained PCI/EC and per-thread I/O fixes",
+  "run": {
+    "id": 37741335600,
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37741335600",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "jobs": [
+    {
+      "id": 113192491184,
+      "name": "baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113192491404,
+      "name": "matrix",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113192551305,
+      "name": "kernel (el8)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113192551318,
+      "name": "kernel (ubuntu20.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113192551329,
+      "name": "kernel (ubuntu24.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113192551353,
+      "name": "kernel (debian12)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113192551364,
+      "name": "kernel (ubuntu22.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113192551371,
+      "name": "kernel (el10)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113192551378,
+      "name": "kernel (el9)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113192551384,
+      "name": "kernel (debian11)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113192551433,
+      "name": "kernel (debian13)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113192552312,
+      "name": "kernel (ubuntu26.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113194417893,
+      "name": "desktop (ubuntu26.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113194417953,
+      "name": "desktop (ubuntu20.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113194417986,
+      "name": "desktop (el8)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113194418020,
+      "name": "desktop (ubuntu22.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113194418029,
+      "name": "desktop (debian11)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113194418064,
+      "name": "desktop (ubuntu24.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113194418068,
+      "name": "desktop (debian12)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113194418073,
+      "name": "desktop (el10)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113194418178,
+      "name": "desktop (debian13)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113194418262,
+      "name": "desktop (el9)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113197092585,
+      "name": "gate",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 11534685566,
+      "name": "desktop-ubuntu22.04",
+      "size_in_bytes": 25406876,
+      "digest": "sha256:9057cfdaa5e19367ed319dc81fd6e1b12647a49b87312bb778b1600d1ff15420",
+      "expired": false,
+      "created_at": "2026-10-08T07:15:06Z",
+      "expires_at": "2026-10-15T07:15:03Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11534680659,
+      "name": "desktop-el10",
+      "size_in_bytes": 21816662,
+      "digest": "sha256:9420999b1e669aaf54b48ef4c6bad0db7f4d8713f0e3d5ad94d8f514392e58aa",
+      "expired": false,
+      "created_at": "2026-10-08T07:15:54Z",
+      "expires_at": "2026-10-15T07:15:52Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11534641524,
+      "name": "desktop-el8",
+      "size_in_bytes": 22044376,
+      "digest": "sha256:155f1da3b98865c96007b386d67e8f3348817618edcbfed7ad55ba20354b0552",
+      "expired": false,
+      "created_at": "2026-10-08T07:19:50Z",
+      "expires_at": "2026-10-15T07:19:47Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11534611649,
+      "name": "octool-source",
+      "size_in_bytes": 2308846,
+      "digest": "sha256:2a7cd4ac3c093542a60c5431a6b25bbba9b19bcaefb069501eff87af636370e0",
+      "expired": false,
+      "created_at": "2026-10-08T07:20:01Z",
+      "expires_at": "2026-10-15T07:20:00Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11534570385,
+      "name": "desktop-debian12",
+      "size_in_bytes": 25406917,
+      "digest": "sha256:2b9f0a1ef3c50722b6afedacc2ef1fb26cff97f96d2be476f3e79473c54a8f7b",
+      "expired": false,
+      "created_at": "2026-10-08T07:13:36Z",
+      "expires_at": "2026-10-15T07:13:33Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11534500708,
+      "name": "desktop-ubuntu24.04",
+      "size_in_bytes": 25452631,
+      "digest": "sha256:21d53498664d6df65a1fe5a7b6c00ef6f6d14bdf92c48a4db36b428b22eaede6",
+      "expired": false,
+      "created_at": "2026-10-08T07:14:02Z",
+      "expires_at": "2026-10-15T07:14:00Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11534490039,
+      "name": "kernel-el8",
+      "size_in_bytes": 373634,
+      "digest": "sha256:a6aa9423933a014f45220ac26b4693c1e8efc5494922a2b9f525f8f0b94efa04",
+      "expired": false,
+      "created_at": "2026-10-08T07:10:44Z",
+      "expires_at": "2026-10-15T07:10:43Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11534355458,
+      "name": "desktop-ubuntu26.04",
+      "size_in_bytes": 25452407,
+      "digest": "sha256:2550f6dab634b116f630db155821b38529072680dcba503bde24d985cf4517de",
+      "expired": false,
+      "created_at": "2026-10-08T07:14:07Z",
+      "expires_at": "2026-10-15T07:14:05Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11534311411,
+      "name": "desktop-el9",
+      "size_in_bytes": 21843844,
+      "digest": "sha256:89f9a991dacca14fe005808e000affd4d00200856148d11b57a5f6fa5cc8cb22",
+      "expired": false,
+      "created_at": "2026-10-08T07:18:48Z",
+      "expires_at": "2026-10-15T07:18:46Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11534185619,
+      "name": "kernel-ubuntu24.04",
+      "size_in_bytes": 310084,
+      "digest": "sha256:e52f9774084efc2cb85b166c5876605df3045f80f3535ea3c0f0c3b2c5dcca93",
+      "expired": false,
+      "created_at": "2026-10-08T07:07:28Z",
+      "expires_at": "2026-10-15T07:07:28Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11534146745,
+      "name": "kernel-debian12",
+      "size_in_bytes": 283539,
+      "digest": "sha256:ca6b9f4d748877fdaae76d4b223e96f2093d9a987b7897b97b8559bd372018f9",
+      "expired": false,
+      "created_at": "2026-10-08T07:07:22Z",
+      "expires_at": "2026-10-15T07:07:22Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11534127222,
+      "name": "kernel-el10",
+      "size_in_bytes": 326744,
+      "digest": "sha256:f59576514d0ae9e50848e5e980964804b10c3deb4cfd38d6f453915109217d0a",
+      "expired": false,
+      "created_at": "2026-10-08T07:08:54Z",
+      "expires_at": "2026-10-15T07:08:53Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11534111930,
+      "name": "kernel-debian11",
+      "size_in_bytes": 271423,
+      "digest": "sha256:eb14b02f50fdf4a83b576fc80b9f47164997399d2e7ab7d7e9460953f5816ea3",
+      "expired": false,
+      "created_at": "2026-10-08T07:07:23Z",
+      "expires_at": "2026-10-15T07:07:22Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11534076737,
+      "name": "mailbox-contract-evidence",
+      "size_in_bytes": 2026,
+      "digest": "sha256:5a4687f3fdb1ecee7332f709f2e23275309b6807886afea0baa319ba464d15dd",
+      "expired": false,
+      "created_at": "2026-10-08T07:05:47Z",
+      "expires_at": "2026-10-22T07:05:46Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11534043623,
+      "name": "desktop-debian11",
+      "size_in_bytes": 25399700,
+      "digest": "sha256:ab5eef3248af14fad258d22ccf89aed4880fe668870912d2e253773fcf48d14c",
+      "expired": false,
+      "created_at": "2026-10-08T07:14:00Z",
+      "expires_at": "2026-10-15T07:13:57Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11534022890,
+      "name": "kernel-el9",
+      "size_in_bytes": 334694,
+      "digest": "sha256:9fdd69662e44e9a5011573761a51f577d891cf64ec244c1fdcab3327c6af8f56",
+      "expired": false,
+      "created_at": "2026-10-08T07:09:59Z",
+      "expires_at": "2026-10-15T07:09:57Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11533878542,
+      "name": "kernel-debian13",
+      "size_in_bytes": 317846,
+      "digest": "sha256:ebd8a89848a175960734238bbe4e419bbaebe64876cb68f0eb68f06259e018cc",
+      "expired": false,
+      "created_at": "2026-10-08T07:08:23Z",
+      "expires_at": "2026-10-15T07:08:22Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11533859266,
+      "name": "el8-baseline",
+      "size_in_bytes": 67057774,
+      "digest": "sha256:9ad2e8003e5b041209d6992b9500443c555499bcea0439e2b6c4405be0eef6b3",
+      "expired": false,
+      "created_at": "2026-10-08T07:11:36Z",
+      "expires_at": "2026-10-15T07:11:33Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11533844931,
+      "name": "desktop-debian13",
+      "size_in_bytes": 25404112,
+      "digest": "sha256:0ad175567f138127e7367599401f5d8c71b4866fc8f10e42e957a81148ac8d0f",
+      "expired": false,
+      "created_at": "2026-10-08T07:15:03Z",
+      "expires_at": "2026-10-15T07:15:01Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11533834792,
+      "name": "desktop-ubuntu20.04",
+      "size_in_bytes": 25408558,
+      "digest": "sha256:86b94e2bab312bd85e864a4f54a0dfd9b974a8c28d094373ea458b44ba69931e",
+      "expired": false,
+      "created_at": "2026-10-08T07:14:05Z",
+      "expires_at": "2026-10-15T07:14:03Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11533798846,
+      "name": "kernel-ubuntu26.04",
+      "size_in_bytes": 340223,
+      "digest": "sha256:e2e565c88cf2f7cec48bbab35720dc41c2d8f3a4da9b6721934722e9d9ab9466",
+      "expired": false,
+      "created_at": "2026-10-08T07:07:47Z",
+      "expires_at": "2026-10-15T07:07:46Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11533783923,
+      "name": "kernel-ubuntu20.04",
+      "size_in_bytes": 60257,
+      "digest": "sha256:0a64db9449b136f898be978b200cd436b4c5b26d77fbbfeb14be86aa4a1d64fc",
+      "expired": false,
+      "created_at": "2026-10-08T07:07:44Z",
+      "expires_at": "2026-10-15T07:07:43Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    },
+    {
+      "id": 11533428326,
+      "name": "kernel-ubuntu22.04",
+      "size_in_bytes": 542102,
+      "digest": "sha256:ff64136c0f05d957838a0339e09c39feb9ae561be7445b3b3cfbd216f7ee4b37",
+      "expired": false,
+      "created_at": "2026-10-08T07:07:46Z",
+      "expires_at": "2026-10-15T07:07:46Z",
+      "workflow_run": {
+        "id": 37741335600,
+        "repository_id": 1396820807,
+        "head_repository_id": 1396820807,
+        "head_branch": "research/kmod-eexist-probe",
+        "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+      }
+    }
+  ],
+  "selected_logs": {
+    "matrix": [
+      "2026-10-08T07:05:44.0603548Z Ran 19 tests in 0.013s",
+      "2026-10-08T07:05:44.0603882Z OK (skipped=2)",
+      "2026-10-08T07:05:46.2885666Z Ran 3 tests in 0.206s",
+      "2026-10-08T07:05:46.5009436Z 56 caller-contract cases passed; synthetic replies, no hardware"
+    ],
+    "el8_kernel": [
+      "2026-10-08T07:05:56.0030708Z ##[group]Run mkdir -p build/artifacts",
+      "2026-10-08T07:09:06.3730736Z  cpio                        x86_64  2.12-11.el8               baseos     265 k",
+      "2026-10-08T07:09:12.8723073Z   Upgrading        : libmount-2.32.1-48.el8_10.x86_64                     21/67 ",
+      "2026-10-08T07:09:30.3553072Z (19/35): libipt-1.6.1-8.el8.x86_64.rpm          137 kB/s |  49 kB     00:00    ",
+      "2026-10-08T07:09:33.6123072Z Complete!",
+      "2026-10-08T07:09:34.8408810Z ALL PASS: HAL encode/decode matches octool ABI on every op",
+      "2026-10-08T07:09:34.8415641Z PASS: CPU/token wire fields, malformed replies, failed tokens, invalid PCI and MMIO mapping boundaries",
+      "2026-10-08T07:09:34.8416435Z PASS: capability rejection before mmap, partial capabilities and explicit legacy MMIO-only transport",
+      "2026-10-08T07:09:34.8420432Z PASS: production PCI/EC adapters, ownership, blockers and errors (ACPI=1)",
+      "2026-10-08T07:09:34.8424921Z PASS: production PCI/EC adapters, ownership, blockers and errors (ACPI=0)",
+      "2026-10-08T07:09:34.8430507Z PASS: direct I/O permission on each calling thread, revocation, no unauthorized instructions",
+      "2026-10-08T07:09:34.8439960Z SELFTEST OK: engine classifies match/mismatch/volatile correctly",
+      "2026-10-08T07:09:35.0945220Z Ran 19 tests in 0.059s",
+      "2026-10-08T07:10:24.7483322Z {\"target\": \"el8\", \"passed\": true, \"observations\": 307, \"guard_sha256\": \"57ca919e302573ca954a64bb69936c64845bd4fc00f426f2455766117d201d2c\"}",
+      "2026-10-08T07:10:26.1745046Z octool: class_create(owner, name) probe passed",
+      "2026-10-08T07:10:29.3077742Z   Installing       : procps-ng-3.3.15-14.el8.x86_64                         1/2 "
+    ],
+    "el10_desktop": [
+      "2026-10-08T07:13:34.8157971Z Totals: 12 passed, 0 failed, 0 skipped, 0 blacklisted, 207ms",
+      "2026-10-08T07:13:36.6844907Z ALL PASS: HAL encode/decode matches octool ABI on every op",
+      "2026-10-08T07:13:36.6854218Z PASS: CPU/token wire fields, malformed replies, failed tokens, invalid PCI and MMIO mapping boundaries",
+      "2026-10-08T07:13:36.6855516Z PASS: capability rejection before mmap, partial capabilities and explicit legacy MMIO-only transport",
+      "2026-10-08T07:13:36.6862368Z PASS: production PCI/EC adapters, ownership, blockers and errors (ACPI=1)",
+      "2026-10-08T07:13:36.6868067Z PASS: production PCI/EC adapters, ownership, blockers and errors (ACPI=0)",
+      "2026-10-08T07:13:36.6875563Z PASS: direct I/O permission on each calling thread, revocation, no unauthorized instructions",
+      "2026-10-08T07:15:35.9150171Z GUI SMOKE PASS: visible window, pid=19386, title='OCTool — Hardware information and registers'",
+      "2026-10-08T07:15:41.4689794Z GUI SMOKE PASS: visible window, pid=19453, title='OCTool — Hardware information and registers'"
+    ]
+  },
+  "probe": {
+    "run_id": 37741335727,
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37741335727",
+    "jobs": [
+      {
+        "id": 113192491943,
+        "name": "duplicate-load",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "artifacts": [
+      {
+        "id": 11532894634,
+        "name": "kmod-eexist-37741335727",
+        "size_in_bytes": 565,
+        "digest": "sha256:9532ad18788c29c860d22ae85d1f387218dd5ac0fffb55bd0501cdd860463683",
+        "expired": false,
+        "created_at": "2026-10-08T07:06:02Z",
+        "expires_at": "2026-11-07T07:06:01Z",
+        "workflow_run": {
+          "id": 37741335727,
+          "repository_id": 1396820807,
+          "head_repository_id": 1396820807,
+          "head_branch": "research/kmod-eexist-probe",
+          "head_sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176"
+        }
+      }
+    ],
+    "result": {
+      "kernel_release": "6.17.0-1022-azure",
+      "module_name": "octool_hwio",
+      "module_sha256": "c798b85824914e9c67ae75f006ced4e460139224bf6b2e49972ccf45c9dc011f",
+      "module_vermagic": "6.17.0-1022-azure SMP mod_unload modversions ",
+      "module_signer": "",
+      "module_signature_hash": "",
+      "initial_load": "insmod",
+      "initial_load_syscall_traced": false,
+      "probe_exit_code": 0,
+      "module_class_device_present_after_probe": true,
+      "dev_mydev_present_after_probe": true,
+      "module_unload_succeeded": true,
+      "hardware_io_attempted": false,
+      "metadata_query": {
+        "caps_valid": true,
+        "magic": "0x4f435432",
+        "version": 1,
+        "size": 32,
+        "features": "0x000000000000003f",
+        "unknown_command_enotty": true,
+        "bad_pointer_efault": true,
+        "close_succeeded": true
+      },
+      "probe": {
+        "second_syscall": "init_module",
+        "second_rc": -1,
+        "second_errno": 17
+      }
+    }
+  },
+  "local_static": {
+    "abi_sha256": "5f07bfefd2a96519756cad1567dfdf4b0c878db142f670e1b208cf39523800d8",
+    "caps_header_sha256": "a23d727f3c1e92611dcf2da13ee36dc3a5c8b9e2bab1e256fce1a019d666fe1d",
+    "original_elf_mailbox_observations_unchanged": 56,
+    "original_elf_report_sha256": "89f27be7be8a5e4491588d219116c15884c2df0322f008084fc6c06f8a84a982",
+    "old_ko_fops_evidence": "legacy-fops-capabilities.json"
+  },
+  "limitations": [
+    "EL CI variants are Rocky 8/9/10, not separate Alma/RHEL tests.",
+    "Target containers use the runner host kernel; target module compile, signing and DKMS lifecycle do not prove target runtime loading.",
+    "Only the controlled Ubuntu runner probe loads a module and queries metadata; no hardware requests.",
+    "MOK trust, physical registers, legacy GUI main window and live MMIO parity remain unverified.",
+    "Matrix job skips 2 Linux-tool tests before build; kernel job executes all 19 Python tests after compiling the tools."
+  ]
+}

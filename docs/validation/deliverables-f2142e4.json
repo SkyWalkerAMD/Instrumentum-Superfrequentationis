@@ -1,0 +1,390 @@
+{
+  "run_id": 37741335600,
+  "sha": "f2142e4c88fa196ee5b5bb9eb630d8fe4342b176",
+  "source_sha256": "8395496120c37862893a01b848deef6297470e103b3056de778fb487e2205d1f",
+  "package_file_count": 20,
+  "kernel_release_count": 11,
+  "targets": [
+    {
+      "target": "el8",
+      "packages": [
+        {
+          "file": "dist/packages-f2142e4/el8/octool-2.0.1-1.el8.x86_64.rpm",
+          "bytes": 9777068,
+          "sha256": "f9cc6aab3ef6a50ccfd2c6724d08b76cb22e83577c322939c873458465e965ff"
+        },
+        {
+          "file": "dist/packages-f2142e4/el8/octool-hwio-dkms-2.0.1-1.el8.noarch.rpm",
+          "bytes": 19068,
+          "sha256": "36f5b28d70aa36e932e3019d5c66b467b4ba07b398e34c16ba9a87ac2b31e7a8"
+        }
+      ],
+      "kernels": [
+        {
+          "release": "4.18.0-553.171.1.el8_10.x86_64",
+          "module_sha256": "ec79058375d96f848249896f44036ccf13928c06181f69bcf76147d7dad2229a",
+          "ci_test_signed_module_sha256": "cae32aa7281b99d708e825d57023ea4198c02561a273ae96a7cda84aa4f5b7b0"
+        }
+      ],
+      "gui_test_summary": "Totals: 12 passed, 0 failed, 0 skipped, 0 blacklisted, 98ms",
+      "guard_observations_passed": 307,
+      "image_digests": [
+        "rockylinux@sha256:9794037624aaa6212aeada1d28861ef5e0a935adaf93e4ef79837119f2a2d04c"
+      ],
+      "screenshots": [
+        {
+          "file": "desktop-el8/smoke/release-4.png",
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        },
+        {
+          "file": "desktop-el8/smoke/native-4.png",
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        }
+      ]
+    },
+    {
+      "target": "el9",
+      "packages": [
+        {
+          "file": "dist/packages-f2142e4/el9/octool-2.0.1-1.el9.x86_64.rpm",
+          "bytes": 9574758,
+          "sha256": "feadc9ad1ff7dbd9a97a811d98fc3ec9963805e4d4b6484feb0b67ff096ce22b"
+        },
+        {
+          "file": "dist/packages-f2142e4/el9/octool-hwio-dkms-2.0.1-1.el9.noarch.rpm",
+          "bytes": 19060,
+          "sha256": "4b033f9676aebe24641b8e6f9982f33b2f16548d16ac663b60b1aa0ac4eafa74"
+        }
+      ],
+      "kernels": [
+        {
+          "release": "5.14.0-687.54.1.el9_8.x86_64",
+          "module_sha256": "c19a360e148fd2fa492e87e77a3999f08e6061dfba3415cbe23104f15449ee61",
+          "ci_test_signed_module_sha256": "7bc7d81c84a19e678339df1f1d055795274644120ce6803c53599f114aecf548"
+        }
+      ],
+      "gui_test_summary": "Totals: 12 passed, 0 failed, 0 skipped, 0 blacklisted, 81ms",
+      "guard_observations_passed": 307,
+      "image_digests": [
+        "rockylinux@sha256:d7be1c094cc5845ee815d4632fe377514ee6ebcf8efaed6892889657e5ddaaa6"
+      ],
+      "screenshots": [
+        {
+          "file": "desktop-el9/smoke/release-4.png",
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        },
+        {
+          "file": "desktop-el9/smoke/native-4.png",
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        }
+      ]
+    },
+    {
+      "target": "el10",
+      "packages": [
+        {
+          "file": "dist/packages-f2142e4/el10/octool-2.0.1-1.el10.x86_64.rpm",
+          "bytes": 9575317,
+          "sha256": "f784978f53c5bb9fa736a679f7668de12c02957f05f2f56f0191b5947b129c01"
+        },
+        {
+          "file": "dist/packages-f2142e4/el10/octool-hwio-dkms-2.0.1-1.el10.noarch.rpm",
+          "bytes": 19160,
+          "sha256": "784a40442aa23d7193535fb10c5c9e972dfc4b35a78bc8d679e4903fa3844726"
+        }
+      ],
+      "kernels": [
+        {
+          "release": "6.12.0-211.62.1.el10_2.x86_64",
+          "module_sha256": "e7311c5eb669a656fd3f8257d03024b69657e5aa63d89debd909b5331a506024",
+          "ci_test_signed_module_sha256": "0605441c5cd340ee533d6cc2516cd97497311e3997bfdda938e4af9e9e510bcb"
+        }
+      ],
+      "gui_test_summary": "Totals: 12 passed, 0 failed, 0 skipped, 0 blacklisted, 207ms",
+      "guard_observations_passed": 307,
+      "image_digests": [
+        "quay.io/rockylinux/rockylinux@sha256:827d37bc128288ccf160ee318bb3cb92d591164cb217e92f8bc61e3982ae1834"
+      ],
+      "screenshots": [
+        {
+          "file": "desktop-el10/smoke/release-4.png",
+          "sha256": "8e9dd47bd43e7fa90b3df13251ff1e4891abf0690bd774380de758c26e7a3a57"
+        },
+        {
+          "file": "desktop-el10/smoke/native-4.png",
+          "sha256": "8e9dd47bd43e7fa90b3df13251ff1e4891abf0690bd774380de758c26e7a3a57"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu20.04",
+      "packages": [
+        {
+          "file": "dist/packages-f2142e4/ubuntu20.04/octool-2.0.1-1.amd64.deb",
+          "bytes": 12719876,
+          "sha256": "9a5cb667cb94fa0a10cc6f2b1b85038ae8f3eb0ba553ed1b6466ea3749efc70b"
+        },
+        {
+          "file": "dist/packages-f2142e4/ubuntu20.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10668,
+          "sha256": "eb57bd4bc98321f5414ac698a7b72f6cc4038bb757562020c80ee8d64ff61772"
+        }
+      ],
+      "kernels": [
+        {
+          "release": "5.4.0-216-generic",
+          "module_sha256": "b28ffc18c890f3c39dbfd2894dd00da00bb850f10c15d49528d08a06b95c261b",
+          "ci_test_signed_module_sha256": "2579f2dab1fd9d1422b2e06bb525f8f07678ecefa52efcce8100dc0b3d621d50"
+        }
+      ],
+      "gui_test_summary": "Totals: 12 passed, 0 failed, 0 skipped, 0 blacklisted, 205ms",
+      "guard_observations_passed": 307,
+      "image_digests": [
+        "ubuntu@sha256:8feb4d8ca5354def3d8fce243717141ce31e2c428701f6682bd2fafe15388214"
+      ],
+      "screenshots": [
+        {
+          "file": "desktop-ubuntu20.04/smoke/release-4.png",
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        },
+        {
+          "file": "desktop-ubuntu20.04/smoke/native-4.png",
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu22.04",
+      "packages": [
+        {
+          "file": "dist/packages-f2142e4/ubuntu22.04/octool-2.0.1-1.amd64.deb",
+          "bytes": 12719874,
+          "sha256": "74aed4f3944c564ff393d33e85540c4617244a65ed2f4a83b19edfca56cf625b"
+        },
+        {
+          "file": "dist/packages-f2142e4/ubuntu22.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10674,
+          "sha256": "41c3ff7c4b5cd5cd4c36e926d693660de8cd898bee311d728988cc78e0b7fb26"
+        }
+      ],
+      "kernels": [
+        {
+          "release": "5.15.0-198-generic",
+          "module_sha256": "11ba48722faca8e5e051d40b1d6459daa920fe58628d72b77f77401bc59953bc",
+          "ci_test_signed_module_sha256": "3dcb7c01ffff385386f59416fcbc86bd3d60f156b932e7a2bfd245cfd5dea934"
+        },
+        {
+          "release": "6.8.0-138-generic",
+          "module_sha256": "ee8cd2475fd1e7c24dccb22130257053a444adc9db808684bad44a00297494bb",
+          "ci_test_signed_module_sha256": "7f7e0e52d7d0f35f67d47247e35c67c37150036e12bcf223e1fdaa1f5a5541a3"
+        }
+      ],
+      "gui_test_summary": "Totals: 12 passed, 0 failed, 0 skipped, 0 blacklisted, 90ms",
+      "guard_observations_passed": 307,
+      "image_digests": [
+        "ubuntu@sha256:5ec03bb3441e8b0bf3b4f9cd4629a1ae763010dc3035bb8da3ae6cf026486401"
+      ],
+      "screenshots": [
+        {
+          "file": "desktop-ubuntu22.04/smoke/release-4.png",
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        },
+        {
+          "file": "desktop-ubuntu22.04/smoke/native-4.png",
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu24.04",
+      "packages": [
+        {
+          "file": "dist/packages-f2142e4/ubuntu24.04/octool-2.0.1-1.amd64.deb",
+          "bytes": 12719876,
+          "sha256": "f5bdab18beb918f8f66a9f00b7f9f6f4a63fd93abc431a35c717c502847cab72"
+        },
+        {
+          "file": "dist/packages-f2142e4/ubuntu24.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10668,
+          "sha256": "c127d4a5048cf5c99b8ba7bde358ea8c2f182d7ca0aaeb1d1d64decb038b30f8"
+        }
+      ],
+      "kernels": [
+        {
+          "release": "6.8.0-146-generic",
+          "module_sha256": "9214c5560954f3d1cadee11b8d77f923048b9b41e336e986531a0c36c0e3a97d",
+          "ci_test_signed_module_sha256": "4e1f35db08eb1ac85144f0a2a08e8848471536f4f6ad49bb2135a88ee1d14897"
+        }
+      ],
+      "gui_test_summary": "Totals: 12 passed, 0 failed, 0 skipped, 0 blacklisted, 93ms",
+      "guard_observations_passed": 307,
+      "image_digests": [
+        "ubuntu@sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55"
+      ],
+      "screenshots": [
+        {
+          "file": "desktop-ubuntu24.04/smoke/release-4.png",
+          "sha256": "c319f51628d27c6a9316bbb000f8d692467b8513ec495bc88a2db61d13d37deb"
+        },
+        {
+          "file": "desktop-ubuntu24.04/smoke/native-4.png",
+          "sha256": "c319f51628d27c6a9316bbb000f8d692467b8513ec495bc88a2db61d13d37deb"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu26.04",
+      "packages": [
+        {
+          "file": "dist/packages-f2142e4/ubuntu26.04/octool-2.0.1-1.amd64.deb",
+          "bytes": 12719874,
+          "sha256": "aa8e2e5804bfaa5c93e9e69c0b415659718a7252a1f99e73387c9043ae5d8cfa"
+        },
+        {
+          "file": "dist/packages-f2142e4/ubuntu26.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10668,
+          "sha256": "fcce1db42eda11414ebe83e09347c98b80d8438944db6c3c44530fd65d197d8d"
+        }
+      ],
+      "kernels": [
+        {
+          "release": "7.0.0-38-generic",
+          "module_sha256": "60e4a9e6f9c9362dabc05e1df8e89e5c69e5ecbb21d7e490e762f4df9636b71a",
+          "ci_test_signed_module_sha256": "8be324da297e491c249c4a2ba20a9aea8619a54d038c8433d22c834fdcb0ed5a"
+        }
+      ],
+      "gui_test_summary": "Totals: 12 passed, 0 failed, 0 skipped, 0 blacklisted, 82ms",
+      "guard_observations_passed": 307,
+      "image_digests": [
+        "ubuntu@sha256:f144425ff09be612d6d9ad965196e9cdc23dae1f42110a8a11a3e9a8198759f7"
+      ],
+      "screenshots": [
+        {
+          "file": "desktop-ubuntu26.04/smoke/release-4.png",
+          "sha256": "567d060a7d1139df9a84c4ef1e5117fe78bcfad4e9117075c44bed2532a673b9"
+        },
+        {
+          "file": "desktop-ubuntu26.04/smoke/native-4.png",
+          "sha256": "567d060a7d1139df9a84c4ef1e5117fe78bcfad4e9117075c44bed2532a673b9"
+        }
+      ]
+    },
+    {
+      "target": "debian11",
+      "packages": [
+        {
+          "file": "dist/packages-f2142e4/debian11/octool-2.0.1-1.amd64.deb",
+          "bytes": 12719870,
+          "sha256": "59d156e36e931b957acb645d1b4021b3f5b15535bd0022c681e0e838219a9d83"
+        },
+        {
+          "file": "dist/packages-f2142e4/debian11/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10668,
+          "sha256": "1dd49aedf00d8a96badb1da794feea420cbbe2ba7815583516fa51caa8ed8a3d"
+        }
+      ],
+      "kernels": [
+        {
+          "release": "5.10.0-46-amd64",
+          "module_sha256": "afb0de05ae56d3823f32259a1d46ee1d1dc9feb99266a37e5b6cd20cb57a3333",
+          "ci_test_signed_module_sha256": "b0a6fec3ed34016853b17eab4639230150d06588a303bd773bd45a14ef54e71a"
+        }
+      ],
+      "gui_test_summary": "Totals: 12 passed, 0 failed, 0 skipped, 0 blacklisted, 89ms",
+      "guard_observations_passed": 307,
+      "image_digests": [
+        "debian@sha256:6f519a81440354a85eb592c5f32109ab80605f6b892455983a6f618bf87fabe9"
+      ],
+      "screenshots": [
+        {
+          "file": "desktop-debian11/smoke/release-4.png",
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        },
+        {
+          "file": "desktop-debian11/smoke/native-4.png",
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        }
+      ]
+    },
+    {
+      "target": "debian12",
+      "packages": [
+        {
+          "file": "dist/packages-f2142e4/debian12/octool-2.0.1-1.amd64.deb",
+          "bytes": 12719882,
+          "sha256": "03ab95f3aa6afd2400bd6b22c2f2aa9755f5c6d254a105e1c7ecdca3cdf23b02"
+        },
+        {
+          "file": "dist/packages-f2142e4/debian12/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10670,
+          "sha256": "100164b3724eaf796c6937fadcf5120e8678f1d9845e430246f1b4aa9ee4e283"
+        }
+      ],
+      "kernels": [
+        {
+          "release": "6.1.0-53-amd64",
+          "module_sha256": "7fc256dc67c263a8f82a65c0550ddcc9b03852f481a65b110eddc32496696258",
+          "ci_test_signed_module_sha256": "99c050e7dcdf02bba6188f09b561296399fdaf328fd7e7e9366612cb6743b610"
+        }
+      ],
+      "gui_test_summary": "Totals: 12 passed, 0 failed, 0 skipped, 0 blacklisted, 153ms",
+      "guard_observations_passed": 307,
+      "image_digests": [
+        "debian@sha256:2c037a04925515fdd6ea85ea14a682d0e79931f5e9f5d07b6dbfc6ba12f9e858"
+      ],
+      "screenshots": [
+        {
+          "file": "desktop-debian12/smoke/release-4.png",
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        },
+        {
+          "file": "desktop-debian12/smoke/native-4.png",
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        }
+      ]
+    },
+    {
+      "target": "debian13",
+      "packages": [
+        {
+          "file": "dist/packages-f2142e4/debian13/octool-2.0.1-1.amd64.deb",
+          "bytes": 12719872,
+          "sha256": "5fcfe026388047661057519e29aabfa6262cf9adad57b0443c1091aa2178c80a"
+        },
+        {
+          "file": "dist/packages-f2142e4/debian13/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10670,
+          "sha256": "9ea778e56ff93627b048d6710a61682c3ff476fd89c697e0fe78cfa0f87198d5"
+        }
+      ],
+      "kernels": [
+        {
+          "release": "6.12.111+deb13-amd64",
+          "module_sha256": "5a22c7337d1cb3e52c5c8b0f96ef3665550f26f8e223036fc98ac688d3b84d23",
+          "ci_test_signed_module_sha256": "8e70efe1236230ea9aa13606b8366aaf6691cbe0b8a81b8c63d30a5318c4dd8a"
+        }
+      ],
+      "gui_test_summary": "Totals: 12 passed, 0 failed, 0 skipped, 0 blacklisted, 146ms",
+      "guard_observations_passed": 307,
+      "image_digests": [
+        "debian@sha256:913f6706df59a68922d1dd08f78c2476560a8d367897200a6005b00e5f67c2d5"
+      ],
+      "screenshots": [
+        {
+          "file": "desktop-debian13/smoke/release-4.png",
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        },
+        {
+          "file": "desktop-debian13/smoke/native-4.png",
+          "sha256": "03efd834e20c7d0ea2dade5bac12e3f953ba921c3f577de90fceb12c0b455f80"
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Hashes are of extracted files, not GitHub artifact ZIP digests.",
+    "Source archive is the cloud-tested commit; later local docs/analysis tools have a separate current-source archive.",
+    "All native/release screenshot files retained; EL10 release-4.png also visually inspected.",
+    "No actual hardware register requests or firmware MOK enrollment."
+  ]
+}

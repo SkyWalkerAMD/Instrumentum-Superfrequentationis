@@ -42,6 +42,30 @@ direct但实际总返回EPERM的诊断不一致已修正。
 旧完整ELF的调用点没有变化，它可以继续向新模块使用已有read/write/mmap；已知错误done字导致旧GUI
 等待不退出的问题并未因此解决。见 [邮箱契约](legacy-mailbox-contract.md)。
 
+## 三份旧模块的静态核对
+
+对作者原ZIP中的三份固定SHA `.ko` 继续核对：从各自DWARF读取 `file_operations` 成员偏移，
+检查名为`fops`的实际对象字节及指向该槽的重定位。不能只看未链接的零值，因为已注册的read/write
+回调在ET_REL中同样存零，由重定位填入真正地址。新审计器同时确认这些回调的R_X86_64_64重定位存在。
+
+| 固定原样本 | fops字节数 | unlocked_ioctl偏移 | compat_ioctl偏移 |
+|---|---:|---:|---:|
+| peter_kernel.ko（6.8样本） | 264 | 72 | 80 |
+| peter_kernel_new.ko（6.17样本） | 272 | 80 | 88 |
+| peter_kernel_old.ko（6.2样本） | 272 | 80 | 88 |
+
+三个对象的两个ioctl槽均为完整8字节零，且无覆盖该槽的重定位。不同样本布局并不相同，本轮由
+其DWARF取偏移，不根据内核版本推断。证据见[旧fops字段记录](validation/legacy-fops-capabilities.json)。
+这是“原对象没有ioctl回调”的静态证据，不是装载旧模块后实测ENOTTY，也不覆盖任意第三方驱动。
+
+```sh
+PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/audit-legacy-fops.py \
+  ../octool-linux.zip --output build/legacy-fops.json
+```
+
+脚本核验输入SHA、ELF类型、DWARF重名布局一致性、对象边界和重定位；缺项或不同样本直接报错。
+本地已对三份原输入执行成功，未装载旧模块或发布其完整字节。
+
 ## 回归与升级检查
 
 - `make -C port/tests check`中的真实HAL系统调用替身覆盖ENOTTY/EACCES、正数返回、magic/格式/大小
@@ -67,4 +91,26 @@ sudo build/kmod-caps-probe
 应看到caps_valid、unknown_command_enotty、bad_pointer_efault、close_succeeded全部true。
 该查询成功仍不能签署硬件、MOK或旧GUI主窗口验收。
 
-本轮含能力查询的完整云端回归与真实探针尚待执行；实际提交SHA、run与结果完成后另记。
+## 本轮实际结果
+
+提交`f2142e4c88fa196ee5b5bb9eb630d8fe4342b176`的
+[portability37741335600](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37741335600)
+23/23全绿：十目标均编译模块与GUI、产出rpm/deb并安装、通过DKMS生命周期和窗口门禁。
+下载后的每目标offline.log均包含能力拒绝、部分能力、legacy隔离、PCI/EC两分支与线程权限通过；
+十份QtTest均12通过0失败0跳过，十份guard报告各307项观测符合预期。kernel阶段19项Python无跳过；
+matrix阶段的2项Linux工具跳过由后续kernel执行补齐。EL10发行/native窗口PID分别19386/19453，
+实际由Mutter/Xwayland承载，并已人工查看发行版AMD PStates页截图：表格未填入未经读取的值。
+
+同提交[probe37741335727](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37741335727)
+在`6.17.0-1022-azure`实载新模块，SHA为`c798b85824914e9c67ae75f006ced4e460139224bf6b2e49972ccf45c9dc011f`。
+真实ioctl返回magic正确、size32、features0x3f；未知命令ENOTTY、坏指针EFAULT、close和显式卸载均成功，
+重复init_module仍精确errno17。无硬件请求，模块未签名，本记录不证明目标EL内核/MOK/原GUI主窗口。
+
+Windows再次从完整固定SHA旧ELF运行56项有界模拟，八个函数哈希和全部观测与上轮完全相同；
+新增能力查询没有改变原机器码或已知失败分支。旧fops静态脚本另在三份原输入实跑、重复结果字节一致。
+
+完整job/artifact、关键日志与探针JSON在[回归记录](validation/module-capabilities-f2142e4.json)。
+十目标20个安装包已下载到`dist/packages-f2142e4/<目标>/`，附`SHA256SUMS`；11套模块、镜像digest、
+包与截图哈希见[交付记录](validation/deliverables-f2142e4.json)。cloud源码SHA为
+`8395496120c37862893a01b848deef6297470e103b3056de778fb487e2205d1f`，保存在
+`dist/cloud-f2142e4/octool-2.0.1-src.tar.gz`。后续归档只增加文档/只读逆向脚本，没有改生产模块、HAL或GUI。

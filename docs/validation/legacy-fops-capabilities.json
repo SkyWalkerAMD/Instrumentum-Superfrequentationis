@@ -1,0 +1,295 @@
+{
+  "schema": 1,
+  "scope": "static fops object fields by DWARF and relocations; no kernel/module execution",
+  "interpretation": "Both ioctl slots are zero with no relocation in each pinned fops object; this is not a runtime ENOTTY observation.",
+  "modules": {
+    "peter_kernel.ko": {
+      "sha256": "4538764d874c39641106f8e3b3d97f0e6a6b02f1d27ba538e79dea1472b4a026",
+      "vermagic": [
+        "vermagic=6.8.0-94-generic SMP preempt mod_unload modversions "
+      ],
+      "fops_section": ".rodata",
+      "fops_offset": 0,
+      "fops_size": 264,
+      "fops_bytes_sha256": "44b8aa4d28701168922acf61435ea4bb442f97b0b14ad7a2510ed68874ee2a72",
+      "fields": [
+        {
+          "member": "read",
+          "offset": 16,
+          "stored_bytes": "0000000000000000",
+          "relocations": [
+            {
+              "object_offset": 16,
+              "type": 1,
+              "symbol": ".text",
+              "addend": 4944
+            }
+          ],
+          "null_without_relocation": false
+        },
+        {
+          "member": "write",
+          "offset": 24,
+          "stored_bytes": "0000000000000000",
+          "relocations": [
+            {
+              "object_offset": 24,
+              "type": 1,
+              "symbol": ".text",
+              "addend": 9968
+            }
+          ],
+          "null_without_relocation": false
+        },
+        {
+          "member": "unlocked_ioctl",
+          "offset": 72,
+          "stored_bytes": "0000000000000000",
+          "relocations": [],
+          "null_without_relocation": true
+        },
+        {
+          "member": "compat_ioctl",
+          "offset": 80,
+          "stored_bytes": "0000000000000000",
+          "relocations": [],
+          "null_without_relocation": true
+        },
+        {
+          "member": "mmap",
+          "offset": 88,
+          "stored_bytes": "0000000000000000",
+          "relocations": [
+            {
+              "object_offset": 88,
+              "type": 1,
+              "symbol": ".text",
+              "addend": 1472
+            }
+          ],
+          "null_without_relocation": false
+        },
+        {
+          "member": "open",
+          "offset": 104,
+          "stored_bytes": "0000000000000000",
+          "relocations": [
+            {
+              "object_offset": 104,
+              "type": 1,
+              "symbol": ".text",
+              "addend": 4288
+            }
+          ],
+          "null_without_relocation": false
+        },
+        {
+          "member": "release",
+          "offset": 120,
+          "stored_bytes": "0000000000000000",
+          "relocations": [
+            {
+              "object_offset": 120,
+              "type": 1,
+              "symbol": ".text",
+              "addend": 3968
+            }
+          ],
+          "null_without_relocation": false
+        }
+      ]
+    },
+    "peter_kernel_new.ko": {
+      "sha256": "405b5a59b1a80a21e246f9cae90c112a232574978097a0aeaaafb8f71581322f",
+      "vermagic": [
+        "vermagic=6.17.0-14-generic SMP preempt mod_unload modversions "
+      ],
+      "fops_section": ".rodata",
+      "fops_offset": 0,
+      "fops_size": 272,
+      "fops_bytes_sha256": "e4d879a3407de578f579dfab4366fcea75a6649c683d9efe4f056f6505437574",
+      "fields": [
+        {
+          "member": "read",
+          "offset": 24,
+          "stored_bytes": "0000000000000000",
+          "relocations": [
+            {
+              "object_offset": 24,
+              "type": 1,
+              "symbol": ".text",
+              "addend": 4992
+            }
+          ],
+          "null_without_relocation": false
+        },
+        {
+          "member": "write",
+          "offset": 32,
+          "stored_bytes": "0000000000000000",
+          "relocations": [
+            {
+              "object_offset": 32,
+              "type": 1,
+              "symbol": ".text",
+              "addend": 10032
+            }
+          ],
+          "null_without_relocation": false
+        },
+        {
+          "member": "unlocked_ioctl",
+          "offset": 80,
+          "stored_bytes": "0000000000000000",
+          "relocations": [],
+          "null_without_relocation": true
+        },
+        {
+          "member": "compat_ioctl",
+          "offset": 88,
+          "stored_bytes": "0000000000000000",
+          "relocations": [],
+          "null_without_relocation": true
+        },
+        {
+          "member": "mmap",
+          "offset": 96,
+          "stored_bytes": "0000000000000000",
+          "relocations": [
+            {
+              "object_offset": 96,
+              "type": 1,
+              "symbol": ".text",
+              "addend": 1472
+            }
+          ],
+          "null_without_relocation": false
+        },
+        {
+          "member": "open",
+          "offset": 104,
+          "stored_bytes": "0000000000000000",
+          "relocations": [
+            {
+              "object_offset": 104,
+              "type": 1,
+              "symbol": ".text",
+              "addend": 4320
+            }
+          ],
+          "null_without_relocation": false
+        },
+        {
+          "member": "release",
+          "offset": 120,
+          "stored_bytes": "0000000000000000",
+          "relocations": [
+            {
+              "object_offset": 120,
+              "type": 1,
+              "symbol": ".text",
+              "addend": 3968
+            }
+          ],
+          "null_without_relocation": false
+        }
+      ]
+    },
+    "peter_kernel_old.ko": {
+      "sha256": "955be8f274f831d77ae259cad45a19ad663f3c62de93c0b565c3d35cc2c8d975",
+      "vermagic": [
+        "vermagic=6.2.0-20-generic SMP preempt mod_unload modversions "
+      ],
+      "fops_section": ".rodata",
+      "fops_offset": 0,
+      "fops_size": 272,
+      "fops_bytes_sha256": "e4d879a3407de578f579dfab4366fcea75a6649c683d9efe4f056f6505437574",
+      "fields": [
+        {
+          "member": "read",
+          "offset": 16,
+          "stored_bytes": "0000000000000000",
+          "relocations": [
+            {
+              "object_offset": 16,
+              "type": 1,
+              "symbol": ".text",
+              "addend": 4672
+            }
+          ],
+          "null_without_relocation": false
+        },
+        {
+          "member": "write",
+          "offset": 24,
+          "stored_bytes": "0000000000000000",
+          "relocations": [
+            {
+              "object_offset": 24,
+              "type": 1,
+              "symbol": ".text",
+              "addend": 9696
+            }
+          ],
+          "null_without_relocation": false
+        },
+        {
+          "member": "unlocked_ioctl",
+          "offset": 80,
+          "stored_bytes": "0000000000000000",
+          "relocations": [],
+          "null_without_relocation": true
+        },
+        {
+          "member": "compat_ioctl",
+          "offset": 88,
+          "stored_bytes": "0000000000000000",
+          "relocations": [],
+          "null_without_relocation": true
+        },
+        {
+          "member": "mmap",
+          "offset": 96,
+          "stored_bytes": "0000000000000000",
+          "relocations": [
+            {
+              "object_offset": 96,
+              "type": 1,
+              "symbol": ".text",
+              "addend": 1472
+            }
+          ],
+          "null_without_relocation": false
+        },
+        {
+          "member": "open",
+          "offset": 112,
+          "stored_bytes": "0000000000000000",
+          "relocations": [
+            {
+              "object_offset": 112,
+              "type": 1,
+              "symbol": ".text",
+              "addend": 4160
+            }
+          ],
+          "null_without_relocation": false
+        },
+        {
+          "member": "release",
+          "offset": 128,
+          "stored_bytes": "0000000000000000",
+          "relocations": [
+            {
+              "object_offset": 128,
+              "type": 1,
+              "symbol": ".text",
+              "addend": 3840
+            }
+          ],
+          "null_without_relocation": false
+        }
+      ]
+    }
+  }
+}

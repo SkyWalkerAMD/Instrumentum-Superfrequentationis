@@ -11,6 +11,17 @@
 - 受限加载探针扩展为实际open/ioctl/close元数据检查，核对ENOTTY/EFAULT，不发硬件请求；原始
   EEXIST/设备注册/显式卸载门禁保留。具体接口、升级注意、真机复现详记docs/module-capabilities.md。
   本轮含能力查询的云端结果待运行，未以此前PCI/EC回归代替。
+- 接续逆向以三份固定SHA旧.ko的DWARF、fops对象字节及重定位交叉确认：unlocked_ioctl和compat_ioctl
+  均为零且无重定位，read/write等回调则有真实重定位；不能把ET_REL内的零直接当作空指针。
+  新增只读audit-legacy-fops.py并对原三份输入实跑，证据在docs/validation/legacy-fops-capabilities.json。
+  这支持旧节点显式MMIO入口的设计，不冒充装载旧模块后的ENOTTY实测。
+- `f2142e4 / portability37741335600`完整23/23成功，十目标所有新旧离线门禁、GUI构建/安装/窗口和
+  DKMS生命周期通过；每目标QtTest12项、guard307项；EL10双窗口由Mutter/Xwayland承载。
+  `probe37741335727`真实caps-v1返回32字节/0x3f，ENOTTY/EFAULT均符合预期，EEXIST/close/卸载通过。
+- 已下载十目标20份rpm/deb与11套模块和完整日志/截图，包复制到dist/packages-f2142e4/并附SHA256SUMS。
+  回归JSON及逐文件哈希分别在docs/validation/module-capabilities-f2142e4.json与deliverables-f2142e4.json；
+  cloud源包SHA为8395496120c37862893a01b848deef6297470e103b3056de778fb487e2205d1f。最新文档源包另生成，
+  不冒充cloud字节相同。原完整ELF56项观测复跑与上轮一致。收尾只增文档及本地已实跑的只读fops审计器。
 
 ## 未发布 — 2026-10-08（接续修复 PCI/EC 协调与端口线程权限）
 
