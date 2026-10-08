@@ -143,8 +143,12 @@ sudo sh port/packaging/dkms-sign.sh "$(uname -r)" port/kmod/octool_hwio.ko
 
 “模块已签名/能加载”和“旧 GUI 所有硬件功能在 lockdown 下可用”是不同验收项。
 旧 GUI 调用点保持不变，不能据此承诺其 iopl、MSR 写或 /dev/mem 直接路径可用。
-原 ELF 还需要验证内部模块加载标志与实际 `/dev/mydev` 打开/映射；仅预载 DKMS 模块不足以证明接入。
-详见 [2026-10-08 启动路径证据](legacy-el-privilege-analysis.md)。
+原 ELF 接入候选步骤（见[重复加载握手](legacy-module-handoff.md)）还需要在目标机验证：给原 GUI
+程序目录提供当前内核、已签名、未压缩且内部名为 `octool_hwio` 的模块镜像，使用它真实查找的旧文件名；
+记录文件 SHA/签名者/vermagic，再以 syscall trace 确认真实 `init_module` 返回 EEXIST、旧分支继续打开
+`/dev/mydev` 并完成 mmap/token 初始化。也要记录目标进程的 CAP_SYS_MODULE、CAP_SYS_RAWIO、
+CAP_SYS_ADMIN、Wayland/Xwayland 会话认证和设备节点权限。仅预载 DKMS 模块不足以证明旧 GUI 接入。
+详见[2026-10-08 启动路径证据](legacy-el-privilege-analysis.md)。
 新基础版 GUI 通过 HAL 访问；必须在已签名模块真实加载后单独验证各族后端及错误处理。
 
 ## 3. 模块与 HAL 真机闭环

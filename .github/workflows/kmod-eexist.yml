@@ -1,0 +1,35 @@
+name: manual kmod duplicate-load probe
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  duplicate-load:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check runner kernel headers
+        run: |
+          if [[ ! -e "/lib/modules/$(uname -r)/build" ]]; then
+            sudo apt-get update
+            sudo apt-get install -y "linux-headers-$(uname -r)"
+          fi
+          test -e "/lib/modules/$(uname -r)/build"
+          uname -a
+      - name: Build module for the ephemeral runner kernel
+        run: make -C port/kmod KVER="$(uname -r)" KDIR="/lib/modules/$(uname -r)/build"
+      - name: Load exact module image then call init_module again with same bytes
+        run: |
+          sudo bash analysis/tools/test-kmod-eexist.sh \
+            "$PWD/port/kmod/octool_hwio.ko" \
+            "$PWD/build/kmod-eexist/result.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kmod-eexist-${{ github.run_id }}
+          path: build/kmod-eexist/result.json
+          if-no-files-found: warn
+          retention-days: 30

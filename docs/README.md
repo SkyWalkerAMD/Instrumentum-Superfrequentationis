@@ -18,6 +18,7 @@
 - [EL8 静态 Qt SDK](qt-sdk.md)：成功 run、产物哈希、依赖配置及复用边界。
 - [原版 ELF 的 EL8–EL10 兼容性](legacy-el-compatibility.md)：继续反汇编的调用点证据和私有运行库实验，区别于重构基础版。
 - [原版启动权限与失败路径](legacy-el-privilege-analysis.md)：NASM 直接 syscall/端口、模块握手、MSR 错误处理与对拍入口限制。
+- [原版模块重复加载握手](legacy-module-handoff.md)：同名 `.ko` 的真实 EEXIST 路径、runner 探针与 Secure Boot 边界。
 - [原版 MMIO 邮箱契约](legacy-mailbox-contract.md)：56 组原指令模拟、三份旧模块映射、错误完成字导致的兼容缺口。
 - [原版 MMIO 保护层实验](legacy-mailbox-guard.md)：不改原调用函数的错误退出方案、原机器码原生执行与跨 EL 构建验证。
 - [云端接入状态](cloud-access.md)：用户要求 OpenAI 托管云端；当前工具/CLI 的实际核实结果。

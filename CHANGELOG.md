@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 未发布 — 2026-10-08（原版 GUI 模块重复加载接入研究）
+
+- 将旧 GUI 模块启动从“仅预载 DKMS 模块”推进到双端调用链：固定原 ELF 的 syscall(175) 调用点、
+  errno==EEXIST 条件和 `MY_KMOD_LOADED` 写入；核对上游 Linux v4.18、v5.14、v6.12 源码中的
+  签名/ELF/模块元数据检查与同名模块 EEXIST 检查顺序。
+- 得到一个不注入 syscall 返回值的候选交接：旧 GUI 目录中的旧文件名指向当前内核有效、签名后未改写、
+  未压缩、内部名 `octool_hwio` 的 DKMS `.ko`，从而使旧 loader 可通过其原有成功/EEXIST 分支置位。
+  明确保留 `CAP_SYS_MODULE` 的重复加载前置检查，以及旧 GUI 对 `CAP_SYS_RAWIO`、CAP_SYS_ADMIN、
+  root-only `/dev/mydev`、直接 iopl/MSR/端口路径的依赖；预载模块不等于普通用户可运行。
+- 静态审计新模块 `hwio_init()` 只创建 chrdev/cdev/class/device，不触碰硬件；据此新增手动触发的真实
+  内核探针：以当前 runner 加载实际项目 `.ko`，对相同磁盘字节调用 `init_module`，严格要求 EEXIST，
+  并采集内核、vermagic、SHA、class/devnode 状态。workflow 不接入 push/PR，避免自动把 PR 模块装进 runner。
+- 接入候选、脚本、复现方法、内核源链接、权限条件与真机步骤见 `docs/legacy-module-handoff.md`；
+  更新启动分析、验收清单与 docs 索引。云端实测结果及 EL 发行版内核补丁/MOK/硬件待确认范围后续追加。
+
 ## 未发布 — 2026-10-08（原机器码原生执行与错误保护层）
 
 - 继续研究原包装函数缺少错误出口的问题。新增可选 mailbox-guard.c，在已核实的动态 write 边界
