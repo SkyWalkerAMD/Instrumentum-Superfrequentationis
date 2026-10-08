@@ -5,19 +5,19 @@
  * One API for MSR / MMIO / port-I/O / PCI-config / EC / CPUID access, with a
  * backend chosen at runtime per operation family:
  *
- *   1. the signed octool_hwio kernel module (/dev/mydev)  - always works,
- *      including under Secure Boot / kernel lockdown;
+ *   1. the octool_hwio kernel module (/dev/mydev), subject to kernel trust,
+ *      device permissions and hardware support. Signing alone is not proof
+ *      of Secure Boot / lockdown acceptance;
  *   2. direct userspace paths (/dev/cpu/N/msr, /dev/mem, iopl()+in/out,
  *      /sys/bus/pci) - only when the kernel is NOT locked down.
  *
- * This replaces octool's scattered Rdmsr()/Read_MMIO()/ReadIoPort()/... helpers
- * with a single implementation whose portability and lockdown handling live in
- * one place. Drop-in intent: octool keeps its call sites, this provides the
- * bodies.
+ * The reconstructed GUI uses this API. Loading the module does not redirect
+ * the source-lost GUI's direct helpers or repair its loader/error handling.
  *
  * Thread-safety: open one hwio handle per thread, or serialize calls on a
  * shared handle. The kernel module supports concurrent opens (one mailbox per
- * open); a single hwio handle owns one open.
+ * open); a single hwio handle owns one open. Direct port I/O currently caches
+ * iopl state per handle: that handle must remain on the same OS thread.
  */
 #ifndef OCTOOL_HWIO_H
 #define OCTOOL_HWIO_H
@@ -93,7 +93,8 @@ int hwio_mem_write(hwio_t *h, uint64_t phys, int width, uint64_t val);
 int hwio_io_read(hwio_t *h, uint16_t port, int width, uint32_t *val);
 int hwio_io_write(hwio_t *h, uint16_t port, int width, uint32_t val);
 
-/* PCI config space. width is 1,2,4. */
+/* PCI domain 0, conventional 256-byte config space. width is 1,2,4; naturally
+ * aligned offset, device 0..31, function 0..7. Invalid inputs return -EINVAL. */
 int hwio_pci_read(hwio_t *h, uint8_t bus, uint8_t dev, uint8_t fn,
 		  uint16_t off, int width, uint32_t *val);
 int hwio_pci_write(hwio_t *h, uint8_t bus, uint8_t dev, uint8_t fn,
@@ -103,7 +104,8 @@ int hwio_pci_write(hwio_t *h, uint8_t bus, uint8_t dev, uint8_t fn,
 int hwio_ec_read(hwio_t *h, uint8_t index, uint8_t *val);
 int hwio_ec_write(hwio_t *h, uint8_t index, uint8_t val);
 
-/* CPU info. */
+/* CPU info. On the direct backend CPUID/TSC run on the calling CPU; callers
+ * needing a specific CPU must pin and restore their thread's affinity. */
 int hwio_cpuid(hwio_t *h, unsigned cpu, uint32_t leaf, uint32_t subleaf,
 	       uint32_t out[4]);
 int hwio_rdtsc(hwio_t *h, unsigned cpu, uint64_t *tsc);

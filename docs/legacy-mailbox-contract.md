@@ -86,10 +86,12 @@ python3 -m unittest discover -s analysis/tests -v
 `port/kmod/octool_hwio.c` 当前将失败编码为 `((u64)(u32)rc << 32) | 1`。
 `ioremap` 失败可以走到 MMIO 的 `-ENOMEM` 应答；这只是可达源码分支，本轮没有在真机制造映射失败。
 原版要求完整值为 1，所以这种应答会卡住。这个问题与 glibc、EL 大版本或 Qt 平台插件无关。
-现有 HAL 在“非零”时退出再解析高位 errno，其 loopback/transport 能通过，不能替代原调用者条件。
+本报告基线 HAL 在“非零”时退出再解析高位 errno，其 loopback/transport 能通过，不能替代原调用者条件。
 
-采集器 `octool_capture.c` 的 `completed = mailbox[0] != 0` 也比原版宽松。
-遇到上述错误应答可能记录 completed=1，而原版仍在等；这是源码核查结果，未运行真实采集器复现。
+基线采集器 `octool_capture.c` 的 `completed = mailbox[0] != 0` 也比原版宽松。
+遇到上述错误应答可能记录 completed=1，而原版仍在等；这是基线源码核查结果，未运行真实采集器复现。
+后续[全面复查](review-2026-10-08.md)已将采集器收紧为完整 done==1，HAL 拒绝非法非零完成字，
+对拍读取 trace 时另核对 wrote=96 和 done=1。上述原字节/旧版本观测保留，不表示原 GUI 已修复。
 对拍工具的 captured-completed 只表示采集器判断，不能单独证明原 GUI 已完成。
 本轮保留生产行为，明确记录缺口；不要用清掉 errno、返回零值的办法把错误伪装成有效硬件读数。
 

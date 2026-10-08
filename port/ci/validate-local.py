@@ -18,12 +18,13 @@ def main():
     scripts = list((ROOT / "port").rglob("*.py"))
     for path in scripts:
         ast.parse(path.read_text(encoding="utf-8"), filename=str(path), feature_version=(3, 8))
-    # ABI and HAL header match the input archive. The HAL implementation hash
-    # records the CPU-token/short-I/O fixes described in docs/gui-phase1.md.
+    # Canonical ABI matches the input archive. HAL implementation/header hashes
+    # pin the reviewed fixes and comments in docs/review-2026-10-08.md;
+    # these are source-integrity checks, not a substitute for wire regressions.
     expected = {
         "port/abi/octool_hwio_abi.h": "5f07bfefd2a96519756cad1567dfdf4b0c878db142f670e1b208cf39523800d8",
-        "port/hal/octool_hwio.c": "ba115e258a3d2d346902a9da70c8139424fb5c603dd4a6c9f76a7d38f2ef6ea9",
-        "port/hal/octool_hwio.h": "d80a19e0e0551ba162e55653bde7975c50b74a1e811a08f6776071af43762dc1",
+        "port/hal/octool_hwio.c": "62274adac48a0054c695cdae85338124690eea3fc48507fcbf033795a4ffc58e",
+        "port/hal/octool_hwio.h": "6d1966f359ddc71912228a1d7e3382aed7d5f4c404d55cdf2547683cac2f72cf",
     }
     # Normalize only CRLF introduced by a checkout, not any source tokens.
     for file, digest in expected.items():

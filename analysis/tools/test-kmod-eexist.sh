@@ -22,6 +22,7 @@ module_name=$(modinfo -F name "$module_path")
 	echo "$module_name is already loaded; refusing to disturb the runner" >&2
 	exit 2
 }
+[[ ! -e /dev/mydev ]] || { echo 'existing /dev/mydev; refusing to disturb it' >&2; exit 2; }
 
 module_sha=$(sha256sum "$module_path" | awk '{print $1}')
 module_vermagic=$(modinfo -F vermagic "$module_path")
@@ -54,18 +55,26 @@ class_present=false
 devnode_present=false
 [[ -e "$class_device" ]] && class_present=true
 [[ -c "$devnode" ]] && devnode_present=true
-[[ "$class_present" == true ]] || probe_rc=1
+[[ "$class_present" == true && "$devnode_present" == true ]] || probe_rc=1
+
+unload_succeeded=false
+if rmmod "$module_name" && [[ ! -e "/sys/module/$module_name" ]]; then
+	loaded=0
+	unload_succeeded=true
+else
+	probe_rc=1
+fi
 
 python3 - "$output_path" "$kernel_release" "$module_name" "$module_sha" \
 	"$module_vermagic" "$module_signer" "$module_sig_hashalgo" \
 	"$probe_rc" "$class_present" "$devnode_present" \
-	"$probe_output" <<'PY'
+	"$probe_output" "$unload_succeeded" <<'PY'
 import json
 import pathlib
 import sys
 
 (out, kernel, module, digest, vermagic, signer, sig_hashalgo, rc,
- class_present, devnode_present, raw) = sys.argv[1:]
+ class_present, devnode_present, raw, unload_succeeded) = sys.argv[1:]
 try:
     result = json.loads(raw)
 except Exception:
@@ -82,6 +91,7 @@ report = {
     "probe_exit_code": int(rc),
     "module_class_device_present_after_probe": class_present == "true",
     "dev_mydev_present_after_probe": devnode_present == "true",
+    "module_unload_succeeded": unload_succeeded == "true",
     "hardware_io_attempted": False,
     "probe": result,
 }
@@ -90,6 +100,6 @@ print(json.dumps(report, indent=2))
 PY
 
 if [[ $probe_rc -ne 0 ]]; then
-	echo "duplicate init_module did not return EEXIST; see $output_path" >&2
+	echo "duplicate-load, device registration or cleanup check failed; see $output_path" >&2
 	exit 1
 fi

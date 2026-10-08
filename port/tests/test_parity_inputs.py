@@ -11,6 +11,23 @@ BINARY = Path(__file__).resolve().parent / "octool_parity"
 
 @unittest.skipUnless(os.name == "posix" and BINARY.is_file(), "requires Linux-built octool_parity")
 class BadTrace(unittest.TestCase):
+    def test_same_character_device_and_symlink_are_rejected(self):
+        header = struct.pack("<QQQQ", 0x4f43545250520001, 96, 5, 0)
+        # One completed MMIO read. No request is sent: identity fails first.
+        request = struct.pack("<12Q", 0x0c, 71, 0x1000, *([0] * 9))
+        record = request + struct.pack("<5QQii", 1, 0, 0, 0, 0, 0, 96, 1)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)
+            corpus = path / "corpus.bin"
+            corpus.write_bytes(header + record)
+            alias = path / "alias"
+            alias.symlink_to("/dev/null")
+            for new_device in ("/dev/null", str(alias)):
+                run = subprocess.run([str(BINARY), "--old", "/dev/null", "--new", new_device,
+                                      "--trace", str(corpus)], capture_output=True, text=True)
+                self.assertEqual(run.returncode, 2)
+                self.assertIn("same device", run.stdout + run.stderr)
+
     def test_empty_or_truncated_trace_fails_before_device_open(self):
         header = struct.pack("<QQQQ", 0x4f43545250520001, 96, 5, 0)
         for payload, message in [(header, "INCONCLUSIVE"), (header + b"x", "truncated")]:

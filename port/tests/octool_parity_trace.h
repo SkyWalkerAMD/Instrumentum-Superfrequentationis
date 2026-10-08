@@ -31,7 +31,7 @@ struct octool_trace_rec {
 	uint64_t mbox[OCTOOL_TRACE_MBOXW];   /* slot[0..4] after completion */
 	uint64_t seq;                        /* per-fd sequence number */
 	int32_t  wrote;                      /* return value of write() */
-	int32_t  completed;                  /* 1 if done flag was seen set */
+	int32_t  completed;                  /* 1 only if the full done word was 1 */
 };
 
 #endif /* OCTOOL_PARITY_TRACE_H */

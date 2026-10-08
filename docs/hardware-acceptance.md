@@ -2,7 +2,8 @@
 
 适用目标：EL8/9/10（Rocky、Alma、RHEL 分别记录），Ubuntu20.04/22.04/24.04/26.04，
 Debian11/12/13，x86_64。每个目标都必须单独留下结果，不能由一个容器推断其他目标已通过。
-本清单尚未在本轮执行。运行前以 [verification-status.md](verification-status.md) 为准。
+本清单尚未在本轮执行。运行前以 [verification-status.md](verification-status.md) 和
+[全面复查报告](review-2026-10-08.md)中的未解决项为准；特别是 PCI/EC 与系统驱动的协调尚未完成。
 
 2026-10-08 邮箱研究补充：当前模块的错误完成字与原版完整 done=1 的等待条件不兼容，
 见[证据与模拟](legacy-mailbox-contract.md)。验收前先在无硬件后端验证成功、延迟、write 失败、
@@ -213,8 +214,9 @@ sudo CORPUS="$PWD/octool-corpus.bin" \
 逐项核对：
 
 - [ ] 旧设备 `/dev/mydev`、新设备 `/dev/mydev_v2` 分属预期模块，trace 有实际 MMIO 读。
-- [ ] live 模式、stable match > 0、MISMATCH(stable)=0、err-parity=0、退出码 0。
-- [ ] 空 trace、截断 trace、全不可读或没有稳定可读地址退出码 2，不能列为通过。
+- [ ] live 模式、stable match > 0、MISMATCH(stable)=0、err-parity=0、unreadable=0、volatile-oob=0、退出码 0。
+- [ ] 空/截断 trace、同一字符设备的路径/别名、任何未解决读取失败或 volatile-oob 返回 2，
+  已出现硬分歧则优先返回 1。一个稳定匹配不能掩盖其他地址读取失败。
 - [ ] volatile 和 volatile-oob 数量/地址保存。三读只是降低时间漂移干扰的启发式方法，
   不是证明易失寄存器实现等价；必须根据作者已确认的寄存器语义进一步分析。
 - [ ] 保存 trace SHA-256、完整结果、旧新模块 SHA-256 和内核日志。

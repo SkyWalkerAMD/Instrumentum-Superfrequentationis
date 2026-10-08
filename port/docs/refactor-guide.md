@@ -3,7 +3,7 @@
 > 2026-10-08 校正：原 GUI 的模块初始化还依赖自身 MY_KMOD_LOADED 标志及程序目录的旧 .ko 查找流程，
 > 不能由提前 modprobe 与 /dev/mydev 存在推断它已采用新模块。请求布局与成功应答已核对；后续发现
 > 当前 errno 高位完成字不满足原版完整 done=1 的条件，见 [邮箱失败分支](../../docs/legacy-mailbox-contract.md)。
-> 下文“后三条全部被拦”也过于笼统：MSR 读、写的权限检查不同，须区分目标内核与 HAL 自身策略。
+> MSR 读、写的权限检查不同，须区分目标内核与 HAL 自身策略。
 > 新的指令证据和边界见 [启动权限分析](../../docs/legacy-el-privilege-analysis.md)。
 
 # octool 多发行版重构：硬件访问层落地指南
@@ -17,7 +17,9 @@
 
 ## 0. 一页总览
 
-重构围绕一个事实：**octool 现在通过 `/dev/mydev` 内核模块只做 MMIO；MSR 走 `/dev/cpu/N/msr`，端口走 `iopl`，物理内存走 `/dev/mem`。后三条在 Secure Boot（内核 lockdown）下全部被拦。** 所以要支持广泛发行版（尤其开了 Secure Boot 的机器），正确做法是把**所有**硬件访问都能走一条已签名的内核模块，同时保留非 lockdown 机器上的直接路径。
+原版通过 `/dev/mydev` 做 MMIO，另有 `/dev/cpu/N/msr`、`iopl` 和 `/dev/mem` 直接路径。
+这些路径的权限与 lockdown 检查并不相同。HAL 为重构 GUI 提供模块后端及直接后端；签名、
+信任链、设备权限和各操作仍需真机验收，不能从签名成功推出原版全部硬件访问已适配。
 
 本目录给出：
 
@@ -55,14 +57,17 @@
 
 - 非 MMIO 操作码（本项目自定，与上面不冲突）：MSR 0x20/0x21、TSC 0x22、CPUID 0x23、端口 in 0x30–0x32 / out 0x33–0x35、PCI 0x40/0x41、EC 0x50/0x51、核数 0x60。现有二进制从不发这些，所以无兼容负担；octool 的访问层用同一批常量。
 
-> 因为 MMIO 操作码保持兼容，**新模块是现有 octool 二进制的直接替换**：装上新模块、`modprobe octool_hwio`，现有 octool 的 MMIO 路径照常工作——这给了你一个不改 octool 就能验证新模块的手段。
+> MMIO 请求及成功结果布局保持兼容，但尚不能称为原二进制的直接替换：旧 loader 的文件查找/
+> 加载标志与高位 errno 的等待问题仍待解决。并排加载后可用独立 HAL 对拍工具比较原始读数，
+> 该结果也只覆盖本次读取集合。完整复查见 [2026-10-08 报告](../../docs/review-2026-10-08.md)。
 
 ---
 
 ## 2. 内核模块（`kmod/`）
 
 - 字符设备默认 `/dev/mydev`（`devname` 模块参数可改），`open()` 要求 `CAP_SYS_RAWIO`，默认还要 `CAP_SYS_ADMIN`（`allow_unpriv=Y` 放宽到仅 RAWIO）。
-- MMIO：`ioremap` 目标页→`readX/writeX`→`iounmap`，与原实现同路径。
+- MMIO：`ioremap(phys, width)`→单次 `readX/writeX`→`iounmap`，映射覆盖整个访问范围。
+  2026-10-08 修正了跨页访问只映射第一页的问题；真实设备有效地址/宽度仍需确认。
 - MSR/CPUID/TSC：`rdmsr_safe_on_cpu`/`wrmsr_safe_on_cpu` 和 `smp_call_function_single` 在 `user_id` 指定的 CPU 上执行。
 - 端口/PCI/EC：模块内直接 `inX/outX`（内核态不受 lockdown 限制）；PCI 走 0xCF8/0xCFC（intel-conf1），EC 走 0x62/0x66 标准时序。
 - `Kbuild` 探测 `class_create` 签名（不是看版本号——RHEL 9 在 9.2 双参数、9.4 起单参数，版本号都是 5.14）。

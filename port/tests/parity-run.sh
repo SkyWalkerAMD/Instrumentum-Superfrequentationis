@@ -5,7 +5,7 @@
 # against the original .ko, using the unmodified octool binary as the workload.
 #
 # It never modifies octool. It:
-#   1. makes sure the ORIGINAL module is loaded and owns /dev/mydev;
+#   1. checks that the old device exists (operator must verify module ownership);
 #   2. captures the addresses octool reads during one real session
 #      (LD_PRELOAD observer - read-only);
 #   3. loads the NEW module beside it under a second name (/dev/mydev_v2);
@@ -32,6 +32,13 @@ NEW_KO=${NEW_KO:-$HERE/../kmod/octool_hwio.ko}
 CORPUS=${CORPUS:-$HERE/octool_corpus.bin}
 
 [ "$(id -u)" = 0 ] || { echo "run as root (needs insmod + CAP_SYS_RAWIO)"; exit 2; }
+case "$NEW_DEV" in ''|*[!a-zA-Z0-9_-]*) echo 'NEW_DEV must be a device basename' >&2; exit 2;; esac
+# Reject an obvious self-comparison before launching the capture workload.
+# octool_parity also compares the character-device numbers before replay.
+if [ "$OLD_DEV" -ef "/dev/$NEW_DEV" ]; then
+	echo 'old/new refer to the same device; verify distinct module ownership' >&2
+	exit 2
+fi
 
 echo ">> building capture shim + parity tool"
 make -C "$HERE" octool_capture.so octool_parity >/dev/null

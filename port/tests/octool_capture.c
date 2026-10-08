@@ -9,7 +9,8 @@
  * requests against a candidate module and confirm identical behaviour. This is
  * a read-only observer: it never changes what octool sends, never issues its own
  * hardware access, and only ever *reads* the mailbox page octool already shares
- * with the module. octool runs exactly as it always does; we just take notes.
+ * with the module. Observation adds waiting and file I/O; it is not timing
+ * transparent and does not prove the original caller consumes error replies.
  *
  * How it hooks
  * ------------
@@ -48,6 +49,7 @@
 #include <stdarg.h>
 #include <sys/mman.h>
 #include <stdatomic.h>
+#include <errno.h>
 
 #define MAXFD 8192
 
@@ -227,9 +229,8 @@ static void record(int fd, const void *req, ssize_t wrote)
 	rec.seq = atomic_fetch_add(&g_fd[fd].seq, 1);
 	rec.wrote = (int32_t)wrote;
 
-	/* Mirror octool's own completion wait: spin on the done flag. The original
-	 * driver may fill the mailbox from a kthread after write() returns, so we
-	 * must wait exactly as octool does before snapshotting. */
+	/* Wait for a nonzero word with a bound, then record it verbatim. Unlike
+	 * this observer, the old GUI waits forever unless the full word equals 1. */
 	if (mbox) {
 		while (mbox[OCTOOL_MBOX_DONE] == 0) {
 			if (++spins > 200000000L)
@@ -237,7 +238,7 @@ static void record(int fd, const void *req, ssize_t wrote)
 			if ((spins & 0xffff) == 0)
 				sched_yield();
 		}
-		completed = mbox[OCTOOL_MBOX_DONE] != 0;
+		completed = mbox[OCTOOL_MBOX_DONE] == 1;
 		for (i = 0; i < OCTOOL_TRACE_MBOXW; i++)
 			rec.mbox[i] = mbox[i];
 	}
@@ -252,9 +253,11 @@ static void record(int fd, const void *req, ssize_t wrote)
 ssize_t write(int fd, const void *buf, size_t count)
 {
 	ssize_t r;
+	int saved_errno;
 
 	ensure();
 	r = real_write(fd, buf, count);
+	saved_errno = errno;
 	if (!g_in_hook && r == (ssize_t)OCTOOL_TRACE_REQSZ &&
 	    count == OCTOOL_TRACE_REQSZ &&
 	    fd >= 0 && fd < MAXFD && g_fd[fd].is_dev) {
@@ -262,6 +265,7 @@ ssize_t write(int fd, const void *buf, size_t count)
 		record(fd, buf, r);
 		g_in_hook = 0;
 	}
+	errno = saved_errno;
 	return r;
 }
 

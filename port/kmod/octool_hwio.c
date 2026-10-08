@@ -4,18 +4,17 @@
  *
  * This is a clean-room reimplementation of the peter_kernel character driver
  * that octool talks to, written for portability across EL8-EL10 and
- * Ubuntu 20.04-26.04. It is bug-for-bug wire-compatible with the existing
- * octool binary on the MMIO path (the only path the shipped binary drives
- * through the device): same /dev node, same 96-byte request struct, same
- * opcodes for 8/16/32/64-bit physical-memory read and write, and the same
- * "result in the mmap page" completion protocol. The current octool binary
- * therefore runs against this module unchanged.
+ * Ubuntu 20.04-26.04 and Debian 11-13. The successful MMIO request layout,
+ * opcodes and mailbox offsets match the shipped binary. This does NOT prove
+ * drop-in operation: its loader handshake is separate, and its full 64-bit
+ * done==1 wait cannot consume this module's negative errno completion words.
+ * See docs/legacy-mailbox-contract.md and docs/legacy-module-handoff.md.
  *
  * On top of that it exposes MSR, port-I/O, PCI-config and EC operations
- * through the same device, so that on Secure Boot / lockdown machines octool
- * can route every hardware access through this (signed) module instead of the
- * userspace paths (/dev/cpu/N/msr writes, iopl()+in/out, /dev/mem) that the
- * kernel blocks under lockdown. Those opcodes use this module's own numbering
+ * through the same device for the reconstructed GUI/HAL. Signing, trust,
+ * permissions and hardware behavior need target-machine acceptance; the
+ * old binary's direct paths are not redirected by loading this module.
+ * Those opcodes use this module's own numbering
  * (see below) - the shipped binary never sends them, so there is nothing to be
  * compatible with; octool's access layer is updated to match.
  *
@@ -91,16 +90,17 @@ static DEFINE_RAW_SPINLOCK(ec_lock);
 static int mmio_read(u64 phys, int width, u64 *out)
 {
 	void __iomem *base;
-	unsigned long off = phys & ~PAGE_MASK;
 
-	base = ioremap(phys & PAGE_MASK, PAGE_SIZE);
+	/* Let ioremap cover the entire access, including a possible page boundary.
+	 * Its returned pointer already includes the physical address's offset. */
+	base = ioremap(phys, width);
 	if (!base)
 		return -ENOMEM;
 	switch (width) {
-	case 1: *out = readb(base + off); break;
-	case 2: *out = readw(base + off); break;
-	case 4: *out = readl(base + off); break;
-	case 8: *out = readq(base + off); break;
+	case 1: *out = readb(base); break;
+	case 2: *out = readw(base); break;
+	case 4: *out = readl(base); break;
+	case 8: *out = readq(base); break;
 	default: iounmap(base); return -EINVAL;
 	}
 	iounmap(base);
@@ -110,16 +110,15 @@ static int mmio_read(u64 phys, int width, u64 *out)
 static int mmio_write(u64 phys, int width, u64 val)
 {
 	void __iomem *base;
-	unsigned long off = phys & ~PAGE_MASK;
 
-	base = ioremap(phys & PAGE_MASK, PAGE_SIZE);
+	base = ioremap(phys, width);
 	if (!base)
 		return -ENOMEM;
 	switch (width) {
-	case 1: writeb((u8)val, base + off); break;
-	case 2: writew((u16)val, base + off); break;
-	case 4: writel((u32)val, base + off); break;
-	case 8: writeq(val, base + off); break;
+	case 1: writeb((u8)val, base); break;
+	case 2: writew((u16)val, base); break;
+	case 4: writel((u32)val, base); break;
+	case 8: writeq(val, base); break;
 	default: iounmap(base); return -EINVAL;
 	}
 	iounmap(base);
@@ -254,7 +253,7 @@ static void dispatch(struct hwio_ctx *ctx, struct octool_hwio_req *r)
 	}
 
 	switch (r->cmd) {
-	/* MMIO - verified wire-compatible */
+	/* MMIO success layout is preserved; see the error-completion caveat below. */
 	case OCTOOL_OP_RD_MEM8:  rc = mmio_read(r->data0, 1, &res); break;
 	case OCTOOL_OP_RD_MEM16: rc = mmio_read(r->data0, 2, &res); break;
 	case OCTOOL_OP_RD_MEM32: rc = mmio_read(r->data0, 4, &res); break;
@@ -305,10 +304,24 @@ static void dispatch(struct hwio_ctx *ctx, struct octool_hwio_req *r)
 
 	/* PCI config */
 	case OCTOOL_OP_PCI_RD:
+		if (r->data0 > 255 || r->data1 > 31 || r->data2 > 7 ||
+		    r->data3 > 255 ||
+		    (r->data4 != 1 && r->data4 != 2 && r->data4 != 4) ||
+		    (r->data3 & (r->data4 - 1))) {
+			rc = -EINVAL;
+			break;
+		}
 		res = pci_conf_read((u32)r->data0, (u32)r->data1, (u32)r->data2,
 				    (u32)r->data3, (int)r->data4);
 		break;
 	case OCTOOL_OP_PCI_WR:
+		if (r->data0 > 255 || r->data1 > 31 || r->data2 > 7 ||
+		    r->data3 > 255 ||
+		    (r->data4 != 1 && r->data4 != 2 && r->data4 != 4) ||
+		    (r->data3 & (r->data4 - 1))) {
+			rc = -EINVAL;
+			break;
+		}
 		pci_conf_write((u32)r->data0, (u32)r->data1, (u32)r->data2,
 			       (u32)r->data3, (int)r->data4, (u32)r->data5);
 		break;
@@ -336,9 +349,9 @@ static void dispatch(struct hwio_ctx *ctx, struct octool_hwio_req *r)
 
 	mbox[OCTOOL_MBOX_RESULT] = res;
 done:
-	/* status word: 0 = ok, negative errno in the high half for callers that
-	 * check it; the shipped binary only tests slot[0]==1 (done) and reads
-	 * slot[1], so keep slot[0] as the done flag. */
+	/* Success is exactly 1. The HAL understands negative errno in the high
+	 * half; the original GUI waits for the entire word to equal 1 and will
+	 * hang on errors. Do not erase errno to manufacture a successful reading. */
 	smp_wmb();
 	mbox[OCTOOL_MBOX_DONE] = rc ? (u64)(u32)rc << 32 | 1 : 1;
 }

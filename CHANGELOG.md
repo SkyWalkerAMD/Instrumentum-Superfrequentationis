@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## 未发布 — 2026-10-08（全面复查与边界修正）
+
+- 按作者“先全部复查”的要求暂停新增加载路径研究，以 `30423b7` 为基线审阅 ABI/kmod/HAL、GUI、
+  运行时、DKMS/rpm/deb、CI、对拍、逆向提取和 EEXIST 探针。再次获取 Actions 原始状态/重点日志，
+  确认基线 portability37734700829 的23项及 probe37734700805 成功，明确容器/真机边界。
+- 修复模块与 HAL 的 MMIO 单页映射越界：模块按 phys+width 请求映射，HAL 包含 offset+width，
+  公共调用检查地址加宽溢出。保持单次对应宽度读写，不改变96字节请求、MMIO操作码或原GUI调用点。
+- HAL与模块在访问前校验PCI宽度1/2/4、BDF、自然对齐及首256字节，避免直接pread/pwrite越过局部
+  uint32缓冲及模块offset截断。模块验证u64字段后转换；新增无硬件负例要求非法参数不产生任何IO。
+- 模块token必须恰好读8字节，失败/短读释放mmap/fd；HAL对非法非零完成字返回EPROTO，合法负errno
+  如实返回且不覆盖输出。增加失败token、非法完成字、跨页替身与原CPU/token字段的真实传输回归。
+- 对拍在打开前拒绝同一字符设备和别名；第二次old读取失败不再算volatile，有未解决读取失败或
+  volatile-oob时退出2，硬分歧优先1。加入selftest和Linux输入负例，不用一个stable match掩盖其他失败。
+  capture只在完整done=1时记completed，保留write errno；旧trace读入另核验wrote=96/done=1。
+- EEXIST探针增加节点存在和显式卸载成功门禁，记录module_unload_succeeded；已有/dev/mydev则拒绝
+  打扰。探针仍只使用授权研究分支的临时runner，无寄存器访问。
+- 统一校正“旧GUI可直接替换”“签名后始终可用”“采集无时序影响”等过强表述。详细报告
+  `docs/review-2026-10-08.md`列明PCI/EC系统驱动协调、HAL能力握手、iopl线程缓存、capture生命周期、
+  旧GUI错误/加载协议、MOK和真机待验事项。未推断任何未确认的面板值或硬件定义。
+- 本地完整ELF和固定fixture分别重跑56个预期观测，导出fixture逐字节一致；Windows测试权限错误和
+  Linux编译器缺失导致的跳过如实记录，不计作成功。修改后的完整云端回归待运行后追加。
+
 ## 未发布 — 2026-10-08（原版 GUI 模块重复加载接入研究）
 
 - 将旧 GUI 模块启动从“仅预载 DKMS 模块”推进到双端调用链：固定原 ELF 的 syscall(175) 调用点、

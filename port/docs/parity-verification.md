@@ -3,22 +3,22 @@
 # MMIO 对拍验证（新模块 vs 旧 .ko）
 
 > 2026-10-08 补充：本历史指南的“兼容”尚不覆盖错误应答。原版等待完整 done=1，当前模块的 errno
-> 高位会导致它持续等待，采集器非零判定又可能记为 completed。旧模块之间也有先 done 后 result 的
+> 高位会导致它持续等待。本次复查已把采集器 completed 收紧为完整 done==1；旧模块之间仍有先 done 后 result 的
 > 顺序差异；详见 [原字节证据与 56 组模拟](../../docs/legacy-mailbox-contract.md)。
 
 本文档说明 `tests/octool_capture.c` + `tests/octool_parity.c` + `tests/parity-run.sh`
 这套“对拍”工具：**在不改动 octool 一行代码的前提下，用现有 octool 二进制作为负载，
 验证新的 `octool_hwio` 模块在真实硬件上的 MMIO 读结果与原 `.ko` 逐一致。**
 
-这是新模块能“顶替旧 .ko”这一说法的实机证据。离线部分（协议、引擎、格式）已全部自测
-通过；唯一需要真机的是“write() → 模块 → 邮箱”这一步，本文给出完整步骤。
+本文提供获取实机证据的方法，尚没有真实硬件对拍结果。离线引擎验证不等于旧 GUI 接入、
+模块加载、错误兼容或硬件行为通过；当前复查范围见 [报告](../../docs/review-2026-10-08.md)。
 
 ---
 
 ## 1. 要回答的问题
 
-重构后的模块把 MMIO 八个操作码（0x0a–0x11）保持与旧 `.ko` 逐字节兼容，所以现有 octool
-可以直接对着新模块跑。但“协议兼容”只保证请求/应答的**格式**一致，不保证新模块在同一
+重构后的模块保留 MMIO 八个操作码（0x0a–0x11）、请求布局和成功应答偏移；旧 GUI 的
+加载握手与错误完成条件另行验证。成功应答的格式一致也不保证新模块在同一
 物理地址上**读回的值**和旧模块一致（ioremap 宽度、映射属性、字节序处理等都可能引入差异）。
 
 对拍要回答的正是后者：
@@ -35,17 +35,18 @@
 ### 2.1 采集（capture，纯观测）
 
 `octool_capture.c` 编成一个 `LD_PRELOAD` 动态库，挂在 `open/openat/mmap/write/close`
-上。它**只观测、不改变** octool 的任何行为，也**不自己访问硬件**：
+上。它不改请求字节、不另发硬件请求，但增加等待和日志开销：
 
 - `open`/`openat`：认出目标设备（默认 `/dev/mydev`，`OCTOOL_CAP_DEV` 可改）的 fd；
 - `mmap`：记下该 fd 的邮箱页（offset 0）；
-- `write`：对该 fd 的 96 字节写，先调真正的 `write()`，然后**像 octool 一样自旋等待
-  done 标志**（原驱动可能用 kthread 异步填邮箱，write 返回时邮箱未必就绪），再把
+- `write`：对该 fd 的 96 字节写，先调真正的 `write()`，然后有界等待非零完成字；
+  仅完整值为 1 才记 completed=1（原版则无界等于 1），再把
   “请求 96 字节 + 邮箱 slot[0..4]”记为一条 trace 记录；
 - `close`：忘掉该 fd。
 
-因为记录发生在 octool 自己的 `write()` 调用内部、且只读邮箱不写，octool 的时序完全不受
-影响。产物是一份 trace：octool 这次会话真正碰过的所有地址与当时旧模块的返回值。
+记录发生在原 `write()` 调用内部，会影响时序。trace 只覆盖被拦截并完整写入的请求；
+短写/失败写、设备路径别名、fd 超过 8191、dup/munmap/mremap 和并发映射生命周期尚未完整支持，
+不能把采集当成完整行为审计。旧 GUI 自身还可能写硬件。
 
 on-disk 格式见 `tests/octool_parity_trace.h`（magic + 定长记录），采集端与比对端共用一份
 定义。
@@ -73,13 +74,12 @@ old2 = 读旧模块
 - `old1 == old2`（该地址此刻稳定）：则 `new == old1` 判 **match**，否则判 **MISMATCH**
   （真正的实现分歧——这是会导致 PARITY FAILED 的硬失败）；
 - `old1 != old2`（该地址本就在变）：只要 `new` 落在 `[min(old1,old2), max(old1,old2)]`
-  区间内就判 **volatile**（正常，不算失败），否则 **volatile-oob**（提示，需人看一眼）;
-- 旧模块两次读的返回码不一致：判 volatile（拿不到干净的稳定读，不比对）;
+  区间内就判 **volatile**（未证明等价），否则 **volatile-oob**（本轮不能验收，退出 2）;
+- 第二次旧模块读取失败：判 unreadable，本轮不能验收，退出 2，不能当作硬件数值变化;
 - 新旧返回码一个成功一个失败：判 **ERR-PARITY**（硬失败）;
-- 两个模块都读不了（都返回错误）：判 unreadable（不是分歧，跳过）。
+- 两个模块都读不了：判 unreadable，本轮不能验收，退出 2。硬失败优先返回 1。
 
-背靠背三读把硬件漂移压到最小，因此“稳定地址上的不一致”几乎只可能来自实现差异——正是
-我们要抓的东西。
+三读只能提供时间窗口内的观测；read-to-clear、非单调变化和并发访问均需按已确认的寄存器语义分析。
 
 ---
 
@@ -147,13 +147,13 @@ sudo tests/octool_parity --old /dev/mydev --new /dev/mydev_v2 --trace corpus.bin
 
 结尾会打印各类计数，并给出：
 
-- `PARITY OK: new module matches old on every stable MMIO read` —— 稳定地址零分歧，
-  退出码 0；
+- `PARITY OK: stable MMIO subset matches; volatile addresses remain unproven` —— 有稳定匹配，
+  稳定地址零分歧、没有未解决的失败读取/volatile-oob，退出码 0；
 - `PARITY FAILED: N stable divergence(s)` —— 有 N 处稳定地址不一致或返回码不一致，
   退出码 1，前若干条会逐行列出 `phys/width/old/new`，据此定位。
 
-`volatile` 计数高是正常的（传感器/计数器多）。真正要盯的是 `MISMATCH(stable)` 和
-`err-parity` 必须为 0。
+`INCONCLUSIVE`、同一字符设备的两个路径/别名、空或截断 trace 返回 2。volatile 项必须单独记录，
+不能仅凭退出码 0 声称整个地址集合等价。脚本只检查旧节点存在，实际模块所有权须由操作者确认。
 
 ---
 
@@ -182,5 +182,4 @@ sudo tests/octool_parity --old /dev/mydev --new /dev/mydev_v2 --trace corpus.bin
   扩大覆盖；也可多次采集后合并 corpus。
 - **写效果不做双执行验证**（见 §4），写的线级一致性由 loopback 覆盖。
 - **offline 模式仅供参考**，拿结论请用 live。
-- 三读法压小但不消除漂移窗口；极高频变化的寄存器可能落入 volatile 而非 match，这是保守
-  的正确方向（不会把真差异漏成 match，只会把个别真相同的算成 volatile）。
+- 三读法不消除漂移窗口；不同实现的错误结果也可能恰好落在区间内，volatile 不是等价证明。

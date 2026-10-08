@@ -30,8 +30,9 @@
  *        transports to prove it classifies MATCH / MISMATCH / VOLATILE
  *        correctly. This validates the harness itself.
  *
- * Exit: 0 if no stable mismatch (and, in selftest, all expectations met);
- *       1 on any stable MISMATCH; 2 on usage/IO error.
+ * Exit: 0 for a matching stable subset with no unresolved read failures;
+ *       1 on a stable mismatch/error asymmetry; 2 on usage/IO error or an
+ *       inconclusive live comparison. Volatile addresses remain unproven.
  *
  * Build: cc -O2 -Wall -Wextra -o octool_parity octool_parity.c ../hal/octool_hwio.c
  */
@@ -46,6 +47,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 
 /* ---- read a trace into memory ------------------------------------------- */
 struct rd_item {
@@ -132,7 +134,9 @@ static int load_trace(const char *path, struct corpus *c)
 		w = op_read_width(r.cmd);
 		if (w) {
 			corpus_add(c, r.data0, w,
-				   rec.mbox[OCTOOL_MBOX_RESULT], rec.completed);
+				   rec.mbox[OCTOOL_MBOX_RESULT],
+				   rec.completed && rec.wrote == OCTOOL_TRACE_REQSZ &&
+				   rec.mbox[OCTOOL_MBOX_DONE] == 1);
 		} else if (!strcmp(op_name(r.cmd), "WR_MEM")) {
 			c->skipped_write++;
 		} else {
@@ -158,7 +162,7 @@ static const char *verdict_str(enum verdict v)
 	case V_MISMATCH:      return "MISMATCH";
 	case V_VOLATILE_OK:   return "volatile";
 	case V_VOLATILE_OOB:  return "volatile-oob";
-	case V_UNREADABLE:    return "unreadable(both)";
+	case V_UNREADABLE:    return "unreadable";
 	case V_ERR_PARITY:    return "ERR-PARITY";
 	case V_DIFF_ADVISORY: return "diff?";
 	}
@@ -182,7 +186,7 @@ static enum verdict classify_live(hwio_t *o, hwio_t *nw, uint64_t phys, int w,
 	if (ro1 != 0 && rn != 0)
 		return V_UNREADABLE;          /* both refuse - not a divergence */
 	if (ro2 != 0)
-		return V_VOLATILE_OK;         /* old read wobbled - no clean compare */
+		return V_UNREADABLE;          /* failed IO is not evidence of volatility */
 	if (o1 == o2)
 		return (nv == o1) ? V_MATCH : V_MISMATCH;
 	/* volatile: new must land within the band the old module spans */
@@ -215,6 +219,7 @@ struct tally { size_t v[7]; };
 static int live_exit_code(const struct tally *t)
 {
 	if (t->v[V_MISMATCH] || t->v[V_ERR_PARITY]) return 1;
+	if (t->v[V_UNREADABLE] || t->v[V_VOLATILE_OOB]) return 2;
 	return t->v[V_MATCH] ? 0 : 2;
 }
 
@@ -256,7 +261,7 @@ static void run(struct corpus *c, hwio_t *o, hwio_t *nw, int offline,
 #define ST_VOL_ADDR 0x800          /* an address the refs treat as volatile */
 #define ST_MISMATCH_ADDR 0x40      /* differs between old and new (stable)   */
 
-struct stref { uint8_t mem[ST_MEM]; int is_new; };
+struct stref { uint8_t mem[ST_MEM]; int is_new; unsigned reads, fail_on_read; };
 static unsigned st_vol_counter;    /* shared, so interleaved reads advance   */
 
 static int st_submit(void *vctx, const void *req96, uint64_t *mbox, size_t words)
@@ -267,6 +272,7 @@ static int st_submit(void *vctx, const void *req96, uint64_t *mbox, size_t words
 	int w = op_read_width(r->cmd);
 
 	memset(mbox, 0, words * sizeof(uint64_t));
+	if (++s->reads == s->fail_on_read) return -EIO;
 	if (w) {
 		uint64_t a = r->data0 % ST_MEM;
 		if (a == ST_VOL_ADDR) {
@@ -293,6 +299,7 @@ static hwio_t *st_open(struct stref *s, int is_new)
 	for (size_t i = 0; i < ST_MEM; i++)
 		s->mem[i] = (uint8_t)(i * 7 + 3);   /* identical content both sides */
 	s->is_new = is_new;
+	s->reads = s->fail_on_read = 0;
 	return hwio_open_transport(&t);
 }
 
@@ -380,6 +387,18 @@ static int selftest(void)
 		    live_exit_code(&stable) != 0 || live_exit_code(&unreadable) != 2) {
 			printf("FAIL: live acceptance exit-code gate\n"); rc = 1;
 		}
+		unreadable.v[V_MATCH] = 1;
+		stable.v[V_VOLATILE_OOB] = 1;
+		if (live_exit_code(&unreadable) != 2 || live_exit_code(&stable) != 2) {
+			printf("FAIL: a matching address must not hide unresolved reads\n"); rc = 1;
+		}
+	}
+	{
+		uint64_t old_value, new_value;
+		so.fail_on_read = so.reads + 2;
+		if (classify_live(o, nw, 0x10, 4, &old_value, &new_value) != V_UNREADABLE) {
+			printf("FAIL: failed second old read is not volatility\n"); rc = 1;
+		}
 	}
 
 	free(c.items);
@@ -431,6 +450,19 @@ int main(int argc, char **argv)
 	hwio_t *o = NULL, *nw;
 
 	if (!offline) {
+		/* Reject aliases too: two names for the same character-device number
+		 * cannot establish old/new parity. Check before opening either device.
+		 * Operators must keep device nodes fixed for the duration of the run. */
+		struct stat old_st, new_st;
+		if (stat(old_dev, &old_st) || stat(new_dev, &new_st) ||
+		    !S_ISCHR(old_st.st_mode) || !S_ISCHR(new_st.st_mode)) {
+			fprintf(stderr, "old/new must be existing character devices\n");
+			free(c.items); return 2;
+		}
+		if (old_st.st_rdev == new_st.st_rdev) {
+			fprintf(stderr, "INCONCLUSIVE: old/new refer to the same device\n");
+			free(c.items); return 2;
+		}
 		o = hwio_open(old_dev);
 		if (!o || hwio_backend_for(o, HWIO_FAM_MMIO) != HWIO_BE_MODULE) {
 			fprintf(stderr, "old: %s not served by module (loaded? permitted?)\n", old_dev);
@@ -454,7 +486,7 @@ int main(int argc, char **argv)
 	printf("  volatile         %zu\n", t.v[V_VOLATILE_OK]);
 	printf("  volatile-oob     %zu\n", t.v[V_VOLATILE_OOB]);
 	printf("  err-parity       %zu\n", t.v[V_ERR_PARITY]);
-	printf("  unreadable(both) %zu\n", t.v[V_UNREADABLE]);
+	printf("  unreadable       %zu\n", t.v[V_UNREADABLE]);
 	if (offline)
 		printf("  diff?(advisory)  %zu\n", t.v[V_DIFF_ADVISORY]);
 
@@ -465,11 +497,11 @@ int main(int argc, char **argv)
 	int hard_fail = t.v[V_MISMATCH] + t.v[V_ERR_PARITY];
 	if (!offline) {
 		if (live_exit_code(&t) == 2) {
-			printf("\nPARITY INCONCLUSIVE: no stable readable address\n");
+			printf("\nPARITY INCONCLUSIVE: no stable match or unresolved reads/volatile range\n");
 			return 2;
 		}
 		printf(hard_fail ? "\nPARITY FAILED: %d stable divergence(s)\n"
-				 : "\nPARITY OK: new module matches old on every stable MMIO read\n",
+				 : "\nPARITY OK: stable MMIO subset matches; volatile addresses remain unproven\n",
 		       hard_fail);
 		return live_exit_code(&t);
 	}

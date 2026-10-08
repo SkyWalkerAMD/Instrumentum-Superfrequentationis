@@ -4,7 +4,8 @@
  *
  * Backend selection per family:
  *   - If the octool_hwio module is present and usable, everything goes through
- *     it (the only path that works under kernel lockdown).
+ *     it. Loading/trust, device permissions and operation success must still
+ *     be verified on the target; a signing certificate alone is insufficient.
  *   - Otherwise, when not locked down, direct userspace paths are used.
  *   - Under lockdown with no module, the family reports HWIO_BE_NONE and its
  *     ops return -EPERM.
@@ -70,6 +71,7 @@ static int mod_submit(void *vctx, const void *req96, uint64_t *out, size_t words
 	struct octool_hwio_req r = *rq;
 	size_t i;
 	ssize_t written;
+	uint64_t done;
 	long spins = 0;
 
 	/* CPU operations use user_id as the requested CPU, not the open token.
@@ -82,18 +84,21 @@ static int mod_submit(void *vctx, const void *req96, uint64_t *out, size_t words
 	if (written != (ssize_t)sizeof(r))
 		return written < 0 ? -errno : -EIO;
 	/* module fills the mailbox from inside write(); poll defensively */
-	while (c->mbox[OCTOOL_MBOX_DONE] == 0) {
+	while ((done = __atomic_load_n(&c->mbox[OCTOOL_MBOX_DONE], __ATOMIC_ACQUIRE)) == 0) {
 		if (++spins > 100000000L)
 			return -ETIMEDOUT;
 	}
-	for (i = 0; i < words; i++)
-		out[i] = c->mbox[i];
-	/* status: low bit is done, high 32 bits carry a negative errno if set */
+	/* Accept only success or the module's documented negative errno encoding.
+	 * Other nonzero values are not evidence of a completed request. */
 	{
-		int32_t st = (int32_t)(c->mbox[OCTOOL_MBOX_DONE] >> 32);
-		if (st < 0)
+		int32_t st = (int32_t)(done >> 32);
+		if ((uint32_t)done != 1 || st > 0 || st < -4095)
+			return -EPROTO;
+		if (st)
 			return st;
 	}
+	for (i = 0; i < words; i++)
+		out[i] = c->mbox[i];
 	return 0;
 }
 
@@ -134,8 +139,11 @@ static int module_transport(const char *dev_path, struct hwio_transport *t)
 		return -errno;
 	}
 	n = read(c->fd, &c->id, sizeof(c->id));	/* fetch per-open token */
-	if (n < (ssize_t)sizeof(c->id))
-		c->id = 0;
+	if (n != (ssize_t)sizeof(c->id)) {
+		int rc = n < 0 ? -errno : -EIO;
+		mod_close(c);
+		return rc;
+	}
 	t->ctx = c;
 	t->submit = mod_submit;
 	t->close = mod_close;
@@ -196,6 +204,7 @@ static int direct_mem(hwio_t *h, uint64_t phys, int width, uint64_t *val, int wr
 	long pg = sysconf(_SC_PAGESIZE);
 	off_t base = (off_t)(phys & ~(uint64_t)(pg - 1));
 	unsigned off = (unsigned)(phys & (pg - 1));
+	size_t length = (size_t)off + (size_t)width;
 	void *map;
 
 	if (h->mem_fd < 0) {
@@ -203,7 +212,9 @@ static int direct_mem(hwio_t *h, uint64_t phys, int width, uint64_t *val, int wr
 		if (h->mem_fd < 0)
 			return -errno;
 	}
-	map = mmap(NULL, pg, PROT_READ | PROT_WRITE, MAP_SHARED, h->mem_fd, base);
+	/* mmap rounds the length up; include the second page for a crossing read.
+	 * Do not split one MMIO operation into several hardware transactions. */
+	map = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, h->mem_fd, base);
 	if (map == MAP_FAILED)
 		return -errno;
 	volatile void *p = (char *)map + off;
@@ -213,7 +224,7 @@ static int direct_mem(hwio_t *h, uint64_t phys, int width, uint64_t *val, int wr
 		case 2: *(volatile uint16_t *)p = (uint16_t)*val; break;
 		case 4: *(volatile uint32_t *)p = (uint32_t)*val; break;
 		case 8: *(volatile uint64_t *)p = *val; break;
-		default: munmap(map, pg); return -EINVAL;
+		default: munmap(map, length); return -EINVAL;
 		}
 	} else {
 		switch (width) {
@@ -221,10 +232,10 @@ static int direct_mem(hwio_t *h, uint64_t phys, int width, uint64_t *val, int wr
 		case 2: *val = *(volatile uint16_t *)p; break;
 		case 4: *val = *(volatile uint32_t *)p; break;
 		case 8: *val = *(volatile uint64_t *)p; break;
-		default: munmap(map, pg); return -EINVAL;
+		default: munmap(map, length); return -EINVAL;
 		}
 	}
-	munmap(map, pg);
+	munmap(map, length);
 	return 0;
 }
 
@@ -403,7 +414,7 @@ int hwio_mem_read(hwio_t *h, uint64_t phys, int width, uint64_t *val)
 {
 	uint64_t op = mmio_read_op(width);
 
-	if (!op) return -EINVAL;
+	if (!op || phys > UINT64_MAX - (uint64_t)(width - 1)) return -EINVAL;
 	if (h->be[HWIO_FAM_MMIO] == HWIO_BE_MODULE) {
 		struct octool_hwio_req r; uint64_t m[WORDS]; int rc;
 		req_init(&r, op); r.data0 = phys;
@@ -420,7 +431,7 @@ int hwio_mem_write(hwio_t *h, uint64_t phys, int width, uint64_t val)
 {
 	uint64_t op = mmio_write_op(width);
 
-	if (!op) return -EINVAL;
+	if (!op || phys > UINT64_MAX - (uint64_t)(width - 1)) return -EINVAL;
 	if (h->be[HWIO_FAM_MMIO] == HWIO_BE_MODULE) {
 		struct octool_hwio_req r; uint64_t m[WORDS];
 		req_init(&r, op); r.data0 = phys; r.data1 = val;
@@ -478,9 +489,19 @@ int hwio_io_write(hwio_t *h, uint16_t port, int width, uint32_t val)
 	return -EPERM;
 }
 
+static int valid_pci(uint8_t dev, uint8_t fn, uint16_t off, int width)
+{
+	/* The module's config mechanism and the GUI support domain 0, 256 bytes.
+	 * Validate before either backend can truncate an address or use width as
+	 * the byte count of a four-byte local buffer. */
+	return (width == 1 || width == 2 || width == 4) &&
+	       dev < 32 && fn < 8 && off < 256 && !(off & (width - 1));
+}
+
 int hwio_pci_read(hwio_t *h, uint8_t bus, uint8_t dev, uint8_t fn,
 		  uint16_t off, int width, uint32_t *val)
 {
+	if (!valid_pci(dev, fn, off, width)) return -EINVAL;
 	if (h->be[HWIO_FAM_PCI] == HWIO_BE_MODULE) {
 		struct octool_hwio_req r; uint64_t m[WORDS]; int rc;
 		req_init(&r, OCTOOL_OP_PCI_RD);
@@ -497,6 +518,7 @@ int hwio_pci_read(hwio_t *h, uint8_t bus, uint8_t dev, uint8_t fn,
 int hwio_pci_write(hwio_t *h, uint8_t bus, uint8_t dev, uint8_t fn,
 		   uint16_t off, int width, uint32_t val)
 {
+	if (!valid_pci(dev, fn, off, width)) return -EINVAL;
 	if (h->be[HWIO_FAM_PCI] == HWIO_BE_MODULE) {
 		struct octool_hwio_req r; uint64_t m[WORDS];
 		req_init(&r, OCTOOL_OP_PCI_WR);
