@@ -1,7 +1,34 @@
 # CHANGELOG
 
+## 未发布 — 2026-10-08（四平台相关主板与时序分派）
+
+- 再跟进4个完整MainWindow槽及2个PCI/DMI谓词，导出3,038原指令字节；复用已固定的原PCI谓词。
+  592项Windows原指令实验通过，覆盖分支优先级、未知vendor、字符串大小写/长度、合成PCI与缓存标志。
+- W790菜单仅AMD拒绝后按GLOBAL_IS_GNR_SP选W790/W890各两窗口，不读主板型号；AMD主板优先查
+  WRX90E/TRX50并只开tr5_mb2，之后才检查1022:14a4或Shimada，另一TR5分支额外创建两个VRM对象。
+  字段+0x38的0x84/0x90及标题只记原数值/文字，未定义为寄存器地址/单位。
+- 客户端主板NVL分支用VZEDC字符串选一/两个面板；Memory Timings的NVL→ARL→GNR优先级与Controls不同。
+  ADL时序原来就创建intel_memtime再创建adl_timings，保留该多窗口顺序，不以一窗口一菜单作错误假设。
+- 新增3项关键分派回归，全部接入CI。资料与明确未决项在docs/legacy-menu-routing.md；未读取真机，
+  未执行面板构造体或硬件，也未把用户CPU/文件夹名当作DMI/PCI实测。
+
+## 未发布 — 2026-10-08（NVL控件绑定与XOC双连接）
+
+- 按继续离线逆向要求补齐此前Qt索引到具体控件的缺口：157成员命名片段、完整retranslateUi的
+  67项文字赋值、intel_ctl6构造28个connect点及两个XOC槽，导出15,111字节最小相关原指令。
+- 163项Windows有界实验通过；QString两种引用计数的控件文字一致，refcount=1路径67次释放。
+  可选CU1按钮为空时只跳过1项连接，其他27项保留；全部连接再与原Qt元数据/路由核对。
+- Apply GT/Apply NPU确实分别绑定此前MSR实验槽。发现同一objectName=xoc、Ui+0x460的点击信号
+  同时连接两个不同槽，两者均创建nvl_xoc窗口；依据Qt源说明记录双流程条件推论，未冒充实机点击。
+- 新增提取器/模拟器及3项边界/连接回归，接入portability门禁。明确局部前置状态、未执行完整构造、
+  Qt翻译/窗口/硬件均为合成边界，未修改GUI/HAL/模块/ABI。细节及复现写入docs/legacy-ui-connections.md。
+
 ## 未发布 — 2026-10-08（原 MSR 栈复用与忙循环）
 
+- `2270c6b / portability37761865986`已完整23/23成功，十目标模块/重构GUI/装包/窗口及总门禁均绿。
+  Linux分析14项测试无跳过，原平台550项、Qt607项和MSR148项通过；下载artifact后与Windows观测
+  排除environment字段逐项完全一致。原MSR24项有界忙循环按预期保留，不把这些已知失败称为修复。
+  作业/日志摘要/报告SHA记录docs/validation/legacy-qt-msr-ci-2270c6b.json。后续UI和菜单实验另轮验证。
 - 从Qt入口继续跟进intel_ctl6的完整gt/npu槽体及原Wrmsr/Rdmsr，公开4函数2,034原指令字节。
   在不预填读缓冲的实验中确认：前一次Wrmsr命令与随后Rdmsr缓冲共用栈地址，失败/EOF/短读会保留
   busy位，使GUI持续轮询。原协议/模块/HAL/GUI未改，未实际调用MSR/宿主设备。

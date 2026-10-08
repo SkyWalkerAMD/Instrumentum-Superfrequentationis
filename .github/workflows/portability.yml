@@ -48,6 +48,14 @@ jobs:
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/emulate-legacy-msr.py \
             --output build/msr-emulation.json
+      - name: Bind original control labels and explicit Qt connections
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/emulate-legacy-ui-connections.py \
+            --output build/ui-connections.json
+      - name: Verify motherboard and timings menu decision priorities
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/emulate-legacy-menu-routing.py \
+            --output build/menu-routing.json
       - uses: actions/upload-artifact@v4
         with:
           name: mailbox-contract-evidence
@@ -56,6 +64,8 @@ jobs:
             build/dispatch-emulation.json
             build/qt-callbacks.json
             build/msr-emulation.json
+            build/ui-connections.json
+            build/menu-routing.json
           if-no-files-found: error
           retention-days: 14
       - run: python3 port/ci/validate-local.py

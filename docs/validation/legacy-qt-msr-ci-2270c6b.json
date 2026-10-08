@@ -1,0 +1,223 @@
+{
+  "schema": 1,
+  "recorded_date": "2026-10-08",
+  "run": {
+    "id": 37761865986,
+    "head_sha": "2270c6bb748019828643eb5f2a0dedc3b794f95d",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37761865986",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "jobs": [
+    {
+      "id": 113259974598,
+      "name": "matrix",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113259974777,
+      "name": "baseline",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113260168624,
+      "name": "kernel (ubuntu24.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113260168666,
+      "name": "kernel (ubuntu20.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113260168678,
+      "name": "kernel (ubuntu22.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113260168689,
+      "name": "kernel (el9)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113260168722,
+      "name": "kernel (debian13)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113260168725,
+      "name": "kernel (debian12)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113260168729,
+      "name": "kernel (debian11)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113260168808,
+      "name": "kernel (el8)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113260168893,
+      "name": "kernel (ubuntu26.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113260168927,
+      "name": "kernel (el10)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113262048736,
+      "name": "desktop (ubuntu22.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113262048775,
+      "name": "desktop (ubuntu26.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113262048835,
+      "name": "desktop (debian12)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113262048870,
+      "name": "desktop (debian11)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113262048872,
+      "name": "desktop (ubuntu24.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113262048879,
+      "name": "desktop (el8)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113262048895,
+      "name": "desktop (debian13)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113262048913,
+      "name": "desktop (el9)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113262048924,
+      "name": "desktop (ubuntu20.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113262049523,
+      "name": "desktop (el10)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 113267823002,
+      "name": "gate",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "analysis_unit_tests": {
+    "passed": 14,
+    "skipped": 0
+  },
+  "scope": "Ten-target reconstructed GUI/module/packages and original Qt/MSR/dispatch offline tests. Not original GUI full main-window or hardware acceptance.",
+  "log_evidence": [
+    "2026-10-08T10:11:57.1238036Z Ran 21 tests in 0.024s",
+    "2026-10-08T10:12:01.5753425Z Ran 14 tests in 0.407s",
+    "2026-10-08T10:12:01.7853067Z 56 caller-contract cases passed; synthetic replies, no hardware",
+    "2026-10-08T10:12:12.0794181Z 550 bounded decision cases passed; no hardware or GUI executed",
+    "2026-10-08T10:12:13.4989271Z 39 classes; 607 bounded cases; 0 metadata/target mismatches",
+    "2026-10-08T10:12:16.0358899Z 148 cases characterized; 24 expected bounded busy loops; no hardware executed"
+  ],
+  "cross_environment": [
+    {
+      "experiment": "dispatch-emulation",
+      "cases": 550,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "1880a797bf48c530f68d7743fa6bf55f24df5ccda49109a518452cf398cf936f",
+      "local_sha256": "02bd88ddb04e8aa5e2476fcf28648f85b971c72e118ac50830532cbdc4b8e88c",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    },
+    {
+      "experiment": "qt-callbacks",
+      "cases": 607,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "bcd756afc46b93e7f06c491761c0a7ad67df440d51322635a4b2d158d976a792",
+      "local_sha256": "94bd74e824dc73e7e8a63fa8e139a1dc8f91baedc284d3ab1f5d7013af49e07d",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    },
+    {
+      "experiment": "msr-emulation",
+      "cases": 148,
+      "observations_equal_except_environment": true,
+      "cloud_sha256": "0fde83942ba6cd76fa1ddbaacbe34988fca04960a06cc4abfe597c5114989c38",
+      "local_sha256": "5904ca3e5395dad612428e453cfbd3d6290dbd4226cac82ddc4179e48c2c4069",
+      "environment": {
+        "cloud": {
+          "system": "Linux",
+          "python": "3.12.3",
+          "unicorn": "2.1.4"
+        },
+        "local": {
+          "system": "Windows",
+          "python": "3.14.8",
+          "unicorn": "2.1.4"
+        }
+      }
+    }
+  ]
+}

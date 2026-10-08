@@ -84,5 +84,7 @@ PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/emulate-legacy-ms
 - 基础Machine增加可选的明确指令上限观察模式，原550决策实验仍要求正常边界；新增边界RET仅控制
   Unicorn预翻译，不执行外部函数。相关分析测试和全部离线门禁继续接入CI。
 
-Windows本地148例及专门回归已验证，云端结果另行追加。原Qt/GUI可见窗口、用户四平台实际MSR值、
+Windows本地148例及专门回归已验证；`2270c6b / 37761865986`云端23/23成功，Linux14项分析测试
+无跳过，148例与Windows除environment外完全一致，见[该轮证据](validation/legacy-qt-msr-ci-2270c6b.json)。
+原Qt/GUI可见窗口、用户四平台实际MSR值、
 命令正确性、硬件写入成功、Secure Boot/lockdown均不由本实验推断。
