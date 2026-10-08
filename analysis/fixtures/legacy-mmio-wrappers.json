@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "scope": "eight original MMIO wrappers only; extracted after full ELF hash and write PLT/GOT validation",
+  "objects": {
+    "kernel_address": 29869368,
+    "kernel_fd": 29869360,
+    "user_request": 29869376
+  },
+  "functions": [
+    {
+      "symbol": "_Z16Read_MMIO_kernelm",
+      "address": 3596560,
+      "opcode": 12,
+      "width": 4,
+      "write": false,
+      "write_call": 3596614,
+      "write_plt": 1368208,
+      "code_hex": "f30f1efa53488d1d1ce49001ba60000000488d3518e49001488b0348c7060c00000048897e1048c70000000000488d05ece390018b38e845ffddff488b136690488b024883f80175f7488b42085bc3",
+      "code_sha256": "8d75c4823807e499fa8bf9658cb1d9a67f6f36e1ef5be28f55690afedf31ce6d"
+    },
+    {
+      "symbol": "_Z18Read_MMIO64_kernelm",
+      "address": 3596640,
+      "opcode": 10,
+      "width": 8,
+      "write": false,
+      "write_call": 3596694,
+      "write_plt": 1368208,
+      "code_hex": "f30f1efa53488d1dcce39001ba60000000488d35c8e39001488b0348c7060a00000048897e1048c70000000000488d059ce390018b38e8f5feddff488b136690488b024883f80175f7488b42085bc3",
+      "code_sha256": "b24e9cdc40a774e1884b8e73d709b729e51f1f7496dd6ba653c227639592058f"
+    },
+    {
+      "symbol": "_Z17Read_MMIO8_kernelm",
+      "address": 3596720,
+      "opcode": 16,
+      "width": 1,
+      "write": false,
+      "write_call": 3596774,
+      "write_plt": 1368208,
+      "code_hex": "f30f1efa53488d1d7ce39001ba60000000488d3578e39001488b0348c7061000000048897e1048c70000000000488d054ce390018b38e8a5feddff488b136690488b024883f80175f7488b42085bc3",
+      "code_sha256": "9c6f617e86fca170dcc347f43f550959842fc1fe9638f9adb2a50a6685f2ebda"
+    },
+    {
+      "symbol": "_Z18Read_MMIO16_kernelm",
+      "address": 3596800,
+      "opcode": 14,
+      "width": 2,
+      "write": false,
+      "write_call": 3596854,
+      "write_plt": 1368208,
+      "code_hex": "f30f1efa53488d1d2ce39001ba60000000488d3528e39001488b0348c7060e00000048897e1048c70000000000488d05fce290018b38e855feddff488b136690488b024883f80175f7488b42085bc3",
+      "code_sha256": "69c2e4a109b76ae65baa0cc65dd3a32a53d507e23fe3b08b272bfdf14174c05d"
+    },
+    {
+      "symbol": "_Z17Write_MMIO_kernelmm",
+      "address": 3596880,
+      "opcode": 13,
+      "width": 4,
+      "write": true,
+      "write_call": 3596941,
+      "write_plt": 1368208,
+      "code_hex": "f30f1efa534889f0488d1dd9e29001ba60000000488d35d5e2900148c7060d00000048897e1048894618488b0348c70000000000488d05a5e290018b38e8fefdddff488b130f1f00488b024883f80175f75bc3",
+      "code_sha256": "0a92ca39f79872dc408dffd1e385928eb80b9f6b83daf1571e9a996ebb276c9e"
+    },
+    {
+      "symbol": "_Z19Write_MMIO64_kernelmm",
+      "address": 3596976,
+      "opcode": 11,
+      "width": 8,
+      "write": true,
+      "write_call": 3597037,
+      "write_plt": 1368208,
+      "code_hex": "f30f1efa534889f0488d1d79e29001ba60000000488d3575e2900148c7060b00000048897e1048894618488b0348c70000000000488d0545e290018b38e89efdddff488b130f1f00488b024883f80175f75bc3",
+      "code_sha256": "377efac4ae7fbd560cb0952906cdc02ae3b16f1e301b7ddc6e9af019ec628220"
+    },
+    {
+      "symbol": "_Z18Write_MMIO8_kernelmh",
+      "address": 3597072,
+      "opcode": 17,
+      "width": 1,
+      "write": true,
+      "write_call": 3597137,
+      "write_plt": 1368208,
+      "code_hex": "f30f1efa534189f0488d1d19e29001ba60000000488d3515e29001410fb6c048c7061100000048897e1048894618488b0348c70000000000488d05e1e190018b38e83afdddff488b130f1f8000000000488b024883f80175f75bc3",
+      "code_sha256": "05d3c8ed5fe7a8f771cad2897983b35517ce846c440600faa808120cc31f63b9"
+    },
+    {
+      "symbol": "_Z19Write_MMIO16_kernelmt",
+      "address": 3597168,
+      "opcode": 15,
+      "width": 2,
+      "write": true,
+      "write_call": 3597233,
+      "write_plt": 1368208,
+      "code_hex": "f30f1efa534189f0488d1db9e19001ba60000000488d35b5e19001410fb7c048c7060f00000048897e1048894618488b0348c70000000000488d0581e190018b38e8dafcddff488b130f1f8000000000488b024883f80175f75bc3",
+      "code_sha256": "3ff9f4a54864f8244a2fbc3bdf86ddb05cf6bb7fe3f837344cc9cd85b178d6d6"
+    }
+  ]
+}

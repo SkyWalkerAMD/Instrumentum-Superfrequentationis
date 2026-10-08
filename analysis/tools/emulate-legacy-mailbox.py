@@ -21,6 +21,7 @@ from unicorn.x86_const import (UC_X86_REG_RAX, UC_X86_REG_RDI, UC_X86_REG_RSI,
                                UC_X86_REG_RDX, UC_X86_REG_RSP, UC_X86_REG_RIP)
 
 SHA256 = '44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10'
+FIXTURE_SHA256 = '4f96aa65f8f03f73e67a277b372e281c433226e5b2403fd26a5464078623d961'
 FUNCTIONS = {
     '_Z16Read_MMIO_kernelm': (0x0c, 4, False),
     '_Z18Read_MMIO64_kernelm': (0x0a, 8, False),
@@ -99,6 +100,37 @@ def image(path):
     return functions, objects
 
 
+def fixture_bytes(functions, objects):
+    result = {'schema': 1, 'source_elf_sha256': SHA256,
+              'scope': 'eight original MMIO wrappers only; extracted after full ELF hash and write PLT/GOT validation',
+              'objects': objects, 'functions': []}
+    for fn in functions:
+        row = {key: value for key, value in fn.items() if key != 'code'}
+        row.update(code_hex=fn['code'].hex(), code_sha256=hashlib.sha256(fn['code']).hexdigest())
+        result['functions'].append(row)
+    data = (json.dumps(result, indent=2) + '\n').encode('utf-8')
+    if hashlib.sha256(data).hexdigest() != FIXTURE_SHA256:
+        raise ValueError('extracted functions differ from the pinned public fixture')
+    return data
+
+
+def fixture(path):
+    data = path.read_bytes()
+    if hashlib.sha256(data).hexdigest() != FIXTURE_SHA256:
+        raise ValueError('fixture hash mismatch')
+    value = json.loads(data)
+    if value['source_elf_sha256'] != SHA256:
+        raise ValueError('fixture source mismatch')
+    functions = []
+    for row in value['functions']:
+        fn = dict(row)
+        fn['code'] = bytes.fromhex(fn.pop('code_hex'))
+        if hashlib.sha256(fn['code']).hexdigest() != fn.pop('code_sha256'):
+            raise ValueError('function hash mismatch')
+        functions.append(fn)
+    return functions, value['objects']
+
+
 def run_case(fn, objects, case):
     name, write_return, done, delay, expected_return = case
     uc = Uc(UC_ARCH_X86, UC_MODE_64)
@@ -173,9 +205,18 @@ def run_case(fn, objects, case):
             'write': call}
 
 
-def investigate(path):
-    functions, objects = image(path)
+def investigate(path, from_fixture=False, export_fixture=None):
+    functions, objects = fixture(path) if from_fixture else image(path)
+    if export_fixture:
+        if from_fixture:
+            raise ValueError('export requires the complete original ELF')
+        export_fixture.parent.mkdir(parents=True, exist_ok=True)
+        export_fixture.write_bytes(fixture_bytes(functions, objects))
     result = {'schema': 1, 'input_sha256': SHA256,
+              'input_mode': 'pinned-function-fixture' if from_fixture else 'complete-ELF',
+              'fixture_sha256': FIXTURE_SHA256 if from_fixture or export_fixture else None,
+              'source_verification': ('complete ELF verified at extraction; this run verifies fixture hash'
+                                      if from_fixture else 'complete ELF SHA and write PLT/GOT verified in this run'),
               'environment': {'python': platform.python_version(), 'system': platform.system(),
                               'unicorn': unicorn.__version__},
               'scope': 'bounded original MMIO caller emulation; write/reply are synthetic; no hardware or kernel execution',
@@ -191,9 +232,11 @@ def investigate(path):
 def main():
     parser = argparse.ArgumentParser(__doc__)
     parser.add_argument('binary', type=Path)
+    parser.add_argument('--fixture', action='store_true', help='input is the pinned public function fixture, not the full ELF')
+    parser.add_argument('--export-fixture', type=Path, help='reproduce the public fixture from the pinned full ELF')
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
-    result = investigate(args.binary)
+    result = investigate(args.binary, args.fixture, args.export_fixture)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_bytes((json.dumps(result, indent=2) + '\n').encode('utf-8'))
     print('{} caller-contract cases passed; synthetic replies, no hardware'.format(result['cases_passed']))

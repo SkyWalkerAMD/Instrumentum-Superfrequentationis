@@ -28,8 +28,18 @@ jobs:
       - run: python3 -m unittest discover -s port/tests -p 'test_*.py' -v
       - name: Verify ELF disassembler against PLT, CET and GOT fixtures
         run: |
-          python3 -m pip install --target build/reference-tools -r analysis/tools/requirements-reference.txt
+          python3 -m pip install --target build/reference-tools -r analysis/tools/requirements-emulation.txt
           PYTHONPATH="$PWD/build/reference-tools" python3 -m unittest discover -s analysis/tests -v
+      - name: Check original MMIO caller with 56 bounded synthetic responses
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/emulate-legacy-mailbox.py \
+            analysis/fixtures/legacy-mmio-wrappers.json --fixture --output build/mailbox-emulation.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mailbox-contract-evidence
+          path: build/mailbox-emulation.json
+          if-no-files-found: error
+          retention-days: 14
       - run: python3 port/ci/validate-local.py
       - run: find port -name '*.sh' -print0 | xargs -0 -n1 bash -n
   kernel:

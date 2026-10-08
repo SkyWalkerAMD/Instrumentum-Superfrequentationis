@@ -12,6 +12,8 @@
   3 份旧模块各 17 个函数；每个函数有字节哈希、逐条指令，模块另有重定位和 DWARF 字段偏移。
 - [Windows 原指令模拟](validation/legacy-mailbox-emulation-windows.json)：8 个包装函数 × 7 种合成应答，
   共 56 项。成功表示观察符合预期，包括预期不能退出的分支，**不是原版兼容性全通过**。
+- [直接从完整 ELF 提取后的模拟](validation/legacy-mailbox-emulation-full-elf-windows.json)
+  与公开函数样本模式的 56 组 observations 完全相同，作为本地提取链证据保留。
 
 | 模块 | 原样本 vermagic 内核 | SHA-256 |
 |---|---|---|
@@ -30,7 +32,9 @@ export PYTHONPATH="$PWD/build/reference-tools"
 python3 analysis/tools/audit-legacy-mailbox.py build/input-audit/octool \
   --module-zip ../octool-linux.zip --output build/mailbox-static.json
 python3 analysis/tools/emulate-legacy-mailbox.py build/input-audit/octool \
-  --output build/mailbox-emulation.json
+  --export-fixture build/reproduced-fixture.json --output build/mailbox-full-elf.json
+python3 analysis/tools/emulate-legacy-mailbox.py analysis/fixtures/legacy-mmio-wrappers.json \
+  --fixture --output build/mailbox-emulation.json
 python3 -m unittest discover -s analysis/tests -v
 ```
 
@@ -38,6 +42,13 @@ python3 -m unittest discover -s analysis/tests -v
 每例最多执行 512 条指令；只放入被选函数的原字节，唯一外部调用 `write@plt` 按 GOT 重定位确认并模拟。
 所有 fd、地址、令牌和应答都是合成值，不打开 `/dev/mydev`、不调用真实 write、不启动 GUI。
 不模拟模块、页表、内核权限或并发调度。因此不能替代 EL 真机、模块加载和 live parity。
+
+公开测试样本 `analysis/fixtures/legacy-mmio-wrappers.json` 共 4,144 字节，其中指令仅 664 字节，
+来自已获公开授权的八个函数。SHA-256 固定为
+`4f96aa65f8f03f73e67a277b372e281c433226e5b2403fd26a5464078623d961`。
+导出入口先校验完整原 ELF 的 SHA，再解析函数范围及 write 的 PLT/GOT；本地已复现出逐字节相同样本。
+云端仅验证公开样本 SHA 和各函数哈希，不再宣称云端重新验证了完整 ELF。
+样本不是可运行的完整 GUI；它只包含原函数指令、地址和三个对象地址，不含运行库或 `.ko`。
 
 ## 1. 完成条件是完整 64 位值等于 1
 
@@ -142,14 +153,22 @@ parse_user_request 的 MMIO 分支创建并唤醒 kthread，write 路径没有�
 云端旧 GUI 仍只到 Not supported 对话框，没有走到本模块路径；上述 emulation 不冒充那段启动成功。
 十目标重构版编译/安装/窗口结果也不能反证这些未注入的失败分支。
 
-新增手动 `legacy mailbox investigation` 工作流，只取已授权的草稿 ELF，在无网络、非 root、
+新增手动 `legacy mailbox investigation` 工作流，在无网络、非 root、只读根文件系统、
 零 capabilities 的独立容器执行模拟器，公开产物只有 JSON。它不启动原 ELF，也不加载旧模块。
-调用方法：`gh workflow run legacy-mailbox.yml --ref main -f asset_id=600130240`。
+调用方法：`gh workflow run legacy-mailbox.yml --ref main`。
 公开范围已由作者在 2026-10-08 明确确认：“①允许公开反汇编证据及模拟结果，继续云端测试”。
 此前自动审批曾因授权范围不明确拦截提交/推送；在作者补充授权后，继续公开本轮派生指令证据、
-研究工具和模拟结果。原 ELF 仍只取自未发布草稿，原 `.ko` 仍不进入公开产物。
-云端模拟和本轮完整回归待以下实际执行记录补齐，不能把已写好的工作流当成通过。
-本地 56 组模拟完成；3 项需 Linux 编译器的 fixture 在 Windows 明确跳过，未冒充执行通过。
+研究工具和模拟结果。完整原 ELF 仍留在未发布草稿，原 `.ko` 仍不进入公开产物。
+
+首次只读工作流 [37724202337](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37724202337)
+在获取草稿 asset600130240 时实际返回 HTTP403 `Resource not accessible by integration`，没有执行模拟；
+其上传步骤也因没有证据文件失败。此前自动审批要求移除 contents:write，此次没有恢复写权限，
+改用已授权公开的八函数指令样本，彻底删除下载步骤、GH_TOKEN 和 asset_id 参数。
+`portability` 的 matrix 阶段也加入同一 56 例，每次 push/PR 自动核验并保存 mailbox-contract-evidence。
+该门禁验证分析工具和原调用者行为；已知错误应答无法返回仍是被明确记录的兼容缺口。
+同一代码提交的 [portability 37724109109](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37724109109)
+23 项均成功，三个真实编译器 fixture 在 Linux 执行通过；该轮尚未包含随后接入的 56 例自动门禁。
+公开样本方案的云端模拟和完整回归以后续实际执行记录为准。
 
 修复前不要把现有包标记成原版 GUI 的完整替换驱动。真机必须继续验证冷启动握手、一次真实成功应答、
 GUI 返回及 stable live parity；失败分支用无硬件的可控后端注入，不通过任意坏物理地址制造内核故障。

@@ -1,6 +1,6 @@
 # GitHub 仓库与 Actions 测试
 
-更新：2026-09-30。
+更新：2026-10-08。
 
 ## 授权与项目命名
 
@@ -21,6 +21,8 @@ push、pull_request 和 workflow_dispatch 触发 portability 工作流。
 这条 GitHub Actions 路径不要求 Codex Cloud 环境或用户提供 Linux 服务器。
 
 - matrix：本地可执行的发布门禁、源码归档一致性与已审阅 ABI/HAL 哈希检查。
+  包括 3 个真实 ELF/ET_REL fixture 测试，以及 56 组原 MMIO 指令有界模拟；公开函数样本先校验固定 SHA。
+  模拟器观察符合预期不代表原 GUI 错误处理已兼容，见 [邮箱研究](legacy-mailbox-contract.md)。
 - kernel：十个独立目标，编译模块、loopback/transport/parity selftest、签名、DKMS 包生命周期。
 - baseline：EL8 构建静态 Qt SDK 和当前 GUI，执行 Qt 控件回归与 ELF ABI 下限检查。
   SDK 按配方哈希缓存、恢复时校验 SHA-256；每次重新编 GUI。SDK 失败不放行 desktop。
@@ -31,10 +33,13 @@ push、pull_request 和 workflow_dispatch 触发 portability 工作流。
 - gate：任何必需阶段失败、取消或跳过都失败；不豁免 GUI 缺失来制造全绿。
 
 上传的 Actions artifacts 保留 7 天；发布验收所需的日志/包应另行归档到正式交付记录。
+邮箱模拟的 JSON 证据例外保留 14 天，同时将验收结果保存到源码 docs/validation。
 早期 GUI 缺失时总门禁保持失败；现已接入作者选择的基础信息及原始寄存器 GUI，
 该范围成功不代表后续平台监控/调参面板或真机已验收。
 另提供手动 `Qt SDK diagnostic` 工作流，独立验证 EL8 静态 Qt 工具链并保留 SDK/配置/日志；
 它调用同一 `in-container.sh sdk el8`，不以 SDK 构建代替 GUI 窗口或总门禁。
+新增手动 `legacy mailbox investigation` 使用仓库只读权限和独立受限容器，运行同一公开八函数样本。
+没有草稿读取令牌，不下载完整原 ELF；`legacy-runtime` 的既有 GUI 启动诊断保持独立。
 实际 run URL、提交 SHA、目标结果和修复记录写入 [Actions 实测记录](actions-debugging.md)、
 [验证状态](verification-status.md) 与根 CHANGELOG，不把配置文件当成运行成功证据。
 
