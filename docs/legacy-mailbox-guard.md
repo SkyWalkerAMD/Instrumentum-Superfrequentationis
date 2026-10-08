@@ -92,3 +92,29 @@ PT_LOAD.p_vaddr=0、PT_PHDR.p_vaddr=0x40。失败对象是新造的测试ELF，�
 实际修复是否生效以后续重跑为准，不改宿主mmap_min_addr。
 布局选项见 [GNU ld](https://sourceware.org/binutils/docs/ld/Options.html)，
 低地址映射限制见 [Linux mmap_min_addr](https://www.kernel.org/doc/html/latest/admin-guide/sysctl/vm.html)。
+
+## 云端实测 37731171839：EL8 构建产物跨四种 glibc 运行通过
+
+[Actions run 37731171839](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37731171839)
+基于提交 `4f7c249578f95f7fd9b6b9e7146c68a0775b741f`，五个 job 全部成功：EL8 构建 job，
+以及 Rocky EL8、EL9、EL10、Ubuntu 22.04 原生执行 job。EL8 上的构建脚本核验保护库需要的
+最高 GLIBC 符号版本不高于 2.28；四个系统运行的是同一组 EL8 构建字节，guard SHA-256
+均为 `57ca919e302573ca954a64bb69936c64845bd4fc00f426f2455766117d201d2c`。
+
+| 容器目标 | 实际 glibc 包 | 本机 307 项 | 证据 artifact digest |
+|---|---|---:|---|
+| Rocky EL8 | `2.28-251.el8_10.43` | 通过 | `7cc0c58c5a2a7cd0969b8dc0181476bc040b0d310081be2ce58514a30535656d` |
+| Rocky EL9 | `2.34-275.el9_8` | 通过 | `025f6b3185d0c2e8987b3c9ff08b9a71a19fc75d00387cfd7f23e50c15b74161` |
+| Rocky EL10 | `2.39-128.el10_2` | 通过 | `a56837ad20581bcf3dfff6603f967c07b8bc73d43d2ecf770467f13e4e6213f` |
+| Ubuntu 22.04 | `2.35-0ubuntu3.15` | 通过 | `7a0e570b7dfc443eb51ef779b09c32cbd9aa40d548bfbad660db9dce0df681c7` |
+
+每个目标的 307 项由未保护 PIE 72 项、未保护非 PIE 成功/异步 16 项、保护后的 PIE/非 PIE/
+显式加载器路径 216 项、无关 write 调用透传 3 项组成。结果中所有失败注入均以指定诊断和退出码 74
+结束；成功与延迟成功仍由原机器码正常返回，96 字节请求和结果字未被保护层改写。EL8 编译产物
+在四个目标上的 SHA 完全相同。逐运行摘要、版本、哈希、artifact ID/digest 见
+[机器可读记录](validation/legacy-mailbox-guard-run-37731171839.json)。
+
+这是对原版八个 MMIO 包装函数错误/无应答路径的跨 glibc 保护层突破：无需改原 ELF 指令、96 字节 ABI
+或邮箱结果，也无需将失败伪装成成功。它只在 write 已经返回后监视完成字，不能中断内核内阻塞的
+write；错误会结束整个进程而不是恢复 GUI；并发请求、模块握手、硬件身份、Secure Boot/MOK、实机
+MMIO 对拍及旧 GUI 主窗口仍未由该模拟覆盖。CI 也没有运行完整旧 GUI 或物理硬件。

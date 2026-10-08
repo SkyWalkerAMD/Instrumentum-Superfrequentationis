@@ -21,7 +21,13 @@
   binutils2.30默认0x400000 text与原始低地址段混排，生成从0开始的LOAD/0x40 PHDR。
   修正测试链接布局为非PIE text-segment=0x10000、max-page-size=0x1000；不修改原机器码，
   不降低mmap_min_addr。新增拒绝低地址LOAD/W+X/可执行栈门禁，加入16项非PIE未保护基线，
-  每目标现为307项；修复后云端结果另记。
+  每目标现为307项；修复后云端结果见37731171839。
+- [云端实测37731171839](docs/legacy-mailbox-guard.md)：EL8构建及EL8/9/10、Ubuntu22.04四个
+  原生glibc执行job全绿，同一EL8构建guard在四者各通过307项，保护库符号上限<=GLIBC_2.28，
+  SHA-256均为57ca919e302573ca954a64bb69936c64845bd4fc00f426f2455766117d201d2c。
+  支持原错误/无应答路径在原函数忙等前诊断并fail-fast，成功请求仍原样返回。这是保护层模拟验证，
+  不代表完整旧GUI、真实内核模块、硬件、并发、Secure Boot或真机主窗口通过；逐项记录在
+  docs/validation/legacy-mailbox-guard-run-37731171839.json。
 
 ## 未发布 — 2026-10-08（MMIO 邮箱逆向续查）
 

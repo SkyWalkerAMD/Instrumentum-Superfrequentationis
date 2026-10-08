@@ -1,0 +1,100 @@
+{
+  "workflow": "legacy native mailbox guard",
+  "run_id": 37731171839,
+  "run_url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37731171839",
+  "head_sha": "4f7c249578f95f7fd9b6b9e7146c68a0775b741f",
+  "started_at": "2026-10-08T05:11:59Z",
+  "completed_at": "2026-10-08T05:14:41Z",
+  "conclusion": "success",
+  "scope": "Only eight hash-pinned original MMIO wrapper bodies, synthetic backend and anonymous mailbox; no full legacy GUI, kernel module, device node or physical hardware.",
+  "fixture_sha256": "4f96aa65f8f03f73e67a277b372e281c433226e5b2403fd26a5464078623d961",
+  "el8_build": {
+    "status": "success",
+    "glibc": "2.28-251.el8_10.43",
+    "guard_glibc_symbol_ceiling": "<=2.28; enforced by test-legacy-guard.py --max-glibc 2.28",
+    "guard_sha256": "57ca919e302573ca954a64bb69936c64845bd4fc00f426f2455766117d201d2c",
+    "artifact": {
+      "id": 11530015552,
+      "name": "legacy-guard-el8-build",
+      "size_bytes": 19556,
+      "digest": "sha256:6f07b786524046530025e1f8a0de97c85bbe7f739922f820636653d54765558a"
+    }
+  },
+  "checks_per_native_target": {
+    "total": 307,
+    "unguarded_pie_cases": 72,
+    "unguarded_nonpie_success_and_async_cases": 16,
+    "guarded_pie_nonpie_and_explicit_loader_cases": 216,
+    "unrelated_write_passthrough_cases": 3,
+    "modes": [
+      "unguarded-pie",
+      "unguarded-exec",
+      "guarded-pie",
+      "guarded-exec",
+      "guarded-loader"
+    ]
+  },
+  "targets": [
+    {
+      "target": "el8",
+      "image": "rockylinux:8",
+      "glibc": "2.28-251.el8_10.43",
+      "status": "success",
+      "observations": 307,
+      "guard_sha256": "57ca919e302573ca954a64bb69936c64845bd4fc00f426f2455766117d201d2c",
+      "artifact": {
+        "id": 11530056320,
+        "name": "legacy-guard-el8-evidence",
+        "size_bytes": 7634,
+        "digest": "sha256:7cc0c58c5a2a7cd0969b8dc0181476bc040b0d310081be2ce58514a30535656d"
+      }
+    },
+    {
+      "target": "el9",
+      "image": "rockylinux:9",
+      "glibc": "2.34-275.el9_8",
+      "status": "success",
+      "observations": 307,
+      "guard_sha256": "57ca919e302573ca954a64bb69936c64845bd4fc00f426f2455766117d201d2c",
+      "artifact": {
+        "id": 11529604379,
+        "name": "legacy-guard-el9-evidence",
+        "size_bytes": 7601,
+        "digest": "sha256:025f6b3185d0c2e8987b3c9ff08b9a71a19fc75d00387cfd7f23e50c15b74161"
+      }
+    },
+    {
+      "target": "el10",
+      "image": "quay.io/rockylinux/rockylinux:10",
+      "glibc": "2.39-128.el10_2",
+      "status": "success",
+      "observations": 307,
+      "guard_sha256": "57ca919e302573ca954a64bb69936c64845bd4fc00f426f2455766117d201d2c",
+      "artifact": {
+        "id": 11529763006,
+        "name": "legacy-guard-el10-evidence",
+        "size_bytes": 7874,
+        "digest": "sha256:a56837ad20581bcf3dfff6603f967c07b8bc73d43d2ecf770467f13e4e6213f"
+      }
+    },
+    {
+      "target": "ubuntu22.04",
+      "image": "ubuntu:22.04",
+      "glibc": "2.35-0ubuntu3.15",
+      "status": "success",
+      "observations": 307,
+      "guard_sha256": "57ca919e302573ca954a64bb69936c64845bd4fc00f426f2455766117d201d2c",
+      "artifact": {
+        "id": 11530450325,
+        "name": "legacy-guard-ubuntu22.04-evidence",
+        "size_bytes": 7559,
+        "digest": "sha256:7a0e570b7dfc443eb51ef779b09c32cbd9aa40d548bfbad660db9dce0df681c7"
+      }
+    }
+  ],
+  "limitations": [
+    "The timeout starts only after write returns and cannot interrupt a blocking kernel write.",
+    "An injected error exits the process with code 74; it does not recover the GUI or undo possible hardware writes.",
+    "The test does not cover original module loading, mmap/token handshake, real kernel responses, concurrent legacy requests, Secure Boot/MOK, physical MMIO parity or the complete GUI main window."
+  ]
+}
