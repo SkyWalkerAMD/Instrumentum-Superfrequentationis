@@ -91,6 +91,25 @@ def extract(path):
     report.update(fixture_sha256=hashlib.sha256(encoded(fixture)).hexdigest(),
                   fixture_code_bytes=sum(f['size'] for f in fixture['functions']),
                   scope=fixture['scope'],static_only_functions=[TSC])
+    # Inventory aligned direct CALLs only. Do not turn this into a claim that
+    # all indirect/tail/zero-sized entry points or their semantics are covered.
+    target=byname[CMD]['st_value'];seen=set();callers=[]
+    for s in symbols:
+        if s['st_info']['type']!='STT_FUNC' or not s['st_size'] or not isinstance(s['st_shndx'],int):continue
+        key=(s['st_value'],s['st_size'])
+        if key in seen or not elf.get_section(s['st_shndx'])['sh_flags'] & 4:continue
+        seen.add(key);code=read(*key)
+        if not any(key[0]+n+5+int.from_bytes(code[n+1:n+5],'little',signed=True)==target
+                   for n in range(len(code)-4) if code[n]==232):continue
+        ins=list(dec.disasm_lite(code,key[0]))
+        for n,(pc,size,mn,ops) in enumerate(ins):
+            if mn!='call' or ops!=hex(target):continue
+            context=ins[max(n-12,0):n+13]
+            callers.append(dict(symbol=s.name,function_address=key[0],function_size=key[1],
+                                function_sha256=hashlib.sha256(code).hexdigest(),call_address=pc,
+                                context=[dict(address=x[0],size=x[1],mnemonic=x[2],operands=x[3]) for x in context]))
+    report['direct_command_callers']=sorted(callers,key=lambda r:r['call_address'])
+    report['caller_scope']='Aligned direct CALL instructions in sized executable ELF functions only; static contexts, no caller body execution'
     return report,fixture
 
 
