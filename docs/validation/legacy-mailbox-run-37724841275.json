@@ -1,0 +1,152 @@
+{
+  "run": {
+    "conclusion": "success",
+    "createdAt": "2026-10-08T03:53:14Z",
+    "databaseId": 37724841275,
+    "headSha": "0e11ed3d81f59c315306ba5a390d64a3157c3773",
+    "jobs": [
+      {
+        "completedAt": "2026-10-08T03:53:34Z",
+        "conclusion": "success",
+        "databaseId": 113140547233,
+        "name": "original-caller",
+        "startedAt": "2026-10-08T03:53:18Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-08T03:53:19Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-08T03:53:19Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-08T03:53:20Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-08T03:53:19Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-08T03:53:30Z",
+            "conclusion": "success",
+            "name": "Prepare isolated emulator dependencies",
+            "number": 3,
+            "startedAt": "2026-10-08T03:53:20Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-08T03:53:30Z",
+            "conclusion": "success",
+            "name": "Emulate only the original MMIO wrappers with synthetic responses",
+            "number": 4,
+            "startedAt": "2026-10-08T03:53:30Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-08T03:53:31Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@v4",
+            "number": 5,
+            "startedAt": "2026-10-08T03:53:30Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-08T03:53:31Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 10,
+            "startedAt": "2026-10-08T03:53:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-08T03:53:31Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 11,
+            "startedAt": "2026-10-08T03:53:31Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37724841275/job/113140547233"
+      }
+    ],
+    "status": "completed",
+    "updatedAt": "2026-10-08T03:53:34Z",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37724841275"
+  },
+  "scope": "isolated Linux instruction emulation; no full ELF startup, module or real hardware test",
+  "input_mode": "pinned-function-fixture",
+  "fixture_sha256": "4f96aa65f8f03f73e67a277b372e281c433226e5b2403fd26a5464078623d961",
+  "image": {
+    "id": "sha256:df18428df8a0f9189c84e7424d214b4c50092af1f9dca5842a00c41c39bda316",
+    "repo_digests": [
+      "python@sha256:05cda9777409a9c3ffddd94a4c476b79f0769a0b4857f0c7ed9226b6800b0d6f"
+    ],
+    "architecture": "amd64",
+    "os": "linux"
+  },
+  "comparison": {
+    "all_four_function_results_equal": true,
+    "cases_per_run": 56,
+    "returned_per_run": 24,
+    "bounded_wait_per_run": 32,
+    "runs": [
+      {
+        "source": "docs/validation/legacy-mailbox-emulation-windows.json",
+        "environment": {
+          "python": "3.14.8",
+          "system": "Windows",
+          "unicorn": "2.1.4"
+        },
+        "input_mode": "pinned-function-fixture",
+        "sha256": "b7489d54621cee52978a48c7eb13e1bb83b1e77807dda38a61005275f5adfe94"
+      },
+      {
+        "source": "docs/validation/legacy-mailbox-emulation-full-elf-windows.json",
+        "environment": {
+          "python": "3.14.8",
+          "system": "Windows",
+          "unicorn": "2.1.4"
+        },
+        "input_mode": "complete-ELF",
+        "sha256": "d2de06e263d0e7a019571164d61a55cdcfef1f25430f32420bd498a0b54e9aea"
+      },
+      {
+        "source": "build/actions/37724841275/legacy-mailbox-evidence/emulation.json",
+        "environment": {
+          "python": "3.12.15",
+          "system": "Linux",
+          "unicorn": "2.1.4"
+        },
+        "input_mode": "pinned-function-fixture",
+        "sha256": "28f91a208934735348d48e785628830a7ffef0371dbfe314f84489aa687dd1e2"
+      },
+      {
+        "source": "build/actions/37724823205/mailbox-contract-evidence/mailbox-emulation.json",
+        "environment": {
+          "python": "3.12.3",
+          "system": "Linux",
+          "unicorn": "2.1.4"
+        },
+        "input_mode": "pinned-function-fixture",
+        "sha256": "4142e96873c19cc89b5d4107e8001740abfe1048e1e26e8328d46b9baf334726"
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "name": "emulation.json",
+      "bytes": 38825,
+      "sha256": "28f91a208934735348d48e785628830a7ffef0371dbfe314f84489aa687dd1e2"
+    },
+    {
+      "name": "image.json",
+      "bytes": 2811,
+      "sha256": "e54691e8b0b912045a5f9756313b90c405d32d78aeedbf36bd70323ec48c73d2"
+    }
+  ],
+  "unresolved": "original GUI waits for complete done==1; error encoded in high word is not compatible"
+}

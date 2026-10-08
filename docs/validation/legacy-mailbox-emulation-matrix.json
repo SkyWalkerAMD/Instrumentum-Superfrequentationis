@@ -1,0 +1,1009 @@
+{
+  "schema": 1,
+  "input_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "input_mode": "pinned-function-fixture",
+  "fixture_sha256": "4f96aa65f8f03f73e67a277b372e281c433226e5b2403fd26a5464078623d961",
+  "source_verification": "complete ELF verified at extraction; this run verifies fixture hash",
+  "environment": {
+    "python": "3.12.3",
+    "system": "Linux",
+    "unicorn": "2.1.4"
+  },
+  "scope": "bounded original MMIO caller emulation; write/reply are synthetic; no hardware or kernel execution",
+  "instruction_limit_per_case": 512,
+  "functions": [
+    {
+      "symbol": "_Z16Read_MMIO_kernelm",
+      "address": 3596560,
+      "opcode": 12,
+      "width": 4,
+      "write": false,
+      "write_call": 3596614,
+      "write_plt": 1368208,
+      "code_sha256": "8d75c4823807e499fa8bf9658cb1d9a67f6f36e1ef5be28f55690afedf31ce6d",
+      "cases": [
+        {
+          "case": "success",
+          "write_return": 96,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 0,
+          "returned": true,
+          "instructions": 22,
+          "stop_pc": "0x60020000",
+          "read_result_hex": "0xfedcba9876543210",
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0c00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "delayed_success",
+          "write_return": 96,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 64,
+          "returned": true,
+          "instructions": 85,
+          "stop_pc": "0x60020000",
+          "read_result_hex": "0xfedcba9876543210",
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0c00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "no_completion",
+          "write_return": 96,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e157",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0c00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "encoded_enomem",
+          "write_return": 96,
+          "reply_done_hex": "0xfffffff400000001",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e157",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0c00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "write_error",
+          "write_return": -1,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e157",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0c00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "short_write",
+          "write_return": 12,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e157",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0c00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "write_error_but_done",
+          "write_return": -1,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 0,
+          "returned": true,
+          "instructions": 22,
+          "stop_pc": "0x60020000",
+          "read_result_hex": "0xfedcba9876543210",
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0c00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        }
+      ]
+    },
+    {
+      "symbol": "_Z18Read_MMIO64_kernelm",
+      "address": 3596640,
+      "opcode": 10,
+      "width": 8,
+      "write": false,
+      "write_call": 3596694,
+      "write_plt": 1368208,
+      "code_sha256": "b24e9cdc40a774e1884b8e73d709b729e51f1f7496dd6ba653c227639592058f",
+      "cases": [
+        {
+          "case": "success",
+          "write_return": 96,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 0,
+          "returned": true,
+          "instructions": 22,
+          "stop_pc": "0x60020000",
+          "read_result_hex": "0xfedcba9876543210",
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0a00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "delayed_success",
+          "write_return": 96,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 64,
+          "returned": true,
+          "instructions": 85,
+          "stop_pc": "0x60020000",
+          "read_result_hex": "0xfedcba9876543210",
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0a00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "no_completion",
+          "write_return": 96,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e1a7",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0a00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "encoded_enomem",
+          "write_return": 96,
+          "reply_done_hex": "0xfffffff400000001",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e1a7",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0a00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "write_error",
+          "write_return": -1,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e1a7",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0a00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "short_write",
+          "write_return": 12,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e1a7",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0a00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "write_error_but_done",
+          "write_return": -1,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 0,
+          "returned": true,
+          "instructions": 22,
+          "stop_pc": "0x60020000",
+          "read_result_hex": "0xfedcba9876543210",
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0a00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        }
+      ]
+    },
+    {
+      "symbol": "_Z17Read_MMIO8_kernelm",
+      "address": 3596720,
+      "opcode": 16,
+      "width": 1,
+      "write": false,
+      "write_call": 3596774,
+      "write_plt": 1368208,
+      "code_sha256": "9c6f617e86fca170dcc347f43f550959842fc1fe9638f9adb2a50a6685f2ebda",
+      "cases": [
+        {
+          "case": "success",
+          "write_return": 96,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 0,
+          "returned": true,
+          "instructions": 22,
+          "stop_pc": "0x60020000",
+          "read_result_hex": "0xfedcba9876543210",
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "1000000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "delayed_success",
+          "write_return": 96,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 64,
+          "returned": true,
+          "instructions": 85,
+          "stop_pc": "0x60020000",
+          "read_result_hex": "0xfedcba9876543210",
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "1000000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "no_completion",
+          "write_return": 96,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e1f7",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "1000000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "encoded_enomem",
+          "write_return": 96,
+          "reply_done_hex": "0xfffffff400000001",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e1f7",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "1000000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "write_error",
+          "write_return": -1,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e1f7",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "1000000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "short_write",
+          "write_return": 12,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e1f7",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "1000000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "write_error_but_done",
+          "write_return": -1,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 0,
+          "returned": true,
+          "instructions": 22,
+          "stop_pc": "0x60020000",
+          "read_result_hex": "0xfedcba9876543210",
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "1000000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        }
+      ]
+    },
+    {
+      "symbol": "_Z18Read_MMIO16_kernelm",
+      "address": 3596800,
+      "opcode": 14,
+      "width": 2,
+      "write": false,
+      "write_call": 3596854,
+      "write_plt": 1368208,
+      "code_sha256": "69c2e4a109b76ae65baa0cc65dd3a32a53d507e23fe3b08b272bfdf14174c05d",
+      "cases": [
+        {
+          "case": "success",
+          "write_return": 96,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 0,
+          "returned": true,
+          "instructions": 22,
+          "stop_pc": "0x60020000",
+          "read_result_hex": "0xfedcba9876543210",
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0e00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "delayed_success",
+          "write_return": 96,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 64,
+          "returned": true,
+          "instructions": 85,
+          "stop_pc": "0x60020000",
+          "read_result_hex": "0xfedcba9876543210",
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0e00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "no_completion",
+          "write_return": 96,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e247",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0e00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "encoded_enomem",
+          "write_return": 96,
+          "reply_done_hex": "0xfffffff400000001",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e247",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0e00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "write_error",
+          "write_return": -1,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e247",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0e00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "short_write",
+          "write_return": 12,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e247",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0e00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "write_error_but_done",
+          "write_return": -1,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 0,
+          "returned": true,
+          "instructions": 22,
+          "stop_pc": "0x60020000",
+          "read_result_hex": "0xfedcba9876543210",
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0e00000000000000470000000000000000503412000000000300000000efcdab0400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        }
+      ]
+    },
+    {
+      "symbol": "_Z17Write_MMIO_kernelmm",
+      "address": 3596880,
+      "opcode": 13,
+      "width": 4,
+      "write": true,
+      "write_call": 3596941,
+      "write_plt": 1368208,
+      "code_sha256": "0a92ca39f79872dc408dffd1e385928eb80b9f6b83daf1571e9a996ebb276c9e",
+      "cases": [
+        {
+          "case": "success",
+          "write_return": 96,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 0,
+          "returned": true,
+          "instructions": 23,
+          "stop_pc": "0x60020000",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0d000000000000004700000000000000005034120000000088776655443322110400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "delayed_success",
+          "write_return": 96,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 64,
+          "returned": true,
+          "instructions": 86,
+          "stop_pc": "0x60020000",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0d000000000000004700000000000000005034120000000088776655443322110400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "no_completion",
+          "write_return": 96,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e298",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0d000000000000004700000000000000005034120000000088776655443322110400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "encoded_enomem",
+          "write_return": 96,
+          "reply_done_hex": "0xfffffff400000001",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e298",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0d000000000000004700000000000000005034120000000088776655443322110400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "write_error",
+          "write_return": -1,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e298",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0d000000000000004700000000000000005034120000000088776655443322110400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "short_write",
+          "write_return": 12,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e298",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0d000000000000004700000000000000005034120000000088776655443322110400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "write_error_but_done",
+          "write_return": -1,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 0,
+          "returned": true,
+          "instructions": 23,
+          "stop_pc": "0x60020000",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0d000000000000004700000000000000005034120000000088776655443322110400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        }
+      ]
+    },
+    {
+      "symbol": "_Z19Write_MMIO64_kernelmm",
+      "address": 3596976,
+      "opcode": 11,
+      "width": 8,
+      "write": true,
+      "write_call": 3597037,
+      "write_plt": 1368208,
+      "code_sha256": "377efac4ae7fbd560cb0952906cdc02ae3b16f1e301b7ddc6e9af019ec628220",
+      "cases": [
+        {
+          "case": "success",
+          "write_return": 96,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 0,
+          "returned": true,
+          "instructions": 23,
+          "stop_pc": "0x60020000",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0b000000000000004700000000000000005034120000000088776655443322110400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "delayed_success",
+          "write_return": 96,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 64,
+          "returned": true,
+          "instructions": 86,
+          "stop_pc": "0x60020000",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0b000000000000004700000000000000005034120000000088776655443322110400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "no_completion",
+          "write_return": 96,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e2f8",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0b000000000000004700000000000000005034120000000088776655443322110400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "encoded_enomem",
+          "write_return": 96,
+          "reply_done_hex": "0xfffffff400000001",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e2f8",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0b000000000000004700000000000000005034120000000088776655443322110400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "write_error",
+          "write_return": -1,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e2f8",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0b000000000000004700000000000000005034120000000088776655443322110400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "short_write",
+          "write_return": 12,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e2f8",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0b000000000000004700000000000000005034120000000088776655443322110400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "write_error_but_done",
+          "write_return": -1,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 0,
+          "returned": true,
+          "instructions": 23,
+          "stop_pc": "0x60020000",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0b000000000000004700000000000000005034120000000088776655443322110400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        }
+      ]
+    },
+    {
+      "symbol": "_Z18Write_MMIO8_kernelmh",
+      "address": 3597072,
+      "opcode": 17,
+      "width": 1,
+      "write": true,
+      "write_call": 3597137,
+      "write_plt": 1368208,
+      "code_sha256": "05d3c8ed5fe7a8f771cad2897983b35517ce846c440600faa808120cc31f63b9",
+      "cases": [
+        {
+          "case": "success",
+          "write_return": 96,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 0,
+          "returned": true,
+          "instructions": 24,
+          "stop_pc": "0x60020000",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "11000000000000004700000000000000005034120000000088000000000000000400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "delayed_success",
+          "write_return": 96,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 64,
+          "returned": true,
+          "instructions": 87,
+          "stop_pc": "0x60020000",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "11000000000000004700000000000000005034120000000088000000000000000400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "no_completion",
+          "write_return": 96,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e367",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "11000000000000004700000000000000005034120000000088000000000000000400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "encoded_enomem",
+          "write_return": 96,
+          "reply_done_hex": "0xfffffff400000001",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e367",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "11000000000000004700000000000000005034120000000088000000000000000400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "write_error",
+          "write_return": -1,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e367",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "11000000000000004700000000000000005034120000000088000000000000000400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "short_write",
+          "write_return": 12,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e367",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "11000000000000004700000000000000005034120000000088000000000000000400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "write_error_but_done",
+          "write_return": -1,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 0,
+          "returned": true,
+          "instructions": 24,
+          "stop_pc": "0x60020000",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "11000000000000004700000000000000005034120000000088000000000000000400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        }
+      ]
+    },
+    {
+      "symbol": "_Z19Write_MMIO16_kernelmt",
+      "address": 3597168,
+      "opcode": 15,
+      "width": 2,
+      "write": true,
+      "write_call": 3597233,
+      "write_plt": 1368208,
+      "code_sha256": "3ff9f4a54864f8244a2fbc3bdf86ddb05cf6bb7fe3f837344cc9cd85b178d6d6",
+      "cases": [
+        {
+          "case": "success",
+          "write_return": 96,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 0,
+          "returned": true,
+          "instructions": 24,
+          "stop_pc": "0x60020000",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0f000000000000004700000000000000005034120000000088770000000000000400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "delayed_success",
+          "write_return": 96,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 64,
+          "returned": true,
+          "instructions": 87,
+          "stop_pc": "0x60020000",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0f000000000000004700000000000000005034120000000088770000000000000400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "no_completion",
+          "write_return": 96,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e3c7",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0f000000000000004700000000000000005034120000000088770000000000000400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "encoded_enomem",
+          "write_return": 96,
+          "reply_done_hex": "0xfffffff400000001",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e3c7",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0f000000000000004700000000000000005034120000000088770000000000000400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "write_error",
+          "write_return": -1,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e3c7",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0f000000000000004700000000000000005034120000000088770000000000000400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "short_write",
+          "write_return": 12,
+          "reply_done_hex": "0x0",
+          "reply_delay_instructions": 0,
+          "returned": false,
+          "instructions": 512,
+          "stop_pc": "0x36e3c7",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0f000000000000004700000000000000005034120000000088770000000000000400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        },
+        {
+          "case": "write_error_but_done",
+          "write_return": -1,
+          "reply_done_hex": "0x1",
+          "reply_delay_instructions": 0,
+          "returned": true,
+          "instructions": 24,
+          "stop_pc": "0x60020000",
+          "read_result_hex": null,
+          "write": {
+            "fd": 600,
+            "count": 96,
+            "request_hex": "0f000000000000004700000000000000005034120000000088770000000000000400000000efcdab0500000000efcdab0600000000efcdab0700000000efcdab0800000000efcdab0900000000efcdab0a00000000efcdab0b00000000efcdab",
+            "mailbox_before_write": 0
+          }
+        }
+      ]
+    }
+  ],
+  "cases_passed": 56
+}

@@ -34,6 +34,13 @@
   同一 56 例接入每次 push/PR 的 matrix 门禁和 JSON artifact，不把复现已知失败分支称作兼容性修复。
 - `d0c6913 / portability 37724109109` 的 23 项已全部成功，三个真实 ELF/ET_REL fixture 在 Linux 实际执行；
   十目标模块、GUI、打包、安装和窗口门禁继续通过。该轮尚不包含新加的公开样本 56 例自动门禁。
+- `0e11ed3 / legacy-mailbox 37724841275` 使用只读公开样本方案成功，受限 Linux 容器实际跑完 56 例。
+  同提交 portability37724823205 的 matrix 新门禁也已通过；分别下载两份真实 artifact，和 Windows
+  完整 ELF/公开样本模式逐项比对，全部请求、返回值、停止地址和指令计数相同。每份 24 例返回、
+  32 例达到指令上限，后者是已知调用者行为，不是原 GUI 错误兼容性修复。原始 JSON/镜像/哈希归档 docs。
+- `0e11ed3 / portability 37724823205` 最终 23/23 成功，新模拟门禁与三个真实编译器 fixture 全过，
+  kernel/desktop 精确覆盖十目标，23 份 artifact 的元数据与 digest 已归档。相比本轮起点 917b986，
+  GUI、ABI、HAL、kmod、packaging、port/tests 未改；收尾仅补充实测证据与文档。
 
 ## 未发布 — 2026-10-08（EL8–EL10 原版启动/权限研究）
 

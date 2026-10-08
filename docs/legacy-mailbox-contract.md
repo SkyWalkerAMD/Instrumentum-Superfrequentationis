@@ -14,6 +14,8 @@
   共 56 项。成功表示观察符合预期，包括预期不能退出的分支，**不是原版兼容性全通过**。
 - [直接从完整 ELF 提取后的模拟](validation/legacy-mailbox-emulation-full-elf-windows.json)
   与公开函数样本模式的 56 组 observations 完全相同，作为本地提取链证据保留。
+- [Linux 独立容器模拟](validation/legacy-mailbox-emulation-linux.json)和
+  [正式 matrix 门禁模拟](validation/legacy-mailbox-emulation-matrix.json)均已实际执行。
 
 | 模块 | 原样本 vermagic 内核 | SHA-256 |
 |---|---|---|
@@ -169,6 +171,30 @@ parse_user_request 的 MMIO 分支创建并唤醒 kthread，write 路径没有�
 同一代码提交的 [portability 37724109109](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37724109109)
 23 项均成功，三个真实编译器 fixture 在 Linux 执行通过；该轮尚未包含随后接入的 56 例自动门禁。
 公开样本方案的云端模拟和完整回归以后续实际执行记录为准。
+
+### 只读方案的云端实测
+
+`0e11ed3d81f59c315306ba5a390d64a3157c3773` 的
+[独立运行 37724841275](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37724841275)
+成功，Python3.12.15 / Unicorn2.1.4 / Linux，56 例执行完毕。
+公开样本、原始模拟 JSON、镜像和比较记录见
+[运行证据](validation/legacy-mailbox-run-37724841275.json)；原始镜像信息另保存在
+[image JSON](validation/legacy-mailbox-image-37724841275.json)。
+镜像为 `python:3.12-slim`，实际 digest
+`sha256:05cda9777409a9c3ffddd94a4c476b79f0769a0b4857f0c7ed9226b6800b0d6f`。
+
+同一提交的 portability37724823205 在 matrix 阶段用 Python3.12.3 / Unicorn2.1.4 实际执行同一门禁。
+下载两份云端 artifact，和 Windows3.14.8 的完整 ELF/公开样本两种模式逐项比较：
+四份报告全部 56 例的请求、指令计数、停止地址、返回值完全一致，环境信息单独记录。
+每份报告均为 24 例返回、32 例达到轮询指令上限；后者包含 ENOMEM 高位、短写、write 失败与无应答。
+这确认了问题可重复，**没有修复原 GUI 或驱动的错误兼容性**，也不是实机硬件测试。
+早期 403 失败的 [原始任务记录](validation/legacy-mailbox-run-37724202337.json)保留，不用后来的成功覆盖失败历史。
+
+同提交的[完整回归 37724823205](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37724823205)
+最终 23/23 成功，包含新模拟门禁、三个真实 ELF/ET_REL fixture、十目标模块/DKMS、EL8 GUI 基线、
+十目标原生 GUI、包安装和实际窗口、源码门禁。核查了 kernel/desktop 两组目标 ID 均精确覆盖十目标，
+23 份 artifact 的元数据和 digest 保存在[完整结果](validation/actions-run-37724823205.json)。
+与本轮起点 917b986 比较，gui、ABI、HAL、kmod、packaging、port/tests 无改动；没有将研究工具通过当成缺口修复。
 
 修复前不要把现有包标记成原版 GUI 的完整替换驱动。真机必须继续验证冷启动握手、一次真实成功应答、
 GUI 返回及 stable live parity；失败分支用无硬件的可控后端注入，不通过任意坏物理地址制造内核故障。

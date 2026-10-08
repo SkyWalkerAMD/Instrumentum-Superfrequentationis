@@ -9,6 +9,14 @@
 三份旧模块双重映射按重定位/DWARF 核对为同页。见[邮箱契约报告](legacy-mailbox-contract.md)。
 这是已记录、尚未修复的兼容缺口；此前成功路径/构建门禁不代表失败路径已兼容。
 
+作者已明确允许公开反汇编证据和模拟结果。公开研究提交 `d0c6913` 的
+[完整回归 37724109109](validation/actions-run-37724109109.json) 23 项成功；
+随后改为只读公开函数样本的 `0e11ed3 / 37724841275` 云端模拟 56 例成功，
+[原始结果与比较](validation/legacy-mailbox-run-37724841275.json)已下载归档。
+两份 Linux 结果与两种 Windows 提取模式全部观测一致；56 例也已接入 push/PR 自动门禁。
+同一 `0e11ed3` 的 [portability37724823205](validation/actions-run-37724823205.json)
+最终 23/23 成功，新门禁和十目标构建、GUI、包安装、窗口均实际通过；23 份 artifact 元数据已归档。
+
 2026-10-08 继续研究原版：`268ac92 / portability 37716682302` 的 23 项正式回归全绿，
 包括新增汇编标签/对象引用 ELF fixture，见[本次完整记录](validation/actions-run-37716682302.json)。
 独立原版诊断 `37716693694` 在 EL8/9/10 实际采到直接 iopl/setuid/setgid 的拒绝返回，
