@@ -181,3 +181,9 @@ c48a38f / [run 36670288030](https://github.com/SkyWalkerAMD/Instrumentum-Superfr
 跳过native检查掩盖崩溃。EL10仍使用Mutter/Xwayland，没有Xvfb回退。
 
 3项本地回归通过；十目标修正后的实际结果须另记，不把此轮红色状态改写成绿色。
+
+后续`eb35626 / 37771462578`又暴露诊断代码本身的问题：降权后xvfb-run用`>> /dev/stderr`
+重新打开root持有的管道被拒，Debian11/12及Ubuntu24日志均报Permission denied，GUI尚未启动。
+修正为非root测试用户在自己的XDG目录中mktemp日志，再通过继承的fd2输出；退出处理保留原状态。
+没有chmod父进程管道、提升测试用户权限或丢弃失败。该轮前置24/26项及原指令门禁成功仍保留，
+桌面结果必须由修正后的新run单独确认。
