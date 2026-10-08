@@ -36,10 +36,16 @@ jobs:
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/emulate-legacy-mailbox.py \
             analysis/fixtures/legacy-mmio-wrappers.json --fixture --output build/mailbox-emulation.json
+      - name: Characterize original platform decisions with 550 synthetic cases
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/emulate-legacy-dispatch.py \
+            --output build/dispatch-emulation.json
       - uses: actions/upload-artifact@v4
         with:
           name: mailbox-contract-evidence
-          path: build/mailbox-emulation.json
+          path: |
+            build/mailbox-emulation.json
+            build/dispatch-emulation.json
           if-no-files-found: error
           retention-days: 14
       - run: python3 port/ci/validate-local.py

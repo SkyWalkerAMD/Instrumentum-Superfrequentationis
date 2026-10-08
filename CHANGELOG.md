@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## 未发布 — 2026-10-08（原平台判断与 Controls 决策逆向）
+
+- 按继续逆向要求深入原ELF平台分支，不改GUI/ABI/HAL/模块。新增28函数指令报告、83个MainWindow槽
+  的直接调用清单；公开13函数3,695原指令字节，完整ELF SHA提取、固定fixture SHA复现。
+- 确认isit_spr/isit_gnr_sp分别按PCI列表8086:3258恰好一行/多于一行分流，非CPUID；ARL/NVL谓词
+  不查vendor。记录ReadPciConfigWord范围、RKL搜索顺序、HEDT的3251查找及列表列含义。
+- 恢复is_it_asus的区分大小写子串优先级、MANGO提前拒绝及品牌fallback checkvrm；后者含EC/SMBus
+  写操作，补充“硬件检查不一定只读”的启动边界。未运行VRM写入、未推断寄存器含义。
+- 确认Controls优先AMD拒绝、NVL→ctl6、GNR标志→ctl5、ARL标志→ctl3，再按hwloc CORE计数和PCI
+  3251分ctl2/ctl。更正仅凭截图把ctl3归入W790的可能误读。OptIn读取后输出被无条件覆盖为1，
+  真实返回只取其他两条件；ctl6布尔参数之后的限制仍待追踪。
+- 新增Unicorn550例涵盖原比较边界/优先级/异常向量/hwloc失败/OC组合，Windows本地已通过。
+  明确所有外部库/硬件输入为合成，停止在面板构造之前；新增fixture篡改、未知执行边界负例。
+  接入portability前置门禁，云端运行结果待实际完成后追加。
+- 详细持久知识与复现保存在docs/legacy-platform-dispatch.md；新增docs/reverse-engineering-status.md，
+  明确42,115解码函数包含静态Qt、550模拟和83入口清单不代表逆向/真机全部完成。
+
 ## 未发布 — 2026-10-08（对拍采集生命周期与完整性）
 
 - 接续 R9 修正采集器失效 mmap 指针及“半份日志仍有效”问题：同步跟踪 munmap/mprotect/mremap/
