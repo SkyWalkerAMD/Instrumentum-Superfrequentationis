@@ -72,7 +72,7 @@ build_sdk() {
 case "$action" in
     kernel)
         make -C port/hal
-        make -C port/tests check hwio_smoke 2>&1 | tee "$out/offline.log"
+        make -C port/tests check hwio_smoke CAPTURE_RESULTS="$out/capture-results.json" 2>&1 | tee "$out/offline.log"
         python3 -m unittest discover -s port/tests -p 'test_*.py' -v
         # Execute only eight pinned original wrapper bodies, with a fake
         # userspace mailbox and no device access. Every target checks the

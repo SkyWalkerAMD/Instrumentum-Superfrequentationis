@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 未发布 — 2026-10-08（对拍采集生命周期与完整性）
+
+- 接续 R10 修正采集器失效 mmap 指针及“半份日志仍有效”问题：同步跟踪 munmap/mprotect/mremap/
+  MAP_FIXED，open 族按设备身份辨认别名，close/复用分配新代际；无法归属的 dup/fcntl 别名、重叠请求
+  和请求期间生命周期变化拒绝整份采集，不串行化原设备请求、不改 GUI/96 字节协议/模块/HAL。
+- 请求在调用前保存；坏请求指针安全拒绝，原 write 只调用一次且 errno 保留。明确拒绝失败/短写、
+  驱动错误/非法完成和有界超时；不写 mailbox、不将错误伪装为结果，也不声称修复原 GUI 无限等待。
+- trace v2 保持头/记录尺寸，仅正常完整收尾后提交新 magic 和精确 nrec；日志 I/O、信号/_exit/fork
+  留作无效。新读取器兼容并警告 v1，在去重前拒绝失败读，新增 --check-trace，脚本在 insmod 前预检。
+- 新增真实 LD_PRELOAD + 普通文件合成邮箱的 42 例回归，核对请求/结果/errno/调用次数和日志拒绝；
+  接入十目标离线门禁并导出 capture-results.json。补充 v2 计数及失败重复地址输入负例。
+- 设计、API 依据、限制、复现步骤详记 docs/capture-integrity.md；尚未支持直接 syscall、close_range、
+  pkey_mprotect、取消/异步信号、完整并发及 capture/guard 混用。云端结果将在实跑后追加。
+
 ## 未发布 — 2026-10-08（模块能力握手与旧节点隔离）
 
 - 修复R9“read/mmap即认为支持全部扩展”的假设：增加旁路只读GET_CAPS_V1 ioctl，32字节固定宽度

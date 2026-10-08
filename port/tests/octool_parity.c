@@ -117,12 +117,13 @@ static int load_trace(const char *path, struct corpus *c)
 	struct octool_trace_hdr h;
 	struct octool_trace_rec rec;
 	ssize_t n;
+	uint64_t count = 0;
 
 	if (fd < 0) { fprintf(stderr, "open %s: %s\n", path, strerror(errno)); return -1; }
 	if (read(fd, &h, sizeof(h)) != (ssize_t)sizeof(h) ||
-	    h.magic != OCTOOL_TRACE_MAGIC ||
+	    (h.magic != OCTOOL_TRACE_MAGIC && h.magic != OCTOOL_TRACE_MAGIC_V2) ||
 	    h.reqsz != OCTOOL_TRACE_REQSZ || h.mboxw != OCTOOL_TRACE_MBOXW) {
-		fprintf(stderr, "%s: not a valid octool trace\n", path);
+		fprintf(stderr, "%s: not a valid finalized octool trace (capture incomplete?)\n", path);
 		close(fd);
 		return -1;
 	}
@@ -132,6 +133,16 @@ static int load_trace(const char *path, struct corpus *c)
 
 		memcpy(&r, rec.req, sizeof(r));
 		w = op_read_width(r.cmd);
+		count++;
+		/* Validate BEFORE deduplication: a later failed request must never
+		 * disappear behind an earlier successful read of the same address. */
+		if ((w || h.magic == OCTOOL_TRACE_MAGIC_V2) &&
+		    (rec.completed != 1 || rec.wrote != OCTOOL_TRACE_REQSZ ||
+		     rec.mbox[OCTOOL_MBOX_DONE] != 1)) {
+			fprintf(stderr, "%s: incomplete request at record %llu\n", path,
+			        (unsigned long long)count);
+			close(fd); return -1;
+		}
 		if (w) {
 			corpus_add(c, r.data0, w,
 				   rec.mbox[OCTOOL_MBOX_RESULT],
@@ -148,6 +159,13 @@ static int load_trace(const char *path, struct corpus *c)
 		fprintf(stderr, "%s: truncated trace record or read error\n", path);
 		return -1;
 	}
+	if ((h.magic == OCTOOL_TRACE_MAGIC_V2 || h.nrec) &&
+	    (!h.nrec || h.nrec != count)) {
+		fprintf(stderr, "%s: trace record count mismatch\n", path);
+		return -1;
+	}
+	if (h.magic == OCTOOL_TRACE_MAGIC)
+		fprintf(stderr, "warning: legacy v1 trace has no capture-finalization guarantee\n");
 	return 0;
 }
 
@@ -414,18 +432,20 @@ static void usage(const char *a0)
 	fprintf(stderr,
 	 "usage:\n"
 	 "  %s --selftest\n"
+	 "  %s --check-trace --trace corpus.bin             (no device access)\n"
 	 "  %s --old /dev/mydev --new /dev/mydev_v2 --trace corpus.bin [--max-show N]\n"
 	 "  %s --new /dev/mydev  --trace corpus.bin            (offline, advisory)\n",
-	 a0, a0, a0);
+	 a0, a0, a0, a0);
 }
 
 int main(int argc, char **argv)
 {
 	const char *old_dev = NULL, *new_dev = NULL, *trace = NULL;
-	int do_selftest = 0, max_show = 20, i;
+	int do_selftest = 0, check_trace = 0, max_show = 20, i;
 
 	for (i = 1; i < argc; i++) {
 		if (!strcmp(argv[i], "--selftest")) do_selftest = 1;
+		else if (!strcmp(argv[i], "--check-trace")) check_trace = 1;
 		else if (!strcmp(argv[i], "--old") && i+1 < argc) old_dev = argv[++i];
 		else if (!strcmp(argv[i], "--new") && i+1 < argc) new_dev = argv[++i];
 		else if (!strcmp(argv[i], "--trace") && i+1 < argc) trace = argv[++i];
@@ -436,15 +456,19 @@ int main(int argc, char **argv)
 	if (do_selftest)
 		return selftest();
 
-	if (!new_dev || !trace) { usage(argv[0]); return 2; }
+	if ((!check_trace && !new_dev) || !trace ||
+	    (check_trace && (new_dev || old_dev))) { usage(argv[0]); return 2; }
 
 	struct corpus c = {0};
-	if (load_trace(trace, &c) != 0)
-		return 2;
+	if (load_trace(trace, &c) != 0) { free(c.items); return 2; }
 	printf("corpus: %zu unique MMIO-read addresses (%zu dup reads, "
 	       "%zu writes skipped, %zu other skipped)\n",
 	       c.n, c.dup, c.skipped_write, c.skipped_other);
 	if (c.n == 0) { printf("INCONCLUSIVE: no MMIO reads in trace\n"); free(c.items); return 2; }
+	if (check_trace) {
+		printf("trace-check OK: format and captured reads only; no hardware parity verdict\n");
+		free(c.items); return 0;
+	}
 
 	int offline = (old_dev == NULL);
 	hwio_t *o = NULL, *nw;

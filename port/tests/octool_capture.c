@@ -1,280 +1,367 @@
 // SPDX-License-Identifier: GPL-2.0
-/*
- * octool_capture.c - LD_PRELOAD observation shim for parity testing.
- *
- * Purpose
- * -------
- * Record the exact request stream the *unmodified* octool binary sends to its
- * character device (/dev/mydev), so the parity tool can later replay those same
- * requests against a candidate module and confirm identical behaviour. This is
- * a read-only observer: it never changes what octool sends, never issues its own
- * hardware access, and only ever *reads* the mailbox page octool already shares
- * with the module. Observation adds waiting and file I/O; it is not timing
- * transparent and does not prove the original caller consumes error replies.
- *
- * How it hooks
- * ------------
- *   open/openat  - note the fd when its path is the target device.
- *   mmap         - note the mailbox page for a tracked fd (offset 0).
- *   write        - for a 96-byte write to a tracked fd: call the real write,
- *                  then wait for the module's done flag exactly as octool will
- *                  (the original driver may complete from a kthread, so the
- *                  mailbox is not guaranteed filled the instant write returns),
- *                  snapshot request + mailbox, append one trace record.
- *   close        - forget the fd.
- *
- * Usage
- * -----
- *   OCTOOL_CAP_OUT=corpus.bin \
- *   LD_PRELOAD=./octool_capture.so ./octool        # drive octool normally
- *
- * Env:
- *   OCTOOL_CAP_DEV  device path to watch (default /dev/mydev)
- *   OCTOOL_CAP_OUT  trace output file    (default octool_trace.bin)
- *
- * Build: cc -O2 -fPIC -shared -o octool_capture.so octool_capture.c -ldl -lpthread
- */
+/* LD_PRELOAD observer. Never retries a device write or changes request/mailbox.
+ * v2 traces commit on normal exit; lost/ambiguous observations invalidate the
+ * whole session. Supported boundaries: docs/capture-integrity.md. */
 #define _GNU_SOURCE
 #include "octool_parity_trace.h"
 #include "../abi/octool_hwio_abi.h"
-
 #include <dlfcn.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <pthread.h>
-#include <sched.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdarg.h>
 #include <sys/mman.h>
-#include <stdatomic.h>
-#include <errno.h>
+#include <sys/stat.h>
+#include <sys/syscall.h>
+#include <sys/uio.h>
+#include <time.h>
+#include <unistd.h>
 
 #define MAXFD 8192
+#define MBOX_BYTES (OCTOOL_TRACE_MBOXW * sizeof(uint64_t))
+struct fdslot { int watched; uint64_t cookie, seq; const uint64_t *mbox; };
+static struct fdslot slots[MAXFD];
+/* Metadata/snapshot/VMA lock, NEVER held over the device write or sleep. */
+static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_once_t once = PTHREAD_ONCE_INIT;
+static __thread int inside;
+static const char *device = "/dev/mydev";
+static int output = -1, initialized, invalid, active;
+static uint64_t next_cookie, records;
+static int (*next_open)(const char *, int, ...);
+static int (*next_open64)(const char *, int, ...);
+static int (*next_openat)(int, const char *, int, ...);
+static int (*next_openat64)(int, const char *, int, ...);
+static int (*next_close)(int);
+static int (*next_dup)(int);
+static int (*next_dup2)(int, int);
+static int (*next_dup3)(int, int, int);
+static ssize_t (*next_write)(int, const void *, size_t);
+static void *(*next_mmap)(void *, size_t, int, int, int, off_t);
+static void *(*next_mmap64)(void *, size_t, int, int, int, off64_t);
+static int (*next_munmap)(void *, size_t);
+static int (*next_mprotect)(void *, size_t, int);
+static void *(*next_mremap)(void *, size_t, size_t, int, ...);
 
-struct fdslot {
-	int                 is_dev;   /* fd refers to the watched device */
-	volatile uint64_t  *mbox;     /* mailbox page mmap'd for this fd, or NULL */
-	_Atomic uint64_t    seq;      /* per-fd request counter */
-};
-
-static struct fdslot g_fd[MAXFD];
-static const char   *g_dev = "/dev/mydev";
-static int           g_out_fd = -1;
-static pthread_mutex_t g_out_lock = PTHREAD_MUTEX_INITIALIZER;
-static pthread_once_t g_once = PTHREAD_ONCE_INIT;
-static __thread int  g_in_hook;               /* reentrancy guard */
-
-/* real libc entry points */
-static int   (*real_open)(const char *, int, ...);
-static int   (*real_open64)(const char *, int, ...);
-static int   (*real_openat)(int, const char *, int, ...);
-static int   (*real_openat64)(int, const char *, int, ...);
-static ssize_t (*real_write)(int, const void *, size_t);
-static int   (*real_close)(int);
-static void *(*real_mmap)(void *, size_t, int, int, int, off_t);
-static void *(*real_mmap64)(void *, size_t, int, int, int, off_t);
-
+/* Caller holds lock (or initializes). Diagnostic cannot recurse into write. */
+static void reject(const char *reason)
+{
+    if (!invalid) {
+        char line[192];
+        int n = snprintf(line, sizeof(line), "[octool_capture] INCOMPLETE: %s\n", reason);
+        if (n > 0) (void)syscall(SYS_write, STDERR_FILENO, line,
+                     (size_t)n < sizeof(line) ? (size_t)n : sizeof(line)-1);
+    }
+    invalid = 1;
+}
+/* Retry ordinary trace-file I/O only, NEVER a device request. */
+static int append_bytes(const void *data, size_t len)
+{
+    const char *p = data;
+    while (len) {
+        ssize_t n = next_write(output, p, len);
+        if (n < 0 && errno == EINTR) continue;
+        if (n <= 0 || (size_t)n > len) return -1;
+        p += n; len -= (size_t)n;
+    }
+    return 0;
+}
+static int is_target(int fd)
+{
+    struct stat a, b;
+    if (fd < 0 || fstat(fd, &a) || stat(device, &b)) return 0;
+    if (S_ISCHR(b.st_mode)) return S_ISCHR(a.st_mode) && a.st_rdev == b.st_rdev;
+    /* Ordinary file permitted for no-hardware regression fixtures. */
+    return a.st_dev == b.st_dev && a.st_ino == b.st_ino;
+}
+static int watched(int fd) { return fd >= 0 && fd < MAXFD && slots[fd].watched; }
+static void forget(int fd)
+{
+    if (watched(fd)) {
+        if (active) reject("descriptor changed during request");
+        memset(&slots[fd], 0, sizeof(slots[fd]));
+    }
+}
+static void fork_prepare(void)
+{
+    pthread_mutex_lock(&lock);
+    reject("forked capture is unsupported");
+}
+static void fork_parent(void) { pthread_mutex_unlock(&lock); }
+static void fork_child(void)
+{
+    /* Child must not commit parent's shared output file. */
+    if (output >= 0) (void)syscall(SYS_close, output);
+    output = -1;
+    pthread_mutex_unlock(&lock);
+}
 static void resolve(void)
 {
-	real_open     = dlsym(RTLD_NEXT, "open");
-	real_open64   = dlsym(RTLD_NEXT, "open64");
-	real_openat   = dlsym(RTLD_NEXT, "openat");
-	real_openat64 = dlsym(RTLD_NEXT, "openat64");
-	real_write    = dlsym(RTLD_NEXT, "write");
-	real_close    = dlsym(RTLD_NEXT, "close");
-	real_mmap     = dlsym(RTLD_NEXT, "mmap");
-	real_mmap64   = dlsym(RTLD_NEXT, "mmap64");
-
-	const char *d = getenv("OCTOOL_CAP_DEV");
-	if (d && *d)
-		g_dev = d;
-	const char *o = getenv("OCTOOL_CAP_OUT");
-	if (!o || !*o)
-		o = "octool_trace.bin";
-
-	g_out_fd = real_open(o, O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0644);
-	if (g_out_fd >= 0) {
-		struct octool_trace_hdr h = {
-			.magic = OCTOOL_TRACE_MAGIC,
-			.reqsz = OCTOOL_TRACE_REQSZ,
-			.mboxw = OCTOOL_TRACE_MBOXW,
-			.nrec  = 0, /* streamed; parity tool counts records */
-		};
-		(void)!real_write(g_out_fd, &h, sizeof(h));
-	}
-	fprintf(stderr, "[octool_capture] watching %s -> %s\n", g_dev, o);
+    const char *path;
+    struct stat st;
+    struct octool_trace_hdr h = {0, OCTOOL_TRACE_REQSZ, OCTOOL_TRACE_MBOXW, 0};
+    inside = 1;
+#define RESOLVE(name) next_##name = dlsym(RTLD_NEXT, #name)
+    RESOLVE(open); RESOLVE(open64); RESOLVE(openat); RESOLVE(openat64);
+    RESOLVE(close); RESOLVE(dup); RESOLVE(dup2); RESOLVE(dup3); RESOLVE(write);
+    RESOLVE(mmap); RESOLVE(mmap64); RESOLVE(munmap); RESOLVE(mprotect); RESOLVE(mremap);
+#undef RESOLVE
+    path = getenv("OCTOOL_CAP_DEV");
+    if (path && *path) device = path;
+    path = getenv("OCTOOL_CAP_OUT");
+    if (!path || !*path) path = "octool_trace.bin";
+    output = next_open(path, O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC | O_NOFOLLOW, 0644);
+    if (output < 0 || fstat(output, &st) || !S_ISREG(st.st_mode) ||
+        append_bytes(&h, sizeof(h))) reject("cannot initialize regular trace file");
+    if (pthread_atfork(fork_prepare, fork_parent, fork_child))
+        reject("cannot register fork boundary");
+    initialized = 1;
+    inside = 0;
 }
-
-static void ensure(void) { pthread_once(&g_once, resolve); }
-
-static int path_is_dev(const char *path)
+static void ensure(void)
 {
-	return path && strcmp(path, g_dev) == 0;
+    int saved = errno;
+    pthread_once(&once, resolve);
+    errno = saved;
 }
-
-static void mark_dev(int fd)
+static int has_mode(int flags)
 {
-	if (fd >= 0 && fd < MAXFD) {
-		g_fd[fd].is_dev = 1;
-		g_fd[fd].mbox = NULL;
-		atomic_store(&g_fd[fd].seq, 0);
-	}
+    return (flags & O_CREAT) || (flags & O_TMPFILE) == O_TMPFILE;
 }
-
-/* ---- open family -------------------------------------------------------- */
-int open(const char *path, int flags, ...)
+static int note_open(int fd)
 {
-	mode_t mode = 0;
-	int fd;
-
-	ensure();
-	if (flags & O_CREAT) {
-		va_list ap; va_start(ap, flags); mode = va_arg(ap, int); va_end(ap);
-	}
-	fd = real_open(path, flags, mode);
-	if (!g_in_hook && path_is_dev(path))
-		mark_dev(fd);
-	return fd;
+    int saved = errno;
+    pthread_mutex_lock(&lock);
+    if (fd >= 0) {
+        forget(fd);
+        if (is_target(fd)) {
+            if (fd >= MAXFD) reject("device fd exceeds capture table");
+            else { slots[fd].watched = 1; slots[fd].cookie = ++next_cookie; }
+        }
+    }
+    pthread_mutex_unlock(&lock); errno = saved; return fd;
 }
+#define OPEN_WRAPPER(name, fallback) \
+int name(const char *path, int flags, ...) { \
+    mode_t mode = 0; int fd; \
+    if (has_mode(flags)) { va_list a; va_start(a, flags); mode = va_arg(a, int); va_end(a); } \
+    if (inside) return (int)syscall(SYS_openat, AT_FDCWD, path, flags, mode); \
+    ensure(); fd = next_##name ? next_##name(path, flags, mode) : fallback(path, flags, mode); \
+    return note_open(fd); \
+}
+OPEN_WRAPPER(open, next_open)
+OPEN_WRAPPER(open64, next_open)
+#define OPENAT_WRAPPER(name, fallback) \
+int name(int dirfd, const char *path, int flags, ...) { \
+    mode_t mode = 0; int fd; \
+    if (has_mode(flags)) { va_list a; va_start(a, flags); mode = va_arg(a, int); va_end(a); } \
+    if (inside) return (int)syscall(SYS_openat, dirfd, path, flags, mode); \
+    ensure(); fd = next_##name ? next_##name(dirfd, path, flags, mode) : fallback(dirfd, path, flags, mode); \
+    return note_open(fd); \
+}
+OPENAT_WRAPPER(openat, next_openat)
+OPENAT_WRAPPER(openat64, next_openat)
 
-int open64(const char *path, int flags, ...)
+/* No start+length overflow. Mailbox starts at its page-aligned mapping base. */
+static int overlaps(uintptr_t a, size_t n, uintptr_t b, size_t m)
 {
-	mode_t mode = 0;
-	int fd;
-
-	ensure();
-	if (flags & O_CREAT) {
-		va_list ap; va_start(ap, flags); mode = va_arg(ap, int); va_end(ap);
-	}
-	fd = real_open64 ? real_open64(path, flags, mode) : real_open(path, flags, mode);
-	if (!g_in_hook && path_is_dev(path))
-		mark_dev(fd);
-	return fd;
+    if (!n || !m) return 0;
+    return a <= b ? b-a < n : a-b < m;
 }
-
-int openat(int dirfd, const char *path, int flags, ...)
+static void invalidate_maps(void *addr, size_t len)
 {
-	mode_t mode = 0;
-	int fd;
-
-	ensure();
-	if (flags & O_CREAT) {
-		va_list ap; va_start(ap, flags); mode = va_arg(ap, int); va_end(ap);
-	}
-	fd = real_openat(dirfd, path, flags, mode);
-	if (!g_in_hook && path_is_dev(path))
-		mark_dev(fd);
-	return fd;
+    int fd;
+    for (fd = 0; fd < MAXFD; ++fd)
+        if (slots[fd].mbox && overlaps((uintptr_t)addr, len,
+                                      (uintptr_t)slots[fd].mbox, MBOX_BYTES)) {
+            slots[fd].mbox = NULL;
+            if (active) reject("mailbox mapping changed during request");
+        }
 }
-
-int openat64(int dirfd, const char *path, int flags, ...)
+static void note_map(int fd, size_t len, int prot, int flags, off64_t off, void *p)
 {
-	mode_t mode = 0;
-	int fd;
-
-	ensure();
-	if (flags & O_CREAT) {
-		va_list ap; va_start(ap, flags); mode = va_arg(ap, int); va_end(ap);
-	}
-	fd = real_openat64 ? real_openat64(dirfd, path, flags, mode)
-			   : real_openat(dirfd, path, flags, mode);
-	if (!g_in_hook && path_is_dev(path))
-		mark_dev(fd);
-	return fd;
+    if (p == MAP_FAILED || (flags & MAP_ANONYMOUS)) return;
+    if (!watched(fd)) {
+        if (is_target(fd)) reject("mapping through untracked descriptor alias");
+        return;
+    }
+    if (active) reject("mailbox mapping changed during request");
+    if (off || len < MBOX_BYTES || !(prot & PROT_READ) ||
+        (flags & MAP_TYPE) == MAP_PRIVATE) {
+        reject("unsupported mailbox mapping"); return;
+    }
+    slots[fd].mbox = p;
 }
-
-/* ---- mmap: capture the mailbox page for a tracked fd --------------------- */
-static void note_mmap(int fd, off_t off, void *ret)
+#define MMAP_WRAPPER(name, offset_type, fallback) \
+void *name(void *addr, size_t len, int prot, int flags, int fd, offset_type off) { \
+    void *p; int saved; \
+    if (inside) return (void *)syscall(SYS_mmap, addr, len, prot, flags, fd, off); \
+    ensure(); pthread_mutex_lock(&lock); inside = 1; \
+    if (flags & MAP_FIXED) invalidate_maps(addr, len); \
+    p = next_##name ? next_##name(addr, len, prot, flags, fd, off) : fallback(addr, len, prot, flags, fd, off); \
+    saved = errno; note_map(fd, len, prot, flags, off, p); \
+    inside = 0; pthread_mutex_unlock(&lock); errno = saved; return p; \
+}
+MMAP_WRAPPER(mmap, off_t, next_mmap)
+MMAP_WRAPPER(mmap64, off64_t, next_mmap)
+int munmap(void *addr, size_t len)
 {
-	if (ret != MAP_FAILED && off == 0 && fd >= 0 && fd < MAXFD && g_fd[fd].is_dev)
-		g_fd[fd].mbox = (volatile uint64_t *)ret;
+    int r, saved;
+    if (inside) return (int)syscall(SYS_munmap, addr, len);
+    ensure(); pthread_mutex_lock(&lock); inside = 1;
+    /* Conservative even on failure: never keep a possibly stale address. */
+    invalidate_maps(addr, len);
+    r = next_munmap(addr, len); saved = errno;
+    inside = 0; pthread_mutex_unlock(&lock); errno = saved; return r;
 }
-
-void *mmap(void *addr, size_t len, int prot, int flags, int fd, off_t off)
+int mprotect(void *addr, size_t len, int prot)
 {
-	void *r;
-
-	ensure();
-	r = real_mmap(addr, len, prot, flags, fd, off);
-	if (!g_in_hook)
-		note_mmap(fd, off, r);
-	return r;
+    int r, saved;
+    if (inside) return (int)syscall(SYS_mprotect, addr, len, prot);
+    ensure(); pthread_mutex_lock(&lock); inside = 1;
+    if (!(prot & PROT_READ)) invalidate_maps(addr, len);
+    r = next_mprotect(addr, len, prot); saved = errno;
+    inside = 0; pthread_mutex_unlock(&lock); errno = saved; return r;
 }
-
-void *mmap64(void *addr, size_t len, int prot, int flags, int fd, off_t off)
+void *mremap(void *addr, size_t old_len, size_t new_len, int flags, ...)
 {
-	void *r;
-
-	ensure();
-	r = real_mmap64 ? real_mmap64(addr, len, prot, flags, fd, off)
-			: real_mmap(addr, len, prot, flags, fd, off);
-	if (!g_in_hook)
-		note_mmap(fd, off, r);
-	return r;
+    void *dest = NULL, *p; int saved;
+    if (flags & MREMAP_FIXED) {
+        va_list a; va_start(a, flags); dest = va_arg(a, void *); va_end(a);
+    }
+    if (inside) return (void *)syscall(SYS_mremap, addr, old_len, new_len, flags, dest);
+    ensure(); pthread_mutex_lock(&lock); inside = 1;
+    /* Do not infer alias semantics for old_len=0 or DONTUNMAP. */
+    invalidate_maps(addr, old_len ? old_len : 1);
+    if (flags & MREMAP_FIXED) invalidate_maps(dest, new_len);
+    p = next_mremap(addr, old_len, new_len, flags, dest); saved = errno;
+    inside = 0; pthread_mutex_unlock(&lock); errno = saved; return p;
 }
-
-/* ---- write: the actual capture point ------------------------------------ */
-static void record(int fd, const void *req, ssize_t wrote)
-{
-	struct octool_trace_rec rec;
-	volatile uint64_t *mbox = g_fd[fd].mbox;
-	int completed = 0;
-	long spins = 0;
-	int i;
-
-	memset(&rec, 0, sizeof(rec));
-	memcpy(rec.req, req, OCTOOL_TRACE_REQSZ);
-	rec.seq = atomic_fetch_add(&g_fd[fd].seq, 1);
-	rec.wrote = (int32_t)wrote;
-
-	/* Wait for a nonzero word with a bound, then record it verbatim. Unlike
-	 * this observer, the old GUI waits forever unless the full word equals 1. */
-	if (mbox) {
-		while (mbox[OCTOOL_MBOX_DONE] == 0) {
-			if (++spins > 200000000L)
-				break;               /* give up; record completed=0 */
-			if ((spins & 0xffff) == 0)
-				sched_yield();
-		}
-		completed = mbox[OCTOOL_MBOX_DONE] == 1;
-		for (i = 0; i < OCTOOL_TRACE_MBOXW; i++)
-			rec.mbox[i] = mbox[i];
-	}
-	rec.completed = completed;
-
-	pthread_mutex_lock(&g_out_lock);
-	if (g_out_fd >= 0)
-		(void)!real_write(g_out_fd, &rec, sizeof(rec));
-	pthread_mutex_unlock(&g_out_lock);
-}
-
-ssize_t write(int fd, const void *buf, size_t count)
-{
-	ssize_t r;
-	int saved_errno;
-
-	ensure();
-	r = real_write(fd, buf, count);
-	saved_errno = errno;
-	if (!g_in_hook && r == (ssize_t)OCTOOL_TRACE_REQSZ &&
-	    count == OCTOOL_TRACE_REQSZ &&
-	    fd >= 0 && fd < MAXFD && g_fd[fd].is_dev) {
-		g_in_hook = 1;
-		record(fd, buf, r);
-		g_in_hook = 0;
-	}
-	errno = saved_errno;
-	return r;
-}
-
 int close(int fd)
 {
-	ensure();
-	if (!g_in_hook && fd >= 0 && fd < MAXFD && g_fd[fd].is_dev) {
-		g_fd[fd].is_dev = 0;
-		g_fd[fd].mbox = NULL;
-	}
-	return real_close(fd);
+    int saved = errno;
+    if (inside) return (int)syscall(SYS_close, fd);
+    ensure(); pthread_mutex_lock(&lock);
+    forget(fd); /* Linux releases fd even for many close error returns. */
+    if (fd == output) { reject("trace descriptor closed by application"); output = -1; }
+    pthread_mutex_unlock(&lock); errno = saved;
+    return next_close(fd);
+}
+static int duplicate(int oldfd, int newfd, int flags, int which)
+{
+    int r, saved;
+    ensure(); pthread_mutex_lock(&lock); inside = 1;
+    r = which == 1 ? next_dup(oldfd) : which == 2 ? next_dup2(oldfd, newfd)
+                                                : next_dup3(oldfd, newfd, flags);
+    saved = errno;
+    if (r >= 0 && r != oldfd) {
+        if (watched(oldfd) || is_target(oldfd)) reject("device descriptor duplication unsupported");
+        forget(r);
+        if (r == output) { reject("trace descriptor replaced by application"); output = -1; }
+    }
+    inside = 0; pthread_mutex_unlock(&lock); errno = saved; return r;
+}
+int dup(int fd) { return inside ? (int)syscall(SYS_dup, fd) : duplicate(fd, -1, 0, 1); }
+int dup2(int fd, int dest) { return inside ? (int)syscall(SYS_dup2, fd, dest) : duplicate(fd, dest, 0, 2); }
+int dup3(int fd, int dest, int flags) { return inside ? (int)syscall(SYS_dup3, fd, dest, flags) : duplicate(fd, dest, flags, 3); }
+static uint64_t now_ns(void)
+{
+    struct timespec t;
+    if (clock_gettime(CLOCK_MONOTONIC, &t)) { reject("monotonic clock failed"); return 0; }
+    return (uint64_t)t.tv_sec * 1000000000ULL + (uint64_t)t.tv_nsec;
+}
+ssize_t write(int fd, const void *buf, size_t count)
+{
+    struct octool_trace_rec rec = {{0}, {0}, 0, 0, 0};
+    uint64_t cookie = 0, start;
+    ssize_t r; int saved, entry_errno = errno, observe = 0;
+    if (inside) return next_write ? next_write(fd, buf, count) : syscall(SYS_write, fd, buf, count);
+    ensure(); pthread_mutex_lock(&lock); inside = 1;
+    if (watched(fd)) {
+        if (!is_target(fd)) { reject("device descriptor identity changed"); forget(fd); }
+        else if (!invalid) {
+            struct iovec local = {rec.req, sizeof(rec.req)}, remote = {(void *)buf, sizeof(rec.req)};
+            if (active) reject("overlapping device requests");
+            else if (count != OCTOOL_TRACE_REQSZ) reject("device request is not 96 bytes");
+            else if (!slots[fd].mbox) reject("no readable tracked mailbox");
+            /* Request is ordinary user memory: avoid turning EFAULT into a
+             * userspace signal. Do NOT use GUP-based copying for PFNMAP mailboxes. */
+            else if (syscall(SYS_process_vm_readv, getpid(), &local, 1, &remote, 1, 0) != OCTOOL_TRACE_REQSZ)
+                reject("request snapshot unavailable");
+            else if (__atomic_load_n(slots[fd].mbox, __ATOMIC_ACQUIRE) != 0)
+                reject("mailbox was not cleared before request");
+            else {
+                cookie = slots[fd].cookie; rec.seq = slots[fd].seq++;
+                active++; observe = 1;
+            }
+        }
+    } else if (fd != output && is_target(fd)) reject("write through untracked descriptor alias");
+    inside = 0; pthread_mutex_unlock(&lock);
+    /* Exactly once, including errors/short writes. */
+    errno = entry_errno;
+    r = next_write(fd, buf, count); saved = errno;
+    if (!observe) { errno = saved; return r; }
+    pthread_mutex_lock(&lock); inside = 1;
+    rec.wrote = (int32_t)r;
+    if (r != (ssize_t)OCTOOL_TRACE_REQSZ) reject("failed or short device write");
+    start = now_ns();
+    while (!invalid) {
+        const uint64_t *mb; uint64_t done; int i;
+        if (!watched(fd) || slots[fd].cookie != cookie || !(mb = slots[fd].mbox)) {
+            reject("request lost descriptor or mailbox"); break;
+        }
+        /* Supported VMA changes take this same mutex; no speculative pointers. */
+        done = __atomic_load_n(mb, __ATOMIC_ACQUIRE);
+        if (done == 1) {
+            for (i = 0; i < OCTOOL_TRACE_MBOXW; ++i)
+                rec.mbox[i] = __atomic_load_n(mb+i, __ATOMIC_RELAXED);
+            if (__atomic_load_n(mb, __ATOMIC_ACQUIRE) != 1 || rec.mbox[0] != 1) {
+                reject("mailbox changed during snapshot"); break;
+            }
+            rec.completed = 1;
+            if (output < 0 || append_bytes(&rec, sizeof(rec))) reject("trace record write failed");
+            else records++;
+            break;
+        }
+        if (done) { reject("error or invalid mailbox completion"); break; }
+        if (now_ns() - start >= 1000000000ULL) { reject("mailbox completion timeout"); break; }
+        inside = 0; pthread_mutex_unlock(&lock);
+        { const struct timespec nap = {0, 1000000}; (void)nanosleep(&nap, NULL); }
+        pthread_mutex_lock(&lock); inside = 1;
+    }
+    active--;
+    inside = 0; pthread_mutex_unlock(&lock); errno = saved; return r;
+}
+static int positional(const void *data, size_t len, off_t off)
+{
+    const char *p = data;
+    while (len) {
+        ssize_t n = pwrite(output, p, len, off);
+        if (n < 0 && errno == EINTR) continue;
+        if (n <= 0 || (size_t)n > len) return -1;
+        p += n; len -= (size_t)n; off += n;
+    }
+    return 0;
+}
+__attribute__((destructor)) static void finish(void)
+{
+    struct octool_trace_hdr h = {0, OCTOOL_TRACE_REQSZ, OCTOOL_TRACE_MBOXW, 0};
+    uint64_t magic = OCTOOL_TRACE_MAGIC_V2;
+    if (!initialized) return;
+    pthread_mutex_lock(&lock); inside = 1;
+    if (active) reject("process exited during device request");
+    if (!records) reject("no complete device requests");
+    h.nrec = records;
+    /* Publish marker LAST, after all complete records and exact count sync.
+     * _exit/signals/I/O failure leave invalid magic. No claim of final marker
+     * durability against power loss; a missing marker simply rejects capture. */
+    if (!invalid && output >= 0 &&
+        (positional(&h, sizeof(h), 0) || fdatasync(output) ||
+         positional(&magic, sizeof(magic), 0))) reject("trace finalization failed");
+    if (output >= 0) (void)next_close(output);
+    output = -1;
+    inside = 0; pthread_mutex_unlock(&lock);
 }

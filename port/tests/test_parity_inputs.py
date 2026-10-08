@@ -40,6 +40,28 @@ class BadTrace(unittest.TestCase):
                 self.assertEqual(run.returncode, 2)
                 self.assertIn(message, run.stdout + run.stderr)
 
+    def test_finalized_counts_and_failed_duplicates(self):
+        request = struct.pack("<12Q", 0x0c, 71, 0x1000, *([0] * 9))
+        good = request + struct.pack("<5QQii", 1, 2, 0, 0, 0, 0, 96, 1)
+        bad = request + struct.pack("<5QQii", 0xfffffff400000001, 2, 0, 0, 0, 1, 96, 1)
+        cases = [
+            (0, 0, good, "capture incomplete"),
+            (0x4f43545250520002, 0, good, "count mismatch"),
+            (0x4f43545250520002, 2, good, "count mismatch"),
+            (0x4f43545250520002, 1, good + good, "count mismatch"),
+            (0x4f43545250520002, 2, good + bad, "incomplete request"),
+            (0x4f43545250520001, 0, good + bad, "incomplete request"),
+        ]
+        for magic, nrec, data, message in cases:
+            with self.subTest(magic=magic, nrec=nrec, message=message):
+                with tempfile.NamedTemporaryFile() as corpus:
+                    corpus.write(struct.pack("<4Q", magic, 96, 5, nrec) + data)
+                    corpus.flush()
+                    run = subprocess.run([str(BINARY), "--check-trace", "--trace", corpus.name],
+                                         capture_output=True, text=True)
+                    self.assertEqual(run.returncode, 2)
+                    self.assertIn(message, run.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

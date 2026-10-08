@@ -63,6 +63,8 @@ fi
 
 # 3. load the new module beside the old one
 [ -s "$CORPUS" ] || { echo "empty or missing corpus: $CORPUS" >&2; exit 2; }
+# Reject incomplete capture before even loading the candidate module.
+"$HERE/octool_parity" --check-trace --trace "$CORPUS"
 if [ ! -e "/dev/$NEW_DEV" ]; then
 	echo ">> loading NEW module as /dev/$NEW_DEV"
 	insmod "$NEW_KO" devname="$NEW_DEV"

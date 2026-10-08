@@ -214,6 +214,9 @@ sudo CORPUS="$PWD/octool-corpus.bin" \
 逐项核对：
 
 - [ ] 旧设备 `/dev/mydev`、新设备 `/dev/mydev_v2` 分属预期模块，trace 有实际 MMIO 读。
+- [ ] 新采集使用 v2，正常退出后 `octool_parity --check-trace --trace corpus.bin` 成功；
+  不接受 INCOMPLETE、被强制终止、计数不符或失败重复读取。旧 v1 的缺少收尾保证需单独记录，
+  不将它冒充本轮完整采集。支持边界见[采集完整性](capture-integrity.md)。
 - [ ] live 模式、stable match > 0、MISMATCH(stable)=0、err-parity=0、unreadable=0、volatile-oob=0、退出码 0。
 - [ ] 空/截断 trace、同一字符设备的路径/别名、任何未解决读取失败或 volatile-oob 返回 2，
   已出现硬分歧则优先返回 1。一个稳定匹配不能掩盖其他地址读取失败。

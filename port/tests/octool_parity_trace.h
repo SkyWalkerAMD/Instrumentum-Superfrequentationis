@@ -16,14 +16,15 @@
 #include <stdint.h>
 
 #define OCTOOL_TRACE_MAGIC   0x4f43545250520001ULL /* "OCTRPR" + version 1 */
+#define OCTOOL_TRACE_MAGIC_V2 0x4f43545250520002ULL /* finalized, exact nrec */
 #define OCTOOL_TRACE_MBOXW   5                      /* mailbox words captured */
 #define OCTOOL_TRACE_REQSZ   96                     /* struct octool_hwio_req */
 
 struct octool_trace_hdr {
-	uint64_t magic;      /* OCTOOL_TRACE_MAGIC */
+	uint64_t magic;      /* v1, finalized v2, or 0 while capture incomplete */
 	uint64_t reqsz;      /* == OCTOOL_TRACE_REQSZ */
 	uint64_t mboxw;      /* == OCTOOL_TRACE_MBOXW */
-	uint64_t nrec;       /* record count (may be 0 if writer streamed) */
+	uint64_t nrec;       /* exact nonzero v2 count; v1 may stream with 0 */
 };
 
 struct octool_trace_rec {
