@@ -147,7 +147,8 @@ lockdown 判定读 `/sys/kernel/security/lockdown`（当前模式在方括号里
 - `octool-hwio-dkms.spec`（EL rpm）、`debian/`（deb）都是模板，接进你现有 octool 的发布流程。
 - EL9/EL10 的 kABI 按小版本失效（见 `../../analysis/docs/linux-porting.md` §4.4），所以不要做跨小版本 kmod，统一 DKMS。
 - Ubuntu 包带 `packaging/octool-msr.conf`（`/usr/lib/modules-load.d/`，内容 `msr`）保证直接路径可用；EL 内建 MSR，不需要。
-- Secure Boot：DKMS 支持 MOK 签名（Ubuntu 经 `update-secureboot-policy`/shim-signed，EL 用 `/var/lib/dkms/mok.*`）；用户 `mokutil --import` 后重启确认一次。签名模块 + HAL 在 lockdown 下走模块，才真正解决 Secure Boot 机器。
+- Secure Boot：DKMS 支持本机签名，证书路径以本机 DKMS 配置为准；还须登记 MOK 并确认目标内核信任。
+  模块加载、HAL 权限和实际硬件操作分别验收，不能由签名成功推导全功能可用；见当前真机清单。
 
 安装（真机快速路径）：
 

@@ -9,9 +9,10 @@
 两条分支都会设置进程内 `MY_KMOD_LOADED` 标志。Linux 上游 4.18、5.14 和 6.12 的源码都表明：
 重复模块名检查发生在模块签名检查和足以解析模块身份的格式/元数据检查之后。因此可行的候选
 接入方式是让旧加载器读到**当前内核对应、已签名且未压缩的 `octool_hwio.ko` 原始字节**，并以
-旧 GUI 实际打开的候选文件名放在它的程序目录。静态审计发现原包有 `peter_kernel.ko`、
-`peter_kernel_old.ko`、`peter_kernel_new.ko` 三个候选；目标硬件上需用文件系统跟踪确认该版本实际
-打开哪一个，以及是否有先前候选遮蔽。模块的文件名不改变其 ELF 内部名；两者内部名都是
+旧 GUI 实际打开的候选文件名放在它的程序目录。复查已确认，当初始化进入加载分支且标志未置位时，
+按 `peter_kernel.ko` → `peter_kernel_old.ko` → `peter_kernel_new.ko` 固定顺序尝试，
+每次按加载标志决定是否继续；这一分支不按内核版本选择文件。目标硬件仍需跟踪实际是否到达此分支，
+以及第一个候选是否加载/重复加载成功。模块的文件名不改变其 ELF 内部名；两者内部名都是
 `octool_hwio` 时，内核可返回真实 `EEXIST`，旧 GUI 再按原逻辑置位。不需要 syscall 返回值注入。
 
 这比“只预载模块”多了必需的用户态条件：旧加载器必须能打开、完整读取一个真实模块镜像。
@@ -42,6 +43,34 @@
 需要特权：[man-pages](https://man7.org/linux/man-pages/man2/init_module.2.html)。
 真实调用前仍有 `CAP_SYS_MODULE` 检查；预载模块不会绕过这个旧 GUI 系统调用的权限检查。
 
+## 复查后接续研究：固定候选顺序与文件失败路径
+
+2026-10-08 从完整固定 SHA ELF 重新解码并核对两个函数，与已归档指令逐项相同：
+`load_kmod`（0x36d5e0，2233 字节）及 `initilize_kernel_driver`（0x36dea0，615 字节）。
+精简证据见[loader 复查 JSON](validation/legacy-loader-review.json)，完整可重现入口仍为
+`analysis/tools/audit-legacy-privileges.py`。没有执行完整 GUI、文件加载 syscall 或硬件访问。
+
+| 初始化调用位置 | 传入文件名 | 后续判断 |
+|---|---|---|
+| 0x36dfc7 | peter_kernel.ko | 0x36dfcc 检查标志；非零直接进入设备初始化 |
+| 0x36dfd9 | peter_kernel_old.ko | 0x36dfde 同样检查 |
+| 0x36dfef | peter_kernel_new.ko | 0x36dff4 检查；仍为零则返回 |
+
+`load_kmod` 读取 `/proc/self/exe`，以最后一个斜杠前的目录拼接斜杠和传入文件名。
+显式私有 ld.so 运行时，此符号链接指向 loader；现有运行时把 loader 与 octool 放在同一目录，
+可以满足这个目录假设。仅改变工作目录或把文件放在别处不一定有效。
+
+另发现一个接入前必须规避的旧错误路径：`open`（0x36d8a3）失败后进入打印分支，
+0x36da75 又跳回 0x36d8b2；随后仍用该失败 fd 调用 `fstat`。`fstat`（0x36d8b7）、
+`malloc`（0x36d8c7）、`read`（0x36d8d7）的结果没有检查，最终将原先从 stat 栈槽取得的长度
+送入 `init_module`。所以不能把“前两个文件不存在，让第三个自动兜底”当作健壮的启动方案；
+也不能由到达 syscall 推断模块已完整读入。此结论是指令控制流分析，未在真机制造失败文件。
+
+候选交接因此进一步收敛为：在受控参考目录优先提供第一个正确的 `peter_kernel.ko`，
+保证它实际对应当前内核有效的 octool_hwio 镜像，并在调用前核实文件内容、长度、签名和权限。
+这不修改原 GUI 调用点，也不增加自动复制/链接部署。仍须证明目标机进入该初始化、权限符合，
+并解决已知邮箱错误等待；不能据固定候选顺序直接宣布旧 GUI 在 EL 上已通过。
+
 ## 权限和启动限制
 
 新模块 `hwio_init()` 只注册字符设备区域、cdev、class 和 `/dev/mydev`，不做 MMIO/PCI/MSR/端口访问；
@@ -58,6 +87,7 @@
 `analysis/tools/kmod-eexist-probe.c` 和 `test-kmod-eexist.sh` 用当前 runner 内核实测：先用 `insmod`
 加载该仓库编出的真实 `octool_hwio.ko`，再从同一文件逐字节读出镜像并直接调用 `init_module`。
 探针要求 errno 精确为 `EEXIST`，并记录运行内核、vermagic、模块 SHA-256、class 设备与 `/dev/mydev`。
+全面复查后还将 class/devnode 存在和显式卸载成功设为硬门禁，已有设备节点时拒绝运行。
 清理只卸载本次脚本先前成功加载的模块。该模块初始化仅注册设备；探针不打开 `/dev/mydev`、不发
 设备请求、不访问宿主物理硬件，也不执行原 GUI。当前 runner 不启用 Secure Boot 强制签名测试；
 记录 signer 字段只为说明本次确切加载的是哪份镜像，不能代替 MOK 验收。
@@ -67,6 +97,11 @@
 证明 EL8/9/10 各自带补丁的运行内核或 Secure Boot MOK 路径。正式运行结果按下节追加。
 
 ## 复现及后续边界
+
+本轮边界修正提交 `a9ffbcd` 的[探针 37737505020](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37737505020)
+已通过，包含新增卸载门禁；新模块 SHA、vermagic 和完整输出见
+[复查回归记录](validation/review-fixes-a9ffbcd.json)。这是当前源码的加载/重复加载/卸载结果，
+与下方旧版本探针分开记录，验证范围仍不包含 EL vendor kernel、MOK 或硬件请求。
 
 ```sh
 make -C port/kmod KVER="$(uname -r)" KDIR="/lib/modules/$(uname -r)/build"

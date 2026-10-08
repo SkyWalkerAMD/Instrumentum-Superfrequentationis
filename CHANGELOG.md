@@ -21,6 +21,18 @@
   旧GUI错误/加载协议、MOK和真机待验事项。未推断任何未确认的面板值或硬件定义。
 - 本地完整ELF和固定fixture分别重跑56个预期观测，导出fixture逐字节一致；Windows测试权限错误和
   Linux编译器缺失导致的跳过如实记录，不计作成功。修改后的完整云端回归待运行后追加。
+- 复查后接续研究重新从固定SHA完整ELF解码两个loader函数，与已有指令逐项一致：初始化在标志为零
+  时固定按peter_kernel.ko→old→new尝试，非按内核版本选文件；open失败只记录后继续fstat，且
+  fstat/malloc/read未核验返回。由此收窄交接为优先提供第一个有效候选，不能依赖缺失文件兜底。
+  地址/函数哈希/边界记录在`docs/legacy-module-handoff.md`和`docs/validation/legacy-loader-review.json`；
+  没有执行原GUI或制造真实模块失败，不冒充EL启动突破已验收。
+- `a9ffbcd / portability37737505060`完整23项全绿：十目标模块、GUI、rpm/deb安装、窗口和DKMS生命周期
+  均通过；EL8 kernel日志确认19项Python无跳过，新增HAL边界/对拍负例实际执行，EL10 QtTest12项与
+  Mutter/Xwayland发行/native两个窗口通过。原有56个模拟观测和每目标307项guard门禁继续通过。
+- 同一提交`probe37737505020`实际加载新模块、返回EEXIST并显式卸载成功，module SHA为
+  `ce6d397ec87033c2fc585659da3f830e084cad13be5e3850addbbbedff9438e6`，class/devnode均可见。
+  完整状态、artifact digest、重点日志摘要与探针JSON归档`docs/validation/review-fixes-a9ffbcd.json`。
+  仍无硬件IO、目标EL运行内核、固件MOK或旧GUI主窗口验证；收尾只追加文档及静态证据。
 
 ## 未发布 — 2026-10-08（原版 GUI 模块重复加载接入研究）
 
