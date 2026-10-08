@@ -1,0 +1,701 @@
+{
+  "run_id": 37716693694,
+  "commit": "268ac920074e82ba570284a92cc2af6432840b5a",
+  "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37716693694",
+  "date": "2026-10-08",
+  "audit_tool": "success: 2 real ELF fixture tests",
+  "scope": "Unmodified ELF observed with strace; no return injection; container host kernel, no target-machine acceptance",
+  "targets": [
+    {
+      "target": "el8",
+      "result": {
+        "target": "el8",
+        "execution_mode": "native",
+        "original_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+        "os_release": "NAME=\"Rocky Linux\"\nVERSION=\"8.9 (Green Obsidian)\"\nID=\"rocky\"\nID_LIKE=\"rhel centos fedora\"\nVERSION_ID=\"8.9\"\nPLATFORM_ID=\"platform:el8\"\nPRETTY_NAME=\"Rocky Linux 8.9 (Green Obsidian)\"\nANSI_COLOR=\"0;32\"\nLOGO=\"fedora-logo-icon\"\nCPE_NAME=\"cpe:/o:rocky:rocky:8:GA\"\nHOME_URL=\"https://rockylinux.org/\"\nBUG_REPORT_URL=\"https://bugs.rockylinux.org/\"\nSUPPORT_END=\"2029-05-31\"\nROCKY_SUPPORT_PRODUCT=\"Rocky-Linux-8\"\nROCKY_SUPPORT_PRODUCT_VERSION=\"8.9\"\nREDHAT_SUPPORT_PRODUCT=\"Rocky Linux\"\nREDHAT_SUPPORT_PRODUCT_VERSION=\"8.9\"\n",
+        "host_kernel": "6.17.0-1022-azure",
+        "uid": 10001,
+        "display": "Xvfb",
+        "hardware_devices_passed_to_container": false,
+        "hardware_register_tests_run": false,
+        "status": "dialog-only",
+        "cpuid": {
+          "vendor": "AuthenticAMD",
+          "leaf1_eax": "00a10f11"
+        },
+        "sysfs_identity": {
+          "/sys/bus/pci/devices/0000:00:00.0/vendor": {
+            "errno": 2,
+            "error": "No such file or directory"
+          },
+          "/sys/bus/pci/devices/0000:00:00.0/device": {
+            "errno": 2,
+            "error": "No such file or directory"
+          },
+          "/sys/devices/virtual/dmi/id/board_vendor": {
+            "value": "Microsoft Corporation"
+          },
+          "/sys/devices/virtual/dmi/id/board_name": {
+            "value": "Virtual Machine"
+          }
+        },
+        "native_loader_returncode": 0,
+        "native_loader_problems": [
+          "/opt/legacy/octool: /lib64/libm.so.6: version `GLIBC_2.29' not found (required by /opt/legacy/octool)",
+          "/opt/legacy/octool: /lib64/libm.so.6: version `GLIBC_2.35' not found (required by /opt/legacy/octool)",
+          "/opt/legacy/octool: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /opt/legacy/octool)",
+          "/opt/legacy/octool: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.28' not found (required by /opt/legacy/octool)",
+          "/opt/legacy/octool: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.26' not found (required by /opt/legacy/octool)",
+          "/opt/legacy/octool: /lib64/libc.so.6: version `GLIBC_2.32' not found (required by /opt/legacy/octool)",
+          "/opt/legacy/octool: /lib64/libc.so.6: version `GLIBC_2.34' not found (required by /opt/legacy/octool)",
+          "/opt/legacy/octool: /lib64/libc.so.6: version `GLIBC_2.33' not found (required by /opt/legacy/octool)",
+          "libhwloc.so.15 => not found",
+          "libxcb-icccm.so.4 => not found",
+          "libxcb-image.so.0 => not found",
+          "libxcb-keysyms.so.1 => not found",
+          "libxcb-render-util.so.0 => not found",
+          "libxkbcommon-x11.so.0 => not found",
+          "libjpeg.so.8 => not found",
+          "libEGL.so.1 => not found",
+          "libwayland-egl.so.1 => not found",
+          "libXcomposite.so.1 => not found",
+          "libfontconfig.so.1 => not found",
+          "libwayland-cursor.so.0 => not found",
+          "libwayland-client.so.0 => not found",
+          "libxkbcommon.so.0 => not found",
+          "libicui18n.so.70 => not found",
+          "libicuuc.so.70 => not found",
+          "libpcre2-16.so.0 => not found"
+        ],
+        "native_packages": [
+          "glibc-2.28-251.el8_10.40.x86_64",
+          "libstdc++-8.5.0-20.el8.x86_64"
+        ],
+        "loader_returncode": 0,
+        "syscall_trace_enabled": true,
+        "strace_version": "strace -- version 5.18",
+        "windows": [
+          {
+            "id": "200009",
+            "title": "Error"
+          }
+        ],
+        "pid": 34,
+        "proc_self_exe": "/opt/legacy/ld-linux-x86-64.so.2",
+        "process_status": {
+          "TracerPid": "39",
+          "CapEff": "0000000000000000",
+          "CapBnd": "0000000000000000",
+          "NoNewPrivs": "1",
+          "Seccomp": "2",
+          "Cpus_allowed_list": "0-3"
+        },
+        "foreign_libraries": [],
+        "syscall_trace_has_iopl": true
+      },
+      "original_elf_mapping_base": "0x7eff49600000",
+      "observed_startup_calls": [
+        {
+          "pid": 34,
+          "return_ip": "0x7eff48308dfb",
+          "original_elf_offset": null,
+          "syscall": "sched_setaffinity",
+          "arguments": "0, 128, [0]",
+          "result": "0"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7eff4a07d6ef",
+          "original_elf_offset": "0xa7d6ef",
+          "syscall": "iopl",
+          "arguments": "3",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7eff48308dfb",
+          "original_elf_offset": null,
+          "syscall": "sched_setaffinity",
+          "arguments": "0, 128, [1]",
+          "result": "0"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7eff4a07d6ef",
+          "original_elf_offset": "0xa7d6ef",
+          "syscall": "iopl",
+          "arguments": "3",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7eff48308dfb",
+          "original_elf_offset": null,
+          "syscall": "sched_setaffinity",
+          "arguments": "0, 128, [2]",
+          "result": "0"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7eff4a07d6ef",
+          "original_elf_offset": "0xa7d6ef",
+          "syscall": "iopl",
+          "arguments": "3",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7eff48308dfb",
+          "original_elf_offset": null,
+          "syscall": "sched_setaffinity",
+          "arguments": "0, 128, [3]",
+          "result": "0"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7eff4a07d6ef",
+          "original_elf_offset": "0xa7d6ef",
+          "syscall": "iopl",
+          "arguments": "3",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7eff48308dfb",
+          "original_elf_offset": null,
+          "syscall": "sched_setaffinity",
+          "arguments": "0, 128, [0, 1, 2, 3]",
+          "result": "0"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7eff48325a1b",
+          "original_elf_offset": null,
+          "syscall": "iopl",
+          "arguments": "3",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7eff4a07d76f",
+          "original_elf_offset": "0xa7d76f",
+          "syscall": "setuid",
+          "arguments": "0",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7eff4a07d7ef",
+          "original_elf_offset": "0xa7d7ef",
+          "syscall": "setgid",
+          "arguments": "0",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7eff4a07d7b2",
+          "original_elf_offset": "0xa7d7b2",
+          "syscall": "setpgid",
+          "arguments": "24, 0",
+          "result": "-1 ESRCH (No such process)"
+        }
+      ],
+      "syscall_counts": {
+        "sched_setaffinity": 5,
+        "iopl": 5,
+        "setuid": 1,
+        "setgid": 1,
+        "setpgid": 1
+      },
+      "hardware_path_open_events": [
+        "34    [00007eff48314704] openat(AT_FDCWD, \"/sys/bus/pci/devices/0000:00:00.0/config\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007eff48314704] openat(AT_FDCWD, \"/sys/bus/pci/devices/0000:00:00.0/config\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007eff48314704] openat(AT_FDCWD, \"/sys/bus/pci/devices/0000:00:00.0/config\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007eff48314704] openat(AT_FDCWD, \"/sys/bus/pci/devices/0000:00:00.0/config\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007eff48314704] openat(AT_FDCWD, \"/sys/firmware/dmi/tables/smbios_entry_point\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007eff48314704] openat(AT_FDCWD, \"/sys/firmware/efi/systab\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007eff48314704] openat(AT_FDCWD, \"/proc/efi/systab\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007eff48314704] openat(AT_FDCWD, \"/dev/mem\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007eff48314704] openat(AT_FDCWD, \"/sys/firmware/dmi/tables/smbios_entry_point\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007eff48314704] openat(AT_FDCWD, \"/sys/firmware/efi/systab\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007eff48314704] openat(AT_FDCWD, \"/proc/efi/systab\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007eff48314704] openat(AT_FDCWD, \"/dev/mem\", O_RDONLY) = -1 ENOENT (No such file or directory)"
+      ],
+      "module_init_observed_before_dialog": false,
+      "mydev_open_observed_before_dialog": false,
+      "raw_evidence": {
+        "syscalls.log": {
+          "path": "docs/validation/legacy-startup-37716693694/el8-syscalls.log",
+          "sha256": "7c14b371d2bac8647e127d7e31ed246f34dd31bef65fab6b687fde2b4f728ad7"
+        },
+        "maps.txt": {
+          "path": "docs/validation/legacy-startup-37716693694/el8-maps.txt",
+          "sha256": "3235802ec6969f56b138dd5c9a405995cbc9eeb2396544eab5f2168031217ec2"
+        },
+        "gui.log": {
+          "path": "docs/validation/legacy-startup-37716693694/el8-gui.log",
+          "sha256": "e10705f7e7e57cdfc7798dcee86c8b08c6b9fb9a99e1dd759f64c585f55ef88f"
+        },
+        "result.json": {
+          "path": "docs/validation/legacy-startup-37716693694/el8-result.json",
+          "sha256": "13b2d7d6fbd6848bca44283a96371d5c9cf99301908b88105d18aae8dc423a1f"
+        }
+      },
+      "screenshot_sha256": "4b39457f6ac0d4e713e16ea577fdcf3281d21193389e0d5ccbfacdccd6dc43df",
+      "screenshot_identical_to": "docs/validation/legacy-el8-36674725439.png"
+    },
+    {
+      "target": "el9",
+      "result": {
+        "target": "el9",
+        "execution_mode": "native",
+        "original_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+        "os_release": "NAME=\"Rocky Linux\"\nVERSION=\"9.3 (Blue Onyx)\"\nID=\"rocky\"\nID_LIKE=\"rhel centos fedora\"\nVERSION_ID=\"9.3\"\nPLATFORM_ID=\"platform:el9\"\nPRETTY_NAME=\"Rocky Linux 9.3 (Blue Onyx)\"\nANSI_COLOR=\"0;32\"\nLOGO=\"fedora-logo-icon\"\nCPE_NAME=\"cpe:/o:rocky:rocky:9::baseos\"\nHOME_URL=\"https://rockylinux.org/\"\nBUG_REPORT_URL=\"https://bugs.rockylinux.org/\"\nSUPPORT_END=\"2032-05-31\"\nROCKY_SUPPORT_PRODUCT=\"Rocky-Linux-9\"\nROCKY_SUPPORT_PRODUCT_VERSION=\"9.3\"\nREDHAT_SUPPORT_PRODUCT=\"Rocky Linux\"\nREDHAT_SUPPORT_PRODUCT_VERSION=\"9.3\"\n",
+        "host_kernel": "6.17.0-1022-azure",
+        "uid": 10001,
+        "display": "Xvfb",
+        "hardware_devices_passed_to_container": false,
+        "hardware_register_tests_run": false,
+        "status": "dialog-only",
+        "cpuid": {
+          "vendor": "AuthenticAMD",
+          "leaf1_eax": "00a00f11"
+        },
+        "sysfs_identity": {
+          "/sys/bus/pci/devices/0000:00:00.0/vendor": {
+            "errno": 2,
+            "error": "No such file or directory"
+          },
+          "/sys/bus/pci/devices/0000:00:00.0/device": {
+            "errno": 2,
+            "error": "No such file or directory"
+          },
+          "/sys/devices/virtual/dmi/id/board_vendor": {
+            "value": "Microsoft Corporation"
+          },
+          "/sys/devices/virtual/dmi/id/board_name": {
+            "value": "Virtual Machine"
+          }
+        },
+        "native_loader_returncode": 0,
+        "native_loader_problems": [
+          "/opt/legacy/octool: /lib64/libm.so.6: version `GLIBC_2.35' not found (required by /opt/legacy/octool)",
+          "libhwloc.so.15 => not found",
+          "libxcb-icccm.so.4 => not found",
+          "libxcb-image.so.0 => not found",
+          "libxcb-keysyms.so.1 => not found",
+          "libxcb-render-util.so.0 => not found",
+          "libxkbcommon-x11.so.0 => not found",
+          "libjpeg.so.8 => not found",
+          "libEGL.so.1 => not found",
+          "libwayland-egl.so.1 => not found",
+          "libXcomposite.so.1 => not found",
+          "libfontconfig.so.1 => not found",
+          "libwayland-cursor.so.0 => not found",
+          "libwayland-client.so.0 => not found",
+          "libxkbcommon.so.0 => not found",
+          "libicui18n.so.70 => not found",
+          "libicuuc.so.70 => not found",
+          "libpcre2-16.so.0 => not found"
+        ],
+        "native_packages": [
+          "glibc-2.34-275.el9_8.x86_64",
+          "libstdc++-11.4.1-2.1.el9.x86_64"
+        ],
+        "loader_returncode": 0,
+        "syscall_trace_enabled": true,
+        "strace_version": "strace -- version 6.12",
+        "windows": [
+          {
+            "id": "200009",
+            "title": "Error"
+          }
+        ],
+        "pid": 34,
+        "proc_self_exe": "/opt/legacy/ld-linux-x86-64.so.2",
+        "process_status": {
+          "TracerPid": "39",
+          "CapEff": "0000000000000000",
+          "CapBnd": "0000000000000000",
+          "NoNewPrivs": "1",
+          "Seccomp": "2",
+          "Cpus_allowed_list": "0-3"
+        },
+        "foreign_libraries": [],
+        "syscall_trace_has_iopl": true
+      },
+      "original_elf_mapping_base": "0x7f3ec8200000",
+      "observed_startup_calls": [
+        {
+          "pid": 34,
+          "return_ip": "0x7f3ec6f08dfb",
+          "original_elf_offset": null,
+          "syscall": "sched_setaffinity",
+          "arguments": "0, 128, [0]",
+          "result": "0"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7f3ec8c7d6ef",
+          "original_elf_offset": "0xa7d6ef",
+          "syscall": "iopl",
+          "arguments": "3",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7f3ec6f08dfb",
+          "original_elf_offset": null,
+          "syscall": "sched_setaffinity",
+          "arguments": "0, 128, [1]",
+          "result": "0"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7f3ec8c7d6ef",
+          "original_elf_offset": "0xa7d6ef",
+          "syscall": "iopl",
+          "arguments": "3",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7f3ec6f08dfb",
+          "original_elf_offset": null,
+          "syscall": "sched_setaffinity",
+          "arguments": "0, 128, [2]",
+          "result": "0"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7f3ec8c7d6ef",
+          "original_elf_offset": "0xa7d6ef",
+          "syscall": "iopl",
+          "arguments": "3",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7f3ec6f08dfb",
+          "original_elf_offset": null,
+          "syscall": "sched_setaffinity",
+          "arguments": "0, 128, [3]",
+          "result": "0"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7f3ec8c7d6ef",
+          "original_elf_offset": "0xa7d6ef",
+          "syscall": "iopl",
+          "arguments": "3",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7f3ec6f08dfb",
+          "original_elf_offset": null,
+          "syscall": "sched_setaffinity",
+          "arguments": "0, 128, [0 1 2 3]",
+          "result": "0"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7f3ec6f25a1b",
+          "original_elf_offset": null,
+          "syscall": "iopl",
+          "arguments": "3",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7f3ec8c7d76f",
+          "original_elf_offset": "0xa7d76f",
+          "syscall": "setuid",
+          "arguments": "0",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7f3ec8c7d7ef",
+          "original_elf_offset": "0xa7d7ef",
+          "syscall": "setgid",
+          "arguments": "0",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 34,
+          "return_ip": "0x7f3ec8c7d7b2",
+          "original_elf_offset": "0xa7d7b2",
+          "syscall": "setpgid",
+          "arguments": "24, 0",
+          "result": "-1 ESRCH (No such process)"
+        }
+      ],
+      "syscall_counts": {
+        "sched_setaffinity": 5,
+        "iopl": 5,
+        "setuid": 1,
+        "setgid": 1,
+        "setpgid": 1
+      },
+      "hardware_path_open_events": [
+        "34    [00007f3ec6f14704] openat(AT_FDCWD, \"/sys/bus/pci/devices/0000:00:00.0/config\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007f3ec6f14704] openat(AT_FDCWD, \"/sys/bus/pci/devices/0000:00:00.0/config\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007f3ec6f14704] openat(AT_FDCWD, \"/sys/bus/pci/devices/0000:00:00.0/config\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007f3ec6f14704] openat(AT_FDCWD, \"/sys/bus/pci/devices/0000:00:00.0/config\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007f3ec6f14704] openat(AT_FDCWD, \"/sys/firmware/dmi/tables/smbios_entry_point\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007f3ec6f14704] openat(AT_FDCWD, \"/sys/firmware/efi/systab\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007f3ec6f14704] openat(AT_FDCWD, \"/proc/efi/systab\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007f3ec6f14704] openat(AT_FDCWD, \"/dev/mem\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007f3ec6f14704] openat(AT_FDCWD, \"/sys/firmware/dmi/tables/smbios_entry_point\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007f3ec6f14704] openat(AT_FDCWD, \"/sys/firmware/efi/systab\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007f3ec6f14704] openat(AT_FDCWD, \"/proc/efi/systab\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "34    [00007f3ec6f14704] openat(AT_FDCWD, \"/dev/mem\", O_RDONLY) = -1 ENOENT (No such file or directory)"
+      ],
+      "module_init_observed_before_dialog": false,
+      "mydev_open_observed_before_dialog": false,
+      "raw_evidence": {
+        "syscalls.log": {
+          "path": "docs/validation/legacy-startup-37716693694/el9-syscalls.log",
+          "sha256": "4cf5c670127aef41ad3a9a833dabdc97d4de3d7773a24ed67856d9e27a9e99f6"
+        },
+        "maps.txt": {
+          "path": "docs/validation/legacy-startup-37716693694/el9-maps.txt",
+          "sha256": "35aee16459e477f4b8d585512fb9ea5e9f6a73d919bcf68cc7b758ccaa916184"
+        },
+        "gui.log": {
+          "path": "docs/validation/legacy-startup-37716693694/el9-gui.log",
+          "sha256": "e10705f7e7e57cdfc7798dcee86c8b08c6b9fb9a99e1dd759f64c585f55ef88f"
+        },
+        "result.json": {
+          "path": "docs/validation/legacy-startup-37716693694/el9-result.json",
+          "sha256": "510efc61bea97b64cb82670c967ad30291d84e01672521149f91e7f3a25ed032"
+        }
+      },
+      "screenshot_sha256": "4b39457f6ac0d4e713e16ea577fdcf3281d21193389e0d5ccbfacdccd6dc43df",
+      "screenshot_identical_to": "docs/validation/legacy-el9-36674725439.png"
+    },
+    {
+      "target": "el10",
+      "result": {
+        "target": "el10",
+        "execution_mode": "native",
+        "original_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+        "os_release": "NAME=\"Rocky Linux\"\nVERSION=\"10.2 (Red Quartz)\"\nRELEASE_TYPE=\"stable\"\nID=\"rocky\"\nID_LIKE=\"rhel centos fedora\"\nVERSION_ID=\"10.2\"\nPLATFORM_ID=\"platform:el10\"\nPRETTY_NAME=\"Rocky Linux 10.2 (Red Quartz)\"\nANSI_COLOR=\"0;32\"\nLOGO=\"fedora-logo-icon\"\nCPE_NAME=\"cpe:/o:rocky:rocky:10::baseos\"\nHOME_URL=\"https://rockylinux.org/\"\nVENDOR_NAME=\"RESF\"\nVENDOR_URL=\"https://resf.org/\"\nBUG_REPORT_URL=\"https://bugs.rockylinux.org/\"\nSUPPORT_END=\"2035-05-31\"\nROCKY_SUPPORT_PRODUCT=\"Rocky-Linux-10\"\nROCKY_SUPPORT_PRODUCT_VERSION=\"10.2\"\nREDHAT_SUPPORT_PRODUCT=\"Rocky Linux\"\nREDHAT_SUPPORT_PRODUCT_VERSION=\"10.2\"\n",
+        "host_kernel": "6.17.0-1022-azure",
+        "uid": 10001,
+        "display": "Mutter/Xwayland",
+        "hardware_devices_passed_to_container": false,
+        "hardware_register_tests_run": false,
+        "status": "dialog-only",
+        "cpuid": {
+          "vendor": "GenuineIntel",
+          "leaf1_eax": "000c06f2"
+        },
+        "sysfs_identity": {
+          "/sys/bus/pci/devices/0000:00:00.0/vendor": {
+            "errno": 2,
+            "error": "No such file or directory"
+          },
+          "/sys/bus/pci/devices/0000:00:00.0/device": {
+            "errno": 2,
+            "error": "No such file or directory"
+          },
+          "/sys/devices/virtual/dmi/id/board_vendor": {
+            "value": "Microsoft Corporation"
+          },
+          "/sys/devices/virtual/dmi/id/board_name": {
+            "value": "Virtual Machine"
+          }
+        },
+        "native_loader_returncode": 0,
+        "native_loader_problems": [
+          "libhwloc.so.15 => not found",
+          "libxcb-icccm.so.4 => not found",
+          "libxcb-image.so.0 => not found",
+          "libxcb-keysyms.so.1 => not found",
+          "libxcb-render-util.so.0 => not found",
+          "libjpeg.so.8 => not found",
+          "libicui18n.so.70 => not found",
+          "libicuuc.so.70 => not found",
+          "libpcre2-16.so.0 => not found"
+        ],
+        "native_packages": [
+          "glibc-2.39-121.el10_2.x86_64",
+          "libstdc++-14.3.1-4.4.el10.x86_64"
+        ],
+        "loader_returncode": 0,
+        "syscall_trace_enabled": true,
+        "strace_version": "strace -- version 6.12",
+        "windows": [
+          {
+            "id": "200009",
+            "title": "Error"
+          }
+        ],
+        "pid": 44,
+        "proc_self_exe": "/opt/legacy/ld-linux-x86-64.so.2",
+        "process_status": {
+          "TracerPid": "49",
+          "CapEff": "0000000000000000",
+          "CapBnd": "0000000000000000",
+          "NoNewPrivs": "1",
+          "Seccomp": "2",
+          "Cpus_allowed_list": "0-3"
+        },
+        "foreign_libraries": [],
+        "syscall_trace_has_iopl": true
+      },
+      "original_elf_mapping_base": "0x7f8bd3600000",
+      "observed_startup_calls": [
+        {
+          "pid": 44,
+          "return_ip": "0x7f8bd2308dfb",
+          "original_elf_offset": null,
+          "syscall": "sched_setaffinity",
+          "arguments": "0, 128, [0]",
+          "result": "0"
+        },
+        {
+          "pid": 44,
+          "return_ip": "0x7f8bd407d6ef",
+          "original_elf_offset": "0xa7d6ef",
+          "syscall": "iopl",
+          "arguments": "3",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 44,
+          "return_ip": "0x7f8bd2308dfb",
+          "original_elf_offset": null,
+          "syscall": "sched_setaffinity",
+          "arguments": "0, 128, [1]",
+          "result": "0"
+        },
+        {
+          "pid": 44,
+          "return_ip": "0x7f8bd407d6ef",
+          "original_elf_offset": "0xa7d6ef",
+          "syscall": "iopl",
+          "arguments": "3",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 44,
+          "return_ip": "0x7f8bd2308dfb",
+          "original_elf_offset": null,
+          "syscall": "sched_setaffinity",
+          "arguments": "0, 128, [2]",
+          "result": "0"
+        },
+        {
+          "pid": 44,
+          "return_ip": "0x7f8bd407d6ef",
+          "original_elf_offset": "0xa7d6ef",
+          "syscall": "iopl",
+          "arguments": "3",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 44,
+          "return_ip": "0x7f8bd2308dfb",
+          "original_elf_offset": null,
+          "syscall": "sched_setaffinity",
+          "arguments": "0, 128, [3]",
+          "result": "0"
+        },
+        {
+          "pid": 44,
+          "return_ip": "0x7f8bd407d6ef",
+          "original_elf_offset": "0xa7d6ef",
+          "syscall": "iopl",
+          "arguments": "3",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 44,
+          "return_ip": "0x7f8bd2308dfb",
+          "original_elf_offset": null,
+          "syscall": "sched_setaffinity",
+          "arguments": "0, 128, [0 1 2 3]",
+          "result": "0"
+        },
+        {
+          "pid": 44,
+          "return_ip": "0x7f8bd2325a1b",
+          "original_elf_offset": null,
+          "syscall": "iopl",
+          "arguments": "3",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 44,
+          "return_ip": "0x7f8bd407d76f",
+          "original_elf_offset": "0xa7d76f",
+          "syscall": "setuid",
+          "arguments": "0",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 44,
+          "return_ip": "0x7f8bd407d7ef",
+          "original_elf_offset": "0xa7d7ef",
+          "syscall": "setgid",
+          "arguments": "0",
+          "result": "-1 EPERM (Operation not permitted)"
+        },
+        {
+          "pid": 44,
+          "return_ip": "0x7f8bd407d7b2",
+          "original_elf_offset": "0xa7d7b2",
+          "syscall": "setpgid",
+          "arguments": "34, 0",
+          "result": "-1 ESRCH (No such process)"
+        }
+      ],
+      "syscall_counts": {
+        "sched_setaffinity": 5,
+        "iopl": 5,
+        "setuid": 1,
+        "setgid": 1,
+        "setpgid": 1
+      },
+      "hardware_path_open_events": [
+        "44    [00007f8bd2314704] openat(AT_FDCWD, \"/sys/bus/pci/devices/0000:00:00.0/config\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "44    [00007f8bd2314704] openat(AT_FDCWD, \"/sys/bus/pci/devices/0000:00:00.0/config\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "44    [00007f8bd2314704] openat(AT_FDCWD, \"/sys/bus/pci/devices/0000:00:00.0/config\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "44    [00007f8bd2314704] openat(AT_FDCWD, \"/sys/bus/pci/devices/0000:00:00.0/config\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "44    [00007f8bd2314704] openat(AT_FDCWD, \"/sys/firmware/dmi/tables/smbios_entry_point\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "44    [00007f8bd2314704] openat(AT_FDCWD, \"/sys/firmware/efi/systab\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "44    [00007f8bd2314704] openat(AT_FDCWD, \"/proc/efi/systab\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "44    [00007f8bd2314704] openat(AT_FDCWD, \"/dev/mem\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "44    [00007f8bd2314704] openat(AT_FDCWD, \"/sys/firmware/dmi/tables/smbios_entry_point\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "44    [00007f8bd2314704] openat(AT_FDCWD, \"/sys/firmware/efi/systab\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "44    [00007f8bd2314704] openat(AT_FDCWD, \"/proc/efi/systab\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+        "44    [00007f8bd2314704] openat(AT_FDCWD, \"/dev/mem\", O_RDONLY) = -1 ENOENT (No such file or directory)"
+      ],
+      "module_init_observed_before_dialog": false,
+      "mydev_open_observed_before_dialog": false,
+      "raw_evidence": {
+        "syscalls.log": {
+          "path": "docs/validation/legacy-startup-37716693694/el10-syscalls.log",
+          "sha256": "42648854e66b6b523561a45764124f3f8d128b08ca103e6ae184cab4ec053c4e"
+        },
+        "maps.txt": {
+          "path": "docs/validation/legacy-startup-37716693694/el10-maps.txt",
+          "sha256": "5b46e7fd9f4721b9a64141c82e6cc5f4106f55dbc995fb136766dd13f139ec2f"
+        },
+        "gui.log": {
+          "path": "docs/validation/legacy-startup-37716693694/el10-gui.log",
+          "sha256": "e10705f7e7e57cdfc7798dcee86c8b08c6b9fb9a99e1dd759f64c585f55ef88f"
+        },
+        "result.json": {
+          "path": "docs/validation/legacy-startup-37716693694/el10-result.json",
+          "sha256": "a88ed096a2b8e61f300e1acbb58df164dd90997a29d72f3e03e7213d753233e5"
+        }
+      },
+      "screenshot_sha256": "5f4bd0b20f0c121cbdbdae2ba1f40710af623af665fc40a35734a7642bebe65b",
+      "screenshot_identical_to": "docs/validation/legacy-el10-36674725439.png"
+    }
+  ]
+}

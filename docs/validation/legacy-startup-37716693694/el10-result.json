@@ -1,0 +1,69 @@
+{
+  "target": "el10",
+  "execution_mode": "native",
+  "original_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "os_release": "NAME=\"Rocky Linux\"\nVERSION=\"10.2 (Red Quartz)\"\nRELEASE_TYPE=\"stable\"\nID=\"rocky\"\nID_LIKE=\"rhel centos fedora\"\nVERSION_ID=\"10.2\"\nPLATFORM_ID=\"platform:el10\"\nPRETTY_NAME=\"Rocky Linux 10.2 (Red Quartz)\"\nANSI_COLOR=\"0;32\"\nLOGO=\"fedora-logo-icon\"\nCPE_NAME=\"cpe:/o:rocky:rocky:10::baseos\"\nHOME_URL=\"https://rockylinux.org/\"\nVENDOR_NAME=\"RESF\"\nVENDOR_URL=\"https://resf.org/\"\nBUG_REPORT_URL=\"https://bugs.rockylinux.org/\"\nSUPPORT_END=\"2035-05-31\"\nROCKY_SUPPORT_PRODUCT=\"Rocky-Linux-10\"\nROCKY_SUPPORT_PRODUCT_VERSION=\"10.2\"\nREDHAT_SUPPORT_PRODUCT=\"Rocky Linux\"\nREDHAT_SUPPORT_PRODUCT_VERSION=\"10.2\"\n",
+  "host_kernel": "6.17.0-1022-azure",
+  "uid": 10001,
+  "display": "Mutter/Xwayland",
+  "hardware_devices_passed_to_container": false,
+  "hardware_register_tests_run": false,
+  "status": "dialog-only",
+  "cpuid": {
+    "vendor": "GenuineIntel",
+    "leaf1_eax": "000c06f2"
+  },
+  "sysfs_identity": {
+    "/sys/bus/pci/devices/0000:00:00.0/vendor": {
+      "errno": 2,
+      "error": "No such file or directory"
+    },
+    "/sys/bus/pci/devices/0000:00:00.0/device": {
+      "errno": 2,
+      "error": "No such file or directory"
+    },
+    "/sys/devices/virtual/dmi/id/board_vendor": {
+      "value": "Microsoft Corporation"
+    },
+    "/sys/devices/virtual/dmi/id/board_name": {
+      "value": "Virtual Machine"
+    }
+  },
+  "native_loader_returncode": 0,
+  "native_loader_problems": [
+    "libhwloc.so.15 => not found",
+    "libxcb-icccm.so.4 => not found",
+    "libxcb-image.so.0 => not found",
+    "libxcb-keysyms.so.1 => not found",
+    "libxcb-render-util.so.0 => not found",
+    "libjpeg.so.8 => not found",
+    "libicui18n.so.70 => not found",
+    "libicuuc.so.70 => not found",
+    "libpcre2-16.so.0 => not found"
+  ],
+  "native_packages": [
+    "glibc-2.39-121.el10_2.x86_64",
+    "libstdc++-14.3.1-4.4.el10.x86_64"
+  ],
+  "loader_returncode": 0,
+  "syscall_trace_enabled": true,
+  "strace_version": "strace -- version 6.12",
+  "windows": [
+    {
+      "id": "200009",
+      "title": "Error"
+    }
+  ],
+  "pid": 44,
+  "proc_self_exe": "/opt/legacy/ld-linux-x86-64.so.2",
+  "process_status": {
+    "TracerPid": "49",
+    "CapEff": "0000000000000000",
+    "CapBnd": "0000000000000000",
+    "NoNewPrivs": "1",
+    "Seccomp": "2",
+    "Cpus_allowed_list": "0-3"
+  },
+  "foreign_libraries": [],
+  "syscall_trace_has_iopl": true
+}

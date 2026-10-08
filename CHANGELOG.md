@@ -20,6 +20,18 @@
 - 为独立 EL 诊断添加可选 strace 系统调用观察，保持 UID10001、零 capabilities、无设备/网络、
   原 ELF 不变和严格主窗口门禁；增加实际权限/CPU 掩码记录。初次提交时云端新结果尚待执行。
   本轮没有改 GUI、ABI/HAL、内核模块或其打包源码；详细结论见 docs/legacy-el-privilege-analysis.md。
+- `268ac92 / legacy run 37716693694`：新增两个 ELF fixture 测试通过，三条 EL 诊断均成功跟踪原 ELF。
+  每目标 4 次 NASM 直接 iopl + 1 次 libc iopl 都返回 EPERM，setuid/setgid 也为 EPERM；
+  maps 重定位后直接 syscall 返回地址精确对应 0xa7d6ef。CapEff/CapBnd 为 0，NoNewPrivs=1，
+  Seccomp=2；不能把受限容器的 EPERM 归因为目标机 lockdown。
+- 三目标目标 PCI config/原始 SMBIOS 入口和 /dev/mem 均为 ENOENT，未在对话框前观察到模块加载或
+  /dev/mydev 打开，所以模块握手结论仍单独标记为静态分析。加载器返回 0、无混入宿主 .so，
+  三张 Not supported 截图与此前相同；严格 GUI 门禁继续失败，不把诊断观察成功冒充主窗口通过。
+  全部原始跟踪和 maps/result 进入 docs/validation，原 ELF 和私有库仍不进入公开源码或产物。
+- 同一 `268ac92 / portability run 37716682302` 共 23 项全部成功；十目标模块/DKMS、GUI 原生构建、
+  rpm/deb 安装与真实窗口、既有离线门禁和新增 ELF fixture 均通过，job/artifact 证据已归档。
+  按本轮起点 b43578d 比对 GUI、ABI、HAL、kmod、packaging 无差异；本地源码门禁确认哈希、
+  docs 链接和源码归档可重复。收尾仅补充实测证据与文档，不改变研究工具或运行逻辑。
 
 ## 2.0.1 — 2026-09-30（未发布，十目标 CI 通过，待真机验收和后续面板恢复）
 

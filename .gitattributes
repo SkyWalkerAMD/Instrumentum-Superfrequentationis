@@ -10,3 +10,6 @@ Kbuild text eol=lf
 *.yml text eol=lf
 *.json text eol=lf
 *.md text eol=lf
+# Preserve captured evidence bytes; /proc/PID/maps includes trailing spaces.
+docs/validation/legacy-startup-*/* -text
+docs/validation/legacy-startup-*/*-maps.txt whitespace=-blank-at-eol

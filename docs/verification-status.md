@@ -1,8 +1,14 @@
 # 验证状态与输入证据
 
-更新：2026-09-30。源码、构建配置、容器测试和真实硬件验收分别记录，不能互相替代。
+更新：2026-10-08。源码、构建配置、容器测试和真实硬件验收分别记录，不能互相替代。
 
 ## 当前结果
+
+2026-10-08 继续研究原版：`268ac92 / portability 37716682302` 的 23 项正式回归全绿，
+包括新增汇编标签/对象引用 ELF fixture，见[本次完整记录](validation/actions-run-37716682302.json)。
+独立原版诊断 `37716693694` 在 EL8/9/10 实际采到直接 iopl/setuid/setgid 的拒绝返回，
+仍只出现 Not supported 对话框，主窗口门禁继续失败；
+详见[启动权限与模块握手分析](legacy-el-privilege-analysis.md)。本轮未改 GUI、ABI/HAL、模块或生产包代码。
 
 原 GUI 源码丢失后，作者已授权重构，并先选择基础信息与 MSR/MMIO/PCI，随后提供四套平台截图。
 可编译的真实 Qt5 GUI 已接入。作者进一步选择先恢复 AMD PStates 的只读频率和完整原始值。
@@ -25,14 +31,14 @@ EL10 改用独立 Xlib 检查器后通过 Mutter/Xwayland；新增 PStates 页�
 | 层次 | 已取得的证据 | 尚不能推出的结论 |
 |---|---|---|
 | EL8 baseline | 静态 Qt5.15.18、实际 GUI/Qt 回归编译、ELF ABI 检查通过 | 原 GUI 全部面板恢复 |
-| 十个 kernel job | HAL、loopback/transport/parity selftest、17 项 Python 测试、Kbuild、签名试验、DKMS 安装/同版本重装/卸载再装 | 真正加载模块、真实 MMIO 等价 |
+| 十个 kernel job | HAL、loopback/transport/parity selftest、18 项 Python 测试、Kbuild、签名试验、DKMS 安装/同版本重装/卸载再装 | 真正加载模块、真实 MMIO 等价 |
 | 十个 desktop job | 各发行版原生 GUI 编译/Qt 回归、GUI+DKMS rpm/deb、新容器安装、发行和 native 两个真实窗口 | 真机寄存器操作有效 |
 | Ubuntu26 GUI 视觉检查 | 下载并查看四页真实 Xwayland 截图，表单未裁切 | 真实硬件功能/电压/超频有效 |
 | 新 AMD PStates | 十目标均通过新增五项回归；连同既有测试及 init/cleanup，每个目标共 12 项结果全部通过 | 9995WX 实机已验收 |
 | MOK/live 对拍 | 有可执行脚本、签名辅助与详细清单 | 固件登记、模块加载、真实读写尚未运行 |
 
 当前 GUI ELF 最高需求 GLIBC_2.28、GLIBCXX_3.4.15、CXXABI_1.3.9；没有动态 Qt/ICU/libjpeg/Wayland
-客户端依赖。EL8 新 Qt SDK tar SHA-256：
+客户端依赖。2026-09-30 已归档的 EL8 Qt SDK tar SHA-256：
 `6afaa07b5716c00c92ece61ef42eae007b18e57e2d650f6b450ddfa52afc8d7c`。
 SDK 仅按匹配构建配方与 SHA 复用，GUI 每次重编。具体依赖策略见 [多发行版指南](multi-distro.md)。
 

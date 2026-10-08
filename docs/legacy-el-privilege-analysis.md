@@ -2,7 +2,7 @@
 
 日期：2026-10-08。接续 [运行库追踪](legacy-el-compatibility.md)。
 本轮继续分析同一原 ELF，不改 GUI、原调用点、96 字节请求、mmap 邮箱或模块协议。
-截至本页初次提交，下面是静态证据；新一轮带系统调用观察的云端结果在执行后追加。
+静态证据与新一轮系统调用观察结果分别记录；云端真实运行见文末 37716693694。
 既有十目标重构版通过记录，不代表原版所有页面通过。
 
 ## 可复现的证据范围
@@ -107,7 +107,7 @@ EL8/9/10 各自的签名、重复加载返回码和实际 mailbox 连接仍需�
 仅目标进程的 preload、模块握手以及桌面授权。本轮保留现有 Ubuntu22.04 参考机采集流程，
 复用 corpus 的 live replay 不依赖原 GUI 的私有运行库，但仍需两份模块与真实读地址。
 
-## 云端观察方法与待填结果
+## 云端观察方法与实测结果
 
 独立诊断增加可选 `trace_syscalls` 输入，使用 strace `-D -f -i`，只观察 syscall 参数/返回值。
 `-D` 保留原进程作为 smoke 的直接子进程，以便继续验证窗口 PID；依据
@@ -121,4 +121,49 @@ gh workflow run legacy-runtime.yml --ref main -f asset_id=600130240 -f trace_sys
 
 新增日志保留 strace 版本、调用指令地址、CapEff/CapBnd、NoNewPrivs、Seccomp、TracerPid 和 CPU 掩码。
 主窗口门禁继续要求 `Work Tool`，Not supported 对话框仍失败。原 ELF 仍在未发布草稿，
-不进入 Git 或公开 artifact。本轮运行 ID、实际错误与结论将在下载证据后追加。
+不进入 Git 或公开 artifact。
+
+### 37716693694：直接系统调用路径得到实际核对
+
+[运行](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37716693694)
+使用提交 `268ac920074e82ba570284a92cc2af6432840b5a`；两个真实 ELF fixture 测试通过，
+EL8/9/10 三个任务均执行到了原版对话框，并按严格主窗口门禁返回失败。
+没有出现跟踪权限失败，也没有增加容器权限来让 strace 工作。
+[结构化结果](validation/legacy-el-run-37716693694.json)保留实际 result、调用地址、哈希和计数。
+原始 syscalls/maps/gui/result 也已纳入 `docs/validation/legacy-startup-37716693694/`，
+避免 GitHub artifact 到期后只剩聊天中的结论。
+原始 maps 的行尾空格也保留，Git 属性按原字节保存这些证据；结构化记录中的 SHA-256 可直接复核。
+
+| 观察项 | EL8 | EL9 | EL10 |
+|---|---|---|---|
+| strace 版本 | 5.18 | 6.12 | 6.12 |
+| 私有加载器 | 返回 0 | 返回 0 | 返回 0 |
+| NASM `iopl(3)` | 4 次 EPERM | 4 次 EPERM | 4 次 EPERM |
+| libc `iopl(3)` | 1 次 EPERM | 1 次 EPERM | 1 次 EPERM |
+| `setuid(0)` / `setgid(0)` | 各 1 次 EPERM | 各 1 次 EPERM | 各 1 次 EPERM |
+| `sched_setaffinity` | 5 次返回 0 | 5 次返回 0 | 5 次返回 0 |
+| 目标 PCI00:00.0 config | 4 次 ENOENT | 4 次 ENOENT | 4 次 ENOENT |
+| 实际窗口 | Not supported | Not supported | Not supported，Xwayland |
+
+从 maps 中的原 ELF offset0 映射减去 ASLR 基址，4 次直接 iopl 的返回指令地址均为
+`0xa7d6ef`，恰是原 `0xa7d6ed` 两字节 syscall 之后；setuid/setgid 也分别对应
+`0xa7d76f` / `0xa7d7ef`。第 5 次 iopl 位于私有 libc 映射。这不是仅凭函数名判断。
+三个进程实际 CapEff/CapBnd 都为 0，NoNewPrivs=1、Seccomp=2，CPU 允许集合为 0–3。
+EPERM 只能说明本受限容器拒绝了请求，不能仅由 errno 归因到真机 lockdown 或 SELinux。
+
+此次原始 SMBIOS 入口文件、EFI systab 和 `/dev/mem` 都是 ENOENT；没有把不存在误写成 EACCES。
+libpci 仍有枚举其他可见 sysfs PCI 节点的行为，因此“没有透传宿主设备”并不等于“原程序零硬件路径读取”。
+测试没有添加 MSR/MMIO 寄存器读写工作负载，也没有记录读写缓冲区内容。
+
+到对话框出现并稳定显示这段范围内，跟踪**没有观察到 init_module/finit_module 或 /dev/mydev 打开**。
+因此第 3 节模块握手仍是静态结论，本次不能声称已动态验证其成功/EEXIST 路径。
+三张截图与上轮对应截图逐字节相同，EL10 实际图像再次查看确认为 Not supported；
+此次同样没有进入主窗口。MMIO 对拍、MOK 真机加载与四套目标硬件仍未执行。
+
+### 同一代码提交的正式回归
+
+`268ac92` 的 [portability 37716682302](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37716682302)
+23 项全部成功，包含十目标内核/DKMS、EL8 Qt/GUI 基线、十目标 GUI 原生构建/安装包/实际窗口、
+源码发布门禁，以及原有 loopback、transport、MMIO parity selftest 和新增两个 ELF fixture 测试。
+[逐 job 与 artifact 元数据](validation/actions-run-37716682302.json)已归档。
+这验证研究工具和文档变动未破坏重构版，不能用来覆盖上一节原版主窗口的失败。

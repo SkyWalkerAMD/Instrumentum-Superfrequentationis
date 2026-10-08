@@ -1,0 +1,78 @@
+{
+  "target": "el9",
+  "execution_mode": "native",
+  "original_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "os_release": "NAME=\"Rocky Linux\"\nVERSION=\"9.3 (Blue Onyx)\"\nID=\"rocky\"\nID_LIKE=\"rhel centos fedora\"\nVERSION_ID=\"9.3\"\nPLATFORM_ID=\"platform:el9\"\nPRETTY_NAME=\"Rocky Linux 9.3 (Blue Onyx)\"\nANSI_COLOR=\"0;32\"\nLOGO=\"fedora-logo-icon\"\nCPE_NAME=\"cpe:/o:rocky:rocky:9::baseos\"\nHOME_URL=\"https://rockylinux.org/\"\nBUG_REPORT_URL=\"https://bugs.rockylinux.org/\"\nSUPPORT_END=\"2032-05-31\"\nROCKY_SUPPORT_PRODUCT=\"Rocky-Linux-9\"\nROCKY_SUPPORT_PRODUCT_VERSION=\"9.3\"\nREDHAT_SUPPORT_PRODUCT=\"Rocky Linux\"\nREDHAT_SUPPORT_PRODUCT_VERSION=\"9.3\"\n",
+  "host_kernel": "6.17.0-1022-azure",
+  "uid": 10001,
+  "display": "Xvfb",
+  "hardware_devices_passed_to_container": false,
+  "hardware_register_tests_run": false,
+  "status": "dialog-only",
+  "cpuid": {
+    "vendor": "AuthenticAMD",
+    "leaf1_eax": "00a00f11"
+  },
+  "sysfs_identity": {
+    "/sys/bus/pci/devices/0000:00:00.0/vendor": {
+      "errno": 2,
+      "error": "No such file or directory"
+    },
+    "/sys/bus/pci/devices/0000:00:00.0/device": {
+      "errno": 2,
+      "error": "No such file or directory"
+    },
+    "/sys/devices/virtual/dmi/id/board_vendor": {
+      "value": "Microsoft Corporation"
+    },
+    "/sys/devices/virtual/dmi/id/board_name": {
+      "value": "Virtual Machine"
+    }
+  },
+  "native_loader_returncode": 0,
+  "native_loader_problems": [
+    "/opt/legacy/octool: /lib64/libm.so.6: version `GLIBC_2.35' not found (required by /opt/legacy/octool)",
+    "libhwloc.so.15 => not found",
+    "libxcb-icccm.so.4 => not found",
+    "libxcb-image.so.0 => not found",
+    "libxcb-keysyms.so.1 => not found",
+    "libxcb-render-util.so.0 => not found",
+    "libxkbcommon-x11.so.0 => not found",
+    "libjpeg.so.8 => not found",
+    "libEGL.so.1 => not found",
+    "libwayland-egl.so.1 => not found",
+    "libXcomposite.so.1 => not found",
+    "libfontconfig.so.1 => not found",
+    "libwayland-cursor.so.0 => not found",
+    "libwayland-client.so.0 => not found",
+    "libxkbcommon.so.0 => not found",
+    "libicui18n.so.70 => not found",
+    "libicuuc.so.70 => not found",
+    "libpcre2-16.so.0 => not found"
+  ],
+  "native_packages": [
+    "glibc-2.34-275.el9_8.x86_64",
+    "libstdc++-11.4.1-2.1.el9.x86_64"
+  ],
+  "loader_returncode": 0,
+  "syscall_trace_enabled": true,
+  "strace_version": "strace -- version 6.12",
+  "windows": [
+    {
+      "id": "200009",
+      "title": "Error"
+    }
+  ],
+  "pid": 34,
+  "proc_self_exe": "/opt/legacy/ld-linux-x86-64.so.2",
+  "process_status": {
+    "TracerPid": "39",
+    "CapEff": "0000000000000000",
+    "CapBnd": "0000000000000000",
+    "NoNewPrivs": "1",
+    "Seccomp": "2",
+    "Cpus_allowed_list": "0-3"
+  },
+  "foreign_libraries": [],
+  "syscall_trace_has_iopl": true
+}
