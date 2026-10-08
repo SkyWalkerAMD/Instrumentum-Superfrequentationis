@@ -239,6 +239,8 @@ sudo CORPUS="$PWD/octool-corpus.bin" \
   输入不被截断。PCI 仅 domain 0000、首 256 字节，不把扩展 offset 截断。
 - [ ] PCI模块路径使用核心已枚举设备；缺失设备返回ENODEV，配置阻塞返回EBUSY，失败清空GUI旧值。
   不为测试这些分支执行真实reset/热拔插；离线替身已覆盖，实机仅记录自然出现的错误和内核日志。
+- [ ] 执行[只读能力探针](module-capabilities.md)，确认实际加载的新模块应答有效。GUI未验证的节点
+  不得作为扩展命令后端；只有parity的`--old`显式选择旧MMIO入口，`--new`必须通过查询。
 - [ ] 若单独验EC，先确认Linux ACPI的第一个EC就是目标及其已知只读寄存器；无EC返回ENODEV，
   不改用猜测端口。当前GUI未提供EC页，EC项可记录“待定义/未验收”。见[系统协调说明](bus-coordination.md)。
 - [ ] 只用作者确认可读且非 read-to-clear 的寄存器比较原始结果；更换目标/宽度后旧结果清空。

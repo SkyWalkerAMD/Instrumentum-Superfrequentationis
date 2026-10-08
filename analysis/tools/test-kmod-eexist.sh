@@ -32,6 +32,9 @@ probe="$repo_root/build/kmod-eexist-probe"
 mkdir -p "$(dirname "$probe")"
 cc -std=c11 -O2 -Wall -Wextra -Werror \
 	-o "$probe" "$repo_root/analysis/tools/kmod-eexist-probe.c"
+caps_probe="$repo_root/build/kmod-caps-probe"
+cc -D_GNU_SOURCE -std=c11 -O2 -Wall -Wextra -Werror \
+	-o "$caps_probe" "$repo_root/analysis/tools/kmod-caps-probe.c"
 
 loaded=0
 cleanup() {
@@ -56,6 +59,7 @@ devnode_present=false
 [[ -e "$class_device" ]] && class_present=true
 [[ -c "$devnode" ]] && devnode_present=true
 [[ "$class_present" == true && "$devnode_present" == true ]] || probe_rc=1
+caps_output=$("$caps_probe") || probe_rc=1
 
 unload_succeeded=false
 if rmmod "$module_name" && [[ ! -e "/sys/module/$module_name" ]]; then
@@ -68,17 +72,21 @@ fi
 python3 - "$output_path" "$kernel_release" "$module_name" "$module_sha" \
 	"$module_vermagic" "$module_signer" "$module_sig_hashalgo" \
 	"$probe_rc" "$class_present" "$devnode_present" \
-	"$probe_output" "$unload_succeeded" <<'PY'
+	"$probe_output" "$unload_succeeded" "$caps_output" <<'PY'
 import json
 import pathlib
 import sys
 
 (out, kernel, module, digest, vermagic, signer, sig_hashalgo, rc,
- class_present, devnode_present, raw, unload_succeeded) = sys.argv[1:]
+ class_present, devnode_present, raw, unload_succeeded, caps_raw) = sys.argv[1:]
 try:
     result = json.loads(raw)
 except Exception:
     result = {"raw_probe_output": raw}
+try:
+    metadata = json.loads(caps_raw)
+except Exception:
+    metadata = {"raw_probe_output": caps_raw}
 report = {
     "kernel_release": kernel,
     "module_name": module,
@@ -93,6 +101,7 @@ report = {
     "dev_mydev_present_after_probe": devnode_present == "true",
     "module_unload_succeeded": unload_succeeded == "true",
     "hardware_io_attempted": False,
+    "metadata_query": metadata,
     "probe": result,
 }
 pathlib.Path(out).write_text(json.dumps(report, indent=2) + "\n")
@@ -100,6 +109,6 @@ print(json.dumps(report, indent=2))
 PY
 
 if [[ $probe_rc -ne 0 ]]; then
-	echo "duplicate-load, device registration or cleanup check failed; see $output_path" >&2
+	echo "duplicate-load, metadata, device registration or cleanup check failed; see $output_path" >&2
 	exit 1
 fi

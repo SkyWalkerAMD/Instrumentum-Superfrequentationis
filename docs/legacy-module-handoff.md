@@ -88,7 +88,8 @@
 加载该仓库编出的真实 `octool_hwio.ko`，再从同一文件逐字节读出镜像并直接调用 `init_module`。
 探针要求 errno 精确为 `EEXIST`，并记录运行内核、vermagic、模块 SHA-256、class 设备与 `/dev/mydev`。
 全面复查后还将 class/devnode 存在和显式卸载成功设为硬门禁，已有设备节点时拒绝运行。
-清理只卸载本次脚本先前成功加载的模块。该模块初始化仅注册设备；探针不打开 `/dev/mydev`、不发
+清理只卸载本次脚本先前成功加载的模块。该模块初始化仅注册设备；早期探针不打开 `/dev/mydev`。
+接续能力修正新增只读open/ioctl/close查询，详见[能力识别](module-capabilities.md)；仍不发96字节
 设备请求、不访问宿主物理硬件，也不执行原 GUI。当前 runner 不启用 Secure Boot 强制签名测试；
 记录 signer 字段只为说明本次确切加载的是哪份镜像，不能代替 MOK 验收。
 
@@ -100,7 +101,7 @@
 
 本轮边界修正提交 `a9ffbcd` 的[探针 37737505020](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37737505020)
 已通过，包含新增卸载门禁；新模块 SHA、vermagic 和完整输出见
-[复查回归记录](validation/review-fixes-a9ffbcd.json)。这是当前源码的加载/重复加载/卸载结果，
+[复查回归记录](validation/review-fixes-a9ffbcd.json)。这是该提交源码的加载/重复加载/卸载结果，
 与下方旧版本探针分开记录，验证范围仍不包含 EL vendor kernel、MOK 或硬件请求。
 
 ```sh

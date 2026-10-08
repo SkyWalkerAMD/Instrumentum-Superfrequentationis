@@ -3,8 +3,8 @@
  * octool_hwio.c - userspace hardware-access layer. See octool_hwio.h.
  *
  * Backend selection per family:
- *   - If the octool_hwio module is present and usable, everything goes through
- *     it. Loading/trust, device permissions and operation success must still
+ *   - If the octool_hwio module reports a usable capability, that family goes
+ *     through it. Loading/trust, device permissions and operation success must still
  *     be verified on the target; a signing certificate alone is insufficient.
  *   - Otherwise, when not locked down, direct userspace paths are used.
  *   - Under lockdown with no module, the family reports HWIO_BE_NONE and its
@@ -12,6 +12,7 @@
  */
 #include "octool_hwio.h"
 #include "../abi/octool_hwio_abi.h"
+#include "../abi/octool_hwio_caps.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -21,6 +22,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/ioctl.h>
 
 #if defined(__x86_64__) || defined(__i386__)
 #include <sys/io.h>	/* iopl, inb/outb - direct port I/O fallback */
@@ -30,6 +32,7 @@
 struct hwio {
 	struct hwio_transport t;	/* module or reference transport */
 	int have_module;
+	uint64_t module_features;
 	int locked_down;
 	enum hwio_backend be[HWIO_FAM__COUNT];
 
@@ -112,9 +115,11 @@ static void mod_close(void *vctx)
 	free(c);
 }
 
-static int module_transport(const char *dev_path, struct hwio_transport *t)
+static int module_transport(const char *dev_path, struct hwio_transport *t,
+			    uint64_t *features, int legacy_mmio)
 {
 	struct mod_ctx *c;
+	struct octool_hwio_caps caps = {0};
 	char path[256];
 	long pg = sysconf(_SC_PAGESIZE);
 	ssize_t n;
@@ -128,14 +133,29 @@ static int module_transport(const char *dev_path, struct hwio_transport *t)
 		return -ENOMEM;
 	c->fd = open(dev_path, O_RDWR | O_CLOEXEC);
 	if (c->fd < 0) {
+		int rc = -errno;
 		free(c);
-		return -errno;
+		return rc;
+	}
+	if (legacy_mmio) {
+		/* Explicit parity-only opt-in, never selected automatically by GUI. */
+		*features = OCTOOL_CAP_MMIO;
+	} else {
+		int rc = ioctl(c->fd, OCTOOL_HWIO_GET_CAPS_V1, &caps);
+		if (rc != 0 || caps.magic != OCTOOL_CAPS_MAGIC ||
+		    caps.version != OCTOOL_CAPS_VERSION || caps.size != sizeof(caps) ||
+		    caps.reserved[0] || caps.reserved[1] || !(caps.features & OCTOOL_CAP_ALL)) {
+			rc = rc < 0 ? -errno : -EPROTO;
+			mod_close(c);
+			return rc;
+		}
+		*features = caps.features;
 	}
 	c->mbox = mmap(NULL, pg, PROT_READ | PROT_WRITE, MAP_SHARED, c->fd, 0);
 	if (c->mbox == MAP_FAILED) {
-		close(c->fd);
-		free(c);
-		return -errno;
+		int rc = -errno;
+		mod_close(c);
+		return rc;
 	}
 	n = read(c->fd, &c->id, sizeof(c->id));	/* fetch per-open token */
 	if (n != (ssize_t)sizeof(c->id)) {
@@ -146,7 +166,7 @@ static int module_transport(const char *dev_path, struct hwio_transport *t)
 	t->ctx = c;
 	t->submit = mod_submit;
 	t->close = mod_close;
-	t->name = "module(/dev/mydev)";
+	t->name = legacy_mmio ? "legacy-module(MMIO-only)" : "module(caps-v1)";
 	return 0;
 }
 
@@ -295,6 +315,10 @@ static int ensure_iopl(void)
 /* ---- backend planning --------------------------------------------------- */
 static void plan_backends(hwio_t *h)
 {
+	static const uint64_t caps[] = {
+		OCTOOL_CAP_MSR, OCTOOL_CAP_MMIO, OCTOOL_CAP_IO,
+		OCTOOL_CAP_PCI, OCTOOL_CAP_EC, OCTOOL_CAP_CPU,
+	};
 	int i;
 	enum hwio_backend b;
 
@@ -304,8 +328,14 @@ static void plan_backends(hwio_t *h)
 		b = HWIO_BE_DIRECT;
 	else
 		b = HWIO_BE_NONE;
-	for (i = 0; i < HWIO_FAM__COUNT; i++)
+	for (i = 0; i < HWIO_FAM__COUNT; i++) {
 		h->be[i] = b;
+		if (h->have_module && !(h->module_features & caps[i]))
+			h->be[i] = HWIO_BE_NONE;
+	}
+	/* There has never been a generic direct EC implementation. */
+	if (h->be[HWIO_FAM_EC] == HWIO_BE_DIRECT)
+		h->be[HWIO_FAM_EC] = HWIO_BE_NONE;
 
 	/* CPUID/TSC/cores can always be answered locally without privilege, so
 	 * never mark that family unavailable. */
@@ -314,7 +344,7 @@ static void plan_backends(hwio_t *h)
 }
 
 /* ---- open/close --------------------------------------------------------- */
-hwio_t *hwio_open(const char *dev_path)
+static hwio_t *open_device(const char *dev_path, int legacy_mmio)
 {
 	hwio_t *h = calloc(1, sizeof(*h));
 
@@ -322,10 +352,20 @@ hwio_t *hwio_open(const char *dev_path)
 		return NULL;
 	h->mem_fd = -1;
 	h->locked_down = hwio_is_locked_down();
-	if (module_transport(dev_path, &h->t) == 0)
+	if (module_transport(dev_path, &h->t, &h->module_features, legacy_mmio) == 0)
 		h->have_module = 1;
 	plan_backends(h);
 	return h;
+}
+
+hwio_t *hwio_open(const char *dev_path)
+{
+	return open_device(dev_path, 0);
+}
+
+hwio_t *hwio_open_legacy_mmio(const char *dev_path)
+{
+	return open_device(dev_path, 1);
 }
 
 hwio_t *hwio_open_transport(const struct hwio_transport *t)
@@ -337,6 +377,7 @@ hwio_t *hwio_open_transport(const struct hwio_transport *t)
 	h->mem_fd = -1;
 	h->t = *t;
 	h->have_module = 1;	/* an explicit transport behaves like the module */
+	h->module_features = OCTOOL_CAP_ALL;
 	plan_backends(h);
 	return h;
 }

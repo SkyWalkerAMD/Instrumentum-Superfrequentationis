@@ -2,7 +2,7 @@
 
 更新：2026-10-08。接续 [全面复查 R7/R9](review-2026-10-08.md)，基线 `bf43013`。
 本轮修改生产模块/HAL 和离线测试，不修改旧 GUI ELF、96 字节请求、MMIO 八个操作码或邮箱偏移。
-下列源码修正仍须对应提交的完整 Actions 回归，实际结果在文末单独记录。
+提交`60b6975`的完整 Actions 回归已通过，实际结果在文末单独记录。
 
 ## PCI：使用内核公开接口
 
@@ -79,11 +79,20 @@ IOPL权限属于线程。现在每次直接端口操作先对当前线程调用 
 
 ## 未完成及实测记录
 
-仍未解决模块能力握手、采集器完整fd/mmap生命周期、旧GUI错误等待/完整主窗口与四平台真实硬件。
-尤其不能把能read/mmap的旧模块当作支持MSR/PCI/EC扩展命令的证明。后续单独实现能力识别，
-保持旧MMIO协议。真机按 [验收清单](hardware-acceptance.md)记录；不提供猜测寄存器地址。
+模块能力握手在后续 [独立修正](module-capabilities.md)中实现，不将本轮PCI/EC测试冒称为能力查询测试。
+采集器完整fd/mmap生命周期、旧GUI错误等待/完整主窗口与四平台真实硬件仍未完成。
+真机按 [验收清单](hardware-acceptance.md)记录；不提供猜测寄存器地址。
 
-本轮修正的云端结果尚待执行，不能沿用 `a9ffbcd` 或 `bf43013` 的结果签本轮代码。
+提交`60b69751da064e2676dac884f2680a58a512ff2e`的
+[portability37740064106](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37740064106)
+23/23全绿。十目标内核/GUI/打包/安装与窗口门禁均完成。EL8日志确认两个生产适配器替身、线程权限
+负例和19项Python测试全部执行；4.18.0-553.171.1.el8_10实际编译和modpost成功，因此此前上游4.18
+ACPI文件获取失败不再阻碍证明该EL8目标的接口可用。EL10 QtTest12通过、两个GUI窗口均出现。
+
+同提交[probe37740064025](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37740064025)
+实际加载/返回EEXIST/卸载通过，`.ko` SHA为`725c9cac80d522855e1e2ebf76054b373ca229eb6c6d89019dba0afb3ac79e26`。
+这是能力查询加入前的探针，未open设备或发硬件请求。
+23项job/23份artifact、重点日志和探针完整JSON见[本次证据](validation/bus-coordination-60b6975.json)。
 
 本地静态检查通过：canonical ABI哈希不变、HAL修正哈希固定、文档链接和源包重复生成一致。
 19项Python测试中16通过、2项需要Linux工具而跳过、1项延续Windows Python3.14 tarfile

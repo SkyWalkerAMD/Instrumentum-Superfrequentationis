@@ -4,7 +4,7 @@ CFLAGS  ?= -O2 -Wall -Wextra -fPIC
 AR      ?= ar
 liboctool_hwio.a: octool_hwio.o
 	$(AR) rcs $@ $^
-octool_hwio.o: octool_hwio.c octool_hwio.h ../abi/octool_hwio_abi.h
+octool_hwio.o: octool_hwio.c octool_hwio.h ../abi/octool_hwio_abi.h ../abi/octool_hwio_caps.h
 	$(CC) $(CFLAGS) -c -o $@ octool_hwio.c
 clean:
 	rm -f octool_hwio.o liboctool_hwio.a

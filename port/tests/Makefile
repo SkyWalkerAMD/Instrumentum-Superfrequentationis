@@ -1,7 +1,7 @@
 CC ?= cc
 CFLAGS ?= -O2 -Wall -Wextra
 
-HEADERS := ../hal/octool_hwio.h ../abi/octool_hwio_abi.h octool_parity_trace.h
+HEADERS := ../hal/octool_hwio.h ../abi/octool_hwio_abi.h ../abi/octool_hwio_caps.h octool_parity_trace.h
 
 loopback: hwio_loopback_test.c ../hal/octool_hwio.c $(HEADERS)
 	$(CC) $(CFLAGS) -o $@ $(filter %.c,$^)
@@ -13,7 +13,7 @@ hwio_smoke: hwio_smoke.c ../hal/octool_hwio.c $(HEADERS)
 	$(CC) $(CFLAGS) -o $@ $(filter %.c,$^)
 
 transport: hwio_transport_test.c ../hal/octool_hwio.c $(HEADERS)
-	$(CC) $(CFLAGS) -o $@ $(filter %.c,$^) $(foreach call,open close mmap munmap read write pread pwrite __pread_chk,-Wl,--wrap=$(call))
+	$(CC) $(CFLAGS) -o $@ $(filter %.c,$^) $(foreach call,open close mmap munmap read write pread pwrite __pread_chk ioctl,-Wl,--wrap=$(call))
 
 bus-acpi bus-noacpi: hwio_bus_test.c ../kmod/octool_bus_access.h
 	$(CC) $(CFLAGS) -Werror -DOCTOOL_TEST_ACPI=$(if $(filter bus-acpi,$@),1,0) -o $@ $<

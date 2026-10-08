@@ -24,7 +24,7 @@ jobs:
           uname -a
       - name: Build module for the ephemeral runner kernel
         run: make -C port/kmod KVER="$(uname -r)" KDIR="/lib/modules/$(uname -r)/build"
-      - name: Load exact module image then call init_module again with same bytes
+      - name: Check duplicate load and read-only capabilities, then unload
         run: |
           sudo bash analysis/tools/test-kmod-eexist.sh \
             "$PWD/port/kmod/octool_hwio.ko" \

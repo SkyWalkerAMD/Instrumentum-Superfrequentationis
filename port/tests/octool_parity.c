@@ -463,7 +463,7 @@ int main(int argc, char **argv)
 			fprintf(stderr, "INCONCLUSIVE: old/new refer to the same device\n");
 			free(c.items); return 2;
 		}
-		o = hwio_open(old_dev);
+		o = hwio_open_legacy_mmio(old_dev);
 		if (!o || hwio_backend_for(o, HWIO_FAM_MMIO) != HWIO_BE_MODULE) {
 			fprintf(stderr, "old: %s not served by module (loaded? permitted?)\n", old_dev);
 			return 2;

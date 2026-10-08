@@ -94,6 +94,8 @@ class ReleaseGates(unittest.TestCase):
             self.assertIn('../abi/octool_hwio_abi.h', (src / "kmod/octool_hwio_abi.h").read_text())
             self.assertEqual((src / "kmod/octool_bus_access.h").read_bytes(),
                              (ROOT / "port/kmod/octool_bus_access.h").read_bytes())
+            self.assertEqual((src / "abi/octool_hwio_caps.h").read_bytes(),
+                             (ROOT / "port/abi/octool_hwio_caps.h").read_bytes())
             self.assertIn('PACKAGE_VERSION="' + ver + '"', (src / "dkms.conf").read_text())
             self.assertIn('/build/kmod', (src / "dkms.conf").read_text())
 

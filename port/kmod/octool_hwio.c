@@ -51,6 +51,7 @@
 #include <asm/processor.h>
 #include <asm/io.h>
 #include "octool_hwio_abi.h"
+#include "../abi/octool_hwio_caps.h"
 #include "octool_bus_access.h"
 
 #define DRV_NAME	"octool_hwio"
@@ -312,6 +313,28 @@ static int hwio_mmap(struct file *f, struct vm_area_struct *vma)
 			       vma->vm_end - vma->vm_start, vma->vm_page_prot);
 }
 
+/* Query supported command families without sending a hardware request. Old
+ * clients continue using read/write/mmap unchanged and need not call this. */
+static long hwio_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+{
+	struct octool_hwio_caps caps = {
+		.magic = OCTOOL_CAPS_MAGIC,
+		.version = OCTOOL_CAPS_VERSION,
+		.size = sizeof(struct octool_hwio_caps),
+		.features = OCTOOL_CAP_MSR | OCTOOL_CAP_MMIO | OCTOOL_CAP_IO |
+			    OCTOOL_CAP_PCI | OCTOOL_CAP_CPU,
+	};
+
+	(void)f;
+	BUILD_BUG_ON(sizeof(caps) != 32);
+	if (cmd != OCTOOL_HWIO_GET_CAPS_V1)
+		return -ENOTTY;
+#if IS_ENABLED(CONFIG_ACPI)
+	caps.features |= OCTOOL_CAP_EC;
+#endif
+	return copy_to_user((void __user *)arg, &caps, sizeof(caps)) ? -EFAULT : 0;
+}
+
 static const struct file_operations hwio_fops = {
 	.owner		= THIS_MODULE,
 	.open		= hwio_open,
@@ -319,6 +342,7 @@ static const struct file_operations hwio_fops = {
 	.read		= hwio_read,
 	.write		= hwio_write,
 	.mmap		= hwio_mmap,
+	.unlocked_ioctl = hwio_ioctl,
 	.llseek		= noop_llseek,
 };
 

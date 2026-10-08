@@ -19,12 +19,12 @@ def main():
     for path in scripts:
         ast.parse(path.read_text(encoding="utf-8"), filename=str(path), feature_version=(3, 8))
     # Canonical ABI matches the input archive. HAL implementation/header hashes
-    # pin the fixes in docs/review-2026-10-08.md and docs/bus-coordination.md;
+    # pin the fixes in docs/review-2026-10-08.md , docs/bus-coordination.md and docs/module-capabilities.md;
     # these are source-integrity checks, not a substitute for wire regressions.
     expected = {
         "port/abi/octool_hwio_abi.h": "5f07bfefd2a96519756cad1567dfdf4b0c878db142f670e1b208cf39523800d8",
-        "port/hal/octool_hwio.c": "09cb2b514d766408ed24332d48f94d9a3b1f287a127629f897b25a1285f7c4c0",
-        "port/hal/octool_hwio.h": "952ae36e38f519176361ab2abeee0333f4cc73284ca69b54cf26f837fb872642",
+        "port/hal/octool_hwio.c": "0fc53c90c814efcca41be7c86bf2013ab4e3207857080411ae9e5f3d013ba3a1",
+        "port/hal/octool_hwio.h": "b1689882bb6c0bdb74a20f21ca44e2d96c9b05045bf248594da3b9daa9b64033",
     }
     # Normalize only CRLF introduced by a checkout, not any source tokens.
     for file, digest in expected.items():

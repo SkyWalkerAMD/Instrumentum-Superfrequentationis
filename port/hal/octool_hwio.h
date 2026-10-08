@@ -5,7 +5,8 @@
  * One API for MSR / MMIO / port-I/O / PCI-config / EC / CPUID access, with a
  * backend chosen at runtime per operation family:
  *
- *   1. the octool_hwio kernel module (/dev/mydev), subject to kernel trust,
+ *   1. the octool_hwio kernel module (/dev/mydev), after a read-only capability
+ *      query confirms each command family, subject to kernel trust,
  *      device permissions and hardware support. Signing alone is not proof
  *      of Secure Boot / lockdown acceptance;
  *   2. direct userspace paths (/dev/cpu/N/msr, /dev/mem, iopl()+in/out,
@@ -65,6 +66,11 @@ struct hwio_transport {
  * returns a handle whose families fall back or report HWIO_BE_NONE. Returns
  * NULL only on out-of-memory. */
 hwio_t *hwio_open(const char *dev_path);
+
+/* Parity-only opt-in for a known old driver without the capability ioctl.
+ * Only MMIO uses that device; never enables its unknown extension opcodes.
+ * The caller must establish device identity. Not used by the GUI. */
+hwio_t *hwio_open_legacy_mmio(const char *dev_path);
 
 /* Open with an explicit transport (tests, or a custom device path already
  * opened). Takes ownership of t->ctx via t->close on hwio_close. */

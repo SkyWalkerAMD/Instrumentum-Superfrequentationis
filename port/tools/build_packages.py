@@ -40,6 +40,7 @@ def module_stage(stage, ver):
                  "class_create_probe.c", "Kbuild", "Makefile"):
         copy(ROOT / "port/kmod" / name, src / "kmod" / name)
     copy(ROOT / "port/abi/octool_hwio_abi.h", src / "abi/octool_hwio_abi.h")
+    copy(ROOT / "port/abi/octool_hwio_caps.h", src / "abi/octool_hwio_caps.h")
     conf = (PACK / "dkms.conf").read_text()
     conf = re.sub(r'^PACKAGE_VERSION=.*$', 'PACKAGE_VERSION="' + ver + '"', conf, flags=re.M)
     write(src / "dkms.conf", conf)

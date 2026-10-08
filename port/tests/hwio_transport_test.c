@@ -3,9 +3,11 @@
  * is opened and no hardware instruction/physical-memory access is executed. */
 #include "../hal/octool_hwio.h"
 #include "../abi/octool_hwio_abi.h"
+#include "../abi/octool_hwio_caps.h"
 #include <assert.h>
 #include <errno.h>
 #include <stdint.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -16,6 +18,15 @@ static struct octool_hwio_req last;
 static int direct_mode, short_io, reply_error;
 static unsigned fortified_reads;
 static unsigned io_calls, closes, unmaps;
+static unsigned queries, mappings;
+static int query_return, query_errno = ENOTTY;
+static struct octool_hwio_caps caps_reply = {
+    .magic = OCTOOL_CAPS_MAGIC, .version = OCTOOL_CAPS_VERSION,
+    .size = sizeof(struct octool_hwio_caps), .features = OCTOOL_CAP_ALL
+};
+_Static_assert(sizeof(struct octool_hwio_caps) == 32, "caps size is fixed");
+_Static_assert(offsetof(struct octool_hwio_caps, features) == 8, "caps features offset");
+_Static_assert(OCTOOL_HWIO_GET_CAPS_V1 == 0x80204f80UL, "x86-64 ioctl encoding");
 static ssize_t token_read = 8;
 static uint64_t forced_done;
 static size_t memory_length;
@@ -28,10 +39,23 @@ int __wrap_open(const char *path, int flags, ...)
     return 600;
 }
 int __wrap_close(int fd) { assert(fd == 600); ++closes; return 0; }
+int __wrap_ioctl(int fd, unsigned long request, ...)
+{
+    va_list ap;
+    assert(fd == 600 && request == OCTOOL_HWIO_GET_CAPS_V1);
+    ++queries; ++io_calls;
+    if (query_return < 0) { errno = query_errno; return -1; }
+    va_start(ap, request);
+    struct octool_hwio_caps *caps = va_arg(ap, struct octool_hwio_caps *);
+    va_end(ap);
+    *caps = caps_reply;
+    return query_return;
+}
 void *__wrap_mmap(void *addr, size_t len, int prot, int flags, int fd, off_t off)
 {
     (void)addr; (void)prot; (void)flags; (void)off;
     ++io_calls;
+    ++mappings;
     assert(len == (memory_length ? memory_length : (size_t)sysconf(_SC_PAGESIZE)));
     assert(fd == 600); return mailbox;
 }
@@ -91,6 +115,60 @@ static void invalid_inputs(hwio_t *h)
     assert(value == 0xa5a5a5a5 && io_calls == before);
 }
 
+static void capability_checks(void)
+{
+    const struct octool_hwio_caps valid = caps_reply;
+    uint64_t value = 0;
+    uint32_t pci = 0;
+    uint8_t ec = 0;
+    for (unsigned mode = 0; mode < 10; ++mode) {
+        unsigned c = closes, u = unmaps, m = mappings;
+        caps_reply = valid; query_return = 0;
+        switch (mode) {
+        case 0: query_return = -1; query_errno = ENOTTY; break;
+        case 1: query_return = -1; query_errno = EACCES; break;
+        case 2: query_return = 1; break;
+        case 3: caps_reply.magic ^= 1; break;
+        case 4: caps_reply.version++; break;
+        case 5: caps_reply.size--; break;
+        case 6: caps_reply.reserved[0] = 1; break;
+        case 7: caps_reply.reserved[1] = 1; break;
+        case 8: caps_reply.features = 0; break;
+        case 9: caps_reply.features = 1ULL << 63; break;
+        }
+        hwio_t *h = hwio_open(NULL);
+        assert(h && hwio_backend_for(h, HWIO_FAM_MMIO) != HWIO_BE_MODULE);
+        assert(closes == c + 1 && unmaps == u && mappings == m);
+        hwio_close(h);
+    }
+    caps_reply = valid; query_return = 0;
+    caps_reply.features = OCTOOL_CAP_MMIO | (1ULL << 63); /* Ignore unknown feature bits. */
+    hwio_t *h = hwio_open(NULL);
+    assert(h && hwio_backend_for(h, HWIO_FAM_MMIO) == HWIO_BE_MODULE);
+    assert(hwio_backend_for(h, HWIO_FAM_MSR) == HWIO_BE_NONE);
+    assert(hwio_backend_for(h, HWIO_FAM_EC) == HWIO_BE_NONE);
+    assert(hwio_backend_for(h, HWIO_FAM_CPU) == HWIO_BE_DIRECT);
+    unsigned before = io_calls;
+    assert(hwio_rdmsr(h, 0, 0, &value) == -EPERM);
+    assert(hwio_pci_read(h, 0, 0, 0, 0, 4, &pci) == -EPERM);
+    assert(hwio_ec_read(h, 0, &ec) == -EPERM && io_calls == before);
+    assert(hwio_mem_read(h, 0x8000, 8, &value) == 0 && last.user_id == token);
+    hwio_close(h);
+    caps_reply = valid; query_return = -1; query_errno = ENOTTY;
+    before = queries;
+    h = hwio_open_legacy_mmio("/dev/mydev");
+    assert(h && queries == before); /* Explicit old-node opt-in, no ioctl needed. */
+    assert(hwio_backend_for(h, HWIO_FAM_MMIO) == HWIO_BE_MODULE);
+    before = io_calls;
+    assert(hwio_wrmsr(h, 0, 0, 0) == -EPERM);
+    assert(hwio_io_write(h, 0, 4, 0) == -EPERM);
+    assert(hwio_pci_write(h, 0, 0, 0, 0, 4, 0) == -EPERM);
+    assert(hwio_ec_write(h, 0, 0) == -EPERM && io_calls == before);
+    assert(hwio_mem_read(h, 0x8000, 8, &value) == 0 && last.cmd == 0x0a && last.user_id == token);
+    hwio_close(h);
+    query_return = 0;
+}
+
 int main(void)
 {
     hwio_t *h = hwio_open(NULL);
@@ -127,6 +205,9 @@ int main(void)
         hwio_close(h);
     }
     token_read = 8;
+    short_io = 0;
+    capability_checks();
+    short_io = 1;
     direct_mode = 1;
     h = hwio_open(NULL);
     assert(h && hwio_backend_for(h, HWIO_FAM_MSR) == HWIO_BE_DIRECT);
@@ -153,6 +234,7 @@ int main(void)
     memory_length = 0;
     hwio_close(h);
     puts("PASS: CPU/token wire fields, malformed replies, failed tokens, invalid PCI and MMIO mapping boundaries");
+    puts("PASS: capability rejection before mmap, partial capabilities and explicit legacy MMIO-only transport");
     printf("Fortified pread calls intercepted: %u\n", fortified_reads);
     return 0;
 }

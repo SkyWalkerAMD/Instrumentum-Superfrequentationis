@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 未发布 — 2026-10-08（模块能力握手与旧节点隔离）
+
+- 修复R9“read/mmap即认为支持全部扩展”的假设：增加旁路只读GET_CAPS_V1 ioctl，32字节固定宽度
+  元数据，完整初始化保留位，未知命令ENOTTY、坏指针EFAULT；不改变原96字节MMIO协议及旧GUI。
+- HAL在mmap前核验能力，按已报告命令族启用module，拒绝非法/缺失应答；部分能力缺失的特权族
+  返回NONE，不向未知驱动发扩展命令。无模块EC后端从误报direct改为NONE。
+- 对拍--old显式选择新增legacy-MMIO入口；--new与GUI继续要求能力查询。保留CPU本地无特权后端
+  和显式注入transport约定。添加10类能力负例、部分能力和legacy隔离回归，DKMS携带新公共头。
+- 受限加载探针扩展为实际open/ioctl/close元数据检查，核对ENOTTY/EFAULT，不发硬件请求；原始
+  EEXIST/设备注册/显式卸载门禁保留。具体接口、升级注意、真机复现详记docs/module-capabilities.md。
+  本轮含能力查询的云端结果待运行，未以此前PCI/EC回归代替。
+
 ## 未发布 — 2026-10-08（接续修复 PCI/EC 协调与端口线程权限）
 
 - 接续全面复查R7/R9：PCI自有CF8/CFC锁无法协调系统访问；改用公开pci_get_domain_bus_and_slot、
@@ -16,6 +28,10 @@
   本轮Linux实编/运行尚待云端执行，不将此前全绿结果冒作新代码通过。
 - Windows静态ABI/文档/可重复源包检查通过；19项Python为16通过、2项Linux工具跳过、1项已知
   Python3.14 tarfile沙箱路径PermissionError，未禁用安全filter。C回归以云端实际执行为准。
+- `60b6975 / portability37740064106`完整23/23成功，EL8日志确认三项新增C回归、19项Python无跳过、
+  4.18 vendor headers与modpost实际成功；EL10 QtTest12项及Mutter/Xwayland双窗口通过。
+  `probe37740064025`实际加载/精确EEXIST/卸载成功（此提交尚未打开元数据设备），模块SHA和全部
+  job/artifact/重点日志归档docs/validation/bus-coordination-60b6975.json。
 
 ## 未发布 — 2026-10-08（全面复查与边界修正）
 
