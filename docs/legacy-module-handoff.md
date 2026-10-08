@@ -62,8 +62,8 @@
 设备请求、不访问宿主物理硬件，也不执行原 GUI。当前 runner 不启用 Secure Boot 强制签名测试；
 记录 signer 字段只为说明本次确切加载的是哪份镜像，不能代替 MOK 验收。
 
-对应 Actions workflow **仅 `workflow_dispatch` 手动触发**，不在 push/PR 自动把项目模块装入 runner
-内核；产物只保留结构化 JSON。此探针证明的是选定 GitHub runner 内核上的真实模块重复加载语义，不
+对应 Actions workflow 可手动触发，也只响应专用分支 `research/kmod-eexist-probe` 的 push；主分支
+普通 push 和 PR 不会把项目模块装入 runner 内核。产物只保留结构化 JSON。此探针证明的是选定 GitHub runner 内核上的真实模块重复加载语义，不
 证明 EL8/9/10 各自带补丁的运行内核或 Secure Boot MOK 路径。正式运行结果按下节追加。
 
 ## 复现及后续边界

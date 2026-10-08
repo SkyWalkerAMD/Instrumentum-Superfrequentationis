@@ -9,9 +9,10 @@
   未压缩、内部名 `octool_hwio` 的 DKMS `.ko`，从而使旧 loader 可通过其原有成功/EEXIST 分支置位。
   明确保留 `CAP_SYS_MODULE` 的重复加载前置检查，以及旧 GUI 对 `CAP_SYS_RAWIO`、CAP_SYS_ADMIN、
   root-only `/dev/mydev`、直接 iopl/MSR/端口路径的依赖；预载模块不等于普通用户可运行。
-- 静态审计新模块 `hwio_init()` 只创建 chrdev/cdev/class/device，不触碰硬件；据此新增手动触发的真实
+- 静态审计新模块 `hwio_init()` 只创建 chrdev/cdev/class/device，不触碰硬件；据此新增受限触发的真实
   内核探针：以当前 runner 加载实际项目 `.ko`，对相同磁盘字节调用 `init_module`，严格要求 EEXIST，
-  并采集内核、vermagic、SHA、class/devnode 状态。workflow 不接入 push/PR，避免自动把 PR 模块装进 runner。
+  并采集内核、vermagic、SHA、class/devnode 状态。workflow 只支持手动触发或专用研究分支 push，不接入
+  普通主分支 push/PR，避免自动把 PR 模块装进 runner。
 - 接入候选、脚本、复现方法、内核源链接、权限条件与真机步骤见 `docs/legacy-module-handoff.md`；
   更新启动分析、验收清单与 docs 索引。云端实测结果及 EL 发行版内核补丁/MOK/硬件待确认范围后续追加。
 

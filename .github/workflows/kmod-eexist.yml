@@ -1,6 +1,9 @@
-name: manual kmod duplicate-load probe
+name: controlled kmod duplicate-load probe
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - research/kmod-eexist-probe
 permissions:
   contents: read
 jobs:
