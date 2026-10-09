@@ -75,6 +75,10 @@ build_sdk() {
 }
 case "$action" in
     kernel)
+        if [ "$family" = rpm ]; then
+            python3 port/ci/select-kernel-pair.py --output "$out/kernel-selection.json"
+            rpm -qa | sort > "$out/packages-kernel-selected.txt"
+        fi
         make -C port/hal
         make -C port/tests check hwio_smoke CAPTURE_RESULTS="$out/capture-results.json" 2>&1 | tee "$out/offline.log"
         python3 -m unittest discover -s port/tests -p 'test_*.py' -v

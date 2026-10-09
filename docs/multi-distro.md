@@ -93,6 +93,10 @@ MMIO dispatch 不变。修正依据与新 HAL 哈希见 [第一阶段记录](gui
 Ubuntu HWE 对应 gcc-N 由 CI bootstrap 安装；本机升级内核时也需保证对应编译器已安装。
 这不属于新的内核 API 分支。
 
+EL 的 AppStream 头文件与 BaseOS 内核镜像可能不同步发布。内核 VM 任务在可丢弃容器中
+选择两者同时存在的最新版本，记录 `kernel-selection.json` 和实际包清单；不能把一个版本的
+模块配另一个版本的内核，也不能在镜像缺失时跳过启动测试。此选择不修改用户系统或 DKMS 安装策略。
+
 ## 4. EL8 静态 Qt 发布基线
 
 默认使用 EL8 自带 GCC，避免较新 gcc-toolset 的 libstdc++ 需求传播给旧系统。
