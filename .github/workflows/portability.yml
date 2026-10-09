@@ -76,6 +76,10 @@ jobs:
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-mmio-clients.py \
             --output build/mmio-clients.json
+      - name: Verify mailbox consistency and FIVR/FCH bit operations
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-mmio-services.py \
+            --output build/mmio-services.json
       - uses: actions/upload-artifact@v4
         with:
           name: mailbox-contract-evidence
@@ -91,6 +95,7 @@ jobs:
             build/amd-mp1.json
             build/intel-ngu.json
             build/mmio-clients.json
+            build/mmio-services.json
           if-no-files-found: error
           retention-days: 14
       - run: python3 port/ci/validate-local.py

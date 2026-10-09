@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## 未发布 — 2026-10-09（公共邮箱错误传播及FIVR/FCH算法）
+
+- 继续32位Wr_MMIO直接调用者，新增9函数1723原指令字节及8字节FP常量，复用原MSR/MMIO叶函数。
+  260项本地刻画通过，4项底层预期永久等待保留；6项关键回归通过，已加入portability前置门禁。
+- PollMailboxReady最多10轮且每轮sleep1000us，ready首轮也睡；所有type/耗尽均返回0。
+  type3检查MSR607低32位busy。MailboxRead的两对样本只在status/data低字都改变时失败，单项或
+  高32位变化被接受，输出第一份样本；type3先写608输入data再写607命令，不能列入只读采集。
+- FIVR两个函数重新用PCI48低32位覆盖基址，丢NVL构造的高位；spread直接OR完整input32，
+  fsw原常量3.0及指令等价式q=min((uint16(input)+3)//9,1023)已逐指令复现，不猜物理单位。
+- AMD FCH的32位shift宽度取模使0..31全宽mask为0，字段不变仍发送update；所有写仍传低offset。
+  量化/范围异常是函数接口实验，不宣称真实UI接受这些实参。第9/10个Wr_MMIO直接调用者已到原请求。
+- 详细流程、地址/常量、失败返回、输入域与限制写入docs/legacy-mmio-services.md，台账同步。
+  未改生产GUI/HAL/模块/ABI；第10个I2C调用者、上层合法域和真机定义仍继续核对。
+- 前一0e636d3已完成portability37865292638的23/23作业及probe37865292601，Linux24/39项测试
+  无跳过，3946项原指令结果通过；下载11份报告与Windows除environment完全一致。证据保存为
+  docs/validation/legacy-mmio-clients-ci-0e636d3.json，本轮260项云端结果后续单列。
+
 ## 未发布 — 2026-10-09（原内存页零地址与64位fallback数据截断）
 
 - 新增4函数1704原指令字节，完整执行rw_memory写槽、NVL读mailbox、64位成员和底层写路由，

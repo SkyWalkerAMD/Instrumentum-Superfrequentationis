@@ -1,0 +1,642 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "ngu_fixture_sha256": "25c9a574a7bd50bcb07a4fa1ff18fd0313690be3dc4f1231717582411fdb8e68",
+  "scope": "Original PollMailboxReady/MailboxRead, FIVR, dynamic and AMD FCH; original MSR/MMIO leaves with synthetic libc/PCI/mailbox",
+  "functions": [
+    {
+      "symbol": "_Z16PollMailboxReadyj",
+      "address": 2356608,
+      "size": 216,
+      "code_hex": "f30f1efa4156415541544189fc5531ed534883ec4064488b042528000000488944243831c04c8d6c24104c8d7424084c89efe82918ffffeb430f1f8000000000bb010000004183fc03751a488d74240c4c89f2bf07060000e8f30113008b5c240c48c1eb1fbfe8030000e8b1caf0ff83c5016683fd09772884db74244183fc0175bebea45d00004c89efe89118ffff89c3c1eb1febcf662e0f1f8400000000004c89efe86818ffff488b44243864482b042528000000750f4883c44031c05b5d415c415d415ec3e8c4b2f0fff30f1efa4889c5e9baf4f0ff",
+      "code_sha256": "4e28005438195b01f6c45d3ff8321859c1badbff1a9770ab8ae111d9524905ac",
+      "calls": [
+        {
+          "instruction": 2356658,
+          "kind": "call",
+          "target": 2297312,
+          "symbols": [
+            "_ZN7RW_MMIOC1Ev",
+            "_ZN7RW_MMIOC2Ev"
+          ]
+        },
+        {
+          "instruction": 2356663,
+          "kind": "jmp",
+          "target": 2356732,
+          "symbols": []
+        },
+        {
+          "instruction": 2356696,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 2356714,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2356746,
+          "kind": "call",
+          "target": 2297504,
+          "symbols": [
+            "_ZN7RW_MMIO7Rd_MMIOEm"
+          ]
+        },
+        {
+          "instruction": 2356756,
+          "kind": "jmp",
+          "target": 2356709,
+          "symbols": []
+        },
+        {
+          "instruction": 2356771,
+          "kind": "call",
+          "target": 2297488,
+          "symbols": [
+            "_ZN7RW_MMIOD1Ev",
+            "_ZN7RW_MMIOD2Ev"
+          ]
+        },
+        {
+          "instruction": 2356807,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 2356819,
+          "kind": "jmp",
+          "target": 1370898,
+          "symbols": [
+            "_Z16PollMailboxReadyj.cold"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z11MailboxReadjjPjS_",
+      "address": 2356832,
+      "size": 594,
+      "code_hex": "f30f1efa41574189f741564189fe41554989cd415455534889d34883ec5864488b042528000000488944244831c0488d6c2420e8e8feffff4889ef4989c4e83d17ffff4d85e40f85000100004183fe010f844a0100004183fe030f85200100008b3331d2bf080600004181cf00000080c744241c0000000089742418e83f0013004489fe31d2bf0706000044897c2418c744241c00000000e823001300bf03000000e879feffff4c8d7c241c4c8d742418bf070600004c89fa4c89f6e8af0013008b44241c8b5424184c89f6bf0806000048c1e0204809d04c89fa48890424e88c0013008b44241c8b542418bf0a00000048c1e0204809d04889442408e83ec9f0ff4c89fa4c89f6bf07060000e85e0013008b44241c8b542418bf0806000048c1e0204989c64909d6e8128c1400443b3424740a394424080f85e80000000fb60424418945008b44240889034889efe8dc16ffff488b44244864482b0425280000000f85d90000004883c4584c89e05b5d415c415d415e415fc3660f1f440000488d3da1e93801e894e9f0ff49bc0300000000000080ebb40f1f8400000000004489fabea45d00004889ef81ca00000080e80a17ffffbf01000000e860fdffffbea45d00004889efe87316ffffbea05d00004889ef4989c6e86316ffffbf0a0000004989c7e856c8f0ffbea45d00004889efe84916ffffbea05d00004889ef48890424e83816ffff4139c77406443b342475134181e6ff0000004589750044893be926ffffff488d3dcbe83801e8eee8f0ff49bc0200000000000080e90bffffffe86ab0f0fff30f1efa4989c4e970f2f0ff",
+      "code_sha256": "7dacfcdd07a6e93a144bff90cb0af8b1e6e33ffa430b8b4db5d1e3b70861a1f8",
+      "calls": [
+        {
+          "instruction": 2356883,
+          "kind": "call",
+          "target": 2356608,
+          "symbols": [
+            "_Z16PollMailboxReadyj"
+          ]
+        },
+        {
+          "instruction": 2356894,
+          "kind": "call",
+          "target": 2297312,
+          "symbols": [
+            "_ZN7RW_MMIOC1Ev",
+            "_ZN7RW_MMIOC2Ev"
+          ]
+        },
+        {
+          "instruction": 2356956,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 2356984,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 2356994,
+          "kind": "call",
+          "target": 2356608,
+          "symbols": [
+            "_Z16PollMailboxReadyj"
+          ]
+        },
+        {
+          "instruction": 2357020,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 2357055,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 2357085,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2357101,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 2357129,
+          "kind": "call",
+          "target": 3703712,
+          "symbols": [
+            "_Z12AsmReadMsr64i"
+          ]
+        },
+        {
+          "instruction": 2357167,
+          "kind": "call",
+          "target": 2297488,
+          "symbols": [
+            "_ZN7RW_MMIOD1Ev",
+            "_ZN7RW_MMIOD2Ev"
+          ]
+        },
+        {
+          "instruction": 2357223,
+          "kind": "call",
+          "target": 1368448,
+          "symbols": [
+            "puts@plt"
+          ]
+        },
+        {
+          "instruction": 2357238,
+          "kind": "jmp",
+          "target": 2357164,
+          "symbols": []
+        },
+        {
+          "instruction": 2357265,
+          "kind": "call",
+          "target": 2297632,
+          "symbols": [
+            "_ZN7RW_MMIO7Wr_MMIOEjj"
+          ]
+        },
+        {
+          "instruction": 2357275,
+          "kind": "call",
+          "target": 2356608,
+          "symbols": [
+            "_Z16PollMailboxReadyj"
+          ]
+        },
+        {
+          "instruction": 2357288,
+          "kind": "call",
+          "target": 2297504,
+          "symbols": [
+            "_ZN7RW_MMIO7Rd_MMIOEm"
+          ]
+        },
+        {
+          "instruction": 2357304,
+          "kind": "call",
+          "target": 2297504,
+          "symbols": [
+            "_ZN7RW_MMIO7Rd_MMIOEm"
+          ]
+        },
+        {
+          "instruction": 2357317,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2357330,
+          "kind": "call",
+          "target": 2297504,
+          "symbols": [
+            "_ZN7RW_MMIO7Rd_MMIOEm"
+          ]
+        },
+        {
+          "instruction": 2357347,
+          "kind": "call",
+          "target": 2297504,
+          "symbols": [
+            "_ZN7RW_MMIO7Rd_MMIOEm"
+          ]
+        },
+        {
+          "instruction": 2357377,
+          "kind": "jmp",
+          "target": 2357164,
+          "symbols": []
+        },
+        {
+          "instruction": 2357389,
+          "kind": "call",
+          "target": 1368448,
+          "symbols": [
+            "puts@plt"
+          ]
+        },
+        {
+          "instruction": 2357404,
+          "kind": "jmp",
+          "target": 2357164,
+          "symbols": []
+        },
+        {
+          "instruction": 2357409,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 2357421,
+          "kind": "jmp",
+          "target": 1370914,
+          "symbols": [
+            "_Z11MailboxReadjjPjS_.cold"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z20Wr_intel_fivr_spreadi",
+      "address": 2335152,
+      "size": 183,
+      "code_hex": "f30f1efa5531d231f64889e5415641545389fb31ff4883ec3864488b042528000000488945d831c0e8b339feff4189c4488d45b04889c74989c6e8f16bffff4183fcff743f4883ec20ba480000004489e1e86a25170083e8014883c420be085a00004c89f7488945c8e8826cffff89c2be085a00004c89f730d209da80ce01e8ec6cffff4c89f7e8546cffff488b45d864482b042528000000750b488d65e85b415c415e5dc3e8b506f1fff30f1efa4989c4e93b48f1ff",
+      "code_sha256": "4a3a4270b6929dc77731609a066c5796851c3cd73e6d515bf054fa7eb081f1ab",
+      "calls": [
+        {
+          "instruction": 2335192,
+          "kind": "call",
+          "target": 2218896,
+          "symbols": [
+            "_Z13find_pci_dev2jjj"
+          ]
+        },
+        {
+          "instruction": 2335210,
+          "kind": "call",
+          "target": 2297312,
+          "symbols": [
+            "_ZN7RW_MMIOC1Ev",
+            "_ZN7RW_MMIOC2Ev"
+          ]
+        },
+        {
+          "instruction": 2335233,
+          "kind": "call",
+          "target": 3852144,
+          "symbols": [
+            "_Z18ReadPciConfigDwordjj"
+          ]
+        },
+        {
+          "instruction": 2335257,
+          "kind": "call",
+          "target": 2297504,
+          "symbols": [
+            "_ZN7RW_MMIO7Rd_MMIOEm"
+          ]
+        },
+        {
+          "instruction": 2335279,
+          "kind": "call",
+          "target": 2297632,
+          "symbols": [
+            "_ZN7RW_MMIO7Wr_MMIOEjj"
+          ]
+        },
+        {
+          "instruction": 2335287,
+          "kind": "call",
+          "target": 2297488,
+          "symbols": [
+            "_ZN7RW_MMIOD1Ev",
+            "_ZN7RW_MMIOD2Ev"
+          ]
+        },
+        {
+          "instruction": 2335318,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 2335330,
+          "kind": "jmp",
+          "target": 1370786,
+          "symbols": [
+            "_Z20Wr_intel_fivr_spreadi.cold"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z17Wr_intel_fivr_fswt",
+      "address": 2335520,
+      "size": 266,
+      "code_hex": "f30f1efa5531d231f64889e5415641545389fb31ff4883ec3864488b042528000000488945d831c0e84338feff4189c4488d45b04889c74989c6e8816affff4183fcff0f848e0000004883ec20ba480000004489e1e8f623170083e8014883c420be185a00004c89f7488945c8e80e6bffff0fb7db660fefc04889c1baabaaaaaaf20f2ac3f20f5e059b653e01be185a00004c89f7f20f2cc04801c025feff0100480fafc2baff03000048c1e82183c001d1f86639d00f47c281e1ffc700ff89c266c1e80383e207c1e010c1e20b09c209cae8296bffff4c89f7e8916affff488b45d864482b042528000000750b488d65e85b415c415e5dc3e8f204f1fff30f1efa4989c4e99846f1ff",
+      "code_sha256": "32ce86999d6349d94a0057e340cb2a6eabcdb527ccf0b18303522b0f00340c15",
+      "calls": [
+        {
+          "instruction": 2335560,
+          "kind": "call",
+          "target": 2218896,
+          "symbols": [
+            "_Z13find_pci_dev2jjj"
+          ]
+        },
+        {
+          "instruction": 2335578,
+          "kind": "call",
+          "target": 2297312,
+          "symbols": [
+            "_ZN7RW_MMIOC1Ev",
+            "_ZN7RW_MMIOC2Ev"
+          ]
+        },
+        {
+          "instruction": 2335605,
+          "kind": "call",
+          "target": 3852144,
+          "symbols": [
+            "_Z18ReadPciConfigDwordjj"
+          ]
+        },
+        {
+          "instruction": 2335629,
+          "kind": "call",
+          "target": 2297504,
+          "symbols": [
+            "_ZN7RW_MMIO7Rd_MMIOEm"
+          ]
+        },
+        {
+          "instruction": 2335730,
+          "kind": "call",
+          "target": 2297632,
+          "symbols": [
+            "_ZN7RW_MMIO7Wr_MMIOEjj"
+          ]
+        },
+        {
+          "instruction": 2335738,
+          "kind": "call",
+          "target": 2297488,
+          "symbols": [
+            "_ZN7RW_MMIOD1Ev",
+            "_ZN7RW_MMIOD2Ev"
+          ]
+        },
+        {
+          "instruction": 2335769,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 2335781,
+          "kind": "jmp",
+          "target": 1370818,
+          "symbols": [
+            "_Z17Wr_intel_fivr_fswt.cold"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z16SET_DYNAMIC_FREQh",
+      "address": 2336608,
+      "size": 201,
+      "code_hex": "f30f1efa554889e5415641545389fb4883ec3864488b042528000000488945d831c0488d45b04889c74989c6e84f66ffff4883ec20ba4800000031c9e8cf1f170083e8014883c420488945c8488d057d1ea401803800741c4883ec20ba4c00000031c9e8a81f170048c1e020480945c84883c4200fb6d3bea05d00004c89f7e83c67ffffba22010080bea45d00004c89f7e82a67ffff4c89f7e89266ffff488b45d864482b042528000000750b488d65e85b415c415e5dc3e8f300f1fff30f1efa4989c4e9c942f1ff",
+      "code_sha256": "ab595d5dc69ac1c92e1983ad95b0fcb19a8d36eeb199e93d881ce5c622c9206b",
+      "calls": [
+        {
+          "instruction": 2336652,
+          "kind": "call",
+          "target": 2297312,
+          "symbols": [
+            "_ZN7RW_MMIOC1Ev",
+            "_ZN7RW_MMIOC2Ev"
+          ]
+        },
+        {
+          "instruction": 2336668,
+          "kind": "call",
+          "target": 3852144,
+          "symbols": [
+            "_Z18ReadPciConfigDwordjj"
+          ]
+        },
+        {
+          "instruction": 2336707,
+          "kind": "call",
+          "target": 3852144,
+          "symbols": [
+            "_Z18ReadPciConfigDwordjj"
+          ]
+        },
+        {
+          "instruction": 2336735,
+          "kind": "call",
+          "target": 2297632,
+          "symbols": [
+            "_ZN7RW_MMIO7Wr_MMIOEjj"
+          ]
+        },
+        {
+          "instruction": 2336753,
+          "kind": "call",
+          "target": 2297632,
+          "symbols": [
+            "_ZN7RW_MMIO7Wr_MMIOEjj"
+          ]
+        },
+        {
+          "instruction": 2336761,
+          "kind": "call",
+          "target": 2297488,
+          "symbols": [
+            "_ZN7RW_MMIOD1Ev",
+            "_ZN7RW_MMIOD2Ev"
+          ]
+        },
+        {
+          "instruction": 2336792,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 2336804,
+          "kind": "jmp",
+          "target": 1370866,
+          "symbols": [
+            "_Z16SET_DYNAMIC_FREQh.cold"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN11RW_MMIO_AMD11Wr_FCH_MISCEjjjj",
+      "address": 2302736,
+      "size": 114,
+      "code_hex": "f30f1efa41564189ce89f641554589c541544529f54989f4554889fd538b473c89d348894718e865ebffff418d4d014889ef4489e6ba010000004989c0d3e24489f183ea014863d24889d021d348d3e048d3e348f7d089da4c21c009c2e8aeebffff5b4889ef5d415c415d415ee95effffff",
+      "code_sha256": "d37f1e998a0b252a603a201da3cda088cd6d5b1e4e88aa509acbe3379089292b",
+      "calls": [
+        {
+          "instruction": 2302774,
+          "kind": "call",
+          "target": 2297504,
+          "symbols": [
+            "_ZN7RW_MMIO7Rd_MMIOEm"
+          ]
+        },
+        {
+          "instruction": 2302829,
+          "kind": "call",
+          "target": 2297632,
+          "symbols": [
+            "_ZN7RW_MMIO7Wr_MMIOEjj"
+          ]
+        },
+        {
+          "instruction": 2302845,
+          "kind": "jmp",
+          "target": 2302688,
+          "symbols": [
+            "_ZN11RW_MMIO_AMD18CG1_cfg_update_reqEv"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN11RW_MMIO_AMD18CG1_cfg_update_reqEv",
+      "address": 2302688,
+      "size": 47,
+      "code_hex": "f30f1efa558b473cbe400000004889fd48894718e8a7ebffff4889efbe400000005d89c281ca00000040e911ecffff",
+      "code_sha256": "b41741eebce836ae18953175738fed5f152e54b3b5a1ad8a36861997969e055f",
+      "calls": [
+        {
+          "instruction": 2302708,
+          "kind": "call",
+          "target": 2297504,
+          "symbols": [
+            "_ZN7RW_MMIO7Rd_MMIOEm"
+          ]
+        },
+        {
+          "instruction": 2302730,
+          "kind": "jmp",
+          "target": 2297632,
+          "symbols": [
+            "_ZN7RW_MMIO7Wr_MMIOEjj"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z12AsmReadMsr64i",
+      "address": 3703712,
+      "size": 77,
+      "code_hex": "f30f1efa4883ec1864488b042528000000488944240831c0488d5424044889e6e80b74feff8b5424048b042448c1e2204809d0488b54240864482b14252800000075054883c418c3e82325dcff",
+      "code_sha256": "ff39f88b74565564e0b3fedd7b66069d1937ea931f59c18bdd631481dcf801a0",
+      "calls": [
+        {
+          "instruction": 3703744,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3703784,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z13find_pci_dev2jjj",
+      "address": 2218896,
+      "size": 25,
+      "code_hex": "f30f1efac1e60383e207c1e708400fb6c60fb7ff09d009f8c3",
+      "code_sha256": "cc5e59daf420f453f8fc5d325daa0133887c2e6696fcd1cea0cac7a38803fdaa",
+      "calls": []
+    }
+  ],
+  "literals": [
+    {
+      "address": 22864216,
+      "text": "(MAILBOX) Mailbox read data is corrupted."
+    },
+    {
+      "address": 22864264,
+      "text": "(MAILBOX) Unrecognized Mailbox Type."
+    }
+  ],
+  "data": [
+    {
+      "address": 23202120,
+      "bytes_hex": "0000000000000840",
+      "sha256": "161f4c0b1a18a0501127332c387e782b5acc10c6c7a9f7e494c1e3394c49bad5",
+      "binary64": 3.0
+    }
+  ],
+  "read_contexts": {
+    "2356701": "poll",
+    "2356751": "poll",
+    "2357025": "status-first",
+    "2357060": "data-first",
+    "2357106": "status-second",
+    "2357293": "status-first",
+    "2357309": "data-first",
+    "2357335": "status-second",
+    "2357352": "data-second",
+    "2335262": "field",
+    "2335634": "field",
+    "2302779": "field",
+    "2302713": "update",
+    "3703749": "data-second"
+  }
+}
