@@ -9,7 +9,7 @@ cat /proc/self/limits > /out/limits.txt
 cat /usr/share/dbus-1/system.conf > /out/system.conf
 mkdir -p /run/dbus
 dbus-uuidgen --ensure
-timeout 45 strace -ff -tt -o /out/dbus.trace dbus-daemon --system --nofork --nopidfile \
+SYSTEMD_NSS_BYPASS_BUS=1 timeout 45 strace -ff -tt -o /out/dbus.trace dbus-daemon --system --nofork --nopidfile \
     --print-address=1 --print-pid=1 > /out/dbus.log 2>&1 &
 probe_pid=$!
 trap 'kill "$probe_pid" 2>/dev/null || true; wait "$probe_pid" 2>/dev/null || true' EXIT

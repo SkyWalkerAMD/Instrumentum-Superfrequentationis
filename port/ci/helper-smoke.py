@@ -61,9 +61,13 @@ def main():
         subprocess.run(['dbus-uuidgen', '--ensure'], check=True)
         if not Path('/run/dbus/system_bus_socket').exists():
             log = args.output.with_suffix('.dbus.log').open('w'); logs.append(log)
+            # Match systemd's bus-service startup environment. Older EL8 NSS
+            # group enumeration otherwise connects to this not-yet-serving
+            # bus while dbus-daemon is dropping privileges, deadlocking itself.
+            bus_env = dict(os.environ, SYSTEMD_NSS_BYPASS_BUS='1')
             children.append(subprocess.Popen(['dbus-daemon', '--system', '--nofork', '--nopidfile',
                                               '--print-address=1', '--print-pid=1'],
-                                             stdout=log, stderr=subprocess.STDOUT))
+                                             stdout=log, stderr=subprocess.STDOUT, env=bus_env))
         wait_for_name('org.freedesktop.DBus')
         service = configparser.ConfigParser(interpolation=None)
         service.read('/usr/share/dbus-1/system-services/org.freedesktop.PolicyKit1.service')
@@ -131,6 +135,7 @@ def main():
             time.sleep(0.05)
         assert not remaining, remaining
         report = {'policy': 'auth_admin', 'helper_mode': '0755', 'polkit_service_command': daemon_command,
+                  'bus_startup_nss_direct_lookup': True,
                   'pkaction_version': policy_version.stdout.strip(), 'pkaction_exit': policy_check.returncode,
                   'root_pkexec': json.loads(authorized.stdout),
                   'no_agent_denial': json.loads(denied.stdout), 'direct_unprivileged_exit': direct.returncode,
