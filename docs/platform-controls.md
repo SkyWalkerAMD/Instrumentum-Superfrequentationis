@@ -66,3 +66,12 @@ Qt 回归增加构造零访问、未知 Intel 型号零 MSR、无效 AMD 输入�
 另用厂商公开字段构造固定 CRC 向量，验证 DDR5 x8/容量/基础时序、损坏与截断 CRC、
 DDR4 有符号细调；这些派生向量的无关字节为零，不冒充实机 SPD 采集。
 这些都是合成设备测试，没有对目标真机执行超频或寄存器写入。
+
+## 本轮验证与交付
+
+最终生产代码 `0b514bbf663f14bdefe684b4e58ff1c5a298b6ea`，核心 [4/4](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068831)、Linux [23/23](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664) 全部通过。
+十个 Linux 目标各 21 项 Qt 与 29 项 Python 回归、11 套实际目标内核在 VM 中启动；
+核心四环境各 4 个 CTest、26 个场景组。Windows 本机的 45 项回归中 36 项通过、9 项因缺少
+C++/Linux 环境跳过，对应编译及系统检查由云端执行。
+20 份安装包和源包保存在 `dist/platform-recovery-0b514bb/`。
+[完整报告](validation/platform-recovery-ci-0b514bb.json)记录源码一致性、包/截图/模块哈希及验收限制。

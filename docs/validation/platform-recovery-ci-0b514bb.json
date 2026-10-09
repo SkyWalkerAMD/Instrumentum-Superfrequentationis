@@ -1,0 +1,2311 @@
+{
+  "schema": 1,
+  "date": "2026-10-10",
+  "source_commit": "0b514bbf663f14bdefe684b4e58ff1c5a298b6ea",
+  "branch": "refactor/platform-recovery",
+  "scope": "Explicit Intel RAPL/HWP controls, AMD BIOS SMUIO, PStates raw fields and memory/board inventory with SPD decoders",
+  "portable_core": {
+    "source_commit": "0b514bbf663f14bdefe684b4e58ff1c5a298b6ea",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068831",
+    "jobs": [
+      {
+        "name": "core (macos-14)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068831/job/114071850498",
+        "startedAt": "2026-10-09T23:34:22Z",
+        "completedAt": "2026-10-09T23:34:43Z"
+      },
+      {
+        "name": "core (ubuntu-22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068831/job/114071850663",
+        "startedAt": "2026-10-09T23:34:17Z",
+        "completedAt": "2026-10-09T23:34:34Z"
+      },
+      {
+        "name": "core (ubuntu-24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068831/job/114071850668",
+        "startedAt": "2026-10-09T23:34:16Z",
+        "completedAt": "2026-10-09T23:34:27Z"
+      },
+      {
+        "name": "core (windows-2022)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068831/job/114071850744",
+        "startedAt": "2026-10-09T23:34:17Z",
+        "completedAt": "2026-10-09T23:35:10Z"
+      }
+    ],
+    "targets": [
+      {
+        "target": "portable-core-macos-14",
+        "ctests": 4,
+        "scenario_groups": 26,
+        "output": [
+          "amd_pstates core: 7 scenario groups passed",
+          "hardware core: 7 scenario groups passed",
+          "helper protocol: 4 scenario groups passed",
+          "8 platform scenario groups passed"
+        ],
+        "report": {
+          "path": "build/platform-recovery-0b514bb/core-artifacts/portable-core-macos-14/results.xml",
+          "bytes": 1015,
+          "sha256": "eb2361dd8dc9c3d93639564351b65fd7e3153b79511bbd20e9396bfc33f38612"
+        }
+      },
+      {
+        "target": "portable-core-ubuntu-22.04",
+        "ctests": 4,
+        "scenario_groups": 26,
+        "output": [
+          "amd_pstates core: 7 scenario groups passed",
+          "hardware core: 7 scenario groups passed",
+          "helper protocol: 4 scenario groups passed",
+          "8 platform scenario groups passed"
+        ],
+        "report": {
+          "path": "build/platform-recovery-0b514bb/core-artifacts/portable-core-ubuntu-22.04/results.xml",
+          "bytes": 960,
+          "sha256": "8d64a81aad60fc3018fa6979fa97a02a8520b0b7ba1e7cc8d65e97e4f147e8f8"
+        }
+      },
+      {
+        "target": "portable-core-ubuntu-24.04",
+        "ctests": 4,
+        "scenario_groups": 26,
+        "output": [
+          "amd_pstates core: 7 scenario groups passed",
+          "hardware core: 7 scenario groups passed",
+          "helper protocol: 4 scenario groups passed",
+          "8 platform scenario groups passed"
+        ],
+        "report": {
+          "path": "build/platform-recovery-0b514bb/core-artifacts/portable-core-ubuntu-24.04/results.xml",
+          "bytes": 959,
+          "sha256": "a498d95ef8e3a8943a04a49cc1a86faf47527e825e2c5e1209e1d27e7add7449"
+        }
+      },
+      {
+        "target": "portable-core-windows-2022",
+        "ctests": 4,
+        "scenario_groups": 26,
+        "output": [
+          "amd_pstates core: 7 scenario groups passed",
+          "hardware core: 7 scenario groups passed",
+          "helper protocol: 4 scenario groups passed",
+          "8 platform scenario groups passed"
+        ],
+        "report": {
+          "path": "build/platform-recovery-0b514bb/core-artifacts/portable-core-windows-2022/results.xml",
+          "bytes": 991,
+          "sha256": "ae9efaa1a1faaa9ad64a118375302e3e088aae09b208034af5cfbd6da21164b5"
+        }
+      }
+    ],
+    "workflow_log": {
+      "path": "build/platform-recovery-0b514bb/core-run.log",
+      "bytes": 121582,
+      "sha256": "da262ddb7eaa0a648fbbe63b8c8d29059ed514c925c00a2d4dec86718beb8917"
+    },
+    "artifact_metadata": {
+      "path": "build/platform-recovery-0b514bb/core-artifacts.json",
+      "bytes": 3845,
+      "sha256": "9a742c74f70621e971f41ac619745d2e7db81623fadb8d6f3553fc34bb1da634"
+    }
+  },
+  "linux": {
+    "source_commit": "0b514bbf663f14bdefe684b4e58ff1c5a298b6ea",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664",
+    "jobs": [
+      {
+        "name": "baseline",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114071849990",
+        "startedAt": "2026-10-09T23:34:16Z",
+        "completedAt": "2026-10-09T23:36:19Z"
+      },
+      {
+        "name": "matrix",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114071850225",
+        "startedAt": "2026-10-09T23:34:17Z",
+        "completedAt": "2026-10-09T23:37:19Z"
+      },
+      {
+        "name": "desktop (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641828",
+        "startedAt": "2026-10-09T23:37:22Z",
+        "completedAt": "2026-10-09T23:39:52Z"
+      },
+      {
+        "name": "desktop (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641831",
+        "startedAt": "2026-10-09T23:37:22Z",
+        "completedAt": "2026-10-09T23:40:30Z"
+      },
+      {
+        "name": "desktop (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641833",
+        "startedAt": "2026-10-09T23:37:22Z",
+        "completedAt": "2026-10-09T23:41:08Z"
+      },
+      {
+        "name": "desktop (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641838",
+        "startedAt": "2026-10-09T23:37:22Z",
+        "completedAt": "2026-10-09T23:39:38Z"
+      },
+      {
+        "name": "kernel (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641850",
+        "startedAt": "2026-10-09T23:37:22Z",
+        "completedAt": "2026-10-09T23:40:35Z"
+      },
+      {
+        "name": "desktop (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641859",
+        "startedAt": "2026-10-09T23:37:22Z",
+        "completedAt": "2026-10-09T23:40:30Z"
+      },
+      {
+        "name": "desktop (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641881",
+        "startedAt": "2026-10-09T23:37:22Z",
+        "completedAt": "2026-10-09T23:40:15Z"
+      },
+      {
+        "name": "desktop (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641885",
+        "startedAt": "2026-10-09T23:37:23Z",
+        "completedAt": "2026-10-09T23:40:34Z"
+      },
+      {
+        "name": "desktop (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641886",
+        "startedAt": "2026-10-09T23:37:22Z",
+        "completedAt": "2026-10-09T23:41:59Z"
+      },
+      {
+        "name": "kernel (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641887",
+        "startedAt": "2026-10-09T23:37:23Z",
+        "completedAt": "2026-10-09T23:39:59Z"
+      },
+      {
+        "name": "kernel (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641894",
+        "startedAt": "2026-10-09T23:37:28Z",
+        "completedAt": "2026-10-09T23:39:54Z"
+      },
+      {
+        "name": "kernel (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641910",
+        "startedAt": "2026-10-09T23:37:23Z",
+        "completedAt": "2026-10-09T23:39:42Z"
+      },
+      {
+        "name": "desktop (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641922",
+        "startedAt": "2026-10-09T23:37:22Z",
+        "completedAt": "2026-10-09T23:42:24Z"
+      },
+      {
+        "name": "kernel (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641924",
+        "startedAt": "2026-10-09T23:37:22Z",
+        "completedAt": "2026-10-09T23:41:36Z"
+      },
+      {
+        "name": "kernel (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641929",
+        "startedAt": "2026-10-09T23:37:22Z",
+        "completedAt": "2026-10-09T23:39:21Z"
+      },
+      {
+        "name": "desktop (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641930",
+        "startedAt": "2026-10-09T23:37:23Z",
+        "completedAt": "2026-10-09T23:41:58Z"
+      },
+      {
+        "name": "kernel (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641950",
+        "startedAt": "2026-10-09T23:37:22Z",
+        "completedAt": "2026-10-09T23:39:45Z"
+      },
+      {
+        "name": "kernel (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641960",
+        "startedAt": "2026-10-09T23:37:22Z",
+        "completedAt": "2026-10-09T23:39:26Z"
+      },
+      {
+        "name": "kernel (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072641966",
+        "startedAt": "2026-10-09T23:37:22Z",
+        "completedAt": "2026-10-09T23:40:11Z"
+      },
+      {
+        "name": "kernel (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114072642038",
+        "startedAt": "2026-10-09T23:37:22Z",
+        "completedAt": "2026-10-09T23:40:26Z"
+      },
+      {
+        "name": "gate",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664/job/114073951986",
+        "startedAt": "2026-10-09T23:42:27Z",
+        "completedAt": "2026-10-09T23:42:34Z"
+      }
+    ],
+    "targets": [
+      {
+        "target": "el8",
+        "qt_tests": 21,
+        "python_tests": 29,
+        "display": "xvfb",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/lib/polkit-1/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 0.115",
+          "pkaction_exit": 0,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Rocky Linux 8.9 (Green Obsidian)",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "4.18.0-553.el8_10.x86_64",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "4df48703b86574bb20576b14f9c209e6149aabe6ad06ccb709131fee48b46fed",
+            "module_sha256": "280061455aa3944d9b74ccb627b43f4399447fa73236e96eb7b68782cee52882"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/platform-recovery-0b514bb/el8/octool-2.0.1-1.el8.x86_64.rpm",
+            "bytes": 10317028,
+            "sha256": "28a08b6fa7f3eb7cce8bf60f8b08d32e3955df57a414c4157dc5cefa61222ce6"
+          },
+          {
+            "path": "dist/platform-recovery-0b514bb/el8/octool-hwio-dkms-2.0.1-1.el8.noarch.rpm",
+            "bytes": 19072,
+            "sha256": "07355201252fd158c8da7769fe3e19679bc7e370a1af5b900975bdc861b2be02"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/gui-tests.txt",
+            "bytes": 2709,
+            "sha256": "e55bccb0f060f2f59c92adab6f42dc1262ae6d8684af787a48c9a0d72205bd51"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/helper-smoke.json",
+            "bytes": 1027,
+            "sha256": "d8568d3fc97be26b62d1810199054ffbc9cc3c486c8116b8684ba9045d600bf5"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/kernel-el8/guest-boot/results.json",
+            "bytes": 504,
+            "sha256": "80bff81cb7427bb9118879ee73b5223757d0ffbbc77a6630d1eb4fd540c149d0"
+          }
+        ],
+        "kernel_selection": {
+          "selected": "4.18.0-553.el8_10.x86_64",
+          "initial_headers": [
+            "4.18.0-553.172.1.el8_10.x86_64"
+          ],
+          "headers_without_image": [],
+          "selection": "newest common kernel-devel/kernel-core",
+          "scope": "disposable CI container only"
+        },
+        "container_account_fixture": {
+          "scope": "disposable EL8 container only; local accounts",
+          "pid1": "docker-init",
+          "removed_provider": "systemd",
+          "changed_databases": [
+            "passwd",
+            "group"
+          ],
+          "before": "#\n# /etc/nsswitch.conf\n#\n# Name Service Switch config file. This file should be\n# sorted with the most-used services at the beginning.\n#\n# Valid databases are: aliases, ethers, group, gshadow, hosts,\n# initgroups, netgroup, networks, passwd, protocols, publickey,\n# rpc, services, and shadow.\n#\n# Valid service provider entries include (in alphabetical order):\n#\n#\tcompat\t\t\tUse /etc files plus *_compat pseudo-db\n#\tdb\t\t\tUse the pre-processed /var/db files\n#\tdns\t\t\tUse DNS (Domain Name Service)\n#\tfiles\t\t\tUse the local files in /etc\n#\thesiod\t\t\tUse Hesiod (DNS) for user lookups\n#\tnis\t\t\tUse NIS (NIS version 2), also called YP\n#\tnisplus\t\t\tUse NIS+ (NIS version 3)\n#\n# See `info libc 'NSS Basics'` for more information.\n#\n# Commonly used alternative service providers (may need installation):\n#\n#\tldap\t\t\tUse LDAP directory server\n#\tmyhostname\t\tUse systemd host names\n#\tmymachines\t\tUse systemd machine names\n#\tmdns*, mdns*_minimal\tUse Avahi mDNS/DNS-SD\n#\tresolve\t\t\tUse systemd resolved resolver\n#\tsss\t\t\tUse System Security Services Daemon (sssd)\n#\tsystemd\t\t\tUse systemd for dynamic user option\n#\twinbind\t\t\tUse Samba winbind support\n#\twins\t\t\tUse Samba wins support\n#\twrapper\t\t\tUse wrapper module for testing\n#\n# Notes:\n#\n# 'sssd' performs its own 'files'-based caching, so it should generally\n# come before 'files'.\n#\n# WARNING: Running nscd with a secondary caching service like sssd may\n# \t   lead to unexpected behaviour, especially with how long\n# \t   entries are cached.\n#\n# Installation instructions:\n#\n# To use 'db', install the appropriate package(s) (provide 'makedb' and\n# libnss_db.so.*), and place the 'db' in front of 'files' for entries\n# you want to be looked up first in the databases, like this:\n#\n# passwd:    db files\n# shadow:    db files\n# group:     db files\n\n# In order of likelihood of use to accelerate lookup.\npasswd:      sss files systemd\nshadow:     files sss\ngroup:       sss files systemd\nhosts:      files dns myhostname\nservices:   files sss\nnetgroup:   sss\nautomount:  files sss\n\naliases:    files\nethers:     files\ngshadow:    files\n# Allow initgroups to default to the setting for group.\n# initgroups: files\nnetworks:   files dns\nprotocols:  files\npublickey:  files\nrpc:        files\n",
+          "after": "#\n# /etc/nsswitch.conf\n#\n# Name Service Switch config file. This file should be\n# sorted with the most-used services at the beginning.\n#\n# Valid databases are: aliases, ethers, group, gshadow, hosts,\n# initgroups, netgroup, networks, passwd, protocols, publickey,\n# rpc, services, and shadow.\n#\n# Valid service provider entries include (in alphabetical order):\n#\n#\tcompat\t\t\tUse /etc files plus *_compat pseudo-db\n#\tdb\t\t\tUse the pre-processed /var/db files\n#\tdns\t\t\tUse DNS (Domain Name Service)\n#\tfiles\t\t\tUse the local files in /etc\n#\thesiod\t\t\tUse Hesiod (DNS) for user lookups\n#\tnis\t\t\tUse NIS (NIS version 2), also called YP\n#\tnisplus\t\t\tUse NIS+ (NIS version 3)\n#\n# See `info libc 'NSS Basics'` for more information.\n#\n# Commonly used alternative service providers (may need installation):\n#\n#\tldap\t\t\tUse LDAP directory server\n#\tmyhostname\t\tUse systemd host names\n#\tmymachines\t\tUse systemd machine names\n#\tmdns*, mdns*_minimal\tUse Avahi mDNS/DNS-SD\n#\tresolve\t\t\tUse systemd resolved resolver\n#\tsss\t\t\tUse System Security Services Daemon (sssd)\n#\tsystemd\t\t\tUse systemd for dynamic user option\n#\twinbind\t\t\tUse Samba winbind support\n#\twins\t\t\tUse Samba wins support\n#\twrapper\t\t\tUse wrapper module for testing\n#\n# Notes:\n#\n# 'sssd' performs its own 'files'-based caching, so it should generally\n# come before 'files'.\n#\n# WARNING: Running nscd with a secondary caching service like sssd may\n# \t   lead to unexpected behaviour, especially with how long\n# \t   entries are cached.\n#\n# Installation instructions:\n#\n# To use 'db', install the appropriate package(s) (provide 'makedb' and\n# libnss_db.so.*), and place the 'db' in front of 'files' for entries\n# you want to be looked up first in the databases, like this:\n#\n# passwd:    db files\n# shadow:    db files\n# group:     db files\n\n# In order of likelihood of use to accelerate lookup.\npasswd: sss files\nshadow:     files sss\ngroup: sss files\nhosts:      files dns myhostname\nservices:   files sss\nnetgroup:   sss\nautomount:  files sss\n\naliases:    files\nethers:     files\ngshadow:    files\n# Allow initgroups to default to the setting for group.\n# initgroups: files\nnetworks:   files dns\nprotocols:  files\npublickey:  files\nrpc:        files\n"
+        }
+      },
+      {
+        "target": "el9",
+        "qt_tests": 21,
+        "python_tests": 29,
+        "display": "xvfb",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/lib/polkit-1/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 0.117",
+          "pkaction_exit": 0,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Rocky Linux 9.3 (Blue Onyx)",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "5.14.0-687.56.1.el9_8.x86_64",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "ffd08603dbd630a7d5f4501f8f5dc6b6488a5165b362281120ab21a9a18e4fdf",
+            "module_sha256": "2eb72f664a74d0477e9a1649033f8e1c3d0f2fb7731ec36add48cae6f408cadc"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/platform-recovery-0b514bb/el9/octool-2.0.1-1.el9.x86_64.rpm",
+            "bytes": 10064148,
+            "sha256": "a1aef45a9aba117d7cadf0cf4115feaa7fe2aa115d14534a5d22f03d56b0afa1"
+          },
+          {
+            "path": "dist/platform-recovery-0b514bb/el9/octool-hwio-dkms-2.0.1-1.el9.noarch.rpm",
+            "bytes": 19059,
+            "sha256": "d4cfd7d531b632800e0d084195603dd9ebc1429c66979f26972782b902983034"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/gui-tests.txt",
+            "bytes": 2709,
+            "sha256": "6494d4656e0374fd240052b4721f701ea110d6acdea0944b119abbf2cbb3d5ce"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/helper-smoke.json",
+            "bytes": 1022,
+            "sha256": "de84a3e583d2af00e3ebd57dfb51664d21c6e615e3daa55bcb19c39858eaf579"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/kernel-el9/guest-boot/results.json",
+            "bytes": 508,
+            "sha256": "1f7451192c95a25a02f2957c3d58500a47b018f528d797881057a0b2213c68d3"
+          }
+        ],
+        "kernel_selection": {
+          "selected": "5.14.0-687.56.1.el9_8.x86_64",
+          "initial_headers": [
+            "5.14.0-687.56.1.el9_8.x86_64"
+          ],
+          "headers_without_image": [],
+          "selection": "newest common kernel-devel/kernel-core",
+          "scope": "disposable CI container only"
+        }
+      },
+      {
+        "target": "el10",
+        "qt_tests": 21,
+        "python_tests": 29,
+        "display": "xwayland",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/lib/polkit-1/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 125",
+          "pkaction_exit": 0,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "GenuineIntel",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Rocky Linux 10.2 (Red Quartz)",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "6.12.0-211.64.1.el10_2.x86_64",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "a399dcb2241af997473ba3992590df526ebedb81e27f8ee053602de895722b22",
+            "module_sha256": "1dcaa565942f926c83e460bbd3d1a3cbb3a375deaa40ab1bd6054c94f5908b0a"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/platform-recovery-0b514bb/el10/octool-2.0.1-1.el10.x86_64.rpm",
+            "bytes": 10065363,
+            "sha256": "d7733a538ff99382fc2c5070d5f4acce83ae095fe67fd8ea106e469aed77b311"
+          },
+          {
+            "path": "dist/platform-recovery-0b514bb/el10/octool-hwio-dkms-2.0.1-1.el10.noarch.rpm",
+            "bytes": 19163,
+            "sha256": "72cc001f8be8989070ed5d2a6169654e708e5274778f6f9d51de34e225667020"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/gui-tests.txt",
+            "bytes": 2710,
+            "sha256": "b5a5f73981148f0abc909051b22d35d6ec47c1c94d5033c2b470c1995f215429"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/helper-smoke.json",
+            "bytes": 1022,
+            "sha256": "266b16ce847b1102f5efb5f8fb70fb1d533a6e32b8f1a1c183095dbb12706259"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/kernel-el10/guest-boot/results.json",
+            "bytes": 509,
+            "sha256": "bc3c64eb10a9127fea532717703bd37afb9189b2679fb98cdd448250840d75e1"
+          }
+        ],
+        "kernel_selection": {
+          "selected": "6.12.0-211.64.1.el10_2.x86_64",
+          "initial_headers": [
+            "6.12.0-211.64.1.el10_2.x86_64"
+          ],
+          "headers_without_image": [],
+          "selection": "newest common kernel-devel/kernel-core",
+          "scope": "disposable CI container only"
+        }
+      },
+      {
+        "target": "ubuntu20.04",
+        "qt_tests": 21,
+        "python_tests": 29,
+        "display": "xvfb",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/lib/policykit-1/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 0.105",
+          "pkaction_exit": 1,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Ubuntu 20.04.6 LTS",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "5.4.0-216-generic",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "c5bb7de4df4416f77e8eb33547a30673d84542c7b0ae789954ce82e8f8b26f09",
+            "module_sha256": "b28ffc18c890f3c39dbfd2894dd00da00bb850f10c15d49528d08a06b95c261b"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/platform-recovery-0b514bb/ubuntu20.04/octool-2.0.1-1.amd64.deb",
+            "bytes": 13591562,
+            "sha256": "494a11e287d0b5e605e7e99587ac00ed44152a2aeabf3872615629a9f98b77cb"
+          },
+          {
+            "path": "dist/platform-recovery-0b514bb/ubuntu20.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+            "bytes": 10670,
+            "sha256": "fb6ffa6a2d4ada5f4c2b637f1e212ce77e67eb006aee378f65ec14940e6d7e38"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/gui-tests.txt",
+            "bytes": 2712,
+            "sha256": "fb83206a9dcbd5889145f3f7952663931cd3d443619fdad51d5f91d63a0ee237"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/helper-smoke.json",
+            "bytes": 1016,
+            "sha256": "d88f9507bfbdb8beb66620e25f3d99c0f5be9cbd868add002bb470764f2cc941"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/kernel-ubuntu20.04/guest-boot/results.json",
+            "bytes": 497,
+            "sha256": "5069d6d94c8c6834bee1a40fd6d8ae4a3cc1fa82034d59045e002d8bffe87a08"
+          }
+        ]
+      },
+      {
+        "target": "ubuntu22.04",
+        "qt_tests": 21,
+        "python_tests": 29,
+        "display": "xvfb",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/libexec/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 0.105",
+          "pkaction_exit": 1,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Ubuntu 22.04.5 LTS",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "5.15.0-198-generic",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "e674dce98d3b3f3bca3ffaca1d2a22ed50c36fa2ff530a74c0908867363cd001",
+            "module_sha256": "11ba48722faca8e5e051d40b1d6459daa920fe58628d72b77f77401bc59953bc"
+          },
+          {
+            "kernel": "6.8.0-138-generic",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "81ea8d2ef9c2d6a46e95c961c8c7c282941c80d4fd4106a3fcf9c87911243d3d",
+            "module_sha256": "ee8cd2475fd1e7c24dccb22130257053a444adc9db808684bad44a00297494bb"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/platform-recovery-0b514bb/ubuntu22.04/octool-2.0.1-1.amd64.deb",
+            "bytes": 13591558,
+            "sha256": "c4024b98c082b61e7c6f774676fc3ee4165a188b518bd1f07aae530e3f4cbde7"
+          },
+          {
+            "path": "dist/platform-recovery-0b514bb/ubuntu22.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+            "bytes": 10668,
+            "sha256": "2dd27e3065457033decede3de2cf05e9f73e73570f11cecc5b34bb864ae3b027"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/gui-tests.txt",
+            "bytes": 2712,
+            "sha256": "ba2f52a1062726f438c3eb8fbe0b13a122d29713a856123d169cd065e65dc6d6"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/helper-smoke.json",
+            "bytes": 1008,
+            "sha256": "7ecff0d9f76a4d7ab349e494ab45cbd3fa43294587cea877f6b6d35943c9fa9b"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/kernel-ubuntu22.04/guest-boot/results.json",
+            "bytes": 992,
+            "sha256": "8c38c0bcb70f2f13662a3edf841ff5eef5847b35b7376d4b3ed9d8e1e3a3b2d8"
+          }
+        ]
+      },
+      {
+        "target": "ubuntu24.04",
+        "qt_tests": 21,
+        "python_tests": 29,
+        "display": "xvfb",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/lib/polkit-1/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 124",
+          "pkaction_exit": 0,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Ubuntu 24.04.5 LTS",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "6.8.0-146-generic",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "bae162f72d687f8f87909f1dfedea1dfe16adefe40da51f649d9a9b6d498342b",
+            "module_sha256": "9214c5560954f3d1cadee11b8d77f923048b9b41e336e986531a0c36c0e3a97d"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/platform-recovery-0b514bb/ubuntu24.04/octool-2.0.1-1.amd64.deb",
+            "bytes": 13591576,
+            "sha256": "41fdae3641640a79914d4b16fe49679b5567b124f57c9e6372950a6606d367db"
+          },
+          {
+            "path": "dist/platform-recovery-0b514bb/ubuntu24.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+            "bytes": 10670,
+            "sha256": "e96ae9dbe0ee8cae7d96fe45babe20c0a226404d442d0d8efd2c7121b50e9fe0"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/gui-tests.txt",
+            "bytes": 2712,
+            "sha256": "765a41e7b84d56f718bdb3805a3c880fcba3b437a8ce29defed3f64ec8fc892c"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/helper-smoke.json",
+            "bytes": 1011,
+            "sha256": "586469d015a8b15ef62c10e410185ddfaa47c5bca3723172556e8c7371cc76fa"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/kernel-ubuntu24.04/guest-boot/results.json",
+            "bytes": 497,
+            "sha256": "a2f81c8e62f2150734dcc205d0d69f2e41a39990cd40721ffc3dfbe6237192c3"
+          }
+        ]
+      },
+      {
+        "target": "ubuntu26.04",
+        "qt_tests": 21,
+        "python_tests": 29,
+        "display": "xwayland",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/lib/polkit-1/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 127",
+          "pkaction_exit": 0,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Ubuntu 26.04.1 LTS",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "7.0.0-38-generic",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "9f55ef7253055a9cf68f8a04323c93dead2fca617386d842fbde9ca7b178b27e",
+            "module_sha256": "60e4a9e6f9c9362dabc05e1df8e89e5c69e5ecbb21d7e490e762f4df9636b71a"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/platform-recovery-0b514bb/ubuntu26.04/octool-2.0.1-1.amd64.deb",
+            "bytes": 13591548,
+            "sha256": "73a2fbb177ec56c77ee41b0180f26f78978e95557fd0ab78829e8bd026c8a8c3"
+          },
+          {
+            "path": "dist/platform-recovery-0b514bb/ubuntu26.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+            "bytes": 10670,
+            "sha256": "330ee2908acd7e951fe0781778edcd8a353b65824e7bb3d9720d25f9196d93b0"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/gui-tests.txt",
+            "bytes": 2712,
+            "sha256": "798ba3b9f02341e247a120c18acf2666bdc5cd3a7914d0255298f55e282bca4e"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/helper-smoke.json",
+            "bytes": 1011,
+            "sha256": "5aee0c74e4df6bcafe309696844e2bf0396f96d5caf5cb649be7d647fb012936"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/kernel-ubuntu26.04/guest-boot/results.json",
+            "bytes": 496,
+            "sha256": "9d7f93c2f9429f1b81fbc993a68c192f2051c9a61b29e18de831f3ec0499699f"
+          }
+        ]
+      },
+      {
+        "target": "debian11",
+        "qt_tests": 21,
+        "python_tests": 29,
+        "display": "xvfb",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/libexec/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 0.105",
+          "pkaction_exit": 1,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Debian GNU/Linux 11 (bullseye)",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "5.10.0-46-amd64",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "8568fbc5dcc1a357e02c5ea67c1462174425aef5e8c9c74970253999c9613eb6",
+            "module_sha256": "afb0de05ae56d3823f32259a1d46ee1d1dc9feb99266a37e5b6cd20cb57a3333"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/platform-recovery-0b514bb/debian11/octool-2.0.1-1.amd64.deb",
+            "bytes": 13591558,
+            "sha256": "934298a66976284fa9fda2742462afbbf74261244b8f1904fc5f9c69d9f7440a"
+          },
+          {
+            "path": "dist/platform-recovery-0b514bb/debian11/octool-hwio-dkms-2.0.1-1.amd64.deb",
+            "bytes": 10668,
+            "sha256": "af485365fea72a9f4483edd37155b63e86eb7f91c91ce36922cb3be45e2e836b"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/gui-tests.txt",
+            "bytes": 2709,
+            "sha256": "e9c8e88a2e45b44fe1d4a0eb27127b565e5cf6d0aa5f772ed60d46188a1e1447"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/helper-smoke.json",
+            "bytes": 1020,
+            "sha256": "8e2a4a57b0a478ee7cdac3c24c71ea1db8f3d396b99dc2233fa410c8d439b1ba"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/kernel-debian11/guest-boot/results.json",
+            "bytes": 495,
+            "sha256": "4b9794ffff202191af850d0abf23b259a3ef0faa983a570ad0cb909c45824239"
+          }
+        ]
+      },
+      {
+        "target": "debian12",
+        "qt_tests": 21,
+        "python_tests": 29,
+        "display": "xvfb",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/lib/polkit-1/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 122",
+          "pkaction_exit": 0,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Debian GNU/Linux 12 (bookworm)",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "6.1.0-53-amd64",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "d66b8bc4b8330f4e98257602449feeeed696b860bf147a40477e7f4cfc48e704",
+            "module_sha256": "7fc256dc67c263a8f82a65c0550ddcc9b03852f481a65b110eddc32496696258"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/platform-recovery-0b514bb/debian12/octool-2.0.1-1.amd64.deb",
+            "bytes": 13591560,
+            "sha256": "575042e47aa6845db664c8a3b3e87997e6451017b6d82f68f006e29eec9a8e05"
+          },
+          {
+            "path": "dist/platform-recovery-0b514bb/debian12/octool-hwio-dkms-2.0.1-1.amd64.deb",
+            "bytes": 10670,
+            "sha256": "fb6ffa6a2d4ada5f4c2b637f1e212ce77e67eb006aee378f65ec14940e6d7e38"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/gui-tests.txt",
+            "bytes": 2709,
+            "sha256": "68ecc0dd305f9830bb747d6fe63781b62da07cdc70b5a3928b7d42aebabf7423"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/helper-smoke.json",
+            "bytes": 1023,
+            "sha256": "1ce62a6c7336dc2787800c1669a5b3e3858aeeaaee0f70ca5ecb52df8b6f12ff"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/kernel-debian12/guest-boot/results.json",
+            "bytes": 494,
+            "sha256": "389f49888874587416a70e96dcf5cb878fb74bb1633c227c9c98d378d9dc0cd8"
+          }
+        ]
+      },
+      {
+        "target": "debian13",
+        "qt_tests": 21,
+        "python_tests": 29,
+        "display": "xvfb",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/lib/polkit-1/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 126",
+          "pkaction_exit": 0,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Debian GNU/Linux 13 (trixie)",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "6.12.111+deb13-amd64",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "6d8a7f745280cc06a6d2877c932f4dfa9079b694eb4227b61b27232642340794",
+            "module_sha256": "5a22c7337d1cb3e52c5c8b0f96ef3665550f26f8e223036fc98ac688d3b84d23"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/platform-recovery-0b514bb/debian13/octool-2.0.1-1.amd64.deb",
+            "bytes": 13591554,
+            "sha256": "8467dae335b7680e1fb4b609dd40103df7b8859f8426b2cb4581260af4d13e78"
+          },
+          {
+            "path": "dist/platform-recovery-0b514bb/debian13/octool-hwio-dkms-2.0.1-1.amd64.deb",
+            "bytes": 10670,
+            "sha256": "0ef8d79c8aced381958198f4510323c0dd6d4e6524f24d6dfe0e9e009ba8a0ca"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/gui-tests.txt",
+            "bytes": 2709,
+            "sha256": "465a8e6b934df08dadcee71cd2ba6debfa4ba2b342aaa23c6e88f6c763263a9d"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/helper-smoke.json",
+            "bytes": 1021,
+            "sha256": "0713705bb2bcd37dcef2e248783a575d6c28684c1a485611a90ff0e93c09bdde"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/platform-recovery-0b514bb/linux-artifacts/kernel-debian13/guest-boot/results.json",
+            "bytes": 500,
+            "sha256": "5412f0c812831eabd1dd733139b383f4b836141363fadcc1687df2797c8e567f"
+          }
+        ]
+      }
+    ],
+    "kernel_boots": 11,
+    "screenshots": [
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/smoke/native-0.png",
+        "bytes": 60231,
+        "sha256": "45378bec32141ae103c6daadecd622fd9f5cf0c789e56b6c18f0ed2c9a7b5b34"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/smoke/native-1.png",
+        "bytes": 32476,
+        "sha256": "9c96be8c28283248fd4d48f1dde9c8d93a6f7cb2abb85e3485e9251b7de99d18"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/smoke/native-2.png",
+        "bytes": 30382,
+        "sha256": "d3ad1f4e313f8523453e2e5abda74d80760710a479a75772603f840d054ca88e"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/smoke/native-3.png",
+        "bytes": 33981,
+        "sha256": "49fbe2c5ae5db07e0b17db3219f1027e22ea1dd93203baf5d5123432b42e80df"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/smoke/native-4.png",
+        "bytes": 71488,
+        "sha256": "c4c8eef3023a8be580eb74c4b93cce197610ddc2c523f543f4b2bec62d4d9ae0"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/smoke/native-5.png",
+        "bytes": 45824,
+        "sha256": "05325b699f76a9accf6e17106d03519f0da4808ea6465be58a2b707f0bf4aaa4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/smoke/native-6.png",
+        "bytes": 64706,
+        "sha256": "1e002a4b66376c746867ff3b9141399275c977a5ef8c861e6a8de01237e1bc8a"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/smoke/native-7.png",
+        "bytes": 42831,
+        "sha256": "a2be3fbf2ce16f0fa03122e77cf2a1631cdec45b1f535310d95977cb7a418904"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/smoke/release-0.png",
+        "bytes": 60231,
+        "sha256": "45378bec32141ae103c6daadecd622fd9f5cf0c789e56b6c18f0ed2c9a7b5b34"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/smoke/release-1.png",
+        "bytes": 32476,
+        "sha256": "9c96be8c28283248fd4d48f1dde9c8d93a6f7cb2abb85e3485e9251b7de99d18"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/smoke/release-2.png",
+        "bytes": 30382,
+        "sha256": "d3ad1f4e313f8523453e2e5abda74d80760710a479a75772603f840d054ca88e"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/smoke/release-3.png",
+        "bytes": 33981,
+        "sha256": "49fbe2c5ae5db07e0b17db3219f1027e22ea1dd93203baf5d5123432b42e80df"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/smoke/release-4.png",
+        "bytes": 71488,
+        "sha256": "c4c8eef3023a8be580eb74c4b93cce197610ddc2c523f543f4b2bec62d4d9ae0"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/smoke/release-5.png",
+        "bytes": 45824,
+        "sha256": "05325b699f76a9accf6e17106d03519f0da4808ea6465be58a2b707f0bf4aaa4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/smoke/release-6.png",
+        "bytes": 64706,
+        "sha256": "1e002a4b66376c746867ff3b9141399275c977a5ef8c861e6a8de01237e1bc8a"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el8/smoke/release-7.png",
+        "bytes": 42831,
+        "sha256": "a2be3fbf2ce16f0fa03122e77cf2a1631cdec45b1f535310d95977cb7a418904"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/smoke/native-0.png",
+        "bytes": 59773,
+        "sha256": "13cb3430d6e298609217e379b471f4e9c5caa8c0ee4e381fca55e3f9dad3836c"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/smoke/native-1.png",
+        "bytes": 32476,
+        "sha256": "9c96be8c28283248fd4d48f1dde9c8d93a6f7cb2abb85e3485e9251b7de99d18"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/smoke/native-2.png",
+        "bytes": 30382,
+        "sha256": "d3ad1f4e313f8523453e2e5abda74d80760710a479a75772603f840d054ca88e"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/smoke/native-3.png",
+        "bytes": 33981,
+        "sha256": "49fbe2c5ae5db07e0b17db3219f1027e22ea1dd93203baf5d5123432b42e80df"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/smoke/native-4.png",
+        "bytes": 71488,
+        "sha256": "c4c8eef3023a8be580eb74c4b93cce197610ddc2c523f543f4b2bec62d4d9ae0"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/smoke/native-5.png",
+        "bytes": 45824,
+        "sha256": "05325b699f76a9accf6e17106d03519f0da4808ea6465be58a2b707f0bf4aaa4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/smoke/native-6.png",
+        "bytes": 64706,
+        "sha256": "1e002a4b66376c746867ff3b9141399275c977a5ef8c861e6a8de01237e1bc8a"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/smoke/native-7.png",
+        "bytes": 42831,
+        "sha256": "a2be3fbf2ce16f0fa03122e77cf2a1631cdec45b1f535310d95977cb7a418904"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/smoke/release-0.png",
+        "bytes": 59773,
+        "sha256": "13cb3430d6e298609217e379b471f4e9c5caa8c0ee4e381fca55e3f9dad3836c"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/smoke/release-1.png",
+        "bytes": 32476,
+        "sha256": "9c96be8c28283248fd4d48f1dde9c8d93a6f7cb2abb85e3485e9251b7de99d18"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/smoke/release-2.png",
+        "bytes": 30382,
+        "sha256": "d3ad1f4e313f8523453e2e5abda74d80760710a479a75772603f840d054ca88e"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/smoke/release-3.png",
+        "bytes": 33981,
+        "sha256": "49fbe2c5ae5db07e0b17db3219f1027e22ea1dd93203baf5d5123432b42e80df"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/smoke/release-4.png",
+        "bytes": 71488,
+        "sha256": "c4c8eef3023a8be580eb74c4b93cce197610ddc2c523f543f4b2bec62d4d9ae0"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/smoke/release-5.png",
+        "bytes": 45824,
+        "sha256": "05325b699f76a9accf6e17106d03519f0da4808ea6465be58a2b707f0bf4aaa4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/smoke/release-6.png",
+        "bytes": 64706,
+        "sha256": "1e002a4b66376c746867ff3b9141399275c977a5ef8c861e6a8de01237e1bc8a"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el9/smoke/release-7.png",
+        "bytes": 42831,
+        "sha256": "a2be3fbf2ce16f0fa03122e77cf2a1631cdec45b1f535310d95977cb7a418904"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/smoke/native-0.png",
+        "bytes": 56120,
+        "sha256": "fbc34e8501bc13a0f2ff00b0e3c7e7906891cbbe17662ab9d90f91671c04cc97"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/smoke/native-1.png",
+        "bytes": 29844,
+        "sha256": "ab4a79e52970a8c6a47f80660cccf128e3f7d8e86cfb3906259f0dcfcd31a86e"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/smoke/native-2.png",
+        "bytes": 27930,
+        "sha256": "071da7d99a8dd620112cec017525866d15ee514f06458f180d06f5c3bd642562"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/smoke/native-3.png",
+        "bytes": 31209,
+        "sha256": "548ac110adc21d3827d35d49ec78474a6172e6131b63b1e46a10b37d613c0b74"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/smoke/native-4.png",
+        "bytes": 65943,
+        "sha256": "42eecca43777202384e739499dfe957d54b7612299d58a3dbce424b4abb7d196"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/smoke/native-5.png",
+        "bytes": 40812,
+        "sha256": "c6060ce4a9f10f45985381cbdb1f8a62c6152655c049bf6cc2a512cc097706b1"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/smoke/native-6.png",
+        "bytes": 61394,
+        "sha256": "3edb2653b2f28655eef509223999f3804e31cc1b71972aefdc4afd1d0b417361"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/smoke/native-7.png",
+        "bytes": 41392,
+        "sha256": "85a48ad2baf8b15e54d6270418a27270354ddda3a991bf914af44eab07646bfc"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/smoke/release-0.png",
+        "bytes": 56120,
+        "sha256": "fbc34e8501bc13a0f2ff00b0e3c7e7906891cbbe17662ab9d90f91671c04cc97"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/smoke/release-1.png",
+        "bytes": 29844,
+        "sha256": "ab4a79e52970a8c6a47f80660cccf128e3f7d8e86cfb3906259f0dcfcd31a86e"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/smoke/release-2.png",
+        "bytes": 27930,
+        "sha256": "071da7d99a8dd620112cec017525866d15ee514f06458f180d06f5c3bd642562"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/smoke/release-3.png",
+        "bytes": 31209,
+        "sha256": "548ac110adc21d3827d35d49ec78474a6172e6131b63b1e46a10b37d613c0b74"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/smoke/release-4.png",
+        "bytes": 65943,
+        "sha256": "42eecca43777202384e739499dfe957d54b7612299d58a3dbce424b4abb7d196"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/smoke/release-5.png",
+        "bytes": 40812,
+        "sha256": "c6060ce4a9f10f45985381cbdb1f8a62c6152655c049bf6cc2a512cc097706b1"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/smoke/release-6.png",
+        "bytes": 61394,
+        "sha256": "3edb2653b2f28655eef509223999f3804e31cc1b71972aefdc4afd1d0b417361"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/smoke/release-7.png",
+        "bytes": 41392,
+        "sha256": "85a48ad2baf8b15e54d6270418a27270354ddda3a991bf914af44eab07646bfc"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/smoke/native-0.png",
+        "bytes": 59414,
+        "sha256": "089734a784b23a4b95ccb667db571d99bcca1cff5760b3e817f264a669d7e1fa"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/smoke/native-1.png",
+        "bytes": 32476,
+        "sha256": "9c96be8c28283248fd4d48f1dde9c8d93a6f7cb2abb85e3485e9251b7de99d18"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/smoke/native-2.png",
+        "bytes": 30382,
+        "sha256": "d3ad1f4e313f8523453e2e5abda74d80760710a479a75772603f840d054ca88e"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/smoke/native-3.png",
+        "bytes": 33981,
+        "sha256": "49fbe2c5ae5db07e0b17db3219f1027e22ea1dd93203baf5d5123432b42e80df"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/smoke/native-4.png",
+        "bytes": 71488,
+        "sha256": "c4c8eef3023a8be580eb74c4b93cce197610ddc2c523f543f4b2bec62d4d9ae0"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/smoke/native-5.png",
+        "bytes": 45824,
+        "sha256": "05325b699f76a9accf6e17106d03519f0da4808ea6465be58a2b707f0bf4aaa4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/smoke/native-6.png",
+        "bytes": 64706,
+        "sha256": "1e002a4b66376c746867ff3b9141399275c977a5ef8c861e6a8de01237e1bc8a"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/smoke/native-7.png",
+        "bytes": 42831,
+        "sha256": "a2be3fbf2ce16f0fa03122e77cf2a1631cdec45b1f535310d95977cb7a418904"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/smoke/release-0.png",
+        "bytes": 59414,
+        "sha256": "089734a784b23a4b95ccb667db571d99bcca1cff5760b3e817f264a669d7e1fa"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/smoke/release-1.png",
+        "bytes": 32476,
+        "sha256": "9c96be8c28283248fd4d48f1dde9c8d93a6f7cb2abb85e3485e9251b7de99d18"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/smoke/release-2.png",
+        "bytes": 30382,
+        "sha256": "d3ad1f4e313f8523453e2e5abda74d80760710a479a75772603f840d054ca88e"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/smoke/release-3.png",
+        "bytes": 33981,
+        "sha256": "49fbe2c5ae5db07e0b17db3219f1027e22ea1dd93203baf5d5123432b42e80df"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/smoke/release-4.png",
+        "bytes": 71488,
+        "sha256": "c4c8eef3023a8be580eb74c4b93cce197610ddc2c523f543f4b2bec62d4d9ae0"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/smoke/release-5.png",
+        "bytes": 45824,
+        "sha256": "05325b699f76a9accf6e17106d03519f0da4808ea6465be58a2b707f0bf4aaa4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/smoke/release-6.png",
+        "bytes": 64706,
+        "sha256": "1e002a4b66376c746867ff3b9141399275c977a5ef8c861e6a8de01237e1bc8a"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu20.04/smoke/release-7.png",
+        "bytes": 42831,
+        "sha256": "a2be3fbf2ce16f0fa03122e77cf2a1631cdec45b1f535310d95977cb7a418904"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/smoke/native-0.png",
+        "bytes": 59368,
+        "sha256": "6c4d116bf142fa3b0031302f673159df1188a8ee9115252165610c6530ed1412"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/smoke/native-1.png",
+        "bytes": 32476,
+        "sha256": "9c96be8c28283248fd4d48f1dde9c8d93a6f7cb2abb85e3485e9251b7de99d18"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/smoke/native-2.png",
+        "bytes": 30382,
+        "sha256": "d3ad1f4e313f8523453e2e5abda74d80760710a479a75772603f840d054ca88e"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/smoke/native-3.png",
+        "bytes": 33981,
+        "sha256": "49fbe2c5ae5db07e0b17db3219f1027e22ea1dd93203baf5d5123432b42e80df"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/smoke/native-4.png",
+        "bytes": 71488,
+        "sha256": "c4c8eef3023a8be580eb74c4b93cce197610ddc2c523f543f4b2bec62d4d9ae0"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/smoke/native-5.png",
+        "bytes": 45824,
+        "sha256": "05325b699f76a9accf6e17106d03519f0da4808ea6465be58a2b707f0bf4aaa4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/smoke/native-6.png",
+        "bytes": 64706,
+        "sha256": "1e002a4b66376c746867ff3b9141399275c977a5ef8c861e6a8de01237e1bc8a"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/smoke/native-7.png",
+        "bytes": 42831,
+        "sha256": "a2be3fbf2ce16f0fa03122e77cf2a1631cdec45b1f535310d95977cb7a418904"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/smoke/release-0.png",
+        "bytes": 59368,
+        "sha256": "6c4d116bf142fa3b0031302f673159df1188a8ee9115252165610c6530ed1412"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/smoke/release-1.png",
+        "bytes": 32476,
+        "sha256": "9c96be8c28283248fd4d48f1dde9c8d93a6f7cb2abb85e3485e9251b7de99d18"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/smoke/release-2.png",
+        "bytes": 30382,
+        "sha256": "d3ad1f4e313f8523453e2e5abda74d80760710a479a75772603f840d054ca88e"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/smoke/release-3.png",
+        "bytes": 33981,
+        "sha256": "49fbe2c5ae5db07e0b17db3219f1027e22ea1dd93203baf5d5123432b42e80df"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/smoke/release-4.png",
+        "bytes": 71488,
+        "sha256": "c4c8eef3023a8be580eb74c4b93cce197610ddc2c523f543f4b2bec62d4d9ae0"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/smoke/release-5.png",
+        "bytes": 45824,
+        "sha256": "05325b699f76a9accf6e17106d03519f0da4808ea6465be58a2b707f0bf4aaa4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/smoke/release-6.png",
+        "bytes": 64706,
+        "sha256": "1e002a4b66376c746867ff3b9141399275c977a5ef8c861e6a8de01237e1bc8a"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu22.04/smoke/release-7.png",
+        "bytes": 42831,
+        "sha256": "a2be3fbf2ce16f0fa03122e77cf2a1631cdec45b1f535310d95977cb7a418904"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/smoke/native-0.png",
+        "bytes": 67788,
+        "sha256": "eb4f3cbe6aac8f2ab04c8d0b3975dd79188d0459561c1b6665c3dafc5f7a45ac"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/smoke/native-1.png",
+        "bytes": 35317,
+        "sha256": "4d48305aa6ffdd59747c510a927e8077667ace92595608351e0331ed090a7164"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/smoke/native-2.png",
+        "bytes": 33498,
+        "sha256": "af40c33838071d44b9613fb8a736acf3df933782436e67330c4bbf5beac58081"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/smoke/native-3.png",
+        "bytes": 36701,
+        "sha256": "75ddc4375b0a7bece4cccef482fbb78960a9ce70201a423a40f1b9cdb9ad3a80"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/smoke/native-4.png",
+        "bytes": 80167,
+        "sha256": "027025e46601ab6fd7bb28269d2bb4a987e8913e2ae75097412c908e733a9bf5"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/smoke/native-5.png",
+        "bytes": 50394,
+        "sha256": "8eb6da3aa53d613023dc87faa4948724342667cc5de7e8f63c569c2e0033c6f1"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/smoke/native-6.png",
+        "bytes": 73086,
+        "sha256": "6cad7b2aee0b312c1e6fb50915ffe39f8fdf86fb4b43201982281cc21061b4f4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/smoke/native-7.png",
+        "bytes": 47149,
+        "sha256": "7466ea7010b0d21c61013c577eb4226c257587c31f1a29fbdcd35655b6438a32"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/smoke/release-0.png",
+        "bytes": 67788,
+        "sha256": "eb4f3cbe6aac8f2ab04c8d0b3975dd79188d0459561c1b6665c3dafc5f7a45ac"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/smoke/release-1.png",
+        "bytes": 35317,
+        "sha256": "4d48305aa6ffdd59747c510a927e8077667ace92595608351e0331ed090a7164"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/smoke/release-2.png",
+        "bytes": 33498,
+        "sha256": "af40c33838071d44b9613fb8a736acf3df933782436e67330c4bbf5beac58081"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/smoke/release-3.png",
+        "bytes": 36701,
+        "sha256": "75ddc4375b0a7bece4cccef482fbb78960a9ce70201a423a40f1b9cdb9ad3a80"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/smoke/release-4.png",
+        "bytes": 80167,
+        "sha256": "027025e46601ab6fd7bb28269d2bb4a987e8913e2ae75097412c908e733a9bf5"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/smoke/release-5.png",
+        "bytes": 50394,
+        "sha256": "8eb6da3aa53d613023dc87faa4948724342667cc5de7e8f63c569c2e0033c6f1"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/smoke/release-6.png",
+        "bytes": 73086,
+        "sha256": "6cad7b2aee0b312c1e6fb50915ffe39f8fdf86fb4b43201982281cc21061b4f4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu24.04/smoke/release-7.png",
+        "bytes": 47149,
+        "sha256": "7466ea7010b0d21c61013c577eb4226c257587c31f1a29fbdcd35655b6438a32"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/smoke/native-0.png",
+        "bytes": 64513,
+        "sha256": "e5245a5c18f1b13fe862d04f7034a1ab52d3bcba97b0b44f9b82c45721e4a063"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/smoke/native-1.png",
+        "bytes": 33585,
+        "sha256": "8662da1b8658edfec9207229c2e9abe2b129b30179ed16709c631ce462400f7c"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/smoke/native-2.png",
+        "bytes": 31165,
+        "sha256": "cb2a987401f1a2ca9db48cf9efb1604fc0c7161cdb3ae84bb46c0e021e51fc2d"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/smoke/native-3.png",
+        "bytes": 34933,
+        "sha256": "60059f4d68487845c1f4762ce5de1a8e567671aa7b5af911c42c9974199414ca"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/smoke/native-4.png",
+        "bytes": 76153,
+        "sha256": "8d5faf1cf8d7578f85a1d26246580e757d34ae9ff8248d3c61d4a3e8692433b6"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/smoke/native-5.png",
+        "bytes": 47570,
+        "sha256": "9c6094238ffbcb57cc2a1954eee83cc2c175223c9814a217a1e631aacf1b15ae"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/smoke/native-6.png",
+        "bytes": 71197,
+        "sha256": "8f3d577d2d465fed9542434d1268becb70de065cb146a534323da13073085298"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/smoke/native-7.png",
+        "bytes": 45972,
+        "sha256": "ba0d0f9928507dd5e96fa4f37d146b49521efbd386dbf970fa4a54020bca35d1"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/smoke/release-0.png",
+        "bytes": 64513,
+        "sha256": "e5245a5c18f1b13fe862d04f7034a1ab52d3bcba97b0b44f9b82c45721e4a063"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/smoke/release-1.png",
+        "bytes": 33585,
+        "sha256": "8662da1b8658edfec9207229c2e9abe2b129b30179ed16709c631ce462400f7c"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/smoke/release-2.png",
+        "bytes": 31165,
+        "sha256": "cb2a987401f1a2ca9db48cf9efb1604fc0c7161cdb3ae84bb46c0e021e51fc2d"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/smoke/release-3.png",
+        "bytes": 34933,
+        "sha256": "60059f4d68487845c1f4762ce5de1a8e567671aa7b5af911c42c9974199414ca"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/smoke/release-4.png",
+        "bytes": 76153,
+        "sha256": "8d5faf1cf8d7578f85a1d26246580e757d34ae9ff8248d3c61d4a3e8692433b6"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/smoke/release-5.png",
+        "bytes": 47570,
+        "sha256": "9c6094238ffbcb57cc2a1954eee83cc2c175223c9814a217a1e631aacf1b15ae"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/smoke/release-6.png",
+        "bytes": 71197,
+        "sha256": "8f3d577d2d465fed9542434d1268becb70de065cb146a534323da13073085298"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-ubuntu26.04/smoke/release-7.png",
+        "bytes": 45972,
+        "sha256": "ba0d0f9928507dd5e96fa4f37d146b49521efbd386dbf970fa4a54020bca35d1"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/smoke/native-0.png",
+        "bytes": 59918,
+        "sha256": "2c69b8bd4fb0d81daa6a024a4e4f329747e297ef34d1e2a546e2ed6ca446e0e4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/smoke/native-1.png",
+        "bytes": 32476,
+        "sha256": "9c96be8c28283248fd4d48f1dde9c8d93a6f7cb2abb85e3485e9251b7de99d18"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/smoke/native-2.png",
+        "bytes": 30382,
+        "sha256": "d3ad1f4e313f8523453e2e5abda74d80760710a479a75772603f840d054ca88e"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/smoke/native-3.png",
+        "bytes": 33981,
+        "sha256": "49fbe2c5ae5db07e0b17db3219f1027e22ea1dd93203baf5d5123432b42e80df"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/smoke/native-4.png",
+        "bytes": 71488,
+        "sha256": "c4c8eef3023a8be580eb74c4b93cce197610ddc2c523f543f4b2bec62d4d9ae0"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/smoke/native-5.png",
+        "bytes": 45824,
+        "sha256": "05325b699f76a9accf6e17106d03519f0da4808ea6465be58a2b707f0bf4aaa4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/smoke/native-6.png",
+        "bytes": 64706,
+        "sha256": "1e002a4b66376c746867ff3b9141399275c977a5ef8c861e6a8de01237e1bc8a"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/smoke/native-7.png",
+        "bytes": 42831,
+        "sha256": "a2be3fbf2ce16f0fa03122e77cf2a1631cdec45b1f535310d95977cb7a418904"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/smoke/release-0.png",
+        "bytes": 59918,
+        "sha256": "2c69b8bd4fb0d81daa6a024a4e4f329747e297ef34d1e2a546e2ed6ca446e0e4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/smoke/release-1.png",
+        "bytes": 32476,
+        "sha256": "9c96be8c28283248fd4d48f1dde9c8d93a6f7cb2abb85e3485e9251b7de99d18"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/smoke/release-2.png",
+        "bytes": 30382,
+        "sha256": "d3ad1f4e313f8523453e2e5abda74d80760710a479a75772603f840d054ca88e"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/smoke/release-3.png",
+        "bytes": 33981,
+        "sha256": "49fbe2c5ae5db07e0b17db3219f1027e22ea1dd93203baf5d5123432b42e80df"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/smoke/release-4.png",
+        "bytes": 71488,
+        "sha256": "c4c8eef3023a8be580eb74c4b93cce197610ddc2c523f543f4b2bec62d4d9ae0"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/smoke/release-5.png",
+        "bytes": 45824,
+        "sha256": "05325b699f76a9accf6e17106d03519f0da4808ea6465be58a2b707f0bf4aaa4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/smoke/release-6.png",
+        "bytes": 64706,
+        "sha256": "1e002a4b66376c746867ff3b9141399275c977a5ef8c861e6a8de01237e1bc8a"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian11/smoke/release-7.png",
+        "bytes": 42831,
+        "sha256": "a2be3fbf2ce16f0fa03122e77cf2a1631cdec45b1f535310d95977cb7a418904"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/smoke/native-0.png",
+        "bytes": 60075,
+        "sha256": "d6889ecea058a9f28383e06da0bbbcc9d04e56289e2542c047d55b3b928fccd9"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/smoke/native-1.png",
+        "bytes": 32476,
+        "sha256": "9c96be8c28283248fd4d48f1dde9c8d93a6f7cb2abb85e3485e9251b7de99d18"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/smoke/native-2.png",
+        "bytes": 30382,
+        "sha256": "d3ad1f4e313f8523453e2e5abda74d80760710a479a75772603f840d054ca88e"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/smoke/native-3.png",
+        "bytes": 33981,
+        "sha256": "49fbe2c5ae5db07e0b17db3219f1027e22ea1dd93203baf5d5123432b42e80df"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/smoke/native-4.png",
+        "bytes": 71488,
+        "sha256": "c4c8eef3023a8be580eb74c4b93cce197610ddc2c523f543f4b2bec62d4d9ae0"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/smoke/native-5.png",
+        "bytes": 45824,
+        "sha256": "05325b699f76a9accf6e17106d03519f0da4808ea6465be58a2b707f0bf4aaa4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/smoke/native-6.png",
+        "bytes": 64706,
+        "sha256": "1e002a4b66376c746867ff3b9141399275c977a5ef8c861e6a8de01237e1bc8a"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/smoke/native-7.png",
+        "bytes": 42831,
+        "sha256": "a2be3fbf2ce16f0fa03122e77cf2a1631cdec45b1f535310d95977cb7a418904"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/smoke/release-0.png",
+        "bytes": 60075,
+        "sha256": "d6889ecea058a9f28383e06da0bbbcc9d04e56289e2542c047d55b3b928fccd9"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/smoke/release-1.png",
+        "bytes": 32476,
+        "sha256": "9c96be8c28283248fd4d48f1dde9c8d93a6f7cb2abb85e3485e9251b7de99d18"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/smoke/release-2.png",
+        "bytes": 30382,
+        "sha256": "d3ad1f4e313f8523453e2e5abda74d80760710a479a75772603f840d054ca88e"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/smoke/release-3.png",
+        "bytes": 33981,
+        "sha256": "49fbe2c5ae5db07e0b17db3219f1027e22ea1dd93203baf5d5123432b42e80df"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/smoke/release-4.png",
+        "bytes": 71488,
+        "sha256": "c4c8eef3023a8be580eb74c4b93cce197610ddc2c523f543f4b2bec62d4d9ae0"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/smoke/release-5.png",
+        "bytes": 45824,
+        "sha256": "05325b699f76a9accf6e17106d03519f0da4808ea6465be58a2b707f0bf4aaa4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/smoke/release-6.png",
+        "bytes": 64706,
+        "sha256": "1e002a4b66376c746867ff3b9141399275c977a5ef8c861e6a8de01237e1bc8a"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian12/smoke/release-7.png",
+        "bytes": 42831,
+        "sha256": "a2be3fbf2ce16f0fa03122e77cf2a1631cdec45b1f535310d95977cb7a418904"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/native-0.png",
+        "bytes": 59790,
+        "sha256": "13d4ff3a1501f3c3c1d25f677cc62ca5b060c57cc807435593c4ce4b154de044"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/native-1.png",
+        "bytes": 32476,
+        "sha256": "9c96be8c28283248fd4d48f1dde9c8d93a6f7cb2abb85e3485e9251b7de99d18"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/native-2.png",
+        "bytes": 30382,
+        "sha256": "d3ad1f4e313f8523453e2e5abda74d80760710a479a75772603f840d054ca88e"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/native-3.png",
+        "bytes": 33981,
+        "sha256": "49fbe2c5ae5db07e0b17db3219f1027e22ea1dd93203baf5d5123432b42e80df"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/native-4.png",
+        "bytes": 71488,
+        "sha256": "c4c8eef3023a8be580eb74c4b93cce197610ddc2c523f543f4b2bec62d4d9ae0"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/native-5.png",
+        "bytes": 45824,
+        "sha256": "05325b699f76a9accf6e17106d03519f0da4808ea6465be58a2b707f0bf4aaa4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/native-6.png",
+        "bytes": 64706,
+        "sha256": "1e002a4b66376c746867ff3b9141399275c977a5ef8c861e6a8de01237e1bc8a"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/native-7.png",
+        "bytes": 42831,
+        "sha256": "a2be3fbf2ce16f0fa03122e77cf2a1631cdec45b1f535310d95977cb7a418904"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/release-0.png",
+        "bytes": 59790,
+        "sha256": "13d4ff3a1501f3c3c1d25f677cc62ca5b060c57cc807435593c4ce4b154de044"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/release-1.png",
+        "bytes": 32476,
+        "sha256": "9c96be8c28283248fd4d48f1dde9c8d93a6f7cb2abb85e3485e9251b7de99d18"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/release-2.png",
+        "bytes": 30382,
+        "sha256": "d3ad1f4e313f8523453e2e5abda74d80760710a479a75772603f840d054ca88e"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/release-3.png",
+        "bytes": 33981,
+        "sha256": "49fbe2c5ae5db07e0b17db3219f1027e22ea1dd93203baf5d5123432b42e80df"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/release-4.png",
+        "bytes": 71488,
+        "sha256": "c4c8eef3023a8be580eb74c4b93cce197610ddc2c523f543f4b2bec62d4d9ae0"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/release-5.png",
+        "bytes": 45824,
+        "sha256": "05325b699f76a9accf6e17106d03519f0da4808ea6465be58a2b707f0bf4aaa4"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/release-6.png",
+        "bytes": 64706,
+        "sha256": "1e002a4b66376c746867ff3b9141399275c977a5ef8c861e6a8de01237e1bc8a"
+      },
+      {
+        "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/release-7.png",
+        "bytes": 42831,
+        "sha256": "a2be3fbf2ce16f0fa03122e77cf2a1631cdec45b1f535310d95977cb7a418904"
+      }
+    ],
+    "baseline_qt_tests": 21,
+    "python_tests_per_kernel_target": 29,
+    "source_archive": {
+      "path": "dist/platform-recovery-0b514bb/octool-2.0.1-src.tar.gz",
+      "bytes": 3295544,
+      "sha256": "0624a6704a5c9f8ff4ed27128239b1e83c4804421bd8598a8425fb4da44776e2"
+    },
+    "visual_review": {
+      "reviewer": "Codex",
+      "screenshots": [
+        {
+          "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/release-4.png",
+          "bytes": 71488,
+          "sha256": "c4c8eef3023a8be580eb74c4b93cce197610ddc2c523f543f4b2bec62d4d9ae0"
+        },
+        {
+          "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/release-5.png",
+          "bytes": 45824,
+          "sha256": "05325b699f76a9accf6e17106d03519f0da4808ea6465be58a2b707f0bf4aaa4"
+        },
+        {
+          "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-debian13/smoke/release-6.png",
+          "bytes": 64706,
+          "sha256": "1e002a4b66376c746867ff3b9141399275c977a5ef8c861e6a8de01237e1bc8a"
+        },
+        {
+          "path": "build/platform-recovery-0b514bb/linux-artifacts/desktop-el10/smoke/release-7.png",
+          "bytes": 41392,
+          "sha256": "85a48ad2baf8b15e54d6270418a27270354ddda3a991bf914af44eab07646bfc"
+        }
+      ],
+      "result": "Reviewed final-commit PStates, Intel and AMD panels on Debian 13 and Memory/Motherboard on Rocky 10. Labels, frequency preparation controls and status text are visible without clipping. These are initial empty snapshots, not physical sensor readings."
+    },
+    "environment_note": "Desktop containers report runner-host kernels; the target kernel versions are verified independently in QEMU boot records.",
+    "workflow_log": {
+      "path": "build/platform-recovery-0b514bb/linux-run.log",
+      "bytes": 9745364,
+      "sha256": "dbea33d5d58ff2591c32ec61dca9e68feda3d42799b86c9429840fd084cfa2f4"
+    },
+    "artifact_metadata": {
+      "path": "build/platform-recovery-0b514bb/linux-artifacts.json",
+      "bytes": 21726,
+      "sha256": "e6384b88915f27989d8c465055d2857fd192821f751f02b56d954e89fac19824"
+    }
+  },
+  "source_sha256_lf": {
+    "gui/access.cpp": "fbc2ace5d17443b06fee85330ffecae5d16665cf591fb20e6ff1b83d459e939c",
+    "gui/access.h": "7e5e6014ac59fb21a1321ca48e559cac0641837ec2770588edba738559a90a6b",
+    "gui/common.pri": "b7e0b23f304136c6579d1868f93217df016e443b62b583ff9ca46f40fe804a40",
+    "gui/core/CMakeLists.txt": "53eabd07f71ea02f6a3ca91d06ee8402d1e05af290f870bb9017c7385840e896",
+    "gui/core/amd_pstates.cpp": "a2c3e49732e7b0b671de9c14747ee48015f5ab63e1b630d4da6f335531743930",
+    "gui/core/amd_pstates.h": "e23db56f1933b144c56063d64c201c8b8304fe090e471e061f7c3b30b8292258",
+    "gui/core/amd_smu.cpp": "4284c25ad812b40a5b460f9cc538515aa49f6308b32aee673796bd960556f7a1",
+    "gui/core/amd_smu.h": "15136b2dcfe73aa3fee86485c263d3d588a66faad86093be8c14407f19495a7a",
+    "gui/core/hardware.cpp": "e61703b1493d6884d811c84353da9fd9bbdc19f05922572a090f4ec85b5e65fa",
+    "gui/core/hardware.h": "88d0af2410bfeab8a9e0ca4516b70d1a5b28653fc9ffaeec18bb19f9dd3f9186",
+    "gui/core/intel_controls.cpp": "436395048b8e7a15b7ebbc2a398ec68bedb4513226cb5673f025305125752923",
+    "gui/core/intel_controls.h": "a4eed29e3e03b0d0f50e80852ab220204158c870a07386fe5c01daf0ce02e104",
+    "gui/core/register_update.cpp": "784a55fd5de656522ce47ae5aef8eb3d0ff6271e841f20f618c280fa7a2d1418",
+    "gui/core/register_update.h": "7b795e57b55a97a534fdd76b02db6681cefd34e8b502dc32e5ffe6946496a338",
+    "gui/core/spd.cpp": "1a17ee4af555a8309241a5702d44e50eb8851f4a9b5ac000075861f35ef0162d",
+    "gui/core/spd.h": "a4e0442e545692989ed09100fb86ed605f8cbbc26b8cbfb4b60a126cc4de89f4",
+    "gui/main.cpp": "4298b3a557a689b19ca7434b756bf6762b1e3df404f794217d7e7cc7543b1b05",
+    "gui/platform/linux_inventory.cpp": "84f2b84b5bd0bca99a175836266a20e2fd6329c30acaf3b48ce468dbdbf7261d",
+    "gui/platform/linux_inventory.h": "495e4d929a80bd180fdb5ce5da43fa14562f8b18587bdf1a31e7657e2161634d",
+    "gui/platformpanels.cpp": "1c65aec4c41e074d06e4829435176851e7cb75b7a7e4a4f4260ad6bb4b78e34a",
+    "gui/platformpanels.h": "eafba32bb6432251e43985779d8a73c6b6af78ecd471ab98b7d3825b5a9f52fb",
+    "gui/pstates.cpp": "e327517a24f23edc1bb6901f6fa27b5c002d8d5a52383b9119b4403cc10ccc2c",
+    "gui/tests/platform_core_test.cpp": "615988ddb58809119175fc054e14753fec1621a3fb3af0c67081bb5112dcb7d4",
+    "gui/tests/regression.cpp": "d34dc49b252cf126d599510c9e64b3d43484b3a326f8eb42079285bbcc541577",
+    "port/tests/test_platform_core.py": "32f64febe783827cea79c09bbf9cf0100ff0306c00e9751c9034bcb1aca76076"
+  },
+  "local_files_matching_cloud": [
+    "gui/access.cpp",
+    "gui/access.h",
+    "gui/common.pri",
+    "gui/core/CMakeLists.txt",
+    "gui/core/amd_pstates.cpp",
+    "gui/core/amd_pstates.h",
+    "gui/core/amd_smu.cpp",
+    "gui/core/amd_smu.h",
+    "gui/core/hardware.cpp",
+    "gui/core/hardware.h",
+    "gui/core/intel_controls.cpp",
+    "gui/core/intel_controls.h",
+    "gui/core/register_update.cpp",
+    "gui/core/register_update.h",
+    "gui/core/spd.cpp",
+    "gui/core/spd.h",
+    "gui/main.cpp",
+    "gui/platform/linux_inventory.cpp",
+    "gui/platform/linux_inventory.h",
+    "gui/platformpanels.cpp",
+    "gui/platformpanels.h",
+    "gui/pstates.cpp",
+    "gui/tests/platform_core_test.cpp",
+    "gui/tests/regression.cpp",
+    "port/tests/test_platform_core.py"
+  ],
+  "driver_hal_abi_unchanged_from": "6d58cfc16149be216b3f1e086b9a02b6928fc908",
+  "local_tests": {
+    "tests": 45,
+    "passed": 36,
+    "skipped": 9,
+    "failed": 0,
+    "report": {
+      "path": "build/platform-local-tests.txt",
+      "bytes": 7053,
+      "sha256": "ac607393f9a3acb39fcca59ef813f913413ff12679868dfd10c904cef90a57f5"
+    },
+    "note": "Windows lacks the C++/Linux execution environment; these cases are covered by cloud tests. Other original local research changes remain outside this cloud commit."
+  },
+  "local_research": {
+    "umc_experiments": 5,
+    "evidence": {
+      "path": "docs/validation/legacy-amd-umc-analysis.json",
+      "bytes": 61096,
+      "sha256": "c3232cd87518bc08d68ecbd010c4aa9d8fc0ae5525cc3602e4d15bb961be1941"
+    },
+    "note": "Local original-instruction emulation, not part of cloud CTest or physical hardware acceptance."
+  },
+  "limits": [
+    "No physical register/firmware acceptance on the four target machines",
+    "PStates writes and physical voltage/current conversions remain incomplete",
+    "Intel VF/OC voltage/per-core turbo/fabric/BCLK controls remain incomplete",
+    "AMD automatic topology, physical-unit limit tuning, curves and profile/hotkey behavior remain incomplete",
+    "Live memory timings, PMIC/VRM/EC configuration and board clocks remain incomplete",
+    "Windows/macOS validate portable core only, not GUI or hardware backends",
+    "x86_64 Linux only; no Secure Boot enrollment, physical desktop password dialog or cross-version upgrade acceptance"
+  ]
+}

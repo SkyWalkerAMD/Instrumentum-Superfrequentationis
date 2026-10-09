@@ -1,5 +1,31 @@
 # 安装包与源码归档
 
+
+最新平台恢复构建为 `0b514bb` / [Actions](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664)，23/23 成功。
+20 份目标 DEB/RPM、源码归档和 SHA256SUMS 已保存到 `dist/platform-recovery-0b514bb/`。
+版本仍为未发布 2.0.1，用提交目录区分构建；请从对应系统的子目录取包。
+[完整证据](validation/platform-recovery-ci-0b514bb.json)保存测试、授权、内核启动和 160 张截图的哈希。
+[功能范围](platform-controls.md)包含明确剩余缺口，不能把安装成功等同于原版全功能或真机调参通过。
+
+| 目标 | 本轮 VM 实际内核 | 子目录 |
+|---|---|---|
+| el8 | `4.18.0-553.el8_10.x86_64` | `el8/` |
+| el9 | `5.14.0-687.56.1.el9_8.x86_64` | `el9/` |
+| el10 | `6.12.0-211.64.1.el10_2.x86_64` | `el10/` |
+| ubuntu20.04 | `5.4.0-216-generic` | `ubuntu20.04/` |
+| ubuntu22.04 | `5.15.0-198-generic`, `6.8.0-138-generic` | `ubuntu22.04/` |
+| ubuntu24.04 | `6.8.0-146-generic` | `ubuntu24.04/` |
+| ubuntu26.04 | `7.0.0-38-generic` | `ubuntu26.04/` |
+| debian11 | `5.10.0-46-amd64` | `debian11/` |
+| debian12 | `6.1.0-53-amd64` | `debian12/` |
+| debian13 | `6.12.111+deb13-amd64` | `debian13/` |
+
+本轮 Qt 回归为每目标 21 项，Python 为每目标 29 项；独立核心四环境各 26 个场景组。
+这些内核模块是验证产物；安装时仍通过 DKMS 为用户当前匹配内核构建，不能跨内核直接混用 `.ko`。
+运行 GUI 可独立安装，授权、运行库及驱动依赖方式见[Linux 适配文档](multi-distro.md)。
+
+以下为此前构建记录，包和源代码哈希不可混用。
+
 最新完整验证为 `88999aa` / [Actions](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37923477646)，23/23 成功。
 20 份目标系统 DEB/RPM 与经验证源包保存到 `dist/linux-integration-88999aa/`，根目录 `SHA256SUMS`
 逐项记录安装包哈希；源包另有同名 `.sha256`。版本仍为未发布的 2.0.1，用提交目录区分各轮构建。
