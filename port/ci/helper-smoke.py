@@ -9,6 +9,7 @@ import configparser
 import json
 import os
 from pathlib import Path
+import re
 import stat
 import shlex
 import subprocess
@@ -59,12 +60,25 @@ def main():
         assert daemon_metadata.st_uid == 0 and not daemon_metadata.st_mode & 0o022
         log = args.output.with_suffix('.polkit.log').open('w'); logs.append(log)
         children.append(subprocess.Popen(daemon_command, stdout=log, stderr=subprocess.STDOUT))
+        policy_version = run(['pkaction', '--version'])
+        assert policy_version.returncode == 0, policy_version
+        # Upstream 0.105 leaves ret=1 after a successful action enumeration.
+        # Accept that historical exit code only for this exact version, and
+        # still require every loaded authorization value and the helper path.
+        accepted_exits = (0, 1) if policy_version.stdout.strip() == 'pkaction version 0.105' else (0,)
+        expected_policy = [r'^com\.octool\.hwio:$'] + [
+            r'^\s*implicit ' + context + r':\s+auth_admin\s*$'
+            for context in ('any', 'inactive', 'active')]
+        expected_policy.append(r'^\s*annotation:\s+org\.freedesktop\.policykit\.exec\.path\s+->\s+'
+                               + re.escape(str(HELPER)) + r'\s*$')
         for _ in range(100):
             policy_check = run(['pkaction', '--action-id', 'com.octool.hwio', '--verbose'])
-            if policy_check.returncode == 0 and 'auth_admin' in policy_check.stdout: break
+            policy_loaded = policy_check.returncode in accepted_exits and all(
+                re.search(pattern, policy_check.stdout, re.MULTILINE) for pattern in expected_policy)
+            if policy_loaded: break
             time.sleep(0.05)
-        assert policy_check.returncode == 0 and 'auth_admin' in policy_check.stdout, policy_check.stderr
         args.output.with_suffix('.policy.txt').write_text(policy_check.stdout)
+        assert policy_loaded, (policy_version, policy_check)
         direct = run(['runuser', '-u', 'octool-smoke', '--', str(HELPER)])
         assert direct.returncode == 77, direct
         unconnected = run([str(HELPER)])
@@ -98,6 +112,7 @@ def main():
             time.sleep(0.05)
         assert not remaining, remaining
         report = {'policy': 'auth_admin', 'helper_mode': '0755', 'polkit_service_command': daemon_command,
+                  'pkaction_version': policy_version.stdout.strip(), 'pkaction_exit': policy_check.returncode,
                   'root_pkexec': json.loads(authorized.stdout),
                   'no_agent_denial': json.loads(denied.stdout), 'direct_unprivileged_exit': direct.returncode,
                   'unconnected_exit': unconnected.returncode, 'headless_diagnostics': info,
