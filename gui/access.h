@@ -3,6 +3,8 @@
 #include <QString>
 #include <memory>
 #include "core/hardware.h"
+#include "platform/hardware_factory.h"
+#include <functional>
 
 using Space = octool::core::Space;
 using Request = octool::core::Request;
@@ -15,11 +17,15 @@ QString hexValue(quint64 value, int width);
 
 class HardwareAccess {
 public:
+    using Authorizer = std::function<octool::platform::BackendConnection(const std::atomic<bool> &)>;
     HardwareAccess();
-    explicit HardwareAccess(std::unique_ptr<octool::core::HardwareBackend> backend);
+    explicit HardwareAccess(std::unique_ptr<octool::core::HardwareBackend> backend,
+                            Authorizer authorizer = octool::platform::authorizeHardware);
+    int authorize(const std::atomic<bool> &cancelled);
     Reply execute(const Request &request);
     CpuIdReply cpuid(unsigned cpu, std::uint32_t leaf, std::uint32_t subleaf = 0);
     QString backend(Space space) const;
 private:
     octool::core::HardwareService service_;
+    Authorizer authorizer_;
 };

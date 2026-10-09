@@ -200,6 +200,35 @@ static void concurrentCallsShareOneLock()
     assert(reference.calls.load() == 540 && reference.active.load() == 0 && !reference.overlap.load());
 }
 
+static void replacementWaitsAndHonorsCancellation()
+{
+    struct Busy final : Reference {
+        std::atomic<bool> &entered, &released;
+        Busy(std::atomic<bool> &e, std::atomic<bool> &r) : entered(e), released(r) {}
+        Reply execute(const Request &r) override {
+            entered.store(true);
+            while (!released.load()) std::this_thread::yield();
+            return Reference::execute(r);
+        }
+    };
+    std::atomic<bool> entered{false}, released{false}, cancelled{false}, replacing{false};
+    HardwareService service(std::unique_ptr<HardwareBackend>(new Busy(entered, released)));
+    std::thread reading([&] { assert(service.execute(Request{}).value == 0xfedcba9876543210ULL); });
+    while (!entered.load()) std::this_thread::yield();
+    bool installed = true;
+    std::thread replacement([&] {
+        replacing.store(true);
+        installed = service.replaceBackend(std::unique_ptr<HardwareBackend>(), &cancelled);
+    });
+    while (!replacing.load()) std::this_thread::yield();
+    cancelled.store(true); released.store(true);
+    reading.join(); replacement.join();
+    assert(!installed && service.backend(Space::Msr) == Backend::Module);
+    cancelled.store(false);
+    assert(service.replaceBackend(std::unique_ptr<HardwareBackend>(), &cancelled));
+    assert(service.execute(Request{}).error == -ENODEV);
+}
+
 int main()
 {
     invalidRequestsDoNotReachBackend();
@@ -208,5 +237,6 @@ int main()
     missingBackendIsUnavailable();
     ownershipIsReleasedOnce();
     concurrentCallsShareOneLock();
-    std::cout << "hardware core: 6 scenario groups passed\n";
+    replacementWaitsAndHonorsCancellation();
+    std::cout << "hardware core: 7 scenario groups passed\n";
 }

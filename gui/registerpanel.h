@@ -10,7 +10,7 @@ class QPlainTextEdit;
 
 class RegisterPanel : public QWidget {
 public:
-    RegisterPanel(Space space, std::shared_ptr<HardwareAccess> access, QWidget *parent = nullptr);
+    RegisterPanel(Space space, std::shared_ptr<HardwareAccess> access, QWidget *parent = nullptr, unsigned initialCpu = 0);
 private:
     QLineEdit *field(const QString &name, const QString &initial = {});
     void submit(bool write);

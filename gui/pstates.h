@@ -23,7 +23,7 @@ PstateSnapshot readAmdPstates(HardwareAccess &access, unsigned cpu);
 
 class PstatesPanel : public QWidget {
 public:
-    explicit PstatesPanel(std::shared_ptr<HardwareAccess> access, QWidget *parent = nullptr);
+    explicit PstatesPanel(std::shared_ptr<HardwareAccess> access, QWidget *parent = nullptr, unsigned initialCpu = 0);
 private:
     void refresh();
     void clearRows();

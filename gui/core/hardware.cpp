@@ -68,5 +68,14 @@ Backend HardwareService::backend(Space space) const
     return backend_ ? backend_->backend(space) : Backend::Unavailable;
 }
 
+bool HardwareService::replaceBackend(std::unique_ptr<HardwareBackend> backend,
+                                     const std::atomic<bool> *cancelled)
+{
+    std::lock_guard<std::mutex> guard(mutex_);
+    if (cancelled && cancelled->load()) return false;
+    backend_ = std::move(backend);
+    return true;
+}
+
 } // namespace core
 } // namespace octool

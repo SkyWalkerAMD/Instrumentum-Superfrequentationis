@@ -3,6 +3,7 @@
 #include "platform/hardware_factory.h"
 #include <QRegularExpression>
 #include <utility>
+#include <cerrno>
 
 CpuIdReply HardwareAccess::cpuid(unsigned cpu, std::uint32_t leaf, std::uint32_t subleaf)
 {
@@ -57,9 +58,20 @@ QString targetText(const Request &r)
         .arg(r.function).arg(hexValue(r.address, 1));
 }
 
-HardwareAccess::HardwareAccess() : service_(octool::platform::makeHardwareBackend()) {}
-HardwareAccess::HardwareAccess(std::unique_ptr<octool::core::HardwareBackend> backend)
-    : service_(std::move(backend)) {}
+HardwareAccess::HardwareAccess()
+    : HardwareAccess(octool::platform::makeHardwareBackend()) {}
+HardwareAccess::HardwareAccess(std::unique_ptr<octool::core::HardwareBackend> backend, Authorizer authorizer)
+    : service_(std::move(backend)), authorizer_(std::move(authorizer)) {}
+
+int HardwareAccess::authorize(const std::atomic<bool> &cancelled)
+{
+    if (cancelled.load()) return -ECANCELED;
+    auto connection = authorizer_(cancelled);
+    if (cancelled.load()) return -ECANCELED;
+    if (connection.error) return connection.error;
+    if (!connection.backend) return -ENOMEM;
+    return service_.replaceBackend(std::move(connection.backend), &cancelled) ? 0 : -ECANCELED;
+}
 
 QString HardwareAccess::backend(Space space) const
 {

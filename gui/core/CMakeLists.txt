@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(Threads REQUIRED)
 
-add_library(octool_core STATIC amd_pstates.cpp hardware.cpp)
+add_library(octool_core STATIC amd_pstates.cpp hardware.cpp helper_protocol.cpp)
 target_include_directories(octool_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(octool_core PUBLIC Threads::Threads)
 if(MSVC)
@@ -17,7 +17,7 @@ endif()
 
 include(CTest)
 if(BUILD_TESTING)
-    foreach(component pstates hardware)
+    foreach(component pstates hardware helper_protocol)
         add_executable(${component}_core_test ../tests/${component}_core_test.cpp)
         target_link_libraries(${component}_core_test PRIVATE octool_core)
         # These regressions use assertions. Release builds must test too.

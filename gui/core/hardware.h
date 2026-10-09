@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #pragma once
 #include <cstdint>
+#include <atomic>
 #include <memory>
 #include <mutex>
 
@@ -50,6 +51,10 @@ public:
     Reply execute(const Request &request);
     CpuIdReply cpuid(unsigned cpu, std::uint32_t leaf, std::uint32_t subleaf = 0);
     Backend backend(Space space) const;
+    // A successful explicit authorization may replace the backend. Wait for
+    // any in-flight operation before retiring its transport.
+    bool replaceBackend(std::unique_ptr<HardwareBackend> backend,
+                        const std::atomic<bool> *cancelled = nullptr);
 private:
     std::unique_ptr<HardwareBackend> backend_;
     mutable std::mutex mutex_;

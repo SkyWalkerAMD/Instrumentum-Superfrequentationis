@@ -13,7 +13,11 @@ case "$action" in
     *) echo 'unknown action' >&2; exit 2;;
 esac
 cat /etc/os-release > "$out/os-release-$action.txt"
-bash port/ci/bootstrap.sh "$target" "$mode" 2>&1 | tee "$out/bootstrap-$action.log"
+if [ "$action" = runtime ]; then
+    bash port/ci/bootstrap-runtime.sh "$target" 2>&1 | tee "$out/bootstrap-$action.log"
+else
+    bash port/ci/bootstrap.sh "$target" "$mode" 2>&1 | tee "$out/bootstrap-$action.log"
+fi
 family=$(python3 - "$target" <<'PY'
 import json, sys
 print(next(t for t in json.load(open('port/ci/targets.json')) if t['id'] == sys.argv[1])['family'])
@@ -27,7 +31,7 @@ if [ "$action" = desktop ] && [ "$family" = deb ]; then
         libxcb-shm0-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-xinput-dev
 fi
 cat /etc/os-release > "$out/os-release-$action.txt"
-gcc --version > "$out/compiler-$action.txt"
+if [ "$action" != runtime ]; then gcc --version > "$out/compiler-$action.txt"; fi
 ldd --version > "$out/libc-$action.txt"
 if [ "$family" = deb ]; then
     dpkg-query -W > "$out/packages-$action.txt"
@@ -83,6 +87,7 @@ case "$action" in
             --build-dir "$out/legacy-guard" --target "$target" \
             --output "$out/legacy-guard/results.json"
         bash port/ci/build-kernels.sh "$out/kernels"
+        bash port/ci/fetch-kernel-images.sh "$root/build/vm-inputs"
         python3 port/tools/build_packages.py --format "$family" --module-only --output "$out/packages"
         install_packages
         verify_dkms
@@ -116,10 +121,14 @@ case "$action" in
         python3 port/tools/build_gui.py --stage "$out/gui-stage"
         cp build/gui/regression/gui-tests.txt "$out/gui-tests.txt"
         python3 port/tools/check_elf.py "$out/gui-stage/opt/octool/bin/octool-real" > "$out/abi.json"
+        python3 port/tools/check_elf.py "$out/gui-stage/opt/octool/bin/octool-hwio-helper" > "$out/helper-abi.json"
         tar -czf "$out/gui-stage.tar.gz" -C "$out/gui-stage" .
         ;;
     desktop)
         gcc -std=c11 -O2 -Wall -Wextra -Werror port/ci/window-probe.c -lX11 -o "$out/window-probe"
+        g++ -std=c++11 -O2 -Wall -Wextra -Werror -pthread port/ci/helper-client.cpp \
+            gui/platform/linux_helper.cpp gui/platform/linux_cpu.cpp gui/core/hardware.cpp \
+            gui/core/helper_protocol.cpp -o "$out/helper-client"
         (cd /inputs && sha256sum -c qt-sdk.sha256)
         tar -xzf /inputs/qt-sdk.tar.gz -C /opt
         mkdir -p /tmp/octool-release-stage
@@ -127,22 +136,38 @@ case "$action" in
         python3 port/tools/build_gui.py --build-dir "$root/build/gui-$target" --stage "$out/native-stage"
         cp "build/gui-$target/regression/gui-tests.txt" "$out/gui-tests.txt"
         python3 port/tools/check_elf.py --inspect "$out/native-stage/opt/octool/bin/octool-real" > "$out/native-abi.json"
+        python3 port/tools/check_elf.py --inspect "$out/native-stage/opt/octool/bin/octool-hwio-helper" > "$out/native-helper-abi.json"
         make -C port/tests check 2>&1 | tee "$out/offline.log"
         python3 port/tools/build_packages.py --format "$family" --gui-stage /tmp/octool-release-stage --output "$out/packages"
         ;;
     runtime)
-        install_packages
-        verify_dkms
+        # Install only the GUI, using declared runtime dependencies. Driver
+        # recommendation is optional until its matching kernel toolchain exists.
+        if [ "$family" = deb ]; then
+            apt-get install -y --no-install-recommends "$out/packages/octool-"[0-9]*.deb
+        else
+            dnf install -y --setopt=install_weak_deps=False "$out/packages/octool-"[0-9]*.rpm
+        fi
+        for tool in gcc g++ make dkms; do
+            if command -v "$tool" >/dev/null; then echo "unexpected build dependency: $tool" >&2; exit 1; fi
+        done
+        if [ -d /usr/src ]; then
+            test -z "$(find /usr/src -maxdepth 1 -name '*linux*' -print)"
+        fi
+        printf '%s\n' 'GUI installed without compiler, make, DKMS or kernel headers' > "$out/minimal-runtime.txt"
         ldd /opt/octool/bin/octool-real | tee "$out/ldd-release.txt"
         ! grep -q 'not found' "$out/ldd-release.txt"
         ldd "$out/native-stage/opt/octool/bin/octool-real" | tee "$out/ldd-native.txt"
         ! grep -q 'not found' "$out/ldd-native.txt"
+        ldd /opt/octool/bin/octool-hwio-helper | tee "$out/ldd-helper.txt"
+        ! grep -q 'not found' "$out/ldd-helper.txt"
         display=$(python3 - "$target" <<'PY'
 import json, sys
 print(next(t for t in json.load(open('port/ci/targets.json')) if t['id'] == sys.argv[1])['display'])
 PY
 )
         useradd -m octool-smoke
+        python3 port/ci/helper-smoke.py --output "$out/helper-smoke.json"
         mkdir -p "$out/smoke"
         chown octool-smoke:octool-smoke "$out/smoke"
         runuser -u octool-smoke -- env HOME=/home/octool-smoke bash -c \
@@ -151,6 +176,10 @@ PY
         runuser -u octool-smoke -- env HOME=/home/octool-smoke bash -c \
             'cd "$HOME"; exec bash "$1/port/ci/headless-smoke.sh" "$2" --binary /out/native-stage/opt/octool/bin/octool-real --log /out/smoke/native.log' \
             _ "$root" "$display"
+        # Only now install the toolchain, headers and optional driver.
+        bash port/ci/bootstrap.sh "$target" kernel 2>&1 | tee "$out/bootstrap-driver.log"
+        install_packages
+        verify_dkms
         # Exercise removal/reinstall in this disposable container too.
         if [ "$family" = deb ]; then
             apt-get purge -y octool octool-hwio-dkms

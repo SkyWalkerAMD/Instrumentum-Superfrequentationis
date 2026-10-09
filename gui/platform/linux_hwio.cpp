@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "linux_hwio.h"
+#include "linux_cpu.h"
 #include <cerrno>
-#include <sched.h>
 
 namespace octool {
 namespace platform {
@@ -50,17 +50,7 @@ public:
         } else {
             // The direct HAL uses the calling CPU. Pin only this worker and
             // restore its affinity before returning it to the caller's pool.
-            if (cpu >= CPU_SETSIZE) { reply.error = -ERANGE; return reply; }
-            cpu_set_t previous, selected;
-            if (sched_getaffinity(0, sizeof(previous), &previous)) {
-                reply.error = -errno; return reply;
-            }
-            CPU_ZERO(&selected); CPU_SET(cpu, &selected);
-            if (sched_setaffinity(0, sizeof(selected), &selected)) {
-                reply.error = -errno; return reply;
-            }
-            reply.error = hwio_cpuid(handle_, cpu, leaf, subleaf, reply.words);
-            if (sched_setaffinity(0, sizeof(previous), &previous)) reply.error = -errno;
+            reply.error = onLinuxCpu(cpu, [&] { return hwio_cpuid(handle_, cpu, leaf, subleaf, reply.words); });
         }
         if (reply.error) for (auto &word : reply.words) word = 0;
         return reply;

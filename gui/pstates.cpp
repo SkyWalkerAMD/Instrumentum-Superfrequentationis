@@ -94,7 +94,7 @@ PstateSnapshot readAmdPstates(HardwareAccess &access, unsigned cpu)
     return snapshot;
 }
 
-PstatesPanel::PstatesPanel(std::shared_ptr<HardwareAccess> access, QWidget *parent)
+PstatesPanel::PstatesPanel(std::shared_ptr<HardwareAccess> access, QWidget *parent, unsigned initialCpu)
     : QWidget(parent), access_(std::move(access))
 {
     auto *layout = new QVBoxLayout(this);
@@ -105,7 +105,7 @@ PstatesPanel::PstatesPanel(std::shared_ptr<HardwareAccess> access, QWidget *pare
     description->setWordWrap(true); layout->addWidget(description);
     auto *controls = new QHBoxLayout;
     controls->addWidget(new QLabel("Logical CPU (decimal)", this));
-    cpu_ = new QLineEdit("0", this); cpu_->setObjectName("pstateCpu"); controls->addWidget(cpu_);
+    cpu_ = new QLineEdit(QString::number(initialCpu), this); cpu_->setObjectName("pstateCpu"); controls->addWidget(cpu_);
     auto *read = new QPushButton("Read once", this); read->setObjectName("pstateRead");
     controls->addWidget(read);
     auto *copy = new QPushButton("Copy snapshot", this); controls->addWidget(copy);

@@ -126,6 +126,11 @@ jobs:
           docker image inspect '${{ matrix.image }}' > build/artifacts/container-image.json
           docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -v "$PWD:/src" -v "$PWD/build/artifacts:/out" -w /src \
             '${{ matrix.image }}' bash port/ci/in-container.sh kernel '${{ matrix.id }}'
+      - name: Boot each matching kernel and exercise the loaded module
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends qemu-system-x86 busybox-static
+          python3 port/ci/boot-kernels.py --inputs build/vm-inputs --modules build/artifacts/kernels --output build/artifacts/guest-boot
       - uses: actions/upload-artifact@v4
         if: always()
         with:

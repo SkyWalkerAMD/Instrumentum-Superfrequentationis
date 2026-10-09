@@ -1,8 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "registerpanel.h"
 #include "pstates.h"
+#include "authorizationpanel.h"
+#include "platform/system_info.h"
 #include <QApplication>
-#include <QFile>
+#include <QCoreApplication>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QFormLayout>
 #include <QLabel>
 #include <QMainWindow>
@@ -11,28 +16,35 @@
 #include <QTabWidget>
 #include <QTimer>
 #include <QVBoxLayout>
-#include <unistd.h>
+#include <cstring>
+#include <iostream>
 
-static QString cpuModel()
+static int diagnostics(int argc, char **argv)
 {
-    QFile file("/proc/cpuinfo");
-    if (file.open(QIODevice::ReadOnly)) {
-        const auto lines = file.readAll().split('\n');
-        for (const auto &line : lines) {
-            if (line.startsWith("model name") && line.contains(':'))
-                return QString::fromUtf8(line.mid(line.indexOf(':') + 1)).trimmed();
-        }
-    }
-    return "Unavailable";
+    QCoreApplication app(argc, argv);
+    const auto info = octool::platform::systemInfo();
+    QJsonArray allowed;
+    for (auto cpu : info.allowedCpus) allowed.append(int(cpu));
+    const QJsonObject report{{"version", OCTOOL_VERSION}, {"os", QSysInfo::prettyProductName()},
+        {"kernel", QSysInfo::kernelVersion()}, {"architecture", QSysInfo::currentCpuArchitecture()},
+        {"cpu_model", QString::fromStdString(info.cpuModel)}, {"online_cpus", double(info.onlineCpus)},
+        {"allowed_cpus", allowed}, {"affinity_error", info.affinityError},
+        {"module_loaded", info.moduleLoaded}, {"helper_installed", info.helperInstalled},
+        {"register_access_tested", false}};
+    std::cout << QJsonDocument(report).toJson().constData();
+    return info.affinityError ? 1 : 0;
 }
 
 int main(int argc, char **argv)
 {
+    if (argc == 2 && std::strcmp(argv[1], "--diagnose") == 0) return diagnostics(argc, argv);
     QApplication app(argc, argv);
     app.setApplicationName("octool");
     app.setOrganizationName("OCTool");
     app.setApplicationVersion(OCTOOL_VERSION);
     auto access = std::make_shared<HardwareAccess>();
+    const auto info = octool::platform::systemInfo();
+    const unsigned initialCpu = info.allowedCpus.empty() ? 0 : info.allowedCpus.front();
     QMainWindow window;
     window.setObjectName("MainWindow");
     window.setWindowTitle("OCTool — Hardware information and registers");
@@ -48,26 +60,24 @@ int main(int argc, char **argv)
         auto *text = new QLabel(value, overview); text->setWordWrap(true);
         text->setTextInteractionFlags(Qt::TextSelectableByMouse); form->addRow(label, text);
     };
-    row("CPU", cpuModel());
-    const long cpuCount = sysconf(_SC_NPROCESSORS_ONLN);
-    row("Online logical CPUs", cpuCount > 0 ? QString::number(cpuCount) : "Unavailable");
+    row("CPU", info.cpuModel.empty() ? "Unavailable" : QString::fromStdString(info.cpuModel));
+    row("Online logical CPUs", info.onlineCpus > 0 ? QString::number(info.onlineCpus) : "Unavailable");
+    row("CPUs available to this process", info.affinityError ? "Unavailable" : QString::number(info.allowedCpus.size()));
     row("Operating system", QSysInfo::prettyProductName());
     row("Kernel", QSysInfo::kernelVersion());
     row("Architecture", QSysInfo::currentCpuArchitecture());
     row("OCTool", app.applicationVersion());
-    const QString msr = access->backend(Space::Msr);
-    row("Hardware access", msr == "module" ? "Connected to /dev/mydev" :
-        "Module unavailable. Explicit register operations may use direct OS access if permitted.");
     layout->addLayout(form);
+    layout->addWidget(new AuthorizationPanel(access, overview));
     auto *scope = new QLabel("Basic information, raw MSR / MMIO / PCI access, and read-only AMD PStates. "
         "Other platform monitoring and overclocking panels are being restored.", overview);
     scope->setWordWrap(true); layout->addWidget(scope);
     layout->addStretch();
     tabs->addTab(overview, "Information");
-    tabs->addTab(new RegisterPanel(Space::Msr, access, tabs), "MSR");
+    tabs->addTab(new RegisterPanel(Space::Msr, access, tabs, initialCpu), "MSR");
     tabs->addTab(new RegisterPanel(Space::Memory, access, tabs), "MMIO");
     tabs->addTab(new RegisterPanel(Space::Pci, access, tabs), "PCI");
-    tabs->addTab(new PstatesPanel(access, tabs), "AMD PStates");
+    tabs->addTab(new PstatesPanel(access, tabs, initialCpu), "AMD PStates");
     window.setCentralWidget(tabs);
     window.show();
     // CI requests snapshots of these real windows for visual inspection.

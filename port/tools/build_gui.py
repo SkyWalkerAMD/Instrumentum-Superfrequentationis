@@ -28,6 +28,8 @@ def config():
                          "port/gui/build.json; prebuilt octool-linux.zip is not source.".format(project))
     if not source_path(cfg["license_file"]).is_file():
         raise ValueError("GUI distribution license file missing: " + cfg["license_file"])
+    if not source_path(cfg["helper_project"]).is_file():
+        raise ValueError("hardware helper source missing: " + cfg["helper_project"])
     return cfg, project
 
 
@@ -79,6 +81,17 @@ def main():
     (destination / "bin").mkdir(parents=True, exist_ok=True)
     shutil.copy2(binary, destination / "bin/octool-real")
     os.chmod(destination / "bin/octool-real", 0o755)
+    helper_dir = args.build_dir / "helper"
+    helper_dir.mkdir(exist_ok=True)
+    subprocess.run([args.qmake, str(source_path(cfg["helper_project"])), "CONFIG+=release",
+                    "QMAKE_CFLAGS+=-march=x86-64 -mtune=generic",
+                    "QMAKE_CXXFLAGS+=-march=x86-64 -mtune=generic"], cwd=helper_dir, check=True)
+    subprocess.run(["make", "-j" + os.environ.get("JOBS", "2")], cwd=helper_dir, check=True)
+    helper = (helper_dir / cfg["helper_binary"]).resolve()
+    if helper_dir.resolve() not in helper.parents or not helper.is_file():
+        parser.error("configured hardware helper was not produced: " + str(helper))
+    shutil.copy2(helper, destination / "bin/octool-hwio-helper")
+    os.chmod(destination / "bin/octool-hwio-helper", 0o755)
     (destination / "licenses").mkdir(exist_ok=True)
     shutil.copy2(source_path(cfg["license_file"]), destination / "licenses/octool-LICENSE")
     sdk_licenses = Path(qt_config) / "licenses"

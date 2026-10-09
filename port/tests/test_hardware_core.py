@@ -27,7 +27,7 @@ class HardwareCore(unittest.TestCase):
             self.assertEqual(built.returncode, 0, built.stdout + built.stderr)
             tested = subprocess.run([str(binary)], capture_output=True, text=True, timeout=30)
             self.assertEqual(tested.returncode, 0, tested.stdout + tested.stderr)
-            self.assertEqual(tested.stdout.strip(), "hardware core: 6 scenario groups passed")
+            self.assertEqual(tested.stdout.strip(), "hardware core: 7 scenario groups passed")
 
 
 if __name__ == "__main__":

@@ -13,6 +13,7 @@
 #include <QtConcurrent/QtConcurrentRun>
 #include <cstring>
 #include <limits>
+#include <cerrno>
 
 QLineEdit *RegisterPanel::field(const QString &name, const QString &initial)
 {
@@ -23,7 +24,7 @@ QLineEdit *RegisterPanel::field(const QString &name, const QString &initial)
     return edit;
 }
 
-RegisterPanel::RegisterPanel(Space space, std::shared_ptr<HardwareAccess> access, QWidget *parent)
+RegisterPanel::RegisterPanel(Space space, std::shared_ptr<HardwareAccess> access, QWidget *parent, unsigned initialCpu)
     : QWidget(parent), space_(space), access_(std::move(access))
 {
     setObjectName(space == Space::Msr ? "rw_msr" : space == Space::Memory ? "rw_memory" : "rw_pci");
@@ -35,7 +36,7 @@ RegisterPanel::RegisterPanel(Space space, std::shared_ptr<HardwareAccess> access
     description->setWordWrap(true);
     layout->addWidget(description);
     auto *form = new QFormLayout;
-    if (space == Space::Msr) form->addRow("Logical CPU (decimal)", field("cpu", "0"));
+    if (space == Space::Msr) form->addRow("Logical CPU (decimal)", field("cpu", QString::number(initialCpu)));
     if (space == Space::Pci) {
         form->addRow("Bus (hex)", field("bus"));
         form->addRow("Device (hex)", field("device"));
@@ -123,6 +124,9 @@ void RegisterPanel::submit(bool write)
         if (reply.error) {
             message += QString("FAILED (%1): %2").arg(reply.error)
                 .arg(QString::fromLocal8Bit(std::strerror(-reply.error)));
+            if (request.write && (reply.error == -ETIMEDOUT || reply.error == -EPIPE ||
+                reply.error == -EPROTO || reply.error == -ENOTCONN))
+                message += ". Write completion is unknown; inspect the hardware state before retrying.";
         } else if (request.write) {
             message += "write submitted " + hexValue(request.value, request.width) + " (not read back)";
         } else {

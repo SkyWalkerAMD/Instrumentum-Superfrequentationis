@@ -51,10 +51,11 @@ def module_stage(stage, ver):
 
 
 def gui_stage(stage, gui):
-    binary = gui / "opt/octool/bin/octool-real"
-    errors = violations(elf_info(binary))
-    if errors:
-        raise ValueError("EL8 release ABI gate failed: " + "; ".join(errors))
+    for name in ("octool-real", "octool-hwio-helper"):
+        binary = gui / "opt/octool/bin" / name
+        errors = violations(elf_info(binary))
+        if errors:
+            raise ValueError(name + " EL8 release ABI gate failed: " + "; ".join(errors))
     for path in (gui / "opt/octool").rglob("*"):
         if re.match(r"^(ld-linux|lib(c|m|pthread|dl|rt|resolv)\.so\.)", path.name):
             raise ValueError("system glibc/loader must not be bundled: " + str(path))
@@ -66,6 +67,7 @@ def gui_stage(stage, gui):
     shutil.copytree(gui / "opt", stage / "opt")
     copy(ROOT / "port/runtime/octool", stage / "usr/bin/octool", 0o755)
     copy(ROOT / "port/runtime/octool.desktop", stage / "usr/share/applications/octool.desktop")
+    copy(PACK / "com.octool.hwio.policy", stage / "usr/share/polkit-1/actions/com.octool.hwio.policy")
     shutil.copytree(ROOT / "docs", stage / "usr/share/doc/octool")
 
 
@@ -74,7 +76,8 @@ def deb(stage, ver, output, gui=False):
         # dpkg-shlibdeps uses this minimal source control file for context.
         write(stage / "debian/control", "Source: octool\n\nPackage: octool\nArchitecture: amd64\n")
         result = subprocess.check_output(
-            ["dpkg-shlibdeps", "-O", "-e" + str(stage / "opt/octool/bin/octool-real")],
+            ["dpkg-shlibdeps", "-O", "-e" + str(stage / "opt/octool/bin/octool-real"),
+             "-e" + str(stage / "opt/octool/bin/octool-hwio-helper")],
             cwd=stage, text=True)
         deps = next(line.split("=", 1)[1] for line in result.splitlines()
                     if line.startswith("shlibs:Depends="))

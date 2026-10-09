@@ -9,7 +9,8 @@ Summary:        OCTool Intel and AMD hardware monitor
 License:        GPL-2.0-only
 Source0:        octool-%{version}-runtime.tar.gz
 ExclusiveArch:  x86_64
-Requires:       octool-hwio-dkms = %{version}-%{release}
+Recommends:     octool-hwio-dkms = %{version}-%{release}
+Requires:       /usr/bin/pkexec
 Requires:       /usr/bin/Xwayland, at-spi2-core, /usr/bin/dbus-run-session, dejavu-sans-fonts, mesa-dri-drivers
 
 %description
@@ -29,4 +30,5 @@ cp -a opt usr %{buildroot}/
 /opt/octool
 /usr/bin/octool
 /usr/share/applications/octool.desktop
+/usr/share/polkit-1/actions/com.octool.hwio.policy
 /usr/share/doc/octool
