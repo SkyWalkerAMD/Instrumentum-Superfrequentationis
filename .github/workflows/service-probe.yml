@@ -1,0 +1,25 @@
+name: service-probe
+on:
+  push:
+    paths:
+      - '.github/workflows/service-probe.yml'
+      - 'port/ci/service-probe.sh'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  el8:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p build/service-probe
+          docker run --rm --init -v "$PWD:/src:ro" -v "$PWD/build/service-probe:/out" \
+            rockylinux:8 bash /src/port/ci/service-probe.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: el8-service-probe
+          path: build/service-probe
+          retention-days: 7
