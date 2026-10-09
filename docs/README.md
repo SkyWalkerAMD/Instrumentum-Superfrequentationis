@@ -33,6 +33,7 @@
 - [原AMD命令传输](legacy-amd-transport.md)：固定BDF、端口等待耗尽仍发送、原libpci失败值和448项实验。
 - [原AMD MP1与操作槽](legacy-amd-mp1.md)：固定身份读取、21次轮询、局部标志和失败后Applied的563项实验。
 - [原Intel NGU与MMIO目标](legacy-intel-ngu.md)：两完整槽、读加基址/写直接传参、busy耗尽及266项原指令实验。
+- [原内存页和64位写路由](legacy-mmio-clients.md)：原槽请求零地址、NVL查询仍写命令、fallback丢高32位及168项实验。
 - [逆向覆盖台账](reverse-engineering-status.md)：清单、算法、模拟和真机证据的区别与尚未完成范围。
 - [原版模块重复加载握手](legacy-module-handoff.md)：同名 `.ko` 的真实 EEXIST 路径、runner 探针与 Secure Boot 边界。
 - [原版 MMIO 邮箱契约](legacy-mailbox-contract.md)：56 组原指令模拟、三份旧模块映射、错误完成字导致的兼容缺口。

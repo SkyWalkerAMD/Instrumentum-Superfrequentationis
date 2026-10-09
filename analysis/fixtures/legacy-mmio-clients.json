@@ -1,0 +1,514 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "ngu_fixture_sha256": "25c9a574a7bd50bcb07a4fa1ff18fd0313690be3dc4f1231717582411fdb8e68",
+  "scope": "Original raw-memory slot, NVL read mailbox, 64-bit write member and router; synthetic Qt, libc, mailbox and mmap",
+  "functions": [
+    {
+      "symbol": "_ZN9rw_memory23on_pushButton_2_clickedEv",
+      "address": 6935792,
+      "size": 1110,
+      "code_hex": "f30f1efa4157415641554154554889fd4883ec2064488b042528000000488944241831c0488b47684c8d6c24084c89ef488b7018e8a7f17300488b7c240841be010000004c8d6424108b570485d20f85440300008b0785c00f84ba02000083f8ff740ff0832f01488b7c24080f84a60200004584f60f84b5000000be11000000488d3da7a3f900e81417d900be05000000488d3ddc15f9004889442410e8fe16d9004531c0b9000400004c89e24c89ee4889ef4889442408e8f3a47f00488b7c24088b0785c00f84fc01000083f8ff740ff0832f01488b7c24080f84e8010000488b7c24108b0785c00f84f701000083f8ff7414f0832f01488b7c24100f84e30100000f1f440000488b44241864482b0425280000000f85d50200004883c4205d415c415d415e415fc3660f1f440000488b7d704889ea4c8d359501f900488d0d68a2f9004c89f64c8d7c2407e8fe39e900488b45684c89e7488b7018e87ef07300ba100000004c89fe4c89e7e87e40d900488b7c2410488945588b0785c00f847b01000083f8ff740ff0832f01488b7c24100f8467010000488b45584c89e748894548488b4568488b7010e82ff07300ba100000004c89fe4c89e7e82f40d900488b7c24104989c78b0785c00f847501000083f8ff740ff0832f01488b7c24100f84610100004c89f8488d7d3048c1e8200f84700100004c89fa31f6e80e3fb9ffc6455001be08000000488d3dfb0bf900e88915d900be05000000488d3dd1caf4004889442410e87315d9004531c0b9000400004c89e24c89ee4889ef4889442408e828a37f00488b7c24088b0785c00f842901000083f8ff740ff0832f01488b7c24080f8415010000488b7c24108b0785c00f84b600000083f8ff740ff0832f01488b7c24100f84a2000000488b75704531c94889e94c89f24c8d050ba1f9004c89e7e81684e9004c89e7e84e0be900488b7d70bed0070000e850cde900e943feffff0f1f00ba08000000be02000000e8c9d7d200488b7c24108b0785c00f8509feffffba08000000be02000000e8abd7d200e90efeffff660f1f440000ba08000000be02000000e891d7d200e985feffff0f1f4000ba08000000be02000000e879d7d200e946fdffff0f1f4000ba08000000be02000000e861d7d200e94affffff0f1f4000ba08000000be02000000e849d7d2004c89f8488d7d3048c1e8200f8590feffff4489fa31f6e8be36b9ffe98bfeffff660f1f840000000000ba08000000be02000000e811d7d200e9d7feffff0f1f4000488b45684c89e7488b7010e838ee7300488b7c24108b470485c08b07410f94c685c0742483f8ff740bf0832f01488b7c24107414488b7c2408e97efcffff662e0f1f840000000000ba08000000be02000000e8b1d6d200ebdbe82ad0aafff30f1efa4889c5e9f826affff30f1efa4889c5e90427affff30f1efa4889c5e9f026affff30f1efa4889c5e9fc26affff30f1efa4889c5e9f826affff30f1efa4889c5e9f426affff30f1efa4889c5e9f826affff30f1efa4889c5e9f426afff",
+      "code_sha256": "a5a3be356305b457ab8c94527e68e4e540d1243a7aec511aec6bfb4797d9bb82",
+      "calls": [
+        {
+          "instruction": 6935844,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6935927,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6935949,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6935976,
+          "kind": "call",
+          "target": 15301280,
+          "symbols": [
+            "_ZN11QMessageBox7warningEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_"
+          ]
+        },
+        {
+          "instruction": 6936125,
+          "kind": "call",
+          "target": 22220864,
+          "symbols": [
+            "_ZN7QObject10disconnectEPKS_PKcS1_S3_"
+          ]
+        },
+        {
+          "instruction": 6936141,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6936157,
+          "kind": "call",
+          "target": 21173984,
+          "symbols": [
+            "_ZNK7QString6toLongEPbi"
+          ]
+        },
+        {
+          "instruction": 6936220,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6936236,
+          "kind": "call",
+          "target": 21173984,
+          "symbols": [
+            "_ZNK7QString6toLongEPbi"
+          ]
+        },
+        {
+          "instruction": 6936301,
+          "kind": "call",
+          "target": 2299392,
+          "symbols": [
+            "_ZN7RW_MMIO9Wr_MMIO64Emm"
+          ]
+        },
+        {
+          "instruction": 6936322,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6936344,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6936371,
+          "kind": "call",
+          "target": 15301216,
+          "symbols": [
+            "_ZN11QMessageBox11informationEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_"
+          ]
+        },
+        {
+          "instruction": 6936469,
+          "kind": "call",
+          "target": 22240176,
+          "symbols": [
+            "_ZN7QObject7connectEPKS_PKcS1_S3_N2Qt14ConnectionTypeE"
+          ]
+        },
+        {
+          "instruction": 6936477,
+          "kind": "call",
+          "target": 22209264,
+          "symbols": [
+            "_ZN11QMetaObject10ConnectionD1Ev",
+            "_ZN11QMetaObject10ConnectionD2Ev"
+          ]
+        },
+        {
+          "instruction": 6936491,
+          "kind": "call",
+          "target": 22258944,
+          "symbols": [
+            "_ZN6QTimer5startEi"
+          ]
+        },
+        {
+          "instruction": 6936496,
+          "kind": "jmp",
+          "target": 6936056,
+          "symbols": []
+        },
+        {
+          "instruction": 6936514,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6936544,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6936549,
+          "kind": "jmp",
+          "target": 6936056,
+          "symbols": []
+        },
+        {
+          "instruction": 6936570,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6936575,
+          "kind": "jmp",
+          "target": 6936201,
+          "symbols": []
+        },
+        {
+          "instruction": 6936594,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6936599,
+          "kind": "jmp",
+          "target": 6935906,
+          "symbols": []
+        },
+        {
+          "instruction": 6936618,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6936623,
+          "kind": "jmp",
+          "target": 6936446,
+          "symbols": []
+        },
+        {
+          "instruction": 6936642,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6936669,
+          "kind": "call",
+          "target": 2297632,
+          "symbols": [
+            "_ZN7RW_MMIO7Wr_MMIOEjj"
+          ]
+        },
+        {
+          "instruction": 6936674,
+          "kind": "jmp",
+          "target": 6936306,
+          "symbols": []
+        },
+        {
+          "instruction": 6936698,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6936703,
+          "kind": "jmp",
+          "target": 6936411,
+          "symbols": []
+        },
+        {
+          "instruction": 6936723,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6936769,
+          "kind": "jmp",
+          "target": 6935876,
+          "symbols": []
+        },
+        {
+          "instruction": 6936794,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6936799,
+          "kind": "jmp",
+          "target": 6936764,
+          "symbols": []
+        },
+        {
+          "instruction": 6936801,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 6936813,
+          "kind": "jmp",
+          "target": 1638378,
+          "symbols": [
+            "_ZN9rw_memory23on_pushButton_2_clickedEv.cold"
+          ]
+        },
+        {
+          "instruction": 6936825,
+          "kind": "jmp",
+          "target": 1638402,
+          "symbols": []
+        },
+        {
+          "instruction": 6936837,
+          "kind": "jmp",
+          "target": 1638394,
+          "symbols": []
+        },
+        {
+          "instruction": 6936849,
+          "kind": "jmp",
+          "target": 1638418,
+          "symbols": []
+        },
+        {
+          "instruction": 6936861,
+          "kind": "jmp",
+          "target": 1638426,
+          "symbols": []
+        },
+        {
+          "instruction": 6936873,
+          "kind": "jmp",
+          "target": 1638434,
+          "symbols": []
+        },
+        {
+          "instruction": 6936885,
+          "kind": "jmp",
+          "target": 1638450,
+          "symbols": []
+        },
+        {
+          "instruction": 6936897,
+          "kind": "jmp",
+          "target": 1638458,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN11NVL_MEM_CFG22read_BIOS_MAILBOX_DATAEjRj",
+      "address": 2381856,
+      "size": 184,
+      "code_hex": "f30f1efa41554189f5bea45d000041544989fc554889d5534883ec08e85fb6feff85c0792431db660f1f840000000000bea45d00004c89e783c301e840b6feff83fb637f0485c078e74489eabea45d00004c89e781e2ffffff1f81ca00000080e89bb6feffbea45d00004c89e7e80eb6feff85c0792331db0f1f840000000000bea45d00004c89e783c301e8f0b5feff83fb637f0485c078e74c89e7bea05d000089c3e8d8b5feff8945004883c40889d85b5d415c415dc3",
+      "code_sha256": "3888a18c74f591e854644192bd3cd18b1eb0c0cf36ac6d8f3a0fc49e4b2e7a40",
+      "calls": [
+        {
+          "instruction": 2381884,
+          "kind": "call",
+          "target": 2297504,
+          "symbols": [
+            "_ZN7RW_MMIO7Rd_MMIOEm"
+          ]
+        },
+        {
+          "instruction": 2381915,
+          "kind": "call",
+          "target": 2297504,
+          "symbols": [
+            "_ZN7RW_MMIO7Rd_MMIOEm"
+          ]
+        },
+        {
+          "instruction": 2381952,
+          "kind": "call",
+          "target": 2297632,
+          "symbols": [
+            "_ZN7RW_MMIO7Wr_MMIOEjj"
+          ]
+        },
+        {
+          "instruction": 2381965,
+          "kind": "call",
+          "target": 2297504,
+          "symbols": [
+            "_ZN7RW_MMIO7Rd_MMIOEm"
+          ]
+        },
+        {
+          "instruction": 2381995,
+          "kind": "call",
+          "target": 2297504,
+          "symbols": [
+            "_ZN7RW_MMIO7Rd_MMIOEm"
+          ]
+        },
+        {
+          "instruction": 2382019,
+          "kind": "call",
+          "target": 2297504,
+          "symbols": [
+            "_ZN7RW_MMIO7Rd_MMIOEm"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z12Write_MMIO64mm",
+      "address": 3601632,
+      "size": 389,
+      "code_hex": "f30f1efa415541544989cc554889d55756534881ece80000000f297424400f297c2450440f29442460440f294c2470440f29942480000000440f299c2490000000440f29a424a0000000440f29ac24b0000000440f29b424c0000000440f29bc24d000000064488b0425280000004889442438488d0546d090018038000f85ed000000be02101000488d3d3d302b0131c0e84adaddffbf1e0000004189c5e85dddddff31d24c8d4c242031c94989c04c89e0be0020000048c74424200100000049f7f04963c541b80300000048894424284863daba002000004929dc4c89642430e84ae270004889c789e84889041fe8fcddddff4489efe824d4ddff488b44243864482b04252800000075740f287424400f287c2450440f28442460440f284c2470440f28942480000000440f289c2490000000440f28a424a0000000440f28ac24b0000000440f28b424c0000000440f28bc24d00000004881c4e80000005b5e5f5d415c415dc30f1f8400000000004889d64889cfe855ecffffe97cffffffe8abb2ddff",
+      "code_sha256": "56ebf386e4743f7ef360c23cd414e5187f2524f0328deedfb5b14db9013f30ae",
+      "calls": [
+        {
+          "instruction": 3601777,
+          "kind": "call",
+          "target": 1363904,
+          "symbols": [
+            "open@plt"
+          ]
+        },
+        {
+          "instruction": 3601790,
+          "kind": "call",
+          "target": 1364704,
+          "symbols": [
+            "sysconf@plt"
+          ]
+        },
+        {
+          "instruction": 3601857,
+          "kind": "call",
+          "target": 10999824,
+          "symbols": [
+            "call_sys_mmap"
+          ]
+        },
+        {
+          "instruction": 3601871,
+          "kind": "call",
+          "target": 1364944,
+          "symbols": [
+            "munmap@plt"
+          ]
+        },
+        {
+          "instruction": 3601879,
+          "kind": "call",
+          "target": 1362432,
+          "symbols": [
+            "close@plt"
+          ]
+        },
+        {
+          "instruction": 3602006,
+          "kind": "call",
+          "target": 3596976,
+          "symbols": [
+            "_Z19Write_MMIO64_kernelmm"
+          ]
+        },
+        {
+          "instruction": 3602011,
+          "kind": "jmp",
+          "target": 3601884,
+          "symbols": []
+        },
+        {
+          "instruction": 3602016,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN7RW_MMIO9Wr_MMIO64Emm",
+      "address": 2299392,
+      "size": 21,
+      "code_hex": "f30f1efa4883ec284889f1e8d0de13004883c428c3",
+      "code_sha256": "b540c16eb30baa2bb8e9eef5230756e197484deea7e07977a3fed1df40b26870",
+      "calls": [
+        {
+          "instruction": 2299403,
+          "kind": "call",
+          "target": 3601632,
+          "symbols": [
+            "_Z12Write_MMIO64mm"
+          ]
+        }
+      ]
+    }
+  ],
+  "literals": [
+    {
+      "address": 22979044,
+      "text": "Write"
+    },
+    {
+      "address": 23209388,
+      "text": "/dev/mem"
+    },
+    {
+      "address": 23254979,
+      "text": "2timeout()"
+    },
+    {
+      "address": 23257853,
+      "text": "Applied!"
+    },
+    {
+      "address": 23260004,
+      "text": "Error"
+    },
+    {
+      "address": 23296157,
+      "text": "1refreshit()"
+    },
+    {
+      "address": 23296286,
+      "text": "Nothing to Write!"
+    }
+  ],
+  "objects": {}
+}

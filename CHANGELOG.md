@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 未发布 — 2026-10-09（原内存页零地址与64位fallback数据截断）
+
+- 新增4函数1704原指令字节，完整执行rw_memory写槽、NVL读mailbox、64位成员和底层写路由，
+  复用原96字节包装器。明确Qt/系统接口与映射为合成边界，无宿主设备访问，不改GUI/HAL/模块/ABI。
+- 原内存槽把解析地址存入对象基址，但两种宽度均传地址参数0；成员方法忽略基址，最后request
+  data0确为0。toLong收到ok指针但未检查；返回则Applied并重连timer，底层永久等待时停在断开状态。
+- 原Write_MMIO64模块路由保留64位数据；devmem路由的mov eax,ebp使8字节store只含低32位。
+  模拟映射覆盖跨页offset4095，未声称真实mmap/权限或失败路径通过。原NVL读helper前后各101次
+  busy预算耗尽仍写命令、读取data并返回busy；“read”不代表只读操作。
+- 168项本地刻画全部符合原指令，其中8项预期永久等待由预算停止；4项关键回归通过并接入CI。
+  详细地址/参数/前提/错误路径存docs/legacy-mmio-clients.md，覆盖台账及真机清单同步。
+- a9de46a的portability37864116644已完整23/23、probe37864116598成功；Linux24/35项测试无跳过，
+  3778项原指令刻画通过。下载10份报告与Windows除environment完全一致，jobs/artifact哈希及比对
+  存docs/validation/legacy-ngu-ci-a9de46a.json。本轮新增168项云端结果后续单列。
+
 ## 未发布 — 2026-10-09（Intel NGU到原96字节请求的地址核对）
 
 - 新增3327字节原指令fixture：NGU、两个完整ctl3/ctl6槽、NVL BIOS mailbox写、SAGV读取、

@@ -268,6 +268,9 @@ sudo CORPUS="$PWD/octool-corpus.bin" \
   低地址5da0/5da4，以及busy耗尽仍写并显示Applied。先按[地址证据](legacy-intel-ngu.md)恢复平台
   地址契约和错误处理；不通过实机试错判断这些低地址是否可写。重构GUI尚未加入这些动作。
 - [ ] 卸载 GUI 和模块包，再安装，DKMS 状态与设备权限正确。
+- [ ] 原版内存页写入暂不用于真机验收：原槽最终请求地址0，与用户输入地址不符；64位/dev/mem
+  路由还丢数据高32位。NVL的read_BIOS_MAILBOX_DATA会写命令，不列入只读采集名单。
+  这些是[原指令证据](legacy-mmio-clients.md)，不通过真机试写验证，不影响重构GUI既有HAL测试。
 - [ ] 升级内核后有新版本的已签名模块；旧内核仍可启动和加载。
 
 GUI 如需 root，使用该机器的合法本地显示认证，在已授权的会话中保留所需 DISPLAY/XAUTHORITY；

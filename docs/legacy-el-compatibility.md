@@ -224,6 +224,7 @@ gh run download RUN_ID --pattern 'legacy-*-evidence' --dir build/legacy-evidence
 | AMD命令传输 | [448项](legacy-amd-transport.md)确认固定BDF、端口等待耗尽仍发送、libpci错误值透传 | 上层完整业务、真实PCI后端、权限和固件时序 |
 | AMD MP1/反馈 | [563项](legacy-amd-mp1.md)确认身份辅助只读BDF0、21次轮询及失败后Applied | 真实Qt/完整构造/固件与其余调用者 |
 | Intel NGU/MMIO地址 | [266项](legacy-intel-ngu.md)从两完整槽到96字节请求；读加基址，写直接传偏移，101次busy耗尽仍写 | 平台正确地址契约、其他调用者、硬件定义及恢复实现 |
+| 原内存页与devmem数据宽度 | [168项](legacy-mmio-clients.md)确认原槽请求地址0、64位fallback只存低32位；NVL读helper仍发写命令 | 真实Qt绑定、映射错误、平台契约及恢复实现 |
 | Qt业务恢复 | 39类451个元方法入口及NVL控件绑定已核对 | 451个函数体的业务含义与全部面板，不以入口数量算完成率 |
 
 这批研究没有修改原GUI调用点或MMIO协议。直接MSR、I/O端口和内嵌libpci没有因安装新`/dev/mydev`

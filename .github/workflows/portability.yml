@@ -72,6 +72,10 @@ jobs:
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-ngu.py \
             --output build/intel-ngu.json
+      - name: Verify raw memory addresses and 64-bit fallback data width
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-mmio-clients.py \
+            --output build/mmio-clients.json
       - uses: actions/upload-artifact@v4
         with:
           name: mailbox-contract-evidence
@@ -86,6 +90,7 @@ jobs:
             build/amd-transport.json
             build/amd-mp1.json
             build/intel-ngu.json
+            build/mmio-clients.json
           if-no-files-found: error
           retention-days: 14
       - run: python3 port/ci/validate-local.py
