@@ -84,6 +84,10 @@ jobs:
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-mmio-i2c.py \
             --output build/mmio-i2c.json
+      - name: Verify NVL profile length gates before original hardware commands
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-nvl-profile.py \
+            --output build/nvl-profile.json
       - uses: actions/upload-artifact@v4
         with:
           name: mailbox-contract-evidence
@@ -101,6 +105,7 @@ jobs:
             build/mmio-clients.json
             build/mmio-services.json
             build/mmio-i2c.json
+            build/nvl-profile.json
           if-no-files-found: error
           retention-days: 14
       - run: python3 port/ci/validate-local.py

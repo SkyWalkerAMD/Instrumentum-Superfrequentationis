@@ -1,0 +1,4890 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "fixture_sha256": "70f812290be3721799ac44f142ee74ac91941096ea5be27d5d3422ba20ce8a9d",
+  "scope": "Original NVL import entry through original percoreoverride_en and Wrmsr to first MSR file-write boundary; original 24-byte exporter write slice. Synthetic Qt, streams, libc and controlled buffer contents; no host I/O, subsequent device actions or oversized copy",
+  "environment": {
+    "system": "Windows",
+    "python": "3.14.8",
+    "unicorn": "2.1.4"
+  },
+  "cases_characterized": 42,
+  "profile_export_bytes": 6386,
+  "observations": [
+    {
+      "symbol": "nvl-profile-save-write-slice",
+      "inputs": {},
+      "read_request": null,
+      "save_request": {
+        "count": 6386,
+        "buffer": 1610663632
+      },
+      "file_events": [],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "export-write-boundary",
+      "return_al": null,
+      "steps": 5,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [],
+      "searches": [],
+      "events": [],
+      "qt_texts": []
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "tell_last": 0
+      },
+      "read_request": null,
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610671296
+        },
+        {
+          "operation": "_ZN5QFileD2Ev"
+        }
+      ],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "returned",
+      "return_al": 0,
+      "steps": 266,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QMessageBox7warningEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_",
+        "_ZN7QStringD1Ev",
+        "_ZN7QStringD1Ev",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt12__basic_fileIcED1Ev@plt",
+        "_ZNSt6localeD1Ev@plt",
+        "_ZNSt8ios_baseD2Ev@plt",
+        "_ZN5QFileD2Ev"
+      ],
+      "searches": [],
+      "events": [
+        {
+          "warning_boundary": true
+        }
+      ],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile",
+        "File wrong size!",
+        "Error"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "tell_last": 1
+      },
+      "read_request": null,
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 1
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610671296
+        },
+        {
+          "operation": "_ZN5QFileD2Ev"
+        }
+      ],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "returned",
+      "return_al": 0,
+      "steps": 266,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QMessageBox7warningEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_",
+        "_ZN7QStringD1Ev",
+        "_ZN7QStringD1Ev",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt12__basic_fileIcED1Ev@plt",
+        "_ZNSt6localeD1Ev@plt",
+        "_ZNSt8ios_baseD2Ev@plt",
+        "_ZN5QFileD2Ev"
+      ],
+      "searches": [],
+      "events": [
+        {
+          "warning_boundary": true
+        }
+      ],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile",
+        "File wrong size!",
+        "Error"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "tell_last": 6384
+      },
+      "read_request": null,
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6384
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610671296
+        },
+        {
+          "operation": "_ZN5QFileD2Ev"
+        }
+      ],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "returned",
+      "return_al": 0,
+      "steps": 266,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QMessageBox7warningEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_",
+        "_ZN7QStringD1Ev",
+        "_ZN7QStringD1Ev",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt12__basic_fileIcED1Ev@plt",
+        "_ZNSt6localeD1Ev@plt",
+        "_ZNSt8ios_baseD2Ev@plt",
+        "_ZN5QFileD2Ev"
+      ],
+      "searches": [],
+      "events": [
+        {
+          "warning_boundary": true
+        }
+      ],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile",
+        "File wrong size!",
+        "Error"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "tell_last": 6385
+      },
+      "read_request": null,
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6385
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610671296
+        },
+        {
+          "operation": "_ZN5QFileD2Ev"
+        }
+      ],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "returned",
+      "return_al": 0,
+      "steps": 266,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QMessageBox7warningEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_",
+        "_ZN7QStringD1Ev",
+        "_ZN7QStringD1Ev",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt12__basic_fileIcED1Ev@plt",
+        "_ZNSt6localeD1Ev@plt",
+        "_ZNSt8ios_baseD2Ev@plt",
+        "_ZN5QFileD2Ev"
+      ],
+      "searches": [],
+      "events": [
+        {
+          "warning_boundary": true
+        }
+      ],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile",
+        "File wrong size!",
+        "Error"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "tell_last": 6386
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 6386,
+        "unchecked_short_read": false
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "5b928aa4484c842b9972f0a3bcc645eabd1f1e464bfce974338d0a868dd7e63d",
+      "buffer_first16": "00000000000000000000000000000000",
+      "buffer_last16": "00000000000000000000000000000000",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "tell_last": 6387
+      },
+      "read_request": {
+        "requested_bytes": 6387,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6387
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "oversize-read-boundary",
+      "return_al": null,
+      "steps": 227,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "tell_last": 6392
+      },
+      "read_request": {
+        "requested_bytes": 6392,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6392
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "oversize-read-boundary",
+      "return_al": null,
+      "steps": 227,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "tell_last": 6393
+      },
+      "read_request": {
+        "requested_bytes": 6393,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6393
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "oversize-read-boundary",
+      "return_al": null,
+      "steps": 227,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "tell_last": 8192
+      },
+      "read_request": {
+        "requested_bytes": 8192,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 8192
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "oversize-read-boundary",
+      "return_al": null,
+      "steps": 227,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "tell_last": 4294967296
+      },
+      "read_request": {
+        "requested_bytes": 4294967296,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 4294967296
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "oversize-read-boundary",
+      "return_al": null,
+      "steps": 227,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "tell_last": 9223372036854775807
+      },
+      "read_request": {
+        "requested_bytes": 9223372036854775807,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 9223372036854775807
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "oversize-read-boundary",
+      "return_al": null,
+      "steps": 227,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 0,
+        "payload_byte": 0,
+        "initial_buffer_byte": 90
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 0,
+        "unchecked_short_read": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 0
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "dc95fd5d0a0ed57ab2d011ca9d0915dc039d038c390ee1ed8e919be0b1adb3f1",
+      "buffer_first16": "5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "buffer_last16": "5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 0,
+        "payload_byte": 0,
+        "initial_buffer_byte": 165
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 0,
+        "unchecked_short_read": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 0
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 0,
+        "payload_byte": 255,
+        "initial_buffer_byte": 90
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 0,
+        "unchecked_short_read": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 0
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "dc95fd5d0a0ed57ab2d011ca9d0915dc039d038c390ee1ed8e919be0b1adb3f1",
+      "buffer_first16": "5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "buffer_last16": "5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 0,
+        "payload_byte": 255,
+        "initial_buffer_byte": 165
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 0,
+        "unchecked_short_read": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 0
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 1,
+        "payload_byte": 0,
+        "initial_buffer_byte": 90
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 1,
+        "unchecked_short_read": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 1
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "ba7e99bf65a47c44f445617de5836a6b08fdb9ed891b6b428169a96a18cf16c9",
+      "buffer_first16": "005a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "buffer_last16": "5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 1,
+        "payload_byte": 0,
+        "initial_buffer_byte": 165
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 1,
+        "unchecked_short_read": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 1
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "40050cc3fe5b32c649be4dff4c97d7213cba4f820bd74fdde1f87e0f280aa1c6",
+      "buffer_first16": "00a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 1,
+        "payload_byte": 255,
+        "initial_buffer_byte": 90
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 1,
+        "unchecked_short_read": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 1
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "163efa430a017c712ea1f82792a314f27b59e7f338f88b5ff7274fe4c419566d",
+      "buffer_first16": "ff5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "buffer_last16": "5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 1,
+        "payload_byte": 255,
+        "initial_buffer_byte": 165
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 1,
+        "unchecked_short_read": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 1
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "25bc662777c03f48f01fcabb32ce685af0dd2aebd1df414169fefc076ded38ca",
+      "buffer_first16": "ffa5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 4,
+        "payload_byte": 0,
+        "initial_buffer_byte": 90
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 4,
+        "unchecked_short_read": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 4
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "bdd41e81a69e893af80a0014c8ed2cddee23b311102387d4b45442d0c68c0f7b",
+      "buffer_first16": "000000005a5a5a5a5a5a5a5a5a5a5a5a",
+      "buffer_last16": "5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 4,
+        "payload_byte": 0,
+        "initial_buffer_byte": 165
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 4,
+        "unchecked_short_read": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 4
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "5e6f1cfcf6d7e5b6d1b055b6f4c7d1de7f0fba8264beb13d15043cc50bfb2dae",
+      "buffer_first16": "00000000a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 4,
+        "payload_byte": 255,
+        "initial_buffer_byte": 90
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 4,
+        "unchecked_short_read": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 4
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "adb383ec982209d0d0278d557952c049c33ff188e36e5d610408f0420e75bb32",
+      "buffer_first16": "ffffffff5a5a5a5a5a5a5a5a5a5a5a5a",
+      "buffer_last16": "5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 4,
+        "payload_byte": 255,
+        "initial_buffer_byte": 165
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 4,
+        "unchecked_short_read": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 4
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "07fb1393815a30b8577c47451d2cfd41814f3ca9869e3c6245128dd02ebc0d1c",
+      "buffer_first16": "ffffffffa5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 6385,
+        "payload_byte": 0,
+        "initial_buffer_byte": 90
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 6385,
+        "unchecked_short_read": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 6385
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "9afb671a76dfec830f052acac2a8e6b394d35d28ad25606b8f56605563137445",
+      "buffer_first16": "00000000000000000000000000000000",
+      "buffer_last16": "0000000000000000000000000000005a",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 6385,
+        "payload_byte": 0,
+        "initial_buffer_byte": 165
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 6385,
+        "unchecked_short_read": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 6385
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "83e2c38b7feb8c330a5a595d5179c48bb0d7da560a36280e4e7d43d5c8f7e749",
+      "buffer_first16": "00000000000000000000000000000000",
+      "buffer_last16": "000000000000000000000000000000a5",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 6385,
+        "payload_byte": 255,
+        "initial_buffer_byte": 90
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 6385,
+        "unchecked_short_read": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 6385
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "8c666b9dcd96b412b7dffb0efcfb51d8da6b049b25c4787eb96dbdb8eb89be9d",
+      "buffer_first16": "ffffffffffffffffffffffffffffffff",
+      "buffer_last16": "ffffffffffffffffffffffffffffff5a",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 6385,
+        "payload_byte": 255,
+        "initial_buffer_byte": 165
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 6385,
+        "unchecked_short_read": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 6385
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "f33086aa693585c0692ba1c955399aa6efa5e1dc29793ad4655f4208f4c20c82",
+      "buffer_first16": "ffffffffffffffffffffffffffffffff",
+      "buffer_last16": "ffffffffffffffffffffffffffffffa5",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 6386,
+        "payload_byte": 0,
+        "initial_buffer_byte": 90
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 6386,
+        "unchecked_short_read": false
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "5b928aa4484c842b9972f0a3bcc645eabd1f1e464bfce974338d0a868dd7e63d",
+      "buffer_first16": "00000000000000000000000000000000",
+      "buffer_last16": "00000000000000000000000000000000",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 6386,
+        "payload_byte": 0,
+        "initial_buffer_byte": 165
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 6386,
+        "unchecked_short_read": false
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "5b928aa4484c842b9972f0a3bcc645eabd1f1e464bfce974338d0a868dd7e63d",
+      "buffer_first16": "00000000000000000000000000000000",
+      "buffer_last16": "00000000000000000000000000000000",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 6386,
+        "payload_byte": 255,
+        "initial_buffer_byte": 90
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 6386,
+        "unchecked_short_read": false
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "e0e42c6027b444136591e4fa199fe1dec456b6b8d6ee03ff416415a46116026f",
+      "buffer_first16": "ffffffffffffffffffffffffffffffff",
+      "buffer_last16": "ffffffffffffffffffffffffffffffff",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "actual_read": 6386,
+        "payload_byte": 255,
+        "initial_buffer_byte": 165
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 6386,
+        "unchecked_short_read": false
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "e0e42c6027b444136591e4fa199fe1dec456b6b8d6ee03ff416415a46116026f",
+      "buffer_first16": "ffffffffffffffffffffffffffffffff",
+      "buffer_last16": "ffffffffffffffffffffffffffffffff",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "cancel": true
+      },
+      "read_request": null,
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 0
+        },
+        {
+          "operation": "_ZN5QFileD2Ev"
+        }
+      ],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "returned",
+      "return_al": 0,
+      "steps": 127,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QMessageBox11informationEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_",
+        "_ZN7QStringD1Ev",
+        "_ZN7QStringD1Ev",
+        "_ZN5QFileD2Ev"
+      ],
+      "searches": [],
+      "events": [
+        {
+          "information_boundary": true
+        }
+      ],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile",
+        "Profile not loaded",
+        "Error"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "qt_open": false
+      },
+      "read_request": null,
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 0
+        },
+        {
+          "operation": "_ZN5QFileD2Ev"
+        }
+      ],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "returned",
+      "return_al": 0,
+      "steps": 127,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QMessageBox11informationEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_",
+        "_ZN7QStringD1Ev",
+        "_ZN7QStringD1Ev",
+        "_ZN5QFileD2Ev"
+      ],
+      "searches": [],
+      "events": [
+        {
+          "information_boundary": true
+        }
+      ],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile",
+        "Profile not loaded",
+        "Error"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "first_open": false
+      },
+      "read_request": null,
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 0
+        },
+        {
+          "operation": "ios.clear",
+          "state": 4
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": -1
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": -1
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610671296
+        },
+        {
+          "operation": "_ZN5QFileD2Ev"
+        }
+      ],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "returned",
+      "return_al": 0,
+      "steps": 268,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QMessageBox7warningEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_",
+        "_ZN7QStringD1Ev",
+        "_ZN7QStringD1Ev",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt12__basic_fileIcED1Ev@plt",
+        "_ZNSt6localeD1Ev@plt",
+        "_ZNSt8ios_baseD2Ev@plt",
+        "_ZN5QFileD2Ev"
+      ],
+      "searches": [],
+      "events": [
+        {
+          "warning_boundary": true
+        }
+      ],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile",
+        "File wrong size!",
+        "Error"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "second_open": false
+      },
+      "read_request": null,
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 0
+        },
+        {
+          "operation": "_ZN11QFileDevice5closeEv"
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610671296
+        },
+        {
+          "operation": "_ZN5QFileD2Ev"
+        }
+      ],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "returned",
+      "return_al": 0,
+      "steps": 284,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZN7QStringC1EPKc",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QMessageBox7warningEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_",
+        "_ZN7QStringD1Ev",
+        "_ZN7QStringD1Ev",
+        "_ZN11QFileDevice5closeEv",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEED1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt12__basic_fileIcED1Ev@plt",
+        "_ZNSt6localeD1Ev@plt",
+        "_ZNSt8ios_baseD2Ev@plt",
+        "_ZN5QFileD2Ev"
+      ],
+      "searches": [],
+      "events": [
+        {
+          "warning_boundary": true
+        }
+      ],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile",
+        "File wrong size!",
+        "Error"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "close_error": true
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 6386,
+        "unchecked_short_read": false
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 0
+        },
+        {
+          "operation": "ios.clear",
+          "state": 4
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 0
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "5b928aa4484c842b9972f0a3bcc645eabd1f1e464bfce974338d0a868dd7e63d",
+      "buffer_first16": "00000000000000000000000000000000",
+      "buffer_last16": "00000000000000000000000000000000",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 293,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "tell_first": -1,
+        "tell_last": -1
+      },
+      "read_request": null,
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": -1
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": -1
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610671296
+        },
+        {
+          "operation": "_ZN5QFileD2Ev"
+        }
+      ],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "returned",
+      "return_al": 0,
+      "steps": 266,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QMessageBox7warningEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_",
+        "_ZN7QStringD1Ev",
+        "_ZN7QStringD1Ev",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt12__basic_fileIcED1Ev@plt",
+        "_ZNSt6localeD1Ev@plt",
+        "_ZNSt8ios_baseD2Ev@plt",
+        "_ZN5QFileD2Ev"
+      ],
+      "searches": [],
+      "events": [
+        {
+          "warning_boundary": true
+        }
+      ],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile",
+        "File wrong size!",
+        "Error"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "tell_first": 0,
+        "tell_last": -1
+      },
+      "read_request": {
+        "requested_bytes": 18446744073709551615,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": true
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": -1
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "oversize-read-boundary",
+      "return_al": null,
+      "steps": 227,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "tell_first": -1,
+        "tell_last": 6385
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 6386,
+        "unchecked_short_read": false
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": -1
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6385
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "5b928aa4484c842b9972f0a3bcc645eabd1f1e464bfce974338d0a868dd7e63d",
+      "buffer_first16": "00000000000000000000000000000000",
+      "buffer_last16": "00000000000000000000000000000000",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "tell_first": 1,
+        "tell_last": 6386
+      },
+      "read_request": null,
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 1
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610671296
+        },
+        {
+          "operation": "_ZN5QFileD2Ev"
+        }
+      ],
+      "first_msr_write": null,
+      "msr_libc_events": [],
+      "buffer_sha256": "db9621f211faa061199c094bb349214a93c72ae1197060cef90068db6a9801ed",
+      "buffer_first16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "buffer_last16": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "outcome": "returned",
+      "return_al": 0,
+      "steps": 266,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QMessageBox7warningEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_",
+        "_ZN7QStringD1Ev",
+        "_ZN7QStringD1Ev",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt12__basic_fileIcED1Ev@plt",
+        "_ZNSt6localeD1Ev@plt",
+        "_ZNSt8ios_baseD2Ev@plt",
+        "_ZN5QFileD2Ev"
+      ],
+      "searches": [],
+      "events": [
+        {
+          "warning_boundary": true
+        }
+      ],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile",
+        "File wrong size!",
+        "Error"
+      ]
+    },
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "inputs": {
+        "tell_first": 1,
+        "tell_last": 6387
+      },
+      "read_request": {
+        "requested_bytes": 6386,
+        "buffer": 1610671808,
+        "exporter_bytes": 6386,
+        "canary_distance": 6392,
+        "reaches_canary_if_fully_copied": false,
+        "synthetic_bytes_delivered": 6386,
+        "unchecked_short_read": false
+      },
+      "save_request": null,
+      "file_events": [
+        {
+          "operation": "_ZN5QFileC1ERK7QString"
+        },
+        {
+          "operation": "QFile.open",
+          "flags": 17,
+          "result": 1
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 1,
+          "flags": 8,
+          "result": 1610671296
+        },
+        {
+          "operation": "ios.clear",
+          "state": 0
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 1,
+          "synthetic_result": 1
+        },
+        {
+          "operation": "tellg",
+          "ordinal": 2,
+          "synthetic_result": 6387
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 1,
+          "result": 1610671296
+        },
+        {
+          "operation": "filebuf.open",
+          "ordinal": 2,
+          "flags": 12,
+          "result": 1610670752
+        },
+        {
+          "operation": "istream.read",
+          "requested": 6386,
+          "synthetic_delivered": 6386
+        },
+        {
+          "operation": "filebuf.close",
+          "ordinal": 2,
+          "result": 1610670752
+        }
+      ],
+      "first_msr_write": {
+        "path": "/dev/cpu/0/msr",
+        "offset": 336,
+        "low": 0,
+        "high": 2147483668,
+        "request_hex": "0000000014000080"
+      },
+      "msr_libc_events": [
+        {
+          "op": "open",
+          "path": "/dev/cpu/0/msr",
+          "flags": 1,
+          "result": 700
+        },
+        {
+          "op": "lseek",
+          "fd": 700,
+          "offset": 336,
+          "result": 336
+        }
+      ],
+      "buffer_sha256": "5b928aa4484c842b9972f0a3bcc645eabd1f1e464bfce974338d0a868dd7e63d",
+      "buffer_first16": "00000000000000000000000000000000",
+      "buffer_last16": "00000000000000000000000000000000",
+      "outcome": "first-msr-write-boundary",
+      "return_al": null,
+      "steps": 285,
+      "panel": null,
+      "panel_flag": null,
+      "calls": [
+        "_ZNK11QMetaObject2trEPKcS1_i",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN7QString16fromAscii_helperEPKci",
+        "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE",
+        "_ZN5QFileC1ERK7QString",
+        "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE",
+        "_ZN7QString13toUtf8_helperERKS_",
+        "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSi5seekgElSt12_Ios_Seekdir@plt",
+        "_ZNSi5tellgEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt",
+        "_ZNSt8ios_baseC2Ev@plt",
+        "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt",
+        "_ZNSi4readEPcl@plt",
+        "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt",
+        "__sprintf_chk@plt",
+        "open@plt",
+        "lseek@plt"
+      ],
+      "searches": [],
+      "events": [],
+      "qt_texts": [
+        "Profiles (*.pro)",
+        "profile.pro",
+        "Load Profile"
+      ]
+    }
+  ]
+}

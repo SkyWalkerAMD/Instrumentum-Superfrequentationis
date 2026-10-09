@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 未发布 — 2026-10-09（NVL配置导入门禁到首个原MSR请求）
+
+- 第三个NGU调用者确认为已连接的Load Profile槽，导出/加载完整静态报告；新fixture6381原字节
+  包括加载函数、percoreoverride_en和24字节保存片段，复用固定Wrmsr叶函数，不执行真实文件/硬件。
+- 保存片段固定6386字节；加载只拒绝<=6385，没有上限，直接将文件长度传read。目标到canary仅6392
+  字节，超长请求由模拟器在read边界停止，未复制越界数据。tellg返回-1与无符号差值的区别单独记录。
+- 精确长度的合成短读0/1/4/6385字节仍进入原percoreoverride_en→Wrmsr，捕获CPU0 MSR150首笔
+  low0/high80000014的8字节请求，在libc write边界停止。未执行后续设置，不声称真实配置已改变。
+- 42项刻画和4项回归通过，接入CI。源码docs/legacy-nvl-profile.md详记长度、短读、打开/关闭失败、
+  受控栈前提及剩余字段恢复；覆盖台账/真机清单同步。不改生产GUI/HAL/模块/96字节ABI。
+- 前一390f49b的portability37866858244完整23/23及probe37866858326成功，Linux24/50项测试
+  无跳过，4325项原指令实验通过。下载13份报告与Windows除environment完全一致，记录于
+  docs/validation/legacy-mmio-i2c-ci-390f49b.json。本轮新增42项的云端验证待独立归档。
+
 ## 未发布 — 2026-10-09（原I2C状态机与28处MMIO调用逐点覆盖）
 
 - 新增完整CpmReadWriteI2CBytes5的1664原代码字节、两张6项配置表、flag/stream relocation证据。

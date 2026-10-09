@@ -1,0 +1,1623 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "msr_fixture_sha256": "8fa956c195a5afe65dd63284d796520adc70519a3e23b1ab2d13b81b4d4f8574",
+  "scope": "Original NVL import entry through original percoreoverride_en and Wrmsr to first MSR file-write boundary; original 24-byte exporter write slice. Synthetic Qt, streams, libc and controlled buffer contents; no host I/O, subsequent device actions or oversized copy",
+  "functions": [
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_12_clickedEv",
+      "address": 6390480,
+      "size": 6161,
+      "code_hex": "f30f1efa554889e54157415641554154534881ec0010000048830c24004881ec0010000048830c24004881ec08010000488d35f976600141b8ffffffff31c9488d151e2c020164488b042528000000488945c831c0488d9d80dfffff4989fc4889df48899d30dfffffe852f5ef00be0b000000488d3dfb2b0201e84169e100be0c000000488d3d575e0101488985c0dfffffe82969e1004883ec084531c94989d84c89e66a004c8dbdc0dfffff4c8db5a0dfffff488985a0dfffff4c89f94c89f2488d8568dfffff4889c748898528dfffffe8693f8600488bbda0dfffff415a415b8b0785c00f84d407000083f8ff7411f0832f01488bbda0dfffff0f84be070000488bbdc0dfffff8b0785c00f84cd07000083f8ff7411f0832f01488bbdc0dfffff0f84b7070000488bbd80dfffff8b0785c00f84c607000083f8ff7411f0832f01488bbd80dfffff0f84b0070000488d8570dfffff488bb528dfffff4889c748898518dfffff4889c3e880c6e600be110000004889dfe853cfe60084c00f8443120000488bb528dfffff4c89ffe8bc65e100488bb5c0dfffff488d85a0e2ffff488dbd90e2ffff4889bdd8deffff4863560448037610488985f0deffff48898590e2ffff4801f2e84203feff488bbdc0dfffff8b0785c00f84c906000083f8ff7411f0832f01488bbdc0dfffff0f84b3060000488d85c0e5ffff4c8dadc0e4ffff4889c748898508dfffff4c89ad20dfffffe8975bb3ff488b05c08a65014531c931f66644898da0e6ffff48c78598e6ffff000000004883c010488985c0e5ffff488b055e8a650148c785a8e6ffff00000000488b5808488b501048c785b0e6ffff0000000048c785b8e6ffff00000000488b43e848899dc0e4ffff48c785c0e6ffff0000000048899405c0e4ffff48c785c8e4ffff00000000488b7be848899d00dfffff4c01ef488995f8deffffe8aa4cb3ff488b05ab8865014883c018488985c0e4ffff488b05998865014883c040488985c0e5ffff488d85d0e4ffff4889c748898510dfffff4889c3e83d33b3ff488bbd08dfffff4889dee85e4cb3ff488bb590e2ffffba080000004889dfe88a5cb3ff488b95c0e4ffff488bbd20dfffff48037ae84885c00f84a512000031f6e8281bb3ff4c8bad20dfffff4c89efe88941b3ffba0200000031f64c89ef4889c3e8e724b3ff488bbd20dfffffe86b41b3ff488bbd10dfffff4989c5e8fc20b3ff4885c00f84751200004929dd4981fdf11800000f86df100000488d9db0e2ffff4889df48899de8deffffe88d32b3ff488bb590e2ffffba0c0000004889dfe8e95bb3ff4885c00f8454120000488d85b0e3ffff4889c7488985e0deffffe8da59b3ff488b15538865014531c04889de488bbde0deffff48c78588e4ffff00000000488d42186644898590e4ffff488985a0e3ffff488d424048c78598e4ffff0000000048c785a0e4ffff0000000048c785a8e4ffff0000000048c785b0e4ffff00000000488985b0e3ffff48c785a8e3ffff00000000e8114bb3ff488d85d0e6ffff488dbda0e3ffff4c89ea4889c648898540dfffffe85149b3ff488bbde8deffffe8f51fb3ffe870bad5ff6a2341b92300000041b823000000b9230000006a23ba23000000be23000000bf23000000e8b7b3d5ff5e5f6a2341b9230000006a2341b823000000b923000000ba23000000be23000000bf23000000e8ccb2d5ff418b8c249c010000585a85c90f8eef020000488d85f6e6ffff48c78548dfffff0000000048898550dfffff488b8540dfffff48898538dfffff0f1f00488b8550dfffff488b8d48dfffffc785c0dfffff110000800fb60089cb8985a0dfffff488d051e3e6601488b10488b82d80d0000488b92e00d00004829c248c1fa024839d10f8355110000488b9548dfffff498bbc24e800000089de8b0490488d0c95000000004989cd25ff1f0000c1e00d0d110000808985c0dfffffe8ee8ce9ff8b95c0dfffff8bb5a0dfffff89c1bf50010000e8f66dd5ff660f1f440000498bbc24e800000089dee8c18ce9ff89c14c89fa4c89f6bf50010000e8df6fd5ff8b85c0dfffff85c078d5488b8540dfffff488b8d48dfffffc785c0dfffff110200808b8488a60400008985a0dfffff488d05513d6601488b10488b82d80d0000488b92e00d00004829c248c1fa024839d10f8399100000428b0428498bbc24e800000089de25ff1f0000c1e00d0d110200808985c0dfffffe8328ce9ff8b95c0dfffff8bb5a0dfffff89c1bf50010000e83a6dd5ff662e0f1f840000000000498bbc24e800000089dee8018ce9ff89c14c89fa4c89f6bf50010000e81f6fd5ff8b85c0dfffff85c078d5488b8540dfffff488bb548dfffffc785c0dfffff270000808b84b0a60200008985a0dfffff488d05913c6601488b00488b88d80d0000488b90e00d00004829ca48c1fa024839d60f83b50f0000428b0429498bbc24e800000089de25ff1f0000c1e00d0d270000808985c0dfffffe8728be9ff8b95c0dfffff8bb5a0dfffff89c1bf50010000e87a6cd5ff662e0f1f840000000000498bbc24e800000089dee8418be9ff89c14c89fa4c89f6bf50010000e85f6ed5ff448badc0dfffff4585ed78d3c7855cdfffff000000004c8bad38dfffffeb2283855cdfffff018b855cdfffff89da410fbfb5a606000089c7e8d220d7ff4983c502488b8550dfffff0fb680801500003b855cdfffff7fc848838548dfffff01488b8548dfffff48838550dfffff0148838538dfffff1e413984249c0100000f8f3bfdffff488d8510fdffff31d231f648c78580dfffff0000000048c78588dfffff000000004989c5488d9d08fdffff48c78590dfffff0000000048c785a0dfffff0000000048c785a8dfffff0000000048c785b0dfffff00000000eb55669089064883c6044889b588dfffff0fb64308488bb5a8dfffff8985c0dfffff483bb5b0dfffff0f84bd00000089064883c3014883c6044889b5a8dfffff4939dd0f84bb000000488bb588dfffff488b9590dfffff0fb6038985c0dfffff4839d6759f488bbd30dfffff4c89fae84013c1ffeb9b660f1f440000ba08000000be01000000e80924db00e939f9ffff0f1f4000ba08000000be02000000e8f123db00488bbdc0dfffff8b0785c00f8533f8ffffba08000000be02000000e8d123db00488bbd80dfffff8b0785c00f853af8ffffba08000000be02000000e8b123db00e93cf8ffff0f1f40004c89fa4c89f7e8bd12c1ff4883c3014939dd0f8545ffffff498b7c2438488b8d30dfffff31d231f64d89f0e858d3c2ff488b85a0dfffff483985a8dfffff7407488985a8dfffff488bb580dfffff4839b588dfffff74074889b588dfffff488b8540dfffff488d9d18fdffff4805501600004989c5eb459089064883c6044889b588dfffff0fb64308488bb5a8dfffff8985c0dfffff483bb5b0dfffff744989064883c3014883c6044889b5a8dfffff4939dd744b488bb588dfffff0fb6038985c0dfffff4839b590dfffff75aa488bbd30dfffff4c89fae8eb11c1ffeba6660f1f8400000000004c89fa4c89f7e8d511c1ff4883c3014939dd75b90f1f4000498b7c24384d89f0ba0100000031f6488b8d30dfffffe86dd2c2ff488b85a0dfffff483985a8dfffff7407488985a8dfffff488bb580dfffff4839b588dfffff74074889b588dfffff488b8540dfffff488d9d28fdffff4805601600004989c5eb4a660f1f44000089064883c6044889b588dfffff0fb64308488bb5a8dfffff8985c0dfffff483bb5b0dfffff744989064883c3014883c6044889b5a8dfffff4939dd744b488bb588dfffff0fb6038985c0dfffff483bb590dfffff75aa488bbd30dfffff4c89fae8fb10c1ffeba6660f1f8400000000004c89fa4c89f7e8e510c1ff4883c3014939dd75b90f1f4000498b7c24384d89f031d2be01000000488b8d30dfffffe87dd1c2ff488b85a0dfffff483b85a8dfffff7407488985a8dfffff488bb580dfffff483bb588dfffff74074889b588dfffff488b8540dfffff488d9d38fdffff4805701600004989c5eb4a660f1f44000089064883c6044889b588dfffff0fb64308488bb5a8dfffff8985c0dfffff483bb5b0dfffff744989064883c3014883c6044889b5a8dfffff4939dd744b488bb588dfffff0fb6038985c0dfffff483bb590dfffff75aa488bbd30dfffff4c89fae80b10c1ffeba6660f1f8400000000004c89fa4c89f7e8f50fc1ff4883c3014939dd75b90f1f4000498b7c2438488b8d30dfffff4d89f0ba01000000be01000000e88ad0c2ff0fb785f0e6ffff660fefc0660fefdbf20f100d4342fb00660fefd2660fefe4f20f2ac00fb785f4e6fffff20f2ad80fb785f2e6fffff20f2ad0f20f5ec1f20f5ed9660f2ec4f20f5ed166480f7edb66490f7ed50f8a770900000f857109000066480f6eeb660feff6660f2eee0f8a190900000f851309000066490f6efd660fefe4660f2efc7a02742641807c2441000f8417090000498bbc240003000066490f6efd660fefc0f20f5ac7e87b3bc8ff8bb5f6fcffffba11010080bf50010000c78564dfffff1101008089b560dfffffe86667d5ff488d8564dfffff488d9d60dfffffbf500100004889c24889de4989c5e8f567d5ffeb130f1f004c89ea4889debf50010000e8e067d5ff448b9d64dfffff4585db78e48bb5fafcffffba11060080bf50010000c78564dfffff1106008089b560dfffffe8ff66d5ff0f1f80000000004c89ea4889debf50010000e89867d5ff448b9564dfffff4585d278e48bb5fefcffffba11070080bf50010000c78564dfffff1107008089b560dfffffe8b766d5ff0f1f80000000004c89ea4889debf50010000e85067d5ff448b8d64dfffff4585c978e40fb6bd07fdffffe8886bcaff8bb502fdffffba11080080bf50010000c78564dfffff1108008089b560dfffffe86366d5ff0f1f004c89ea4889debf50010000e80067d5ff448b8564dfffff4585c078e40fb68d5efdffff498b7c243831d2be01000000440fb68560fdffffe8e4cbc2ff498b7c2438ba01000000be010000000fb68d5ffdffff440fb68561fdffffe8c1cbc2ff8bb548fdffffba15000080bf50010000c78564dfffff1500008089b560dfffffe8dc65d5ff0f1f40004c89ea4889debf50010000e87866d5ff8bbd64dfffff85ff78e68bb550fdffffba17000080bf50010000c78564dfffff1700008089b560dfffffe89965d5ff660f1f8400000000004c89ea4889debf50010000e83066d5ff8bb564dfffff85f678e68bb54cfdffffba19000080bf50010000c78564dfffff1900008089b560dfffffe85165d5ff904c89ea4889debf50010000e8f065d5ff8b8d64dfffff85c978e68bb554fdffffba1b000080bf50010000c78564dfffff1b00008089b560dfffffe81165d5ff904c89ea4889debf50010000e8b065d5ff8b9564dfffff85d278e68bb558fdffffba21000080bf50010000c78564dfffff2100008089b560dfffffe8d164d5ff904c89ea4889debf50010000e87065d5ff8b8564dfffff85c078e631f6498b7c246080bd62fdffff00400f95c6e80f317a00488d8564fdffff31db4889c2eb1d900fbf3283c3014989d5ba0200000089dfe81b1ad7ff4983c5024c89ea0fb68563fdffff39d87fd94c89ffe89143d8ff4c89ffe8791dd7ff4c89ffe8d126d7ff488bbd38e0ffff488bb540e0ffff4829fe48c1fe02744d4c8b9550e0ffff4c8b8d68e0ffff488d9582fdffff31c04c8b8580e0ffff0f1f40000fb60a4883c201890c870fb64a0741890c820fb64a0f41890c810fb64a1741890c804883c0014839f075d5488bbd70e1ffff488bb578e1ffff4829fe48c1fe0274514c8b9588e1ffff4c8b8da0e1ffff488d95a2feffff31c04c8b85b8e1ffff0f1f8400000000000fb60a4883c201890c870fb64a0741890c820fb64a0f41890c810fb64a1741890c804883c0014839c675d5488bbd98e0ffff488bb5a0e0ffff4829fe48c1fe02744c4c8b95b0e0ffff4c8b8dc8e0ffff488d95a2fdffff31c04c8b85e0e0ffff0fb60a4883c201890c870fb64a3f41890c820fb64a7f41890c810fb68abf00000041890c804883c0014839c675d2488bbdd0e1ffff488bb5d8e1ffff4829fe48c1fe0274514c8b95e8e1ffff4c8b8d00e2ffff488d95c2feffff31c04c8b8518e2ffff0f1f4400000fb60a4883c201890c870fb64a3f41890c820fb64a7f41890c810fb68abf00000041890c804883c0014839f075d2e86557d6ff4c89ffe8dd0efeff488bbda0dfffff4885ff740f488bb5b0dfffff4829fee8120eb3ff488bbd80dfffff4885ff740f488bb590dfffff4829fee8f70db3ff488b05507a6501488bbde0deffff48c785a8e3ffff000000004883c018488985a0e3ffff488b05dc7a65014883c010488985b0e3ffffe8ec42b3ff488b05e57a6501488bbde8deffff4883c010488985b0e2ffffe83e12b3ff488dbd18e3ffffe86219b3ff488b1d4b7a6501488dbde8e2ffff488d4310488985b0e2ffffe8244bb3ff488b0505796501488bbd10dfffff4883c018488985c0e4ffff488b05ec7865014883c040488985c0e5ffff488b05727a65014883c010488985d0e4ffffe8d211b3ff488dbd38e5ffffe8f618b3ff488d4310488dbd08e5ffff488985d0e4ffffe8bf4ab3ff488b8500dfffff488b9df8deffff488bbd08dfffff488985c0e4ffff488b40e848899c05c0e4ffff488b05f079650148c785c8e4ffff000000004883c010488985c0e5ffffe8f541b3ff488bbd90e2ffff483bbdf0deffff7410488b85a0e2ffff488d7001e8a50cb3ff4c89e7e80d1bfeffbe08000000488d3dee4c0101e87c56e100be07000000488d3d1b190801488985c0dfffffe86456e1004531c0b9000400004c89fa4c89f64c89e7488985a0dfffffe817e487004c89f7e81fcaecff4c89ffe817caecff488bbd18dfffffe81bb2e600488bbd28dfffffe8ffc9ecff488b45c864482b0425280000000f85f7020000488d65d85b415c415d415e415f5dc30f1f440000be12000000488d3dbf4b0101e8e755e100be05000000488d3daf540101488985c0dfffffe8cf55e1004531c0b9000400004c89fa4c89f64c89e7488985a0dfffffe882e387004c89f7e88ac9ecff4c89ffe882c9ecff488bbd18dfffffe886b1e600488bbd68dfffff8b0785c0742183f8ff0f8461fffffff0832f01488bbd68dfffff0f8550ffffff0f1f8000000000ba08000000be02000000e85918db00e935ffffffbe10000000488d3d26e30101e84355e100be05000000488d3d0b540101488985c0dfffffe82b55e1004531c0b9000400004c89fa4c89f64c89e7488985a0dfffffe81ee387004c89f7e8e6c8ecff4c89ffe8dec8ecff488b059f766501488bbd10dfffff4883c018488985c0e4ffff488b05867665014883c040488985c0e5ffff488b050c7865014883c010488985d0e4ffffe86c0fb3ff488dbd38e5ffffe89016b3ff488b0579776501488dbd08e5ffff4883c010488985d0e4ffffe85248b3ff488b8500dfffff488b9df8deffff488bbd08dfffff488985c0e4ffff488b40e848899c05c0e4ffff488b058377650148c785c8e4ffff000000004883c010488985c0e5ffffe8883fb3ff488bbd90e2ffff483bbdf0deffff0f8492feffff488b85a0e2ffff488d7001e8340ab3ffe97dfeffff41807c2441000f85d100000066490f6efd660fefed660f2efd7a060f8403f7ffffbf0100000066490f6ec5e85f01d6ffe9eff6ffff8b772083ce04e87f08b3ffe952edffff31ffe84301d6ffe983f6ffff488b85c0e4ffff488bbd20dfffff480378e88b772083ce04e85108b3ffe969edffff488d3583e101014c89ffe8dde0efffbe05000000488d3d65520101e88c53e1004531c0b9000400004c89fa4c89f64c89e7488985a0dfffffe87fe187004c89f7e847c7ecff4c89ffe83fc7ecff488bbd18dfffffe8e3eae600488bbde8deffffe83722b3ffe944feffff498bbc240003000066480f6ef3660fefc0f20f5ac6e8e82fc8ffe9f1f5ffff488d3d9c3ffb0031c0e8e509b3ffe8900fb3ff4889ce488d3d863ffb0031c0e8cf09b3ff4889ce488d3d753ffb0031c0e8be09b3fff30f1efa4889c3e9e004b7fff30f1efa4889c7e92805b7fff30f1efa4889c3e96305b7fff30f1efa4889c3e9fc04b7fff30f1efa4889c3e96e05b7fff30f1efa4889c3e9d804b7fff30f1efa4889c3e96305b7fff30f1efa4889c3e97a05b7fff30f1efa4889c3e98b05b7fff30f1efa4889c3e97705b7fff30f1efa4889c3e97004b7fff30f1efa4889c3e97405b7fff30f1efa4889c34c8dbdc0dfffffe96905b7fff30f1efa4889c3e96505b7fff30f1efa4889c3e96d05b7fff30f1efa4889c3e93504b7fff30f1efa4889c3e95d05b7fff30f1efa4889c7e9ba05b7fff30f1efa4889c7e9bd05b7fff30f1efa4889c3e94d05b7fff30f1efa4889c3e98105b7fff30f1efa4889c3e9d304b7fff30f1efa4889c3e97105b7fff30f1efa4889c3e92804b7fff30f1efa4889c3e9d503b7fff30f1efa4889c3e91c04b7ff",
+      "code_sha256": "4273991f8e1337b7ba248742f8d35ca57ef6ff5932b8f4d78ebc76f9d1110169",
+      "calls": [
+        {
+          "instruction": 6390585,
+          "kind": "call",
+          "target": 22116496,
+          "symbols": [
+            "_ZNK11QMetaObject2trEPKcS1_i"
+          ]
+        },
+        {
+          "instruction": 6390602,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6390626,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6390690,
+          "kind": "call",
+          "target": 15188752,
+          "symbols": [
+            "_ZN11QFileDialog15getOpenFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE"
+          ]
+        },
+        {
+          "instruction": 6390843,
+          "kind": "call",
+          "target": 21514944,
+          "symbols": [
+            "_ZN5QFileC1ERK7QString",
+            "_ZN5QFileC2ERK7QString"
+          ]
+        },
+        {
+          "instruction": 6390856,
+          "kind": "call",
+          "target": 21517216,
+          "symbols": [
+            "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE"
+          ]
+        },
+        {
+          "instruction": 6390879,
+          "kind": "call",
+          "target": 21162528,
+          "symbols": [
+            "_ZN7QString13toUtf8_helperERKS_"
+          ]
+        },
+        {
+          "instruction": 6390937,
+          "kind": "call",
+          "target": 6260704,
+          "symbols": [
+            "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0"
+          ]
+        },
+        {
+          "instruction": 6391012,
+          "kind": "call",
+          "target": 1368192,
+          "symbols": [
+            "_ZNSt8ios_baseC2Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6391169,
+          "kind": "call",
+          "target": 1364528,
+          "symbols": [
+            "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt"
+          ]
+        },
+        {
+          "instruction": 6391230,
+          "kind": "call",
+          "target": 1358080,
+          "symbols": [
+            "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6391245,
+          "kind": "call",
+          "target": 1364528,
+          "symbols": [
+            "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt"
+          ]
+        },
+        {
+          "instruction": 6391265,
+          "kind": "call",
+          "target": 1368688,
+          "symbols": [
+            "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt"
+          ]
+        },
+        {
+          "instruction": 6391299,
+          "kind": "call",
+          "target": 1351984,
+          "symbols": [
+            "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt"
+          ]
+        },
+        {
+          "instruction": 6391314,
+          "kind": "call",
+          "target": 1361824,
+          "symbols": [
+            "_ZNSi5tellgEv@plt"
+          ]
+        },
+        {
+          "instruction": 6391332,
+          "kind": "call",
+          "target": 1354512,
+          "symbols": [
+            "_ZNSi5seekgElSt12_Ios_Seekdir@plt"
+          ]
+        },
+        {
+          "instruction": 6391344,
+          "kind": "call",
+          "target": 1361824,
+          "symbols": [
+            "_ZNSi5tellgEv@plt"
+          ]
+        },
+        {
+          "instruction": 6391359,
+          "kind": "call",
+          "target": 1353536,
+          "symbols": [
+            "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt"
+          ]
+        },
+        {
+          "instruction": 6391406,
+          "kind": "call",
+          "target": 1358080,
+          "symbols": [
+            "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6391426,
+          "kind": "call",
+          "target": 1368688,
+          "symbols": [
+            "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt"
+          ]
+        },
+        {
+          "instruction": 6391457,
+          "kind": "call",
+          "target": 1368192,
+          "symbols": [
+            "_ZNSt8ios_baseC2Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6391578,
+          "kind": "call",
+          "target": 1364528,
+          "symbols": [
+            "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt"
+          ]
+        },
+        {
+          "instruction": 6391610,
+          "kind": "call",
+          "target": 1364112,
+          "symbols": [
+            "_ZNSi4readEPcl@plt"
+          ]
+        },
+        {
+          "instruction": 6391622,
+          "kind": "call",
+          "target": 1353536,
+          "symbols": [
+            "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt"
+          ]
+        },
+        {
+          "instruction": 6391627,
+          "kind": "call",
+          "target": 3621312,
+          "symbols": [
+            "_Z18percoreoverride_env"
+          ]
+        },
+        {
+          "instruction": 6391668,
+          "kind": "call",
+          "target": 3619632,
+          "symbols": [
+            "_Z5Wr1ADiiiiiiii"
+          ]
+        },
+        {
+          "instruction": 6391711,
+          "kind": "call",
+          "target": 3619440,
+          "symbols": [
+            "_Z5Wr650iiiiiiii"
+          ]
+        },
+        {
+          "instruction": 6391901,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6391925,
+          "kind": "call",
+          "target": 3602032,
+          "symbols": [
+            "_Z7WrmsrTxjjjm"
+          ]
+        },
+        {
+          "instruction": 6391946,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6391964,
+          "kind": "call",
+          "target": 3602560,
+          "symbols": [
+            "_Z7RdmsrTxjPjS_m"
+          ]
+        },
+        {
+          "instruction": 6392089,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6392113,
+          "kind": "call",
+          "target": 3602032,
+          "symbols": [
+            "_Z7WrmsrTxjjjm"
+          ]
+        },
+        {
+          "instruction": 6392138,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6392156,
+          "kind": "call",
+          "target": 3602560,
+          "symbols": [
+            "_Z7RdmsrTxjPjS_m"
+          ]
+        },
+        {
+          "instruction": 6392281,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6392305,
+          "kind": "call",
+          "target": 3602032,
+          "symbols": [
+            "_Z7WrmsrTxjjjm"
+          ]
+        },
+        {
+          "instruction": 6392330,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6392348,
+          "kind": "call",
+          "target": 3602560,
+          "symbols": [
+            "_Z7RdmsrTxjPjS_m"
+          ]
+        },
+        {
+          "instruction": 6392382,
+          "kind": "jmp",
+          "target": 6392418,
+          "symbols": []
+        },
+        {
+          "instruction": 6392409,
+          "kind": "call",
+          "target": 3713840,
+          "symbols": [
+            "_Z29Wr_VFPoint_offset_percore_nvliii"
+          ]
+        },
+        {
+          "instruction": 6392572,
+          "kind": "jmp",
+          "target": 6392659,
+          "symbols": []
+        },
+        {
+          "instruction": 6392683,
+          "kind": "call",
+          "target": 2268848,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 6392688,
+          "kind": "jmp",
+          "target": 6392589,
+          "symbols": []
+        },
+        {
+          "instruction": 6392706,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6392711,
+          "kind": "jmp",
+          "target": 6390981,
+          "symbols": []
+        },
+        {
+          "instruction": 6392730,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6392762,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6392794,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6392799,
+          "kind": "jmp",
+          "target": 6390816,
+          "symbols": []
+        },
+        {
+          "instruction": 6392814,
+          "kind": "call",
+          "target": 2268848,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 6392851,
+          "kind": "call",
+          "target": 2383728,
+          "symbols": [
+            "_ZN11NVL_MEM_CFG22Set_OcTurboRatioLimitsEbiRSt6vectorIiSaIiEES3_"
+          ]
+        },
+        {
+          "instruction": 6392925,
+          "kind": "jmp",
+          "target": 6392996,
+          "symbols": []
+        },
+        {
+          "instruction": 6393024,
+          "kind": "call",
+          "target": 2268848,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 6393029,
+          "kind": "jmp",
+          "target": 6392941,
+          "symbols": []
+        },
+        {
+          "instruction": 6393046,
+          "kind": "call",
+          "target": 2268848,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 6393086,
+          "kind": "call",
+          "target": 2383728,
+          "symbols": [
+            "_ZN11NVL_MEM_CFG22Set_OcTurboRatioLimitsEbiRSt6vectorIiSaIiEES3_"
+          ]
+        },
+        {
+          "instruction": 6393160,
+          "kind": "jmp",
+          "target": 6393236,
+          "symbols": []
+        },
+        {
+          "instruction": 6393264,
+          "kind": "call",
+          "target": 2268848,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 6393269,
+          "kind": "jmp",
+          "target": 6393181,
+          "symbols": []
+        },
+        {
+          "instruction": 6393286,
+          "kind": "call",
+          "target": 2268848,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 6393326,
+          "kind": "call",
+          "target": 2383728,
+          "symbols": [
+            "_ZN11NVL_MEM_CFG22Set_OcTurboRatioLimitsEbiRSt6vectorIiSaIiEES3_"
+          ]
+        },
+        {
+          "instruction": 6393400,
+          "kind": "jmp",
+          "target": 6393476,
+          "symbols": []
+        },
+        {
+          "instruction": 6393504,
+          "kind": "call",
+          "target": 2268848,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 6393509,
+          "kind": "jmp",
+          "target": 6393421,
+          "symbols": []
+        },
+        {
+          "instruction": 6393526,
+          "kind": "call",
+          "target": 2268848,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 6393569,
+          "kind": "call",
+          "target": 2383728,
+          "symbols": [
+            "_ZN11NVL_MEM_CFG22Set_OcTurboRatioLimitsEbiRSt6vectorIiSaIiEES3_"
+          ]
+        },
+        {
+          "instruction": 6393744,
+          "kind": "call",
+          "target": 2738960,
+          "symbols": [
+            "_ZN11clkgen_95959apply_cpuEf"
+          ]
+        },
+        {
+          "instruction": 6393781,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6393814,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6393819,
+          "kind": "jmp",
+          "target": 6393840,
+          "symbols": []
+        },
+        {
+          "instruction": 6393835,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6393884,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6393907,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6393956,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6393979,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6394003,
+          "kind": "call",
+          "target": 2882592,
+          "symbols": [
+            "_Z13set_ngu_ratioi"
+          ]
+        },
+        {
+          "instruction": 6394040,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6394059,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6394103,
+          "kind": "call",
+          "target": 2383072,
+          "symbols": [
+            "_ZN11NVL_MEM_CFG21set_ufs_min_max_ratioEbiii"
+          ]
+        },
+        {
+          "instruction": 6394138,
+          "kind": "call",
+          "target": 2383072,
+          "symbols": [
+            "_ZN11NVL_MEM_CFG21set_ufs_min_max_ratioEbiii"
+          ]
+        },
+        {
+          "instruction": 6394175,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6394195,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6394242,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6394267,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6394314,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6394331,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6394378,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6394395,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6394442,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6394459,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6394492,
+          "kind": "call",
+          "target": 14402448,
+          "symbols": [
+            "_ZN15QAbstractButton10setCheckedEb"
+          ]
+        },
+        {
+          "instruction": 6394509,
+          "kind": "jmp",
+          "target": 6394540,
+          "symbols": []
+        },
+        {
+          "instruction": 6394528,
+          "kind": "call",
+          "target": 3714240,
+          "symbols": [
+            "_Z21Wr_VFPoint_offset_nvliii"
+          ]
+        },
+        {
+          "instruction": 6394554,
+          "kind": "call",
+          "target": 3790416,
+          "symbols": [
+            "_ZN9OCTVB_NVLC2Ev",
+            "_ZN9OCTVB_NVLC1Ev"
+          ]
+        },
+        {
+          "instruction": 6394562,
+          "kind": "call",
+          "target": 3715136,
+          "symbols": [
+            "_ZN9OCTVB_NVL11get_percoreEv"
+          ]
+        },
+        {
+          "instruction": 6394570,
+          "kind": "call",
+          "target": 3717536,
+          "symbols": [
+            "_ZN9OCTVB_NVL7get_trlEv"
+          ]
+        },
+        {
+          "instruction": 6394982,
+          "kind": "call",
+          "target": 3664848,
+          "symbols": [
+            "_Z5Wr199v"
+          ]
+        },
+        {
+          "instruction": 6394990,
+          "kind": "call",
+          "target": 6267728,
+          "symbols": [
+            "_ZN9OCTVB_NVLD2Ev",
+            "_ZN9OCTVB_NVLD1Ev"
+          ]
+        },
+        {
+          "instruction": 6395017,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6395044,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6395103,
+          "kind": "call",
+          "target": 1365968,
+          "symbols": [
+            "_ZNSt8ios_baseD2Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6395133,
+          "kind": "call",
+          "target": 1353536,
+          "symbols": [
+            "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt"
+          ]
+        },
+        {
+          "instruction": 6395145,
+          "kind": "call",
+          "target": 1355376,
+          "symbols": [
+            "_ZNSt12__basic_fileIcED1Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6395175,
+          "kind": "call",
+          "target": 1368144,
+          "symbols": [
+            "_ZNSt6localeD1Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6395241,
+          "kind": "call",
+          "target": 1353536,
+          "symbols": [
+            "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt"
+          ]
+        },
+        {
+          "instruction": 6395253,
+          "kind": "call",
+          "target": 1355376,
+          "symbols": [
+            "_ZNSt12__basic_fileIcED1Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6395276,
+          "kind": "call",
+          "target": 1368144,
+          "symbols": [
+            "_ZNSt6localeD1Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6395350,
+          "kind": "call",
+          "target": 1365968,
+          "symbols": [
+            "_ZNSt8ios_baseD2Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6395382,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6395390,
+          "kind": "call",
+          "target": 6271248,
+          "symbols": [
+            "_ZN10intel_ctl67refreshEv"
+          ]
+        },
+        {
+          "instruction": 6395407,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6395431,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6395460,
+          "kind": "call",
+          "target": 15301216,
+          "symbols": [
+            "_ZN11QMessageBox11informationEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_"
+          ]
+        },
+        {
+          "instruction": 6395468,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6395476,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6395488,
+          "kind": "call",
+          "target": 21514368,
+          "symbols": [
+            "_ZN5QFileD2Ev",
+            "_ZN5QFileD1Ev"
+          ]
+        },
+        {
+          "instruction": 6395500,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6395556,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6395580,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6395609,
+          "kind": "call",
+          "target": 15301216,
+          "symbols": [
+            "_ZN11QMessageBox11informationEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_"
+          ]
+        },
+        {
+          "instruction": 6395617,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6395625,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6395637,
+          "kind": "call",
+          "target": 21514368,
+          "symbols": [
+            "_ZN5QFileD2Ev",
+            "_ZN5QFileD1Ev"
+          ]
+        },
+        {
+          "instruction": 6395698,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6395703,
+          "kind": "jmp",
+          "target": 6395505,
+          "symbols": []
+        },
+        {
+          "instruction": 6395720,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6395744,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6395773,
+          "kind": "call",
+          "target": 15301280,
+          "symbols": [
+            "_ZN11QMessageBox7warningEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_"
+          ]
+        },
+        {
+          "instruction": 6395781,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6395789,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6395855,
+          "kind": "call",
+          "target": 1353536,
+          "symbols": [
+            "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt"
+          ]
+        },
+        {
+          "instruction": 6395867,
+          "kind": "call",
+          "target": 1355376,
+          "symbols": [
+            "_ZNSt12__basic_fileIcED1Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6395897,
+          "kind": "call",
+          "target": 1368144,
+          "symbols": [
+            "_ZNSt6localeD1Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6395971,
+          "kind": "call",
+          "target": 1365968,
+          "symbols": [
+            "_ZNSt8ios_baseD2Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6396007,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6396012,
+          "kind": "jmp",
+          "target": 6395630,
+          "symbols": []
+        },
+        {
+          "instruction": 6396060,
+          "kind": "call",
+          "target": 3643904,
+          "symbols": [
+            "_Z11Wr_ARL_Bclkdb"
+          ]
+        },
+        {
+          "instruction": 6396065,
+          "kind": "jmp",
+          "target": 6393749,
+          "symbols": []
+        },
+        {
+          "instruction": 6396076,
+          "kind": "call",
+          "target": 1351984,
+          "symbols": [
+            "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt"
+          ]
+        },
+        {
+          "instruction": 6396081,
+          "kind": "jmp",
+          "target": 6391304,
+          "symbols": []
+        },
+        {
+          "instruction": 6396088,
+          "kind": "call",
+          "target": 3643904,
+          "symbols": [
+            "_Z11Wr_ARL_Bclkdb"
+          ]
+        },
+        {
+          "instruction": 6396093,
+          "kind": "jmp",
+          "target": 6393669,
+          "symbols": []
+        },
+        {
+          "instruction": 6396122,
+          "kind": "call",
+          "target": 1351984,
+          "symbols": [
+            "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt"
+          ]
+        },
+        {
+          "instruction": 6396127,
+          "kind": "jmp",
+          "target": 6391373,
+          "symbols": []
+        },
+        {
+          "instruction": 6396142,
+          "kind": "call",
+          "target": 5339600,
+          "symbols": [
+            "_ZN7QStringC1EPKc",
+            "_ZN7QStringC2EPKc"
+          ]
+        },
+        {
+          "instruction": 6396159,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6396188,
+          "kind": "call",
+          "target": 15301280,
+          "symbols": [
+            "_ZN11QMessageBox7warningEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_"
+          ]
+        },
+        {
+          "instruction": 6396196,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6396204,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6396216,
+          "kind": "call",
+          "target": 21529632,
+          "symbols": [
+            "_ZN11QFileDevice5closeEv"
+          ]
+        },
+        {
+          "instruction": 6396228,
+          "kind": "call",
+          "target": 1358720,
+          "symbols": [
+            "_ZNSt13basic_filebufIcSt11char_traitsIcEED1Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6396233,
+          "kind": "jmp",
+          "target": 6395794,
+          "symbols": []
+        },
+        {
+          "instruction": 6396259,
+          "kind": "call",
+          "target": 2738512,
+          "symbols": [
+            "_ZN11clkgen_959510apply_pcieEf"
+          ]
+        },
+        {
+          "instruction": 6396264,
+          "kind": "jmp",
+          "target": 6393694,
+          "symbols": []
+        },
+        {
+          "instruction": 6396278,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 6396283,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 6396300,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 6396317,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 6396329,
+          "kind": "jmp",
+          "target": 1613454,
+          "symbols": [
+            "_ZN10intel_ctl624on_pushButton_12_clickedEv.cold"
+          ]
+        },
+        {
+          "instruction": 6396341,
+          "kind": "jmp",
+          "target": 1613538,
+          "symbols": []
+        },
+        {
+          "instruction": 6396353,
+          "kind": "jmp",
+          "target": 1613609,
+          "symbols": []
+        },
+        {
+          "instruction": 6396365,
+          "kind": "jmp",
+          "target": 1613518,
+          "symbols": []
+        },
+        {
+          "instruction": 6396377,
+          "kind": "jmp",
+          "target": 1613644,
+          "symbols": []
+        },
+        {
+          "instruction": 6396389,
+          "kind": "jmp",
+          "target": 1613506,
+          "symbols": []
+        },
+        {
+          "instruction": 6396401,
+          "kind": "jmp",
+          "target": 1613657,
+          "symbols": []
+        },
+        {
+          "instruction": 6396413,
+          "kind": "jmp",
+          "target": 1613692,
+          "symbols": []
+        },
+        {
+          "instruction": 6396425,
+          "kind": "jmp",
+          "target": 1613721,
+          "symbols": []
+        },
+        {
+          "instruction": 6396437,
+          "kind": "jmp",
+          "target": 1613713,
+          "symbols": []
+        },
+        {
+          "instruction": 6396449,
+          "kind": "jmp",
+          "target": 1613462,
+          "symbols": []
+        },
+        {
+          "instruction": 6396461,
+          "kind": "jmp",
+          "target": 1613734,
+          "symbols": []
+        },
+        {
+          "instruction": 6396480,
+          "kind": "jmp",
+          "target": 1613742,
+          "symbols": []
+        },
+        {
+          "instruction": 6396492,
+          "kind": "jmp",
+          "target": 1613750,
+          "symbols": []
+        },
+        {
+          "instruction": 6396504,
+          "kind": "jmp",
+          "target": 1613770,
+          "symbols": []
+        },
+        {
+          "instruction": 6396516,
+          "kind": "jmp",
+          "target": 1613470,
+          "symbols": []
+        },
+        {
+          "instruction": 6396528,
+          "kind": "jmp",
+          "target": 1613778,
+          "symbols": []
+        },
+        {
+          "instruction": 6396540,
+          "kind": "jmp",
+          "target": 1613883,
+          "symbols": []
+        },
+        {
+          "instruction": 6396552,
+          "kind": "jmp",
+          "target": 1613898,
+          "symbols": []
+        },
+        {
+          "instruction": 6396564,
+          "kind": "jmp",
+          "target": 1613798,
+          "symbols": []
+        },
+        {
+          "instruction": 6396576,
+          "kind": "jmp",
+          "target": 1613862,
+          "symbols": []
+        },
+        {
+          "instruction": 6396588,
+          "kind": "jmp",
+          "target": 1613700,
+          "symbols": []
+        },
+        {
+          "instruction": 6396600,
+          "kind": "jmp",
+          "target": 1613870,
+          "symbols": []
+        },
+        {
+          "instruction": 6396612,
+          "kind": "jmp",
+          "target": 1613553,
+          "symbols": []
+        },
+        {
+          "instruction": 6396624,
+          "kind": "jmp",
+          "target": 1613482,
+          "symbols": []
+        },
+        {
+          "instruction": 6396636,
+          "kind": "jmp",
+          "target": 1613565,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-profile-save-write-slice",
+      "address": 6387658,
+      "size": 24,
+      "code_hex": "488bbd20e1ffff488db5d0e6ffffbaf2180000e83e59b3ff",
+      "code_sha256": "d4820627fdc7222b12a82071ff6ba0cd8e3db43bd2bfaf27b93d501fa5db6bd9",
+      "calls": [
+        {
+          "instruction": 6387677,
+          "kind": "call",
+          "target": 1364256,
+          "symbols": [
+            "_ZNSo5writeEPKcl@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z18percoreoverride_env",
+      "address": 3621312,
+      "size": 196,
+      "code_hex": "f30f1efa55ba1400008031f6bf50010000534883ec1864488b042528000000488944240831c0488d6c24044889e3c7042400000000c744240414000080e81eb5ffff660f1f4400004889ea4889debf50010000e8b8b5ffff8b54240485d278e84889ea4889debf50010000e8a0b5ffff8b3424ba15000080bf50010000c74424041500008083ce08893424e8d0b4ffff4889ea4889debf50010000e870b5ffff8b44240485c078e8488b44240864482b04252800000075074883c4185b5dc3e88c66ddff",
+      "code_sha256": "646f40620b32944d58f3560c3bf131829dac09d46ee767717ec024b32e1d1bbe",
+      "calls": [
+        {
+          "instruction": 3621373,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3621395,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3621419,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3621451,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3621467,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3621503,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    }
+  ],
+  "objects": {
+    "_ZN10intel_ctl616staticMetaObjectE": {
+      "address": 29489664,
+      "size": 48,
+      "source_initial_hex": "a057c4010000000020b3670100000000e0af67010000000030fca6000000000000000000000000000000000000000000"
+    },
+    "GLOBAL_NVL_MEM_CFG": {
+      "address": 29869608,
+      "size": 8,
+      "source_initial_hex": "0000000000000000"
+    }
+  },
+  "literals": [
+    {
+      "instruction": 6390543,
+      "address": 23310132,
+      "text": "Profiles (*.pro)"
+    },
+    {
+      "instruction": 6390595,
+      "address": 23310149,
+      "text": "profile.pro"
+    },
+    {
+      "instruction": 6390612,
+      "address": 23257522,
+      "text": "Load Profile"
+    },
+    {
+      "instruction": 6395400,
+      "address": 23257853,
+      "text": "Applied!"
+    },
+    {
+      "instruction": 6395417,
+      "address": 23703355,
+      "text": "Profile"
+    },
+    {
+      "instruction": 6395549,
+      "address": 23257699,
+      "text": "Profile not loaded"
+    },
+    {
+      "instruction": 6395566,
+      "address": 23260004,
+      "text": "Error"
+    },
+    {
+      "instruction": 6395713,
+      "address": 23296622,
+      "text": "File wrong size!"
+    },
+    {
+      "instruction": 6395730,
+      "address": 23260004,
+      "text": "Error"
+    },
+    {
+      "instruction": 6396132,
+      "address": 23296622,
+      "text": "File wrong size!"
+    },
+    {
+      "instruction": 6396152,
+      "address": 23260004,
+      "text": "Error"
+    },
+    {
+      "instruction": 6396269,
+      "address": 22862096,
+      "text": "vector::_M_range_check: __n (which is %zu) >= this->size() (which is %zu)"
+    },
+    {
+      "instruction": 6396291,
+      "address": 22862096,
+      "text": "vector::_M_range_check: __n (which is %zu) >= this->size() (which is %zu)"
+    },
+    {
+      "instruction": 6396308,
+      "address": 22862096,
+      "text": "vector::_M_range_check: __n (which is %zu) >= this->size() (which is %zu)"
+    }
+  ],
+  "relocations": [
+    {
+      "address": 29822896,
+      "type": 6,
+      "addend": 0,
+      "symbol": "_ZTVSt9basic_iosIcSt11char_traitsIcEE"
+    },
+    {
+      "address": 29822840,
+      "type": 6,
+      "addend": 0,
+      "symbol": "_ZTTSt14basic_ifstreamIcSt11char_traitsIcEE"
+    },
+    {
+      "address": 29822520,
+      "type": 6,
+      "addend": 0,
+      "symbol": "_ZTVSt14basic_ifstreamIcSt11char_traitsIcEE"
+    },
+    {
+      "address": 29822720,
+      "type": 6,
+      "addend": 0,
+      "symbol": "_ZTVSi"
+    },
+    {
+      "address": 29822928,
+      "type": 6,
+      "addend": 0,
+      "symbol": "_ZTVSt13basic_filebufIcSt11char_traitsIcEE"
+    },
+    {
+      "address": 29822816,
+      "type": 6,
+      "addend": 0,
+      "symbol": "_ZTVSt15basic_streambufIcSt11char_traitsIcEE"
+    }
+  ],
+  "data": [
+    {
+      "address": 22860096,
+      "bytes_hex": "0000000000005940",
+      "binary64": 100.0
+    }
+  ]
+}
