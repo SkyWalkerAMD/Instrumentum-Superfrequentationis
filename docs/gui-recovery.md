@@ -107,4 +107,5 @@ ctest --test-dir build/portable-core -C Release --output-on-failure
 以 warnings-as-errors 编译，Release 测试强制保留断言。两组测试覆盖 PStates 的 7 个场景组，
 以及硬件接口的 6 个场景组（含错误输出、所有权和 6 线程混合访问）。
 既有 `portability` 工作流继续验证 Linux HAL、Qt 控件、静态 Qt 构建和十发行版包装/窗口。
-本地只完成 Python/静态验证；本轮 C++/Qt 云端结果以实际 run SHA 和报告为准。
+本地缺工具链后已使用 GitHub Actions：`beb10b7` 的四环境核心与 Linux 23/23 矩阵全部通过，
+EL8 基线及十目标各 13 项 Qt 回归通过。见[本次完整记录与产物哈希](validation/refactor-hardware-ci-beb10b7.json)。

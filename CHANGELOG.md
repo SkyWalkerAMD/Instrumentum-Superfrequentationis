@@ -5,7 +5,9 @@
 - 将 AMD PStates 和寄存器请求/校验/串行服务提取为独立 C++11 核心，增加可替换 HardwareBackend。
 - Linux HAL 与 CPUID 亲和性处理移至适配器，Qt 界面复用核心规则；未知地址空间在访问前拒绝，失败输出统一清空。
 - 增加独立 CMake、13 个核心场景组及跨编译器 Actions；Qt 回归补充不可用后端和 CPUID 错误路径。
-- Linux HAL、内核和 96 字节 ABI 保持原实现。跨系统硬件适配与完整平台面板仍在后续阶段，云端运行结果另行归档。
+- `beb10b7` 已云端验证：独立核心 4/4、Linux 完整矩阵 23/23；基线和十目标各 13 项 Qt 测试，每目标 26 项 Python 无跳过。
+- 已归档 20 个桌面阶段 DEB/RPM 包、模块/源码包与日志，见 docs/validation/refactor-hardware-ci-beb10b7.json；20 个重构文件与云端源码包匹配。
+- Linux HAL、内核和 96 字节 ABI 保持原实现。Windows/macOS 仅验证核心；其硬件后端、完整平台面板与目标真机验收仍在后续阶段。
 
 ## 未发布 — 2026-10-09（NVL配置导入门禁到首个原MSR请求）
 

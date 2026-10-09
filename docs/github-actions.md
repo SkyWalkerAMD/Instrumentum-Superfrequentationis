@@ -17,7 +17,7 @@ GUI 程序名、模块名、96 字节 ABI、MMIO 协议、源码包名沿用原�
 ## Actions 执行方式
 
 push、pull_request 和 workflow_dispatch 触发 portability 工作流。
-仅使用标准 `ubuntu-24.04` GitHub 托管 runner，内部运行十种目标发行版容器。
+`portability` 使用标准 `ubuntu-24.04` GitHub 托管 runner，内部运行十种目标发行版容器。
 这条 GitHub Actions 路径不要求 Codex Cloud 环境或用户提供 Linux 服务器。
 
 - matrix：本地可执行的发布门禁、源码归档一致性与已审阅 ABI/HAL 哈希检查。
@@ -53,3 +53,11 @@ artifact/cache 存储有独立的额度与计费规则。转为私密后，标�
 当前按用户要求保持公开，不自动提前改私密。以后转换时，公开期间产生的 fork 不会随之
 变为私密；已被复制的公开内容也不能通过可见性转换收回。
 依据：[GitHub repository visibility](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/managing-repository-settings/setting-repository-visibility)。
+
+
+## 重构核心的云端工具链（2026-10-09）
+
+作者明确要求本机缺工具链时使用云端。新增 `portable core` 工作流通过 CMake 构建不依赖 Qt/HAL 的核心，
+在 Ubuntu22.04/24.04、Windows2022 MSVC、macOS14 Clang 上执行相同两组回归；未实现这些系统的完整硬件后端。
+本次使用独立 `refactor/portable-hardware` 分支保留原目录中的未提交研究改动。
+`beb10b7` 的四环境核心和 Linux 23/23 完整矩阵均成功；[验证证据](validation/refactor-hardware-ci-beb10b7.json)绑定实际 SHA、run URL、报告和 20 个桌面阶段安装包哈希。

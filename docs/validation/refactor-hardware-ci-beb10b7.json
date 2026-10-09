@@ -1,0 +1,668 @@
+{
+  "schema": 1,
+  "date": "2026-10-09",
+  "source_commit": "beb10b7d6a6e35d922d456e6f49000b03ed85147",
+  "branch": "refactor/portable-hardware",
+  "scope": "PStates and hardware service refactoring, Linux adapter, Qt integration, portable core CI",
+  "local_original_checkout": "octool-linux (other uncommitted research changes were not included in these runs)",
+  "source_sha256_lf": {
+    ".github/workflows/portable-core.yml": "032c332a52392556177da86baeb62a0e70382d767d39efc4009a5c00e1e2efe3",
+    "gui/common.pri": "312eca8667aeb32b312167abbc84ee64df22184ddd581e74812420d19f990279",
+    "gui/access.h": "11a5aaca2954563ee6a29f09b4ff18f5be0a035a804a3d9d3e7883f43c714add",
+    "gui/access.cpp": "ca6a59cea1106c6bdf7439bd7c71ef02b9462d0ca1dcbdf5f477f5ce3e576242",
+    "gui/registerpanel.cpp": "77673ae36b64b4464dc3cafafdcb684306ef144182b6a755e3cf5d1625019804",
+    "gui/pstates.h": "f4b033814556f403c91cb40250d0c5d7ed0457ca31acf65b1b92e85bf4df3e99",
+    "gui/pstates.cpp": "18e51f247142acdec31a9d12fe201ff01b55c300e2e3cce3e1cf9019ccaa1020",
+    "gui/core/amd_pstates.h": "167e3eac45f5605632622492053e31b4d0ae47cf8962659c7a74d1a2f32b8add",
+    "gui/core/amd_pstates.cpp": "116469cb0c2240f5f7cd67be1f6e5ef83a08f3f1ce89cecef5d6c8cf89d8daf4",
+    "gui/core/hardware.h": "5d4c65ff670c339c6e240194a8f36e6bd98022f174b9998c6d27443f1dedc37c",
+    "gui/core/hardware.cpp": "1732495dc85a505d6c522d9b43788800c845461dede2d1fce48246acb8d1583f",
+    "gui/core/CMakeLists.txt": "1a5ab24eb88151a3fb364617cd8dff2f42a24abbf93e09e4b4bbbfdb9b56616d",
+    "gui/platform/hardware_factory.h": "8428d3be0d50083a9ffb724a63cde5069697edb488c749f4f67f71af3a6d0406",
+    "gui/platform/linux_hwio.h": "3237b829107acf939d69f29d29a4534f5c20808a5d20997f0376de21b9e9edbc",
+    "gui/platform/linux_hwio.cpp": "c7be0f537e209817f32fd0237a2b3e8882d61c458ba07ddfca60497cfb0f0c8d",
+    "gui/tests/regression.cpp": "60e2ba68dd2153242364d806a2e9ef0739d09a031e6f68dcf0810b2f24835b30",
+    "gui/tests/pstates_core_test.cpp": "9b99b769e24932021d17bc129f8489a4924cff2d47ac198b3fa2875a72194019",
+    "gui/tests/hardware_core_test.cpp": "b9a13e7ab0b6f0dc7fd8631d9506f8c2fcc1359ef41204a936a80a3cf5ef636f",
+    "port/tests/test_pstate_core.py": "905d706987764f05abc84b4a9ad792ce0b6e5e31a73a6a13df2b6acf40d39dd9",
+    "port/tests/test_hardware_core.py": "e6052bcf21783d06a8a5bc2295e5fee15eed4a9d7cdcf6162b4d875ad7e6f0c4"
+  },
+  "unchanged_abi_hal_sha256_lf": {
+    "port/abi/octool_hwio_abi.h": "5f07bfefd2a96519756cad1567dfdf4b0c878db142f670e1b208cf39523800d8",
+    "port/hal/octool_hwio.h": "b1689882bb6c0bdb74a20f21ca44e2d96c9b05045bf248594da3b9daa9b64033",
+    "port/hal/octool_hwio.c": "0fc53c90c814efcca41be7c86bf2013ab4e3207857080411ae9e5f3d013ba3a1"
+  },
+  "local_static_and_python": {
+    "tests": 42,
+    "failures": 0,
+    "errors": 0,
+    "skipped": [
+      [
+        "test_validation_errors_lifetime_and_concurrency (test_hardware_core.HardwareCore.test_validation_errors_lifetime_and_concurrency)",
+        "C++ compiler unavailable on this Windows host; cloud CMake also tests MSVC"
+      ],
+      [
+        "test_empty_capture_cannot_reuse_previous_valid_file (test_parity_inputs.BadTrace.test_empty_capture_cannot_reuse_previous_valid_file)",
+        "requires Linux-built octool_parity"
+      ],
+      [
+        "test_empty_or_truncated_trace_fails_before_device_open (test_parity_inputs.BadTrace.test_empty_or_truncated_trace_fails_before_device_open)",
+        "requires Linux-built octool_parity"
+      ],
+      [
+        "test_finalized_counts_and_failed_duplicates (test_parity_inputs.BadTrace.test_finalized_counts_and_failed_duplicates)",
+        "requires Linux-built octool_parity"
+      ],
+      [
+        "test_same_character_device_and_symlink_are_rejected (test_parity_inputs.BadTrace.test_same_character_device_and_symlink_are_rejected)",
+        "requires Linux-built octool_parity"
+      ],
+      [
+        "test_standalone_core_with_synthetic_reader (test_pstate_core.PstateCore.test_standalone_core_with_synthetic_reader)",
+        "C++ compiler unavailable on this Windows host"
+      ]
+    ]
+  },
+  "portable_core": {
+    "run_url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860447",
+    "jobs_passed": 4,
+    "compiler_evidence": {
+      "path": "build/refactor-hardware-20261009/core-run.log",
+      "bytes": 112188,
+      "sha256": "68ed6d5f0bd2f8f000ff0bf37d29279806f13de183e7bc8576c56dc9d7e16e44"
+    },
+    "compilers": {
+      "windows-2022": "MSVC 19.44.35229.0",
+      "ubuntu-24.04": "GNU 13.3.0",
+      "ubuntu-22.04": "GNU 11.4.0",
+      "macos-14": "AppleClang 15.0.0.15000309"
+    },
+    "targets": [
+      {
+        "target": "macos-14",
+        "tests": 2,
+        "failures": 0,
+        "skipped": 0,
+        "output": "amd_pstates core: 7 scenario groups passed\nhardware core: 6 scenario groups passed",
+        "report": {
+          "path": "build/refactor-hardware-20261009/core-artifacts/portable-core-macos-14/results.xml",
+          "bytes": 635,
+          "sha256": "578ebdb1a38a3ee0fb782975d5c452c7181c6ca6be38503e0fe23c8f880ebb01"
+        }
+      },
+      {
+        "target": "ubuntu-22.04",
+        "tests": 2,
+        "failures": 0,
+        "skipped": 0,
+        "output": "amd_pstates core: 7 scenario groups passed\nhardware core: 6 scenario groups passed",
+        "report": {
+          "path": "build/refactor-hardware-20261009/core-artifacts/portable-core-ubuntu-22.04/results.xml",
+          "bytes": 578,
+          "sha256": "f5e3ad796d96941189e9aa11394d51c5b56b61ada565a0a89dae157df5a6f3ae"
+        }
+      },
+      {
+        "target": "ubuntu-24.04",
+        "tests": 2,
+        "failures": 0,
+        "skipped": 0,
+        "output": "amd_pstates core: 7 scenario groups passed\nhardware core: 6 scenario groups passed",
+        "report": {
+          "path": "build/refactor-hardware-20261009/core-artifacts/portable-core-ubuntu-24.04/results.xml",
+          "bytes": 579,
+          "sha256": "606935b4c563e88dce37a88ed74864d5227340af52dd2e2aa7e46291b50c9702"
+        }
+      },
+      {
+        "target": "windows-2022",
+        "tests": 2,
+        "failures": 0,
+        "skipped": 0,
+        "output": "amd_pstates core: 7 scenario groups passed\nhardware core: 6 scenario groups passed",
+        "report": {
+          "path": "build/refactor-hardware-20261009/core-artifacts/portable-core-windows-2022/results.xml",
+          "bytes": 602,
+          "sha256": "4c1c42cefd950752a80a93ff9739a15952d456e50450f5f9f2598ed2f98dc9b4"
+        }
+      }
+    ],
+    "unique_scenario_groups": 13
+  },
+  "linux": {
+    "run_url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363",
+    "jobs_passed": 23,
+    "targets": [
+      "el8",
+      "el9",
+      "el10",
+      "ubuntu20.04",
+      "ubuntu22.04",
+      "ubuntu24.04",
+      "ubuntu26.04",
+      "debian11",
+      "debian12",
+      "debian13"
+    ],
+    "jobs": [
+      {
+        "name": "baseline",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113706932472"
+      },
+      {
+        "name": "matrix",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113706932984"
+      },
+      {
+        "name": "kernel (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789384"
+      },
+      {
+        "name": "kernel (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789426"
+      },
+      {
+        "name": "kernel (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789435"
+      },
+      {
+        "name": "kernel (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789443"
+      },
+      {
+        "name": "kernel (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789445"
+      },
+      {
+        "name": "kernel (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789447"
+      },
+      {
+        "name": "kernel (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789462"
+      },
+      {
+        "name": "kernel (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789475"
+      },
+      {
+        "name": "desktop (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789480"
+      },
+      {
+        "name": "desktop (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789494"
+      },
+      {
+        "name": "desktop (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789499"
+      },
+      {
+        "name": "desktop (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789501"
+      },
+      {
+        "name": "desktop (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789502"
+      },
+      {
+        "name": "kernel (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789525"
+      },
+      {
+        "name": "desktop (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789529"
+      },
+      {
+        "name": "desktop (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789539"
+      },
+      {
+        "name": "desktop (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789558"
+      },
+      {
+        "name": "desktop (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789559"
+      },
+      {
+        "name": "desktop (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789563"
+      },
+      {
+        "name": "kernel (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113707789806"
+      },
+      {
+        "name": "gate",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37895860363/job/113709190897"
+      }
+    ],
+    "qt_regression": [
+      {
+        "job": "baseline",
+        "result": "13 passed, 0 failed, 0 skipped, 0 blacklisted, 85ms"
+      },
+      {
+        "job": "desktop (el8)",
+        "result": "13 passed, 0 failed, 0 skipped, 0 blacklisted, 80ms"
+      },
+      {
+        "job": "desktop (ubuntu22.04)",
+        "result": "13 passed, 0 failed, 0 skipped, 0 blacklisted, 150ms"
+      },
+      {
+        "job": "desktop (ubuntu24.04)",
+        "result": "13 passed, 0 failed, 0 skipped, 0 blacklisted, 205ms"
+      },
+      {
+        "job": "desktop (ubuntu26.04)",
+        "result": "13 passed, 0 failed, 0 skipped, 0 blacklisted, 103ms"
+      },
+      {
+        "job": "desktop (debian11)",
+        "result": "13 passed, 0 failed, 0 skipped, 0 blacklisted, 204ms"
+      },
+      {
+        "job": "desktop (debian12)",
+        "result": "13 passed, 0 failed, 0 skipped, 0 blacklisted, 83ms"
+      },
+      {
+        "job": "desktop (el10)",
+        "result": "13 passed, 0 failed, 0 skipped, 0 blacklisted, 205ms"
+      },
+      {
+        "job": "desktop (el9)",
+        "result": "13 passed, 0 failed, 0 skipped, 0 blacklisted, 149ms"
+      },
+      {
+        "job": "desktop (ubuntu20.04)",
+        "result": "13 passed, 0 failed, 0 skipped, 0 blacklisted, 102ms"
+      },
+      {
+        "job": "desktop (debian13)",
+        "result": "13 passed, 0 failed, 0 skipped, 0 blacklisted, 197ms"
+      }
+    ],
+    "python_regression": [
+      {
+        "job": "matrix",
+        "tests": 26
+      },
+      {
+        "job": "matrix",
+        "tests": 54
+      },
+      {
+        "job": "kernel (ubuntu26.04)",
+        "tests": 26
+      },
+      {
+        "job": "kernel (ubuntu22.04)",
+        "tests": 26
+      },
+      {
+        "job": "kernel (debian11)",
+        "tests": 26
+      },
+      {
+        "job": "kernel (debian13)",
+        "tests": 26
+      },
+      {
+        "job": "kernel (debian12)",
+        "tests": 26
+      },
+      {
+        "job": "kernel (el8)",
+        "tests": 26
+      },
+      {
+        "job": "kernel (ubuntu24.04)",
+        "tests": 26
+      },
+      {
+        "job": "kernel (el9)",
+        "tests": 26
+      },
+      {
+        "job": "kernel (ubuntu20.04)",
+        "tests": 26
+      },
+      {
+        "job": "kernel (el10)",
+        "tests": 26
+      }
+    ],
+    "python_skips": 0,
+    "full_log": {
+      "path": "build/refactor-hardware-20261009/portability-run.log",
+      "bytes": 8914564,
+      "sha256": "1234fdd45aa4b30e2de8700ef38561982cd0bc0da26681f0fa0ecd1d83ba99f5"
+    },
+    "source_archive": {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/octool-source/octool-2.0.1-src.tar.gz",
+      "bytes": 3209592,
+      "sha256": "83d50dc99f90bc8c14c756c8b5eee6363776873562404e30dd5ba3f96452dbcd"
+    }
+  },
+  "deliverables": [
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-debian11/packages/octool-2.0.1-1.amd64.deb",
+      "bytes": 13419892,
+      "sha256": "0cfaeb2c1d2b81deadc54afb8b1f9a90d5ca7b7e2d37e239851c05ca5cf44a83"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-debian11/packages/octool-hwio-dkms-2.0.1-1.amd64.deb",
+      "bytes": 10670,
+      "sha256": "24bff4dc1b0988852d665a1ff4332bedad282ddf23f50575ac26bf94ccafa1f2"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-debian12/packages/octool-2.0.1-1.amd64.deb",
+      "bytes": 13419920,
+      "sha256": "aef71d6dc8c706babeb1118bd39b2377f5d3e9f9b2084c2c78bfc0ebf192cba6"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-debian12/packages/octool-hwio-dkms-2.0.1-1.amd64.deb",
+      "bytes": 10670,
+      "sha256": "d00fbc8a840b4846080991367e5ad34961c3d0df629e6d0d7857d3975b8ee3f8"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-debian13/packages/octool-2.0.1-1.amd64.deb",
+      "bytes": 13419928,
+      "sha256": "5fb8ef891bd40bb2de7d36452573007425b12d5b20b057166fe62ec71376747e"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-debian13/packages/octool-hwio-dkms-2.0.1-1.amd64.deb",
+      "bytes": 10670,
+      "sha256": "20be2fbb3769d27f7534cdd43057f8139990af65895e6ca7c20f1f7c317b6945"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-el10/packages/octool-2.0.1-1.el10.x86_64.rpm",
+      "bytes": 9919358,
+      "sha256": "944954314dcc2ee7ce4df1320ba928f207460284396e76de235bc348185fd5c0"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-el10/packages/octool-hwio-dkms-2.0.1-1.el10.noarch.rpm",
+      "bytes": 19165,
+      "sha256": "b5ede0bc79b918ace2a45bf8aa1693e56b55b14a92d3918ec1ec0c3edc48b9c2"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-el8/packages/octool-2.0.1-1.el8.x86_64.rpm",
+      "bytes": 10179732,
+      "sha256": "5a878f5d3d9920ca33727f190b22bcc022b1615147093b798d9761ad094eabcf"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-el8/packages/octool-hwio-dkms-2.0.1-1.el8.noarch.rpm",
+      "bytes": 19072,
+      "sha256": "b34088d684c7a1c05e2318650c5d87d7c5a8907037adf79f3002f342ee152566"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-el9/packages/octool-2.0.1-1.el9.x86_64.rpm",
+      "bytes": 9918254,
+      "sha256": "df061deab486230e9b5fc63e5f64dcf166239e26dcc9342f632f1e87fa0c4236"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-el9/packages/octool-hwio-dkms-2.0.1-1.el9.noarch.rpm",
+      "bytes": 19060,
+      "sha256": "fe1c27c3ab75129a8d7647620edb9ce3541de4f476e057bcdefd096b05c8b3cf"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-ubuntu20.04/packages/octool-2.0.1-1.amd64.deb",
+      "bytes": 13419930,
+      "sha256": "88e022602225e6e34f3e5b0f1bdf0ed83d4140944cf41d5be60175e3d5375147"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-ubuntu20.04/packages/octool-hwio-dkms-2.0.1-1.amd64.deb",
+      "bytes": 10668,
+      "sha256": "402159bc517b1310d81567b0b632840ac33c92d61d099527e9017a5f4b2ef1ee"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-ubuntu22.04/packages/octool-2.0.1-1.amd64.deb",
+      "bytes": 13419900,
+      "sha256": "584a0d125751ce827fc2c0efa26a7a93edaafa2ccdcf30cabe4f6c22ed5af855"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-ubuntu22.04/packages/octool-hwio-dkms-2.0.1-1.amd64.deb",
+      "bytes": 10672,
+      "sha256": "8ec4d4c16753f33a6245a223a36e28819842c6d10e762d1f87859ad3fac9d48a"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-ubuntu24.04/packages/octool-2.0.1-1.amd64.deb",
+      "bytes": 13419922,
+      "sha256": "5bf31a561f69f8a836a9b457ce1fcdb5bd2aec2c02a7b76fb1bc380ef2c416cb"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-ubuntu24.04/packages/octool-hwio-dkms-2.0.1-1.amd64.deb",
+      "bytes": 10672,
+      "sha256": "4d127debefecd78c30ce49b4cad41335f681fe20799b655ccc4e45450c1b4f9a"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-ubuntu26.04/packages/octool-2.0.1-1.amd64.deb",
+      "bytes": 13419902,
+      "sha256": "34560fa332c75e34442e8a7ff5b6e943ee12e90d145a9c29cab01609ff3db123"
+    },
+    {
+      "path": "build/refactor-hardware-20261009/linux-artifacts/desktop-ubuntu26.04/packages/octool-hwio-dkms-2.0.1-1.amd64.deb",
+      "bytes": 10670,
+      "sha256": "eca27d6304253707c3e7110687d4278b5a697b2c38ab105a4fb8b69ed011de0e"
+    }
+  ],
+  "github_artifacts": [
+    {
+      "id": 11600915160,
+      "name": "desktop-debian13",
+      "size_in_bytes": 25971990,
+      "digest": "sha256:ae25d85afc2f90111a1fdbf2eee9a9eb7b495eef140aae9a49fcdd96f424cd68",
+      "expired": false,
+      "expires_at": "2026-10-16T06:59:16Z"
+    },
+    {
+      "id": 11600880238,
+      "name": "kernel-debian13",
+      "size_in_bytes": 318963,
+      "digest": "sha256:85b974ca258ceb5e0c288e51973e5f216b28eacbf820d6a71d4df838a83b5a4b",
+      "expired": false,
+      "expires_at": "2026-10-16T06:58:23Z"
+    },
+    {
+      "id": 11600880213,
+      "name": "kernel-el10",
+      "size_in_bytes": 327900,
+      "digest": "sha256:9e165195fc49bb866f86b7b26602762bee396f992956749eb1c42333ddb0782a",
+      "expired": false,
+      "expires_at": "2026-10-16T06:58:08Z"
+    },
+    {
+      "id": 11600865333,
+      "name": "kernel-el8",
+      "size_in_bytes": 373763,
+      "digest": "sha256:8bcae96e5878aea29986c0647205f3c8626f23bbaa59762072062d004af2c968",
+      "expired": false,
+      "expires_at": "2026-10-16T06:58:19Z"
+    },
+    {
+      "id": 11600855273,
+      "name": "desktop-debian12",
+      "size_in_bytes": 25974658,
+      "digest": "sha256:248851f6298c628eb6a75036e94efeb244fdc71a9cb0a64fb474e981fd2be224",
+      "expired": false,
+      "expires_at": "2026-10-16T06:57:29Z"
+    },
+    {
+      "id": 11600795723,
+      "name": "el8-baseline",
+      "size_in_bytes": 67056209,
+      "digest": "sha256:402eb617202841d8864da14830797cf98e62602c8c3f3db9e29f9a9978139b61",
+      "expired": false,
+      "expires_at": "2026-10-16T06:54:43Z"
+    },
+    {
+      "id": 11600646777,
+      "name": "kernel-debian12",
+      "size_in_bytes": 284552,
+      "digest": "sha256:d69766ef21b2955911f61a23fd4f4ddf039c38e485ac7584122da0fff0133d6b",
+      "expired": false,
+      "expires_at": "2026-10-16T06:57:20Z"
+    },
+    {
+      "id": 11600552620,
+      "name": "octool-source",
+      "size_in_bytes": 3069530,
+      "digest": "sha256:c3861a711220abc6791ffc35092a76345926245793403cc10a544d1e542f80e0",
+      "expired": false,
+      "expires_at": "2026-10-16T07:00:40Z"
+    },
+    {
+      "id": 11600481376,
+      "name": "kernel-el9",
+      "size_in_bytes": 335747,
+      "digest": "sha256:b4789e2bf65c52b888c10c4a80436dcfcac9dc7e44f17d94b647bba0c6ac0c6e",
+      "expired": false,
+      "expires_at": "2026-10-16T06:58:08Z"
+    },
+    {
+      "id": 11600437506,
+      "name": "kernel-ubuntu26.04",
+      "size_in_bytes": 341198,
+      "digest": "sha256:ab1b9fabcfee78e5662866ef4428fa87792f75b18f8a6cccdf541e4b2f32b0e1",
+      "expired": false,
+      "expires_at": "2026-10-16T06:57:36Z"
+    },
+    {
+      "id": 11600422716,
+      "name": "desktop-ubuntu22.04",
+      "size_in_bytes": 25975250,
+      "digest": "sha256:b4cf8cdf53e2634c787ee9ffb824b301f42dab66d0375732b9be66534c39385a",
+      "expired": false,
+      "expires_at": "2026-10-16T06:58:46Z"
+    },
+    {
+      "id": 11600418089,
+      "name": "desktop-el8",
+      "size_in_bytes": 22443276,
+      "digest": "sha256:ca047cd656dffa6780ee22c98d6adac4b7f0a4c18f950ee1d168235f98a21da5",
+      "expired": false,
+      "expires_at": "2026-10-16T06:59:41Z"
+    },
+    {
+      "id": 11600411569,
+      "name": "kernel-ubuntu24.04",
+      "size_in_bytes": 311073,
+      "digest": "sha256:96f2781246c9814afd5b33d91ac9392862bd5ea33891bde3081e2c3fe51c6df2",
+      "expired": false,
+      "expires_at": "2026-10-16T06:57:37Z"
+    },
+    {
+      "id": 11600361527,
+      "name": "mailbox-contract-evidence",
+      "size_in_bytes": 424440,
+      "digest": "sha256:de3eeb091259197896b3693ce2c5bc0c0e85767ae9614e4fbe132dac77b49942",
+      "expired": false,
+      "expires_at": "2026-10-23T06:55:40Z"
+    },
+    {
+      "id": 11600108492,
+      "name": "kernel-ubuntu22.04",
+      "size_in_bytes": 543185,
+      "digest": "sha256:f4e57fa900eed360b77b78706a74a95204626b05c558bd99dceaaa2349fd5ae1",
+      "expired": false,
+      "expires_at": "2026-10-16T06:57:44Z"
+    },
+    {
+      "id": 11600093639,
+      "name": "desktop-ubuntu20.04",
+      "size_in_bytes": 25978371,
+      "digest": "sha256:50c201e1780969c5f93a851c80ee1eef804f188f43fc65d408d423353692b50e",
+      "expired": false,
+      "expires_at": "2026-10-16T06:58:10Z"
+    },
+    {
+      "id": 11600088929,
+      "name": "desktop-el9",
+      "size_in_bytes": 22183413,
+      "digest": "sha256:fdb84d19aa820e73ff989c7b788937aa4e98ed6b74408874b04e4661d7955c59",
+      "expired": false,
+      "expires_at": "2026-10-16T06:59:42Z"
+    },
+    {
+      "id": 11600009365,
+      "name": "desktop-el10",
+      "size_in_bytes": 22158834,
+      "digest": "sha256:2703bd3da57c90a77852a1b7171f1242ed3d7e0339ae789fd7775a8b61e96b3b",
+      "expired": false,
+      "expires_at": "2026-10-16T07:00:28Z"
+    },
+    {
+      "id": 11600003769,
+      "name": "kernel-ubuntu20.04",
+      "size_in_bytes": 61371,
+      "digest": "sha256:cd8246fac954c3604c0dc5cc9bd80bd10d3e0e261b56f3e7a8e1ea017716a3c9",
+      "expired": false,
+      "expires_at": "2026-10-16T06:57:38Z"
+    },
+    {
+      "id": 11599834076,
+      "name": "desktop-ubuntu26.04",
+      "size_in_bytes": 26019910,
+      "digest": "sha256:ea52c3fb59e60a4147a6b499ff0e4ed078154a28d9b7ee41a70bb5636a4a93e6",
+      "expired": false,
+      "expires_at": "2026-10-16T06:58:51Z"
+    },
+    {
+      "id": 11599714720,
+      "name": "desktop-debian11",
+      "size_in_bytes": 25969669,
+      "digest": "sha256:062e0b481ea8cd9f97e0d567363454813739f1a6ff36f52692aa9619a6082b14",
+      "expired": false,
+      "expires_at": "2026-10-16T06:59:43Z"
+    },
+    {
+      "id": 11599694645,
+      "name": "desktop-ubuntu24.04",
+      "size_in_bytes": 26021373,
+      "digest": "sha256:353ffcda58f1ed7119a6d0c8ecdcfbb4d7d370cb2c8112fbeca5bd718a6b891c",
+      "expired": false,
+      "expires_at": "2026-10-16T06:58:05Z"
+    },
+    {
+      "id": 11599599871,
+      "name": "kernel-debian11",
+      "size_in_bytes": 272478,
+      "digest": "sha256:0c270ceb9e6aadc067f3bedd37f8759d98eb9199d6abbcc9a8421a7f9191463f",
+      "expired": false,
+      "expires_at": "2026-10-16T06:57:36Z"
+    }
+  ],
+  "limits": [
+    "Only the pure core is compiled on Windows and macOS; their hardware adapters and GUI are not implemented.",
+    "No target-machine register or overclocking acceptance was performed.",
+    "Per-operation serialization is not a multi-register mailbox transaction.",
+    "System information still uses Linux /proc and sysconf in the GUI.",
+    "Intel/AMD/board panels and complete OCTool reconstruction remain unfinished.",
+    "The Linux HAL, kernel and 96-byte ABI were not changed in this increment."
+  ]
+}

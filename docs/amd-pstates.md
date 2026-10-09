@@ -1,5 +1,13 @@
 # AMD PStates：只读恢复及证据边界
 
+最新重构提交 `beb10b7` 已把 PStates、寄存器请求/校验/串行服务和 Linux 硬件适配分离。
+独立核心四环境通过，Linux 完整矩阵 23/23；EL8 基线与十目标各 13 项 Qt 测试通过，
+每目标 26 项 Python 回归无跳过，见[本次源码、测试及产物哈希](validation/refactor-hardware-ci-beb10b7.json)。
+当前主线是先完成功能重构，再移植重构版；Windows/macOS 此时只验证核心，尚无硬件后端/完整 GUI。
+剩余系统信息、多步事务、其他平台面板和目标真机验收仍待继续。
+
+以下保留此前研究与验证记录。
+
 更新：2026-09-30。作者确认 TRX50 SAGE 使用 Threadripper PRO 9995WX，BIOS 未知；
 针对截图中的 306 mV、31 A，作者明确选择“暂无定义，先恢复可核实的只读频率和原始值”。
 当前实现位于 [pstates.cpp](../gui/pstates.cpp)，复用原 HAL，没有新增或修改线级命令。
