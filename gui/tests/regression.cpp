@@ -123,6 +123,17 @@ private slots:
         panel.findChild<QPushButton *>("smuProbe")->click();
         QCOMPARE(reference.calls.load(),0);
         QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("Invalid"));
+        panel.findChild<QLineEdit *>("smuCcd")->setText("3");
+        panel.findChild<QLineEdit *>("smuCore")->setText("7");
+        panel.findChild<QLineEdit *>("smuMhz")->setText("6000");
+        panel.findChild<QPushButton *>("smuEncodeFrequency")->click();
+        QCOMPARE(panel.findChild<QLineEdit *>("smuArg0")->text(),QString("30701770"));
+        QCOMPARE(panel.findChild<QComboBox *>("smuCommand")->currentData().toInt(),0x27);
+        QCOMPARE(reference.calls.load(),0);
+        panel.findChild<QLineEdit *>("smuCcd")->setText("16");
+        panel.findChild<QPushButton *>("smuEncodeFrequency")->click();
+        QCOMPARE(panel.findChild<QLineEdit *>("smuArg0")->text(),QString("30701770"));
+        QCOMPARE(reference.calls.load(),0);
     }
     void inventoryReadsUnitsErrorsAndBoundSpdFixtures() {
         QTemporaryDir root; QVERIFY(root.isValid());

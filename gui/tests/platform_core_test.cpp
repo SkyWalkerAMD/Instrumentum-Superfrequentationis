@@ -3,6 +3,8 @@
 #include "amd_smu.h"
 #include "amd_pstates.h"
 #include "spd.h"
+#include <algorithm>
+#include <iterator>
 #include <cassert>
 #include <cerrno>
 #include <cmath>
@@ -177,12 +179,43 @@ void smuTimeouts() {
 void spdAndPstateBits() {
     const std::uint8_t crcVector[]={'1','2','3','4','5','6','7','8','9'};
     assert(spdCrc16(crcVector,9)==0x31c3); // CRC-16/XMODEM published check value.
-    std::vector<std::uint8_t> bytes(1024); bytes[2]=0x12; bytes[3]=2; bytes[4]=4; bytes[6]=1; bytes[234]=8; bytes[235]=2;
+    std::vector<std::uint8_t> bytes(236); bytes[2]=0x12; bytes[3]=2; bytes[4]=4; bytes[6]=0x20; bytes[234]=8; bytes[235]=2;
     auto s=decodeSpd(bytes); assert(!s.error && s.memoryType==0x12 && !s.crcChecked);
     assert(s.fields[3].value=="2" && s.fields[4].value=="8" && s.fields[5].value=="32");
     bytes.resize(235); assert(decodeSpd(bytes).error==-EMSGSIZE);
     bytes.resize(512); bytes[2]=0x0c; assert(decodeSpd(bytes).error==-EILSEQ);
     bytes[2]=0xff; assert(decodeSpd(bytes).error==-ENOTSUP);
+    // Published Advantech AQD-SD5V16GE48-SB base bytes 0..47 and geometry.
+    // Other bytes deliberately zeroed: this is a derived fixture, not a dump.
+    // Expected CRC 0x2145 was calculated separately with Python crc_hqx.
+    const std::uint8_t base[] = {
+        0x30,0x10,0x12,0x03,0x04,0x00,0x20,0x62,0,0,0,0,0x70,0,0,0,
+        0,0,0,0,0xa0,1,0xf2,3,0x7a,0x0d,0,0,0,0,0x80,0x3e,
+        0x80,0x3e,0x80,0x3e,0,0x7d,0x80,0xbb,0x30,0x75,0x27,1,0xa0,0,0x82,0};
+    bytes.assign(512,0); std::copy(std::begin(base),std::end(base),bytes.begin());
+    bytes[235]=0x2a; bytes[510]=0x45; bytes[511]=0x21;
+    s=decodeSpd(bytes); assert(!s.error && s.crcChecked && s.crcValid);
+    auto field=[&](const char *name) { for (const auto &v:s.fields) if (v.name==name) return v.value; return std::string(); };
+    assert(field("SDRAM device width (bits)")=="8" && field("Subchannels per module")=="2");
+    assert(field("Module capacity (MiB)")=="16384" && field("Bus extension per subchannel (bits)")=="4");
+    assert(field("SPD tCK minimum (ps)")=="416" && field("SPD tAA minimum (ps)")=="16000");
+    assert(field("SPD tRFC1 minimum (ns)")=="295");
+    bytes[200]^=1; s=decodeSpd(bytes);
+    assert(s.error==-EILSEQ && s.crcChecked && !s.crcValid && s.fields.size()==1);
+    bytes.resize(511); s=decodeSpd(bytes); assert(!s.error && !s.crcChecked);
+    bytes[234]|=0x40; s=decodeSpd(bytes); assert(field("Module capacity (MiB)").empty());
+    // Derived from the AQD-SD4U16GN32-SE1 published base bytes, with
+    // unrelated fields zeroed and a separately calculated CRC (0x4e2e).
+    const std::uint8_t ddr4[] = {
+        0x23,0x11,0x0c,3,0x85,0x21,0,8,0,0x60,0,3,9,3,0,0,
+        0,0,5,0x0d,0xf8,0xff,3,0,0x6e,0x6e,0x6e,0x11,0,0x6e,0xf0,0x0a,
+        0x20,8,0,5,0,0xa8,0x14,0x28,0x28,0,0x78,0,0x14,0x3c,0,0};
+    bytes.assign(128,0); std::copy(std::begin(ddr4),std::end(ddr4),bytes.begin());
+    bytes[118]=0x9c; bytes[124]=0xe7; bytes[126]=0x2e; bytes[127]=0x4e;
+    s=decodeSpd(bytes); assert(!s.error && s.crcValid);
+    assert(field("Module capacity (MiB)")=="16384" && field("SPD tCK minimum (ps)")=="625");
+    assert(field("SPD tCK maximum (ps)")=="1600" && field("SPD tRRD_L minimum (ps)")=="4900");
+    assert(field("SPD tRFC1 minimum (ps)")=="350000" && field("SPD tRC minimum (ps)")=="45750");
     const auto p=decodeFamily1aPstate(UINT64_C(0x80000001ffffffff));
     assert(p.vidBits==511 && p.iddValueBits==255 && p.iddDivBits==3 && p.frequencyMHz==20475);
 }

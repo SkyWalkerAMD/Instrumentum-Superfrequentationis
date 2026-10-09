@@ -21,6 +21,7 @@
 #include <QtConcurrent>
 #include <cerrno>
 #include <cstring>
+#include <utility>
 
 namespace {
 QString failure(int error) {
@@ -153,6 +154,13 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     };
     commands(); connect(profile_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, commands);
     form->addRow("Command", command_);
+    auto *frequency = new QHBoxLayout;
+    auto *ccd = edit("smuCcd", "0", this), *core = edit("smuCore", "0", this), *mhz = edit("smuMhz", "", this);
+    for (const auto &item : {std::make_pair("CCD",ccd), std::make_pair("Core in CCD",core), std::make_pair("MHz",mhz)}) {
+        frequency->addWidget(new QLabel(item.first,this)); frequency->addWidget(item.second);
+    }
+    auto *encode = new QPushButton("Prepare frequency",this); encode->setObjectName("smuEncodeFrequency"); frequency->addWidget(encode);
+    form->addRow("Shimada frequency (decimal firmware indices)",frequency);
     auto *args = new QHBoxLayout;
     for (unsigned i = 0; i < 6; ++i) { args_[i] = edit(qPrintable(QString("smuArg%1").arg(i)), "0", this); args_[i]->setPlaceholderText(QString("Arg%1").arg(i)); args->addWidget(args_[i]); }
     form->addRow("Arg0 … Arg5 (32-bit hex)", args); layout->addLayout(form);
@@ -161,6 +169,21 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     table_ = table({"Item", "Result"}, this, layout); table_->setObjectName("smuTable");
     status_ = description("Ready. No hardware access has been performed.", layout, this); status_->setObjectName("smuStatus");
     copyButton(this, buttons, table_, status_);
+    connect(encode,&QPushButton::clicked,this,[this,ccd,core,mhz] {
+        using namespace octool::core;
+        quint64 ccdValue=0, coreValue=0, frequencyValue=0; std::uint32_t encoded=0;
+        if (profile_->currentData().toInt()!=int(SmuProfile::Shimada) ||
+            !parseNumber(ccd->text(),10,15,ccdValue) || !parseNumber(core->text(),10,7,coreValue) ||
+            !parseNumber(mhz->text(),10,0xfffff,frequencyValue) ||
+            encodeShimadaCoreFrequency(unsigned(ccdValue),unsigned(coreValue),unsigned(frequencyValue),encoded)) {
+            status_->setText("Shimada only: CCD 0..15, core 0..7, MHz 1..1048575 (encoding limits). No command sent."); return;
+        }
+        command_->setCurrentIndex(command_->findData(0x27));
+        args_[0]->setText(QString::number(encoded,16));
+        for (unsigned i=1;i<6;++i) args_[i]->setText("0");
+        table_->setRowCount(0);
+        status_->setText("Frequency command prepared. CCD/core are firmware indices, not Linux CPU numbers; their presence is not verified. Review before sending.");
+    });
     connect(probe, &QPushButton::clicked, this, [this] { submit(true); }); connect(send, &QPushButton::clicked, this, [this] { submit(false); });
     auto clear = [this] { table_->setRowCount(0); status_->setText("Inputs changed. Probe again to check the target."); };
     for (auto *e : {cpu_, bus_, device_, function_}) connect(e, &QLineEdit::textChanged, this, clear);
@@ -210,7 +233,7 @@ MemoryBoardPanel::MemoryBoardPanel(QWidget *parent) : QWidget(parent) {
     setObjectName("memoryBoard"); auto *layout=new QVBoxLayout(this);
     description("Memory and motherboard · BIOS identity, kernel sensors and DDR4 / DDR5 SPD\n"
         "SPD describes the module, not the currently trained timings. Sensors depend on the installed kernel driver. "
-        "DDR5 CRC, timing writes, PMIC / VRM controls and board-specific clocks are not yet recovered.",layout,this);
+        "Base CRC is checked when the full block is available. Timing writes, PMIC / VRM controls and board-specific clocks are not yet recovered.",layout,this);
     auto *buttons=new QHBoxLayout; auto *read=new QPushButton("Read once",this); read->setObjectName("inventoryRead"); buttons->addWidget(read);
     auto *open=new QPushButton("Open SPD dump…",this); open->setObjectName("spdOpen"); buttons->addWidget(open); layout->addLayout(buttons);
     table_=table({"Device", "Item", "Value", "Unit", "Status", "Source"},this,layout); table_->setObjectName("inventoryTable");

@@ -1,0 +1,97 @@
+{
+  "schema": 1,
+  "date": "2026-10-10",
+  "sources": [
+    {
+      "file": "coreboot-ddr4.h",
+      "url": "https://raw.githubusercontent.com/coreboot/coreboot/main/src/include/device/dram/ddr4.h",
+      "sha256": "6db2564c5a59a6b9508ee9e1096035ec9e4d4f1419c0a23842787de079cf421d",
+      "used_for": "DDR4 SPD basic byte offsets"
+    },
+    {
+      "file": "coreboot-ddr5.h",
+      "url": "https://raw.githubusercontent.com/coreboot/coreboot/main/src/include/device/dram/ddr5.h",
+      "sha256": "4d60eeea40394e2c8f3fd02f37c9e968d9fd47bafb3b6c9e3b177c58f3efd42b",
+      "used_for": "DDR5 SPD basic byte offsets only"
+    },
+    {
+      "file": "intel-family.h",
+      "url": "https://raw.githubusercontent.com/torvalds/linux/v6.12/arch/x86/include/asm/intel-family.h",
+      "sha256": "40d6ec4b096e05e92c1e4d469ec09c5c0d000c39d303be3254ddc813613b64af",
+      "used_for": "Intel family/model numbers (Linux v6.12)"
+    },
+    {
+      "file": "msr-index.h",
+      "url": "https://raw.githubusercontent.com/torvalds/linux/v6.12/arch/x86/include/asm/msr-index.h",
+      "sha256": "903d9ad2d9852f6673ad98ed7e3942ca93526e6a7768c07cebede7cd1a67c796",
+      "used_for": "HWP register fields (Linux v6.12)"
+    },
+    {
+      "file": "intel_pstate.c",
+      "url": "https://raw.githubusercontent.com/torvalds/linux/v6.12/drivers/cpufreq/intel_pstate.c",
+      "sha256": "d8cfea1a9db3cd65c655711e2aa2244d2689f86a2a231f77b4cb436a686f214b",
+      "used_for": "HWP capabilities and requests (Linux v6.12)"
+    },
+    {
+      "file": "intel_rapl_common.c",
+      "url": "https://raw.githubusercontent.com/torvalds/linux/v6.12/drivers/powercap/intel_rapl_common.c",
+      "sha256": "c0a5e84f5b55187b2ca40c800812ce57500915e8f7771a3279490e2250f8052f",
+      "used_for": "Core/SPR RAPL model layout and unit profiles (Linux v6.12)"
+    },
+    {
+      "file": "intel_rapl_msr.c",
+      "url": "https://raw.githubusercontent.com/torvalds/linux/v6.12/drivers/powercap/intel_rapl_msr.c",
+      "sha256": "22736a75626c42a22f2e0fc9a140199253dfed30894fb36beb394b0d5aee3bbe",
+      "used_for": "RAPL MSR addresses (Linux v6.12)"
+    },
+    {
+      "file": "hwmon.html",
+      "url": "https://www.kernel.org/doc/html/latest/hwmon/sysfs-interface.html",
+      "sha256": "f8fb425b18b207d81f20c6dc58f26cc9d40fe45cd197ecd18efb72338cc859d1",
+      "used_for": "Kernel sensor ABI units"
+    },
+    {
+      "file": "illumos-spd-ddr4.h",
+      "url": "https://raw.githubusercontent.com/illumos/illumos-gate/master/usr/src/lib/libjedec/common/spd_ddr4.h",
+      "sha256": "7d5c2c0afb3a58f1a70a34c1d032373188c62dccf4fb0595f21fd9dc1111da16",
+      "used_for": "DDR4 SPD timing fields and signed fine offsets"
+    },
+    {
+      "file": "illumos-spd-ddr5.h",
+      "url": "https://raw.githubusercontent.com/illumos/illumos-gate/master/usr/src/lib/libjedec/common/spd_ddr5.h",
+      "sha256": "a36f2598ad2d8978fb993c74c9a9474b75eaafdd5c0882bfbdcc09f7d9e43533",
+      "used_for": "DDR5 I/O width bits 7:5, subchannels, timing fields and CRC extent"
+    },
+    {
+      "file": "illumos-spd-ddr5.c",
+      "url": "https://raw.githubusercontent.com/illumos/illumos-gate/master/usr/src/lib/libjedec/common/libjedec_spd_ddr5.c",
+      "sha256": "cb8b80ff844d1572b3c299a3704dab47e9374c1d01beead348fd9aaae3ba0a5b",
+      "used_for": "Cross-check geometry, density and stacked-package boundaries"
+    },
+    {
+      "file": "illumos-aqd-ddr5.spd",
+      "url": "https://raw.githubusercontent.com/illumos/illumos-gate/master/usr/src/test/util-tests/tests/libjedec/hex2spd/data/ddr5/AQD-D5V16GR48-SB.spd",
+      "sha256": "439ba5837fc7c57e2ea2604515f109c49e67820fcc6063b67140b91512090107",
+      "used_for": "Cross-check DDR5 x8 encoding; not included as a hardware capture"
+    },
+    {
+      "file": "illumos-aqd-ddr4.spd",
+      "url": "https://raw.githubusercontent.com/illumos/illumos-gate/master/usr/src/test/util-tests/tests/libjedec/hex2spd/data/ddr4/AQD-SD4U16GN32-SE1.spd",
+      "sha256": "57b171b9d8bb35f0fd561dba60b7359ab5c6100655e0b403ddc6a75c31a76d5e",
+      "used_for": "Published DDR4 example fields used to derive a synthetic regression vector"
+    },
+    {
+      "file": "advantech-ddr5.pdf",
+      "url": "https://advdownload.advantech.com/productfile/PIS/AQD-SD5V16GE48-SB/file/AQD-SD5V16GE48-SB_datasheet20221005145737.pdf",
+      "sha256": "8cb018896e65ac4531dfdd3599e5225eed68fecff6aedf855618c6fa482b01e8",
+      "used_for": "AQD-SD5V16GE48-SB revision 1.0, SPD tables pages 12-14: x8 encoding, timing values and CRC extent"
+    }
+  ],
+  "correction": "Cached coreboot spd_bin.c DDR5 I/O-width arithmetic is inconsistent with the manufacturer table. Production decoder uses byte6 bits7:5, verified against the manufacturer and illumos definitions.",
+  "source_license_note": "Definitions and published numeric layout facts were used to implement the decoder independently; no illumos CDDL implementation or ZenStates GPL-3.0 code is incorporated.",
+  "fixture_note": "SPD tests use selected public base bytes, zero unrelated bytes, and separately computed CRC-16 values. They are derived synthetic fixtures, not physical machine captures.",
+  "amd_evidence": [
+    "docs/validation/legacy-amd-initialization-analysis.json",
+    "docs/legacy-amd-transport.md"
+  ]
+}

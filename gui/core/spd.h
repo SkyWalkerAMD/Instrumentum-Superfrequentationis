@@ -14,6 +14,7 @@ struct SpdSnapshot {
 };
 std::uint16_t spdCrc16(const std::uint8_t *bytes, std::size_t length);
 // Bounded offline decoder, also used for sysfs EEPROM reads. Never writes SPD.
-// DDR5 identity/geometry only; no assumptions about trained timings or XMP.
+// DDR4/DDR5 base CRC, identity/geometry and revision-1 timing requirements.
+// SPD requirements are not the currently trained timings or XMP/EXPO.
 SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &bytes);
 } }
