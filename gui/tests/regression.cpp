@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "registerpanel.h"
 #include "pstates.h"
+#include "platform/linux_hwio.h"
 #include "../../port/abi/octool_hwio_abi.h"
 #include <QtTest>
 #include <QComboBox>
@@ -63,7 +64,7 @@ struct PstateReference {
     }
     std::shared_ptr<HardwareAccess> access() {
         hwio_transport transport{this, submit, nullptr, "PStates test transport"};
-        return std::make_shared<HardwareAccess>(hwio_open_transport(&transport));
+        return std::make_shared<HardwareAccess>(octool::platform::makeLinuxHardwareBackend(hwio_open_transport(&transport)));
     }
 };
 
@@ -81,7 +82,7 @@ struct Reference {
     }
     std::shared_ptr<HardwareAccess> access() {
         hwio_transport transport{this, submit, nullptr, "GUI test transport"};
-        return std::make_shared<HardwareAccess>(hwio_open_transport(&transport));
+        return std::make_shared<HardwareAccess>(octool::platform::makeLinuxHardwareBackend(hwio_open_transport(&transport)));
     }
 };
 
@@ -156,11 +157,23 @@ private slots:
         unsigned cpu = 0;
         while (cpu < CPU_SETSIZE && !CPU_ISSET(cpu, &before)) ++cpu;
         QVERIFY(cpu < CPU_SETSIZE);
-        HardwareAccess access(hwio_open("/nonexistent-octool-regression-device"));
+        HardwareAccess access(octool::platform::makeLinuxHardwareBackend(
+            hwio_open("/nonexistent-octool-regression-device")));
         QCOMPARE(access.cpuid(cpu, 0).error, 0);
         QCOMPARE(sched_getaffinity(0, sizeof(after), &after), 0);
         QVERIFY(CPU_EQUAL(&before, &after));
         QCOMPARE(access.cpuid(UINT32_MAX, 0).error, -ERANGE);
+    }
+    void failedBackendDoesNotReopenOrExposeCpuidData() {
+        HardwareAccess unavailable(octool::platform::makeLinuxHardwareBackend(nullptr));
+        QCOMPARE(unavailable.backend(Space::Msr), QString("none"));
+        QCOMPARE(unavailable.execute(Request{}).error, -ENOMEM);
+        QCOMPARE(unavailable.cpuid(0, 0).error, -ENOMEM);
+        PstateReference reference; auto access = reference.access();
+        reference.failLeaf = 1;
+        const auto result = access->cpuid(3, 1);
+        QCOMPARE(result.error, -EACCES);
+        for (auto word : result.words) QCOMPARE(word, std::uint32_t(0));
     }
     void parsesWithoutTruncation() {
         quint64 value = 0;
@@ -180,6 +193,8 @@ private slots:
         r = Request{}; r.space = Space::Memory; r.width = 1; r.write = true; r.value = 256;
         QCOMPARE(access->execute(r).error, -EINVAL);
         r.width = 8; r.address = UINT64_MAX; QCOMPARE(access->execute(r).error, -EINVAL);
+        r = Request{}; r.space = static_cast<Space>(99);
+        QCOMPARE(access->execute(r).error, -EINVAL);
         QCOMPARE(reference.calls.load(), 0);
     }
     void familiesEncodeActualRequests() {

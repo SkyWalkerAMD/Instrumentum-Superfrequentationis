@@ -14,18 +14,34 @@
 #include <cerrno>
 #include <cstring>
 
-// Frequency definition: Linux cpupower helpers/amd.c, AMD PPR 57238 p235.
-// The PPR describes model 02h. Only the Linux-supported family-wide frequency
-// rule is used here; model-specific VID/current interpretations are excluded.
 PstateValue decodeFamily1aPstate(quint64 raw)
 {
-    PstateValue value;
-    value.enabled = (raw >> 63) != 0;
-    const unsigned fid = unsigned(raw & 0xfff);
-    value.validFrequency = value.enabled && fid >= 0x10;
-    if (value.validFrequency) value.frequencyMHz = fid * 5;
-    return value;
+    return octool::core::decodeFamily1aPstate(raw);
 }
+
+namespace {
+class AccessPstateReader final : public octool::core::PstateReader {
+public:
+    explicit AccessPstateReader(HardwareAccess &access) : access_(access) {}
+    int cpuid(unsigned cpu, std::uint32_t leaf, std::uint32_t subleaf,
+              std::uint32_t words[4]) override {
+        const auto reply = access_.cpuid(cpu, leaf, subleaf);
+        if (!reply.error)
+            for (unsigned i = 0; i < 4; ++i) words[i] = reply.words[i];
+        return reply.error;
+    }
+    int readMsr(unsigned cpu, std::uint32_t index, std::uint64_t &value) override {
+        Request request;
+        request.cpu = cpu;
+        request.address = index;
+        const auto reply = access_.execute(request);
+        if (!reply.error) value = reply.value;
+        return reply.error;
+    }
+private:
+    HardwareAccess &access_;
+};
+} // namespace
 
 static QString errorText(int error)
 {
@@ -34,62 +50,47 @@ static QString errorText(int error)
 
 PstateSnapshot readAmdPstates(HardwareAccess &access, unsigned cpu)
 {
+    AccessPstateReader reader(access);
+    const auto sample = octool::core::readAmdPstates(reader, cpu);
     PstateSnapshot snapshot;
     const QString target = QString("Logical CPU %1: ").arg(cpu);
-    auto root = access.cpuid(cpu, 0);
-    if (root.error) { snapshot.status = target + errorText(root.error); return snapshot; }
-    char vendor[13]{};
-    std::memcpy(vendor, &root.words[1], 4);
-    std::memcpy(vendor + 4, &root.words[3], 4);
-    std::memcpy(vendor + 8, &root.words[2], 4);
-    if (std::strcmp(vendor, "AuthenticAMD") || root.words[0] < 1) {
+    const QString description = sample.hasIdentity ?
+        target + QString("family %1h, model %2h, stepping %3. ")
+            .arg(sample.family, 0, 16).arg(sample.model, 0, 16).arg(sample.stepping) : target;
+    using Status = octool::core::PstateStatus;
+    switch (sample.status) {
+    case Status::CpuReadFailed:
+    case Status::LimitReadFailed:
+        snapshot.status = description + errorText(sample.error); return snapshot;
+    case Status::NotAmd:
         snapshot.status = target + "Requires an AMD Family 1Ah CPU. No MSR read performed.";
         return snapshot;
-    }
-    auto identity = access.cpuid(cpu, 1);
-    if (identity.error) { snapshot.status = target + errorText(identity.error); return snapshot; }
-    const unsigned baseFamily = (identity.words[0] >> 8) & 0xf;
-    const unsigned family = baseFamily + (baseFamily == 0xf ? (identity.words[0] >> 20) & 0xff : 0);
-    const unsigned model = ((identity.words[0] >> 4) & 0xf) |
-        ((baseFamily == 6 || baseFamily == 0xf) ? (identity.words[0] >> 12) & 0xf0 : 0);
-    const unsigned stepping = identity.words[0] & 0xf;
-    const QString description = target + QString("family %1h, model %2h, stepping %3. ")
-        .arg(family, 0, 16).arg(model, 0, 16).arg(stepping);
-    if (family != 0x1a) {
+    case Status::UnsupportedFamily:
         snapshot.status = description + "This PStates decoder supports Family 1Ah only. No MSR read performed.";
         return snapshot;
-    }
-    auto extended = access.cpuid(cpu, 0x80000000);
-    if (extended.error) { snapshot.status = description + errorText(extended.error); return snapshot; }
-    if (extended.words[0] < 0x80000007) {
+    case Status::CapabilityUnavailable:
         snapshot.status = description + "Hardware P-state capability unavailable. No MSR read performed.";
         return snapshot;
-    }
-    auto power = access.cpuid(cpu, 0x80000007);
-    if (power.error) { snapshot.status = description + errorText(power.error); return snapshot; }
-    if (!(power.words[3] & (1u << 7))) {
+    case Status::CapabilityNotAdvertised:
         snapshot.status = description + "Hardware P-states not advertised. No MSR read performed.";
         return snapshot;
+    case Status::Complete:
+        break;
     }
-    Request request;
-    request.cpu = cpu; request.address = 0xc0010061;
-    auto limit = access.execute(request);
-    if (limit.error) { snapshot.status = description + errorText(limit.error); return snapshot; }
-    const unsigned maximum = unsigned((limit.value >> 4) & 7);
-    unsigned failures = 0;
     for (unsigned i = 0; i < 8; ++i) {
         auto &row = snapshot.rows[int(i)];
-        if (i > maximum) { row.status = "Above reported P-state limit"; continue; }
-        request.address = 0xc0010064u + i;
-        auto result = access.execute(request);
-        if (result.error) { row.status = errorText(result.error); ++failures; continue; }
-        row.read = true; row.raw = result.value;
+        const auto &item = sample.rows[i];
+        using RowStatus = octool::core::PstateRowStatus;
+        if (item.status == RowStatus::AboveLimit) { row.status = "Above reported P-state limit"; continue; }
+        if (item.status == RowStatus::ReadFailed) { row.status = errorText(item.error); continue; }
+        if (item.status != RowStatus::Read) continue;
+        row.read = true; row.raw = item.raw;
         auto decoded = decodeFamily1aPstate(row.raw);
         row.status = !decoded.enabled ? "Definition disabled" :
             decoded.validFrequency ? "Definition read" : "Reserved frequency ID";
     }
     snapshot.status = description + QString("P0-P%1 requested; %2 read failure(s). %3")
-        .arg(maximum).arg(failures).arg(QDateTime::currentDateTime().toString(Qt::ISODate));
+        .arg(sample.maximum).arg(sample.failures).arg(QDateTime::currentDateTime().toString(Qt::ISODate));
     return snapshot;
 }
 

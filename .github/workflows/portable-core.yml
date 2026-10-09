@@ -1,0 +1,46 @@
+name: portable core
+on:
+  push:
+    paths:
+      - 'gui/core/**'
+      - 'gui/tests/*_core_test.cpp'
+      - '.github/workflows/portable-core.yml'
+  pull_request:
+    paths:
+      - 'gui/core/**'
+      - 'gui/tests/*_core_test.cpp'
+      - '.github/workflows/portable-core.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: portable-core-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  core:
+    name: core (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04, windows-2022, macos-14]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure without Qt or OS drivers
+        run: cmake -S gui/core -B build/portable-core -DCMAKE_BUILD_TYPE=Release
+      - name: Compile with warnings as errors
+        run: cmake --build build/portable-core --config Release --parallel 2
+      - name: Test synthetic reads, validation, errors, lifetime and concurrency
+        run: ctest --test-dir build/portable-core -C Release --output-on-failure --output-junit results.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: portable-core-${{ matrix.os }}
+          path: |
+            build/portable-core/results.xml
+            build/portable-core/Testing/Temporary/LastTest.log
+          if-no-files-found: warn
+          retention-days: 7

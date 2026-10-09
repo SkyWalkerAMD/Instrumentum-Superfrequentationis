@@ -1,21 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #pragma once
 #include <QString>
-#include <QMutex>
 #include <memory>
-#include "../port/hal/octool_hwio.h"
+#include "core/hardware.h"
 
-enum class Space { Msr, Memory, Pci };
-struct Request {
-    Space space = Space::Msr;
-    bool write = false;
-    unsigned cpu = 0;
-    quint64 address = 0, value = 0;
-    unsigned bus = 0, device = 0, function = 0;
-    int width = 8;
-};
-struct Reply { int error = 0; quint64 value = 0; };
-struct CpuIdReply { int error = 0; uint32_t words[4]{}; };
+using Space = octool::core::Space;
+using Request = octool::core::Request;
+using Reply = octool::core::Reply;
+using CpuIdReply = octool::core::CpuIdReply;
 bool parseNumber(const QString &text, int base, quint64 maximum, quint64 &value);
 QString validate(const Request &request);
 QString targetText(const Request &request);
@@ -23,12 +15,11 @@ QString hexValue(quint64 value, int width);
 
 class HardwareAccess {
 public:
-    explicit HardwareAccess(hwio_t *handle = nullptr);
-    ~HardwareAccess();
+    HardwareAccess();
+    explicit HardwareAccess(std::unique_ptr<octool::core::HardwareBackend> backend);
     Reply execute(const Request &request);
-    CpuIdReply cpuid(unsigned cpu, uint32_t leaf, uint32_t subleaf = 0);
+    CpuIdReply cpuid(unsigned cpu, std::uint32_t leaf, std::uint32_t subleaf = 0);
     QString backend(Space space) const;
 private:
-    hwio_t *handle_;
-    mutable QMutex mutex_;
+    octool::core::HardwareService service_;
 };

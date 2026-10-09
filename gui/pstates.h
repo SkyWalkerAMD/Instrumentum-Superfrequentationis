@@ -1,17 +1,14 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #pragma once
 #include "access.h"
+#include "core/amd_pstates.h"
 #include <QVector>
 #include <QWidget>
 class QLineEdit;
 class QLabel;
 class QTableWidget;
 
-struct PstateValue {
-    bool enabled = false;
-    bool validFrequency = false;
-    unsigned frequencyMHz = 0;
-};
+using PstateValue = octool::core::PstateValue;
 PstateValue decodeFamily1aPstate(quint64 raw);
 struct PstateRow {
     bool read = false;

@@ -78,3 +78,33 @@ PE 表位于实际 .data，不能只搜 .rdata。工具输出二进制 SHA-256�
 该诊断已在 [run 36661824443](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36661824443)
 成功完成；SDK 和配置证据见 [qt-sdk.md](qt-sdk.md)。当前正式流程已开始实测基础版 GUI。
 后续平台面板需要作者提供 CPU/主板/BIOS 和优先面板；硬件字段不确定时先确认再实现。
+
+## 重构增量：独立核心与 Linux 适配器（2026-10-09）
+
+目标是先重构 OCTool 的功能与模块边界，再把重构版移植到其他系统。
+本轮把已有 AMD PStates 的 CPU 能力判断、频率解码、一次性快照，以及寄存器请求、
+校验和串行访问抽到 `gui/core`；核心仅使用 C++11 标准库，不依赖 Qt 或 Linux HAL。
+
+- `core/HardwareBackend` 定义 MSR/MMIO/PCI 请求、CPUID 和后端诊断。
+  `HardwareService` 持有后端并串行所有调用；无效地址空间、宽度、地址、PCI 字段和越界写值在分发前拒绝。
+  保留原错误码；失败的寄存器值和 CPUID 输出清零，成功写入只回显提交值，不自动回读。
+- `platform/linux_hwio.cpp` 负责现有 HAL、96 字节协议的调用及直接 CPUID 的线程亲和性恢复。
+  HAL 与内核协议源码不变；Qt 层仅作输入解析、状态文本和异步控件接入。
+- 新 OS 需实现 `HardwareBackend` 和构建时选择的工厂，提供目标逻辑 CPU 语义与错误映射。
+  当前只实现 Linux 硬件适配器。独立核心在其他系统编译不代表对应驱动或完整 GUI 已移植。
+- 锁的范围仍是单笔操作。NVL 等共享 mailbox 的多步事务、其余平台面板和真机验收仍待后续重构。
+  基本信息页的 `/proc/cpuinfo` 和 `sysconf` 也仍属后续系统信息接口范围。
+
+独立编译与回归（不需要 Qt、驱动或硬件）：
+
+```sh
+cmake -S gui/core -B build/portable-core -DCMAKE_BUILD_TYPE=Release
+cmake --build build/portable-core --config Release
+ctest --test-dir build/portable-core -C Release --output-on-failure
+```
+
+新增 `portable core` Actions 工作流分别使用 Ubuntu 22.04/24.04、Windows MSVC 和 macOS Clang，
+以 warnings-as-errors 编译，Release 测试强制保留断言。两组测试覆盖 PStates 的 7 个场景组，
+以及硬件接口的 6 个场景组（含错误输出、所有权和 6 线程混合访问）。
+既有 `portability` 工作流继续验证 Linux HAL、Qt 控件、静态 Qt 构建和十发行版包装/窗口。
+本地只完成 Python/静态验证；本轮 C++/Qt 云端结果以实际 run SHA 和报告为准。

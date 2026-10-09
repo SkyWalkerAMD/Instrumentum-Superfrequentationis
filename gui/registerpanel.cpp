@@ -88,7 +88,8 @@ void RegisterPanel::submit(bool write)
         return false;
     };
     quint64 n = 0;
-    if (!number("address", 16, std::numeric_limits<quint64>::max(), request.address)) return;
+    if (!number("address", 16, std::numeric_limits<quint64>::max(), n)) return;
+    request.address = n;
     if (space_ == Space::Msr) {
         if (!number("cpu", 10, UINT32_MAX, n)) return;
         request.cpu = unsigned(n);
@@ -101,7 +102,10 @@ void RegisterPanel::submit(bool write)
         if (!number("function", 16, 7, n)) return;
         request.function = unsigned(n);
     }
-    if (write && !number("value", 16, std::numeric_limits<quint64>::max(), request.value)) return;
+    if (write) {
+        if (!number("value", 16, std::numeric_limits<quint64>::max(), n)) return;
+        request.value = n;
+    }
     QString invalid = validate(request);
     if (!invalid.isEmpty()) { status_->setText(invalid); return; }
     if (write && QMessageBox::question(this, "Confirm register write",
