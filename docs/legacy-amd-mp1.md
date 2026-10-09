@@ -111,3 +111,7 @@ PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-amd-mp1.py
 
 [逐指令证据](validation/legacy-amd-mp1-analysis.json)和[Windows观测](validation/legacy-amd-mp1-windows.json)
 随源码保存。下一步仍包括真实Qt绑定、全部上层调用、固件含义、原PCI后端、完整构造影响及实机验收。
+
+`7690e2a / portability37862775672`最终23/23成功；probe37862775686成功。Linux24项port、31项
+分析无跳过；含本页563项的3512项原指令门禁通过。下载9份报告与Windows除environment完全一致，
+作业/artifact摘要及逐报告SHA见[云端记录](validation/legacy-mp1-ci-7690e2a.json)。不包含随后NGU新实验。

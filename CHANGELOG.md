@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 未发布 — 2026-10-09（Intel NGU到原96字节请求的地址核对）
+
+- 新增3327字节原指令fixture：NGU、两个完整ctl3/ctl6槽、NVL BIOS mailbox写、SAGV读取、
+  RW_MMIO小构造/析构/读写和底层路由；复用已固定的MSR叶函数及两种kernel MMIO包装器。
+- 核实RW_MMIO读加this+0x18基址、32位写不读对象，原NGU传5da0/5da4；模拟基址123450000时
+  原96字节请求实际读123455da4、写5da0/5da4。完整请求留证，不修改协议或在内核中猜测补基址。
+- NGU有符号上限夹255且无下限；两个槽以toUInt结果直接传int。80000000/ffffffff可保留完整
+  32位NVL payload；MSR只取低8位。额外MSR读取不复查busy，NVL/非NVL附带写入顺序均保存。
+- NVL mailbox前/后各最多101次busy读取，耗尽仍写并返回；完整槽仍Applied。266项原指令刻画
+  本地通过，包含30项预期持续轮询和62项完整槽，4项关键回归通过。Qt解析、PCI后端及大构造器
+  均为明确合成边界，未执行原/dev/mem或真实硬件。新门禁加入CI，后续云端结果另记。
+- 保存NGU第三个静态调用者、该Wr_MMIO重载10函数28处直接CALL及上下文，未将它们全部计为动态恢复。
+  详细规格、地址/参数/错误路径见docs/legacy-intel-ngu.md；真机清单排除尚未恢复契约的NGU试写。
+- 前一7690e2a的portability37862775672完整23/23、probe37862775686成功；3512项原指令及Linux
+  24/31项门禁通过且无跳过，下载9报告与Windows除environment一致。完整证据随docs/validation保存。
+
 ## 未发布 — 2026-10-09（AMD MP1、身份读取及上层失败反馈）
 
 - 新导出2668字节原指令：完整MP1、FindPciDeviceById2、word PCI包装、两个cpufunctions短槽，
