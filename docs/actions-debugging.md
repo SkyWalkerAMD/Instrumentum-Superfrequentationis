@@ -254,3 +254,7 @@ AppStream kernel-devel 与 BaseOS kernel-core 的交集选最新配对，先安�
 不以合成传输应答替代这条调用链，也不执行物理寄存器写入。
 认证门禁执行实际 pkexec 客户端的 root 成功、普通用户无代理拒绝和退出清理，交互密码窗口
 及真实主板/Secure Boot 验收仍单列。后续完整结果见 [验证状态](verification-status.md)。
+
+`88999aa` 的[完整验证 37923477646](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37923477646)
+最终 23/23 成功；EL8 正式包的授权、最小运行环境、窗口与 DKMS 生命周期全部通过。
+十目标及全部 11 套内核的[最终证据](validation/linux-integration-ci-88999aa.json)独立记录，未混用此前失败轮次。
