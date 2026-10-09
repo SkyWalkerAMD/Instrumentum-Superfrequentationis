@@ -64,6 +64,10 @@ jobs:
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-amd-transport.py \
             --fixture analysis/fixtures/legacy-amd-transport.json --output build/amd-transport.json
+      - name: Verify MP1 polling and AMD slot failure feedback
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-amd-mp1.py \
+            --output build/amd-mp1.json
       - uses: actions/upload-artifact@v4
         with:
           name: mailbox-contract-evidence
@@ -76,6 +80,7 @@ jobs:
             build/menu-routing.json
             build/amd-initialization.json
             build/amd-transport.json
+            build/amd-mp1.json
           if-no-files-found: error
           retention-days: 14
       - run: python3 port/ci/validate-local.py

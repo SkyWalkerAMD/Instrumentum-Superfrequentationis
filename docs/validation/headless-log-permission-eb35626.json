@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "recorded_date": "2026-10-08",
+  "run_id": 37771462578,
+  "commit": "eb35626e3d9948c5535daf4a18a33907357f28fd",
+  "final_workflow_conclusion": "cancelled",
+  "reason": "Superseded by logging-path correction after confirmed desktop failures; not full-matrix success.",
+  "port_python_tests": {
+    "passed": 24,
+    "skipped": 0
+  },
+  "analysis_unit_tests": {
+    "passed": 26,
+    "skipped": 0
+  },
+  "original_instruction_cases": 2949,
+  "failure": "xvfb-run cannot reopen /dev/stderr after runuser; GUI did not start",
+  "failed_jobs": [
+    {
+      "id": 113293492075,
+      "name": "desktop (debian11)",
+      "evidence": [
+        "2026-10-08T11:45:26.9535405Z /usr/bin/xvfb-run: 159: cannot create /dev/stderr: Permission denied",
+        "2026-10-08T11:45:26.9536045Z /usr/bin/xvfb-run: 82: cannot create /dev/stderr: Permission denied",
+        "2026-10-08T11:45:35.6297735Z ##[error]Process completed with exit code 2."
+      ]
+    },
+    {
+      "id": 113293492042,
+      "name": "desktop (debian12)",
+      "evidence": [
+        "2026-10-08T11:45:27.0359120Z /usr/bin/xvfb-run: 159: cannot create /dev/stderr: Permission denied",
+        "2026-10-08T11:45:27.0359894Z /usr/bin/xvfb-run: 82: cannot create /dev/stderr: Permission denied",
+        "2026-10-08T11:45:34.5494998Z ##[error]Process completed with exit code 2."
+      ]
+    },
+    {
+      "id": 113293492171,
+      "name": "desktop (ubuntu24.04)",
+      "evidence": [
+        "2026-10-08T11:45:36.1201863Z /usr/bin/xvfb-run: 159: cannot create /dev/stderr: Permission denied",
+        "2026-10-08T11:45:36.1202515Z /usr/bin/xvfb-run: 82: cannot create /dev/stderr: Permission denied",
+        "2026-10-08T11:45:40.6743757Z ##[error]Process completed with exit code 2."
+      ]
+    }
+  ],
+  "correction_commit": "27d24538a62c269966c6ddac129334c91f446623",
+  "correction": "Owned mktemp file inside private XDG_RUNTIME_DIR; echo retained diagnostics via inherited fd 2 on exit; preserve exit code, do not elevate user privileges.",
+  "scope": "CI display logging only. Does not change GUI/HAL/kernel/ABI; original reset hypothesis remains unproven by this logging failure."
+}

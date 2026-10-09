@@ -98,7 +98,8 @@ BDF位运算是`((bus & 255)<<8) | ((device & 31)<<3) | (function & 7)`。
   非空时把解析结果**有符号扩展至64位**后调用`smu_cmd2(0x56,argument,out)`，返回值和输出均不处理。
   若解析结果为-1，静态指令应送`0xffffffffffffffff`，而非只给低32位；未执行真实Qt解析，未定义单位。
 
-后续验证应补这些槽的原指令实验、控件连接及MP1分支，再决定重构界面的错误反馈。
+2026-10-09补充：两个短槽及MP1已加入独立563项[原指令实验](legacy-amd-mp1.md)，仍不计入本页448项。
+实际控件连接/完整构造/Qt解析及固件定义仍须继续核对，再决定重构界面的错误反馈。
 两个完整短槽的[反汇编文本](validation/legacy-amd-short-callers.txt)一并保留，合计339+272字节；
 可用已有`analysis/tools/elf-runtime-audit.py`的`--instructions --functions`选这两个完整符号复核，
 实际SHA须与本页输入一致。调用上下文JSON和完整文本都只是静态证据。

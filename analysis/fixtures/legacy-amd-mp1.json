@@ -1,0 +1,972 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "transport_fixture_sha256": "11b9e60fa785bb4f5c37c9a2f1be40579e4c1aaf58703551b3eb44e4f29231dc",
+  "scope": "Original MP1/identity/slots and bounded flag regions; synthetic PCI, Qt, libc and TSC boundaries",
+  "functions": [
+    {
+      "symbol": "_Z10MP1_C2PMSGjjRj",
+      "address": 2225920,
+      "size": 1019,
+      "code_hex": "f30f1efa41574189ffbf2210000041564189f6be301600004155415455534883ec18488954240831d2e882e4ffff488d1dcdcda5014189c4803b0119ed81e500fcffff81c52409b103803b014519ed4181e500fcffff4181c57009b10383f8ff0f846a020000bb880ab103bd200ab10341bd800ab103e8e51a15004883ec20bab80000004489e141b800020500e81ecf18004883c420bfd0070000e800c9f2ff4883ec20babc0000004489e141b801000000e8f9ce18004883c420bfd0070000e8dbc8f2ff4883ec204589e84489e1bab8000000e8d7ce18004883c420bfd0070000e8b9c8f2ff4531c04883ec204489e1babc000000e8b5ce18004883c420bfd0070000e897c8f2ff4883ec204189d84489e1bab8000000e893ce18004883c420bfd0070000e875c8f2ff4883ec204589f04489e1babc000000e871ce18004883c420bfd0070000e853c8f2ff4883ec204589e84489e1bab8000000e84fce18004883c420bfd0070000e831c8f2ff4531c0babc0000004489e14883ec20e82dce1800bfd00700004883c420e80fc8f2ff4189d8bab80000004489e14883ec20e80bce1800bfd00700004883c420e8edc7f2ff4589f0babc0000004489e14883ec20e8e9cd1800bfd00700004883c420e8cbc7f2ff4189e8bab80000004489e14883ec20e8c7cd1800bfd00700004883c420e8a9c7f2ff4589f8babc0000004489e14883ec20e8a5cd1800bfd00700004883c420e887c7f2ff4589e8bab80000004489e14883ec20e883cd18004883c420bfa0860100e865c7f2ff4883ec20babc0000004489e1e824ce18004883c42083f8010f84970100004531ed0f1f40004883ec20babc0000004489e14183c501e8fbcd18004883c42083f80174064183fd137edc4189c54883ec204189d84489e1bab8000000e815cd18004489e1babc000000e8c8cd1800488b7424284883c4208906e8181915004883c4184489e85b5d415c415d415e415fc3660f1f44000031d2be30160000bf02100000e8cfe1ffff4189c483f8ff0f8579fdffff31d2be36160000bf02100000e8b2e1ffff4189c483f8ff0f855cfdffff31d2beb5140000bf22100000e895e1ffff4189c483f8ff0f853ffdffff31d2bee8140000bf22100000e878e1ffff4189c483f8ff0f8522fdffff31d2be80140000bf22100000e85be1ffff4189c483f8ff741a488d059dcaa501bb400ab1038038000f8404fdffffe9effcffff31d2be50140000bf22100000e828e1ffff4189c483f8ff75cd488d056ccaa5014531e480380075be803b0075b931d2bed8140000bf22100000e8fbe0ffff4189c483f8ff75a031d2bea4140000bf22100000e8e2e0ffff4189c483f8ff758731d231f631ffe8afe0ffff4189c4e974ffffff0f1f800000000041bd01000000e98cfeffff",
+      "code_sha256": "fbf1e17f31298fff8f84ab3b4ff9bfe278401b94cfa507b1c3b6f1766de5c48a",
+      "calls": [
+        {
+          "instruction": 2225961,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2226038,
+          "kind": "call",
+          "target": 3609184,
+          "symbols": [
+            "_Z14lock_amd_mutexv"
+          ]
+        },
+        {
+          "instruction": 2226061,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2226075,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2226098,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2226112,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2226132,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2226146,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2226166,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2226180,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2226200,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2226214,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2226234,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2226248,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2226268,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2226282,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2226302,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2226316,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2226336,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2226350,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2226370,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2226384,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2226404,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2226418,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2226438,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2226452,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2226472,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2226486,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2226503,
+          "kind": "call",
+          "target": 3852144,
+          "symbols": [
+            "_Z18ReadPciConfigDwordjj"
+          ]
+        },
+        {
+          "instruction": 2226544,
+          "kind": "call",
+          "target": 3852144,
+          "symbols": [
+            "_Z18ReadPciConfigDwordjj"
+          ]
+        },
+        {
+          "instruction": 2226582,
+          "kind": "call",
+          "target": 3851952,
+          "symbols": [
+            "_Z19WritePciConfigDwordjjj"
+          ]
+        },
+        {
+          "instruction": 2226595,
+          "kind": "call",
+          "target": 3852144,
+          "symbols": [
+            "_Z18ReadPciConfigDwordjj"
+          ]
+        },
+        {
+          "instruction": 2226611,
+          "kind": "call",
+          "target": 3609296,
+          "symbols": [
+            "_Z17release_amd_mutexv"
+          ]
+        },
+        {
+          "instruction": 2226652,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2226681,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2226710,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2226739,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2226768,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2226802,
+          "kind": "jmp",
+          "target": 2226022,
+          "symbols": []
+        },
+        {
+          "instruction": 2226819,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2226864,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2226889,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2226908,
+          "kind": "call",
+          "target": 2218896,
+          "symbols": [
+            "_Z13find_pci_dev2jjj"
+          ]
+        },
+        {
+          "instruction": 2226916,
+          "kind": "jmp",
+          "target": 2226781,
+          "symbols": []
+        },
+        {
+          "instruction": 2226934,
+          "kind": "jmp",
+          "target": 2226567,
+          "symbols": []
+        }
+      ],
+      "parent_symbol": "_Z10MP1_C2PMSGjjRj",
+      "parent_function_sha256": "fbf1e17f31298fff8f84ab3b4ff9bfe278401b94cfa507b1c3b6f1766de5c48a"
+    },
+    {
+      "symbol": "_Z18FindPciDeviceById2jjj",
+      "address": 2218928,
+      "size": 110,
+      "code_hex": "f30f1efa415431d25589f531f65389fb31ffe8c9ffffff4883ec2031d289c14189c4e849ec18004883c4200fb7c039d8740e41bcffffffff5b5d4489e0415cc3bfe8030000e8a6e4f2ff4883ec20ba020000004489e1e815ec18004883c4200fb7c039e875cc4489e05b5d415cc3",
+      "code_sha256": "b475898c93ebc5c67a5ad0df54db09cadfcf51f1e523860e9e0c33923802ba8f",
+      "calls": [
+        {
+          "instruction": 2218946,
+          "kind": "call",
+          "target": 2218896,
+          "symbols": [
+            "_Z13find_pci_dev2jjj"
+          ]
+        },
+        {
+          "instruction": 2218962,
+          "kind": "call",
+          "target": 3852320,
+          "symbols": [
+            "_Z17ReadPciConfigWordjj"
+          ]
+        },
+        {
+          "instruction": 2218997,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 2219014,
+          "kind": "call",
+          "target": 3852320,
+          "symbols": [
+            "_Z17ReadPciConfigWordjj"
+          ]
+        }
+      ],
+      "parent_symbol": "_Z18FindPciDeviceById2jjj",
+      "parent_function_sha256": "b475898c93ebc5c67a5ad0df54db09cadfcf51f1e523860e9e0c33923802ba8f"
+    },
+    {
+      "symbol": "_ZN12cpufunctions29on_per_ccx_oc_apply_3_clickedEv",
+      "address": 7668080,
+      "size": 339,
+      "code_hex": "f30f1efa41554154554889fd4883ec2064488b042528000000488944241831c080bf880f000000c7442404000000000f84e30000004c8d642410be01000000bf180000004c89e2e844f5acffbe08000000488d3d35e1ed00e8c3eacd00be06000000488d3d9fc7e9004889442410e8adeacd004c8d6c24084531c0b9000400004c89e24c89ee4889ef4889442408e85d787400488b7c24088b0785c0744a83f8ff740bf0832f01488b7c2408743a488b7c24108b0785c0744983f8ff740bf0832f01488b7c24107439488b44241864482b042528000000755d4883c4205d415c415dc30f1f440000ba08000000be02000000e829adc700488b7c24108b0785c075b7ba08000000be02000000e80fadc700ebb60f1f440000488d542404be01000000bf25000000e894f0acff4c8d642410e916ffffffe865a69ffff30f1efa4889c5e9b997a4fff30f1efa4889c5e9b597a4ff",
+      "code_sha256": "211eaa29131a01d4780fb8b8896c28c6209c25cf3dc59a419e0108dd7c1da528",
+      "calls": [
+        {
+          "instruction": 7668151,
+          "kind": "call",
+          "target": 2225920,
+          "symbols": [
+            "_Z10MP1_C2PMSGjjRj"
+          ]
+        },
+        {
+          "instruction": 7668168,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7668190,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7668222,
+          "kind": "call",
+          "target": 15301216,
+          "symbols": [
+            "_ZN11QMessageBox11informationEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_"
+          ]
+        },
+        {
+          "instruction": 7668322,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 7668348,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 7668353,
+          "kind": "jmp",
+          "target": 7668281,
+          "symbols": []
+        },
+        {
+          "instruction": 7668375,
+          "kind": "call",
+          "target": 2224944,
+          "symbols": [
+            "_Z8smu_cmd2hmRj"
+          ]
+        },
+        {
+          "instruction": 7668385,
+          "kind": "jmp",
+          "target": 7668156,
+          "symbols": []
+        },
+        {
+          "instruction": 7668390,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 7668402,
+          "kind": "jmp",
+          "target": 1677936,
+          "symbols": [
+            "_ZN12cpufunctions29on_per_ccx_oc_apply_3_clickedEv.cold"
+          ]
+        },
+        {
+          "instruction": 7668414,
+          "kind": "jmp",
+          "target": 1677944,
+          "symbols": []
+        }
+      ],
+      "parent_symbol": "_ZN12cpufunctions29on_per_ccx_oc_apply_3_clickedEv",
+      "parent_function_sha256": "211eaa29131a01d4780fb8b8896c28c6209c25cf3dc59a419e0108dd7c1da528"
+    },
+    {
+      "symbol": "_ZN12cpufunctions30on_per_ccx_oc_apply_19_clickedEv",
+      "address": 7676080,
+      "size": 272,
+      "code_hex": "f30f1efa415455534889fb4883ec2064488b042528000000488944241831c0488b8708100000488d6c24104889ef488bb068020000e8e6a56800ba0a00000031f64889efe837f6cd00488b7c24104189c48b0785c0746983f8ff740bf0832f01488b7c24107459488b83081000004889efc744240c00000000488bb068020000e89ba56800488b7c24108b5f048b0785c0744583f8ff740bf0832f01488b7c2410743585db7544488b44241864482b04252800000075484883c4205b5d415cc3ba08000000be02000000e8118ec700eb960f1f8000000000ba08000000be02000000e8f98dc70085db74bc488d54240c4963f4bf56000000e883d1acffeba8e85c879ffff30f1efa4989c4e9d07aa4ff",
+      "code_sha256": "a43afd758252886f49acce8d3270617570ec4d4bc8a8163c087517ca1b353f00",
+      "calls": [
+        {
+          "instruction": 7676133,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 7676148,
+          "kind": "call",
+          "target": 21174064,
+          "symbols": [
+            "_ZNK7QString5toIntEPbi"
+          ]
+        },
+        {
+          "instruction": 7676208,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 7676282,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 7676287,
+          "kind": "jmp",
+          "target": 7676183,
+          "symbols": []
+        },
+        {
+          "instruction": 7676306,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 7676328,
+          "kind": "call",
+          "target": 2224944,
+          "symbols": [
+            "_Z8smu_cmd2hmRj"
+          ]
+        },
+        {
+          "instruction": 7676333,
+          "kind": "jmp",
+          "target": 7676247,
+          "symbols": []
+        },
+        {
+          "instruction": 7676335,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 7676347,
+          "kind": "jmp",
+          "target": 1678480,
+          "symbols": [
+            "_ZN12cpufunctions30on_per_ccx_oc_apply_19_clickedEv.cold"
+          ]
+        }
+      ],
+      "parent_symbol": "_ZN12cpufunctions30on_per_ccx_oc_apply_19_clickedEv",
+      "parent_function_sha256": "a43afd758252886f49acce8d3270617570ec4d4bc8a8163c087517ca1b353f00"
+    },
+    {
+      "symbol": "_Z17ReadPciConfigWordjj",
+      "address": 3852320,
+      "size": 174,
+      "code_hex": "f30f1efa5789c889d15689c689c20fb6fcc1ee0383e20783e61f4881eca80000000f2934240f297c2410440f29442420440f294c2430440f29542440440f295c2450440f29642460440f296c2470440f29b42480000000440f29bc2490000000e85b1dfcff0f2834240f287c2410440f28442420440f284c2430440f28542440440f285c2450440f28642460440f286c2470440f28b42480000000440f28bc24900000004881c4a80000005e5fc3",
+      "code_sha256": "0d66947171ecc4f6c9434a877c77abf672aea8748a780002af88bfac3072df08",
+      "calls": [
+        {
+          "instruction": 3852416,
+          "kind": "call",
+          "target": 3597792,
+          "symbols": [
+            "_Z16libpci_read_wordiiii"
+          ]
+        }
+      ],
+      "parent_symbol": "_Z17ReadPciConfigWordjj",
+      "parent_function_sha256": "0d66947171ecc4f6c9434a877c77abf672aea8748a780002af88bfac3072df08"
+    },
+    {
+      "symbol": "_Z16libpci_read_wordiiii",
+      "address": 3597792,
+      "size": 170,
+      "code_hex": "f30f1efa41554189fd41544189f45589cd5389d34883ec08488d05b1df9001803800747c488b3daddf900181fbffff00000f94c04885ff0f95c221d04181fcffff00000f94c284d074094181fdffff00007429488d056edf90014189d84489e14489ea31f6488b38e89316710048890564df90014889c74885c074144883c40889ee5b5d415c415de9931771000f1f004883c40831c05b5d415c415dc30f1f00e84bfdffffe97affffff",
+      "code_sha256": "f4b1568ee73da5d3e658a34dabac9c1c3d660b007f75b4a57aff05e24bb46ed3",
+      "calls": [
+        {
+          "instruction": 3597896,
+          "kind": "call",
+          "target": 11009248,
+          "symbols": [
+            "pci_get_dev"
+          ]
+        },
+        {
+          "instruction": 3597928,
+          "kind": "jmp",
+          "target": 11009536,
+          "symbols": [
+            "pci_read_word"
+          ]
+        },
+        {
+          "instruction": 3597952,
+          "kind": "call",
+          "target": 3597264,
+          "symbols": [
+            "_Z17libpci_initializev"
+          ]
+        },
+        {
+          "instruction": 3597957,
+          "kind": "jmp",
+          "target": 3597828,
+          "symbols": []
+        }
+      ],
+      "parent_symbol": "_Z16libpci_read_wordiiii",
+      "parent_function_sha256": "f4b1568ee73da5d3e658a34dabac9c1c3d660b007f75b4a57aff05e24bb46ed3"
+    },
+    {
+      "symbol": "pci_read_word",
+      "address": 11009536,
+      "size": 134,
+      "code_hex": "f30f1efa4883ec1864488b042528000000488944240831c040f6c60175528d46023b87900100007e37488b8780010000488d542406b902000000ff504085c0b8ffffffff660f45442406488b54240864482b14252800000075274883c418c390488b87880100004863f60fb70430ebda488bbf78010000ba02000000e86ffdffffe88aaa6cff",
+      "code_sha256": "193425867a98d78b4b48430513089ffb5d9f8020114717039961a3b8a357a03c",
+      "calls": [
+        {
+          "instruction": 11009646,
+          "kind": "jmp",
+          "target": 11009610,
+          "symbols": []
+        },
+        {
+          "instruction": 11009660,
+          "kind": "call",
+          "target": 11009008,
+          "symbols": [
+            "pci_read_data.part.0.isra.0"
+          ]
+        },
+        {
+          "instruction": 11009665,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ],
+      "parent_symbol": "pci_read_word",
+      "parent_function_sha256": "193425867a98d78b4b48430513089ffb5d9f8020114717039961a3b8a357a03c"
+    },
+    {
+      "symbol": "AMD_PM_LOG.constructor.identity-flags",
+      "address": 2928779,
+      "size": 62,
+      "code_hex": "31d2be30160000bf22100000e8142bf5ff8944245883f8ff0f84d9210000c6437801488d054d149b018038007409b801010000668943788b442458894360",
+      "code_sha256": "c2832eb945fbd06b305cadcad865eaa7a8aac847e12c981741bb15363b4ad81a",
+      "calls": [
+        {
+          "instruction": 2928791,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        }
+      ],
+      "parent_symbol": "_ZN10AMD_PM_LOGC2Ev",
+      "parent_function_sha256": "8d52d37738f8f465ab3871161b839d7d9beece223ff6bef234ef74757addff13",
+      "stop_address": 2928841
+    },
+    {
+      "symbol": "AMD_PM_LOG.constructor.identity-flags.1",
+      "address": 2937474,
+      "size": 163,
+      "code_hex": "31d2be30160000bf02100000e81d09f5ff8944245883f8ff0f8509deffff31d2be36160000bf02100000e8ff08f5ff8944245883f8ff0f85ebddffff31d2beb5140000bf22100000e8e108f5ff8944245883f8ff0f85cdddffff31d2bee8140000bf22100000e8c308f5ff8944245883f8ff7409c6437901e9aaddffff31d2be80140000bf22100000e8a008f5ff8944245883f8ff0f84661d0000c60301e988ddffff",
+      "code_sha256": "6f75f9bca194d1cdbdf8243de310725feb72350cac42cd2535064341025e1c7b",
+      "calls": [
+        {
+          "instruction": 2937486,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2937516,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2937546,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2937576,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2937594,
+          "kind": "jmp",
+          "target": 2928809,
+          "symbols": []
+        },
+        {
+          "instruction": 2937611,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2937632,
+          "kind": "jmp",
+          "target": 2928813,
+          "symbols": []
+        }
+      ],
+      "parent_symbol": "_ZN10AMD_PM_LOGC2Ev",
+      "parent_function_sha256": "8d52d37738f8f465ab3871161b839d7d9beece223ff6bef234ef74757addff13",
+      "stop_address": 2928841
+    },
+    {
+      "symbol": "AMD_PM_LOG.constructor.identity-flags.2",
+      "address": 2945155,
+      "size": 108,
+      "code_hex": "31d2be50140000bf22100000e81cebf4ff8944245883f8ff0f850cc0ffff488d055bd49a018038000f85cf090000488d054ad49a018038000f85bf09000031d2bed8140000bf22100000e8deeaf4ff8944245883f8ff0f84020f0000c6437a01c7433c24000000e9bebfffff",
+      "code_sha256": "df0d195ec8035e7f52e3b0e04ce371531bef71e5f22fab453dcf59b7a0e941dc",
+      "calls": [
+        {
+          "instruction": 2945167,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2945229,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2945258,
+          "kind": "jmp",
+          "target": 2928813,
+          "symbols": []
+        }
+      ],
+      "parent_symbol": "_ZN10AMD_PM_LOGC2Ev",
+      "parent_function_sha256": "8d52d37738f8f465ab3871161b839d7d9beece223ff6bef234ef74757addff13",
+      "stop_address": 2928841
+    },
+    {
+      "symbol": "AMD_PM_LOG.constructor.identity-flags.3",
+      "address": 2947712,
+      "size": 24,
+      "code_hex": "c6437a01c7433c24000000c744245800000000e915b6ffff",
+      "code_sha256": "1b796789ee1a8b3ee53de8e0ead68d6ef46a6cf98b21d694e00603fa318499cf",
+      "calls": [
+        {
+          "instruction": 2947731,
+          "kind": "jmp",
+          "target": 2928813,
+          "symbols": []
+        }
+      ],
+      "parent_symbol": "_ZN10AMD_PM_LOGC2Ev",
+      "parent_function_sha256": "8d52d37738f8f465ab3871161b839d7d9beece223ff6bef234ef74757addff13",
+      "stop_address": 2928841
+    },
+    {
+      "symbol": "AMD_PM_LOG.constructor.identity-flags.4",
+      "address": 2949089,
+      "size": 67,
+      "code_hex": "31d2bea4140000bf22100000e8bedbf4ff8944245883f8ff7415ba01010000c7433c1c0000006689537ae99db0ffff31d231f631ffe875dbf4ff89442458e989b0ffff",
+      "code_sha256": "8751067216f5261b3617f8bf14f1a17fddf7fc35f1de196dc93f5a2b58953063",
+      "calls": [
+        {
+          "instruction": 2949101,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 2949131,
+          "kind": "jmp",
+          "target": 2928813,
+          "symbols": []
+        },
+        {
+          "instruction": 2949142,
+          "kind": "call",
+          "target": 2218896,
+          "symbols": [
+            "_Z13find_pci_dev2jjj"
+          ]
+        },
+        {
+          "instruction": 2949151,
+          "kind": "jmp",
+          "target": 2928813,
+          "symbols": []
+        }
+      ],
+      "parent_symbol": "_ZN10AMD_PM_LOGC2Ev",
+      "parent_function_sha256": "8d52d37738f8f465ab3871161b839d7d9beece223ff6bef234ef74757addff13",
+      "stop_address": 2928841
+    },
+    {
+      "symbol": "cpufunctions.constructor.copy-flags",
+      "address": 7743977,
+      "size": 26,
+      "code_hex": "0fb6856b0200000fb695690200008885d00100008895880f0000",
+      "code_sha256": "c7ac3698ba2bc97726c691b8662a865472048220276692965acd30b7b892d1f6",
+      "calls": [],
+      "parent_symbol": "_ZN12cpufunctionsC2EP7QWidget",
+      "parent_function_sha256": "5c57785bae2ed506ff37535fd5eb7ed526ad2702ed922a174e1ebf30d4d26c9e",
+      "stop_address": 7744003
+    }
+  ],
+  "objects": {
+    "GLOBAL_IS_SHIMADA": {
+      "address": 29869314,
+      "size": 1,
+      "source_initial_hex": "00"
+    },
+    "GLOBAL_IS_GPT": {
+      "address": 29869313,
+      "size": 1,
+      "source_initial_hex": "00"
+    },
+    "GLOBAL_IS_GRANITE": {
+      "address": 29869315,
+      "size": 1,
+      "source_initial_hex": "00"
+    },
+    "MY_PCI_LIB_INIT": {
+      "address": 29869488,
+      "size": 1,
+      "source_initial_hex": "00"
+    },
+    "_ZL14current_device": {
+      "address": 29869496,
+      "size": 8,
+      "source_initial_hex": "0000000000000000"
+    },
+    "pacc_pci": {
+      "address": 29869480,
+      "size": 8,
+      "source_initial_hex": "0000000000000000"
+    }
+  },
+  "literals": [
+    {
+      "address": 22989176,
+      "text": "Status"
+    },
+    {
+      "address": 23257853,
+      "text": "Applied!"
+    }
+  ],
+  "flag_preconditions": {
+    "rbx": "synthetic AMD_PM_LOG object; bytes +0x78..+0x7b initially zero",
+    "rsp": "synthetic live constructor frame; writable local +0x58",
+    "initial_zero_evidence": [
+      {
+        "address": 2914726,
+        "size": 10,
+        "mnemonic": "movabs",
+        "operands": "rax, 0x7c00000000"
+      },
+      {
+        "address": 2914756,
+        "size": 4,
+        "mnemonic": "mov",
+        "operands": "qword ptr [rbx + 0x78], rax"
+      }
+    ],
+    "copy": "rbp=cpufunctions; embedded AMD_PM_LOG begins at +0x1f0",
+    "embedding_evidence": [
+      {
+        "address": 7739156,
+        "size": 7,
+        "mnemonic": "lea",
+        "operands": "rax, [rbp + 0x1f0]"
+      },
+      {
+        "address": 7739163,
+        "size": 3,
+        "mnemonic": "mov",
+        "operands": "rdi, rax"
+      },
+      {
+        "address": 7739166,
+        "size": 5,
+        "mnemonic": "mov",
+        "operands": "qword ptr [rsp + 0x40], rax"
+      },
+      {
+        "address": 7739171,
+        "size": 5,
+        "mnemonic": "call",
+        "operands": "0x2c7910"
+      }
+    ],
+    "excluded": "All preceding/following constructor bodies, intervening refresh calls, aliases and concurrent mutations"
+  }
+}

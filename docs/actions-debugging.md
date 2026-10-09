@@ -187,3 +187,10 @@ c48a38f / [run 36670288030](https://github.com/SkyWalkerAMD/Instrumentum-Superfr
 修正为非root测试用户在自己的XDG目录中mktemp日志，再通过继承的fd2输出；退出处理保留原状态。
 没有chmod父进程管道、提升测试用户权限或丢弃失败。该轮前置24/26项及原指令门禁成功仍保留，
 桌面结果必须由修正后的新run单独确认。
+该诊断代码失败的[逐作业证据](validation/headless-log-permission-eb35626.json)单独保留。
+
+修正提交`27d2453`的[portability 37772538641](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37772538641)
+最终23/23成功；十目标kernel和desktop、EL8 baseline及总门禁全部通过。
+模块重复加载探针`37772538612`也成功。Linux24项port/26项analysis无跳过，2949项原指令门禁通过。
+下载8份报告后与Windows除environment完全一致；[记录](validation/headless-ci-27d2453.json)
+保存作业、artifact摘要及逐报告SHA。不替代原完整主窗口、真实硬件对拍或MOK固件验收。
