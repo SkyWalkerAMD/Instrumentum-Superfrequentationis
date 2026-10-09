@@ -1,5 +1,37 @@
 # 安装包与源码归档
 
+最新完整验证为 `88999aa` / [Actions](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37923477646)，23/23 成功。
+20 份目标系统 DEB/RPM 与经验证源包保存到 `dist/linux-integration-88999aa/`，根目录 `SHA256SUMS`
+逐项记录安装包哈希；源包另有同名 `.sha256`。版本仍为未发布的 2.0.1，用提交目录区分各轮构建。
+[完整证据](validation/linux-integration-ci-88999aa.json)包含全部 11 套 VM 内核、授权报告、100 张窗口截图和源代码一致性记录。
+
+| 目标系统 | 已启动并验证模块的内核 | 安装包目录 |
+|---|---|---|
+| Rocky Linux 8 | `4.18.0-553.el8_10.x86_64` | `el8/` |
+| Rocky Linux 9 | `5.14.0-687.56.1.el9_8.x86_64` | `el9/` |
+| Rocky Linux 10 | `6.12.0-211.62.1.el10_2.x86_64` | `el10/` |
+| Ubuntu 20.04 | `5.4.0-216-generic` | `ubuntu20.04/` |
+| Ubuntu 22.04 | `5.15.0-198-generic`, `6.8.0-138-generic` | `ubuntu22.04/` |
+| Ubuntu 24.04 | `6.8.0-146-generic` | `ubuntu24.04/` |
+| Ubuntu 26.04 | `7.0.0-38-generic` | `ubuntu26.04/` |
+| Debian 11 | `5.10.0-46-amd64` | `debian11/` |
+| Debian 12 | `6.1.0-53-amd64` | `debian12/` |
+| Debian 13 | `6.12.111+deb13-amd64` | `debian13/` |
+
+该表是本次实际版本记录；用户机器通过 DKMS 为自己的匹配内核重新编译，不能直接混用这些 `.ko`。
+
+GUI 包包含独立硬件辅助程序和 polkit 策略，DKMS 为可选推荐依赖。
+例如在 Debian12 对应目录，只装界面使用 `sudo apt-get install --no-install-recommends ./octool-2.0.1-1.amd64.deb`；
+需要驱动时，按[安装清单](hardware-acceptance.md)先准备匹配头文件再安装同目录 DKMS 包。
+运行 `octool` 后在基础页申请授权；无显示诊断使用 `octool --diagnose`。
+
+```sh
+gh run download 37923477646 --repo SkyWalkerAMD/Instrumentum-Superfrequentationis \
+  --pattern 'desktop-*' --pattern 'kernel-*' --name octool-source --dir build/actions/37923477646
+```
+
+下面是此前构建的历史记录，文件哈希不可混用。
+
 更新：2026-10-08。当前功能范围为基础信息、原始 MSR/MMIO/PCI、AMD PStates 只读频率/原始值。
 原 OCTool 的全部 Intel/AMD 调参面板尚未恢复，实机验收见 [清单](hardware-acceptance.md)。
 

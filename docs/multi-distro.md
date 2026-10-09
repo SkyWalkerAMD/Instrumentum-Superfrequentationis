@@ -1,10 +1,30 @@
 # 多发行版构建、运行时与打包
 
-最新重构提交 `beb10b7` 已把 PStates、寄存器请求/校验/串行服务和 Linux 硬件适配分离。
+2026-10-09 现有重构组件的十目标 Linux 兼容适配及自动化验收已完成，验证提交 `88999aa`，分支 `refactor/linux-integration`。
+范围为现有重构版的基础信息、原始 MSR/MMIO/PCI、AMD PStates 只读页，以及其运行依赖、
+启动器、独立授权辅助程序、polkit 与 DKMS 交付。原版其余调参面板仍未全部恢复。
+
+- [完整云端验证](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37923477646)：23/23 成功；Ubuntu20.04/22.04/24.04/26.04、Debian11/12/13、Rocky8/9/10。
+- 11 套真实发行版内核在 QEMU 中启动，模块加载、双 CPU 的 HAL/CPUID、设备权限、无效请求及卸载通过。
+- EL8 基线与十目标各 17 项 Qt 回归、每目标 28 项 Python 回归通过，无跳过。
+- 十目标在无编译器/头文件/DKMS 的环境安装 GUI，实际 pkexec 成功/拒绝/退出清理、无显示诊断、
+  受限 CPU、X11/Xwayland 窗口通过；随后安装驱动并验证重装/卸载。核心四环境各 18 个场景组通过。
+- [逐目标结果、源码与产物哈希](validation/linux-integration-ci-88999aa.json)；20 份 DEB/RPM、源包与 SHA256SUMS 已保存在
+  `dist/linux-integration-88999aa/`，下载/安装方式见 [产物说明](artifacts.md)。
+
+普通用户运行 `octool`，在基础页明确申请硬件授权；`octool --diagnose` 无需显示服务器。
+真实主板寄存器操作、交互认证窗口、Secure Boot/MOK、跨版本升级仍按[真机清单](hardware-acceptance.md)验收。
+Rocky 的结果不自动等同于 Alma/RHEL；Windows/macOS 目前仅验证核心。
+EL8 容器以本地账户测试，移除只在系统启动后可用的 NSS systemd 提供者；变更仅在可丢弃
+容器内，前后内容已归档，安装包不修改用户的 NSS。目录账户认证仍需目标环境验收。
+
+以下保留此前研究与验证记录。
+
+前次重构提交 `beb10b7` 已把 PStates、寄存器请求/校验/串行服务和 Linux 硬件适配分离。
 独立核心四环境通过，Linux 完整矩阵 23/23；EL8 基线与十目标各 13 项 Qt 测试通过，
 每目标 26 项 Python 回归无跳过，见[本次源码、测试及产物哈希](validation/refactor-hardware-ci-beb10b7.json)。
 当前主线是先完成功能重构，再移植重构版；Windows/macOS 此时只验证核心，尚无硬件后端/完整 GUI。
-剩余系统信息、多步事务、其他平台面板和目标真机验收仍待继续。
+该轮之后的系统信息、授权与 Linux 适配已由本文开头的新验证覆盖；其他平台面板和真机验收仍待继续。
 
 以下保留此前研究与验证记录。
 

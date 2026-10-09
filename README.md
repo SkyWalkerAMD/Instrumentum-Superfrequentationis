@@ -6,6 +6,12 @@ OCTool 功能重构与后续跨系统移植。当前目标是先重构整套程�
 
 在用户已有 port/ 重构上扩展 EL8/9/10、Ubuntu20.04/22.04/24.04/26.04、Debian11/12/13。
 
+2026-10-09 本轮 `88999aa` 已完成现有重构组件的十发行版 Linux 适配，
+[完整验证](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37923477646) 23/23 成功，包含 11 套真实发行版内核在虚拟机中的加载/通信/卸载，
+普通用户 GUI、独立硬件授权、干净环境安装与 DEB/RPM 重装。
+EL8 基线及十目标各 17 项 Qt 回归通过；[结果与安装包](docs/artifacts.md)已保存。
+`octool --diagnose` 可在无显示环境运行。原版其他调参面板和真实主板操作仍需后续恢复/验收。
+
 **基础版已有历史验证：十个发行版目标的模块实编、GUI 编译、离线回归、rpm/deb 安装和窗口启动通过。
 [GitHub Actions run 36670288030](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/36670288030)
 的 23 个 job（含总门禁）全绿；EL10 与 Ubuntu26.04 使用 Mutter/Xwayland。
@@ -43,6 +49,6 @@ python3 -m unittest discover -s port/tests -p 'test_*.py' -v
 ```
 
 用户已明确授权创建公开 GitHub 仓库并用 GitHub Actions 测试，无需自有 SSH 服务器。
-进入支持 Docker 的 Linux 环境后，使用 `python3 port/ci/run-matrix.py` 执行全矩阵。
+进入具备 Docker、QEMU、静态 BusyBox 和 C 编译器的 Linux 环境后，使用 `python3 port/ci/run-matrix.py` 执行全矩阵。
 也保留 `.github/workflows/portability.yml`；两者调用同一容器内入口。
 缺失输入会报错，不用预编译 Ubuntu GUI 或示例窗口替代。

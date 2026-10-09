@@ -238,6 +238,11 @@ passwd/group/initgroups 的 NSS 提供者列表移除 systemd，保留 files、s
 用户主机的 NSS。独立探针扩展到实际 polkit 启动及 pkexec 的 root 成功/无代理普通用户拒绝，
 所执行命令只是 /usr/bin/true；完整桌面测试仍要求 OCTool 自己的辅助程序通过同一授权链路。
 
+`88999aa` 的[独立服务探针 37923477621](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37923477621)
+通过，总线与 polkit 均正常注册；root 的 pkexec 返回 0，无认证代理的普通用户返回 127。
+[服务日志、容器账户配置及哈希](validation/el8-service-startup-88999aa.json)保存完整范围；这项结果
+只验证容器服务链路，不代表已完成真实桌面密码窗口或目录账户认证。
+
 第二轮 `53fa72b / 37913786621` 的 EL9 头文件变为 `5.14.0-687.56.1.el9_8.x86_64`，
 同一源索引却没有匹配的 kernel-core，下载按预期失败，未用旧镜像冒充新内核。内核 CI 现从
 AppStream kernel-devel 与 BaseOS kernel-core 的交集选最新配对，先安装选定头文件，再仅在

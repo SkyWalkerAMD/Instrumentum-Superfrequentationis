@@ -1,0 +1,165 @@
+{
+  "schema": 1,
+  "date": "2026-10-09",
+  "run": {
+    "conclusion": "success",
+    "headSha": "88999aa3d37180dff873705df259690eee404222",
+    "jobs": [
+      {
+        "completedAt": "2026-10-09T11:24:46Z",
+        "conclusion": "success",
+        "databaseId": 113796760703,
+        "name": "el8",
+        "startedAt": "2026-10-09T11:24:03Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-09T11:24:05Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-09T11:24:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-09T11:24:07Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-09T11:24:05Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-09T11:24:42Z",
+            "conclusion": "success",
+            "name": "Run mkdir -p build/service-probe",
+            "number": 3,
+            "startedAt": "2026-10-09T11:24:07Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-09T11:24:44Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@v4",
+            "number": 4,
+            "startedAt": "2026-10-09T11:24:42Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-09T11:24:44Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 8,
+            "startedAt": "2026-10-09T11:24:44Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-09T11:24:44Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 9,
+            "startedAt": "2026-10-09T11:24:44Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37923477621/job/113796760703"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37923477621"
+  },
+  "probe": {
+    "system_bus_ready": true,
+    "polkit_ready": true,
+    "root_pkexec_exit": 0,
+    "unprivileged_no_agent_exit": 127,
+    "polkit_command": [
+      "/usr/lib/polkit-1/polkitd"
+    ],
+    "scope": "disposable EL8 local accounts; harmless /usr/bin/true, no OCTool hardware access"
+  },
+  "container_account_fixture": {
+    "scope": "disposable EL8 container only; local accounts",
+    "pid1": "docker-init",
+    "removed_provider": "systemd",
+    "changed_databases": [
+      "passwd",
+      "group"
+    ],
+    "before": "#\n# /etc/nsswitch.conf\n#\n# Name Service Switch config file. This file should be\n# sorted with the most-used services at the beginning.\n#\n# Valid databases are: aliases, ethers, group, gshadow, hosts,\n# initgroups, netgroup, networks, passwd, protocols, publickey,\n# rpc, services, and shadow.\n#\n# Valid service provider entries include (in alphabetical order):\n#\n#\tcompat\t\t\tUse /etc files plus *_compat pseudo-db\n#\tdb\t\t\tUse the pre-processed /var/db files\n#\tdns\t\t\tUse DNS (Domain Name Service)\n#\tfiles\t\t\tUse the local files in /etc\n#\thesiod\t\t\tUse Hesiod (DNS) for user lookups\n#\tnis\t\t\tUse NIS (NIS version 2), also called YP\n#\tnisplus\t\t\tUse NIS+ (NIS version 3)\n#\n# See `info libc 'NSS Basics'` for more information.\n#\n# Commonly used alternative service providers (may need installation):\n#\n#\tldap\t\t\tUse LDAP directory server\n#\tmyhostname\t\tUse systemd host names\n#\tmymachines\t\tUse systemd machine names\n#\tmdns*, mdns*_minimal\tUse Avahi mDNS/DNS-SD\n#\tresolve\t\t\tUse systemd resolved resolver\n#\tsss\t\t\tUse System Security Services Daemon (sssd)\n#\tsystemd\t\t\tUse systemd for dynamic user option\n#\twinbind\t\t\tUse Samba winbind support\n#\twins\t\t\tUse Samba wins support\n#\twrapper\t\t\tUse wrapper module for testing\n#\n# Notes:\n#\n# 'sssd' performs its own 'files'-based caching, so it should generally\n# come before 'files'.\n#\n# WARNING: Running nscd with a secondary caching service like sssd may\n# \t   lead to unexpected behaviour, especially with how long\n# \t   entries are cached.\n#\n# Installation instructions:\n#\n# To use 'db', install the appropriate package(s) (provide 'makedb' and\n# libnss_db.so.*), and place the 'db' in front of 'files' for entries\n# you want to be looked up first in the databases, like this:\n#\n# passwd:    db files\n# shadow:    db files\n# group:     db files\n\n# In order of likelihood of use to accelerate lookup.\npasswd:      sss files systemd\nshadow:     files sss\ngroup:       sss files systemd\nhosts:      files dns myhostname\nservices:   files sss\nnetgroup:   sss\nautomount:  files sss\n\naliases:    files\nethers:     files\ngshadow:    files\n# Allow initgroups to default to the setting for group.\n# initgroups: files\nnetworks:   files dns\nprotocols:  files\npublickey:  files\nrpc:        files\n",
+    "after": "#\n# /etc/nsswitch.conf\n#\n# Name Service Switch config file. This file should be\n# sorted with the most-used services at the beginning.\n#\n# Valid databases are: aliases, ethers, group, gshadow, hosts,\n# initgroups, netgroup, networks, passwd, protocols, publickey,\n# rpc, services, and shadow.\n#\n# Valid service provider entries include (in alphabetical order):\n#\n#\tcompat\t\t\tUse /etc files plus *_compat pseudo-db\n#\tdb\t\t\tUse the pre-processed /var/db files\n#\tdns\t\t\tUse DNS (Domain Name Service)\n#\tfiles\t\t\tUse the local files in /etc\n#\thesiod\t\t\tUse Hesiod (DNS) for user lookups\n#\tnis\t\t\tUse NIS (NIS version 2), also called YP\n#\tnisplus\t\t\tUse NIS+ (NIS version 3)\n#\n# See `info libc 'NSS Basics'` for more information.\n#\n# Commonly used alternative service providers (may need installation):\n#\n#\tldap\t\t\tUse LDAP directory server\n#\tmyhostname\t\tUse systemd host names\n#\tmymachines\t\tUse systemd machine names\n#\tmdns*, mdns*_minimal\tUse Avahi mDNS/DNS-SD\n#\tresolve\t\t\tUse systemd resolved resolver\n#\tsss\t\t\tUse System Security Services Daemon (sssd)\n#\tsystemd\t\t\tUse systemd for dynamic user option\n#\twinbind\t\t\tUse Samba winbind support\n#\twins\t\t\tUse Samba wins support\n#\twrapper\t\t\tUse wrapper module for testing\n#\n# Notes:\n#\n# 'sssd' performs its own 'files'-based caching, so it should generally\n# come before 'files'.\n#\n# WARNING: Running nscd with a secondary caching service like sssd may\n# \t   lead to unexpected behaviour, especially with how long\n# \t   entries are cached.\n#\n# Installation instructions:\n#\n# To use 'db', install the appropriate package(s) (provide 'makedb' and\n# libnss_db.so.*), and place the 'db' in front of 'files' for entries\n# you want to be looked up first in the databases, like this:\n#\n# passwd:    db files\n# shadow:    db files\n# group:     db files\n\n# In order of likelihood of use to accelerate lookup.\npasswd: sss files\nshadow:     files sss\ngroup: sss files\nhosts:      files dns myhostname\nservices:   files sss\nnetgroup:   sss\nautomount:  files sss\n\naliases:    files\nethers:     files\ngshadow:    files\n# Allow initgroups to default to the setting for group.\n# initgroups: files\nnetworks:   files dns\nprotocols:  files\npublickey:  files\nrpc:        files\n"
+  },
+  "files": [
+    {
+      "path": "build/linux-integration-88999aa/service-probe/client.log",
+      "bytes": 2469,
+      "sha256": "571c77d4cff8f5eebb8495d2afd25b225ea5fd38cc32163f18209a1cb8cc69d8"
+    },
+    {
+      "path": "build/linux-integration-88999aa/service-probe/dbus-group.txt",
+      "bytes": 11,
+      "sha256": "16955b1ceb57ccc8192ce22791eedb1104be05073bc875068748639decd00145"
+    },
+    {
+      "path": "build/linux-integration-88999aa/service-probe/dbus-user.txt",
+      "bytes": 48,
+      "sha256": "75f74b04d248d7f086a112092f9142e3cceec981ebac454c9d0f2461ecda2c41"
+    },
+    {
+      "path": "build/linux-integration-88999aa/service-probe/dbus.log",
+      "bytes": 434,
+      "sha256": "2d068f75d94a0c146b94d4400c97fe1c3d30fa5a3232a8456185b928fc8f7d7c"
+    },
+    {
+      "path": "build/linux-integration-88999aa/service-probe/dbus.trace.132",
+      "bytes": 90830,
+      "sha256": "b50deb22868b14ae38b6a05cdfdb19122b2d9a9616f88f7d90ccc1c3167ac8cc"
+    },
+    {
+      "path": "build/linux-integration-88999aa/service-probe/dbus.trace.153",
+      "bytes": 1388,
+      "sha256": "571641920fc3cc4425bee52e716a4146dfefb0a69b59618fedd1c735da2f046b"
+    },
+    {
+      "path": "build/linux-integration-88999aa/service-probe/dbus.trace.154",
+      "bytes": 29901,
+      "sha256": "9fbf38ae849be68eb27601e640dd9035a1567f6db6147d35b8bec8b16c3ee41d"
+    },
+    {
+      "path": "build/linux-integration-88999aa/service-probe/limits.txt",
+      "bytes": 1323,
+      "sha256": "1a4fac1539e802eb21a5f3bd793d955a860eb00c2594f05d4c28f95608a7b5e3"
+    },
+    {
+      "path": "build/linux-integration-88999aa/service-probe/nsswitch.conf",
+      "bytes": 2215,
+      "sha256": "7ebe90e44dc9e74b6c20d11f0b87de292b048acb189bbc7ceaecc492ddbf0ed2"
+    },
+    {
+      "path": "build/linux-integration-88999aa/service-probe/polkit.log",
+      "bytes": 367,
+      "sha256": "037753afcdb5c4a6f736e7ad22c29b5abb8ae77d95e2063282add05355ef3bbf"
+    },
+    {
+      "path": "build/linux-integration-88999aa/service-probe/runtime-nss.json",
+      "bytes": 4887,
+      "sha256": "de22bc2767285f94bd15e9f6acb9695f4f7aec23533674f6a3ae2d8d0c466384"
+    },
+    {
+      "path": "build/linux-integration-88999aa/service-probe/service-probe.json",
+      "bytes": 271,
+      "sha256": "ef704d0688a1f911f418663434fcd005fe39aafee1c58082ff57b39b831bfff5"
+    },
+    {
+      "path": "build/linux-integration-88999aa/service-probe/system.conf",
+      "bytes": 5694,
+      "sha256": "f04a4d38054f5d67135283f8034be9517046255bdf29a467e37bf3f644be142e"
+    }
+  ],
+  "scope": "EL8 container without systemd PID 1; local accounts and real polkit/pkexec, harmless /usr/bin/true only",
+  "limits": [
+    "No OCTool helper or hardware access in this isolated probe",
+    "No interactive desktop or directory-service authentication test",
+    "NSS changes are limited to the marked disposable test container, never the installed application"
+  ]
+}
