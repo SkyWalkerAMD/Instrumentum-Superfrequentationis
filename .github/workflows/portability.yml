@@ -80,6 +80,10 @@ jobs:
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-mmio-services.py \
             --output build/mmio-services.json
+      - name: Verify I2C failure paths and every inventoried direct MMIO write site
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-mmio-i2c.py \
+            --output build/mmio-i2c.json
       - uses: actions/upload-artifact@v4
         with:
           name: mailbox-contract-evidence
@@ -96,6 +100,7 @@ jobs:
             build/intel-ngu.json
             build/mmio-clients.json
             build/mmio-services.json
+            build/mmio-i2c.json
           if-no-files-found: error
           retention-days: 14
       - run: python3 port/ci/validate-local.py

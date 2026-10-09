@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 未发布 — 2026-10-09（原I2C状态机与28处MMIO调用逐点覆盖）
+
+- 新增完整CpmReadWriteI2CBytes5的1664原代码字节、两张6项配置表、flag/stream relocation证据。
+  合成平台谓词、PCI、iostream及硬件应答，不改原ELF/生产GUI/HAL/模块/96字节ABI。
+- 110项I2C刻画通过：14处写CALL均执行；读base+offset而写低offset。disable超时打印错误却返回1；
+  enable/abort/idle错误返回0；接收预算跨字节累计且失败保留部分输出；外层等待无退出上限。
+  6项持续等待由预算停止、4项越界索引由模拟器在load前停止，明确这些不是原函数的拒绝路径。
+- 新增9项跨入口探针，把已有10个声明函数的28处32位Wr_MMIO直接CALL全部执行到原96字节请求。
+  以fixture的CALL地址逐点核对，尾调用的非CALL返回地址单列，不宣称间接/inline/全部MMIO均完成。
+- 5项关键回归通过，总119项加入CI。原表字段及函数位运算只作为已核实数据，不猜平台寄存器含义。
+  详细参数、传输顺序、预算边界、错误/部分输出和覆盖分母写入docs/legacy-mmio-i2c.md，台账同步。
+- 前一782c1f2的portability37866058532完整23/23及probe37866058548成功，Linux24/45项测试
+  无跳过，4206项原指令刻画通过；下载12份报告与Windows除environment完全一致。作业、产物哈希
+  及比对写入docs/validation/legacy-mmio-services-ci-782c1f2.json，I2C新增云端结果完成后另记。
+
 ## 未发布 — 2026-10-09（公共邮箱错误传播及FIVR/FCH算法）
 
 - 继续32位Wr_MMIO直接调用者，新增9函数1723原指令字节及8字节FP常量，复用原MSR/MMIO叶函数。
