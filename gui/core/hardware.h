@@ -4,6 +4,7 @@
 #include <atomic>
 #include <memory>
 #include <mutex>
+#include <functional>
 
 namespace octool {
 namespace core {
@@ -41,8 +42,18 @@ public:
     virtual Backend backend(Space space) const = 0;
 };
 
-// Own one backend and serialize ALL of its calls, including diagnostics and
-// CPUID. This is per-operation serialization, not a multi-register transaction.
+// A borrowed session is valid only within HardwareService::transaction. Use
+// its methods, never re-enter the owning service while its lock is held.
+class HardwareSession {
+public:
+    virtual ~HardwareSession() = default;
+    virtual int checkpoint() const = 0;
+    virtual Reply execute(const Request &request) = 0;
+    virtual CpuIdReply cpuid(unsigned cpu, std::uint32_t leaf, std::uint32_t subleaf = 0) = 0;
+};
+
+// Own one backend and serialize all operations, including an entire explicit
+// transaction. Other processes/kernel drivers are outside this local lock.
 // Construction never executes a register request. Destroy only after callers
 // have released the service (the GUI workers retain their shared owner).
 class HardwareService {
@@ -51,13 +62,17 @@ public:
     Reply execute(const Request &request);
     CpuIdReply cpuid(unsigned cpu, std::uint32_t leaf, std::uint32_t subleaf = 0);
     Backend backend(Space space) const;
+    // Deadline includes waiting for the lock. Checkpoints bound cooperative
+    // work; they cannot interrupt an OS call already inside the backend.
+    int transaction(const std::function<int(HardwareSession &)> &operation,
+                    int timeoutMs = 10000, const std::atomic<bool> *cancelled = nullptr);
     // A successful explicit authorization may replace the backend. Wait for
     // any in-flight operation before retiring its transport.
     bool replaceBackend(std::unique_ptr<HardwareBackend> backend,
                         const std::atomic<bool> *cancelled = nullptr);
 private:
     std::unique_ptr<HardwareBackend> backend_;
-    mutable std::mutex mutex_;
+    mutable std::timed_mutex mutex_;
 };
 
 } // namespace core

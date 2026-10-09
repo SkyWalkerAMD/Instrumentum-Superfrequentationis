@@ -22,7 +22,7 @@ PstateValue decodeFamily1aPstate(quint64 raw)
 namespace {
 class AccessPstateReader final : public octool::core::PstateReader {
 public:
-    explicit AccessPstateReader(HardwareAccess &access) : access_(access) {}
+    explicit AccessPstateReader(octool::core::HardwareSession &access) : access_(access) {}
     int cpuid(unsigned cpu, std::uint32_t leaf, std::uint32_t subleaf,
               std::uint32_t words[4]) override {
         const auto reply = access_.cpuid(cpu, leaf, subleaf);
@@ -39,7 +39,7 @@ public:
         return reply.error;
     }
 private:
-    HardwareAccess &access_;
+    octool::core::HardwareSession &access_;
 };
 } // namespace
 
@@ -50,8 +50,11 @@ static QString errorText(int error)
 
 PstateSnapshot readAmdPstates(HardwareAccess &access, unsigned cpu)
 {
-    AccessPstateReader reader(access);
-    const auto sample = octool::core::readAmdPstates(reader, cpu);
+    octool::core::PstateSnapshot sample;
+    const int error = access.transaction([&](octool::core::HardwareSession &session) {
+        AccessPstateReader reader(session); sample = octool::core::readAmdPstates(reader, cpu); return 0;
+    });
+    if (error) { sample.error = error; sample.status = octool::core::PstateStatus::CpuReadFailed; }
     PstateSnapshot snapshot;
     const QString target = QString("Logical CPU %1: ").arg(cpu);
     const QString description = sample.hasIdentity ?
@@ -101,7 +104,7 @@ PstatesPanel::PstatesPanel(std::shared_ptr<HardwareAccess> access, QWidget *pare
     auto *description = new QLabel("AMD CPU Functions / PStates — read only\n"
         "Legacy P-state definitions for AMD Family 1Ah. Configured MHz is not a live clock measurement; "
         "CPPC / amd-pstate may control the running frequency independently.\n"
-        "Voltage and current conversion are awaiting verification. The complete raw MSR is preserved.", this);
+        "VID / Idd columns show encoded bits, not mV / A. Voltage and current conversion and P-state writes remain unverified.", this);
     description->setWordWrap(true); layout->addWidget(description);
     auto *controls = new QHBoxLayout;
     controls->addWidget(new QLabel("Logical CPU (decimal)", this));
@@ -110,8 +113,9 @@ PstatesPanel::PstatesPanel(std::shared_ptr<HardwareAccess> access, QWidget *pare
     controls->addWidget(read);
     auto *copy = new QPushButton("Copy snapshot", this); controls->addWidget(copy);
     layout->addLayout(controls);
-    table_ = new QTableWidget(8, 6, this); table_->setObjectName("pstateTable");
-    table_->setHorizontalHeaderLabels({"P-state", "MSR", "Raw value (hex)", "Enabled", "Configured MHz", "Status"});
+    table_ = new QTableWidget(8, 9, this); table_->setObjectName("pstateTable");
+    table_->setHorizontalHeaderLabels({"P-state", "MSR", "Raw value (hex)", "Enabled", "Configured MHz", "Status",
+        "VID bits 32,21:14", "Idd bits 29:22", "Div bits 31:30"});
     table_->setEditTriggers(QAbstractItemView::NoEditTriggers);
     table_->verticalHeader()->hide();
     table_->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -127,10 +131,10 @@ PstatesPanel::PstatesPanel(std::shared_ptr<HardwareAccess> access, QWidget *pare
     connect(copy, &QPushButton::clicked, this, [this] {
         QString text = "OCTool AMD PStates (read only)\n" + status_->text() + "\n";
         for (int column = 0; column < table_->columnCount(); ++column)
-            text += table_->horizontalHeaderItem(column)->text() + (column == 5 ? "\n" : "\t");
+            text += table_->horizontalHeaderItem(column)->text() + (column+1 == table_->columnCount() ? "\n" : "\t");
         for (int row = 0; row < table_->rowCount(); ++row)
             for (int column = 0; column < table_->columnCount(); ++column)
-                text += table_->item(row, column)->text() + (column == 5 ? "\n" : "\t");
+                text += table_->item(row, column)->text() + (column+1 == table_->columnCount() ? "\n" : "\t");
         QApplication::clipboard()->setText(text);
     });
 }
@@ -138,7 +142,7 @@ PstatesPanel::PstatesPanel(std::shared_ptr<HardwareAccess> access, QWidget *pare
 void PstatesPanel::clearRows()
 {
     for (int row = 0; row < 8; ++row)
-        for (int column = 0; column < 6; ++column)
+        for (int column = 0; column < table_->columnCount(); ++column)
             table_->setItem(row, column, new QTableWidgetItem(column == 0 ? QString("P%1").arg(row) :
                 column == 1 ? hexValue(0xc0010064u + unsigned(row), 4) : column == 5 ? "Not read" : "—"));
 }
@@ -161,6 +165,9 @@ void PstatesPanel::refresh()
             table_->item(row, 2)->setText(hexValue(item.raw, 8));
             table_->item(row, 3)->setText(decoded.enabled ? "Yes" : "No");
             if (decoded.validFrequency) table_->item(row, 4)->setText(QString::number(decoded.frequencyMHz));
+            table_->item(row, 6)->setText(QString::number(decoded.vidBits));
+            table_->item(row, 7)->setText(QString::number(decoded.iddValueBits));
+            table_->item(row, 8)->setText(QString::number(decoded.iddDivBits));
         }
         status_->setText(snapshot.status); setEnabled(true); watcher->deleteLater();
     });

@@ -24,6 +24,8 @@ public:
     int authorize(const std::atomic<bool> &cancelled);
     Reply execute(const Request &request);
     CpuIdReply cpuid(unsigned cpu, std::uint32_t leaf, std::uint32_t subleaf = 0);
+    int transaction(const std::function<int(octool::core::HardwareSession &)> &operation,
+                    int timeoutMs = 10000, const std::atomic<bool> *cancelled = nullptr);
     QString backend(Space space) const;
 private:
     octool::core::HardwareService service_;

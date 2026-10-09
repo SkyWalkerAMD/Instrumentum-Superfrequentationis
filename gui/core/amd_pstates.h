@@ -10,6 +10,7 @@ struct PstateValue {
     bool enabled = false;
     bool validFrequency = false;
     unsigned frequencyMHz = 0;
+    unsigned frequencyId = 0, vidBits = 0, iddValueBits = 0, iddDivBits = 0;
 };
 PstateValue decodeFamily1aPstate(std::uint64_t raw);
 

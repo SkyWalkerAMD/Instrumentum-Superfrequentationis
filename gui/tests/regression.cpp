@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "registerpanel.h"
 #include "pstates.h"
+#include "platformpanels.h"
+#include "platform/linux_inventory.h"
 #include "platform/linux_hwio.h"
 #include "platform/linux_cpu.h"
 #include "authorizationpanel.h"
@@ -13,6 +15,9 @@
 #include <QPushButton>
 #include <QTimer>
 #include <QTableWidget>
+#include <QTemporaryDir>
+#include <QFile>
+#include <QDir>
 #include <atomic>
 #include <cstring>
 #include <cerrno>
@@ -93,6 +98,58 @@ struct Reference {
 class Regression : public QObject {
     Q_OBJECT
 private slots:
+    void platformPanelsDoNotAccessHardwareAtConstruction() {
+        Reference reference; auto access=reference.access();
+        IntelControlsPanel intel(access,nullptr,7); AmdTuningPanel amd(access,nullptr,7); MemoryBoardPanel inventory;
+        QCOMPARE(reference.calls.load(),0);
+        QCOMPARE(intel.findChild<QLineEdit *>("intelCpu")->text(),QString("7"));
+        QCOMPARE(amd.findChild<QLineEdit *>("smuCpu")->text(),QString("7"));
+        QCOMPARE(inventory.findChild<QTableWidget *>("inventoryTable")->rowCount(),0);
+        intel.findChild<QLineEdit *>("intelValue")->setText("125");
+        intel.findChild<QPushButton *>("intelApply")->click();
+        QCOMPARE(reference.calls.load(),0);
+    }
+    void unsupportedIntelProfileDoesNotReadOrWriteMsrs() {
+        PstateReference reference; reference.amd=false; auto access=reference.access();
+        IntelControlsPanel intel(access,nullptr,3); intel.show();
+        auto *read=intel.findChild<QPushButton *>("intelRead"); read->click(); QTRY_VERIFY(read->isEnabled());
+        QVERIFY(reference.msrs.empty()); QCOMPARE(reference.writes.load(),0);
+        QCOMPARE(intel.findChild<QComboBox *>("intelField")->count(),0);
+        QVERIFY(intel.findChild<QLabel *>("intelStatus")->text().contains("No verified RAPL profile"));
+    }
+    void smuProbeRejectsInvalidInputsBeforeAnyAccess() {
+        Reference reference; AmdTuningPanel panel(reference.access());
+        panel.findChild<QLineEdit *>("smuBus")->setText("100");
+        panel.findChild<QPushButton *>("smuProbe")->click();
+        QCOMPARE(reference.calls.load(),0);
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("Invalid"));
+    }
+    void inventoryReadsUnitsErrorsAndBoundSpdFixtures() {
+        QTemporaryDir root; QVERIFY(root.isValid());
+        auto put=[&root](const QString &relative,const QByteArray &data) {
+            const QString path=root.path()+relative; QVERIFY(QDir().mkpath(QFileInfo(path).path()));
+            QFile f(path); QVERIFY(f.open(QIODevice::WriteOnly)); QCOMPARE(f.write(data),qint64(data.size()));
+        };
+        put("/class/dmi/id/board_name","Fixture board\n");
+        put("/class/hwmon/hwmon0/name","Fixture sensor\n");
+        put("/class/hwmon/hwmon0/temp1_input","-1250\n");
+        put("/class/hwmon/hwmon0/temp1_label","CPU\n");
+        put("/class/hwmon/hwmon0/temp1_fault","1\n");
+        put("/class/hwmon/hwmon0/in1_input","invalid\n");
+        put("/class/hwmon/hwmon0/power1_average","125000000\n");
+        QByteArray spd(1024,0); spd[2]=0x12;
+        put("/bus/i2c/drivers/spd5118/0-0050/eeprom",spd);
+        const auto result=octool::platform::linuxInventory(root.path());
+        QCOMPARE(result.spd.size(),1); QCOMPARE(result.spd[0].bytes,spd);
+        bool temperature=false,power=false,invalid=false,board=false;
+        for(const auto &r:result.rows) {
+            if(r.name=="CPU") { temperature=true; QCOMPARE(r.value,QString("-1.25")); QCOMPARE(r.unit,QString("C")); QVERIFY(r.status.contains("fault")); }
+            if(r.name=="power1 (average)") { power=true; QCOMPARE(r.value,QString("125")); QCOMPARE(r.unit,QString("W")); }
+            if(r.name=="in1") { invalid=true; QVERIFY(r.value.isEmpty()); QVERIFY(r.status.contains("Invalid")); }
+            if(r.name=="board_name") { board=true; QCOMPARE(r.value,QString("Fixture board")); }
+        }
+        QVERIFY(temperature && power && invalid && board);
+    }
     void linuxCpuInformationAndAffinityAreExplicit() {
         using namespace octool::platform;
         QCOMPARE(QString::fromStdString(parseLinuxCpuModel("processor: 8\n model name \t:  Example CPU  \r\n")), QString("Example CPU"));

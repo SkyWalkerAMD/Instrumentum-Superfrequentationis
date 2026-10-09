@@ -11,6 +11,12 @@ PstateValue decodeFamily1aPstate(std::uint64_t raw)
     PstateValue value;
     value.enabled = (raw >> 63) != 0;
     const unsigned fid = unsigned(raw & 0xfff);
+    value.frequencyId = fid;
+    // Bit extraction only. The UI labels the exact positions; these are not
+    // a model-independent mV/A conversion or a measured current limit.
+    value.vidBits = unsigned((raw >> 14) & 255) | unsigned((raw >> 24) & 256);
+    value.iddValueBits = unsigned((raw >> 22) & 255);
+    value.iddDivBits = unsigned((raw >> 30) & 3);
     value.validFrequency = value.enabled && fid >= 0x10;
     if (value.validFrequency) value.frequencyMHz = fid * 5;
     return value;

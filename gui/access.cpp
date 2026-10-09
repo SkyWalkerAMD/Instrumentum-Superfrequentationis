@@ -86,3 +86,9 @@ Reply HardwareAccess::execute(const Request &r)
 {
     return service_.execute(r);
 }
+
+int HardwareAccess::transaction(const std::function<int(octool::core::HardwareSession &)> &operation,
+                                int timeoutMs, const std::atomic<bool> *cancelled)
+{
+    return service_.transaction(operation, timeoutMs, cancelled);
+}

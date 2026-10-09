@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "registerpanel.h"
 #include "pstates.h"
+#include "platformpanels.h"
 #include "authorizationpanel.h"
 #include "platform/system_info.h"
 #include <QApplication>
@@ -47,8 +48,8 @@ int main(int argc, char **argv)
     const unsigned initialCpu = info.allowedCpus.empty() ? 0 : info.allowedCpus.front();
     QMainWindow window;
     window.setObjectName("MainWindow");
-    window.setWindowTitle("OCTool — Hardware information and registers");
-    window.resize(940, 700);
+    window.setWindowTitle("OCTool — Platform controls and hardware information");
+    window.resize(1100, 760);
     auto *tabs = new QTabWidget(&window);
     auto *overview = new QWidget(tabs);
     auto *layout = new QVBoxLayout(overview);
@@ -69,8 +70,9 @@ int main(int argc, char **argv)
     row("OCTool", app.applicationVersion());
     layout->addLayout(form);
     layout->addWidget(new AuthorizationPanel(access, overview));
-    auto *scope = new QLabel("Basic information, raw MSR / MMIO / PCI access, and read-only AMD PStates. "
-        "Other platform monitoring and overclocking panels are being restored.", overview);
+    auto *scope = new QLabel("Raw MSR / MMIO / PCI, AMD P-state definitions, Intel power / HWP controls, "
+        "AMD BIOS mailbox commands, and memory / motherboard inventory. "
+        "Each page states the recovered scope; board-specific tuning and full original feature parity remain in progress.", overview);
     scope->setWordWrap(true); layout->addWidget(scope);
     layout->addStretch();
     tabs->addTab(overview, "Information");
@@ -78,6 +80,9 @@ int main(int argc, char **argv)
     tabs->addTab(new RegisterPanel(Space::Memory, access, tabs), "MMIO");
     tabs->addTab(new RegisterPanel(Space::Pci, access, tabs), "PCI");
     tabs->addTab(new PstatesPanel(access, tabs, initialCpu), "AMD PStates");
+    tabs->addTab(new IntelControlsPanel(access, tabs, initialCpu), "Intel Controls");
+    tabs->addTab(new AmdTuningPanel(access, tabs, initialCpu), "AMD tuning");
+    tabs->addTab(new MemoryBoardPanel(tabs), "Memory / Motherboard");
     window.setCentralWidget(tabs);
     window.show();
     // CI requests snapshots of these real windows for visual inspection.
