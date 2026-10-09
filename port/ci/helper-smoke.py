@@ -5,10 +5,12 @@ Root authorization and no-agent denial are automatic. A human session's password
 dialog and real hardware register access remain hardware acceptance items.
 """
 import argparse
+import configparser
 import json
 import os
 from pathlib import Path
 import stat
+import shlex
 import subprocess
 import time
 import xml.etree.ElementTree as ET
@@ -48,10 +50,15 @@ def main():
         for _ in range(100):
             if Path('/run/dbus/system_bus_socket').exists(): break
             time.sleep(0.05)
-        daemon = next(x for x in (Path('/usr/lib/polkit-1/polkitd'), Path('/usr/lib/policykit-1/polkitd'),
-                                 Path('/usr/libexec/polkit-1/polkitd')) if x.is_file())
+        service = configparser.ConfigParser(interpolation=None)
+        service.read('/usr/share/dbus-1/system-services/org.freedesktop.PolicyKit1.service')
+        daemon_command = shlex.split(service['D-BUS Service']['Exec'])
+        daemon = Path(daemon_command[0])
+        assert daemon.is_absolute() and daemon.name == 'polkitd' and daemon.is_file(), daemon_command
+        daemon_metadata = daemon.stat()
+        assert daemon_metadata.st_uid == 0 and not daemon_metadata.st_mode & 0o022
         log = args.output.with_suffix('.polkit.log').open('w'); logs.append(log)
-        children.append(subprocess.Popen([str(daemon), '--no-debug'], stdout=log, stderr=subprocess.STDOUT))
+        children.append(subprocess.Popen(daemon_command, stdout=log, stderr=subprocess.STDOUT))
         for _ in range(100):
             policy_check = run(['pkaction', '--action-id', 'com.octool.hwio', '--verbose'])
             if policy_check.returncode == 0 and 'auth_admin' in policy_check.stdout: break
@@ -90,7 +97,8 @@ def main():
             if not remaining: break
             time.sleep(0.05)
         assert not remaining, remaining
-        report = {'policy': 'auth_admin', 'helper_mode': '0755', 'root_pkexec': json.loads(authorized.stdout),
+        report = {'policy': 'auth_admin', 'helper_mode': '0755', 'polkit_service_command': daemon_command,
+                  'root_pkexec': json.loads(authorized.stdout),
                   'no_agent_denial': json.loads(denied.stdout), 'direct_unprivileged_exit': direct.returncode,
                   'unconnected_exit': unconnected.returncode, 'headless_diagnostics': info,
                   'restricted_cpu': selected, 'helper_exited_after_disconnect': True,
