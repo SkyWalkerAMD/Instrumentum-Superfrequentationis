@@ -1,0 +1,242 @@
+{
+  "schema": 1,
+  "date": "2026-10-09",
+  "scope": "Isolated EL8 system bus startup diagnostic",
+  "root_cause": "NSS group enumeration in dbus-daemon connects to the same not-yet-serving system bus before privilege drop.",
+  "fix": "Pass SYSTEMD_NSS_BYPASS_BUS=1 only to the test dbus-daemon, matching systemd service startup. No global NSS/polkit change.",
+  "source": "https://raw.githubusercontent.com/systemd/systemd/v239/src/core/execute.c",
+  "cases": [
+    {
+      "case": "before",
+      "run": {
+        "conclusion": "failure",
+        "headSha": "59844a03dc6b26be58e18673fc23cd7cb01f5582",
+        "jobs": [
+          {
+            "completedAt": "2026-10-09T11:03:05Z",
+            "conclusion": "failure",
+            "databaseId": 113789142934,
+            "name": "el8",
+            "startedAt": "2026-10-09T11:01:18Z",
+            "status": "completed",
+            "steps": [
+              {
+                "completedAt": "2026-10-09T11:01:20Z",
+                "conclusion": "success",
+                "name": "Set up job",
+                "number": 1,
+                "startedAt": "2026-10-09T11:01:19Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-09T11:01:23Z",
+                "conclusion": "success",
+                "name": "Run actions/checkout@v4",
+                "number": 2,
+                "startedAt": "2026-10-09T11:01:20Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-09T11:03:02Z",
+                "conclusion": "failure",
+                "name": "Run mkdir -p build/service-probe",
+                "number": 3,
+                "startedAt": "2026-10-09T11:01:23Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-09T11:03:03Z",
+                "conclusion": "success",
+                "name": "Run actions/upload-artifact@v4",
+                "number": 4,
+                "startedAt": "2026-10-09T11:03:02Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-09T11:03:03Z",
+                "conclusion": "success",
+                "name": "Post Run actions/checkout@v4",
+                "number": 8,
+                "startedAt": "2026-10-09T11:03:03Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-09T11:03:03Z",
+                "conclusion": "success",
+                "name": "Complete job",
+                "number": 9,
+                "startedAt": "2026-10-09T11:03:03Z",
+                "status": "completed"
+              }
+            ],
+            "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37921161363/job/113789142934"
+          }
+        ],
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37921161363"
+      },
+      "files": [
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-before/client.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-before/client.trace.90",
+          "sha256": "3c1569cda1104c74f998b09a702b6781de396f2521ba51779968c066b1a0d6fd",
+          "bytes": 21409
+        },
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-before/dbus-group.txt",
+          "sha256": "16955b1ceb57ccc8192ce22791eedb1104be05073bc875068748639decd00145",
+          "bytes": 11
+        },
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-before/dbus-user.txt",
+          "sha256": "75f74b04d248d7f086a112092f9142e3cceec981ebac454c9d0f2461ecda2c41",
+          "bytes": 48
+        },
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-before/dbus.log",
+          "sha256": "5026753e0fbabe0272ea1bfe406dc5d30f0ec53d4a26c00eccd84c4fbf18d368",
+          "bytes": 76
+        },
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-before/dbus.trace.85",
+          "sha256": "c345e737b6c5770d90ef467e6dda4b9d0b5f874195dae6bba2b355ddc4606d65",
+          "bytes": 49489
+        },
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-before/limits.txt",
+          "sha256": "1a4fac1539e802eb21a5f3bd793d955a860eb00c2594f05d4c28f95608a7b5e3",
+          "bytes": 1323
+        },
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-before/nsswitch.conf",
+          "sha256": "7ebe90e44dc9e74b6c20d11f0b87de292b048acb189bbc7ceaecc492ddbf0ed2",
+          "bytes": 2215
+        },
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-before/system.conf",
+          "sha256": "f04a4d38054f5d67135283f8034be9517046255bdf29a467e37bf3f644be142e",
+          "bytes": 5694
+        }
+      ]
+    },
+    {
+      "case": "after",
+      "run": {
+        "conclusion": "success",
+        "headSha": "2e953c41bec68c2916561525a04c94316ef2be0d",
+        "jobs": [
+          {
+            "completedAt": "2026-10-09T11:06:37Z",
+            "conclusion": "success",
+            "databaseId": 113790711049,
+            "name": "el8",
+            "startedAt": "2026-10-09T11:06:00Z",
+            "status": "completed",
+            "steps": [
+              {
+                "completedAt": "2026-10-09T11:06:01Z",
+                "conclusion": "success",
+                "name": "Set up job",
+                "number": 1,
+                "startedAt": "2026-10-09T11:06:01Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-09T11:06:03Z",
+                "conclusion": "success",
+                "name": "Run actions/checkout@v4",
+                "number": 2,
+                "startedAt": "2026-10-09T11:06:01Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-09T11:06:34Z",
+                "conclusion": "success",
+                "name": "Run mkdir -p build/service-probe",
+                "number": 3,
+                "startedAt": "2026-10-09T11:06:03Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-09T11:06:35Z",
+                "conclusion": "success",
+                "name": "Run actions/upload-artifact@v4",
+                "number": 4,
+                "startedAt": "2026-10-09T11:06:34Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-09T11:06:35Z",
+                "conclusion": "success",
+                "name": "Post Run actions/checkout@v4",
+                "number": 8,
+                "startedAt": "2026-10-09T11:06:35Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-09T11:06:35Z",
+                "conclusion": "success",
+                "name": "Complete job",
+                "number": 9,
+                "startedAt": "2026-10-09T11:06:35Z",
+                "status": "completed"
+              }
+            ],
+            "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37921640657/job/113790711049"
+          }
+        ],
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/37921640657"
+      },
+      "files": [
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-after/client.log",
+          "sha256": "9f15b836c559c50bd24bfc63588c2fe2526833e587f08af38954d157f4c9a50d",
+          "bytes": 125
+        },
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-after/client.trace.87",
+          "sha256": "f19a83d4dc21cae61a31068673957d7845cd335d3e97db60f031e1d428600421",
+          "bytes": 23516
+        },
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-after/dbus-group.txt",
+          "sha256": "16955b1ceb57ccc8192ce22791eedb1104be05073bc875068748639decd00145",
+          "bytes": 11
+        },
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-after/dbus-user.txt",
+          "sha256": "75f74b04d248d7f086a112092f9142e3cceec981ebac454c9d0f2461ecda2c41",
+          "bytes": 48
+        },
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-after/dbus.log",
+          "sha256": "727ab9cdc550943fe3ff833b0fa92f3983edec6f3230c4bc51bb64a26aba7d81",
+          "bytes": 79
+        },
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-after/dbus.trace.82",
+          "sha256": "c3cabba3accdbefaa99ef3ab911678db9459f408da36116e489ef63372a52b0d",
+          "bytes": 60284
+        },
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-after/limits.txt",
+          "sha256": "e24591ef1a70359115ec381388d00319384fed20723d0996a600ec91029c7b69",
+          "bytes": 1323
+        },
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-after/nsswitch.conf",
+          "sha256": "7ebe90e44dc9e74b6c20d11f0b87de292b048acb189bbc7ceaecc492ddbf0ed2",
+          "bytes": 2215
+        },
+        {
+          "path": "build/linux-integration-2e953c4/dbus-probe-after/system.conf",
+          "sha256": "f04a4d38054f5d67135283f8034be9517046255bdf29a467e37bf3f644be142e",
+          "bytes": 5694
+        }
+      ]
+    }
+  ]
+}

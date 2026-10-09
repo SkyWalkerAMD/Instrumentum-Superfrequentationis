@@ -57,3 +57,8 @@ else
         dnf install -y --setopt=install_weak_deps=False xorg-x11-server-Xvfb xorg-x11-xauth
     fi
 fi
+if [ "$target" = el8 ]; then
+    # No systemd PID 1 means no dynamic-user service; keep the real local
+    # passwd/group database for the unprivileged and administrator test users.
+    python3 port/ci/container-nss.py --output /out/runtime-nss.json
+fi

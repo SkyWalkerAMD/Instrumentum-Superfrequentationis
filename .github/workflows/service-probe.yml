@@ -4,6 +4,7 @@ on:
     paths:
       - '.github/workflows/service-probe.yml'
       - 'port/ci/service-probe.sh'
+      - 'port/ci/container-nss.py'
   workflow_dispatch:
 permissions:
   contents: read
@@ -15,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: |
           mkdir -p build/service-probe
-          docker run --rm --init -v "$PWD:/src:ro" -v "$PWD/build/service-probe:/out" \
+          docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -v "$PWD:/src:ro" -v "$PWD/build/service-probe:/out" \
             rockylinux:8 bash /src/port/ci/service-probe.sh
       - uses: actions/upload-artifact@v4
         if: always()

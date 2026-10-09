@@ -194,3 +194,58 @@ c48a38f / [run 36670288030](https://github.com/SkyWalkerAMD/Instrumentum-Superfr
 模块重复加载探针`37772538612`也成功。Linux24项port/26项analysis无跳过，2949项原指令门禁通过。
 下载8份报告后与Windows除environment完全一致；[记录](validation/headless-ci-27d2453.json)
 保存作业、artifact摘要及逐报告SHA。不替代原完整主窗口、真实硬件对拍或MOK固件验收。
+
+## 2026-10-09：授权辅助程序与目标内核启动
+
+首轮 `f0aa7c3 / 37912479085` 的独立核心四环境成功，部分 Linux 目标通过；Ubuntu20/22、
+Debian11 的新认证冒烟失败在测试代码寻找 polkitd 的路径，尚未执行授权。第一次补充候选目录仍
+遗漏了 Ubuntu22 的 `/usr/libexec/polkitd`，在 f32a7ca 再现。最终改为读取安装包自带的 D-Bus
+服务 Exec，校验绝对路径、root 所有权和写权限后用参数数组启动，不经过 shell；报告保存实际命令。
+Ubuntu 路径可核对 [官方文件清单](https://packages.ubuntu.com/jammy/all/polkitd/filelist)。
+此前被修复提交取消的轮次不计为完整绿色结果。
+
+`7b1cbaf / 37915729368` 随后暴露 polkit 0.105 的第二个兼容点：pkaction 成功列举策略后
+仍返回 1。[0.105 上游源码](https://raw.githubusercontent.com/polkit-org/polkit/0.105/src/programs/pkaction.c)
+初始化 `ret=1`，正常列举结束未改为 0。冒烟现仅对精确版本 0.105 接受这个历史返回码，
+并逐项核对 action ID、any/inactive/active 的 auth_admin 及辅助程序绝对路径；其他版本仍要求 0。
+报告保存版本、返回码和实际加载的策略文本，失败包含标准输出与错误信息。没有放宽安装策略或认证要求。
+
+`f2ab389 / 37917582690` 的 Ubuntu/Debian、Rocky10 桌面及全部目标内核通过；Rocky8 的
+pkaction 在 30 秒后超时，原启动日志为空，不能据此断言是 OCTool 的权限策略问题。
+后续将系统总线连通性、polkit 服务注册和策略查询分开检查，通过 D-Bus NameHasOwner
+等待服务就绪，避免查询触发自动启动与显式启动竞争；保留服务启动输出和失败进程状态。
+同轮发现最小 EL8 镜像没有 find，原检查的命令替换把失败变成了空串；现使用既有 Python
+检查 Debian/Ubuntu 的 linux 目录及 EL 的 kernels 子目录，缺工具不再导致头文件检查误通过。
+这些是容器测试流程修正，安装包内的授权要求不变。
+
+`53235e8` 的就绪检查进一步证明卡住的是 D-Bus 本身，polkit 尚未启动。最小复现
+`37921161363` 的 strace 显示 dbus-daemon 在读取用户组后连接自己刚创建的 socket，
+随后等待 EXTERNAL 认证回复，尚未完成降权和进入事件循环。EL8 的 NSS 含 systemd，
+组枚举会通过总线查询动态账户，形成自等待。
+[systemd v239 的执行代码](https://raw.githubusercontent.com/systemd/systemd/v239/src/core/execute.c)
+专门给总线进程设置 `SYSTEMD_NSS_BYPASS_BUS=1`，改为直接查询账户数据库。
+该轮仅在启动 dbus-daemon 的子进程环境中补齐同一设置，未修改 NSS 文件、系统策略或客户端授权。
+对照复现 `37921640657` 成功，NameHasOwner 返回 true；
+[前后日志与哈希](validation/el8-dbus-startup-2e953c4.json)保存准确提交、环境和证据。
+`service-probe` 工作流及 `port/ci/service-probe.sh` 保留为独立诊断，不代替完整桌面门禁。
+
+`2e953c4 / 37921640595` 的完整桌面测试确认总线已正常降权并响应，但随后 polkitd 的账户
+枚举请求了容器内不存在的 systemd 动态用户服务。仅给总线设置环境变量不能覆盖 polkit、
+runuser 和会清理环境的 setuid pkexec。EL8 的一次性测试容器现使用本地测试账户：仅从
+passwd/group/initgroups 的 NSS 提供者列表移除 systemd，保留 files、sss 和其他配置。
+脚本要求 root、明确的可丢弃容器标记、Rocky8，且 PID 1 不能是 systemd；遇到未知 NSS
+条件规则会拒绝修改。修改前后内容写入 runtime-nss.json。这不进入发行安装流程，也不改
+用户主机的 NSS。独立探针扩展到实际 polkit 启动及 pkexec 的 root 成功/无代理普通用户拒绝，
+所执行命令只是 /usr/bin/true；完整桌面测试仍要求 OCTool 自己的辅助程序通过同一授权链路。
+
+第二轮 `53fa72b / 37913786621` 的 EL9 头文件变为 `5.14.0-687.56.1.el9_8.x86_64`，
+同一源索引却没有匹配的 kernel-core，下载按预期失败，未用旧镜像冒充新内核。内核 CI 现从
+AppStream kernel-devel 与 BaseOS kernel-core 的交集选最新配对，先安装选定头文件，再仅在
+可丢弃测试容器移除不配对的头文件。实际版本、初始版本和未配对项写入 kernel-selection.json。
+用户 DKMS 安装流程不变；需要与其正在运行的内核匹配，不能使用 CI 的版本替代。
+
+新增虚拟机门禁启动发行版实际内核、加载新模块并通过 HAL 核对两个 CPU 的 CPUID；
+同时测试设备权限、能力查询、无效请求和卸载。使用真实 HAL 和已加载模块，CPUID 来自虚拟 CPU；
+不以合成传输应答替代这条调用链，也不执行物理寄存器写入。
+认证门禁执行实际 pkexec 客户端的 root 成功、普通用户无代理拒绝和退出清理，交互密码窗口
+及真实主板/Secure Boot 验收仍单列。后续完整结果见 [验证状态](verification-status.md)。
