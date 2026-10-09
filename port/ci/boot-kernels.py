@@ -61,9 +61,10 @@ def main():
     parser.add_argument('--inputs', required=True, type=Path)
     parser.add_argument('--modules', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
+    parser.add_argument('--work-dir', type=Path, default=ROOT / 'build/guest-boot')
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
-    workspace = ROOT / 'build/guest-boot'
+    workspace = args.work_dir
     workspace.mkdir(parents=True, exist_ok=True)
     probe = workspace / 'probe'
     subprocess.run(['gcc', '-std=gnu11', '-O2', '-Wall', '-Wextra', '-Werror', '-static', '-pthread',

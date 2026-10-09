@@ -14,6 +14,7 @@
   适用功能和后续平台面板范围见 [第一阶段](gui-phase1.md)。
 
 宿主要求：Linux x86_64、Python 3.8 或更新、可用的本机 Linux/amd64 Docker daemon，
+QEMU x86 系统模拟器、静态 BusyBox、gcc 和可静态链接的 libc；
 能够访问目标镜像仓库、各发行版软件源及 Qt 官方下载。构建目录必须能保存 Qt 源码/
 对象文件、十目标各自的源码副本和产物；实际时间、峰值内存、磁盘量尚无实测记录。
 runner 顺序执行任务，Qt/GUI 默认 make -j2，避免在尚未知配置的机器上同时启动多个 Qt 构建。
@@ -30,7 +31,7 @@ EL10 容器还取决于宿主 CPU 能否运行该镜像，拉取成功不能替�
 # 不访问 Docker，检查将要运行的任务列表：
 python3 port/ci/run-matrix.py --plan --scope kernel --targets debian11 debian12 debian13
 
-# 实际执行三项内核编译、C 离线测试、模块包构建和 DKMS 安装：
+# 实际执行内核编译、离线测试、DKMS 安装及目标内核的 QEMU 加载/通信/卸载：
 python3 port/ci/run-matrix.py --scope kernel --targets debian11 debian12 debian13
 
 # 扩展至全部十目标的内核分项：
@@ -42,6 +43,8 @@ python3 port/ci/run-matrix.py --scope kernel
 每个目标都执行同一个 `in-container.sh kernel <target>`，与 GitHub CI 的入口相同。
 bootstrap 先验证 `/etc/os-release` 的 ID/版本与 target 一致，再安装依赖。
 kernel 模式不再安装 Qt、X11、Wayland 的开发包。
+容器只下载并提取与头文件同版的官方内核，不在宿主安装内核。容器成功后，独立 runner
+在 QEMU TCG 中启动这些内核并检查真实模块；不把编译通过计作模块已加载。
 
 ## 全矩阵
 
@@ -56,7 +59,8 @@ python3 port/ci/run-matrix.py
 完整计划为 31 个阶段：10 个 kernel、1 个 EL8 baseline、10 个 desktop、10 个 runtime。
 baseline 生成 EL8 静态 Qt SDK 和发行 GUI；每个 desktop 使用 SDK 在对应目标重新编 GUI，
 并为同一个 EL8 发行 GUI 生成该目标的 rpm/deb；runtime 在新的同目标容器安装并启动
-发行/本地重编的两份 GUI，核对 DKMS，执行卸载和重装。详细门禁见 [多发行版指南](multi-distro.md)。
+发行/本地重编的两份 GUI。先在没有编译器/头文件/DKMS 的环境检查普通用户窗口、授权辅助程序
+和无显示诊断，再安装驱动工具链检查 DKMS 卸载/重装。详细门禁见 [多发行版指南](multi-distro.md)。
 
 一个内核任务失败后继续其他目标。GUI preflight/baseline 失败时，将 desktop/runtime
 标为 blocked，完整命令退出非零。某个 desktop 失败只阻断它的 runtime。

@@ -46,6 +46,7 @@ def main():
             assert any(x.endswith("/.github/workflows/portability.yml") for x in names)
             assert any(x.endswith("/docs/hardware-acceptance.md") for x in names)
             assert not any("/build/" in x or "/dist/" in x or "__pycache__" in x for x in names)
+            assert not any(".git" in Path(x).parts for x in names)
             assert not any(x.endswith((".key", ".ko", ".zip")) for x in names)
             for entry in tar:
                 if entry.name.endswith(".sh"):

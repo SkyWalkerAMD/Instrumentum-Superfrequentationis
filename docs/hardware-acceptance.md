@@ -37,6 +37,21 @@ Debian11/12/13，x86_64。每个目标都必须单独留下结果，不能由一
 
 ## 1. 安装与 DKMS
 
+2026-10-09 起，GUI 与 DKMS 可以分开安装。仅查看基础信息时，Debian/Ubuntu 使用
+`apt-get install --no-install-recommends ./octool-2.0.1-1.amd64.deb`，EL 使用
+`dnf install --setopt=install_weak_deps=False ./octool-2.0.1-1.el9.x86_64.rpm`
+（将 el9 换成实际目标包）。这一步不需要编译器和内核头文件；硬件访问再按下面安装驱动。
+
+正常桌面以普通用户启动 `octool`，在基础页明确申请硬件授权。管理员认证只授予
+`/opt/octool/bin/octool-hwio-helper`；不要用旧 `com.octool.qt.policy` 给整个 GUI 提权。
+可先保存 `octool --diagnose` 的 JSON。云端 root/no-agent 测试不能替代下列交互验收：
+
+- [ ] X11/Wayland 桌面的认证窗口能显示；输入正确凭据后才授权，GUI PID 的 UID 仍为普通用户。
+- [ ] 拒绝、取消、认证超时后界面可重试；不会自动重发写请求。
+- [ ] 关闭 GUI 后辅助程序退出；设备节点仍为 root:root 0600。
+- [ ] 加载并签名模块后重新申请授权，实际读取使用预期后端；无模块和 lockdown 的失败可见。
+- [ ] CPU 限制/离线/热插拔时错误可见，CPUID 操作后恢复亲和性。
+
 从源码根目录构建测试工具：
 
 ```sh

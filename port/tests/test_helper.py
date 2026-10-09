@@ -34,7 +34,7 @@ class Helper(unittest.TestCase):
     @unittest.skipUnless(sys.platform.startswith('linux'), 'Linux socket/process transport')
     def test_socket_protocol_failures_and_cancellation(self):
         self.build_run('gui/tests/helper_transport_test.cpp', ['gui/platform/linux_helper.cpp'],
-                       'helper transport: 5 scenario groups passed')
+                       'helper transport: 6 scenario groups passed')
 
 
 if __name__ == '__main__':

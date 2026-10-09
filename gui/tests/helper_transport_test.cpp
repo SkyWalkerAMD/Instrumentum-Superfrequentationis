@@ -82,5 +82,30 @@ int main()
     assert(platform::sendHelperFrame(pair[0], frame, 1000) == 0);
     server.join(); close(pair[0]);
     assert(serverResult == 2 && backend.calls == 2);
-    std::cout << "helper transport: 5 scenario groups passed\n";
+
+    // A write may already have happened when its reply is lost/corrupted.
+    // Poison the connection and prove a later call cannot resend that write.
+    assert(socketpair(AF_UNIX, SOCK_STREAM, 0, pair) == 0);
+    unsigned writes = 0;
+    server = std::thread([&] {
+        ipc::Frame received; ipc::Command command;
+        assert(platform::receiveHelperFrame(pair[1], received, 1000) == 0);
+        assert(ipc::decodeCommand(received, command) && command.request.write);
+        ++writes;
+        auto corrupt = ipc::encodeResponse(ipc::Operation::Execute, ipc::Response{});
+        corrupt[0] = 0;
+        assert(platform::sendHelperFrame(pair[1], corrupt, 1000) == 0);
+        assert(platform::receiveHelperFrame(pair[1], received, 1000) == -EPIPE);
+        close(pair[1]);
+    });
+    {
+        core::HardwareService service(platform::makeHelperBackend(pair[0]));
+        core::Request request; request.write = true; request.address = 0x123; request.value = UINT64_MAX;
+        auto reply = service.execute(request);
+        assert(reply.error == -EPROTO && reply.value == 0);
+        reply = service.execute(request);
+        assert(reply.error == -ENOTCONN && reply.value == 0);
+    }
+    server.join(); assert(writes == 1);
+    std::cout << "helper transport: 6 scenario groups passed\n";
 }

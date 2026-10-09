@@ -323,6 +323,22 @@ private slots:
         QCOMPARE(reference.last.data1, uint64_t(0xfedcba9876543210ULL));
         QVERIFY(panel.findChild<QLineEdit *>("result")->text().isEmpty());
     }
+    void lostWriteReplyReportsUncertainCompletion() {
+        Reference reference; reference.error = -EPIPE;
+        RegisterPanel panel(Space::Msr, reference.access()); panel.show();
+        panel.findChild<QLineEdit *>("address")->setText("123");
+        panel.findChild<QLineEdit *>("value")->setText("FEDCBA9876543210");
+        QTimer::singleShot(0, [] {
+            auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget());
+            if (box) box->button(QMessageBox::Yes)->click();
+        });
+        panel.findChild<QPushButton *>("write")->click();
+        QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(reference.calls.load(), 1);
+        const auto status = panel.findChild<QLabel *>("status")->text();
+        QVERIFY(status.contains("FAILED") && status.contains("Write completion is unknown"));
+        QVERIFY(panel.findChild<QLineEdit *>("result")->text().isEmpty());
+    }
 };
 QTEST_MAIN(Regression)
 #include "regression.moc"

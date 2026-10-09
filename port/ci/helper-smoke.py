@@ -48,7 +48,8 @@ def main():
         for _ in range(100):
             if Path('/run/dbus/system_bus_socket').exists(): break
             time.sleep(0.05)
-        daemon = next(x for x in (Path('/usr/lib/polkit-1/polkitd'), Path('/usr/libexec/polkit-1/polkitd')) if x.is_file())
+        daemon = next(x for x in (Path('/usr/lib/polkit-1/polkitd'), Path('/usr/lib/policykit-1/polkitd'),
+                                 Path('/usr/libexec/polkit-1/polkitd')) if x.is_file())
         log = args.output.with_suffix('.polkit.log').open('w'); logs.append(log)
         children.append(subprocess.Popen([str(daemon), '--no-debug'], stdout=log, stderr=subprocess.STDOUT))
         for _ in range(100):

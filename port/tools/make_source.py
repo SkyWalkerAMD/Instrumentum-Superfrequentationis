@@ -25,6 +25,8 @@ def create(output):
         # source copy under build/, so rglob would scan those copies repeatedly.
         subdirs[:] = [name for name in subdirs if name not in SKIP_DIRS]
         for name in names:
+            if name in SKIP_DIRS:
+                continue  # A linked worktree has a .git file, not a directory.
             p = Path(directory) / name
             rel = p.relative_to(ROOT)
             if not p.is_file():

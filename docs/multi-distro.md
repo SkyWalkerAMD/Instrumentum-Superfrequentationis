@@ -44,6 +44,7 @@ kernel release、modinfo 和构建日志。发布时保存这些 artifacts，并
 
 - `project`：实际 qmake `.pro` 的仓库相对路径。
 - `binary`：shadow build 输出目录中的 ELF 相对路径。
+- `helper_project` / `helper_binary`：无 Qt 的授权辅助程序，一同在 EL8 构建和检查 ELF 依赖。
 - `test_project`：`gui/tests/regression.pro`，每次 GUI 编译后运行离线 Qt 控件/传输回归。
 - `qmake_args`：项目所需附加参数，以数组保存，不做 shell 字符串拼接。
 - `resources`：需要分发的额外资源路径，当前复制到 `/opt/octool/share/<原路径>`。
@@ -173,13 +174,16 @@ python3 port/tools/build_packages.py --format rpm --gui-stage build/gui-stage --
 工具复用 `port/packaging/` 的 DKMS conf、udev、MSR modules-load 和 RPM spec。
 Debian 的原未完整配置 debhelper 模板已改为明确的 control 模板加 `dpkg-deb`，
 这样 Ubuntu20.04 无需不存在的 debhelper-compat13，且两个发行版线共用同一 payload。
-`dpkg-shlibdeps` 从最终 GUI 计算共享库依赖；RPM 使用 rpmbuild 自带依赖扫描。
+`dpkg-shlibdeps` 从最终 GUI 和辅助程序计算共享库依赖；RPM 使用 rpmbuild 自带依赖扫描。
 所有 native 打包命令要在对应目标系统/容器执行，不在 Windows 伪造 rpm/deb。
 
 安装文件：`/opt/octool/`（GUI、许可证、资源）、`/usr/bin/octool`（launcher）、
 `/usr/src/octool-hwio-<version>/`（DKMS 源码）、`/usr/libexec/octool/`（注册和签名辅助）。
+GUI 包另安装 `/opt/octool/bin/octool-hwio-helper`（root 所有、0755、无 SUID）和
+`/usr/share/polkit-1/actions/com.octool.hwio.policy`。GUI 强制依赖 pkexec/polkit 运行环境，
+DKMS 改为推荐依赖；只查看基础信息时不需要编译器、DKMS 或内核头文件。
 设备仍为 `/dev/mydev`，udev 默认 root:root 0600，不授予普通桌面用户硬件写权限。
-包安装会注册并构建已安装头文件对应的内核，刷新 depmod 索引后按名称核对版本/vermagic；
+安装 DKMS 包会注册并构建已安装头文件对应的内核，刷新 depmod 索引后按名称核对版本/vermagic；
 失败不得吞掉，未安装头文件会给出具体错误。
 容器 CI 另外读取 DKMS installed 状态、vermagic 和 MODULE_VERSION，防止 RPM scriptlet 告警被误当安装成功。
 安装过程不自动 modprobe、不卸载旧模块。
@@ -200,6 +204,43 @@ python3 port/tools/make_source.py --require-gui
 新 GUI RPM 的 License 为 GPL-2.0-only，与 gui/LICENSE 一致；旧二进制许可不变。
 GUI release 重打包没有 DWARF，runtime spec 关闭 debug_package，仍保留自动依赖扫描。
 
+### 桌面授权和无显示诊断
+
+普通桌面用户运行 `octool`，在基础页点击 `Authorize hardware access…`，由桌面认证代理
+提示管理员认证。GUI 始终保留调用用户身份。只启动固定路径的辅助进程，授权仅持续到当前
+连接关闭；取消或认证失败保留原连接。没有代理的精简桌面需要先配置发行版的 polkit 认证代理。
+策略的 active/inactive/any 均为 `auth_admin`，没有 `allow_gui`、免认证规则或整套 GUI 提权。
+行为与退出码依据 [pkexec 手册](https://polkit.pages.freedesktop.org/polkit/pkexec.1.html)。
+
+辅助进程的私有 socket 只接受固定 64 字节、逐字段校验的请求；它不接受文件路径或 shell 命令。
+该格式属于新的进程间协议，没有改变旧设备的 96 字节请求。每次传输限时 10 秒，认证限时 120 秒；
+普通空闲连接可保持，部分请求必须在限时内收齐。通信失败关闭连接，不自动重发硬件操作；
+写入已发送但应答缺失时，界面提示结果不能确认。内核调用本身的不可中断等待不因用户态超时而保证终止。
+
+无需显示服务器、认证或设备访问即可导出诊断：
+
+```sh
+octool --diagnose
+```
+
+JSON 包含系统/内核/版本、CPU 型号、在线数量、进程允许的 CPU 列表、亲和性错误、模块/辅助程序
+是否存在，以及 `register_access_tested: false`。系统信息和动态 CPU 集合由 Linux 适配层提供；
+MSR/PStates 默认使用实际允许的 CPU，CPUID 临时绑定后恢复线程原亲和性。
+
+原输入组件的对应关系：
+
+| 原组件 | 重构后的来源与安装方式 |
+|---|---|
+| `octool` | `gui/` 的 Qt 界面、`gui/core/` 的功能核心、`gui/platform/` 的 Linux 适配器 |
+| `mylib/` | EL8 静态 Qt 与目标包管理器解析的运行依赖；不搬运旧私有 libc/Qt 库 |
+| `run_lib.sh` | `port/runtime/octool`，安装到 `/usr/bin/octool` |
+| `peter_kernel*.ko` | `port/kmod/` 源码，由 DKMS 针对实际内核编译为 `octool_hwio.ko` |
+| `com.octool.qt.policy` | 固定辅助程序专用的 `com.octool.hwio.policy` |
+| `aptinstalls.sh` | 目标发行版的 DEB/RPM 依赖与 DKMS 安装流程 |
+| `readme.txt` | 本文、安装产物说明和真机验收文档 |
+
+该表说明部署组件替换关系；原 OCTool 的所有平台面板仍未恢复，不能用系统兼容通过替代功能完整性。
+
 ## 7. CI 和本地 Linux runner 复现
 
 当前使用用户授权的公开 GitHub 仓库 Actions，见 [GitHub 接入](github-actions.md)。
@@ -216,11 +257,14 @@ Linux Docker 环境内的完整执行入口为 `python3 port/ci/run-matrix.py`�
 
 1. 矩阵校验及 Python 发布门禁测试、ABI/HAL 已审阅哈希检查、文档链接与源码归档一致性检查。
 2. 十个独立 kernel job：HAL、loopback、transport、parity selftest、真实 Kbuild/modpost、测试证书签名、
-   DKMS 包构建/安装、同版本重装、卸载再安装、installed/vermagic 核对。Ubuntu22.04 还覆盖当前 GA/HWE。
+   DKMS 包构建/安装、同版本重装、卸载再安装、installed/vermagic 核对。随后下载同版官方内核，
+   在 QEMU TCG 中启动，加载/卸载实际模块，检查设备权限、能力查询、两个 CPU 的 HAL/CPUID 通信
+   和无效请求。Ubuntu22.04 还覆盖当前 GA/HWE，十目标共十一套内核。
 3. EL8 baseline job：实际 GUI 源码 preflight、静态 Qt SDK、GUI/Qt 控件回归、EL8 ABI 门禁。
    SDK 按 Qt/依赖脚本哈希缓存并校验归档，GUI 每次重编；配方改变使旧 seed/cache 失效。
 4. 十个 desktop job：使用 baseline SDK 在各目标重新编 GUI、生成 native rpm/deb；
-   第二个全新容器安装发行包，检查 ldd，运行发行/本地重编两种 GUI，卸载再安装并核对 DKMS。
+   第二个全新容器先只装 GUI 并断言没有编译器/DKMS/头文件，检查 ldd、发行/native 窗口、实际
+   pkexec 成功/拒绝/退出清理、无显示和受限 CPU 诊断；然后才装工具链和驱动，核对 DKMS 卸载再安装。
 5. `gate` 在所有 job 成功时才成功；失败、取消、跳过均不能过门禁。
 
 kernel job 不依赖 GUI baseline，因此 GUI 缺失时仍可收集 Debian 内核和离线测试失败点。
@@ -237,6 +281,11 @@ docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -v "$PWD:/src" -v "$PWD/
 ```
 
 替换 image/id 即覆盖其他表中目标。baseline/desktop/runtime 的完整挂载参数见 workflow。
+独立 `run-matrix.py` 的 Linux 宿主需提供 QEMU、静态 BusyBox、gcc 和可静态链接的 libc；内核阶段
+同样执行 VM 测试。直接运行容器入口只完成容器部分，另执行 `boot-kernels.py` 才包含内核启动。
 这些入口会安装软件包，只应在可丢弃的构建容器中执行。
 不使用 `--privileged`，不把宿主机 `/lib/modules` 或 `/dev` 挂进容器。
-容器门禁无法验证 insmod、真实 MMIO、MOK 注册、物理桌面权限与超频行为；这些必须留给真机。
+QEMU 测试采用 [直接内核启动](https://www.qemu.org/docs/master/system/linuxboot.html) 和
+[newc initramfs](https://docs.kernel.org/driver-api/early-userspace/buffer-format.html)，无网络、无物理硬件透传。
+它验证目标内核的实际模块加载和设备通信；真实 MMIO、Secure Boot/MOK、交互密码窗口、物理桌面
+权限与超频行为仍需真机验收。Rocky 的结果不自动等同于 Alma/RHEL 的独立验收。

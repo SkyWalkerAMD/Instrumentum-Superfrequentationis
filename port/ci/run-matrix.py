@@ -164,6 +164,12 @@ class DockerRunner:
                 # Killing the Docker client does not stop its daemon's container.
                 # Only remove the unique container created by this invocation.
                 self.command(["docker", "rm", "-f", name], log, timeout=30)
+        if code == 0 and action == "kernel":
+            code = self.command([sys.executable, str(source / "port/ci/boot-kernels.py"),
+                                 "--inputs", str(source / "build/vm-inputs"),
+                                 "--modules", str(artifacts / "kernels"),
+                                 "--output", str(artifacts / "guest-boot"),
+                                 "--work-dir", str(work / "guest-work")], log, timeout=600)
         return dict(row, status="passed" if code == 0 else "failed", exit_code=code, image_id=image_id)
 
 
@@ -195,8 +201,9 @@ def main():
         return 0
     if platform.system() != "Linux" or platform.machine() not in ("x86_64", "amd64"):
         parser.error("execute this runner on the supplied Linux x86_64 build host; --plan also works on Windows")
-    if not shutil.which("docker"):
-        parser.error("Docker is not installed on this Linux host")
+    for executable in ("docker", "qemu-system-x86_64", "busybox", "gcc"):
+        if not shutil.which(executable):
+            parser.error(executable + " is not installed on this Linux host (BusyBox and libc must support static linking)")
     stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     output = (args.output or ROOT / "build/cloud-runs" / (stamp + "-" + uuid.uuid4().hex[:6])).resolve()
     if any(c in str(output) for c in (":", "\n", "\r")):
