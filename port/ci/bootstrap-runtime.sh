@@ -43,7 +43,7 @@ else
             dnf config-manager --set-enabled "$repo"
         fi
     done
-    dnf install -y --setopt=install_weak_deps=False ca-certificates util-linux shadow-utils /usr/bin/dbus-run-session
+    dnf install -y --setopt=install_weak_deps=False ca-certificates util-linux shadow-utils /usr/bin/dbus-run-session /usr/bin/dbus-send
     if [ "$target" = el8 ]; then
         dnf install -y --setopt=install_weak_deps=False python39
         mkdir -p /usr/local/bin

@@ -21,8 +21,23 @@ POLICY = Path('/usr/share/polkit-1/actions/com.octool.hwio.policy')
 
 
 def run(args, **kwargs):
+    kwargs.setdefault('timeout', 30)
     return subprocess.run(args, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                          timeout=30, **kwargs)
+                          **kwargs)
+
+
+def wait_for_name(name):
+    # Query only the bus itself: do not trigger service auto-activation while
+    # the explicitly started daemon is still registering its name.
+    deadline = time.monotonic() + 20
+    while True:
+        result = run(['dbus-send', '--system', '--type=method_call', '--print-reply', '--reply-timeout=1000',
+                      '--dest=org.freedesktop.DBus', '/org/freedesktop/DBus',
+                      'org.freedesktop.DBus.NameHasOwner', 'string:' + name], timeout=3)
+        if result.returncode == 0 and re.search(r'^\s*boolean true\s*$', result.stdout, re.MULTILINE):
+            return
+        assert time.monotonic() < deadline, (name, result)
+        time.sleep(0.05)
 
 
 def main():
@@ -46,11 +61,10 @@ def main():
         subprocess.run(['dbus-uuidgen', '--ensure'], check=True)
         if not Path('/run/dbus/system_bus_socket').exists():
             log = args.output.with_suffix('.dbus.log').open('w'); logs.append(log)
-            children.append(subprocess.Popen(['dbus-daemon', '--system', '--nofork', '--nopidfile'],
+            children.append(subprocess.Popen(['dbus-daemon', '--system', '--nofork', '--nopidfile',
+                                              '--print-address=1', '--print-pid=1'],
                                              stdout=log, stderr=subprocess.STDOUT))
-        for _ in range(100):
-            if Path('/run/dbus/system_bus_socket').exists(): break
-            time.sleep(0.05)
+        wait_for_name('org.freedesktop.DBus')
         service = configparser.ConfigParser(interpolation=None)
         service.read('/usr/share/dbus-1/system-services/org.freedesktop.PolicyKit1.service')
         daemon_command = shlex.split(service['D-BUS Service']['Exec'])
@@ -58,8 +72,13 @@ def main():
         assert daemon.is_absolute() and daemon.name == 'polkitd' and daemon.is_file(), daemon_command
         daemon_metadata = daemon.stat()
         assert daemon_metadata.st_uid == 0 and not daemon_metadata.st_mode & 0o022
+        # Keep startup diagnostics in CI; production continues to use the
+        # distribution's installed service unchanged.
+        daemon_command = [arg for arg in daemon_command if arg != '--no-debug']
+        args.output.with_suffix('.service.json').write_text(json.dumps(daemon_command) + '\n')
         log = args.output.with_suffix('.polkit.log').open('w'); logs.append(log)
         children.append(subprocess.Popen(daemon_command, stdout=log, stderr=subprocess.STDOUT))
+        wait_for_name('org.freedesktop.PolicyKit1')
         policy_version = run(['pkaction', '--version'])
         assert policy_version.returncode == 0, policy_version
         # Upstream 0.105 leaves ret=1 after a successful action enumeration.
@@ -120,6 +139,21 @@ def main():
                   'interactive_password_dialog_tested': False, 'register_access_tested': False}
         args.output.write_text(json.dumps(report, indent=2) + '\n')
         print(json.dumps(report, indent=2))
+    except Exception:
+        processes = []
+        for child in children:
+            state = {'pid': child.pid, 'exit': child.poll(), 'args': child.args}
+            for field in ('status', 'wchan'):
+                path = Path('/proc') / str(child.pid) / field
+                try: state[field] = path.read_text()
+                except OSError as error: state[field] = str(error)
+            processes.append(state)
+        args.output.with_suffix('.failure.json').write_text(json.dumps(processes, indent=2) + '\n')
+        for log in logs:
+            log.flush()
+            print(Path(log.name).read_text(), flush=True)
+        print(json.dumps(processes, indent=2), flush=True)
+        raise
     finally:
         for child in reversed(children):
             if child.poll() is None:

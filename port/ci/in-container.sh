@@ -155,9 +155,11 @@ case "$action" in
         for tool in gcc g++ make dkms; do
             if command -v "$tool" >/dev/null; then echo "unexpected build dependency: $tool" >&2; exit 1; fi
         done
-        if [ -d /usr/src ]; then
-            test -z "$(find /usr/src -maxdepth 1 -name '*linux*' -print)"
-        fi
+        python3 - <<'PY'
+from pathlib import Path
+headers = list(Path('/usr/src').glob('*linux*')) + list(Path('/usr/src/kernels').glob('*'))
+assert not headers, headers
+PY
         printf '%s\n' 'GUI installed without compiler, make, DKMS or kernel headers' > "$out/minimal-runtime.txt"
         ldd /opt/octool/bin/octool-real | tee "$out/ldd-release.txt"
         ! grep -q 'not found' "$out/ldd-release.txt"
