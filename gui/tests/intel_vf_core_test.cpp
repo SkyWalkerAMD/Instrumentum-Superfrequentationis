@@ -96,7 +96,7 @@ void encodingAndEveryPoint() {
         assert(out.submitted == UINT32_C(0xf9a00000)); // -51 / 1024 V, nearest to -50 mV.
         assert(out.expected == (old.value.data & 0x1fffff) + out.submitted && out.readback.value.data == out.expected);
         assert(out.readback.legacy.data == old.legacy.data && out.readback.control.data == old.control.data);
-        assert(std::find(t.device->commands.begin(), t.device->commands.end(), 0x15) == t.device->commands.end());
+        assert(std::find(t.device->commands.begin(), t.device->commands.end(), 0x15u) == t.device->commands.end());
         for (const auto &r : t.device->requests) if (r.write && ((r.value >> 32) & 255) == 0x11) {
             assert(((r.value >> 40) & 255) == unsigned(domain) && ((r.value >> 48) & 255) == p);
             assert((r.value & 0x1fffff) == 0);
