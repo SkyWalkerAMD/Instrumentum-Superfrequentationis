@@ -1,5 +1,15 @@
 # 安装包与源码归档
 
+<!-- intel-ratio-recovery-fa39af6 -->
+最新生产代码 `fa39af6` 已验证：[核心 4/4](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38011778227)、[Linux 23/23](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38011778246)。
+新增 [core/cache 最大 OC 倍频](intel-ratio-recovery.md)，两种设置均保留其它字段并完整回读。
+十个 x86_64 Linux 目标每个 29 Qt / 31 Python，各核心环境 6 CTest / 49 场景组，11 套真实目标内核 VM 启动。
+安装包保存于 `dist/intel-ratio-recovery-fa39af6/`：每目标 GUI + DKMS，共 20 个 DEB/RPM；另有源码包、侧车 SHA 和 `SHA256SUMS`。
+[完整证据](validation/intel-ratio-recovery-ci-fa39af6.json)包含产物哈希、源码比对、原指令观测和 200 张界面截图。
+目标物理机器的固件行为、Secure Boot 和实际电压/频率效果未验收；[剩余功能](recovery-status.md)仍独立列出。
+
+以下保留此前验证记录。
+
 <!-- intel-oc-recovery-90e16fb -->
 2026-10-10：最新验证生产代码为 `90e16fb`，分支 `refactor/platform-recovery`。
 在 UMC 212 字段、快照文件和 AMD 拓扑基础上，新增 Raptor Lake-S core/cache 电压 offset：

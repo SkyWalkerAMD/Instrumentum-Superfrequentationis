@@ -52,8 +52,8 @@
 Qt 和 PCI 查找是明确替身；没有原 Qt、设备访问或固件写入。
 
 882 项覆盖八种分支组合、64 种空输入组合、六字段的零/边界/回绕值、固件失败返回和非布尔标志。
-另有三项关键原行为回归随 `analysis/tests` 自动发现。当前记录为 Windows 本机运行；
-不混入 Intel OC 生产提交 `90e16fb` 的 45 个核心场景组或 Linux 安装包通过数字。
+另有三项关键原行为回归随 `analysis/tests` 自动发现。初始记录来自 Windows 本机；现已连同标签/标志实验进入 `fa39af6` 的云端门禁，
+并与本机 JSON 逐项相等。它们不属于核心场景组或真机验收数字。
 
 ```sh
 PYTHONPATH=build/reference-tools python3 analysis/tools/legacy-amd-limits.py --output build/amd-limits.json

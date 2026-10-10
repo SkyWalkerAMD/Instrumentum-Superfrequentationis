@@ -1,5 +1,16 @@
 # Instrumentum Superfrequentationis
 
+<!-- intel-ratio-recovery-fa39af6 -->
+2026-10-10：最新验证生产代码为 `fa39af6`，研究分支 `refactor/platform-recovery`。
+新增 Raptor Lake-S 核心/缓存最大 OC 倍频设置；保留电压 offset、target、mode，检查锁/旧值并完整回读。
+原版全部功能和四台真机验收仍未完成，范围见[还原状态](docs/recovery-status.md)与[倍频实现](docs/intel-ratio-recovery.md)。
+
+- [核心验证](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38011778227) 4/4，各 6 CTest / 49 场景组；[Linux 验证](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38011778246) 23/23，十目标各 29 Qt / 31 Python。
+- 11 套内核 VM、20 个 DEB/RPM、200 张界面截图及源码校验已归档：[验证明细](docs/validation/intel-ratio-recovery-ci-fa39af6.json)、[安装产物](docs/artifacts.md)。
+- 原 Intel 倍频 108 场景、AMD 六字段 882 场景、六行标签绑定与 80 组标志分支均进入本次云端研究门禁；不属于真实硬件调参验证。
+
+以下保留此前验证记录。
+
 <!-- intel-oc-recovery-90e16fb -->
 2026-10-10：最新验证生产代码为 `90e16fb`，分支 `refactor/platform-recovery`。
 在 UMC 212 字段、快照文件和 AMD 拓扑基础上，新增 Raptor Lake-S core/cache 电压 offset：
