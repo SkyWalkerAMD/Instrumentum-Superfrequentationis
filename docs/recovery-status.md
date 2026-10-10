@@ -1,5 +1,19 @@
 # 功能还原状态
 
+<!-- controls-register-c0f97cc -->
+2026-10-10：最新验证生产提交 `c0f97cc`，GUI 与 CLI 同步更新。
+新增 **HWP 活动窗口**，全部 13 项 RAPL/HWP 设置检查完整配置读回；
+CLI 补齐原始 MSR/MMIO/PCI 读写，GUI 可离线导入 CLI 的 UMC 报告并重算 212 字段。
+
+- [实现说明](control-register-recovery.md)、[功能对照](frontend-progress.md)、[验证及交付](control-register-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38023681945) 4/4，各 7 CTest / 72 场景组。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38023680671) 12/12，十目标各 9 CTest、147 份 JSON 验证。
+- [Linux GUI/驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38023680720) 23/23，十目标各 43 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-controls-c0f97cc/`：10 个 GUI + 10 个 CLI + 10 个可选 DKMS 包、对应源码和 SHA256SUMS。
+
+AMD 写入协议的[交叉核对](amd-shimada-crosscheck.md)另有记录。原版全部功能与四台真机验收仍未完成；
+驱动/HAL/ABI 未改，模拟测试不等于硬件调参验收。以下保留此前记录。
+
 <!-- intel-voltage-452f594 -->
 2026-10-10：GUI 与独立 CLI 同时新增 **Intel 目标电压 + Adaptive/Override 模式设置**，验证生产提交 `452f594`。
 沿用 Raptor Lake-S B7 的 core/cache 配置，明确选择单一域，保留 offset 与倍率；
@@ -35,17 +49,18 @@ PStates 写入、曲线写入、Intel server VF/fabric、板级专用控制等�
 
 以下保留此前记录。
 
-当前验证生产代码为 `06b477c`，新增 [Shimada 原始曲线查询](amd-curve-query-recovery.md)，并保留此前 Intel offset / 最大 OC 倍频、UMC 和拓扑功能。
-[本轮验证](validation/amd-curve-recovery-ci-06b477c.json)为核心 4/4、Linux 23/23；安装包与原目录源码均已同步。
+`06b477c` 是此前 [Shimada 原始曲线查询](amd-curve-query-recovery.md)的历史版本，
+[当时验证](validation/amd-curve-recovery-ci-06b477c.json)为核心 4/4、Linux 23/23。
+最新生产版本以本页顶部为准，下表已更新到 `c0f97cc`。
 原版全部功能仍未完成。安装兼容、自动化回归、原指令研究和真实硬件验收分别记录，
 没有能代表四大模块全部功能的可靠百分比；212 个 UMC 字段也不是整个软件的功能分母。
 
 | 用户要求的模块 | 已接入可编译程序 | 尚未还原的部分 |
 |---|---|---|
 | AMD PStates | 按逻辑 CPU 采样 P0–P7、上限/能力检查、频率、64 位原值、完整 9 位 VID / Idd 编码 | 型号专用 mV/A 换算；满足跨核/跨 coherent fabric 一致性的设置 |
-| Intel Controls | RAPL 功耗/时间窗、HWP、温度；Raptor Lake-S 单域 core/cache offset 与最大 OC ratio、保留其它字段、锁/旧值检查及回读 | W790/W890 电压域；VF 点、逐核 turbo/ratio/VID rank/SP、fabric/BCLK |
+| Intel Controls | RAPL、HWP 含活动窗口，13 项设置完整读回；温度；Raptor Lake-S core/cache offset、最大 OC ratio、目标电压与 Adaptive/Override；VF 点查询 | W790/W890 电压域；VF 写入、逐核 turbo/ratio/VID rank/SP、fabric/BCLK |
 | AMD 调参 | 三套独立 BIOS SMUIO；Shimada 已提取命令和逐核频率参数准备；CPUID 稀疏拓扑；限定身份的原始曲线查询 | CPUID 与固件目标 ID 对应；MP1/PBO 高层单位、曲线设置/电流/温度限制、PM 表、profiles/hotkeys |
-| 内存与主板 | DMI/BIOS、内核传感器、绑定驱动的 SPD、DDR4/5 基础 CRC/组织/基础时序；AMD UMC 212 字段与离线快照 | UMC 各型号物理单位/通道标签；Intel 训练时序；PMIC/VRM/EC/时钟芯片和训练写入 |
+| 内存与主板 | DMI/BIOS、内核传感器、绑定驱动的 SPD、DDR4/5 基础 CRC/组织/基础时序；AMD UMC 212 字段、离线快照与 CLI 报告导入 GUI | UMC 各型号物理单位/通道标签；Intel 训练时序；PMIC/VRM/EC/时钟芯片和训练写入 |
 
 入口与代码：[平台控制](platform-controls.md)、[Intel offset](intel-oc-recovery.md)、
 [UMC](amd-umc-recovery.md)、[AMD 拓扑与 PStates](amd-topology-recovery.md)。
@@ -65,6 +80,8 @@ AMD [六字段完整槽实验](amd-limits-recovery.md)确认大多数字段走 M
 原乘法会回绕、部分消息重用、失败仍提示 Applied；六个入口标签和第二个对象标志已由原 UI/构造指令补齐，
 仍需要完成 MP1 隐含写入、参数语义和返回校验；[曲线查询](amd-curve-query-recovery.md)已有原指令实验与独立实现；[目标列表和设置入口](amd-curve-target-mapping.md)的静态追踪进一步区分了 PM 表编号与物理核心。
 把同名 BIOS 命令换上这些输入单位，并不足以还原原硬件行为。
+[Shimada 外部实现交叉核对](amd-shimada-crosscheck.md)进一步记录了 setter 访问端口、
+PBO 命令表与型号支持差异；这些差异尚未形成可验证的新增写入契约。
 
 内存与主板寄存器依赖内存代际、通道/插槽路由、芯片 ID 和固件状态；当前 UMC 先按原编码显示。
 板级写入仍缺少各芯片的确认、访问协调及可验证的更新/恢复规则。
