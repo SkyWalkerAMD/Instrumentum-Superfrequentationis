@@ -34,8 +34,37 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 147, len(reports)
-assert len([r for r in reports if r["error"] == -22]) >= 79
+assert len(reports) == 180, len(reports)
+assert len([r for r in reports if r["error"] == -22]) >= 93
+turbo = [r for r in reports if r["command"] in ("intel-turbo-read", "intel-turbo-set") and "before" in r["data"]]
+assert len(turbo) == 19
+for result in turbo:
+    data = result["data"]
+    assert not data["hardware_effect_measured"]
+    assert data["ratio_msr"] == ("0x000001ad" if data["core_type"] == "p" else "0x00000650")
+    assert data["core_count_msr"] == ("0x000001ae" if data["core_type"] == "p" else "0x00000651")
+    for key in ("before", "after"):
+        if key not in data:
+            continue
+        snapshot = data[key]
+        if snapshot["valid"]:
+            assert len(snapshot["groups"]) == 8
+            for i, group in enumerate(snapshot["groups"]):
+                assert group["group"] == i
+                assert group["ratio"] == ((int(snapshot["ratios_raw"], 16) >> (i * 8)) & 255)
+                assert group["active_core_threshold"] == ((int(snapshot["core_counts_raw"], 16) >> (i * 8)) & 255)
+                assert group["editable"] == bool(group["active"] and snapshot["layout_valid"] and snapshot["programmable"] and not snapshot["locked"])
+        else:
+            assert snapshot["ratios_raw"] is None and snapshot["core_counts_raw"] is None and not snapshot["groups"]
+    if result["command"] == "intel-turbo-set":
+        assert data["verified"] == result["ok"]
+        if result["ok"]:
+            assert data["after"]["ratios_raw"] == data["expected_raw"]
+            assert data["before"]["core_counts_raw"] == data["after"]["core_counts_raw"]
+            assert data["after"]["groups"][data["group"]]["ratio"] == data["requested_ratio"]
+            assert data["completed_writes"] == int(not data["unchanged"])
+assert [r["error"] for r in turbo[8:17]] == [-1, -1, -5, -11, -13, -95, -5, -22, -11]
+assert turbo[-1]["ok"] and not turbo[-1]["data"]["before"]["layout_valid"]
 registers = [r for r in reports if r["command"] in ("register-read", "register-write") and r["error"] != -22]
 assert len(registers) == 19
 assert registers[0]["data"]["value"] == "0xfedcba9876543210"

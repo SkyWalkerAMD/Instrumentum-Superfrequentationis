@@ -10,6 +10,7 @@
 #include "umcpanel.h"
 #include "intelocpanel.h"
 #include "intelvfpanel.h"
+#include "intelturbopanel.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFormLayout>
@@ -87,6 +88,7 @@ int main(int argc, char **argv)
     intel->addTab(new IntelControlsPanel(access, intel, initialCpu), "Power / performance");
     intel->addTab(new IntelOcPanel(access, intel, initialCpu), "Core / cache voltage and ratio");
     intel->addTab(new IntelVfPanel(access, intel, initialCpu), "V/F points");
+    intel->addTab(new IntelTurboPanel(access, intel, initialCpu), "Turbo ratio groups");
     tabs->addTab(intel, "Intel Controls");
     tabs->addTab(new AmdTuningPanel(access, tabs, initialCpu), "AMD tuning");
     tabs->addTab(new MemoryBoardPanel(tabs), "Memory / Motherboard");
@@ -105,6 +107,8 @@ int main(int argc, char **argv)
                 window.grab().save(capture + "-5-voltage.png");
                 intel->setCurrentIndex(2);
                 window.grab().save(capture + "-5-vf.png");
+                intel->setCurrentIndex(3);
+                window.grab().save(capture + "-5-turbo.png");
                 intel->setCurrentIndex(0);
             }
         }

@@ -5,6 +5,7 @@
 #include "tests/amd_curve_fixture.h"
 #include "tests/intel_oc_fixture.h"
 #include "tests/intel_controls_fixture.h"
+#include "tests/intel_turbo_fixture.h"
 #include <cassert>
 #include <cerrno>
 #include <iostream>
@@ -101,7 +102,21 @@ void invalidBeforeOpen() {
         {"register-read", "--space", "msr", "--cpu", "0", "--bus", "0", "--address", "1"},
         {"intel-set", "--cpu", "0", "--field", "hwp-window-us", "--value", "-1", "--apply"},
         {"intel-set", "--cpu", "0", "--field", "hwp-window-us", "--value", "1270000001", "--apply"},
-        {"intel-set", "--cpu", "0", "--field", "hwp-window-us", "--value", "0.5", "--apply"}
+        {"intel-set", "--cpu", "0", "--field", "hwp-window-us", "--value", "0.5", "--apply"},
+        {"intel-turbo-read", "--core-type", "p"},
+        {"intel-turbo-read", "--cpu", "0"},
+        {"intel-turbo-read", "--cpu", "0", "--core-type", "core"},
+        {"intel-turbo-read", "--cpu", "0", "--core-type", "p", "--apply"},
+        {"intel-turbo-read", "--cpu", "0", "--core-type", "p", "--group", "0"},
+        {"intel-turbo-set", "--cpu", "0", "--core-type", "p", "--group", "0", "--value", "60"},
+        {"intel-turbo-set", "--cpu", "0", "--core-type", "p", "--value", "60", "--apply"},
+        {"intel-turbo-set", "--cpu", "0", "--core-type", "p", "--group", "8", "--value", "60", "--apply"},
+        {"intel-turbo-set", "--cpu", "0", "--core-type", "p", "--group", "-1", "--value", "60", "--apply"},
+        {"intel-turbo-set", "--cpu", "0", "--core-type", "p", "--group", "0", "--value", "0", "--apply"},
+        {"intel-turbo-set", "--cpu", "0", "--core-type", "p", "--group", "0", "--value", "86", "--apply"},
+        {"intel-turbo-set", "--cpu", "0", "--core-type", "p", "--group", "0", "--value", "1.5", "--apply"},
+        {"intel-turbo-set", "--cpu", "0", "--core-type", "p", "--group", "0", "--value", "nan", "--apply"},
+        {"intel-turbo-set", "--cpu", "0", "--core-type", "p", "--group", "0", "--value", "60", "--num-cores", "1", "--apply"}
     };
     unsigned opens = 0;
     const auto factory = [&]() { ++opens; return std::unique_ptr<HardwareBackend>(); };
@@ -281,6 +296,46 @@ void voltageCommands() {
         assert(intel.mutationCount == (failure == 2 ? 1u : 0u));
     }
 }
+void turboCommands() {
+    for (const char *kind : {"p", "e"}) {
+        IntelTurboFixture d;
+        const auto original = d.regs;
+        command(d, {"intel-turbo-read", "--cpu", "130", "--core-type", kind}, 0);
+        assert(!d.writes && !d.wrongCpu);
+        const char *ratio = std::string(kind) == "p" ? "56" : "40";
+        const std::vector<std::string> args = {"intel-turbo-set", "--cpu", "130", "--core-type", kind, "--group", "3", "--value", ratio, "--apply"};
+        const auto result = command(d, args, 0);
+        assert(result.find("\"verified\":true") != std::string::npos && d.writes == 1);
+        const auto unchanged = command(d, args, 0);
+        assert(unchanged.find("\"unchanged\":true") != std::string::npos && d.writes == 1);
+        assert(d.regs[0x1ae] == original.at(0x1ae) && d.regs[0x651] == original.at(0x651));
+        command(d, {"intel-turbo-set", "--cpu", "130", "--core-type", kind, "--group", "3", "--value", "60", "--apply"}, 3);
+        assert(d.writes == 1 && !d.wrongCpu);
+    }
+    for (unsigned mode = 0; mode < 9; ++mode) {
+        IntelTurboFixture d;
+        if (mode == 0) d.regs[0x194] |= UINT64_C(1) << 20;
+        if (mode == 1) d.regs[0xce] &= ~(UINT64_C(1) << 28);
+        if (mode == 2) d.discardChange = true;
+        if (mode == 3) d.afterRequest = [&](const Request &r) {
+            if (r.address == 0x1ae && d.reads == 4) d.regs[0x1ad] ^= UINT64_C(1) << 48;
+        };
+        if (mode == 4) d.failRead = 0;
+        if (mode == 5) d.model = 0x8f;
+        if (mode == 6) d.failWrite = 0;
+        if (mode == 7) d.regs[0x1ae] = 0;
+        if (mode == 8) d.afterRequest = [&](const Request &r) { if (r.write) d.regs[0x1ae] ^= UINT64_C(1) << 56; };
+        const auto result = command(d, {"intel-turbo-set", "--cpu", "130", "--core-type", "p", "--group", "3", "--value", "56", "--apply"}, 3);
+        assert(result.find("\"verified\":false") != std::string::npos);
+        assert(d.writes == (mode == 2 || mode == 6 || mode == 8 ? 1u : 0u));
+    }
+    IntelTurboFixture nonhybrid; nonhybrid.hybrid = false;
+    command(nonhybrid, {"intel-turbo-read", "--cpu", "130", "--core-type", "e"}, 3);
+    assert(nonhybrid.requests.empty());
+    IntelTurboFixture malformed; malformed.regs[0x1ae] = 0;
+    const auto result = command(malformed, {"intel-turbo-read", "--cpu", "130", "--core-type", "p"}, 0);
+    assert(result.find("\"layout_valid\":false") != std::string::npos && !malformed.writes);
+}
 void vfCommands() {
     IntelOcFixture intel;
     command(intel, {"intel-vf-read", "--cpu", "130", "--domain", "core"}, 0);
@@ -352,8 +407,8 @@ void inventory(const std::string &root) {
 int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--inventory-fixture") { inventory(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
-    invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands();
+    invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "10 CLI scenario groups passed (79 rejected commands, real core with simulated devices)\n";
+    if (!emit) std::cout << "11 CLI scenario groups passed (93 rejected commands, real core with simulated devices)\n";
 }

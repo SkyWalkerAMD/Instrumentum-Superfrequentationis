@@ -8,6 +8,7 @@
 #include "core/amd_umc.h"
 #include "core/intel_controls.h"
 #include "core/intel_oc.h"
+#include "core/intel_turbo.h"
 #include "core/spd.h"
 #include "platform/linux_inventory_native.h"
 #include "platform/system_info.h"
@@ -70,22 +71,26 @@ const std::map<std::string, IntelField> intelFields = {
 };
 struct Command {
     std::string name, path, field;
-    unsigned cpu = 0, timeout = 10000, ccd = 0, core = 0, point = 0;
+    unsigned cpu = 0, timeout = 10000, ccd = 0, core = 0, point = 0, group = 0;
     double value = 0;
     SmuTarget smu; SmuCommand message; UmcTarget umc;
     Request reg;
     IntelOcDomain domain = IntelOcDomain::Core;
     IntelOcVoltageMode mode = IntelOcVoltageMode::Adaptive;
+    IntelTurboKind turboKind = IntelTurboKind::Primary;
 };
 Command parse(const std::vector<std::string> &args) {
     Command c; c.name = args.at(0);
-    const std::set<std::string> hardware = {"cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read",
+    const std::set<std::string> hardware = {"cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read", "intel-turbo-read", "intel-turbo-set",
         "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
     require(hardware.count(c.name) || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode", "Unknown command: " + c.name);
     std::set<std::string> keys = {"--json"};
     if (hardware.count(c.name)) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
-    const bool writing = c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "amd-smu-send" || c.name == "register-write";
+    const bool writing = c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-turbo-set" || c.name == "amd-smu-send" || c.name == "register-write";
+    const bool turbo = c.name == "intel-turbo-read" || c.name == "intel-turbo-set";
+    if (turbo) keys.insert("--core-type");
+    if (c.name == "intel-turbo-set") { keys.insert("--group"); keys.insert("--value"); }
     if (rawRegister) {
         for (const char *key : {"--space", "--address", "--width", "--bus", "--device", "--function"}) keys.insert(key);
         if (writing) keys.insert("--value");
@@ -136,6 +141,15 @@ Command parse(const std::vector<std::string> &args) {
         require(c.timeout > 0, "--timeout-ms must be 1..120000");
     }
     if (writing) require(options.count("--apply") != 0, "Settings commands require --apply; nothing was opened or changed");
+    if (turbo) {
+        const auto kind = get(options, "--core-type");
+        require(kind == "p" || kind == "e", "--core-type must be p or e");
+        c.turboKind = kind == "p" ? IntelTurboKind::Primary : IntelTurboKind::Secondary;
+        if (writing) {
+            c.group = uintOption(options, "--group", 7); c.value = decimal(get(options, "--value"));
+            require(c.value >= 1 && c.value <= 85 && std::floor(c.value) == c.value, "Turbo group ratio must be an integer 1..85");
+        }
+    }
     if (c.name == "intel-set" || c.name == "intel-oc-set") {
         c.field = get(options, "--field"); c.value = decimal(get(options, "--value"));
         if (c.name == "intel-set") {
@@ -216,6 +230,21 @@ std::string ocSnapshot(const IntelOcSnapshot &s) {
         {"target_mv", s.valid && !s.error ? number(intelOcTargetMillivolts(s.response.data)) : "null"},
         {"target_mode", s.valid && !s.error ? quote(intelOcVoltageMode(s.response.data) == IntelOcVoltageMode::Adaptive ? "adaptive" : "override") : "null"},
         {"max_ratio", s.valid && !s.error ? number(s.response.data & 255) : "null"}});
+}
+std::string turboSnapshot(const IntelTurboSnapshot &s) {
+    const bool valid = s.valid && !s.error;
+    std::vector<std::string> groups;
+    if (valid) for (unsigned i = 0; i < 8; ++i) {
+        const unsigned count = intelTurboByte(s.coreCounts, i);
+        groups.push_back(object({{"group", number(i)}, {"active_core_threshold", number(count)},
+            {"ratio", number(intelTurboByte(s.ratios, i))}, {"active", boolean(count != 0)},
+            {"editable", boolean(count && s.layoutValid && s.programmable && !s.locked)}}));
+    }
+    return object({{"error", number(s.error)}, {"valid", boolean(valid)}, {"identity", identity(s.identity)},
+        {"hybrid", valid ? boolean(s.hybrid) : "null"}, {"programmable", valid ? boolean(s.programmable) : "null"},
+        {"locked", valid ? boolean(s.locked) : "null"}, {"layout_valid", valid ? boolean(s.layoutValid) : "null"},
+        {"ratios_raw", valid ? hex(s.ratios, 16) : "null"}, {"core_counts_raw", valid ? hex(s.coreCounts, 16) : "null"},
+        {"groups", array(groups)}});
 }
 class Pstates final : public PstateReader {
 public:
@@ -318,6 +347,24 @@ Result hardware(const Command &c, HardwareSession &s) {
             if (c.field == "target-mv") out.data.push_back({"requested_mode", quote(c.mode == IntelOcVoltageMode::Adaptive ? "adaptive" : "override")});
             out.data.push_back({"write_attempted", boolean(result.writeAttempted)}); out.data.push_back({"verified", boolean(result.verified)});
             out.data.push_back({"stage", number(unsigned(result.stage))}); out.data.push_back({"after", ocSnapshot(result.readback)});
+        }
+    } else if (c.name == "intel-turbo-read" || c.name == "intel-turbo-set") {
+        const auto snapshot = readIntelTurbo(s, c.cpu, c.turboKind); out.error = snapshot.error;
+        out.data.push_back({"core_type", quote(c.turboKind == IntelTurboKind::Primary ? "p" : "e")});
+        out.data.push_back({"ratio_msr", hex(intelTurboRatioMsr(c.turboKind))});
+        out.data.push_back({"core_count_msr", hex(intelTurboCountMsr(c.turboKind))});
+        out.data.push_back({"before", turboSnapshot(snapshot)});
+        out.data.push_back({"hardware_effect_measured", "false"});
+        if (c.name == "intel-turbo-set") {
+            IntelTurboUpdate result;
+            if (!out.error) { result = applyIntelTurboRatio(s, snapshot, c.group, unsigned(c.value)); out.error = result.error; }
+            out.data.push_back({"group", number(c.group)}); out.data.push_back({"requested_ratio", number(c.value)});
+            out.data.push_back({"write_attempted", boolean(result.writeAttempted)});
+            out.data.push_back({"completed_writes", number(result.completed)});
+            out.data.push_back({"verified", boolean(result.verified && !out.error)});
+            out.data.push_back({"unchanged", boolean(result.unchanged)});
+            out.data.push_back({"expected_raw", result.expected ? hex(result.expected, 16) : "null"});
+            out.data.push_back({"after", turboSnapshot(result.after)});
         }
     } else if (c.name == "intel-vf-read") {
         const auto snapshot = readIntelVf(s, c.cpu, c.domain, c.point); out.error = snapshot.error;
@@ -441,6 +488,8 @@ Usage: octool-cli COMMAND [OPTIONS]
   intel-set --cpu N --field F --value V --apply
   intel-oc-read --cpu N --domain core|cache
   intel-vf-read --cpu N --domain core|cache [--point 1..15]
+  intel-turbo-read --cpu N --core-type p|e
+  intel-turbo-set --cpu N --core-type p|e --group 0..7 --value RATIO --apply
   intel-oc-set --cpu N --domain core|cache --field offset-mv|max-ratio --value V --apply
   intel-oc-set --cpu N --domain core|cache --field target-mv --value INTEGER_MV --mode adaptive|override --apply
   amd-smu-probe --cpu N --profile shimada|phoenix|gpt [PCI]
@@ -463,6 +512,9 @@ Unsigned indices and raw register values accept decimal or 0x-prefixed hex.
 Tuning --value uses decimal. Raw writes submit exactly once, without a readback;
 they have no model/lock/bit-preservation checks and are intended for known registers.
 Voltage target requires integer 1..2000 mV and an explicit mode; this is not a safe operating range.
+Turbo groups use integer ratios 1..85, preserving active-core thresholds and other
+groups. Active-group ratios must not increase as core counts increase. This B7
+profile checks programmable capability, OC lock, stale values and full readback.
 Results are JSON (optional --json); raw registers are exact hexadecimal strings.
 Exit: 0 success, 2 invalid command/options, 3 failed operation or partial read.
 Run diagnose first; choose a CPU from allowed_cpus. Device access may need sudo.

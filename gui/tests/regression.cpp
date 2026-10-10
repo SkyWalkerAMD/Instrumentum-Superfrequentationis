@@ -5,8 +5,10 @@
 #include "umcpanel.h"
 #include "intelocpanel.h"
 #include "intelvfpanel.h"
+#include "intelturbopanel.h"
 #include "intel_oc_fixture.h"
 #include "intel_controls_fixture.h"
+#include "intel_turbo_fixture.h"
 #include "amd_curve_fixture.h"
 #include "platform/linux_inventory.h"
 #include "platform/linux_hwio.h"
@@ -120,6 +122,7 @@ private slots:
         UmcPanel umc(access,nullptr,7);
         IntelOcPanel oc(access,nullptr,7);
         IntelVfPanel vf(access,nullptr,7);
+        IntelTurboPanel turbo(access,nullptr,7);
         QCOMPARE(reference.calls.load(),0);
         QCOMPARE(intel.findChild<QLineEdit *>("intelCpu")->text(),QString("7"));
         QCOMPARE(amd.findChild<QLineEdit *>("smuCpu")->text(),QString("7"));
@@ -132,9 +135,90 @@ private slots:
         QCOMPARE(oc.findChild<QComboBox *>("ocMode")->currentData().toInt(), -1);
         QCOMPARE(vf.findChild<QLineEdit *>("vfCpu")->text(),QString("7"));
         QCOMPARE(vf.findChild<QTableWidget *>("vfTable")->rowCount(),0);
+        QCOMPARE(turbo.findChild<QLineEdit *>("turboCpu")->text(),QString("7"));
+        QVERIFY(!turbo.findChild<QPushButton *>("turboApply")->isEnabled());
         intel.findChild<QLineEdit *>("intelValue")->setText("125");
         intel.findChild<QPushButton *>("intelApply")->click();
         QCOMPARE(reference.calls.load(),0);
+    }
+    void intelTurboReadsGroupsAndInvalidatesTargets() {
+        auto *device = new IntelTurboFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelTurboPanel panel(access, nullptr, 130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("turboRead"); auto *table = panel.findChild<QTableWidget *>("turboTable");
+        auto *apply = panel.findChild<QPushButton *>("turboApply");
+        QCOMPARE(device->reads, 0u); read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(), 8); QCOMPARE(table->item(7, 1)->text(), QString("8"));
+        QCOMPARE(table->item(0, 2)->text(), QString("60")); QVERIFY(apply->isEnabled());
+        panel.findChild<QPushButton *>("turboCopy")->click();
+        QVERIFY(QApplication::clipboard()->text().contains("Active-core threshold"));
+        QVERIFY(QApplication::clipboard()->text().contains(hexValue(device->regs[0x1ad], 8)));
+        const auto reads = device->reads;
+        panel.findChild<QComboBox *>("turboKind")->setCurrentIndex(1);
+        QCOMPARE(table->rowCount(), 0); QVERIFY(!apply->isEnabled()); QCOMPARE(device->reads, reads);
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->item(7, 1)->text(), QString("16")); QCOMPARE(table->item(0, 2)->text(), QString("44"));
+        QCOMPARE(device->writes, 0u); QCOMPARE(device->wrongCpu, 0u);
+        const auto calls = device->cpuCalls; panel.findChild<QLineEdit *>("turboCpu")->setText("-1"); read->click();
+        QCOMPARE(device->cpuCalls, calls); QCOMPARE(table->rowCount(), 0); QVERIFY(!apply->isEnabled());
+    }
+    void intelTurboCancelApplyAndSkipUnchanged() {
+        auto *device = new IntelTurboFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelTurboPanel panel(access, nullptr, 130); panel.resize(1100, 640); panel.show();
+        panel.findChild<QPushButton *>("turboRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *group = panel.findChild<QComboBox *>("turboGroup"); auto *value = panel.findChild<QLineEdit *>("turboRatio");
+        auto *apply = panel.findChild<QPushButton *>("turboApply"); auto *status = panel.findChild<QLabel *>("turboStatus");
+        group->setCurrentIndex(3); value->setText("60"); const auto reads = device->reads;
+        apply->click(); QCOMPARE(device->reads, reads); QCOMPARE(device->writes, 0u);
+        value->setText("56");
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Cancel)->click(); });
+        apply->click(); QCOMPARE(device->reads, reads); QCOMPARE(device->writes, 0u);
+        const auto previous = device->regs;
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->writes, 1u); QCOMPARE(device->wrongCpu, 0u);
+        QCOMPARE(device->regs[0x1ae], previous.at(0x1ae)); QCOMPARE(device->regs[0x650], previous.at(0x650));
+        QVERIFY(value->text().isEmpty()); QVERIFY(status->text().contains("readback verified"));
+        QCOMPARE(panel.findChild<QTableWidget *>("turboTable")->item(3, 2)->text(), QString("56"));
+        const auto screenshot = qEnvironmentVariable("OCTOOL_TURBO_TEST_SCREENSHOT");
+        if (!screenshot.isEmpty()) QVERIFY(panel.grab().save(screenshot));
+        group->setCurrentIndex(3); value->setText("56");
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->writes, 1u); QVERIFY(status->text().contains("no write performed")); QVERIFY(value->text().isEmpty());
+    }
+    void intelTurboPermissionsAndUnverifiedResults() {
+        auto *device = new IntelTurboFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelTurboPanel panel(access, nullptr, 130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("turboRead"); auto *apply = panel.findChild<QPushButton *>("turboApply");
+        auto *table = panel.findChild<QTableWidget *>("turboTable"); auto *status = panel.findChild<QLabel *>("turboStatus");
+        device->regs[0x194] |= UINT64_C(1) << 20; read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(), 8); QVERIFY(!apply->isEnabled());
+        device->regs[0x194] &= ~(UINT64_C(1) << 20); const auto counts = device->regs[0x1ae]; device->regs[0x1ae] = 0;
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(), 8); QVERIFY(!apply->isEnabled());
+        device->regs[0x1ae] = counts; read->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(apply->isEnabled());
+        device->discardChange = true; panel.findChild<QComboBox *>("turboGroup")->setCurrentIndex(3);
+        panel.findChild<QLineEdit *>("turboRatio")->setText("56");
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->writes, 1u);
+        QCOMPARE(table->rowCount(), 0); QVERIFY(!apply->isEnabled()); QVERIFY(status->text().contains("not verified"));
+        QVERIFY(panel.findChild<QLabel *>("turboRaw")->text().isEmpty());
+        device->failRead = int(device->reads); read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(), 0); QVERIFY(!apply->isEnabled()); QVERIFY(status->text().contains("No settings displayed"));
+    }
+    void intelTurboStaleCountsPreventWrites() {
+        auto *device = new IntelTurboFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelTurboPanel panel(access, nullptr, 130); panel.show();
+        panel.findChild<QPushButton *>("turboRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        panel.findChild<QComboBox *>("turboGroup")->setCurrentIndex(3);
+        panel.findChild<QLineEdit *>("turboRatio")->setText("56"); device->regs[0x1ae] ^= UINT64_C(1) << 56;
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        panel.findChild<QPushButton *>("turboApply")->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->writes, 0u); QCOMPARE(panel.findChild<QTableWidget *>("turboTable")->rowCount(), 0);
+        QVERIFY(panel.findChild<QLabel *>("turboStatus")->text().contains("No settings write"));
     }
     void intelVfReadsBothDomainsAndInvalidates() {
         auto *device = new IntelOcFixture;

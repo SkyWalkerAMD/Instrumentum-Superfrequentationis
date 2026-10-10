@@ -57,6 +57,8 @@ sudo octool-cli intel-read --cpu 0
 sudo octool-cli intel-oc-read --cpu 0 --domain core
 sudo octool-cli intel-vf-read --cpu 0 --domain core
 sudo octool-cli intel-vf-read --cpu 0 --domain cache --point 8
+sudo octool-cli intel-turbo-read --cpu 0 --core-type p
+sudo octool-cli intel-turbo-read --cpu 0 --core-type e
 sudo octool-cli amd-smu-probe --cpu 0 --profile shimada
 sudo octool-cli amd-smu-read --cpu 0 --profile shimada --message 2
 octool-cli amd-topology --cpu 0
@@ -80,6 +82,13 @@ GUI 的 AMD UMC → Open snapshot 中打开；GUI 重新解码原始寄存器，
 该 JSON 可保存作记录，目前没有 GUI 文件导入或写回功能。
 
 ## 已还原的设置入口
+
+`intel-turbo-set --cpu N --core-type p|e --group 0..7 --value RATIO --apply`：
+修改 Raptor Lake-S B7 的一个睿频分组倍率（整数 1..85），保留活动核心数量阈值与其它组。
+先检查可编程能力、锁、表内顺序和完整旧值，再一次写入并完整读回。
+相同值不写，失败不重试；返回 `verified`、`unchanged`、`write_attempted`、`completed_writes` 和前后快照。
+E 核表需要 CPUID 混合架构能力；分组编号不是物理核心编号，配置倍率不代表实测频率。
+详见[睿频分组还原](intel-turbo-recovery.md)。
 
 `intel-set --cpu N --field FIELD --value VALUE --apply`：
 
