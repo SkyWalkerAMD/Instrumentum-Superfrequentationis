@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "date": "2026-10-10",
+  "source": {
+    "repository": "edlf/DDR5SPDEditor",
+    "commit": "6c9d015098f3f25e636ff7402cf955d4cc7fa2cd",
+    "file": "xmp3.cpp",
+    "git_blob": "7cd16298c602209342dc4ade42fcfd453cfb8d19",
+    "url": "https://github.com/edlf/DDR5SPDEditor/blob/6c9d015098f3f25e636ff7402cf955d4cc7fa2cd/xmp3.cpp"
+  },
+  "method": "Python standard-library CRC-16/XMODEM evaluation of the published computed_crc != 0 predicate; no upstream implementation, OCTool ELF or compiled decoder executed.",
+  "scope": "Synthetic checksum counterexamples only. Does not establish legal XMP timing values, user-profile enable semantics, slot presence or actual hardware suitability.",
+  "modified_field_for_zero_crc": {
+    "profile_relative_offset": 29,
+    "synthetic_word": 13253
+  },
+  "cases": [
+    {
+      "name": "all_zero",
+      "synthetic_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "computed_crc": 0,
+      "stored_crc": 0,
+      "has_nonzero_bytes": false,
+      "published_hasData_predicate": false,
+      "crc_matches": true
+    },
+    {
+      "name": "nonzero_crc_valid",
+      "synthetic_hex": "30252500224d010000000000006e316e316e317665e49630752701a000820000000000000000000000000000000000000000000000000000000000000000d244",
+      "computed_crc": 17618,
+      "stored_crc": 17618,
+      "has_nonzero_bytes": true,
+      "published_hasData_predicate": true,
+      "crc_matches": true
+    },
+    {
+      "name": "nonzero_data_zero_crc",
+      "synthetic_hex": "30252500224d010000000000006e316e316e317665e49630752701a000c533000000000000000000000000000000000000000000000000000000000000000000",
+      "computed_crc": 0,
+      "stored_crc": 0,
+      "has_nonzero_bytes": true,
+      "published_hasData_predicate": false,
+      "crc_matches": true
+    },
+    {
+      "name": "stored_crc_corrupt",
+      "synthetic_hex": "30252500224d010000000000006e316e316e317665e49630752701a000820000000000000000000000000000000000000000000000000000000000000000d344",
+      "computed_crc": 17618,
+      "stored_crc": 17619,
+      "has_nonzero_bytes": true,
+      "published_hasData_predicate": true,
+      "crc_matches": false
+    }
+  ],
+  "conclusion": "Computed CRC alone cannot determine whether bytes are zero, whether the stored CRC matches or whether a user profile is enabled. Keep user-profile decoding pending a pinned presence/enable contract."
+}

@@ -1,0 +1,3714 @@
+{
+  "schema": 1,
+  "date": "2026-10-10",
+  "source_commit": "e4cb81bb71f2d5c871ab160317d8ed91effbd9a7",
+  "branch": "refactor/platform-recovery",
+  "scope": "DDR5 EXPO 1.0 two basic profiles: voltages, stored timings, whole-block CRC, independent enable bits, XMP coexistence and error isolation; shared core, GUI and CLI",
+  "portable_core": {
+    "source_commit": "e4cb81bb71f2d5c871ab160317d8ed91effbd9a7",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197597",
+    "jobs": [
+      {
+        "name": "core (ubuntu-24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197597/job/114225123319",
+        "startedAt": "2026-10-10T13:33:55Z",
+        "completedAt": "2026-10-10T13:34:42Z"
+      },
+      {
+        "name": "core (macos-14)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197597/job/114225123390",
+        "startedAt": "2026-10-10T13:33:59Z",
+        "completedAt": "2026-10-10T13:36:02Z"
+      },
+      {
+        "name": "core (ubuntu-22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197597/job/114225123438",
+        "startedAt": "2026-10-10T13:33:54Z",
+        "completedAt": "2026-10-10T13:34:28Z"
+      },
+      {
+        "name": "core (windows-2022)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197597/job/114225123464",
+        "startedAt": "2026-10-10T13:33:55Z",
+        "completedAt": "2026-10-10T13:36:13Z"
+      }
+    ],
+    "log": {
+      "path": "build/ddr5-expo-e4cb81b/core-run.log",
+      "bytes": 165556,
+      "sha256": "76b3fe28c31c4141be77434e9660ca6986521ada8f9e7b1e7102fd933ee75376"
+    },
+    "artifact_metadata": {
+      "path": "build/ddr5-expo-e4cb81b/core-artifacts.json",
+      "bytes": 3845,
+      "sha256": "e393099f32b8c2cc965a0820eb9ec7bc68a2bd174ca31710ddd8d92b31574c02"
+    },
+    "asan_ubsan": {
+      "path": "build/ddr5-expo-e4cb81b/core-artifacts/portable-core-ubuntu-24.04/sanitized-core/Testing/Temporary/LastTest.log",
+      "bytes": 1600,
+      "sha256": "9253e9fb53f83699016abe26c05f64e72c3d90089487dac96e531d414477018d"
+    },
+    "targets": [
+      {
+        "target": "portable-core-macos-14",
+        "ctests": 12,
+        "scenario_groups": 116,
+        "evidence": [
+          {
+            "path": "build/ddr5-expo-e4cb81b/core-artifacts/portable-core-macos-14/portable-core/results.xml",
+            "bytes": 2569,
+            "sha256": "04661fb3a412e0be90aa5d384233f13d87053f214be4e1e3053da376b1f37d9f"
+          },
+          {
+            "path": "build/ddr5-expo-e4cb81b/core-artifacts/portable-core-macos-14/portable-core/Testing/Temporary/LastTest.log",
+            "bytes": 8807,
+            "sha256": "0ae691a4cc144667e1385fa44ee548275857c32e1fc9bd02a7d34cea2b1e71ef"
+          }
+        ]
+      },
+      {
+        "target": "portable-core-ubuntu-22.04",
+        "ctests": 12,
+        "scenario_groups": 116,
+        "evidence": [
+          {
+            "path": "build/ddr5-expo-e4cb81b/core-artifacts/portable-core-ubuntu-22.04/portable-core/results.xml",
+            "bytes": 2518,
+            "sha256": "f4a918a119990ca75cca8a147493c67d3d3eb9a3f184396b9b52d1de675d625f"
+          },
+          {
+            "path": "build/ddr5-expo-e4cb81b/core-artifacts/portable-core-ubuntu-22.04/portable-core/Testing/Temporary/LastTest.log",
+            "bytes": 8783,
+            "sha256": "32a1577c699f0e41b78848307081e5bcaa1124f001005d7300bf8cd1f5401c6d"
+          }
+        ]
+      },
+      {
+        "target": "portable-core-ubuntu-24.04",
+        "ctests": 12,
+        "scenario_groups": 116,
+        "evidence": [
+          {
+            "path": "build/ddr5-expo-e4cb81b/core-artifacts/portable-core-ubuntu-24.04/portable-core/results.xml",
+            "bytes": 2517,
+            "sha256": "529245386554dfaa7681a3955c02158ed812efbd295bda1e1cbd4b87ca9100da"
+          },
+          {
+            "path": "build/ddr5-expo-e4cb81b/core-artifacts/portable-core-ubuntu-24.04/portable-core/Testing/Temporary/LastTest.log",
+            "bytes": 8783,
+            "sha256": "d34f902ca93ce914abb8282398d8fc5b931d7e2f495fca2331df60973d234a18"
+          }
+        ]
+      },
+      {
+        "target": "portable-core-windows-2022",
+        "ctests": 12,
+        "scenario_groups": 116,
+        "evidence": [
+          {
+            "path": "build/ddr5-expo-e4cb81b/core-artifacts/portable-core-windows-2022/portable-core/results.xml",
+            "bytes": 2585,
+            "sha256": "cac004761fdf89277052b2a1f1467658fe115f587d937ea1a85cdfeab0768604"
+          },
+          {
+            "path": "build/ddr5-expo-e4cb81b/core-artifacts/portable-core-windows-2022/portable-core/Testing/Temporary/LastTest.log",
+            "bytes": 9408,
+            "sha256": "adb6ff42b1ce654d18b6e803d9967666620ce1f2fe2ed09fdd7dee411f8d703b"
+          }
+        ]
+      }
+    ]
+  },
+  "headless_cli": {
+    "source_commit": "e4cb81bb71f2d5c871ab160317d8ed91effbd9a7",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197668",
+    "jobs": [
+      {
+        "name": "matrix",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197668/job/114225123786",
+        "startedAt": "2026-10-10T13:33:55Z",
+        "completedAt": "2026-10-10T13:34:01Z"
+      },
+      {
+        "name": "cli (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197668/job/114225153925",
+        "startedAt": "2026-10-10T13:34:04Z",
+        "completedAt": "2026-10-10T13:35:37Z"
+      },
+      {
+        "name": "cli (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197668/job/114225153935",
+        "startedAt": "2026-10-10T13:34:04Z",
+        "completedAt": "2026-10-10T13:35:32Z"
+      },
+      {
+        "name": "cli (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197668/job/114225153938",
+        "startedAt": "2026-10-10T13:34:03Z",
+        "completedAt": "2026-10-10T13:36:13Z"
+      },
+      {
+        "name": "cli (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197668/job/114225153948",
+        "startedAt": "2026-10-10T13:34:04Z",
+        "completedAt": "2026-10-10T13:35:29Z"
+      },
+      {
+        "name": "cli (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197668/job/114225153950",
+        "startedAt": "2026-10-10T13:34:04Z",
+        "completedAt": "2026-10-10T13:35:38Z"
+      },
+      {
+        "name": "cli (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197668/job/114225153981",
+        "startedAt": "2026-10-10T13:34:04Z",
+        "completedAt": "2026-10-10T13:35:18Z"
+      },
+      {
+        "name": "cli (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197668/job/114225153986",
+        "startedAt": "2026-10-10T13:34:04Z",
+        "completedAt": "2026-10-10T13:35:12Z"
+      },
+      {
+        "name": "cli (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197668/job/114225153988",
+        "startedAt": "2026-10-10T13:34:04Z",
+        "completedAt": "2026-10-10T13:35:30Z"
+      },
+      {
+        "name": "cli (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197668/job/114225153996",
+        "startedAt": "2026-10-10T13:34:04Z",
+        "completedAt": "2026-10-10T13:35:12Z"
+      },
+      {
+        "name": "cli (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197668/job/114225154009",
+        "startedAt": "2026-10-10T13:34:04Z",
+        "completedAt": "2026-10-10T13:35:37Z"
+      },
+      {
+        "name": "gate",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197668/job/114225568694",
+        "startedAt": "2026-10-10T13:36:16Z",
+        "completedAt": "2026-10-10T13:36:18Z"
+      }
+    ],
+    "log": {
+      "path": "build/ddr5-expo-e4cb81b/cli-run.log",
+      "bytes": 1726771,
+      "sha256": "7fb3ab534ba5ae5b7c16f66d4da1a2b906f9043ffd3d4c31e7e0d1e79261c6c5"
+    },
+    "artifact_metadata": {
+      "path": "build/ddr5-expo-e4cb81b/cli-artifacts.json",
+      "bytes": 9428,
+      "sha256": "235f307211942da7a035e7e59f6b648ae865cbc65327e69de40682f0e9b79135"
+    }
+  },
+  "linux": {
+    "source_commit": "e4cb81bb71f2d5c871ab160317d8ed91effbd9a7",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685",
+    "jobs": [
+      {
+        "name": "baseline",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114225123520",
+        "startedAt": "2026-10-10T13:33:55Z",
+        "completedAt": "2026-10-10T13:39:38Z"
+      },
+      {
+        "name": "matrix",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114225123638",
+        "startedAt": "2026-10-10T13:33:55Z",
+        "completedAt": "2026-10-10T13:37:08Z"
+      },
+      {
+        "name": "kernel (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114225737318",
+        "startedAt": "2026-10-10T13:37:11Z",
+        "completedAt": "2026-10-10T13:39:26Z"
+      },
+      {
+        "name": "kernel (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114225737325",
+        "startedAt": "2026-10-10T13:37:11Z",
+        "completedAt": "2026-10-10T13:51:53Z"
+      },
+      {
+        "name": "kernel (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114225737327",
+        "startedAt": "2026-10-10T13:37:11Z",
+        "completedAt": "2026-10-10T13:40:33Z"
+      },
+      {
+        "name": "kernel (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114225737328",
+        "startedAt": "2026-10-10T13:37:11Z",
+        "completedAt": "2026-10-10T13:39:53Z"
+      },
+      {
+        "name": "kernel (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114225737334",
+        "startedAt": "2026-10-10T13:37:12Z",
+        "completedAt": "2026-10-10T13:39:58Z"
+      },
+      {
+        "name": "kernel (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114225737372",
+        "startedAt": "2026-10-10T13:37:11Z",
+        "completedAt": "2026-10-10T13:40:58Z"
+      },
+      {
+        "name": "kernel (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114225737373",
+        "startedAt": "2026-10-10T13:37:11Z",
+        "completedAt": "2026-10-10T13:40:07Z"
+      },
+      {
+        "name": "kernel (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114225737375",
+        "startedAt": "2026-10-10T13:37:12Z",
+        "completedAt": "2026-10-10T13:40:05Z"
+      },
+      {
+        "name": "kernel (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114225737386",
+        "startedAt": "2026-10-10T13:37:12Z",
+        "completedAt": "2026-10-10T13:39:58Z"
+      },
+      {
+        "name": "kernel (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114225737429",
+        "startedAt": "2026-10-10T13:37:11Z",
+        "completedAt": "2026-10-10T13:40:31Z"
+      },
+      {
+        "name": "desktop (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114226189806",
+        "startedAt": "2026-10-10T13:39:40Z",
+        "completedAt": "2026-10-10T13:42:48Z"
+      },
+      {
+        "name": "desktop (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114226189808",
+        "startedAt": "2026-10-10T13:39:41Z",
+        "completedAt": "2026-10-10T13:43:45Z"
+      },
+      {
+        "name": "desktop (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114226189811",
+        "startedAt": "2026-10-10T13:39:41Z",
+        "completedAt": "2026-10-10T13:42:58Z"
+      },
+      {
+        "name": "desktop (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114226189834",
+        "startedAt": "2026-10-10T13:39:41Z",
+        "completedAt": "2026-10-10T13:43:43Z"
+      },
+      {
+        "name": "desktop (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114226189839",
+        "startedAt": "2026-10-10T13:39:41Z",
+        "completedAt": "2026-10-10T13:55:13Z"
+      },
+      {
+        "name": "desktop (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114226189841",
+        "startedAt": "2026-10-10T13:39:41Z",
+        "completedAt": "2026-10-10T14:07:58Z"
+      },
+      {
+        "name": "desktop (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114226189853",
+        "startedAt": "2026-10-10T13:39:41Z",
+        "completedAt": "2026-10-10T13:49:22Z"
+      },
+      {
+        "name": "desktop (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114226189857",
+        "startedAt": "2026-10-10T13:39:41Z",
+        "completedAt": "2026-10-10T13:42:12Z"
+      },
+      {
+        "name": "desktop (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114226189859",
+        "startedAt": "2026-10-10T13:39:41Z",
+        "completedAt": "2026-10-10T13:43:50Z"
+      },
+      {
+        "name": "desktop (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114226189871",
+        "startedAt": "2026-10-10T13:39:41Z",
+        "completedAt": "2026-10-10T13:42:32Z"
+      },
+      {
+        "name": "gate",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38056197685/job/114231473293",
+        "startedAt": "2026-10-10T14:08:00Z",
+        "completedAt": "2026-10-10T14:08:06Z"
+      }
+    ],
+    "log": {
+      "path": "build/ddr5-expo-e4cb81b/linux-run.log",
+      "bytes": 10415821,
+      "sha256": "66cb3985b08bbdf09c17d0d6e2a6aecfb1108077e192f7bf455b78392be83a9b"
+    },
+    "artifact_metadata": {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts.json",
+      "bytes": 21726,
+      "sha256": "4ae27028cdf2907c6ceab9ed2cb998692c8445ac8d03fe5947bf5c475eb008d5"
+    },
+    "kernel_vm_boots": 11,
+    "analysis_tests": 74,
+    "baseline_qt_tests": 60
+  },
+  "targets": [
+    {
+      "target": "el8",
+      "ctests": 14,
+      "core_scenario_groups": 116,
+      "cli_scenario_groups": 15,
+      "invalid_commands_before_device_open": 132,
+      "json_reports_in_process_test": 278,
+      "gui_regression_tests": 60,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f716a2ee000)\n\tlibpthread.so.0 => /lib64/libpthread.so.0 (0x00007f7169de0000)\n\tlibstdc++.so.6 => /lib64/libstdc++.so.6 (0x00007f7169a4b000)\n\tlibm.so.6 => /lib64/libm.so.6 (0x00007f71696c9000)\n\tlibgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00007f71694b1000)\n\tlibc.so.6 => /lib64/libc.so.6 (0x00007f71690ec000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f716a000000)\n",
+        "guide_installed": true,
+        "binary_bytes": 488096
+      },
+      "kernel_boots": [
+        {
+          "kernel": "4.18.0-553.el8_10.x86_64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "4df48703b86574bb20576b14f9c209e6149aabe6ad06ccb709131fee48b46fed",
+          "module_sha256": "280061455aa3944d9b74ccb627b43f4399447fa73236e96eb7b68782cee52882"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/el8/octool-cli-2.0.1-1.el8.x86_64.rpm",
+          "bytes": 205864,
+          "sha256": "b50f0e49bd65627fdc7c6cd84ef5853f59ec6746a6bf4abf159097306ac7b360"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/el8/octool-2.0.1-1.el8.x86_64.rpm",
+          "bytes": 10799208,
+          "sha256": "401e8db8a598b9d3babab83f0d1b99bb8b4db4fb4053147ba478df1cafbeec5c"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/el8/octool-hwio-dkms-2.0.1-1.el8.noarch.rpm",
+          "bytes": 19072,
+          "sha256": "621f8661cb51110921af216eefd8ef4d097036e5f61e1fe0bb645d6fb81628a9"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-el8/ctest.txt",
+          "bytes": 1545,
+          "sha256": "7d7c4dbcee20f68a4338180892e8810571f8e198f79be2eb00224dd6a8d6a636"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-el8/LastTest.log",
+          "bytes": 8210,
+          "sha256": "a4f260f8c51f477a37b0d144e6219d8d309cd6381d5117e95463beccc708ac9d"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-el8/runtime.json",
+          "bytes": 1467,
+          "sha256": "a98c87efd19c3418f5195cd464ad19e3702a96c1d07ed592f48031edf75dac49"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-el8/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-el8/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/gui-tests.txt",
+          "bytes": 19243,
+          "sha256": "1228e2382eb79eae3b38802fa96783a05671565605cc687a5f983b053bb26e4b"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/helper-smoke.json",
+          "bytes": 1027,
+          "sha256": "4aa478f0774260e7cd2c161bd5b25e37962b434f54f8bde4450734ba5b54af15"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/kernel-el8/guest-boot/results.json",
+          "bytes": 504,
+          "sha256": "80bff81cb7427bb9118879ee73b5223757d0ffbbc77a6630d1eb4fd540c149d0"
+        }
+      ]
+    },
+    {
+      "target": "el9",
+      "ctests": 14,
+      "core_scenario_groups": 116,
+      "cli_scenario_groups": 15,
+      "invalid_commands_before_device_open": 132,
+      "json_reports_in_process_test": 278,
+      "gui_regression_tests": 60,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 26,
+              "model": 2,
+              "stepping": 1,
+              "signature": "0x00b00f21"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f0c66303000)\n\tlibstdc++.so.6 => /lib64/libstdc++.so.6 (0x00007f0c660d2000)\n\tlibm.so.6 => /lib64/libm.so.6 (0x00007f0c65ff7000)\n\tlibgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00007f0c65fdc000)\n\tlibc.so.6 => /lib64/libc.so.6 (0x00007f0c65dd3000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f0c66305000)\n",
+        "guide_installed": true,
+        "binary_bytes": 475880
+      },
+      "kernel_boots": [
+        {
+          "kernel": "5.14.0-687.56.1.el9_8.x86_64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "ffd08603dbd630a7d5f4501f8f5dc6b6488a5165b362281120ab21a9a18e4fdf",
+          "module_sha256": "2eb72f664a74d0477e9a1649033f8e1c3d0f2fb7731ec36add48cae6f408cadc"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/el9/octool-cli-2.0.1-1.el9.x86_64.rpm",
+          "bytes": 209363,
+          "sha256": "f27ce84e68fee0fd9d1523ac35435d27d336dae72d2cf157edbd78f892e92f18"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/el9/octool-2.0.1-1.el9.x86_64.rpm",
+          "bytes": 10479154,
+          "sha256": "677e0e533eb933fbe14761c3aa1136b2702dfeed007902fd47ceb35796f03ee1"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/el9/octool-hwio-dkms-2.0.1-1.el9.noarch.rpm",
+          "bytes": 19060,
+          "sha256": "3cb69fec5fd24d2b3a86a4985851e7cdd20a45c72d62aeaca9212b104bbed765"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-el9/ctest.txt",
+          "bytes": 1545,
+          "sha256": "827f5b2a6a89d5836b8c8578213dc9a0b2f8a793ead895ad12cf05551f64f64b"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-el9/LastTest.log",
+          "bytes": 8208,
+          "sha256": "13abc818943b01457ef940297c488afcaf60f2bf89cf155391c2354a43fbd3f8"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-el9/runtime.json",
+          "bytes": 1401,
+          "sha256": "b56697bf7476d151bd20ff9ed31271bfe63407f3ea70234b64535de830724085"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-el9/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "35a7c19fb77152b9c2604c7ede5dcd4ccbc699bf79dc9817ecef9f2eb0edb0cf"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-el9/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "b333f31e5cdc38ecd68af68e5921dd7eb86fe21eb7d9a58cfca45e6e33aed48b"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/gui-tests.txt",
+          "bytes": 19127,
+          "sha256": "5b94ba7dc4b37519d5499573ad0684dc11fabc1668b54c6649fc70f73c3da292"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/helper-smoke.json",
+          "bytes": 1022,
+          "sha256": "e57a54a3683fe2a4567adb87687f5f1723ed4a4e4876e6abf061d1926e165366"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/kernel-el9/guest-boot/results.json",
+          "bytes": 508,
+          "sha256": "1f7451192c95a25a02f2957c3d58500a47b018f528d797881057a0b2213c68d3"
+        }
+      ]
+    },
+    {
+      "target": "el10",
+      "ctests": 14,
+      "core_scenario_groups": 116,
+      "cli_scenario_groups": 15,
+      "invalid_commands_before_device_open": 132,
+      "json_reports_in_process_test": 278,
+      "gui_regression_tests": 60,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f1f602f8000)\n\tlibstdc++.so.6 => /lib64/libstdc++.so.6 (0x00007f1f60078000)\n\tlibm.so.6 => /lib64/libm.so.6 (0x00007f1f5ffca000)\n\tlibgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00007f1f5ff9d000)\n\tlibc.so.6 => /lib64/libc.so.6 (0x00007f1f5fdc4000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f1f602fa000)\n",
+        "guide_installed": false,
+        "binary_bytes": 500408
+      },
+      "kernel_boots": [
+        {
+          "kernel": "6.12.0-211.64.1.el10_2.x86_64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "a399dcb2241af997473ba3992590df526ebedb81e27f8ee053602de895722b22",
+          "module_sha256": "1dcaa565942f926c83e460bbd3d1a3cbb3a375deaa40ab1bd6054c94f5908b0a"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/el10/octool-cli-2.0.1-1.el10.x86_64.rpm",
+          "bytes": 220840,
+          "sha256": "f6a66c9cc135b3f87530b16848077a26f5c298d3cee661d7619e6ea4965132df"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/el10/octool-2.0.1-1.el10.x86_64.rpm",
+          "bytes": 10480090,
+          "sha256": "3e7287204465233c6221596d61308086b429644ea66229e30435c2b03383b4bc"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/el10/octool-hwio-dkms-2.0.1-1.el10.noarch.rpm",
+          "bytes": 19164,
+          "sha256": "a82b4f8e4f6ed4fe4e7b4d05fc9e207d7a98404765b06281a1fafe3e7bb89b19"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-el10/ctest.txt",
+          "bytes": 1545,
+          "sha256": "7443469bf2b2a894fd29140ba769f8f4568b5266d8244d8598b9634148013bdb"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-el10/LastTest.log",
+          "bytes": 8208,
+          "sha256": "2e53ac5bc05d02c4576cee3bee47468e933dc92fd8a5a9649009b808fc0dcfd9"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-el10/runtime.json",
+          "bytes": 1402,
+          "sha256": "9abe982796712ec922b591cab7fce4a2cfc97be2809ef3dac4875ed978a6ce40"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-el10/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-el10/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/gui-tests.txt",
+          "bytes": 18564,
+          "sha256": "b3d263ca0917ffe0dda1961f9d3ec3c918f627aaef67718e5f65b06a7315a519"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/helper-smoke.json",
+          "bytes": 1022,
+          "sha256": "a93d610b6583db36f320aac518af407b4ac3921d9d07fdd8ac9aec927bd5ad7f"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/kernel-el10/guest-boot/results.json",
+          "bytes": 509,
+          "sha256": "bc3c64eb10a9127fea532717703bd37afb9189b2679fb98cdd448250840d75e1"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu20.04",
+      "ctests": 14,
+      "core_scenario_groups": 116,
+      "cli_scenario_groups": 15,
+      "invalid_commands_before_device_open": 132,
+      "json_reports_in_process_test": 278,
+      "gui_regression_tests": 60,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f94404de000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f944042a000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f9440248000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f94400f9000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f94400de000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f943feec000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f94404e0000)\n",
+        "guide_installed": false,
+        "binary_bytes": 546776
+      },
+      "kernel_boots": [
+        {
+          "kernel": "5.4.0-216-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "c5bb7de4df4416f77e8eb33547a30673d84542c7b0ae789954ce82e8f8b26f09",
+          "module_sha256": "b28ffc18c890f3c39dbfd2894dd00da00bb850f10c15d49528d08a06b95c261b"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/ubuntu20.04/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 248282,
+          "sha256": "eb1da21d086a522247dd458bd59da103232913fb1093f0064a5ad6897878a51a"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/ubuntu20.04/octool-2.0.1-1.amd64.deb",
+          "bytes": 14261158,
+          "sha256": "88268a3d043bed02d55662185b7043fd21c3ce7937b0128055f1377ae6c794d0"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/ubuntu20.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10672,
+          "sha256": "6f6b95481de233a4bc2298a478317838449c0630cef49d1944bae4045313b3ad"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu20.04/ctest.txt",
+          "bytes": 1545,
+          "sha256": "7ce684865032806b4f7c2a542e672e8873e14840df5a9d8c9885b38fd6d3af66"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu20.04/LastTest.log",
+          "bytes": 8208,
+          "sha256": "50c9359ab986ee060d0510baeecae1882f3be51d50c72182d089a812d5ac9397"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu20.04/runtime.json",
+          "bytes": 1543,
+          "sha256": "532a866dedacc0374434486a7a074537ec299979b5208e49f1c70e973b614ca3"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu20.04/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu20.04/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/gui-tests.txt",
+          "bytes": 19130,
+          "sha256": "e3e0d8b65ec12e1e4f6c548fc59d819ffa81c9cfb4748802241b2ca2068c27c3"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/helper-smoke.json",
+          "bytes": 1016,
+          "sha256": "58c345e215841b181b68532e08c3112f2aaf8dafed1fc00bda0ef15626f72c1d"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/kernel-ubuntu20.04/guest-boot/results.json",
+          "bytes": 497,
+          "sha256": "5069d6d94c8c6834bee1a40fd6d8ae4a3cc1fa82034d59045e002d8bffe87a08"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu22.04",
+      "ctests": 14,
+      "core_scenario_groups": 116,
+      "cli_scenario_groups": 15,
+      "invalid_commands_before_device_open": 132,
+      "json_reports_in_process_test": 278,
+      "gui_regression_tests": 60,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f77b89e3000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f77b8730000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f77b8649000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f77b8629000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f77b8400000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f77b89e5000)\n",
+        "guide_installed": false,
+        "binary_bytes": 505816
+      },
+      "kernel_boots": [
+        {
+          "kernel": "5.15.0-198-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "e674dce98d3b3f3bca3ffaca1d2a22ed50c36fa2ff530a74c0908867363cd001",
+          "module_sha256": "11ba48722faca8e5e051d40b1d6459daa920fe58628d72b77f77401bc59953bc"
+        },
+        {
+          "kernel": "6.8.0-138-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "81ea8d2ef9c2d6a46e95c961c8c7c282941c80d4fd4106a3fcf9c87911243d3d",
+          "module_sha256": "ee8cd2475fd1e7c24dccb22130257053a444adc9db808684bad44a00297494bb"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/ubuntu22.04/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 238130,
+          "sha256": "5dfaf547ef66103d6839ff7ac6dafe77eda70c79ac8d5af6c1df9f4f5c08b016"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/ubuntu22.04/octool-2.0.1-1.amd64.deb",
+          "bytes": 14261182,
+          "sha256": "199d8889505a7ec30af3e7f16b59d3d4534ed88e9a275efa094c86fff9852aba"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/ubuntu22.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10674,
+          "sha256": "b0f143ce1d2f9aac16b3bb1d8762e8de79d808ea915dc2ec6d4eb09339cfaa42"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu22.04/ctest.txt",
+          "bytes": 1545,
+          "sha256": "242c2648bced10018968ee5e4619e3589efe92e3428ce9cd984934fb1174c775"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu22.04/LastTest.log",
+          "bytes": 8208,
+          "sha256": "e1914ad0cc4954f4f6c7404c6a0aa06d21f1c0c0fb4a83266b9e394d0ac4602a"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu22.04/runtime.json",
+          "bytes": 1462,
+          "sha256": "8655e21d4ae061326be093a4e3fb0d13e50302faf84b75ca71ff890607b72397"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu22.04/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu22.04/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/gui-tests.txt",
+          "bytes": 19352,
+          "sha256": "0fa2145975db81d67e336aee8012077bc63ab4102a81dda4b340d068251d0d2d"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/helper-smoke.json",
+          "bytes": 1008,
+          "sha256": "7ecff0d9f76a4d7ab349e494ab45cbd3fa43294587cea877f6b6d35943c9fa9b"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/kernel-ubuntu22.04/guest-boot/results.json",
+          "bytes": 992,
+          "sha256": "8c38c0bcb70f2f13662a3edf841ff5eef5847b35b7376d4b3ed9d8e1e3a3b2d8"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu24.04",
+      "ctests": 14,
+      "core_scenario_groups": 116,
+      "cli_scenario_groups": 15,
+      "invalid_commands_before_device_open": 132,
+      "json_reports_in_process_test": 278,
+      "gui_regression_tests": 60,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f7e18687000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f7e1837d000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f7e18294000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f7e18266000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f7e18053000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f7e18689000)\n",
+        "guide_installed": false,
+        "binary_bytes": 526296
+      },
+      "kernel_boots": [
+        {
+          "kernel": "6.8.0-146-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "bae162f72d687f8f87909f1dfedea1dfe16adefe40da51f649d9a9b6d498342b",
+          "module_sha256": "9214c5560954f3d1cadee11b8d77f923048b9b41e336e986531a0c36c0e3a97d"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/ubuntu24.04/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 247366,
+          "sha256": "cc93b674a05aa89d18c8fa25f2a298d73c06cecddbba86460e2460971911b0db"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/ubuntu24.04/octool-2.0.1-1.amd64.deb",
+          "bytes": 14261170,
+          "sha256": "8e7265154533ba8ceb2220f277fc6ae2f763e7914840f265639d91868315e227"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/ubuntu24.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10668,
+          "sha256": "94f71cef0b58e98955578d2776b02f79bd500bb40d9f92e49ecab29d9dec9fc5"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu24.04/ctest.txt",
+          "bytes": 1545,
+          "sha256": "702c707bfe0441bf6970bf2414ab452fdf938400376455614cc2f816411b076b"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu24.04/LastTest.log",
+          "bytes": 8208,
+          "sha256": "c6cc5c2b41708532ae47e33ebed1790d7afce6f48a1b70f816b791e84ac3a2a3"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu24.04/runtime.json",
+          "bytes": 1462,
+          "sha256": "98a537f8e11f2840b12607afe1005ac50d34e51d3b46b025ec6c18de46f7d6cf"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu24.04/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu24.04/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/gui-tests.txt",
+          "bytes": 19130,
+          "sha256": "215b3b374ebe9d77fb34fca9a374285b4029c06b930a9e15691b2a82e56539d4"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/helper-smoke.json",
+          "bytes": 1011,
+          "sha256": "9ed9c893465370f645dc9b21159d76ea2614f38fcbd45eeb8a1a920fa1b2c48f"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/kernel-ubuntu24.04/guest-boot/results.json",
+          "bytes": 497,
+          "sha256": "a2f81c8e62f2150734dcc205d0d69f2e41a39990cd40721ffc3dfbe6237192c3"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu26.04",
+      "ctests": 14,
+      "core_scenario_groups": 116,
+      "cli_scenario_groups": 15,
+      "invalid_commands_before_device_open": 132,
+      "json_reports_in_process_test": 278,
+      "gui_regression_tests": 60,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "GenuineIntel",
+              "family": 6,
+              "model": 106,
+              "stepping": 6,
+              "signature": "0x000606a6"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007fcdcb8f5000)\n\tlibstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fcdcb5c5000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x00007fcdcb49f000)\n\tlibgcc_s.so.1 => /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fcdcb471000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x00007fcdcb250000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fcdcb8f7000)\n",
+        "guide_installed": false,
+        "binary_bytes": 548176
+      },
+      "kernel_boots": [
+        {
+          "kernel": "7.0.0-38-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "9f55ef7253055a9cf68f8a04323c93dead2fca617386d842fbde9ca7b178b27e",
+          "module_sha256": "60e4a9e6f9c9362dabc05e1df8e89e5c69e5ecbb21d7e490e762f4df9636b71a"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/ubuntu26.04/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 254514,
+          "sha256": "6449b04632bb0b8f1918dcb4888897469682050f49e273be1aa1ff6fc389db48"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/ubuntu26.04/octool-2.0.1-1.amd64.deb",
+          "bytes": 14261184,
+          "sha256": "9442c8c1d0ba74236dc881a05f3523fbd7329e3bde15e3ed3c05e51f729cbd7e"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/ubuntu26.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10670,
+          "sha256": "a3d8b1bbc41094895c8939f023db256bf6894f8ad6e1be3124b563765bee0183"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu26.04/ctest.txt",
+          "bytes": 1545,
+          "sha256": "29d92ec7ef1a805579be30a49b884b0efe7bbfd3e93382629fcfddc40d80317b"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu26.04/LastTest.log",
+          "bytes": 8208,
+          "sha256": "0cc81e5e4b04e62d7ffc2930c8479f9089198f64ae4bb8e6cd4f0df33cb1ab88"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu26.04/runtime.json",
+          "bytes": 1493,
+          "sha256": "45801c554dab10152bda53908eaa7b7c1cccf488612952a090de91affaa868c3"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu26.04/unprivileged-diagnose.json",
+          "bytes": 381,
+          "sha256": "ecfd0ef8b34f6b943cc7967051b557b4d4f1acba1460f0bd2425471ba3d7a215"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-ubuntu26.04/reinstalled-diagnose.json",
+          "bytes": 377,
+          "sha256": "07b4f85e82ae667e10f71c69cf3e5d240c152671695164e0ab52bbd497e69099"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/gui-tests.txt",
+          "bytes": 19130,
+          "sha256": "551fa26d1e27555b3c6763207851bd33d9b829c7bd28313463b5067159440ad1"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/helper-smoke.json",
+          "bytes": 1011,
+          "sha256": "05190cfd405fb0cfa217664764437c0a7924afb251319752f79d3e13ba5ce6d6"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/kernel-ubuntu26.04/guest-boot/results.json",
+          "bytes": 496,
+          "sha256": "9d7f93c2f9429f1b81fbc993a68c192f2051c9a61b29e18de831f3ec0499699f"
+        }
+      ]
+    },
+    {
+      "target": "debian11",
+      "ctests": 14,
+      "core_scenario_groups": 116,
+      "cli_scenario_groups": 15,
+      "invalid_commands_before_device_open": 132,
+      "json_reports_in_process_test": 278,
+      "gui_regression_tests": 60,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 17,
+              "stepping": 1,
+              "signature": "0x00a10f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f0f1a569000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f0f1a4c3000)\n\tlibstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f0f1a2f6000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f0f1a1b2000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f0f1a198000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f0f19fc4000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f0f1a56b000)\n",
+        "guide_installed": true,
+        "binary_bytes": 494528
+      },
+      "kernel_boots": [
+        {
+          "kernel": "5.10.0-46-amd64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "8568fbc5dcc1a357e02c5ea67c1462174425aef5e8c9c74970253999c9613eb6",
+          "module_sha256": "afb0de05ae56d3823f32259a1d46ee1d1dc9feb99266a37e5b6cd20cb57a3333"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/debian11/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 233714,
+          "sha256": "0858531ffdf35cac4a1c530022d15885aeaf1bd3df44c1f3c356ed7d1c30bf51"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/debian11/octool-2.0.1-1.amd64.deb",
+          "bytes": 14261184,
+          "sha256": "517c5488249d9a347675ec8b26aaab084904656db144fc946df5128941a60155"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/debian11/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10666,
+          "sha256": "18cfbbd4dc3ab324c01c61ed5b20b38ce73606982bcb658b3cc97a47404ab133"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-debian11/ctest.txt",
+          "bytes": 1545,
+          "sha256": "9607133c84a6435c41094388e065697241b53a7ef6d3a489515f1b3a7a8cb888"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-debian11/LastTest.log",
+          "bytes": 8208,
+          "sha256": "330de844f6e3ded2cc560954181fa2e7d9cc463a04b1a7c43ae6cb0d4b63b895"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-debian11/runtime.json",
+          "bytes": 1547,
+          "sha256": "edbfc23a566cc42f7c41f223938540d1883c73c091d7724dfd62084ff6878e35"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-debian11/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "e661623b4840f9e9fec6afeb366b53b9c8b07098d338360c99e2bff982892316"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-debian11/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "507715fc9c450d2fe9cb25a35b592e84748652284ba185066a356962b1bb12cf"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/gui-tests.txt",
+          "bytes": 18904,
+          "sha256": "46ebe602d2ba05d38fd1cd675bbfc3956627163d2b42652d487007b2d525f960"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/helper-smoke.json",
+          "bytes": 1020,
+          "sha256": "0441adf06b6febfbce39b2d7a1168bed2c82a8dba4d94f6e52b661a2125b626c"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/kernel-debian11/guest-boot/results.json",
+          "bytes": 495,
+          "sha256": "4b9794ffff202191af850d0abf23b259a3ef0faa983a570ad0cb909c45824239"
+        }
+      ]
+    },
+    {
+      "target": "debian12",
+      "ctests": 14,
+      "core_scenario_groups": 116,
+      "cli_scenario_groups": 15,
+      "invalid_commands_before_device_open": 132,
+      "json_reports_in_process_test": 278,
+      "gui_regression_tests": 60,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 26,
+              "model": 2,
+              "stepping": 1,
+              "signature": "0x00b00f21"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007fdc0ee13000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fdc0eb77000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fdc0ea97000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fdc0ea77000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fdc0e895000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fdc0ee15000)\n",
+        "guide_installed": true,
+        "binary_bytes": 490512
+      },
+      "kernel_boots": [
+        {
+          "kernel": "6.1.0-53-amd64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "d66b8bc4b8330f4e98257602449feeeed696b860bf147a40477e7f4cfc48e704",
+          "module_sha256": "7fc256dc67c263a8f82a65c0550ddcc9b03852f481a65b110eddc32496696258"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/debian12/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 233102,
+          "sha256": "4838b9c42188249424cf2fd83a3f8f5b31560310efc72ee21053658ad9a51bc3"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/debian12/octool-2.0.1-1.amd64.deb",
+          "bytes": 14261178,
+          "sha256": "1a9eae7374dd4c5c3bb4b9fb55fca8efbaf8514063717459d072d9299380dcdf"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/debian12/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10670,
+          "sha256": "bf32a9364a2640a9504c430dfc5e6d1d618a9169ca878754c848d03f65cdbeb1"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-debian12/ctest.txt",
+          "bytes": 1545,
+          "sha256": "aa2fca41036cd658c6835350c653e213919716ba33db5be46f2d9f617f050c97"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-debian12/LastTest.log",
+          "bytes": 8208,
+          "sha256": "65d77a0dc243a45edf1d343204de6a706d147df375d334a3682031c02767b976"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-debian12/runtime.json",
+          "bytes": 1461,
+          "sha256": "71ec37354ba3e279b5e8bacbabcf8263a299f819295ce18c2f4614b4c771a9c8"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-debian12/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "35a7c19fb77152b9c2604c7ede5dcd4ccbc699bf79dc9817ecef9f2eb0edb0cf"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-debian12/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "b333f31e5cdc38ecd68af68e5921dd7eb86fe21eb7d9a58cfca45e6e33aed48b"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/gui-tests.txt",
+          "bytes": 19349,
+          "sha256": "a49f47369f3849adffd99c841165730d03551d8f6751a0c1a454327b97da888b"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/helper-smoke.json",
+          "bytes": 1023,
+          "sha256": "f4b053f876682646743a997c2c01c08f97affdf3952a775140b0b98d6336f7b1"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/kernel-debian12/guest-boot/results.json",
+          "bytes": 494,
+          "sha256": "389f49888874587416a70e96dcf5cb878fb74bb1633c227c9c98d378d9dc0cd8"
+        }
+      ]
+    },
+    {
+      "target": "debian13",
+      "ctests": 14,
+      "core_scenario_groups": 116,
+      "cli_scenario_groups": 15,
+      "invalid_commands_before_device_open": 132,
+      "json_reports_in_process_test": 278,
+      "gui_regression_tests": 60,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f80c39a5000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f80c36b8000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f80c35c8000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f80c359b000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f80c33a7000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f80c39a7000)\n",
+        "guide_installed": true,
+        "binary_bytes": 512360
+      },
+      "kernel_boots": [
+        {
+          "kernel": "6.12.111+deb13-amd64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "6d8a7f745280cc06a6d2877c932f4dfa9079b694eb4227b61b27232642340794",
+          "module_sha256": "5a22c7337d1cb3e52c5c8b0f96ef3665550f26f8e223036fc98ac688d3b84d23"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/debian13/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 242934,
+          "sha256": "c6dd901661434b9ec3fe2d91a10b30537f905bba5f4e61ea92c8e9b466554278"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/debian13/octool-2.0.1-1.amd64.deb",
+          "bytes": 14261178,
+          "sha256": "7a8ec00badce28423b4061e4e6f5f14f728be07ae0b9f8c75525425f16f94854"
+        },
+        {
+          "path": "dist/gui-cli-ddr5-expo-e4cb81b/debian13/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10670,
+          "sha256": "f1ab8863ff07b7c1af3d2c29d75f985a09325dad4dd54d64494623df10d00e43"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-debian13/ctest.txt",
+          "bytes": 1545,
+          "sha256": "cf626ecba446636585c6b2afc312fdfc7bc2439bf5a3dc671ac2d007da408832"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-debian13/LastTest.log",
+          "bytes": 8208,
+          "sha256": "5025f67339686ba2acb0afeb7db823687519ea26e581456ba103c57ab37e84d2"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-debian13/runtime.json",
+          "bytes": 1461,
+          "sha256": "1321fb2c69441176677f8421a3ad54f28ba40b57cebd2cb4f5ecbc9bcf4af8c5"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-debian13/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/cli-artifacts/cli-debian13/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/gui-tests.txt",
+          "bytes": 19243,
+          "sha256": "29f97d4dea33eaffe7fb5633bd7c201ba46cbf83db7340889b5c240e14d8a115"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/helper-smoke.json",
+          "bytes": 1021,
+          "sha256": "d0b070be52a5ea8cabb2031230170a9d3adb6aab51e63428ec2f6e9e2c232e61"
+        },
+        {
+          "path": "build/ddr5-expo-e4cb81b/linux-artifacts/kernel-debian13/guest-boot/results.json",
+          "bytes": 500,
+          "sha256": "5412f0c812831eabd1dd733139b383f4b836141363fadcc1687df2797c8e567f"
+        }
+      ]
+    }
+  ],
+  "physical_hardware_acceptance": "not_run",
+  "screenshots": [
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/expo-fixture.png",
+      "bytes": 257912,
+      "sha256": "88d1ac09c3d4876c08d167ebfba5645cbba1ac482968d40c2533de0ee98cfbbc"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/native-0.png",
+      "bytes": 61263,
+      "sha256": "add474937a52c07c5024d3ab6f4b21fdde0943e4383137b7dd62e910bfbb6b47"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/native-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/native-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/native-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/native-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/native-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/native-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/native-7.png",
+      "bytes": 47429,
+      "sha256": "58111bed4655d7eeb11b1cb711c36670c010eaf72e0267407616012dc3a0c372"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/native-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/release-0.png",
+      "bytes": 61263,
+      "sha256": "add474937a52c07c5024d3ab6f4b21fdde0943e4383137b7dd62e910bfbb6b47"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/release-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/release-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/release-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/release-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/release-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/release-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/release-7.png",
+      "bytes": 47429,
+      "sha256": "58111bed4655d7eeb11b1cb711c36670c010eaf72e0267407616012dc3a0c372"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/smoke/release-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/spd-fixture.png",
+      "bytes": 206695,
+      "sha256": "1e6a59b1d96a7d6aceb69029fceac791ecca09c501be062cc78ef67b858de9e6"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/turbo-fixture.png",
+      "bytes": 97513,
+      "sha256": "a8fc2a3bd04c6a94c5a2b4c1e7180a742b688374bbe377d7bb38fd0f06c20c7b"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/umc-diff-fixture.png",
+      "bytes": 122098,
+      "sha256": "5cf111adec43d5f5ccf6f6e8ccc773721fc1f9919e3fb7319bfbdd073fb4888d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/uncore-fixture.png",
+      "bytes": 75998,
+      "sha256": "19d81f7d580b51c442d4d31d10663336503163ffeab2ba228cccb3a9434b813d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/vf-edit-fixture.png",
+      "bytes": 123257,
+      "sha256": "fc5fb5b9c4255d9166fcedc185360caa3505dab7459e8ed0acc0228752bcf76d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/vf-fixture.png",
+      "bytes": 152666,
+      "sha256": "647c229f9d65582250fbf44e814761aa98f407600551059d943c724a9b073557"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/expo-fixture.png",
+      "bytes": 258113,
+      "sha256": "49f870da399354c49011b6292f3569bee4cf78af8baa7d382e2531ce2a782d62"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/native-0.png",
+      "bytes": 60509,
+      "sha256": "9a3a1b9ea02d2149764b06a62de30cbf133ad535da9fa03d8c8f3731466745e9"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/native-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/native-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/native-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/native-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/native-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/native-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/native-7.png",
+      "bytes": 47429,
+      "sha256": "58111bed4655d7eeb11b1cb711c36670c010eaf72e0267407616012dc3a0c372"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/native-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/release-0.png",
+      "bytes": 60509,
+      "sha256": "9a3a1b9ea02d2149764b06a62de30cbf133ad535da9fa03d8c8f3731466745e9"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/release-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/release-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/release-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/release-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/release-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/release-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/release-7.png",
+      "bytes": 47429,
+      "sha256": "58111bed4655d7eeb11b1cb711c36670c010eaf72e0267407616012dc3a0c372"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/smoke/release-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/spd-fixture.png",
+      "bytes": 206799,
+      "sha256": "0bc4f551801ef8f88d9c0220b6aa7552ec1fd8ddcc3e02217093a9eab1cafbc1"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/turbo-fixture.png",
+      "bytes": 97513,
+      "sha256": "a8fc2a3bd04c6a94c5a2b4c1e7180a742b688374bbe377d7bb38fd0f06c20c7b"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/umc-diff-fixture.png",
+      "bytes": 122098,
+      "sha256": "5cf111adec43d5f5ccf6f6e8ccc773721fc1f9919e3fb7319bfbdd073fb4888d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/uncore-fixture.png",
+      "bytes": 75998,
+      "sha256": "19d81f7d580b51c442d4d31d10663336503163ffeab2ba228cccb3a9434b813d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/vf-edit-fixture.png",
+      "bytes": 123177,
+      "sha256": "1e339033c2d066e8d21d56832cb70dbc2b11bd9298beaaba00b582ac9cb59237"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el9/vf-fixture.png",
+      "bytes": 152775,
+      "sha256": "4eaba7cc1e4603fcfcc65e1ad1052959b40091c243aa6e8ec233942f12335587"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/controls-fixture.png",
+      "bytes": 163204,
+      "sha256": "3ea98939845341f696954bacc03c70519230698150d5259897642348384c82d9"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/expo-fixture.png",
+      "bytes": 250091,
+      "sha256": "180d206e35ae19778c95ecd591226b6f218050c64cdc02dbe1630737ddad2955"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/native-0.png",
+      "bytes": 57539,
+      "sha256": "a315351cbd7bcc57364b3b414c21080f4cda48ef0398fb9ae262237262ecd7f5"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/native-1.png",
+      "bytes": 30301,
+      "sha256": "becfca1cc65f886a79a86f2ec435f604f0d85f41f4d3d664377da9961d07e763"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/native-2.png",
+      "bytes": 28500,
+      "sha256": "559eb0466a1fe08a56a8f5693cf2a6e2ea44f60897b7d0786fae99278f184c75"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/native-3.png",
+      "bytes": 31674,
+      "sha256": "b1ecaca9da6c14426cc34b218213df1231eb6d3af24df2f5a3d9d06e68c735a2"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/native-4.png",
+      "bytes": 66427,
+      "sha256": "bc873c8a3b79f60a4f54c0c2e8cba6a4a246339b8e9ae7d2c1960bb3508d84cc"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/native-5-turbo.png",
+      "bytes": 52322,
+      "sha256": "24a8e9947b0b6a303dbf2025886c6a49f338c4acfe6422a4ee5d20166bf4bbbc"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/native-5-uncore.png",
+      "bytes": 49140,
+      "sha256": "c73fa6efc59ab1acdbaa00072094b1962b497329956cc65da1d8c0fe08d8c837"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/native-5-vf.png",
+      "bytes": 71329,
+      "sha256": "58da28ecfd5fe610c280a095bd864dcaf088a0393ec6ca27571eec51d854abb2"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/native-5-voltage.png",
+      "bytes": 82428,
+      "sha256": "5dca25e5c77d693b0d9e39dda27de95c4e0e1f0edb144d57cc4344e42a18172a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/native-5.png",
+      "bytes": 50379,
+      "sha256": "4f9df60a839fb162e80c54147d148102b212be0dcb6ed75f8b3ae256b71e3c09"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/native-6.png",
+      "bytes": 67798,
+      "sha256": "91a2e6e737898b0bfadb3a7f0ca2557ac4f089dccbc15c938bc5b33c0c9c569b"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/native-7.png",
+      "bytes": 45401,
+      "sha256": "74598fef08e333347111ac4e3daeadef424759a6eeaeaaba4b86e814400b4fa5"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/native-8.png",
+      "bytes": 53768,
+      "sha256": "9597a6f8712c0f3a117cdbac9cddc862068cfe0883047418fc1eba40b4231af9"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/release-0.png",
+      "bytes": 57539,
+      "sha256": "a315351cbd7bcc57364b3b414c21080f4cda48ef0398fb9ae262237262ecd7f5"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/release-1.png",
+      "bytes": 30301,
+      "sha256": "becfca1cc65f886a79a86f2ec435f604f0d85f41f4d3d664377da9961d07e763"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/release-2.png",
+      "bytes": 28500,
+      "sha256": "559eb0466a1fe08a56a8f5693cf2a6e2ea44f60897b7d0786fae99278f184c75"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/release-3.png",
+      "bytes": 31674,
+      "sha256": "b1ecaca9da6c14426cc34b218213df1231eb6d3af24df2f5a3d9d06e68c735a2"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/release-4.png",
+      "bytes": 66427,
+      "sha256": "bc873c8a3b79f60a4f54c0c2e8cba6a4a246339b8e9ae7d2c1960bb3508d84cc"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/release-5-turbo.png",
+      "bytes": 52322,
+      "sha256": "24a8e9947b0b6a303dbf2025886c6a49f338c4acfe6422a4ee5d20166bf4bbbc"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/release-5-uncore.png",
+      "bytes": 49140,
+      "sha256": "c73fa6efc59ab1acdbaa00072094b1962b497329956cc65da1d8c0fe08d8c837"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/release-5-vf.png",
+      "bytes": 71329,
+      "sha256": "58da28ecfd5fe610c280a095bd864dcaf088a0393ec6ca27571eec51d854abb2"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/release-5-voltage.png",
+      "bytes": 82428,
+      "sha256": "5dca25e5c77d693b0d9e39dda27de95c4e0e1f0edb144d57cc4344e42a18172a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/release-5.png",
+      "bytes": 50379,
+      "sha256": "4f9df60a839fb162e80c54147d148102b212be0dcb6ed75f8b3ae256b71e3c09"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/release-6.png",
+      "bytes": 67798,
+      "sha256": "91a2e6e737898b0bfadb3a7f0ca2557ac4f089dccbc15c938bc5b33c0c9c569b"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/release-7.png",
+      "bytes": 45401,
+      "sha256": "74598fef08e333347111ac4e3daeadef424759a6eeaeaaba4b86e814400b4fa5"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/smoke/release-8.png",
+      "bytes": 53768,
+      "sha256": "9597a6f8712c0f3a117cdbac9cddc862068cfe0883047418fc1eba40b4231af9"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/spd-fixture.png",
+      "bytes": 208625,
+      "sha256": "25b95a5cefd077e85426cd902958d4a56bd693f8073662f8dfb9f10e6a666dcb"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/turbo-fixture.png",
+      "bytes": 71888,
+      "sha256": "d18d54dc9eb278ffe8da4a3f9636acc350510327318c88e0ea7622e5848a1939"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/umc-diff-fixture.png",
+      "bytes": 112629,
+      "sha256": "64958e104f2968e7b7472686c528d66ccec30a95beda0c5331c5c97163bb9a0c"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/uncore-fixture.png",
+      "bytes": 71094,
+      "sha256": "0ef0f496a03b9e0a3c1503f8142146fbedffc9739e6d1a669a9069814177b085"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/vf-edit-fixture.png",
+      "bytes": 114217,
+      "sha256": "d406fcf4c925de8c98d301b83cf0e647b16ca31f2275c8769b94ecae87a79178"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el10/vf-fixture.png",
+      "bytes": 135729,
+      "sha256": "1304b1a4574f24595e06e1ba4fa0b98e5c33bd863bafce19053db50f679bc0fe"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/expo-fixture.png",
+      "bytes": 258311,
+      "sha256": "cc57ac69ed59b08cac2fcc6f456b1940da802f46fe1001abdcbfde1d290241af"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/native-0.png",
+      "bytes": 60083,
+      "sha256": "1ec759e59654058160b9c0da507b63cd8b5c4b7cdbcf7774737b4b453dd96620"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/native-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/native-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/native-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/native-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/native-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/native-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/native-7.png",
+      "bytes": 47429,
+      "sha256": "58111bed4655d7eeb11b1cb711c36670c010eaf72e0267407616012dc3a0c372"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/native-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/release-0.png",
+      "bytes": 60083,
+      "sha256": "1ec759e59654058160b9c0da507b63cd8b5c4b7cdbcf7774737b4b453dd96620"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/release-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/release-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/release-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/release-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/release-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/release-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/release-7.png",
+      "bytes": 47429,
+      "sha256": "58111bed4655d7eeb11b1cb711c36670c010eaf72e0267407616012dc3a0c372"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/smoke/release-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/spd-fixture.png",
+      "bytes": 206725,
+      "sha256": "61faaa9e2635d0895fab08587b7883b6c06017bebdaad10a112ee8924f8fc827"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/turbo-fixture.png",
+      "bytes": 79809,
+      "sha256": "83e49b5e6036413a8b8ec9f8e741cd1c1e472efa9e4d25a3e24653b087b7f846"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/umc-diff-fixture.png",
+      "bytes": 122098,
+      "sha256": "5cf111adec43d5f5ccf6f6e8ccc773721fc1f9919e3fb7319bfbdd073fb4888d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/uncore-fixture.png",
+      "bytes": 75998,
+      "sha256": "19d81f7d580b51c442d4d31d10663336503163ffeab2ba228cccb3a9434b813d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/vf-edit-fixture.png",
+      "bytes": 122888,
+      "sha256": "e4d872fe45f73d8b8b7a06c016f00d9d84805abe79355284077ddfaf8688e103"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu20.04/vf-fixture.png",
+      "bytes": 152601,
+      "sha256": "d0fe174ef151378c8cc957cd7aeab379d22ed16b885a3859a9ff8e265fcc4424"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/expo-fixture.png",
+      "bytes": 258294,
+      "sha256": "0b9afd6adcaa03b96997b0157cb42a27dead09b337f47631a27d7c5b64252af9"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/native-0.png",
+      "bytes": 60032,
+      "sha256": "b12c3b6912cce2cbd39b34226a275c2d5dbe994fae51f0707bc16a99c7eb7578"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/native-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/native-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/native-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/native-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/native-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/native-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/native-7.png",
+      "bytes": 47429,
+      "sha256": "58111bed4655d7eeb11b1cb711c36670c010eaf72e0267407616012dc3a0c372"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/native-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/release-0.png",
+      "bytes": 60032,
+      "sha256": "b12c3b6912cce2cbd39b34226a275c2d5dbe994fae51f0707bc16a99c7eb7578"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/release-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/release-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/release-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/release-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/release-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/release-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/release-7.png",
+      "bytes": 47429,
+      "sha256": "58111bed4655d7eeb11b1cb711c36670c010eaf72e0267407616012dc3a0c372"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/smoke/release-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/spd-fixture.png",
+      "bytes": 206457,
+      "sha256": "b8ac4b4cd75ed0a7b0b93a8eb4a0e4f91160d153ddba6ae239a766f58ff7b5ad"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/turbo-fixture.png",
+      "bytes": 97513,
+      "sha256": "a8fc2a3bd04c6a94c5a2b4c1e7180a742b688374bbe377d7bb38fd0f06c20c7b"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/umc-diff-fixture.png",
+      "bytes": 122098,
+      "sha256": "5cf111adec43d5f5ccf6f6e8ccc773721fc1f9919e3fb7319bfbdd073fb4888d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/uncore-fixture.png",
+      "bytes": 75998,
+      "sha256": "19d81f7d580b51c442d4d31d10663336503163ffeab2ba228cccb3a9434b813d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/vf-edit-fixture.png",
+      "bytes": 122920,
+      "sha256": "de5b9b6cc56acb8908c1e803b137f9dacab449a88936a54569283328c866691d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu22.04/vf-fixture.png",
+      "bytes": 152601,
+      "sha256": "58657f6498761957cfddf3aae338e2ba091a45936a598875a8e23884d2929d48"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/controls-fixture.png",
+      "bytes": 208944,
+      "sha256": "b6a3c75969f5daa8751279df94a3c2e20ed0a9c2d0dd5928fac15797ab0594d9"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/expo-fixture.png",
+      "bytes": 303765,
+      "sha256": "784b0c8dbb866df7b99fc03dfed6114f9e90e2795741cfcea2a7d429c2e83cbb"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/native-0.png",
+      "bytes": 69164,
+      "sha256": "709694a9de91340e677136e99169aad542f3b5d4e7bae90fd2724ceb2a162b1b"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/native-1.png",
+      "bytes": 35483,
+      "sha256": "bc7aac42669d26cb301cfc2165a272b47c506682e79af25b8706f629ebef62f2"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/native-2.png",
+      "bytes": 33708,
+      "sha256": "229b48333f366e215ad7b246085f798370d149f595db486b1f06d5f96348e667"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/native-3.png",
+      "bytes": 36960,
+      "sha256": "a604fe89dbb3ccfb7dcf3d30a0fe83643b809a858a931e17c7b358752d8b5d0c"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/native-4.png",
+      "bytes": 80357,
+      "sha256": "11fe99e920968309e8386f2f94e0ed9a9aca648b1ba38202433ea63b70751841"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/native-5-turbo.png",
+      "bytes": 62386,
+      "sha256": "c6441d9e840e07d3b71b74cf63f71f3359722c3797617cdeb5d39a3f18434ef3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/native-5-uncore.png",
+      "bytes": 57213,
+      "sha256": "4c211b04aeb67a74672ba59420b3fa235fc8a8028e0a20edb1b302c17c67a3a5"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/native-5-vf.png",
+      "bytes": 86865,
+      "sha256": "53319067c0bdefe41b1647f7790ff922341df48bd0c8339994db48d06245c2e9"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/native-5-voltage.png",
+      "bytes": 97342,
+      "sha256": "92412f109e6b8f0f1115bbc528367e7d1de2c4f2be6c613a30699cc51b4e00e2"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/native-5.png",
+      "bytes": 61063,
+      "sha256": "50c19b42be9f684b2a1c00b69042687ebcd8bff6f6f75ce084b697b4ca4c23be"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/native-6.png",
+      "bytes": 82279,
+      "sha256": "6111ec871f389acf2583a9542f76f40f874a003fa54f3c0b25022f40baeb63c8"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/native-7.png",
+      "bytes": 54222,
+      "sha256": "ec0b74f736fbd9435ec5568e45d926d57e624f8325179c20d3230a331016dbad"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/native-8.png",
+      "bytes": 66976,
+      "sha256": "fb8e00731421fa5e5d133acbff6234da7749c4c9e04483b6d4162ddb0764b303"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/release-0.png",
+      "bytes": 69164,
+      "sha256": "709694a9de91340e677136e99169aad542f3b5d4e7bae90fd2724ceb2a162b1b"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/release-1.png",
+      "bytes": 35483,
+      "sha256": "bc7aac42669d26cb301cfc2165a272b47c506682e79af25b8706f629ebef62f2"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/release-2.png",
+      "bytes": 33708,
+      "sha256": "229b48333f366e215ad7b246085f798370d149f595db486b1f06d5f96348e667"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/release-3.png",
+      "bytes": 36960,
+      "sha256": "a604fe89dbb3ccfb7dcf3d30a0fe83643b809a858a931e17c7b358752d8b5d0c"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/release-4.png",
+      "bytes": 80357,
+      "sha256": "11fe99e920968309e8386f2f94e0ed9a9aca648b1ba38202433ea63b70751841"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/release-5-turbo.png",
+      "bytes": 62386,
+      "sha256": "c6441d9e840e07d3b71b74cf63f71f3359722c3797617cdeb5d39a3f18434ef3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/release-5-uncore.png",
+      "bytes": 57213,
+      "sha256": "4c211b04aeb67a74672ba59420b3fa235fc8a8028e0a20edb1b302c17c67a3a5"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/release-5-vf.png",
+      "bytes": 86865,
+      "sha256": "53319067c0bdefe41b1647f7790ff922341df48bd0c8339994db48d06245c2e9"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/release-5-voltage.png",
+      "bytes": 97342,
+      "sha256": "92412f109e6b8f0f1115bbc528367e7d1de2c4f2be6c613a30699cc51b4e00e2"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/release-5.png",
+      "bytes": 61063,
+      "sha256": "50c19b42be9f684b2a1c00b69042687ebcd8bff6f6f75ce084b697b4ca4c23be"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/release-6.png",
+      "bytes": 82279,
+      "sha256": "6111ec871f389acf2583a9542f76f40f874a003fa54f3c0b25022f40baeb63c8"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/release-7.png",
+      "bytes": 54222,
+      "sha256": "ec0b74f736fbd9435ec5568e45d926d57e624f8325179c20d3230a331016dbad"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/release-8.png",
+      "bytes": 66976,
+      "sha256": "fb8e00731421fa5e5d133acbff6234da7749c4c9e04483b6d4162ddb0764b303"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/spd-fixture.png",
+      "bytes": 242892,
+      "sha256": "04d890fc3ad7a861ba459f99a29359a5c45a3be61e952bab816df9d9084ba109"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/turbo-fixture.png",
+      "bytes": 112666,
+      "sha256": "1ffc5d2e4a57b81189178d3aeb49ce5002d37578e57b426c6131274c3a60b059"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/umc-diff-fixture.png",
+      "bytes": 143053,
+      "sha256": "27e82fabf7e9d0e83625d853511622be2523f646c060e9ec1a590744002d246e"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/uncore-fixture.png",
+      "bytes": 88041,
+      "sha256": "8f6cff83ca5d6b4895e3f8c5a518c36de264384ccdee55b5db3a46dab3d60153"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/vf-edit-fixture.png",
+      "bytes": 143764,
+      "sha256": "9a19d803f281ff757344f393877cdc4e6a5e338f95768a13a56b57f2d0324d9d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/vf-fixture.png",
+      "bytes": 178177,
+      "sha256": "1ecfc52a892a4af105e4265f99fbea9ba52a5df89dc36b987996a23f159129cb"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/controls-fixture.png",
+      "bytes": 209039,
+      "sha256": "eef4961237db5871414af920efc56338ad30857eaea29f309113608a9c444a50"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/expo-fixture.png",
+      "bytes": 303054,
+      "sha256": "7313aff90461e10a17d018ca327522e299591fc3e043fa1aa9621d2af8dd9301"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/native-0.png",
+      "bytes": 65019,
+      "sha256": "7461d9aa2d128e136912ee35b7f0af2f2572881245b3ddec96d0d274ceedd5c2"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/native-1.png",
+      "bytes": 33907,
+      "sha256": "c96e203432d92377a6db81369199c270c8c93a6351e0a31a1c0659045345b52a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/native-2.png",
+      "bytes": 31570,
+      "sha256": "761888d87daa3735be75e6ab4236ec19cc9df062486085495945c72e9cdd64a6"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/native-3.png",
+      "bytes": 35274,
+      "sha256": "71233adda2b16dcea7d3e9e8172c7aaf7a7e6c4d5ddd3423fb720062761a0ea4"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/native-4.png",
+      "bytes": 76514,
+      "sha256": "4ac658788aa2398c24477499a8ebd6bd92807a481af7ea782016be2f09e8530d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/native-5-turbo.png",
+      "bytes": 60861,
+      "sha256": "6a63652674f99de21c58d01b353853bdd7e7c016d2dd3945a0737deadb0e5bfd"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/native-5-uncore.png",
+      "bytes": 55951,
+      "sha256": "03d12eb9e7b66eeb204f20176b649effce2b9fa1feb5cfcec799c9854eb0c815"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/native-5-vf.png",
+      "bytes": 83935,
+      "sha256": "3dc17557d06af0c1d916a2aa0c92fb2facd50f3a6c89d29649b5c58e2709b01b"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/native-5-voltage.png",
+      "bytes": 94703,
+      "sha256": "def6a0c7fbb3f0051760bbc7943a3e93269604efe97f40717ccc5dc0abdd6b01"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/native-5.png",
+      "bytes": 58737,
+      "sha256": "c01a088730788cb064e37b352d5218993cf094859bb8b7a293a47e7ce9103913"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/native-6.png",
+      "bytes": 79886,
+      "sha256": "5c0d3d780c0189f4e56471e9601eea773c00a30a2aca1f4ceae2d9f4272ec16c"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/native-7.png",
+      "bytes": 52886,
+      "sha256": "9757c815702565f45e196384151cdc4a6b558fa97e4c9173ffa298e815df76f9"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/native-8.png",
+      "bytes": 62433,
+      "sha256": "f7359de7a8ba237a91336ec3484f1efa709d6b5cc5ca9af2dcfbeaf3f67b56f3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/release-0.png",
+      "bytes": 65019,
+      "sha256": "7461d9aa2d128e136912ee35b7f0af2f2572881245b3ddec96d0d274ceedd5c2"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/release-1.png",
+      "bytes": 33907,
+      "sha256": "c96e203432d92377a6db81369199c270c8c93a6351e0a31a1c0659045345b52a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/release-2.png",
+      "bytes": 31570,
+      "sha256": "761888d87daa3735be75e6ab4236ec19cc9df062486085495945c72e9cdd64a6"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/release-3.png",
+      "bytes": 35274,
+      "sha256": "71233adda2b16dcea7d3e9e8172c7aaf7a7e6c4d5ddd3423fb720062761a0ea4"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/release-4.png",
+      "bytes": 76514,
+      "sha256": "4ac658788aa2398c24477499a8ebd6bd92807a481af7ea782016be2f09e8530d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/release-5-turbo.png",
+      "bytes": 60861,
+      "sha256": "6a63652674f99de21c58d01b353853bdd7e7c016d2dd3945a0737deadb0e5bfd"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/release-5-uncore.png",
+      "bytes": 55951,
+      "sha256": "03d12eb9e7b66eeb204f20176b649effce2b9fa1feb5cfcec799c9854eb0c815"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/release-5-vf.png",
+      "bytes": 83935,
+      "sha256": "3dc17557d06af0c1d916a2aa0c92fb2facd50f3a6c89d29649b5c58e2709b01b"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/release-5-voltage.png",
+      "bytes": 94703,
+      "sha256": "def6a0c7fbb3f0051760bbc7943a3e93269604efe97f40717ccc5dc0abdd6b01"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/release-5.png",
+      "bytes": 58737,
+      "sha256": "c01a088730788cb064e37b352d5218993cf094859bb8b7a293a47e7ce9103913"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/release-6.png",
+      "bytes": 79886,
+      "sha256": "5c0d3d780c0189f4e56471e9601eea773c00a30a2aca1f4ceae2d9f4272ec16c"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/release-7.png",
+      "bytes": 52886,
+      "sha256": "9757c815702565f45e196384151cdc4a6b558fa97e4c9173ffa298e815df76f9"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/smoke/release-8.png",
+      "bytes": 62433,
+      "sha256": "f7359de7a8ba237a91336ec3484f1efa709d6b5cc5ca9af2dcfbeaf3f67b56f3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/spd-fixture.png",
+      "bytes": 243081,
+      "sha256": "5e056ba9e2b8ec69ca7e9bae912c33de3b3cd9f08f15137fcb7d3f31ef9243c4"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/turbo-fixture.png",
+      "bytes": 112760,
+      "sha256": "fcc3935727ee367cf8ee8fa4db0b3fc2ef774203d6acd38a554f068b1f188f21"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/umc-diff-fixture.png",
+      "bytes": 143135,
+      "sha256": "a6b7c902a3f48e4f9ef4c52c07922303d16ff815a741f572d3e2123ab453b432"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/uncore-fixture.png",
+      "bytes": 88185,
+      "sha256": "75fa946db78c49713ef05c347fe3610d3337b97aff0ee9e133f27f8ce476ae9f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/vf-edit-fixture.png",
+      "bytes": 144131,
+      "sha256": "5ed7b4f82935f674b5b82b37cd8163a4eed3e97ed46c1f16028a1c9c4634e51e"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu26.04/vf-fixture.png",
+      "bytes": 178554,
+      "sha256": "85efe0c7f49e7f13a2d93ed8572a3494efad341f5d8422364dd3307fdd8eac97"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/expo-fixture.png",
+      "bytes": 258009,
+      "sha256": "32f5538392ec84faac7872115f24f699b0dc70c06f14c8a137f9f1318335c67a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/native-0.png",
+      "bytes": 60745,
+      "sha256": "e3ed0446d52284784cad516f76ea33f3715779e85b32c16a18b7e5f027bdfc5f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/native-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/native-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/native-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/native-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/native-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/native-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/native-7.png",
+      "bytes": 47429,
+      "sha256": "58111bed4655d7eeb11b1cb711c36670c010eaf72e0267407616012dc3a0c372"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/native-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/release-0.png",
+      "bytes": 60745,
+      "sha256": "e3ed0446d52284784cad516f76ea33f3715779e85b32c16a18b7e5f027bdfc5f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/release-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/release-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/release-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/release-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/release-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/release-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/release-7.png",
+      "bytes": 47429,
+      "sha256": "58111bed4655d7eeb11b1cb711c36670c010eaf72e0267407616012dc3a0c372"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/smoke/release-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/spd-fixture.png",
+      "bytes": 206199,
+      "sha256": "a5001c911d888ef58ccd4b5a09a1eb5f30da53511f7e56a1c39dfc7fb66f63fb"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/turbo-fixture.png",
+      "bytes": 79809,
+      "sha256": "83e49b5e6036413a8b8ec9f8e741cd1c1e472efa9e4d25a3e24653b087b7f846"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/umc-diff-fixture.png",
+      "bytes": 122098,
+      "sha256": "5cf111adec43d5f5ccf6f6e8ccc773721fc1f9919e3fb7319bfbdd073fb4888d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/uncore-fixture.png",
+      "bytes": 75998,
+      "sha256": "19d81f7d580b51c442d4d31d10663336503163ffeab2ba228cccb3a9434b813d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/vf-edit-fixture.png",
+      "bytes": 104496,
+      "sha256": "d6b642516b373a23fd6e6397113d65c22d7e517d7f25765e329e3247a5286642"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian11/vf-fixture.png",
+      "bytes": 152844,
+      "sha256": "6fab8438cb583fcdc6c4d565079414197b800d02168bb37772acdfb3fc735cb2"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/expo-fixture.png",
+      "bytes": 257883,
+      "sha256": "4e8ad212f202956179b823390c1eafe9b6498ea764e31c5f25fb25a5fe4002d3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/native-0.png",
+      "bytes": 60538,
+      "sha256": "c7929e26aa2d3832ad481a226b436daa194d61cda74a4eb3dc417116146e1a0f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/native-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/native-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/native-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/native-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/native-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/native-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/native-7.png",
+      "bytes": 47429,
+      "sha256": "58111bed4655d7eeb11b1cb711c36670c010eaf72e0267407616012dc3a0c372"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/native-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/release-0.png",
+      "bytes": 60538,
+      "sha256": "c7929e26aa2d3832ad481a226b436daa194d61cda74a4eb3dc417116146e1a0f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/release-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/release-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/release-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/release-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/release-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/release-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/release-7.png",
+      "bytes": 47429,
+      "sha256": "58111bed4655d7eeb11b1cb711c36670c010eaf72e0267407616012dc3a0c372"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/smoke/release-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/spd-fixture.png",
+      "bytes": 206908,
+      "sha256": "25b58aefad9f31c1b4493fa2cb0ffe028897a17d51dac5c5f47bdc383d9b0c06"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/turbo-fixture.png",
+      "bytes": 97513,
+      "sha256": "a8fc2a3bd04c6a94c5a2b4c1e7180a742b688374bbe377d7bb38fd0f06c20c7b"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/umc-diff-fixture.png",
+      "bytes": 122098,
+      "sha256": "5cf111adec43d5f5ccf6f6e8ccc773721fc1f9919e3fb7319bfbdd073fb4888d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/uncore-fixture.png",
+      "bytes": 75998,
+      "sha256": "19d81f7d580b51c442d4d31d10663336503163ffeab2ba228cccb3a9434b813d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/vf-edit-fixture.png",
+      "bytes": 122932,
+      "sha256": "7e7ab330423d0181e0786e7880bc1618e73fa7cf2814ff4857a4d87a97c69275"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/vf-fixture.png",
+      "bytes": 152452,
+      "sha256": "7ce5445e81840101915af80ce2daa156804ed660ec634bcb5b95bb862e54c59c"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/expo-fixture.png",
+      "bytes": 258021,
+      "sha256": "5cad24da1e3316606833243e4b34e09212837e3b8567ab380fa5f287be0ea131"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/native-0.png",
+      "bytes": 60580,
+      "sha256": "39c2b6801e6a40f4456a7df021a66c012be9e1964d007bfd97e6bb287b548824"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/native-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/native-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/native-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/native-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/native-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/native-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/native-7.png",
+      "bytes": 47429,
+      "sha256": "58111bed4655d7eeb11b1cb711c36670c010eaf72e0267407616012dc3a0c372"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/native-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/release-0.png",
+      "bytes": 60580,
+      "sha256": "39c2b6801e6a40f4456a7df021a66c012be9e1964d007bfd97e6bb287b548824"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/release-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/release-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/release-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/release-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/release-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/release-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/release-7.png",
+      "bytes": 47429,
+      "sha256": "58111bed4655d7eeb11b1cb711c36670c010eaf72e0267407616012dc3a0c372"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/smoke/release-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/spd-fixture.png",
+      "bytes": 206591,
+      "sha256": "c820539e43618aef036673ae657a0df54f41f9eca5cf3ae3b822f5012af627a6"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/turbo-fixture.png",
+      "bytes": 97513,
+      "sha256": "a8fc2a3bd04c6a94c5a2b4c1e7180a742b688374bbe377d7bb38fd0f06c20c7b"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/umc-diff-fixture.png",
+      "bytes": 122098,
+      "sha256": "5cf111adec43d5f5ccf6f6e8ccc773721fc1f9919e3fb7319bfbdd073fb4888d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/uncore-fixture.png",
+      "bytes": 75998,
+      "sha256": "19d81f7d580b51c442d4d31d10663336503163ffeab2ba228cccb3a9434b813d"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/vf-edit-fixture.png",
+      "bytes": 122924,
+      "sha256": "e64e6f939da676f88d6854ed2661ff7000bc0b998c52ceb457e916ee12e25ebc"
+    },
+    {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian13/vf-fixture.png",
+      "bytes": 152428,
+      "sha256": "b9e60234917d965ca9c2c58ca3b11cbf960851af0a9564a399f53f2dcbe57bfe"
+    }
+  ],
+  "visual_review": {
+    "scope": "Inspected EXPO fixture windows on Debian 12, Ubuntu 24.04 and Rocky 8: header/CRC, all thirteen first-profile quantities and units, plus the second-profile voltage and initial timing rows are visible. Full second-profile values are asserted by Qt; remaining rows require scrolling. Inspected XMP first-profile quantities on Debian 12 and Ubuntu 24.04. Ubuntu native/release memory pages are byte-identical and show the updated scope without an automatic scan.",
+    "screenshots": [
+      {
+        "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/spd-fixture.png",
+        "bytes": 242892,
+        "sha256": "04d890fc3ad7a861ba459f99a29359a5c45a3be61e952bab816df9d9084ba109"
+      },
+      {
+        "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/expo-fixture.png",
+        "bytes": 303765,
+        "sha256": "784b0c8dbb866df7b99fc03dfed6114f9e90e2795741cfcea2a7d429c2e83cbb"
+      },
+      {
+        "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/native-7.png",
+        "bytes": 54222,
+        "sha256": "ec0b74f736fbd9435ec5568e45d926d57e624f8325179c20d3230a331016dbad"
+      },
+      {
+        "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-ubuntu24.04/smoke/release-7.png",
+        "bytes": 54222,
+        "sha256": "ec0b74f736fbd9435ec5568e45d926d57e624f8325179c20d3230a331016dbad"
+      },
+      {
+        "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-el8/expo-fixture.png",
+        "bytes": 257912,
+        "sha256": "88d1ac09c3d4876c08d167ebfba5645cbba1ac482968d40c2533de0ee98cfbbc"
+      },
+      {
+        "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/expo-fixture.png",
+        "bytes": 257883,
+        "sha256": "4e8ad212f202956179b823390c1eafe9b6498ea764e31c5f25fb25a5fe4002d3"
+      },
+      {
+        "path": "build/ddr5-expo-e4cb81b/linux-artifacts/desktop-debian12/spd-fixture.png",
+        "bytes": 206908,
+        "sha256": "25b58aefad9f31c1b4493fa2cb0ffe028897a17d51dac5c5f47bdc383d9b0c06"
+      }
+    ],
+    "fixture_values_are_hardware_measurements": false,
+    "native_release_memory_page_identical": true
+  },
+  "cli_package_bytes": {
+    "minimum": 205864,
+    "maximum": 254514
+  },
+  "gui_package_bytes": {
+    "minimum": 10479154,
+    "maximum": 14261184
+  },
+  "expo_format_research": {
+    "original_function_emulated": false,
+    "evidence": {
+      "path": "docs/validation/ddr5-expo-sources.json",
+      "bytes": 5432,
+      "sha256": "410720e778e906c0aa9019d1d62c6bd8691694f23919d64cab5ca755a70f677c"
+    }
+  },
+  "user_profile_predicate_research": {
+    "synthetic_cases": 4,
+    "original_or_hardware_execution": false,
+    "evidence": {
+      "path": "docs/validation/xmp-user-presence-research.json",
+      "bytes": 2470,
+      "sha256": "ca849384a4101107f39a1161ca629735f82436a5e74398896fa7bb7cc12635e5"
+    }
+  },
+  "xmp_static_research": {
+    "executed_original_instructions": false,
+    "evidence": [
+      {
+        "path": "docs/validation/legacy-ddr5-xmp-static.json",
+        "bytes": 105972,
+        "sha256": "42697f1add19c51afe29b7c7438f0bd9ed59ef493369d26676fc5c661f6fad8b"
+      },
+      {
+        "path": "docs/validation/ddr5-xmp-sources.json",
+        "bytes": 3041,
+        "sha256": "c6e3e357b8d328df81a9b4570aab693fbb75891cc52ea36d4fb0ddff7affbf7e"
+      }
+    ]
+  },
+  "xmp_enable_dispatch": {
+    "local_scenarios": 8,
+    "full_original_function_emulation": false,
+    "hardware_access": false,
+    "profile_bodies_executed": false,
+    "evidence": {
+      "path": "docs/validation/legacy-ddr5-xmp-enable-dispatch-local.json",
+      "bytes": 12042,
+      "sha256": "17602b6de98194fff86a1f77b861d401b7b50ac722ce5d47c63d7abd12ff3ee5"
+    }
+  },
+  "original_uncore_emulation": {
+    "scenarios": 48,
+    "bounded_busy_loop": true,
+    "cloud_unittest_reexecuted_scenarios": true,
+    "hardware_access": false,
+    "evidence": [
+      {
+        "path": "analysis/fixtures/legacy-intel-uncore.json",
+        "bytes": 4077,
+        "sha256": "ee0cb4a9a4168c166d7875cf0f895d67d9de8d93ad98528f11d7a9f06e433193"
+      },
+      {
+        "path": "docs/validation/legacy-intel-uncore-static.json",
+        "bytes": 17725,
+        "sha256": "a9bfa2654cad50566d1d6f48c28a074e4e218f71dbe4352cb5ba3b32c16920f8"
+      },
+      {
+        "path": "docs/validation/legacy-intel-uncore-local.json",
+        "bytes": 39619,
+        "sha256": "ef19cf18edf1569f7e99ed6c5361f0690d0dbb6b67c5a56a0b875ad428743362"
+      },
+      {
+        "path": "docs/validation/intel-uncore-sources.json",
+        "bytes": 2233,
+        "sha256": "b2d8ba7659d102a16ab8683dd666ecaf05ac572f99b5c586e001e2cba3946896"
+      }
+    ]
+  },
+  "original_vf_emulation": {
+    "scenarios": 135,
+    "cloud_unittest_reexecuted_scenarios": true,
+    "hardware_access": false,
+    "evidence": [
+      {
+        "path": "analysis/fixtures/legacy-intel-vf.json",
+        "bytes": 12342,
+        "sha256": "0d0b237fd7eae253ffc4dccff0dd7951a275b859a8ddde18b6182238f050078d"
+      },
+      {
+        "path": "docs/validation/legacy-intel-vf-static.json",
+        "bytes": 127388,
+        "sha256": "ced8270459fa20272874ca7d6592c5dbef087872260a4b1bc655c174cede6f7d"
+      },
+      {
+        "path": "docs/validation/legacy-intel-vf-emulation.json",
+        "bytes": 56039,
+        "sha256": "70fa93d7b7ce2f31fe2b8b6382c8c3084d9c902ed28e9470fae96e59cba48098"
+      }
+    ]
+  },
+  "original_voltage_emulation": {
+    "scenarios": 82,
+    "source_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+    "evidence": [
+      {
+        "path": "analysis/fixtures/legacy-intel-voltage.json",
+        "bytes": 11734,
+        "sha256": "72f5a01e7b203f8b5098fe8425eb185f63455148495ad10c89cc1c9f03b7f3af"
+      },
+      {
+        "path": "docs/validation/intel-voltage-static.json",
+        "bytes": 98846,
+        "sha256": "aa4c940327b6a1bb502122b758d0d65b2dd6b5bbe9105023052e69636f4a8c21"
+      },
+      {
+        "path": "docs/validation/intel-voltage-local.json",
+        "bytes": 36719,
+        "sha256": "cb04fd54e690458a4fdb5cb559f168428bfd2378f06d28cd5f64fbe520c03ed4"
+      }
+    ],
+    "cloud_matches_local_execution": true,
+    "cloud_evidence": {
+      "path": "build/ddr5-expo-e4cb81b/linux-artifacts/mailbox-contract-evidence/intel-voltage.json",
+      "bytes": 36719,
+      "sha256": "cb04fd54e690458a4fdb5cb559f168428bfd2378f06d28cd5f64fbe520c03ed4"
+    }
+  },
+  "source_archive": {
+    "path": "dist/gui-cli-ddr5-expo-e4cb81b/octool-2.0.1-src.tar.gz",
+    "bytes": 3997166,
+    "sha256": "7ac1f34caba83a417d059afdd1c6fa92996cfef366a259ba9a8d362485449d4c"
+  },
+  "local_sources_matching_cloud": {
+    "cli/CMakeLists.txt": "06348146dd958b94f61e624b7d1815406d47b9828ab926ebe33d8461d9db56ef",
+    "cli/commands.cpp": "8385d33a65835c02690b618b43ba6a68e863aebafb329df0684a8fdc355d3d13",
+    "cli/test_process.py": "21e8239fff9241891fc779840d03b52edffe84dff005e54e57ada5b440ecefcb",
+    "cli/tests.cpp": "e49fb5308a2e2458be12c143937f5343d78dbf06dc5c370f7fcd132e83317003",
+    "docs/ddr5-expo-recovery.md": "44c26647590d27e7d4e42db266e989b9aa8efd1d8830c2be209eb434da7e17f3",
+    "docs/ddr5-xmp-recovery.md": "b97a91a96401d28eefaf6c9894c74fff8905a79b275d85a83e6efa5a5d20c907",
+    "docs/frontend-progress.md": "bb09cdf4de61285491ded164d95e5de5f3acd181653a26d2427fdbd58ef71652",
+    "docs/headless-cli.md": "235fd3062af48b077f93ed11fbe7a2e485a5e6e56f2ac9ef8676431391e991c1",
+    "docs/validation/ddr5-expo-sources.json": "1876583c64ee91110dea297e9d5a99e2aa8beef385c9124eef243e555d9e985e",
+    "gui/core/spd.cpp": "498aa4292d73e1c1b9f4a229dbb41488e2c61055137ed2872bc3a7f6ed8afc49",
+    "gui/core/spd.h": "b52d0445cf1ed723fe4e897c78c3dcec56e5745dae81b7ae5dd2158fb7358425",
+    "gui/platformpanels.cpp": "b7f198b01aed6407527e9e5d34790104dc2541f0e0c40ec1ed6aa0acc24ca7ff",
+    "gui/tests/regression.cpp": "dff983c1d5f569796e3ca91a502bab85d80fdcefd85ff6192e3cdf57ec65f331",
+    "gui/tests/spd_core_test.cpp": "db27f038f21d14370ad676bec82612a29b6a22cab9aa37de27165146c84139f3",
+    "gui/tests/spd_fixture.h": "9f729011e8af000e2501bcc4bef2e0597b981abd34c6aaa0bf2e9bc4e5ce9eaf",
+    "port/ci/in-container.sh": "b9cae0fcf2873576a0f296728885f03ea9e81f6f3c8173b866d71087455d6aa6",
+    "port/tools/build_cli.py": "6055d1ff45113444b3ea14838095c9e5e7229040ad86e2d03d01d06b27eaea0b",
+    "port/tools/build_gui.py": "c2845fa28a584d4e7c65fe74ce8624a75634aa2c4b689caffad540a81c02a1af"
+  },
+  "preserved_original_document_difference": {
+    "path": "docs/recovery-status.md",
+    "scope": "Existing local UMC implementation link preserved in the original directory; All 18 changed files match the cloud archive in full; unrelated original document differences are retained."
+  },
+  "driver_hal_abi_unchanged_from": "6d58cfc16149be216b3f1e086b9a02b6928fc908",
+  "local_tests": {
+    "total": 48,
+    "passed": 36,
+    "skipped": 12,
+    "failed": 0,
+    "report": {
+      "path": "build/expo-local-tests.txt",
+      "bytes": 7623,
+      "sha256": "aac9cf83084f6c9eee31f86c4160f39ff8a5ca3066e0a98c2c7afda2f25d6c40"
+    },
+    "note": "Local host lacks C++/Qt/Linux toolchain; executable coverage supplied by cloud runs."
+  },
+  "limits": [
+    "Linux x86_64 packages; portable core tests do not establish Windows/macOS hardware support",
+    "XMP 3.0 manufacturer and EXPO 1.0 basic profiles only; no EXPO enhanced timings, EXPO 1.1, user slots, SPD writes, applying profiles or current trained timings",
+    "No physical hardware tuning, stability, Secure Boot enrollment or cross-version upgrade acceptance",
+    "Other previously documented restoration gaps and process-local transaction locking remain"
+  ]
+}
