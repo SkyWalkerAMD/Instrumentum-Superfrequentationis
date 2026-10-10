@@ -651,6 +651,11 @@ private slots:
             }
             if(id==203) QVERIFY(table->isRowHidden(row));
         }
+        // Setting the wrapped comparison summary posts a layout request. Wait
+        // for its full height before capturing, as the interactive event loop does.
+        auto *status=panel.findChild<QLabel *>("umcStatus");
+        QTRY_VERIFY(status->height()>=status->heightForWidth(status->width()));
+        QVERIFY(status->geometry().bottom()<=panel.rect().bottom());
         const auto screenshot=qEnvironmentVariable("OCTOOL_UMC_DIFF_TEST_SCREENSHOT");
         if(!screenshot.isEmpty()) QVERIFY(panel.grab().save(screenshot));
         only->setChecked(false);
