@@ -1,0 +1,2430 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "core_fixture_sha256": "be1bb6aeba8051be1a746c3fadbefa89f3f0a83f8be78b9d731d778b4d08726e",
+  "scope": "Original Load entry through 0x618ee6; full ratio Set/Get and vector growth helpers; original Save entry through 0x6168b4 plus QString cleanup branches. Topology/config objects, Qt parsing/destruction, streams and libc are synthetic. Stop before clocks and other fields; no complete Save, hardware or real Qt execution.",
+  "functions": [
+    {
+      "symbol": "_ZN11NVL_MEM_CFG22Set_OcTurboRatioLimitsEbiRSt6vectorIiSaIiEES3_",
+      "address": 2383728,
+      "size": 401,
+      "code_hex": "f30f1efa41574989ff4156415541544d89c455534889cb4883ec2864488b042528000000488944241831c085d20f8512010000440fb6af100b00004183f501410fb6c58944240c89f031edc1e01a89442408660f1f440000498b8f180e00008b54240c31c04c8b4308d3e289e9c1e20dc1e10881e200e0ff0009ca31c90b5424084080fd070f94c1c1e11c09ca488b0b81e200ffff1c4929c849c1f8024939e80f86c00000008a04a94d8b442408498b0c244929c849c1f8024939e80f86bb0000008b0ca981ca2b000080bf500100004c8d742414895424144c8d6c241088cc89c689442410e8c59612000f1f4400004c89f24c89eebf50010000e8609712008b44241485c078e84c89f24c89eebf500100004883c501e8449712004883fd080f8532ffffff488b44241864482b04252800000075424883c4285b5d415c415d415e415fc383fa0175100fb687110b00008944240ce9edfeffff0fb6c28944240ce9e1feffff4c89c24889ee488d3d2d783801e87842f0ffe82348f0ff4c89c24889ee488d3d1678380131c0e85f42f0ff",
+      "code_sha256": "acb6fb4ee57503c713d79cd2ffb50e42fd7741e17d4e995ece39b0bb8b823c4f",
+      "calls": [
+        {
+          "instruction": 2383958,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 2383979,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 2384007,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 2384069,
+          "kind": "jmp",
+          "target": 2383799,
+          "symbols": []
+        },
+        {
+          "instruction": 2384081,
+          "kind": "jmp",
+          "target": 2383799,
+          "symbols": []
+        },
+        {
+          "instruction": 2384099,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 2384104,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 2384124,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN11NVL_MEM_CFG22Get_OcTurboRatioLimitsEbiRSt6vectorIiSaIiEES3_",
+      "address": 2891808,
+      "size": 413,
+      "code_hex": "f30f1efa41574989ff41564d89c641554989cd415455534883ec3864488b042528000000488944242831c085d20f85440100000fb687100b000083f0010fb6c089442408498b4500493b4508740449894508498b06493b460874044989460889f0488d6c2420488d5c241c4531e4c1e01a894424040f1f00498b8f180e00008b5424084489e031f6c1e008bf50010000c744241c00000000d3e20d00000080c1e20d81e200e0ff0009c20b54240481e200ffff8c83ca2a89542420e840d60a004889ea4889debf50010000e8e0d60a008b44242085c078e84889ea4889debf50010000e8c8d60a008b44241c498b75080fb6d089542424493b7510746389164883c604498975080fb6c4498b760889442424493b7610743889064883c604498976084183c4014183fc080f8548ffffff488b44242864482b04252800000075584883c4385b5d415c415d415e415fc390488d5424244c89f7e8337df6ffebc390488d5424244c89ef8944240ce81f7df6ff8b44240ceb9083fa01740c0fb6c289442408e9bcfeffff0fb687110b000089442408e9acfeffffe85387e8ff",
+      "code_sha256": "0579e1ececbf27a33d9c55598cd3e6487315ce00d1f9307b343d86a93ba8bcfa",
+      "calls": [
+        {
+          "instruction": 2891995,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 2892011,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 2892035,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 2892152,
+          "kind": "call",
+          "target": 2268848,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 2892157,
+          "kind": "jmp",
+          "target": 2892098,
+          "symbols": []
+        },
+        {
+          "instruction": 2892172,
+          "kind": "call",
+          "target": 2268848,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 2892181,
+          "kind": "jmp",
+          "target": 2892071,
+          "symbols": []
+        },
+        {
+          "instruction": 2892195,
+          "kind": "jmp",
+          "target": 2891876,
+          "symbols": []
+        },
+        {
+          "instruction": 2892211,
+          "kind": "jmp",
+          "target": 2891876,
+          "symbols": []
+        },
+        {
+          "instruction": 2892216,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_",
+      "address": 2268848,
+      "size": 359,
+      "code_hex": "f30f1efa41574889d148baffffffffffffff1f41564155415455534883ec184c8b67084c8b3f4c89e04c29f848c1f8024839d00f84220100004885c0ba010000004989f64889fd480f45d031f64801d04c89f2400f92c64c29fa4885f60f85a50000004885c00f85d400000031db4531ed4d89e08b014d8d4c15044d29f041894415004f8d24014885d27f2c4d85c07f5f4d85ff75444c896d004c89650848895d104883c4185b5d415c415d415e415fc30f1f80000000004c89fe4c89ef4c894424084c890c24e8e404f2ff4c8b4424084c8b0c244d85c07f16488b75104c89ff4c29fee80703f2ffebab0f1f4400004c89c24c89f64c89cfe86226f2ff4d85ff7493ebd50f1f0048bbfcffffffffffff7f4889df48894c240848891424e8dd26f2ff488b1424488b4c24084989c54801c3e93affffff660f1f84000000000048beffffffffffffff1f4839f0480f47c6488d1c8500000000ebb7488d3d972f3a01e87912f2ff",
+      "code_sha256": "fd2b1c2714deddb90ddf96ae44724e800b4204f3c40bf56cd67ef3ce5acda2a6",
+      "calls": [
+        {
+          "instruction": 2269047,
+          "kind": "call",
+          "target": 1352800,
+          "symbols": [
+            "memmove@plt"
+          ]
+        },
+        {
+          "instruction": 2269076,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 2269081,
+          "kind": "jmp",
+          "target": 2268998,
+          "symbols": []
+        },
+        {
+          "instruction": 2269097,
+          "kind": "call",
+          "target": 1361424,
+          "symbols": [
+            "memcpy@plt"
+          ]
+        },
+        {
+          "instruction": 2269107,
+          "kind": "jmp",
+          "target": 2269066,
+          "symbols": []
+        },
+        {
+          "instruction": 2269134,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 2269154,
+          "kind": "jmp",
+          "target": 2268961,
+          "symbols": []
+        },
+        {
+          "instruction": 2269193,
+          "kind": "jmp",
+          "target": 2269122,
+          "symbols": []
+        },
+        {
+          "instruction": 2269202,
+          "kind": "call",
+          "target": 1356432,
+          "symbols": [
+            "_ZSt20__throw_length_errorPKc@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-prefix",
+      "address": 6379056,
+      "size": 4740,
+      "code_hex": "f30f1efa554889e54157415641554154534881ec0010000048830c24004881ecf80e00004889bd38e1ffff4889fb4c8db5e0e1ffff64488b042528000000488945c831c0e847ebd5ff488b43304c89f7488b4030488bb0b8020000e840707c00ba0a00000031f64c89f7e801c1e1004c89f7888508fdffffe8c309edff488b43304c89f7488b4030488bb0f0030000e80c707c00ba0a00000031f64c89f7e8cdc0e100488bbde0e1ffff888509fdffff8b0785c00f842f23000083f8ff7411f0832f01488bbde0e1ffff0f8419230000488b9d38e1ffff4c89f7488b4330488b4030488bb090010000e8b26f7c00ba0a00000031f64c89f7e873c0e1004c89f788850afdffffe83509edff488b43304c89f7488b4030488bb058030000e87e6f7c00ba0a00000031f64c89f7e83fc0e100488bbde0e1ffff88850bfdffff8b0785c00f847d24000083f8ff7411f0832f01488bbde0e1ffff0f8467240000488b8538e1ffff4c89f7488b4030488b4030488bb0f8030000e8246f7c00ba0a00000031f64c89f7e8e5bfe100488bbde0e1ffff88850cfdffff8b0785c00f842725000083f8ff7411f0832f01488bbde0e1ffff0f8411250000488b8538e1ffff4c89f7488b4030488b4030488bb0d0020000e8ca6e7c00ba0a00000031f64c89f7e88bbfe100488bbde0e1ffff88850dfdffff8b0785c00f842923000083f8ff7411f0832f01488bbde0e1ffff0f8413230000488b8538e1ffff4c89f7488b4030488b4030488bb010020000e8706e7c00ba0a00000031f64c89f7e831bfe100488bbde0e1ffff88850efdffff8b0785c00f84e322000083f8ff7411f0832f01488bbde0e1ffff0f84cd220000488b9d38e1ffff4c89f7488b4330488b4030488bb070040000e8166e7c00ba0a00000031f64c89f7e8d7bee1004c89f788850ffdffffe89907edff488b43304c89f7488b4030488bb000020000e8e26d7c00ba0a00000031f64c89f7e8a3bee100488bbde0e1ffff888510fdffff8b0785c00f84d123000083f8ff7411f0832f01488bbde0e1ffff0f84bb230000488b8538e1ffff4c89f7488b4030488b4030488bb058020000e8886d7c00ba0a00000031f64c89f7e849bee100488bbde0e1ffff888511fdffff8b0785c00f846323000083f8ff7411f0832f01488bbde0e1ffff0f844d230000488b8538e1ffff4c89f7488b4030488b4030488b7028e8316d7c00ba0a00000031f64c89f7e8f2bde100488bbde0e1ffff888512fdffff8b0785c00f846820000083f8ff7411f0832f01488bbde0e1ffff0f8452200000488b9d38e1ffff4c89f7488b4330488b4030488bb028030000e8d76c7c00ba0a00000031f64c89f7e898bde1004c89f7888513fdffffe85a06edff488b43304c89f7488b4030488bb058010000e8a36c7c00ba0a00000031f64c89f7e864bde1004c89f7888514fdffffe82606edff488b43304c89f7488b4030488bb008030000e86f6c7c00ba0a00000031f64c89f7e830bde1004c89f7888515fdffffe8f205edff488b43304c89f7488b4030488bb0a8030000e83b6c7c00ba0a00000031f64c89f7e8fcbce1004c89f7888516fdffffe8be05edff488b43304c89f7488b4030488bb038030000e8076c7c00ba0a00000031f64c89f7e8c8bce100488bbde0e1ffff888517fdffff8b0785c00f84b620000083f8ff7411f0832f01488bbde0e1ffff0f84a0200000488b9d38e1ffff4c89f7488b4330488b4030488bb020020000e8ad6b7c00ba0a00000031f64c89f7e86ebce1004c89f7888518fdffffe83005edff488b43304c89f7488b4030488bb060020000e8796b7c00ba0a00000031f64c89f7e83abce100488bbde0e1ffff888519fdffff8b0785c00f841420000083f8ff7411f0832f01488bbde0e1ffff0f84fe1f0000488b8538e1ffff4c89f7488b4030488b4030488bb0a8020000e81f6b7c00ba0a00000031f64c89f7e8e0bbe100488bbde0e1ffff88851afdffff8b0785c00f843220000083f8ff7411f0832f01488bbde0e1ffff0f841c200000488b8538e1ffff4c89f7488b4030488b4030488bb000030000e8c56a7c00ba0a00000031f64c89f7e886bbe100488bbde0e1ffff88851bfdffff8b0785c00f843c20000083f8ff7411f0832f01488bbde0e1ffff0f8426200000488b8538e1ffff4c89f7488b4030488b4030488b30e86f6a7c00ba0a00000031f64c89f7e830bbe100488bbde0e1ffff88851cfdffff8b0785c00f84f61e000083f8ff7411f0832f01488bbde0e1ffff0f84e01e0000488b8538e1ffff4c89f7488b4030488b4030488bb0d8000000e8156a7c00ba0a00000031f64c89f7e8d6bae100488bbde0e1ffff88851dfdffff8b0785c00f84741d000083f8ff7411f0832f01488bbde0e1ffff0f845e1d0000488b8538e1ffff4c89f7488b4030488b4030488bb048030000e8bb697c00ba0a00000031f64c89f7e87cbae100488bbde0e1ffff88851efdffff8b0785c00f846a1d000083f8ff7411f0832f01488bbde0e1ffff0f84541d0000488b9d38e1ffff4c89f7488b4330488b4030488bb010010000e861697c00ba0a00000031f64c89f7e822bae1004c89f788851ffdffffe8e402edff488b43304c89f7488b4030488b7018e830697c00ba0a00000031f64c89f7e8f1b9e100488bbde0e1ffff888520fdffff8b0785c00f84a31c000083f8ff7411f0832f01488bbde0e1ffff0f848d1c0000488b9d38e1ffff4c89f7488b4330488b4030488bb048010000e8d6687c00ba0a00000031f64c89f7e897b9e1004c89f7888521fdffffe85902edff488b43304c89f7488b4030488bb050010000e8a2687c00ba0a00000031f64c89f7e863b9e1004c89f7888522fdffffe82502edff488b43304c89f7488b4030488b7008e871687c00ba0a00000031f64c89f7e832b9e1004c89f7888523fdffffe8f401edff488b43304c89f7488b4030488bb0e0010000e83d687c00ba0a00000031f64c89f7e8feb8e100488bbde0e1ffff888524fdffff8b0785c00f84001c000083f8ff7411f0832f01488bbde0e1ffff0f84ea1b0000488b9d38e1ffff4c89f7488b4330488b4030488bb0f8010000e8e3677c00ba0a00000031f64c89f7e8a4b8e1004c89f7888525fdffffe86601edff488b43304c89f7488b4030488bb030040000e8af677c00ba0a00000031f64c89f7e870b8e1004c89f7888526fdffffe83201edff488b43304c89f7488b4030488bb0c8000000e87b677c00ba0a00000031f64c89f7e83cb8e1004c89f7888527fdffffe8fe00edff488b43304c89f7488b4030488bb038010000e847677c00ba0a00000031f64c89f7e808b8e100488bbde0e1ffff888528fdffff8b0785c00f84e21a000083f8ff7411f0832f01488bbde0e1ffff0f84cc1a0000488b8538e1ffff4c89f7488b4030488b4030488bb008010000e8ed667c00ba0a00000031f64c89f7e8aeb7e100488bbde0e1ffff888529fdffff8b0785c00f84b01b000083f8ff7411f0832f01488bbde0e1ffff0f849a1b0000488b8538e1ffff4c89f7488b4030488b4030488bb098020000e893667c00ba0a00000031f64c89f7e854b7e100488bbde0e1ffff88852afdffff8b0785c00f841a1a000083f8ff7411f0832f01488bbde0e1ffff0f84041a0000488b8538e1ffff4c89f7488b4030488b4030488bb080000000e839667c00ba0a00000031f64c89f7e8fab6e100488bbde0e1ffff88852bfdffff8b0785c00f84241b000083f8ff7411f0832f01488bbde0e1ffff0f840e1b0000488b8538e1ffff4c89f7488b4030488b4030488bb0d8030000e8df657c00ba0a00000031f64c89f7e8a0b6e100488bbde0e1ffff88852cfdffff8b0785c00f841a1b000083f8ff7411f0832f01488bbde0e1ffff0f84041b0000488b8538e1ffff4c89f7488b4030488b4030488bb080030000e885657c00ba0a00000031f64c89f7e846b6e100488bbde0e1ffff88852dfdffff8b0785c00f845c1a000083f8ff7411f0832f01488bbde0e1ffff0f84461a0000488b9d38e1ffff4c89f7488b4330488b4030488bb0a0040000e82b657c00ba0a00000031f64c89f7e8ecb5e1004c89f788852efdffffe8aefeecff488b43304c89f7488b4030488bb0f8000000e8f7647c00ba0a00000031f64c89f7e8b8b5e1004c89f788852ffdffffe87afeecff488b43304c89f7488b4030488bb0c0010000e8c3647c00ba0a00000031f64c89f7e884b5e1004c89f7888530fdffffe846feecff488b43304c89f7488b4030488bb0c8030000e88f647c00ba0a00000031f64c89f7e850b5e1004c89f7888531fdffffe812feecff488b43304c89f7488b4030488bb0e0000000e85b647c00ba0a00000031f64c89f7e81cb5e1004c89f7888532fdffffe8defdecff488b43304c89f7488b4030488bb0b8030000e827647c00ba0a00000031f64c89f7e8e8b4e100488bbde0e1ffff888533fdffff8b0785c00f844e19000083f8ff7411f0832f01488bbde0e1ffff0f8438190000488b8538e1ffff4c89f7488b4030488b4030488bb0a0000000e8cd637c00ba0a00000031f64c89f7e88eb4e100488bbde0e1ffff888534fdffff8b0785c00f843019000083f8ff7411f0832f01488bbde0e1ffff0f841a190000488b8538e1ffff4c89f7488b4030488b4030488bb0f8020000e873637c00ba0a00000031f64c89f7e834b4e100488bbde0e1ffff888535fdffff8b0785c00f84be16000083f8ff7411f0832f01488bbde0e1ffff0f84a8160000488b8538e1ffff4c89f7488b4030488b4030488bb0b0020000e819637c00ba0a00000031f64c89f7e8dab3e100488bbde0e1ffff888536fdffff8b0785c00f840417000083f8ff7411f0832f01488bbde0e1ffff0f84ee160000488b8538e1ffff4c89f7488b4030488b4030488bb0a0030000e8bf627c00ba0a00000031f64c89f7e880b3e100488bbde0e1ffff888537fdffff8b0785c00f849616000083f8ff7411f0832f01488bbde0e1ffff0f8480160000488b9d38e1ffff4c89f7488b4330488b4030488bb0b0040000e865627c00ba0a00000031f64c89f7e826b3e1004c89f7888538fdffffe8e8fbecff488b43304c89f7488b4030488bb0e8020000e831627c00ba0a00000031f64c89f7e8f2b2e1004c89f7888539fdffffe8b4fbecff488b43304c89f7488b4030488bb098000000e8fd617c00ba0a00000031f64c89f7e8beb2e100488bbde0e1ffff88853afdffff8b0785c00f844c17000083f8ff7411f0832f01488bbde0e1ffff0f8436170000488b8538e1ffff4c89f7488b4030488b4030488bb0d8040000e8a3617c00ba0a00000031f64c89f7e864b2e100488bbde0e1ffff88853bfdffff8b0785c00f842e17000083f8ff7411f0832f01488bbde0e1ffff0f8418170000488b9d38e1ffff4c89f7488b4330488b4030488bb018040000e849617c00ba0a00000031f64c89f7e80ab2e1004c89f788853cfdffffe8ccfaecff488b43304c89f7488b4030488bb030010000e815617c00ba0a00000031f64c89f7e8d6b1e1004c89f788853dfdffffe898faecff488b43304c89f7488b4030488bb038020000e8e1607c00ba0a00000031f64c89f7e8a2b1e1004c89f788853efdffffe864faecff488b43304c89f7488b4030488bb0b8010000e8ad607c00ba0a00000031f64c89f7e86eb1e1004c89f788853ffdffffe830faecff488b43304c89f7488b4030488b7050e87c607c00ba0a00000031f64c89f7e83db1e100488bbde0e1ffff888540fdffff8b0785c00f841b16000083f8ff7411f0832f01488bbde0e1ffff0f8405160000488b8538e1ffff4c89f7488b4030488b4030488b7020e825607c00ba0a00000031f64c89f7e8e6b0e100488bbde0e1ffff888541fdffff8b0785c00f84ec15000083f8ff7411f0832f01488bbde0e1ffff0f84d6150000488b8538e1ffff4c89f7488b4030488b4030488bb040010000e8cb5f7c00ba0a00000031f64c89f7e88cb0e100488bbde0e1ffff888542fdffff8b0785c00f84f615000083f8ff7411f0832f01488bbde0e1ffff0f84e0150000488b9d38e1ffff4c89f7488b4330488b4030488bb0a8010000e8715f7c00ba0a00000031f64c89f7e832b0e1004c89f7888543fdffffe8f4f8ecff488b43304c89f7488b4030488bb018010000e83d5f7c00ba0a00000031f64c89f7e8feafe1004c89f7888544fdffffe8c0f8ecff488b43304c89f7488b4030488bb078020000e8095f7c00ba0a00000031f64c89f7e8caafe100488bbde0e1ffff888545fdffff8b0785c00f84bc14000083f8ff7411f0832f01488bbde0e1ffff0f84a6140000488b8538e1ffff4c89f7488b4030488b4030488bb078030000e8af5e7c00ba0a00000031f64c89f7e870afe100488bbde0e1ffff888546fdffff8b0785c00f84c614000083f8ff7411f0832f01488bbde0e1ffff0f84b0140000488b8538e1ffff4c89f7488b4030488b4030488b7040e8585e7c00ba0a00000031f64c89f7e819afe100488bbde0e1ffff888547fdffff8b0785c00f845712000083f8ff7411f0832f01488bbde0e1ffff0f8441120000",
+      "code_sha256": "bac81bb076a102b6224f04ca63ea2b187dc88071c72208febcefc47fb3517255",
+      "calls": [
+        {
+          "instruction": 6379124,
+          "kind": "call",
+          "target": 3621312,
+          "symbols": [
+            "_Z18percoreoverride_env"
+          ]
+        },
+        {
+          "instruction": 6379147,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379162,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379176,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6379199,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379214,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379289,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379304,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379318,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6379341,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379356,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379431,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379446,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379521,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379536,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379611,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379626,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379701,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379716,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379730,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6379753,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379768,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379843,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379858,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379930,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379945,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380020,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380035,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380049,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6380072,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380087,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380101,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6380124,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380139,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380153,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6380176,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380191,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380205,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6380228,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380243,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380318,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380333,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380347,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6380370,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380385,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380460,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380475,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380550,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380565,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380636,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380651,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380726,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380741,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380816,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380831,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380906,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380921,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380935,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6380955,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380970,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381045,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381060,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381074,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6381097,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381112,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381126,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6381146,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381161,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381175,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6381198,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381213,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381288,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381303,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381317,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6381340,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381355,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381369,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6381392,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381407,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381421,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6381444,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381459,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381534,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381549,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381624,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381639,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381714,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381729,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381804,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381819,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381894,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381909,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381984,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381999,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382013,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6382036,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382051,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382065,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6382088,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382103,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382117,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6382140,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382155,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382169,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6382192,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382207,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382221,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6382244,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382259,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382334,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382349,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382424,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382439,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382514,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382529,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382604,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382619,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382694,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382709,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382723,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6382746,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382761,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382775,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6382798,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382813,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382888,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382903,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382978,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382993,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383007,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6383030,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383045,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383059,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6383082,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383097,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383111,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6383134,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383149,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383163,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6383183,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383198,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383270,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383285,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383360,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383375,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383450,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383465,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383479,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6383502,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383517,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383531,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6383554,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383569,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383644,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383659,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383731,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383746,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617a19",
+      "address": 6388249,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e86835db00e9d3dcffff",
+      "code_sha256": "98b329365c8b983e79b6ecc0e39816bb02f49cf88c31c20e55dd78a71722dac7",
+      "calls": [
+        {
+          "instruction": 6388259,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388264,
+          "kind": "jmp",
+          "target": 6379264,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617a2d",
+      "address": 6388269,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e85435db00e99adfffff",
+      "code_sha256": "83d6a71065d5ef33841fec7a113e618f1d454ccacd7fc6c6711ce78fda574874",
+      "calls": [
+        {
+          "instruction": 6388279,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388284,
+          "kind": "jmp",
+          "target": 6379995,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617a41",
+      "address": 6388289,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e84035db00e944e9ffff",
+      "code_sha256": "a2011584f2db9ca947438ea14e3859f1304f96e3ffb28e4ccb7115ab06a04ae0",
+      "calls": [
+        {
+          "instruction": 6388299,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388304,
+          "kind": "jmp",
+          "target": 6382489,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617a55",
+      "address": 6388309,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e82c35db00e98ee2ffff",
+      "code_sha256": "86f140ad61a487bb6bb6e2d044b7f5c1afb5fc02db5d7ac457e751f594eb0f19",
+      "calls": [
+        {
+          "instruction": 6388319,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388324,
+          "kind": "jmp",
+          "target": 6380791,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617a69",
+      "address": 6388329,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e81835db00e95fe3ffff",
+      "code_sha256": "889adf5f85a1ee5fb6a34e2e9e7185c0a3283320075d5cdc30ddf887bbae5a55",
+      "calls": [
+        {
+          "instruction": 6388339,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388344,
+          "kind": "jmp",
+          "target": 6381020,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617a7d",
+      "address": 6388349,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e80435db00e9e8e5ffff",
+      "code_sha256": "1a92599eb0d8a72f348eb316833447ff6a017d0ffae9691373c14646a2496dfa",
+      "calls": [
+        {
+          "instruction": 6388359,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388364,
+          "kind": "jmp",
+          "target": 6381689,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617a91",
+      "address": 6388369,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e8f034db00e920e5ffff",
+      "code_sha256": "ffbea2fc83470427fb8ae0ad04c39a7509ef59f5ce24c9925a4f0451b399dc61",
+      "calls": [
+        {
+          "instruction": 6388379,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388384,
+          "kind": "jmp",
+          "target": 6381509,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617aa5",
+      "address": 6388389,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e8dc34db00e998e2ffff",
+      "code_sha256": "dcdaee8763b6967d12674edb89db4f91edccce8fd267227cd5ec7d5b3f73e626",
+      "calls": [
+        {
+          "instruction": 6388399,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388404,
+          "kind": "jmp",
+          "target": 6380881,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617ab9",
+      "address": 6388409,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e8c834db00e902e4ffff",
+      "code_sha256": "e57012bb6fdb73c4508a85ebebbd04d2155cdf901ccea02b8849639c9e7df276",
+      "calls": [
+        {
+          "instruction": 6388419,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388424,
+          "kind": "jmp",
+          "target": 6381263,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617acd",
+      "address": 6388429,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e8b434db00e96ce9ffff",
+      "code_sha256": "b25ae91c763dac3674b2c7adeccd799848db7b7d9b3fc6fc3c7fa5bf7b92a475",
+      "calls": [
+        {
+          "instruction": 6388439,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388444,
+          "kind": "jmp",
+          "target": 6382669,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617ae1",
+      "address": 6388449,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e8a034db00e9fee8ffff",
+      "code_sha256": "9ad833c33e83104cae7187496a5cddf58d3cbbd38706bc70124de898dbe5612e",
+      "calls": [
+        {
+          "instruction": 6388459,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388464,
+          "kind": "jmp",
+          "target": 6382579,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617af5",
+      "address": 6388469,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e88c34db00e9abedffff",
+      "code_sha256": "7a519f3e24fb004890e81ec67beb4dafc1d2177e244166187ab20a174b69c55c",
+      "calls": [
+        {
+          "instruction": 6388479,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388484,
+          "kind": "jmp",
+          "target": 6383796,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617b55",
+      "address": 6388565,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e82c34db00e9d9dcffff",
+      "code_sha256": "ef6bf581314c3673696a9759ffbecd0fc45d552f04dea589aa296b4d0ecdf933",
+      "calls": [
+        {
+          "instruction": 6388575,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388580,
+          "kind": "jmp",
+          "target": 6379586,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617b69",
+      "address": 6388585,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e81834db00e91fddffff",
+      "code_sha256": "6412a6b8144c5b08667491aec765122e1c79b62de98f6f19c810aa05d8f475df",
+      "calls": [
+        {
+          "instruction": 6388595,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388600,
+          "kind": "jmp",
+          "target": 6379676,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617b7d",
+      "address": 6388605,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e80434db00e90ce1ffff",
+      "code_sha256": "6aa702ac2528f0c30f75194648db0fb37a92cbddf9d56baec2de545b947b7927",
+      "calls": [
+        {
+          "instruction": 6388615,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388620,
+          "kind": "jmp",
+          "target": 6380701,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617b91",
+      "address": 6388625,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e8f033db00e9eedfffff",
+      "code_sha256": "e7933a39a77ff5949b630594f100d8b86e564f45e27ef7067affa196526ef79b",
+      "calls": [
+        {
+          "instruction": 6388635,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388640,
+          "kind": "jmp",
+          "target": 6380435,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617ba5",
+      "address": 6388645,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e8dc33db00e94cdfffff",
+      "code_sha256": "b0cf8b65e5b18e431b68d84c9c144ab78374e554db9cbf17942459fb13516410",
+      "calls": [
+        {
+          "instruction": 6388655,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388660,
+          "kind": "jmp",
+          "target": 6380293,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617bb9",
+      "address": 6388665,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e8c833db00e952e4ffff",
+      "code_sha256": "379731e26af2fe63d02a55cefb2f55d2820dacf01c8184c7521b270571415b0a",
+      "calls": [
+        {
+          "instruction": 6388675,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388680,
+          "kind": "jmp",
+          "target": 6381599,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617bcd",
+      "address": 6388685,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e8b433db00e9a6e5ffff",
+      "code_sha256": "8ec11bde81ab2e86f9165e3edbeb71001222dbd8b49d987d6ce743822969be03",
+      "calls": [
+        {
+          "instruction": 6388695,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388700,
+          "kind": "jmp",
+          "target": 6381959,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617be1",
+      "address": 6388705,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e8a033db00e9dee4ffff",
+      "code_sha256": "3e3fbe017a70f4e88ea585b3c69d57dab0f3490667b0ff2ee71c03067017a07b",
+      "calls": [
+        {
+          "instruction": 6388715,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388720,
+          "kind": "jmp",
+          "target": 6381779,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617bf5",
+      "address": 6388725,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e88c33db00e985dbffff",
+      "code_sha256": "b3d2423a29070381db661f10ef4a5bf83d2f811e4bc8dc6b2b1cab092c6a1dd7",
+      "calls": [
+        {
+          "instruction": 6388735,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388740,
+          "kind": "jmp",
+          "target": 6379406,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617c09",
+      "address": 6388745,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e87833db00e9d0dfffff",
+      "code_sha256": "b19683f344c7f24b0e69f100ab8e890652e7e391733f2ef6e9b767f8424fe08f",
+      "calls": [
+        {
+          "instruction": 6388755,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388760,
+          "kind": "jmp",
+          "target": 6380525,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617c1d",
+      "address": 6388765,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e86433db00e9b4e6ffff",
+      "code_sha256": "fadf25419d3f9b0c387a755513d8af7e9d3988195ddfd82d64eeb2cd4b5c2d66",
+      "calls": [
+        {
+          "instruction": 6388775,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388780,
+          "kind": "jmp",
+          "target": 6382309,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617c31",
+      "address": 6388785,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e85033db00e9e8e4ffff",
+      "code_sha256": "3dfe6e84306123b15e2d323e2eb7eda8eaa738bddc42410bfd57b8cf1ee6bed8",
+      "calls": [
+        {
+          "instruction": 6388795,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388800,
+          "kind": "jmp",
+          "target": 6381869,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617c45",
+      "address": 6388805,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e83c33db00e9b6e8ffff",
+      "code_sha256": "fdba9ee08a579e316e6387c747842e9d60d70c286b20310712be9a47730c24e1",
+      "calls": [
+        {
+          "instruction": 6388815,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388820,
+          "kind": "jmp",
+          "target": 6382863,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617c59",
+      "address": 6388825,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e82833db00e9d2e6ffff",
+      "code_sha256": "861cb1fd2557ac1c981daf4059305fda898a5408992000d656df305bb3b9bf02",
+      "calls": [
+        {
+          "instruction": 6388835,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388840,
+          "kind": "jmp",
+          "target": 6382399,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617c6d",
+      "address": 6388845,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e81433db00e9c6dfffff",
+      "code_sha256": "4226a6274fd48b52c13551a9c1a9c11310796ed169abecb575f03911a115d642",
+      "calls": [
+        {
+          "instruction": 6388855,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388860,
+          "kind": "jmp",
+          "target": 6380615,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617c81",
+      "address": 6388865,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e80033db00e9d4e8ffff",
+      "code_sha256": "a189701120f4e93123ddb3f1ed1fa8acbd85f87cfa295882449bc60f7d861cf8",
+      "calls": [
+        {
+          "instruction": 6388875,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388880,
+          "kind": "jmp",
+          "target": 6382953,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617c95",
+      "address": 6388885,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e8ec32db00e9e7e9ffff",
+      "code_sha256": "54f0510c2e94cf4f02a3f31b40978e710c9d966a5a400ec122704b4c8392e0d2",
+      "calls": [
+        {
+          "instruction": 6388895,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388900,
+          "kind": "jmp",
+          "target": 6383248,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617ca9",
+      "address": 6388905,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e8d832db00e946ebffff",
+      "code_sha256": "576a9f6c02b7cc88307d11ce1aedff32c0870e37911433018b3f832b92782e08",
+      "calls": [
+        {
+          "instruction": 6388915,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388920,
+          "kind": "jmp",
+          "target": 6383619,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617cbd",
+      "address": 6388925,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e8c432db00e916eaffff",
+      "code_sha256": "e9c512dac775a935ba8491975d3e5c1c667d8cd912de417c67b6e3accb93104e",
+      "calls": [
+        {
+          "instruction": 6388935,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388940,
+          "kind": "jmp",
+          "target": 6383335,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617cd1",
+      "address": 6388945,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e8b032db00e99fdcffff",
+      "code_sha256": "8b4f37148563d8443a23d12ef36d232b1d83ffcc893018570de564178b481a73",
+      "calls": [
+        {
+          "instruction": 6388955,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388960,
+          "kind": "jmp",
+          "target": 6379908,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617ce5",
+      "address": 6388965,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e89c32db00e931dcffff",
+      "code_sha256": "0a7bd4ff7257fb5b2a72faa14f949c2b01341720b234af4ca214219cd408f21d",
+      "calls": [
+        {
+          "instruction": 6388975,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388980,
+          "kind": "jmp",
+          "target": 6379818,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617cf9",
+      "address": 6388985,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e88832db00e9dbdaffff",
+      "code_sha256": "0b649e8fd3b051a7c06147e5094b0f76983ee162c53ff3552a08ee459fd17865",
+      "calls": [
+        {
+          "instruction": 6388995,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6389000,
+          "kind": "jmp",
+          "target": 6379496,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617d0d",
+      "address": 6389005,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e87432db00e93cebffff",
+      "code_sha256": "1abcd33b04e87902d50dc560020556d08e078cddbe291b4376aed608813eead0",
+      "calls": [
+        {
+          "instruction": 6389015,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6389020,
+          "kind": "jmp",
+          "target": 6383709,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-ratio-cleanup-0x617d21",
+      "address": 6389025,
+      "size": 20,
+      "code_hex": "ba08000000be02000000e86032db00e90ceaffff",
+      "code_sha256": "6a7c95aebf57a9d6e41a92af72daaec6e476c80ca790fe61f743d679e89b563e",
+      "calls": [
+        {
+          "instruction": 6389035,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6389040,
+          "kind": "jmp",
+          "target": 6383425,
+          "symbols": []
+        }
+      ]
+    }
+  ],
+  "literals": [
+    {
+      "instruction": 2384115,
+      "address": 22862096,
+      "text": "vector::_M_range_check: __n (which is %zu) >= this->size() (which is %zu)"
+    },
+    {
+      "instruction": 2269195,
+      "address": 22859689,
+      "text": "vector::_M_realloc_insert"
+    }
+  ],
+  "save_widget_offsets": [
+    0,
+    8,
+    24,
+    32,
+    40,
+    64,
+    80,
+    128,
+    152,
+    160,
+    200,
+    216,
+    224,
+    248,
+    264,
+    272,
+    280,
+    304,
+    312,
+    320,
+    328,
+    336,
+    344,
+    400,
+    424,
+    440,
+    448,
+    480,
+    504,
+    512,
+    528,
+    544,
+    568,
+    600,
+    608,
+    632,
+    664,
+    680,
+    688,
+    696,
+    720,
+    744,
+    760,
+    768,
+    776,
+    808,
+    824,
+    840,
+    856,
+    888,
+    896,
+    928,
+    936,
+    952,
+    968,
+    984,
+    1008,
+    1016,
+    1048,
+    1072,
+    1136,
+    1184,
+    1200,
+    1240
+  ]
+}

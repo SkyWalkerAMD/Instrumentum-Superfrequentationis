@@ -1,0 +1,1261 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "fixture_sha256": "0a4cfbda11940d92d8cc24bdde0bf48350631881359f4ae2572cb131de834be9",
+  "scope": "Execute the original complete AMD_UMC constructor against synthetic PCI.\n\nRW_MMIO_AMD construction, PCI lookup, TR5 detection and PCI IO are explicit\nsubstitutes. No host PCI, MSR, memory or port IO occurs in this experiment.\n",
+  "scenarios": [
+    {
+      "name": "pci-1022:1480",
+      "inputs": {
+        "devices": {
+          "1022:1480": 291
+        },
+        "default": 1200
+      },
+      "output": {
+        "bdf": 291,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ]
+        ],
+        "instructions": 55354
+      },
+      "checked": {
+        "bdf": 291,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ]
+      }
+    },
+    {
+      "name": "pci-1022:1630",
+      "inputs": {
+        "devices": {
+          "1022:1630": 291
+        },
+        "default": 1200
+      },
+      "output": {
+        "bdf": 291,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ]
+        ],
+        "instructions": 55362
+      },
+      "checked": {
+        "bdf": 291,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ]
+      }
+    },
+    {
+      "name": "pci-1022:1450",
+      "inputs": {
+        "devices": {
+          "1022:1450": 291
+        },
+        "default": 1200
+      },
+      "output": {
+        "bdf": 291,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ],
+          [
+            4130,
+            5200,
+            0
+          ]
+        ],
+        "instructions": 55376
+      },
+      "checked": {
+        "bdf": 291,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ]
+      }
+    },
+    {
+      "name": "pci-1002:1630",
+      "inputs": {
+        "devices": {
+          "1002:1630": 291
+        },
+        "default": 1200
+      },
+      "output": {
+        "bdf": 291,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ],
+          [
+            4130,
+            5200,
+            0
+          ],
+          [
+            4098,
+            5680,
+            0
+          ]
+        ],
+        "instructions": 55384
+      },
+      "checked": {
+        "bdf": 291,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ]
+      }
+    },
+    {
+      "name": "pci-1002:1636",
+      "inputs": {
+        "devices": {
+          "1002:1636": 291
+        },
+        "default": 1200
+      },
+      "output": {
+        "bdf": 291,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ],
+          [
+            4130,
+            5200,
+            0
+          ],
+          [
+            4098,
+            5680,
+            0
+          ],
+          [
+            4098,
+            5686,
+            0
+          ]
+        ],
+        "instructions": 55392
+      },
+      "checked": {
+        "bdf": 291,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ]
+      }
+    },
+    {
+      "name": "pci-1022:14b5",
+      "inputs": {
+        "devices": {
+          "1022:14b5": 291
+        },
+        "default": 1200
+      },
+      "output": {
+        "bdf": 291,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ],
+          [
+            4130,
+            5200,
+            0
+          ],
+          [
+            4098,
+            5680,
+            0
+          ],
+          [
+            4098,
+            5686,
+            0
+          ],
+          [
+            4130,
+            5301,
+            0
+          ]
+        ],
+        "instructions": 55400
+      },
+      "checked": {
+        "bdf": 291,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ]
+      }
+    },
+    {
+      "name": "shimada-first-valid",
+      "inputs": {
+        "shimada": true,
+        "default": 1200
+      },
+      "output": {
+        "bdf": 0,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ]
+        ],
+        "instructions": 55370
+      },
+      "checked": {
+        "bdf": 0,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ]
+      }
+    },
+    {
+      "name": "granite-first-valid",
+      "inputs": {
+        "granite": true,
+        "default": 1200
+      },
+      "output": {
+        "bdf": 0,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ]
+        ],
+        "instructions": 55367
+      },
+      "checked": {
+        "bdf": 0,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ]
+      }
+    },
+    {
+      "name": "tr5-first-valid",
+      "inputs": {
+        "tr5": true,
+        "default": 1200
+      },
+      "output": {
+        "bdf": 0,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ],
+          [
+            4130,
+            5200,
+            0
+          ],
+          [
+            4098,
+            5680,
+            0
+          ],
+          [
+            4098,
+            5686,
+            0
+          ],
+          [
+            4130,
+            5301,
+            0
+          ],
+          [
+            "fallback",
+            0,
+            0,
+            0
+          ]
+        ],
+        "instructions": 55405
+      },
+      "checked": {
+        "bdf": 0,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ]
+      }
+    },
+    {
+      "name": "fallback",
+      "inputs": {
+        "default": 1200,
+        "fallback_bdf": 1110
+      },
+      "output": {
+        "bdf": 1110,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ],
+          [
+            4130,
+            5200,
+            0
+          ],
+          [
+            4098,
+            5680,
+            0
+          ],
+          [
+            4098,
+            5686,
+            0
+          ],
+          [
+            4130,
+            5301,
+            0
+          ],
+          [
+            "fallback",
+            0,
+            0,
+            0
+          ]
+        ],
+        "instructions": 55407
+      },
+      "checked": {
+        "bdf": 1110,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288
+        ]
+      }
+    },
+    {
+      "name": "initial-hole",
+      "inputs": {
+        "default": 1200,
+        "absolute_registers": {
+          "0x50200": 4294967295
+        }
+      },
+      "output": {
+        "bdf": 0,
+        "base": 327680,
+        "initial_offset": 1048576,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          1376768,
+          1376768,
+          1376864
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ],
+          [
+            4130,
+            5200,
+            0
+          ],
+          [
+            4098,
+            5680,
+            0
+          ],
+          [
+            4098,
+            5686,
+            0
+          ],
+          [
+            4130,
+            5301,
+            0
+          ],
+          [
+            "fallback",
+            0,
+            0,
+            0
+          ]
+        ],
+        "instructions": 55428
+      },
+      "checked": {
+        "bdf": 0,
+        "base": 327680,
+        "initial_offset": 1048576,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          1376768,
+          1376768,
+          1376864
+        ]
+      }
+    },
+    {
+      "name": "second-frequency",
+      "inputs": {
+        "default": 1200,
+        "absolute_registers": {
+          "0x50200": 0
+        }
+      },
+      "output": {
+        "bdf": 0,
+        "base": 1376256,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          1376768,
+          1376864
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ],
+          [
+            4130,
+            5200,
+            0
+          ],
+          [
+            4098,
+            5680,
+            0
+          ],
+          [
+            4098,
+            5686,
+            0
+          ],
+          [
+            4130,
+            5301,
+            0
+          ],
+          [
+            "fallback",
+            0,
+            0,
+            0
+          ]
+        ],
+        "instructions": 55489
+      },
+      "checked": {
+        "bdf": 0,
+        "base": 1376256,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          1376768,
+          1376864
+        ]
+      }
+    },
+    {
+      "name": "shimada-second-frequency",
+      "inputs": {
+        "shimada": true,
+        "default": 1200,
+        "absolute_registers": {
+          "0x50200": 0
+        }
+      },
+      "output": {
+        "bdf": 0,
+        "base": 2424832,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          1376768,
+          2425440
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ]
+        ],
+        "instructions": 55455
+      },
+      "checked": {
+        "bdf": 0,
+        "base": 2424832,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          1376768,
+          2425440
+        ]
+      }
+    },
+    {
+      "name": "tr5-second-frequency",
+      "inputs": {
+        "tr5": true,
+        "default": 1200,
+        "absolute_registers": {
+          "0x50200": 0
+        }
+      },
+      "output": {
+        "bdf": 0,
+        "base": 2424832,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          1376768,
+          2425440
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ],
+          [
+            4130,
+            5200,
+            0
+          ],
+          [
+            4098,
+            5680,
+            0
+          ],
+          [
+            4098,
+            5686,
+            0
+          ],
+          [
+            4130,
+            5301,
+            0
+          ],
+          [
+            "fallback",
+            0,
+            0,
+            0
+          ]
+        ],
+        "instructions": 55490
+      },
+      "checked": {
+        "bdf": 0,
+        "base": 2424832,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          1376768,
+          2425440
+        ]
+      }
+    },
+    {
+      "name": "no-frequency",
+      "inputs": {
+        "default": 0
+      },
+      "output": {
+        "bdf": 0,
+        "base": 12910592,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          1376768,
+          2425344,
+          3473920,
+          4522496,
+          5571072,
+          6619648,
+          7668224,
+          8716800,
+          9765376,
+          10813952,
+          11862528,
+          12911104,
+          12911200
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ],
+          [
+            4130,
+            5200,
+            0
+          ],
+          [
+            4098,
+            5680,
+            0
+          ],
+          [
+            4098,
+            5686,
+            0
+          ],
+          [
+            4130,
+            5301,
+            0
+          ],
+          [
+            "fallback",
+            0,
+            0,
+            0
+          ]
+        ],
+        "instructions": 56360
+      },
+      "checked": {
+        "bdf": 0,
+        "base": 12910592,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          1376768,
+          2425344,
+          3473920,
+          4522496,
+          5571072,
+          6619648,
+          7668224,
+          8716800,
+          9765376,
+          10813952,
+          11862528,
+          12911104,
+          12911200
+        ]
+      }
+    },
+    {
+      "name": "all-ones",
+      "inputs": {
+        "default": 4294967295
+      },
+      "output": {
+        "bdf": 0,
+        "base": 12910592,
+        "initial_offset": 4194304,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          1376768,
+          2425344,
+          3473920,
+          4522496,
+          5571072,
+          6619648,
+          7668224,
+          8716800,
+          9765376,
+          10813952,
+          11862528,
+          12911104,
+          13959680,
+          15008256,
+          16056832,
+          17105408,
+          17105504
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ],
+          [
+            4130,
+            5200,
+            0
+          ],
+          [
+            4098,
+            5680,
+            0
+          ],
+          [
+            4098,
+            5686,
+            0
+          ],
+          [
+            4130,
+            5301,
+            0
+          ],
+          [
+            "fallback",
+            0,
+            0,
+            0
+          ]
+        ],
+        "instructions": 56426
+      },
+      "checked": {
+        "bdf": 0,
+        "base": 12910592,
+        "initial_offset": 4194304,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          1376768,
+          2425344,
+          3473920,
+          4522496,
+          5571072,
+          6619648,
+          7668224,
+          8716800,
+          9765376,
+          10813952,
+          11862528,
+          12911104,
+          13959680,
+          15008256,
+          16056832,
+          17105408,
+          17105504
+        ]
+      }
+    },
+    {
+      "name": "shimada-all-ones",
+      "inputs": {
+        "shimada": true,
+        "default": 4294967295
+      },
+      "output": {
+        "bdf": 0,
+        "base": 19202048,
+        "initial_offset": 4194304,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          1376768,
+          2425344,
+          3473920,
+          4522496,
+          5571072,
+          7668224,
+          8716800,
+          10813952,
+          11862528,
+          13959680,
+          15008256,
+          17105408,
+          18153984,
+          20251136,
+          21299712,
+          23396864,
+          23396960
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ]
+        ],
+        "instructions": 56417
+      },
+      "checked": {
+        "bdf": 0,
+        "base": 19202048,
+        "initial_offset": 4194304,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          1376768,
+          2425344,
+          3473920,
+          4522496,
+          5571072,
+          7668224,
+          8716800,
+          10813952,
+          11862528,
+          13959680,
+          15008256,
+          17105408,
+          18153984,
+          20251136,
+          21299712,
+          23396864,
+          23396960
+        ]
+      }
+    },
+    {
+      "name": "rfc-lanes",
+      "inputs": {
+        "default": 1200,
+        "absolute_registers": {
+          "0x50260": 312
+        }
+      },
+      "output": {
+        "bdf": 0,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 12,
+        "read_addresses": [
+          328192,
+          328192,
+          328288,
+          328288,
+          328292,
+          328296,
+          328300
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ],
+          [
+            4130,
+            5200,
+            0
+          ],
+          [
+            4098,
+            5680,
+            0
+          ],
+          [
+            4098,
+            5686,
+            0
+          ],
+          [
+            4130,
+            5301,
+            0
+          ],
+          [
+            "fallback",
+            0,
+            0,
+            0
+          ]
+        ],
+        "instructions": 55528
+      },
+      "checked": {
+        "bdf": 0,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 12,
+        "read_addresses": [
+          328192,
+          328192,
+          328288,
+          328288,
+          328292,
+          328296,
+          328300
+        ]
+      }
+    },
+    {
+      "name": "rfc-all-sentinels",
+      "inputs": {
+        "default": 1200,
+        "absolute_registers": {
+          "0x50260": 312,
+          "0x50264": 312,
+          "0x50268": 312,
+          "0x5026c": 312,
+          "0x50360": 312,
+          "0x50364": 312,
+          "0x50368": 312,
+          "0x5036c": 312,
+          "0x50460": 312,
+          "0x50464": 312,
+          "0x50468": 312,
+          "0x5046c": 312,
+          "0x50560": 312,
+          "0x50564": 312,
+          "0x50568": 312,
+          "0x5056c": 312
+        }
+      },
+      "output": {
+        "bdf": 0,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288,
+          328288,
+          328292,
+          328296,
+          328300,
+          328544,
+          328548,
+          328552,
+          328556,
+          328800,
+          328804,
+          328808,
+          328812,
+          329056,
+          329060,
+          329064,
+          329068
+        ],
+        "pci_queries": [
+          [
+            4130,
+            5248,
+            0
+          ],
+          [
+            4130,
+            5680,
+            0
+          ],
+          [
+            4130,
+            5200,
+            0
+          ],
+          [
+            4098,
+            5680,
+            0
+          ],
+          [
+            4098,
+            5686,
+            0
+          ],
+          [
+            4130,
+            5301,
+            0
+          ],
+          [
+            "fallback",
+            0,
+            0,
+            0
+          ]
+        ],
+        "instructions": 55872
+      },
+      "checked": {
+        "bdf": 0,
+        "base": 327680,
+        "initial_offset": 0,
+        "lane_offset": 0,
+        "read_addresses": [
+          328192,
+          328192,
+          328288,
+          328288,
+          328292,
+          328296,
+          328300,
+          328544,
+          328548,
+          328552,
+          328556,
+          328800,
+          328804,
+          328808,
+          328812,
+          329056,
+          329060,
+          329064,
+          329068
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "Synthetic PCI discovery and return values only; not hardware compatibility evidence",
+    "RW_MMIO_AMD constructor is a stub, not part of the instruction coverage",
+    "Original search bugs are evidence, not a production selection algorithm"
+  ]
+}

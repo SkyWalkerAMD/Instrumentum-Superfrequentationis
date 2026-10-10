@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "profile_fixture_sha256": "70f812290be3721799ac44f142ee74ac91941096ea5be27d5d3422ba20ce8a9d",
+  "msr_fixture_sha256": "8fa956c195a5afe65dd63284d796520adc70519a3e23b1ab2d13b81b4d4f8574",
+  "scope": "Original Load Profile through complete percoreoverride_en, Wr1AD, Wr650, get_32bit, Wrmsr and Rdmsr bodies. Stop before per-core payload application. Qt, streams and libc are synthetic; no host device files or hardware.",
+  "functions": [
+    {
+      "symbol": "_Z5Wr1ADiiiiiiii",
+      "address": 3619632,
+      "size": 93,
+      "code_hex": "f30f1efa41560fb6c90fb6d2400fb6f64155400fb6ff4154554489cd53448b6c24304489c3448b742438e831f51300410fb6d5400fb6f50fb6fb410fb6ce4189c4e81af513005b4489e65d89c2415cbfad010000415d415ee993bbffff",
+      "code_sha256": "18839f28f2bfc2d47dc992d1ee2d6cf802bee2709213cf80330b18cce649d2b4",
+      "calls": [
+        {
+          "instruction": 3619674,
+          "kind": "call",
+          "target": 4927632,
+          "symbols": [
+            "_Z9get_32bithhhh"
+          ]
+        },
+        {
+          "instruction": 3619697,
+          "kind": "call",
+          "target": 4927632,
+          "symbols": [
+            "_Z9get_32bithhhh"
+          ]
+        },
+        {
+          "instruction": 3619720,
+          "kind": "jmp",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z5Wr650iiiiiiii",
+      "address": 3619440,
+      "size": 93,
+      "code_hex": "f30f1efa41560fb6c90fb6d2400fb6f64155400fb6ff4154554489cd53448b6c24304489c3448b742438e8f1f51300410fb6d5400fb6f50fb6fb410fb6ce4189c4e8daf513005b4489e65d89c2415cbf50060000415d415ee953bcffff",
+      "code_sha256": "2b95d1b85202d15b43967a7a25cfa0c7daa8760af8640ad34905bc949dc3473b",
+      "calls": [
+        {
+          "instruction": 3619482,
+          "kind": "call",
+          "target": 4927632,
+          "symbols": [
+            "_Z9get_32bithhhh"
+          ]
+        },
+        {
+          "instruction": 3619505,
+          "kind": "call",
+          "target": 4927632,
+          "symbols": [
+            "_Z9get_32bithhhh"
+          ]
+        },
+        {
+          "instruction": 3619528,
+          "kind": "jmp",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z9get_32bithhhh",
+      "address": 4927632,
+      "size": 72,
+      "code_hex": "f30f1efa4883ec3864488b042528000000488944242831c0884c240b8854240a408874240940887c24088b442408488b54242864482b14252800000075054883c438c3e83878c9ff",
+      "code_sha256": "0dd387af48bda55c335ba3131776353139dbc082b2ff429fcf03a9a740234b93",
+      "calls": [
+        {
+          "instruction": 4927699,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    }
+  ]
+}

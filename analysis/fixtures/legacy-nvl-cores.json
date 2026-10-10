@@ -1,0 +1,438 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "prefix_fixture_sha256": "4f3583a200896ad98c7d19d683ee5626d9c1195bfe2a974f5b0f4f3a654fd76c",
+  "profile_fixture_sha256": "70f812290be3721799ac44f142ee74ac91941096ea5be27d5d3422ba20ce8a9d",
+  "msr_fixture_sha256": "8fa956c195a5afe65dd63284d796520adc70519a3e23b1ab2d13b81b4d4f8574",
+  "scope": "Original Load Profile entry through per-core loop; original Tx leaves, CPU-index getter and VF write helper. Original exporter core slice uses synthetic Rd_PC_Ratio and VF enumeration results, with an explicitly prepared frame. Stop before later fields. All Qt/streams/libc and topology data are synthetic; no host hardware or full Save execution.",
+  "functions": [
+    {
+      "symbol": "_ZN18My_Processor_Cores18get_Processor_MaskEi",
+      "address": 4920656,
+      "size": 52,
+      "code_hex": "f30f1efa488b8780000000488b97880000004863f64829c248c1fa024839d673048b04b0c350488d3d93c3110131c0e8dc8dc9ff",
+      "code_sha256": "b30e8c42a62cd08aae977dd3f4dd079d2f235c7f97b4698d3fe88737291ddb9b",
+      "calls": [
+        {
+          "instruction": 4920703,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z7WrmsrTxjjjm",
+      "address": 3602032,
+      "size": 168,
+      "code_hex": "f30f1efa41554189c84189fd488d0d322f2b0141544189f4be01000000555389d3ba4000000048c1e3204c09e34883ec6864488b042528000000488944245831c0488d6c24104889efe862f0ddff4889efbe0100000031c0e8f3d8ddff31d24489ee89c589c7e8a5b1ddff89ef488d742408ba0800000048895c2408e89fe9ddff89efe808d3ddff488b44245864482b042528000000750b4883c4685b5d415c415dc3e8f8b1ddff",
+      "code_sha256": "1f20c2a6b3c4d815a61c137b2862447ad1dd9228fb1b4ced83cf1f5cc3bef641",
+      "calls": [
+        {
+          "instruction": 3602105,
+          "kind": "call",
+          "target": 1369888,
+          "symbols": [
+            "__sprintf_chk@plt"
+          ]
+        },
+        {
+          "instruction": 3602120,
+          "kind": "call",
+          "target": 1363904,
+          "symbols": [
+            "open@plt"
+          ]
+        },
+        {
+          "instruction": 3602134,
+          "kind": "call",
+          "target": 1353856,
+          "symbols": [
+            "lseek@plt"
+          ]
+        },
+        {
+          "instruction": 3602156,
+          "kind": "call",
+          "target": 1368208,
+          "symbols": [
+            "write@plt"
+          ]
+        },
+        {
+          "instruction": 3602163,
+          "kind": "call",
+          "target": 1362432,
+          "symbols": [
+            "close@plt"
+          ]
+        },
+        {
+          "instruction": 3602195,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z7RdmsrTxjPjS_m",
+      "address": 3602560,
+      "size": 172,
+      "code_hex": "f30f1efa41554189c84989d5488d0d222d2b014154ba400000004989f4be01000000555389fb4883ec6864488b042528000000488944245831c0488d6c24104889efe859eeddff4889ef31f631c0e8edd6ddff89de31d289c589c7e8a0afddffba08000000488d74240889efe81fe0ddff89efe808d1ddff488b4424084889c248c1ea204189550041890424488b44245864482b042528000000750b4883c4685b5d415c415dc3e8e4afddff",
+      "code_sha256": "9a1e82f71e39cd5f4904915ef1688e054157d5a3b3cff6599d5bc8c3c46cab99",
+      "calls": [
+        {
+          "instruction": 3602626,
+          "kind": "call",
+          "target": 1369888,
+          "symbols": [
+            "__sprintf_chk@plt"
+          ]
+        },
+        {
+          "instruction": 3602638,
+          "kind": "call",
+          "target": 1363904,
+          "symbols": [
+            "open@plt"
+          ]
+        },
+        {
+          "instruction": 3602651,
+          "kind": "call",
+          "target": 1353856,
+          "symbols": [
+            "lseek@plt"
+          ]
+        },
+        {
+          "instruction": 3602668,
+          "kind": "call",
+          "target": 1366288,
+          "symbols": [
+            "read@plt"
+          ]
+        },
+        {
+          "instruction": 3602675,
+          "kind": "call",
+          "target": 1362432,
+          "symbols": [
+            "close@plt"
+          ]
+        },
+        {
+          "instruction": 3602727,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z29Wr_VFPoint_offset_percore_nvliii",
+      "address": 3713840,
+      "size": 399,
+      "code_hex": "f30f1efa4157415641554c63ea41544189fc5569ee00a00f00534863dd4869db83de1b434883ec1864488b042528000000488944240831c089e8c1f81f48c1fb3229c3e84896feff4c8d3da91a8f01c7042400000000c7442404000000004d8b374d85f60f84e6000000498b86d80d0000498b96e00d00004829c248c1fa024939d50f83e5000000428b14a841c1e41b31f64181e400000078c1e20d81e200e0ff0381ca000000804409e281ca330000048954240481fdc1bdf0ff0f8c7f00000031c085dbbf500100004889e50f9fc04c8d64240429c381e3ff03000048c1e31509de893424e8054bfeff0f1f4400004c89e24889eebf50010000e8a04bfeff8b44240485c078e84c89e24889eebf50010000e8884bfeff488b44240864482b04252800000075564883c4185b5d415c415d415e415fc3660f1f84000000000081e3ff030000be00000080e971ffffffbf280e0000e8261adcff4889c74989c6e89b48f1ff4d8937e9fdfeffff4c89ee488d3d692c240131c0e8b2f6dbffe85dfcdbfff30f1efa4889c5e9cce9ddff",
+      "code_sha256": "7697d056c846d6152ae8ce07d7edbdd7e85a4ff2e6cac32b21b580aa21c0b329",
+      "calls": [
+        {
+          "instruction": 3713907,
+          "kind": "call",
+          "target": 3621312,
+          "symbols": [
+            "_Z18percoreoverride_env"
+          ]
+        },
+        {
+          "instruction": 3714070,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3714091,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3714115,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3714171,
+          "kind": "jmp",
+          "target": 3714033,
+          "symbols": []
+        },
+        {
+          "instruction": 3714181,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 3714192,
+          "kind": "call",
+          "target": 2749744,
+          "symbols": [
+            "_ZN11NVL_MEM_CFGC2Ev",
+            "_ZN11NVL_MEM_CFGC1Ev"
+          ]
+        },
+        {
+          "instruction": 3714200,
+          "kind": "jmp",
+          "target": 3713946,
+          "symbols": []
+        },
+        {
+          "instruction": 3714217,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 3714222,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 3714234,
+          "kind": "jmp",
+          "target": 1480331,
+          "symbols": [
+            "_Z29Wr_VFPoint_offset_percore_nvliii.cold"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-core-slice",
+      "address": 6384106,
+      "size": 1004,
+      "code_hex": "488b8538e1ffff8b809c0100006689855cfdffff85c00f8e2c140000488d85d0e6ffff488d9df6e6ffff4c89b520e1ffff4531e448898530e1ffff4989c648899d18e1ffff904489e74589e7e81525d6ff488b9d18e1ffffc78590e1ffff00000000c785b0e1ffff1000008042880423488d05c75b6601488b10488b82d80d0000488b92e00d00004829c248c1fa024c39e20f86ff130000428b04a04a8d1ca5000000004489e64c8dadb0e1ffff48899d28e1ffff488b9d38e1ffff25ff1f0000488bbbe8000000c1e00d0d100000808985b0e1ffffe88baae9ff8b95b0e1ffff8bb590e1ffffbf5001000089c1e8938bd5ff488bbbe80000004489e6488d9d90e1ffffe85daae9ff89c1eb21660f1f840000000000488b8538e1ffff4489fe488bb8e8000000e83aaae9ff89c1bf500100004c89ea4889dee8588dd5ff8bbdb0e1ffff85ff78ce8b8590e1ffff488b9530e1ffffc78590e1ffff00000000c785b0e1ffff10020080428984a2a6000000488d05c65a6601488b10488b82d80d0000488b92e00d00004829c248c1fa024c39e20f86fe120000488b9528e1ffff4489fe8b041025ff1f0000c1e00d0d100200808985b0e1ffff488b8538e1ffff488bb8e8000000e89aa9e9ff8b95b0e1ffff8bb590e1ffffbf5001000089c1e8a28ad5ff6690488b8538e1ffff4489fe488bb8e8000000e86aa9e9ff4889de4c89eabf5001000089c1e8888cd5ff8bb5b0e1ffff85f678ce8b8590e1ffff488b9530e1ffffc78590e1ffff00000000c785b0e1ffff26000080428984a2a6040000488d05f6596601488b00488b88d80d0000488b90e00d00004829ca48c1fa024c39e20f862e120000488b8528e1ffff4489fe8b040125ff1f0000c1e00d0d260000808985b0e1ffff488b8538e1ffff488bb8e8000000e8caa8e9ff8b95b0e1ffff8bb590e1ffffbf5001000089c1e8d289d5ff6690488b8538e1ffff4489fe488bb8e8000000e89aa8e9ff4c89ea4889debf5001000089c1e8b88bd5ff8b8db0e1ffff85c978ce8b8590e1ffff488b9d30e1ffff4489fe488bbd20e1ffff428984a3a6020000e88acbd7ff4c8bbde8e1ffff488b9de0e1ffff31d248b8abaaaaaaaaaaaaaa4c8b9d38e1ffff4c89ff4829df48c1ff03480faff84889d84288bc2576fcffff4885ff74370f1f00488b30488b48084829f14883f9040f86141100008b4e044883c0186641898c56a60600004883c2014839d775d34c899d38e1ffff4c39fb742b0f1f8000000000488b3b4885ff740c488b73104829fee81435b3ff4883c3184939df75e34c8bbde0e1ffff4d85ff7412488bb5f0e1ffff4c89ff4c29fee8ed34b3ff488b8538e1ffff4983c4014983c61e4439a09c0100000f8f61fcffff4c8bb520e1ffff",
+      "code_sha256": "b032b935e6cf0d3830699053825fedbadf423fa92ef47823732f5a53ed0ab33f",
+      "calls": [
+        {
+          "instruction": 6384182,
+          "kind": "call",
+          "target": 3641168,
+          "symbols": [
+            "_Z11Rd_PC_Ratioi"
+          ]
+        },
+        {
+          "instruction": 6384320,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6384344,
+          "kind": "call",
+          "target": 3602032,
+          "symbols": [
+            "_Z7WrmsrTxjjjm"
+          ]
+        },
+        {
+          "instruction": 6384366,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6384373,
+          "kind": "jmp",
+          "target": 6384408,
+          "symbols": []
+        },
+        {
+          "instruction": 6384401,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6384419,
+          "kind": "call",
+          "target": 3602560,
+          "symbols": [
+            "_Z7RdmsrTxjPjS_m"
+          ]
+        },
+        {
+          "instruction": 6384561,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6384585,
+          "kind": "call",
+          "target": 3602032,
+          "symbols": [
+            "_Z7WrmsrTxjjjm"
+          ]
+        },
+        {
+          "instruction": 6384609,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6384627,
+          "kind": "call",
+          "target": 3602560,
+          "symbols": [
+            "_Z7RdmsrTxjPjS_m"
+          ]
+        },
+        {
+          "instruction": 6384769,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6384793,
+          "kind": "call",
+          "target": 3602032,
+          "symbols": [
+            "_Z7WrmsrTxjjjm"
+          ]
+        },
+        {
+          "instruction": 6384817,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6384835,
+          "kind": "call",
+          "target": 3602560,
+          "symbols": [
+            "_Z7RdmsrTxjPjS_m"
+          ]
+        },
+        {
+          "instruction": 6384881,
+          "kind": "call",
+          "target": 3750016,
+          "symbols": [
+            "_Z22check_vfpt_percore_nvli"
+          ]
+        },
+        {
+          "instruction": 6385031,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6385070,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-empty-core-slice",
+      "address": 6389298,
+      "size": 12,
+      "code_hex": "4c8dadb0e1ffffe998efffff",
+      "code_sha256": "9e2d71808a5778316fe36eac7ae476259832aa45ea6ba7020b0f639f4e18e577",
+      "calls": [
+        {
+          "instruction": 6389305,
+          "kind": "jmp",
+          "target": 6385110,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "nvl-save-range-error-slice",
+      "address": 6389344,
+      "size": 50,
+      "code_hex": "4889cabe01000000488d3da15afb0031c048c1fa024c8bb520e1ffffe8df24b3ff4c89e6488d3d855afb0031c0e8ce24b3ff",
+      "code_sha256": "e5868756205595a0906593deb6b04a665368f6ee348f8a9a983e7e1e570613fc",
+      "calls": [
+        {
+          "instruction": 6389372,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 6389389,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        }
+      ]
+    }
+  ],
+  "literals": [
+    {
+      "instruction": 6389380,
+      "address": 22862096,
+      "text": "vector::_M_range_check: __n (which is %zu) >= this->size() (which is %zu)"
+    },
+    {
+      "instruction": 3602572,
+      "address": 23209397,
+      "text": "/dev/cpu/%d/msr"
+    }
+  ]
+}

@@ -88,6 +88,11 @@ jobs:
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-nvl-profile.py \
             --output build/nvl-profile.json
+      - name: Verify original UMC fields and channel-search boundaries with synthetic PCI
+        run: |
+          python3 analysis/tools/generate-amd-umc-tables.py --check
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-amd-umc.py --output build/amd-umc.json
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-amd-umc-selection.py --output build/amd-umc-selection.json
       - uses: actions/upload-artifact@v4
         with:
           name: mailbox-contract-evidence
@@ -106,6 +111,8 @@ jobs:
             build/mmio-services.json
             build/mmio-i2c.json
             build/nvl-profile.json
+            build/amd-umc.json
+            build/amd-umc-selection.json
           if-no-files-found: error
           retention-days: 14
       - run: python3 port/ci/validate-local.py

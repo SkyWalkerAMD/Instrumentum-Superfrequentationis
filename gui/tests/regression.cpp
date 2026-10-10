@@ -2,6 +2,7 @@
 #include "registerpanel.h"
 #include "pstates.h"
 #include "platformpanels.h"
+#include "umcpanel.h"
 #include "platform/linux_inventory.h"
 #include "platform/linux_hwio.h"
 #include "platform/linux_cpu.h"
@@ -101,13 +102,46 @@ private slots:
     void platformPanelsDoNotAccessHardwareAtConstruction() {
         Reference reference; auto access=reference.access();
         IntelControlsPanel intel(access,nullptr,7); AmdTuningPanel amd(access,nullptr,7); MemoryBoardPanel inventory;
+        UmcPanel umc(access,nullptr,7);
         QCOMPARE(reference.calls.load(),0);
         QCOMPARE(intel.findChild<QLineEdit *>("intelCpu")->text(),QString("7"));
         QCOMPARE(amd.findChild<QLineEdit *>("smuCpu")->text(),QString("7"));
         QCOMPARE(inventory.findChild<QTableWidget *>("inventoryTable")->rowCount(),0);
+        QCOMPARE(umc.findChild<QTableWidget *>("umcTable")->rowCount(),0);
         intel.findChild<QLineEdit *>("intelValue")->setText("125");
         intel.findChild<QPushButton *>("intelApply")->click();
         QCOMPARE(reference.calls.load(),0);
+    }
+    void umcOfflineCaptureKeepsDistinctFieldsAndClearsInvalidInput() {
+        Reference reference; UmcPanel panel(reference.access());
+        const QByteArray bytes=R"({"format":"octool-amd-umc-v1","bank":0,"refresh_slot":0,"registers":[{"offset":516,"value":34},{"offset":4624,"value":258048}]})";
+        QVERIFY(panel.loadCapture(bytes)); QCOMPARE(reference.calls.load(),0);
+        auto *table=panel.findChild<QTableWidget *>("umcTable"); QCOMPARE(table->rowCount(),212);
+        QStringList tcl;
+        for(int row=0;row<table->rowCount();++row) if(table->item(row,1)->text()=="Tcl") tcl<<table->item(row,6)->text();
+        QCOMPARE(tcl,QStringList({"34","63"}));
+        QVERIFY(panel.findChild<QLabel *>("umcStatus")->text().contains("Offline"));
+        QVERIFY(!panel.captureBytes().isEmpty());
+        QVERIFY(panel.loadCapture(panel.captureBytes()));
+        const QList<QByteArray> bad={"{}",bytes.left(60),QByteArray(65537,' '),
+            QByteArray(bytes).replace("\"bank\":0","\"bank\":-1"),
+            QByteArray(bytes).replace("\"bank\":0","\"bank\":0.5"),
+            QByteArray(bytes).replace("\"value\":34","\"value\":4294967296"),
+            QByteArray(bytes).replace("\"offset\":4624","\"offset\":516")};
+        for(const auto &input:bad) {
+            QVERIFY(!panel.loadCapture(input)); QCOMPARE(table->rowCount(),0);
+            QVERIFY(panel.captureBytes().isEmpty()); QVERIFY(!panel.findChild<QPushButton *>("umcSave")->isEnabled());
+        }
+        QCOMPARE(reference.calls.load(),0);
+    }
+    void umcRejectsInvalidTargetAndWrongVendorWithoutPci() {
+        PstateReference reference; reference.amd=false; UmcPanel panel(reference.access(),nullptr,3);
+        panel.findChild<QLineEdit *>("umcBus")->setText("100");
+        auto *read=panel.findChild<QPushButton *>("umcRead"); read->click(); QCOMPARE(reference.calls.load(),0);
+        panel.findChild<QLineEdit *>("umcBus")->setText("0"); read->click(); QTRY_VERIFY(read->isEnabled());
+        QCOMPARE(reference.writes.load(),0); QVERIFY(reference.msrs.empty());
+        QCOMPARE(panel.findChild<QTableWidget *>("umcTable")->rowCount(),0);
+        QVERIFY(panel.findChild<QLabel *>("umcStatus")->text().contains("Read failed"));
     }
     void unsupportedIntelProfileDoesNotReadOrWriteMsrs() {
         PstateReference reference; reference.amd=false; auto access=reference.access();

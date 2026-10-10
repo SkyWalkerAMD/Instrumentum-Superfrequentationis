@@ -7,6 +7,7 @@
 #include <QApplication>
 #include <QCoreApplication>
 #include <QJsonArray>
+#include "umcpanel.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFormLayout>
@@ -83,6 +84,7 @@ int main(int argc, char **argv)
     tabs->addTab(new IntelControlsPanel(access, tabs, initialCpu), "Intel Controls");
     tabs->addTab(new AmdTuningPanel(access, tabs, initialCpu), "AMD tuning");
     tabs->addTab(new MemoryBoardPanel(tabs), "Memory / Motherboard");
+    tabs->addTab(new UmcPanel(access,tabs,initialCpu), "AMD UMC");
     window.setCentralWidget(tabs);
     window.show();
     // CI requests snapshots of these real windows for visual inspection.

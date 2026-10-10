@@ -1,0 +1,5737 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "ratio_fixture_sha256": "3866b2f640411b665750df660b7a14fc39f4b5705f63895dc0978bdd593030c1",
+  "ngu_fixture_sha256": "25c9a574a7bd50bcb07a4fa1ff18fd0313690be3dc4f1231717582411fdb8e68",
+  "functions": [
+    {
+      "symbol": "_ZN10intel_ctl624on_pushButton_11_clickedEv",
+      "address": 6379056,
+      "size": 11413,
+      "code_hex": "f30f1efa554889e54157415641554154534881ec0010000048830c24004881ecf80e00004889bd38e1ffff4889fb4c8db5e0e1ffff64488b042528000000488945c831c0e847ebd5ff488b43304c89f7488b4030488bb0b8020000e840707c00ba0a00000031f64c89f7e801c1e1004c89f7888508fdffffe8c309edff488b43304c89f7488b4030488bb0f0030000e80c707c00ba0a00000031f64c89f7e8cdc0e100488bbde0e1ffff888509fdffff8b0785c00f842f23000083f8ff7411f0832f01488bbde0e1ffff0f8419230000488b9d38e1ffff4c89f7488b4330488b4030488bb090010000e8b26f7c00ba0a00000031f64c89f7e873c0e1004c89f788850afdffffe83509edff488b43304c89f7488b4030488bb058030000e87e6f7c00ba0a00000031f64c89f7e83fc0e100488bbde0e1ffff88850bfdffff8b0785c00f847d24000083f8ff7411f0832f01488bbde0e1ffff0f8467240000488b8538e1ffff4c89f7488b4030488b4030488bb0f8030000e8246f7c00ba0a00000031f64c89f7e8e5bfe100488bbde0e1ffff88850cfdffff8b0785c00f842725000083f8ff7411f0832f01488bbde0e1ffff0f8411250000488b8538e1ffff4c89f7488b4030488b4030488bb0d0020000e8ca6e7c00ba0a00000031f64c89f7e88bbfe100488bbde0e1ffff88850dfdffff8b0785c00f842923000083f8ff7411f0832f01488bbde0e1ffff0f8413230000488b8538e1ffff4c89f7488b4030488b4030488bb010020000e8706e7c00ba0a00000031f64c89f7e831bfe100488bbde0e1ffff88850efdffff8b0785c00f84e322000083f8ff7411f0832f01488bbde0e1ffff0f84cd220000488b9d38e1ffff4c89f7488b4330488b4030488bb070040000e8166e7c00ba0a00000031f64c89f7e8d7bee1004c89f788850ffdffffe89907edff488b43304c89f7488b4030488bb000020000e8e26d7c00ba0a00000031f64c89f7e8a3bee100488bbde0e1ffff888510fdffff8b0785c00f84d123000083f8ff7411f0832f01488bbde0e1ffff0f84bb230000488b8538e1ffff4c89f7488b4030488b4030488bb058020000e8886d7c00ba0a00000031f64c89f7e849bee100488bbde0e1ffff888511fdffff8b0785c00f846323000083f8ff7411f0832f01488bbde0e1ffff0f844d230000488b8538e1ffff4c89f7488b4030488b4030488b7028e8316d7c00ba0a00000031f64c89f7e8f2bde100488bbde0e1ffff888512fdffff8b0785c00f846820000083f8ff7411f0832f01488bbde0e1ffff0f8452200000488b9d38e1ffff4c89f7488b4330488b4030488bb028030000e8d76c7c00ba0a00000031f64c89f7e898bde1004c89f7888513fdffffe85a06edff488b43304c89f7488b4030488bb058010000e8a36c7c00ba0a00000031f64c89f7e864bde1004c89f7888514fdffffe82606edff488b43304c89f7488b4030488bb008030000e86f6c7c00ba0a00000031f64c89f7e830bde1004c89f7888515fdffffe8f205edff488b43304c89f7488b4030488bb0a8030000e83b6c7c00ba0a00000031f64c89f7e8fcbce1004c89f7888516fdffffe8be05edff488b43304c89f7488b4030488bb038030000e8076c7c00ba0a00000031f64c89f7e8c8bce100488bbde0e1ffff888517fdffff8b0785c00f84b620000083f8ff7411f0832f01488bbde0e1ffff0f84a0200000488b9d38e1ffff4c89f7488b4330488b4030488bb020020000e8ad6b7c00ba0a00000031f64c89f7e86ebce1004c89f7888518fdffffe83005edff488b43304c89f7488b4030488bb060020000e8796b7c00ba0a00000031f64c89f7e83abce100488bbde0e1ffff888519fdffff8b0785c00f841420000083f8ff7411f0832f01488bbde0e1ffff0f84fe1f0000488b8538e1ffff4c89f7488b4030488b4030488bb0a8020000e81f6b7c00ba0a00000031f64c89f7e8e0bbe100488bbde0e1ffff88851afdffff8b0785c00f843220000083f8ff7411f0832f01488bbde0e1ffff0f841c200000488b8538e1ffff4c89f7488b4030488b4030488bb000030000e8c56a7c00ba0a00000031f64c89f7e886bbe100488bbde0e1ffff88851bfdffff8b0785c00f843c20000083f8ff7411f0832f01488bbde0e1ffff0f8426200000488b8538e1ffff4c89f7488b4030488b4030488b30e86f6a7c00ba0a00000031f64c89f7e830bbe100488bbde0e1ffff88851cfdffff8b0785c00f84f61e000083f8ff7411f0832f01488bbde0e1ffff0f84e01e0000488b8538e1ffff4c89f7488b4030488b4030488bb0d8000000e8156a7c00ba0a00000031f64c89f7e8d6bae100488bbde0e1ffff88851dfdffff8b0785c00f84741d000083f8ff7411f0832f01488bbde0e1ffff0f845e1d0000488b8538e1ffff4c89f7488b4030488b4030488bb048030000e8bb697c00ba0a00000031f64c89f7e87cbae100488bbde0e1ffff88851efdffff8b0785c00f846a1d000083f8ff7411f0832f01488bbde0e1ffff0f84541d0000488b9d38e1ffff4c89f7488b4330488b4030488bb010010000e861697c00ba0a00000031f64c89f7e822bae1004c89f788851ffdffffe8e402edff488b43304c89f7488b4030488b7018e830697c00ba0a00000031f64c89f7e8f1b9e100488bbde0e1ffff888520fdffff8b0785c00f84a31c000083f8ff7411f0832f01488bbde0e1ffff0f848d1c0000488b9d38e1ffff4c89f7488b4330488b4030488bb048010000e8d6687c00ba0a00000031f64c89f7e897b9e1004c89f7888521fdffffe85902edff488b43304c89f7488b4030488bb050010000e8a2687c00ba0a00000031f64c89f7e863b9e1004c89f7888522fdffffe82502edff488b43304c89f7488b4030488b7008e871687c00ba0a00000031f64c89f7e832b9e1004c89f7888523fdffffe8f401edff488b43304c89f7488b4030488bb0e0010000e83d687c00ba0a00000031f64c89f7e8feb8e100488bbde0e1ffff888524fdffff8b0785c00f84001c000083f8ff7411f0832f01488bbde0e1ffff0f84ea1b0000488b9d38e1ffff4c89f7488b4330488b4030488bb0f8010000e8e3677c00ba0a00000031f64c89f7e8a4b8e1004c89f7888525fdffffe86601edff488b43304c89f7488b4030488bb030040000e8af677c00ba0a00000031f64c89f7e870b8e1004c89f7888526fdffffe83201edff488b43304c89f7488b4030488bb0c8000000e87b677c00ba0a00000031f64c89f7e83cb8e1004c89f7888527fdffffe8fe00edff488b43304c89f7488b4030488bb038010000e847677c00ba0a00000031f64c89f7e808b8e100488bbde0e1ffff888528fdffff8b0785c00f84e21a000083f8ff7411f0832f01488bbde0e1ffff0f84cc1a0000488b8538e1ffff4c89f7488b4030488b4030488bb008010000e8ed667c00ba0a00000031f64c89f7e8aeb7e100488bbde0e1ffff888529fdffff8b0785c00f84b01b000083f8ff7411f0832f01488bbde0e1ffff0f849a1b0000488b8538e1ffff4c89f7488b4030488b4030488bb098020000e893667c00ba0a00000031f64c89f7e854b7e100488bbde0e1ffff88852afdffff8b0785c00f841a1a000083f8ff7411f0832f01488bbde0e1ffff0f84041a0000488b8538e1ffff4c89f7488b4030488b4030488bb080000000e839667c00ba0a00000031f64c89f7e8fab6e100488bbde0e1ffff88852bfdffff8b0785c00f84241b000083f8ff7411f0832f01488bbde0e1ffff0f840e1b0000488b8538e1ffff4c89f7488b4030488b4030488bb0d8030000e8df657c00ba0a00000031f64c89f7e8a0b6e100488bbde0e1ffff88852cfdffff8b0785c00f841a1b000083f8ff7411f0832f01488bbde0e1ffff0f84041b0000488b8538e1ffff4c89f7488b4030488b4030488bb080030000e885657c00ba0a00000031f64c89f7e846b6e100488bbde0e1ffff88852dfdffff8b0785c00f845c1a000083f8ff7411f0832f01488bbde0e1ffff0f84461a0000488b9d38e1ffff4c89f7488b4330488b4030488bb0a0040000e82b657c00ba0a00000031f64c89f7e8ecb5e1004c89f788852efdffffe8aefeecff488b43304c89f7488b4030488bb0f8000000e8f7647c00ba0a00000031f64c89f7e8b8b5e1004c89f788852ffdffffe87afeecff488b43304c89f7488b4030488bb0c0010000e8c3647c00ba0a00000031f64c89f7e884b5e1004c89f7888530fdffffe846feecff488b43304c89f7488b4030488bb0c8030000e88f647c00ba0a00000031f64c89f7e850b5e1004c89f7888531fdffffe812feecff488b43304c89f7488b4030488bb0e0000000e85b647c00ba0a00000031f64c89f7e81cb5e1004c89f7888532fdffffe8defdecff488b43304c89f7488b4030488bb0b8030000e827647c00ba0a00000031f64c89f7e8e8b4e100488bbde0e1ffff888533fdffff8b0785c00f844e19000083f8ff7411f0832f01488bbde0e1ffff0f8438190000488b8538e1ffff4c89f7488b4030488b4030488bb0a0000000e8cd637c00ba0a00000031f64c89f7e88eb4e100488bbde0e1ffff888534fdffff8b0785c00f843019000083f8ff7411f0832f01488bbde0e1ffff0f841a190000488b8538e1ffff4c89f7488b4030488b4030488bb0f8020000e873637c00ba0a00000031f64c89f7e834b4e100488bbde0e1ffff888535fdffff8b0785c00f84be16000083f8ff7411f0832f01488bbde0e1ffff0f84a8160000488b8538e1ffff4c89f7488b4030488b4030488bb0b0020000e819637c00ba0a00000031f64c89f7e8dab3e100488bbde0e1ffff888536fdffff8b0785c00f840417000083f8ff7411f0832f01488bbde0e1ffff0f84ee160000488b8538e1ffff4c89f7488b4030488b4030488bb0a0030000e8bf627c00ba0a00000031f64c89f7e880b3e100488bbde0e1ffff888537fdffff8b0785c00f849616000083f8ff7411f0832f01488bbde0e1ffff0f8480160000488b9d38e1ffff4c89f7488b4330488b4030488bb0b0040000e865627c00ba0a00000031f64c89f7e826b3e1004c89f7888538fdffffe8e8fbecff488b43304c89f7488b4030488bb0e8020000e831627c00ba0a00000031f64c89f7e8f2b2e1004c89f7888539fdffffe8b4fbecff488b43304c89f7488b4030488bb098000000e8fd617c00ba0a00000031f64c89f7e8beb2e100488bbde0e1ffff88853afdffff8b0785c00f844c17000083f8ff7411f0832f01488bbde0e1ffff0f8436170000488b8538e1ffff4c89f7488b4030488b4030488bb0d8040000e8a3617c00ba0a00000031f64c89f7e864b2e100488bbde0e1ffff88853bfdffff8b0785c00f842e17000083f8ff7411f0832f01488bbde0e1ffff0f8418170000488b9d38e1ffff4c89f7488b4330488b4030488bb018040000e849617c00ba0a00000031f64c89f7e80ab2e1004c89f788853cfdffffe8ccfaecff488b43304c89f7488b4030488bb030010000e815617c00ba0a00000031f64c89f7e8d6b1e1004c89f788853dfdffffe898faecff488b43304c89f7488b4030488bb038020000e8e1607c00ba0a00000031f64c89f7e8a2b1e1004c89f788853efdffffe864faecff488b43304c89f7488b4030488bb0b8010000e8ad607c00ba0a00000031f64c89f7e86eb1e1004c89f788853ffdffffe830faecff488b43304c89f7488b4030488b7050e87c607c00ba0a00000031f64c89f7e83db1e100488bbde0e1ffff888540fdffff8b0785c00f841b16000083f8ff7411f0832f01488bbde0e1ffff0f8405160000488b8538e1ffff4c89f7488b4030488b4030488b7020e825607c00ba0a00000031f64c89f7e8e6b0e100488bbde0e1ffff888541fdffff8b0785c00f84ec15000083f8ff7411f0832f01488bbde0e1ffff0f84d6150000488b8538e1ffff4c89f7488b4030488b4030488bb040010000e8cb5f7c00ba0a00000031f64c89f7e88cb0e100488bbde0e1ffff888542fdffff8b0785c00f84f615000083f8ff7411f0832f01488bbde0e1ffff0f84e0150000488b9d38e1ffff4c89f7488b4330488b4030488bb0a8010000e8715f7c00ba0a00000031f64c89f7e832b0e1004c89f7888543fdffffe8f4f8ecff488b43304c89f7488b4030488bb018010000e83d5f7c00ba0a00000031f64c89f7e8feafe1004c89f7888544fdffffe8c0f8ecff488b43304c89f7488b4030488bb078020000e8095f7c00ba0a00000031f64c89f7e8caafe100488bbde0e1ffff888545fdffff8b0785c00f84bc14000083f8ff7411f0832f01488bbde0e1ffff0f84a6140000488b8538e1ffff4c89f7488b4030488b4030488bb078030000e8af5e7c00ba0a00000031f64c89f7e870afe100488bbde0e1ffff888546fdffff8b0785c00f84c614000083f8ff7411f0832f01488bbde0e1ffff0f84b0140000488b8538e1ffff4c89f7488b4030488b4030488b7040e8585e7c00ba0a00000031f64c89f7e819afe100488bbde0e1ffff888547fdffff8b0785c00f845712000083f8ff7411f0832f01488bbde0e1ffff0f8441120000488b8538e1ffff4c89f7488b4030488b4030488bb0b0010000e8fe5d7c0031f64c89f7e814b0e100488bbde0e1ffff66490f7ec48b0785c00f841712000083f8ff7411f0832f01488bbde0e1ffff0f8401120000488b8538e1ffff4c89f7488b4030488b4030488bb0a8040000e8aa5d7c0031f64c89f7e8c0afe100488bbde0e1ffff66480f7ec38b0785c00f84fb11000083f8ff7411f0832f01488bbde0e1ffff0f84e5110000488b8538e1ffff4c89f7488b4030488b4030488bb068010000e8565d7c0031f64c89f7e86cafe100488bbde0e1ffff8b0785c00f848811000083f8ff7411f0832f01488bbde0e1ffff0f8472110000f20f100d8d67fb0066490f6ed4f20f59d1f20f59c1f20f2cc266480f6ed3f20f59d1668985f0e6fffff20f2cc2668985f2e6fffff20f2cc0668985f4e6ffff488b8538e1ffff8b809c0100006689855cfdffff85c00f8e2c140000488d85d0e6ffff488d9df6e6ffff4c89b520e1ffff4531e448898530e1ffff4989c648899d18e1ffff904489e74589e7e81525d6ff488b9d18e1ffffc78590e1ffff00000000c785b0e1ffff1000008042880423488d05c75b6601488b10488b82d80d0000488b92e00d00004829c248c1fa024c39e20f86ff130000428b04a04a8d1ca5000000004489e64c8dadb0e1ffff48899d28e1ffff488b9d38e1ffff25ff1f0000488bbbe8000000c1e00d0d100000808985b0e1ffffe88baae9ff8b95b0e1ffff8bb590e1ffffbf5001000089c1e8938bd5ff488bbbe80000004489e6488d9d90e1ffffe85daae9ff89c1eb21660f1f840000000000488b8538e1ffff4489fe488bb8e8000000e83aaae9ff89c1bf500100004c89ea4889dee8588dd5ff8bbdb0e1ffff85ff78ce8b8590e1ffff488b9530e1ffffc78590e1ffff00000000c785b0e1ffff10020080428984a2a6000000488d05c65a6601488b10488b82d80d0000488b92e00d00004829c248c1fa024c39e20f86fe120000488b9528e1ffff4489fe8b041025ff1f0000c1e00d0d100200808985b0e1ffff488b8538e1ffff488bb8e8000000e89aa9e9ff8b95b0e1ffff8bb590e1ffffbf5001000089c1e8a28ad5ff6690488b8538e1ffff4489fe488bb8e8000000e86aa9e9ff4889de4c89eabf5001000089c1e8888cd5ff8bb5b0e1ffff85f678ce8b8590e1ffff488b9530e1ffffc78590e1ffff00000000c785b0e1ffff26000080428984a2a6040000488d05f6596601488b00488b88d80d0000488b90e00d00004829ca48c1fa024c39e20f862e120000488b8528e1ffff4489fe8b040125ff1f0000c1e00d0d260000808985b0e1ffff488b8538e1ffff488bb8e8000000e8caa8e9ff8b95b0e1ffff8bb590e1ffffbf5001000089c1e8d289d5ff6690488b8538e1ffff4489fe488bb8e8000000e89aa8e9ff4c89ea4889debf5001000089c1e8b88bd5ff8b8db0e1ffff85c978ce8b8590e1ffff488b9d30e1ffff4489fe488bbd20e1ffff428984a3a6020000e88acbd7ff4c8bbde8e1ffff488b9de0e1ffff31d248b8abaaaaaaaaaaaaaa4c8b9d38e1ffff4c89ff4829df48c1ff03480faff84889d84288bc2576fcffff4885ff74370f1f00488b30488b48084829f14883f9040f86141100008b4e044883c0186641898c56a60600004883c2014839d775d34c899d38e1ffff4c39fb742b0f1f8000000000488b3b4885ff740c488b73104829fee81435b3ff4883c3184939df75e34c8bbde0e1ffff4d85ff7412488bb5f0e1ffff4c89ff4c29fee8ed34b3ff488b8538e1ffff4983c4014983c61e4439a09c0100000f8f61fcffff4c8bb520e1ffffba1001008031f6bf50010000c78540e1ffff000000004c8da544e1ffff488d9d40e1ffffc78544e1ffff10010080e81789d5ff4c89e24889debf50010000e8b789d5ff448b8544e1ffff4c8bbd38e1ffff4585c079250f1f40004c89e24889debf50010000e89089d5ff8b8544e1ffff85c078e64c89bd38e1ffff8b8540e1ffffba1006008031f6bf50010000c78540e1ffff000000008985f6fcffffc78544e1ffff10060080e89e88d5ff4c89e24889debf50010000e83e89d5ff8b9544e1ffff4c8bbd38e1ffff85d279260f1f4400004c89e24889debf50010000e81889d5ff8b8544e1ffff85c078e64c89bd38e1ffff8b8540e1ffffba1007008031f6bf50010000c78540e1ffff000000008985fafcffffc78544e1ffff10070080e82688d5ff4c89e24889debf50010000e8c688d5ff8b8544e1ffff4c8bbd38e1ffff85c079260f1f4400004c89e24889debf50010000e8a088d5ff8b8544e1ffff85c078e64c89bd38e1ffff8b8540e1ffffba1008008031f6bf50010000c78540e1ffff000000008985fefcffffc78544e1ffff10080080e8ae87d5ff4c89e24889debf50010000e84e88d5ff8b8544e1ffff4c8bbd38e1ffff85c079280f1f4400004c89e24889debf50010000e82888d5ff448b9d44e1ffff4585db78e44c89bd38e1ffff4c8bbd38e1ffff8b8540e1ffff31c9ba01000000488dbd70e1ffff498b7738898502fdffff4889bdf8e0ffffe884ecc2ff488b8570e1ffff498b77384c89efb9010000008b500488955efdffff8b00ba01000000888560fdffffe856ecc2ff488b85b0e1ffff488bbd70e1ffff48c785b0e1ffff00000000488bb580e1ffff48898570e1ffff488b85b8e1ffff48c785b8e1ffff0000000048898578e1ffff488b85c0e1ffff48c785c0e1ffff0000000048898580e1ffff4885ff74234829fee82032b3ff488bbdb0e1ffff488bb5c0e1ffff4829fe4885ff7405e80532b3ff488b8570e1ffff8b500488955ffdffff8b00c68506fdffff00888561fdffffe8c1d6d6ff488bb538e1ffff89c2bf50010000c78540e1ffff00000000c78544e1ffff1400008083e20f8896d802000089c2c0ea048896d902000089c2c1ea1083e2018896da0200000fb6d4b81a00000083fa3f8996dc0200000f44d031f6889507fdffffba14000080e8f785d5ff0f1f80000000004c89e24889debf50010000e89086d5ff448b9544e1ffff4585d278e48b8540e1ffffba1600008031f6bf50010000c78540e1ffff00000000898548fdffffc78544e1ffff16000080e8a385d5ff0f1f004c89e24889debf50010000e84086d5ff448b8d44e1ffff4585c978e48b8540e1ffffba1800008031f6bf50010000c78540e1ffff00000000898550fdffffc78544e1ffff18000080e85385d5ff0f1f004c89e24889debf50010000e8f085d5ff448b8544e1ffff4585c078e48b8540e1ffffba1a00008031f6bf50010000c78540e1ffff0000000089854cfdffffc78544e1ffff1a000080e80385d5ff0f1f004c89e24889debf50010000e8a085d5ff8bbd44e1ffff85ff78e68b8540e1ffffba2000008031f6bf50010000c78540e1ffff00000000898554fdffffc78544e1ffff20000080e8b584d5ff0f1f4400004c89e24889debf50010000e85085d5ff8bb544e1ffff85f678e68b8540e1ffff898558fdffff488b8538e1ffff488b7860e8aa407a00888562fdffff488d8590e1ffffbe020000004889c7488985f0e0ffffe869c2d7ff488b8590e1ffff488bbd98e1ffff48baabaaaaaaaaaaaaaa488b9d38e1ffff4829c748c1ff03480faffa31d24088bd63fdffff4885ff743490488b30488b48084829f14883f9040f86830b00008b4e044883c01866898c5564fdffff4883c2014839fa75d448899d38e1ffff4c89f7e81563d8ff4c89f7e8fd3cd7ff4c89f7e85546d7ff488bbd58e2ffff488bb560e2ffff4829fe48c1fe02745d4c8b9570e2ffff4c8b8d88e2ffff31c0488d9582fdffff4c8b85a0e2ffff488b9d38e1ffff660f1f8400000000008b0c874883c201884aff418b0c82884a07418b0c81884a0f418b0c804883c001884a174839f075d848899d38e1ffff488bbd90e3ffff488bb598e3ffff4829fe48c1fe0274594c8b95a8e3ffff4c8b8dc0e3ffff31c0488d95a2feffff4c8b85d8e3ffff488b9d38e1ffff0f1f4400008b0c874883c201884aff418b0c82884a07418b0c81884a0f418b0c804883c001884a174839f075d848899d38e1ffff488bbdb8e2ffff488bb5c0e2ffff4829fe48c1fe02745c4c8b95d0e2ffff4c8b8de8e2ffff31c0488d95a2fdffff4c8b8500e3ffff488b9d38e1ffff0f1f4400008b0c874883c201884aff418b0c82884a3f418b0c81884a7f418b0c804883c001888abf0000004839f075d548899d38e1ffff488bbdf0e3ffff488bb5f8e3ffff4829fe48c1fe0274594c8b9508e4ffff4c8b8d20e4ffff31c0488d95c2feffff4c8b8538e4ffff488b9d38e1ffff66908b0c874883c201884aff418b0c82884a3f418b0c81884a7f418b0c804883c001888abf0000004839f075d548899d38e1ffff4c8dbd58e1ffff488d35e084600141b8ffffffff31c9488d15053a02014c89ffe85903f000be0b000000488d3d023a0201e84877e100be0c000000488d3d836c0101488985b0e1ffffe83077e1004883ec084531c94d89f84c89e96a004c8da560e1ffff488bb538e1ffff48898560e1ffff488d8548e1ffff4c89e24889c748898530e1ffffe8a35186005a4c89e759e8c9eaecff488bbdb0e1ffff8b0785c00f849107000083f8ff7411f0832f01488bbdb0e1ffff0f847b070000488bbd58e1ffff8b0785c00f845607000083f8ff7411f0832f01488bbd58e1ffff0f8440070000488bb530e1ffff4c89e7e8bcd4e600be120000004c89e7e88fdde60084c00f8444070000488bb530e1ffff4c89efe8f873e100488bb5b0e1ffff488d85c0e4ffff488dbdb0e4ffff4889bde8e0ffff486356044803761048898508e1ffff488985b0e4ffff4801f2e87e11feff488bbdb0e1ffff8b0785c00f849203000083f8ff7411f0832f01488bbdb0e1ffff0f847c030000488d85c8e5ffff488d9dd0e4ffff4889c748899d20e1ffff48898528e1ffffe8d369b3ff488b05fc98650131f648c785a0e6ffff0000000048c785b0e6ffff0000000048c785b8e6ffff000000004883c010488985c8e5ffff31c0668985a8e6ffff488b05e696650148c785c0e6ffff0000000048c785c8e6ffff00000000488b5008488b401048035ae8488995d0e4ffff4889034889df48899518e1ffff48898510e1ffffe8fc5ab3ff488b056d956501488d9dd8e4ffff4889df4883c018488985d0e4ffff488b05519565014883c040488985c8e5ffffe89941b3ff488bbd28e1ffff4889dee8ba5ab3ff488bb5b0e4ffffba140000004889dfe8e66ab3ff488b95d0e4ffff488bbd20e1ffff48037ae84885c00f847d06000031f6e88429b3ff488d8540e5ffff4889c748898500e1ffffe80e6bb3ff84c00f84b9000000488bbd20e1ffff488db5d0e6ffffbaf2180000e83e59b3ff4889dfe8562fb3ff4885c00f844b06000031f64c89efe8b3f28700ba58020000be580200004c89efe8015e7100be06000000488d3d34e30401e87074e100be04000000488d3df5ab0e0148898558e1ffffe85874e10048898550e1ffff4531c0b9000400004c89fa488d8550e1ffff488bbd38e1ffff4889c6488985e0e0ffffe8f9018800488bbde0e0ffffe8fde7ecff4c89ffe8f5e7ecff4c89efe84dc48700488b051e9465014889df4883c018488985d0e4ffff488b05099465014883c040488985c8e5ffff488b051f9765014883c010488985d8e4ffffe87f2eb3ff488bbd00e1ffffe8a335b3ff488b058c966501488dbd10e5ffff4883c010488985d8e4ffffe86567b3ff488b8518e1ffff488b9d10e1ffff488bbd28e1ffff488985d0e4ffff488b40e848899c05d0e4ffff488b05969665014883c010488985c8e5ffffe8a65eb3ff488bbdb0e4ffff483bbd08e1ffff7410488b85c0e4ffff488d7001e85629b3ff4c89e7e82ecfe600488bbd30e1ffffe812e7ecff4c89f7e8ea29feff488b8590e1ffff488b9d98e1ffff4889c74839c374384989c690498b3e4885ff7416498b46104889c648898538e1ffff4829fee80229b3ff4c89f04883c0184989c64839c375d3488bbd90e1ffff4885ff740f488bb5a0e1ffff4829fee8d828b3ff488bbd70e1ffff488bb580e1ffff4885ff74084829fee8bd28b3ff488b45c864482b0425280000000f859c040000488d65d85b415c415d415e415f5dc3ba08000000be01000000e87c35db00e970fcffffba08000000be02000000e86835db00e9d3dcffffba08000000be02000000e85435db00e99adfffffba08000000be02000000e84035db00e944e9ffffba08000000be02000000e82c35db00e98ee2ffffba08000000be02000000e81835db00e95fe3ffffba08000000be02000000e80435db00e9e8e5ffffba08000000be02000000e8f034db00e920e5ffffba08000000be02000000e8dc34db00e998e2ffffba08000000be02000000e8c834db00e902e4ffffba08000000be02000000e8b434db00e96ce9ffffba08000000be02000000e8a034db00e9fee8ffffba08000000be02000000e88c34db00e9abedffffba08000000be02000000e87834db00e9ebedffffba08000000be02000000f20f118530e1ffffe85c34db00f20f108530e1ffffe96aeeffffba08000000be02000000e84034db00e907eeffffba08000000be02000000e82c34db00e9d9dcffffba08000000be02000000e81834db00e91fddffffba08000000be02000000e80434db00e90ce1ffffba08000000be02000000e8f033db00e9eedfffffba08000000be02000000e8dc33db00e94cdfffffba08000000be02000000e8c833db00e952e4ffffba08000000be02000000e8b433db00e9a6e5ffffba08000000be02000000e8a033db00e9dee4ffffba08000000be02000000e88c33db00e985dbffffba08000000be02000000e87833db00e9d0dfffffba08000000be02000000e86433db00e9b4e6ffffba08000000be02000000e85033db00e9e8e4ffffba08000000be02000000e83c33db00e9b6e8ffffba08000000be02000000e82833db00e9d2e6ffffba08000000be02000000e81433db00e9c6dfffffba08000000be02000000e80033db00e9d4e8ffffba08000000be02000000e8ec32db00e9e7e9ffffba08000000be02000000e8d832db00e946ebffffba08000000be02000000e8c432db00e916eaffffba08000000be02000000e8b032db00e99fdcffffba08000000be02000000e89c32db00e931dcffffba08000000be02000000e88832db00e9dbdaffffba08000000be02000000e87432db00e93cebffffba08000000be02000000e86032db00e90ceaffffba08000000be02000000e84c32db00e9acf8ffffba08000000be02000000e83832db00e971f8ffffbe0e000000488d3d0d650101e8226fe100be02000000488d3d173b1a01488985b0e1ffffe80a6fe100488bbd38e1ffff4531c04c89ea4c89feb90004000048898558e1ffffe8b9fc87004c89ffe8c1e2ecff4c89efe8b9e2ecff4c89e7e8c1cae600488bbd30e1ffffe8a5e2ecff4c89f7e87d25feff488b8590e1ffff488b9d98e1ffff4889c74839c30f84c7fbffff4989c6498b3e4885ff7416498b46104889c648898538e1ffff4829fee89224b3ff4c89f04883c0184989c64839c375d3e98bfbffff8b772083ce04e80323b3ffe97af9ffff4c8dadb0e1ffffe998efffff488b85d0e4ffff488bbd20e1ffff480378e88b772083ce04e8d522b3ffe993f9ffff4889cabe01000000488d3da15afb0031c048c1fa024c8bb520e1ffffe8df24b3ff4c89e6488d3d855afb0031c0e8ce24b3ffe8792ab3ff4889cabe01000000488d3d6a5afb0031c048c1fa02e8af24b3fff30f1efa4889c3e9a91eb7fff30f1efa4889c3e9ad1eb7fff30f1efa4889c3e9b11eb7fff30f1efa4889c3e9151fb7fff30f1efa4889c7e91b1fb7fff30f1efa4889c3e9a11eb7fff30f1efa4889c3e98d1eb7fff30f1efa4889c3e9651eb7fff30f1efa4889c3e9591eb7fff30f1efa4889c3e94d1eb7fff30f1efa4889c3e9411eb7fff30f1efa4889c3e9351eb7fff30f1efa4889c3e9291eb7fff30f1efa4889c3e91d1eb7fff30f1efa4889c3e9111eb7fff30f1efa4889c3e9051eb7fff30f1efa4889c3e9f91db7fff30f1efa4889c3e9ed1db7fff30f1efa4889c3e9e11db7fff30f1efa4889c3e9d51db7fff30f1efa4889c3e96a1eb7fff30f1efa4889c3e9661eb7fff30f1efa4889c3e9b11db7fff30f1efa4889c3e9a51db7fff30f1efa4889c3e9991db7fff30f1efa4889c3e98d1db7fff30f1efa4889c3e9811db7fff30f1efa4889c3e9751db7fff30f1efa4889c3e9691db7fff30f1efa4889c3e95d1db7fff30f1efa4889c3e9511db7fff30f1efa4889c3e9451db7fff30f1efa4889c3e9391db7fff30f1efa4889c3e92d1db7fff30f1efa4889c3e9211db7fff30f1efa4889c3e9151db7fff30f1efa4889c3e9091db7fff30f1efa4889c3e9fd1cb7fff30f1efa4889c3e9791db7fff30f1efa4889c3e9e51cb7fff30f1efa4889c3e9d91cb7fff30f1efa4889c3e9cd1cb7fff30f1efa4889c3e9c11cb7fff30f1efa4889c3e9b51cb7fff30f1efa4889c3e9a91cb7fff30f1efa4889c3e99d1cb7fff30f1efa4889c3e9911cb7fff30f1efa4889c3e9851cb7fff30f1efa4889c3e9791cb7fff30f1efa4889c3e96d1cb7fff30f1efa4889c3e9611cb7fff30f1efa4889c3e9551cb7fff30f1efa4889c3e9491cb7fff30f1efa4889c3e93d1cb7fff30f1efa4889c3e9311cb7fff30f1efa4889c3e9e01cb7fff30f1efa4889c3e9191cb7fff30f1efa4889c3e90d1cb7fff30f1efa4889c3e9011cb7fff30f1efa4889c3e9f51bb7fff30f1efa4889c3e9e91bb7fff30f1efa4889c3e9dd1bb7fff30f1efa4889c3e9d11bb7fff30f1efa4889c3e9c51bb7fff30f1efa4889c3e9fd1bb7fff30f1efa4889c3e9f91bb7fff30f1efa4889c3e9a11bb7fff30f1efa4889c3e9951bb7fff30f1efa4889c3e9891bb7fff30f1efa4889c3e97d1bb7fff30f1efa4889c3e9711bb7fff30f1efa4889c3e9651bb7fff30f1efa4889c3e9591bb7fff30f1efa4889c3e94d1bb7fff30f1efa4889c3e9411bb7fff30f1efa4889c3e9351bb7fff30f1efa4889c3e9291bb7fff30f1efa4889c3e91d1bb7fff30f1efa4889c3e97d1bb7fff30f1efa4889c3e9651bb7fff30f1efa4889c3e9aa1bb7fff30f1efa4889c3e9451bb7fff30f1efa4889c3e9d51bb7fff30f1efa4889c3e9a81bb7fff30f1efa4889c3e9f51ab7fff30f1efa4989c7e9851bb7fff30f1efa4889c3e9b11ab7ff",
+      "code_sha256": "85f2e8271b12fb5473620f30f18c020ee472f6a00a79b2b353179d6add2e0fd1",
+      "calls": [
+        {
+          "instruction": 6379124,
+          "kind": "call",
+          "target": 3621312,
+          "symbols": [
+            "_Z18percoreoverride_env"
+          ]
+        },
+        {
+          "instruction": 6379147,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379162,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379176,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6379199,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379214,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379289,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379304,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379318,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6379341,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379356,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379431,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379446,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379521,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379536,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379611,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379626,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379701,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379716,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379730,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6379753,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379768,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379843,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379858,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6379930,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6379945,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380020,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380035,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380049,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6380072,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380087,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380101,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6380124,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380139,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380153,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6380176,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380191,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380205,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6380228,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380243,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380318,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380333,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380347,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6380370,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380385,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380460,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380475,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380550,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380565,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380636,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380651,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380726,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380741,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380816,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380831,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380906,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380921,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6380935,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6380955,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6380970,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381045,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381060,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381074,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6381097,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381112,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381126,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6381146,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381161,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381175,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6381198,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381213,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381288,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381303,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381317,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6381340,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381355,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381369,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6381392,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381407,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381421,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6381444,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381459,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381534,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381549,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381624,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381639,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381714,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381729,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381804,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381819,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381894,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381909,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6381984,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6381999,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382013,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6382036,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382051,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382065,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6382088,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382103,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382117,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6382140,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382155,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382169,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6382192,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382207,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382221,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6382244,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382259,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382334,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382349,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382424,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382439,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382514,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382529,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382604,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382619,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382694,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382709,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382723,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6382746,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382761,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382775,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6382798,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382813,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382888,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382903,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6382978,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6382993,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383007,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6383030,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383045,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383059,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6383082,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383097,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383111,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6383134,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383149,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383163,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6383183,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383198,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383270,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383285,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383360,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383375,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383450,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383465,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383479,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6383502,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383517,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383531,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6383554,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383569,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383644,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383659,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383731,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383746,
+          "kind": "call",
+          "target": 21174176,
+          "symbols": [
+            "_ZNK7QString6toUIntEPbi"
+          ]
+        },
+        {
+          "instruction": 6383821,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383831,
+          "kind": "call",
+          "target": 21174512,
+          "symbols": [
+            "_ZNK7QString8toDoubleEPb"
+          ]
+        },
+        {
+          "instruction": 6383905,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383915,
+          "kind": "call",
+          "target": 21174512,
+          "symbols": [
+            "_ZNK7QString8toDoubleEPb"
+          ]
+        },
+        {
+          "instruction": 6383989,
+          "kind": "call",
+          "target": 14534352,
+          "symbols": [
+            "_ZNK9QLineEdit4textEv"
+          ]
+        },
+        {
+          "instruction": 6383999,
+          "kind": "call",
+          "target": 21174512,
+          "symbols": [
+            "_ZNK7QString8toDoubleEPb"
+          ]
+        },
+        {
+          "instruction": 6384182,
+          "kind": "call",
+          "target": 3641168,
+          "symbols": [
+            "_Z11Rd_PC_Ratioi"
+          ]
+        },
+        {
+          "instruction": 6384320,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6384344,
+          "kind": "call",
+          "target": 3602032,
+          "symbols": [
+            "_Z7WrmsrTxjjjm"
+          ]
+        },
+        {
+          "instruction": 6384366,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6384373,
+          "kind": "jmp",
+          "target": 6384408,
+          "symbols": []
+        },
+        {
+          "instruction": 6384401,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6384419,
+          "kind": "call",
+          "target": 3602560,
+          "symbols": [
+            "_Z7RdmsrTxjPjS_m"
+          ]
+        },
+        {
+          "instruction": 6384561,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6384585,
+          "kind": "call",
+          "target": 3602032,
+          "symbols": [
+            "_Z7WrmsrTxjjjm"
+          ]
+        },
+        {
+          "instruction": 6384609,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6384627,
+          "kind": "call",
+          "target": 3602560,
+          "symbols": [
+            "_Z7RdmsrTxjPjS_m"
+          ]
+        },
+        {
+          "instruction": 6384769,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6384793,
+          "kind": "call",
+          "target": 3602032,
+          "symbols": [
+            "_Z7WrmsrTxjjjm"
+          ]
+        },
+        {
+          "instruction": 6384817,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 6384835,
+          "kind": "call",
+          "target": 3602560,
+          "symbols": [
+            "_Z7RdmsrTxjPjS_m"
+          ]
+        },
+        {
+          "instruction": 6384881,
+          "kind": "call",
+          "target": 3750016,
+          "symbols": [
+            "_Z22check_vfpt_percore_nvli"
+          ]
+        },
+        {
+          "instruction": 6385031,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6385070,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6385156,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6385172,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6385211,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6385277,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6385293,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6385331,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6385397,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6385413,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6385451,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6385517,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6385533,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6385571,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6385639,
+          "kind": "call",
+          "target": 2382960,
+          "symbols": [
+            "_ZN11NVL_MEM_CFG21get_ufs_min_max_ratioEbi"
+          ]
+        },
+        {
+          "instruction": 6385685,
+          "kind": "call",
+          "target": 2382960,
+          "symbols": [
+            "_ZN11NVL_MEM_CFG21get_ufs_min_max_ratioEbi"
+          ]
+        },
+        {
+          "instruction": 6385787,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6385814,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6385850,
+          "kind": "call",
+          "target": 3688320,
+          "symbols": [
+            "_Z27Rd_SAGV_CONFIG_POLICY_Tunerv"
+          ]
+        },
+        {
+          "instruction": 6385956,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6385979,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6386040,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6386059,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6386120,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6386139,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6386200,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6386219,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6386278,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 6386299,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 6386337,
+          "kind": "call",
+          "target": 14398288,
+          "symbols": [
+            "_ZNK15QAbstractButton9isCheckedEv"
+          ]
+        },
+        {
+          "instruction": 6386370,
+          "kind": "call",
+          "target": 3749168,
+          "symbols": [
+            "_Z14check_vfpt_nvli"
+          ]
+        },
+        {
+          "instruction": 6386486,
+          "kind": "call",
+          "target": 3790416,
+          "symbols": [
+            "_ZN9OCTVB_NVLC2Ev",
+            "_ZN9OCTVB_NVLC1Ev"
+          ]
+        },
+        {
+          "instruction": 6386494,
+          "kind": "call",
+          "target": 3715136,
+          "symbols": [
+            "_ZN9OCTVB_NVL11get_percoreEv"
+          ]
+        },
+        {
+          "instruction": 6386502,
+          "kind": "call",
+          "target": 3717536,
+          "symbols": [
+            "_ZN9OCTVB_NVL7get_trlEv"
+          ]
+        },
+        {
+          "instruction": 6386994,
+          "kind": "call",
+          "target": 22116496,
+          "symbols": [
+            "_ZNK11QMetaObject2trEPKcS1_i"
+          ]
+        },
+        {
+          "instruction": 6387011,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6387035,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6387096,
+          "kind": "call",
+          "target": 15189824,
+          "symbols": [
+            "_ZN11QFileDialog15getSaveFileNameEP7QWidgetRK7QStringS4_S4_PS2_6QFlagsINS_6OptionEE"
+          ]
+        },
+        {
+          "instruction": 6387106,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6387199,
+          "kind": "call",
+          "target": 21514944,
+          "symbols": [
+            "_ZN5QFileC1ERK7QString",
+            "_ZN5QFileC2ERK7QString"
+          ]
+        },
+        {
+          "instruction": 6387212,
+          "kind": "call",
+          "target": 21517216,
+          "symbols": [
+            "_ZN5QFile4openE6QFlagsIN9QIODevice12OpenModeFlagEE"
+          ]
+        },
+        {
+          "instruction": 6387235,
+          "kind": "call",
+          "target": 21162528,
+          "symbols": [
+            "_ZN7QString13toUtf8_helperERKS_"
+          ]
+        },
+        {
+          "instruction": 6387293,
+          "kind": "call",
+          "target": 6260704,
+          "symbols": [
+            "_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE12_M_constructIPKcEEvT_S8_St20forward_iterator_tag.isra.0"
+          ]
+        },
+        {
+          "instruction": 6387368,
+          "kind": "call",
+          "target": 1368192,
+          "symbols": [
+            "_ZNSt8ios_baseC2Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6387503,
+          "kind": "call",
+          "target": 1364528,
+          "symbols": [
+            "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt"
+          ]
+        },
+        {
+          "instruction": 6387554,
+          "kind": "call",
+          "target": 1358080,
+          "symbols": [
+            "_ZNSt13basic_filebufIcSt11char_traitsIcEEC1Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6387569,
+          "kind": "call",
+          "target": 1364528,
+          "symbols": [
+            "_ZNSt9basic_iosIcSt11char_traitsIcEE4initEPSt15basic_streambufIcS1_E@plt"
+          ]
+        },
+        {
+          "instruction": 6387589,
+          "kind": "call",
+          "target": 1368688,
+          "symbols": [
+            "_ZNSt13basic_filebufIcSt11char_traitsIcEE4openEPKcSt13_Ios_Openmode@plt"
+          ]
+        },
+        {
+          "instruction": 6387623,
+          "kind": "call",
+          "target": 1351984,
+          "symbols": [
+            "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt"
+          ]
+        },
+        {
+          "instruction": 6387645,
+          "kind": "call",
+          "target": 1368784,
+          "symbols": [
+            "_ZNKSt12__basic_fileIcE7is_openEv@plt"
+          ]
+        },
+        {
+          "instruction": 6387677,
+          "kind": "call",
+          "target": 1364256,
+          "symbols": [
+            "_ZNSo5writeEPKcl@plt"
+          ]
+        },
+        {
+          "instruction": 6387685,
+          "kind": "call",
+          "target": 1353536,
+          "symbols": [
+            "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt"
+          ]
+        },
+        {
+          "instruction": 6387704,
+          "kind": "call",
+          "target": 15297200,
+          "symbols": [
+            "_ZN11QMessageBoxC1EP7QWidget",
+            "_ZN11QMessageBoxC2EP7QWidget"
+          ]
+        },
+        {
+          "instruction": 6387722,
+          "kind": "call",
+          "target": 13817360,
+          "symbols": [
+            "_ZN7QWidget11setBaseSizeEii"
+          ]
+        },
+        {
+          "instruction": 6387739,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6387763,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6387810,
+          "kind": "call",
+          "target": 15301216,
+          "symbols": [
+            "_ZN11QMessageBox11informationEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_"
+          ]
+        },
+        {
+          "instruction": 6387822,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6387830,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6387838,
+          "kind": "call",
+          "target": 15285456,
+          "symbols": [
+            "_ZN11QMessageBoxD1Ev",
+            "_ZN11QMessageBoxD2Ev"
+          ]
+        },
+        {
+          "instruction": 6387900,
+          "kind": "call",
+          "target": 1353536,
+          "symbols": [
+            "_ZNSt13basic_filebufIcSt11char_traitsIcEE5closeEv@plt"
+          ]
+        },
+        {
+          "instruction": 6387912,
+          "kind": "call",
+          "target": 1355376,
+          "symbols": [
+            "_ZNSt12__basic_fileIcED1Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6387942,
+          "kind": "call",
+          "target": 1368144,
+          "symbols": [
+            "_ZNSt6localeD1Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6388005,
+          "kind": "call",
+          "target": 1365968,
+          "symbols": [
+            "_ZNSt8ios_baseD2Ev@plt"
+          ]
+        },
+        {
+          "instruction": 6388037,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6388045,
+          "kind": "call",
+          "target": 21514368,
+          "symbols": [
+            "_ZN5QFileD2Ev",
+            "_ZN5QFileD1Ev"
+          ]
+        },
+        {
+          "instruction": 6388057,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6388065,
+          "kind": "call",
+          "target": 6267728,
+          "symbols": [
+            "_ZN9OCTVB_NVLD2Ev",
+            "_ZN9OCTVB_NVLD1Ev"
+          ]
+        },
+        {
+          "instruction": 6388121,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6388163,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6388190,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6388239,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388244,
+          "kind": "jmp",
+          "target": 6387337,
+          "symbols": []
+        },
+        {
+          "instruction": 6388259,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388264,
+          "kind": "jmp",
+          "target": 6379264,
+          "symbols": []
+        },
+        {
+          "instruction": 6388279,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388284,
+          "kind": "jmp",
+          "target": 6379995,
+          "symbols": []
+        },
+        {
+          "instruction": 6388299,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388304,
+          "kind": "jmp",
+          "target": 6382489,
+          "symbols": []
+        },
+        {
+          "instruction": 6388319,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388324,
+          "kind": "jmp",
+          "target": 6380791,
+          "symbols": []
+        },
+        {
+          "instruction": 6388339,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388344,
+          "kind": "jmp",
+          "target": 6381020,
+          "symbols": []
+        },
+        {
+          "instruction": 6388359,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388364,
+          "kind": "jmp",
+          "target": 6381689,
+          "symbols": []
+        },
+        {
+          "instruction": 6388379,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388384,
+          "kind": "jmp",
+          "target": 6381509,
+          "symbols": []
+        },
+        {
+          "instruction": 6388399,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388404,
+          "kind": "jmp",
+          "target": 6380881,
+          "symbols": []
+        },
+        {
+          "instruction": 6388419,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388424,
+          "kind": "jmp",
+          "target": 6381263,
+          "symbols": []
+        },
+        {
+          "instruction": 6388439,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388444,
+          "kind": "jmp",
+          "target": 6382669,
+          "symbols": []
+        },
+        {
+          "instruction": 6388459,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388464,
+          "kind": "jmp",
+          "target": 6382579,
+          "symbols": []
+        },
+        {
+          "instruction": 6388479,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388484,
+          "kind": "jmp",
+          "target": 6383796,
+          "symbols": []
+        },
+        {
+          "instruction": 6388499,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388504,
+          "kind": "jmp",
+          "target": 6383880,
+          "symbols": []
+        },
+        {
+          "instruction": 6388527,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388540,
+          "kind": "jmp",
+          "target": 6384043,
+          "symbols": []
+        },
+        {
+          "instruction": 6388555,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388560,
+          "kind": "jmp",
+          "target": 6383964,
+          "symbols": []
+        },
+        {
+          "instruction": 6388575,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388580,
+          "kind": "jmp",
+          "target": 6379586,
+          "symbols": []
+        },
+        {
+          "instruction": 6388595,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388600,
+          "kind": "jmp",
+          "target": 6379676,
+          "symbols": []
+        },
+        {
+          "instruction": 6388615,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388620,
+          "kind": "jmp",
+          "target": 6380701,
+          "symbols": []
+        },
+        {
+          "instruction": 6388635,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388640,
+          "kind": "jmp",
+          "target": 6380435,
+          "symbols": []
+        },
+        {
+          "instruction": 6388655,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388660,
+          "kind": "jmp",
+          "target": 6380293,
+          "symbols": []
+        },
+        {
+          "instruction": 6388675,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388680,
+          "kind": "jmp",
+          "target": 6381599,
+          "symbols": []
+        },
+        {
+          "instruction": 6388695,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388700,
+          "kind": "jmp",
+          "target": 6381959,
+          "symbols": []
+        },
+        {
+          "instruction": 6388715,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388720,
+          "kind": "jmp",
+          "target": 6381779,
+          "symbols": []
+        },
+        {
+          "instruction": 6388735,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388740,
+          "kind": "jmp",
+          "target": 6379406,
+          "symbols": []
+        },
+        {
+          "instruction": 6388755,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388760,
+          "kind": "jmp",
+          "target": 6380525,
+          "symbols": []
+        },
+        {
+          "instruction": 6388775,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388780,
+          "kind": "jmp",
+          "target": 6382309,
+          "symbols": []
+        },
+        {
+          "instruction": 6388795,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388800,
+          "kind": "jmp",
+          "target": 6381869,
+          "symbols": []
+        },
+        {
+          "instruction": 6388815,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388820,
+          "kind": "jmp",
+          "target": 6382863,
+          "symbols": []
+        },
+        {
+          "instruction": 6388835,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388840,
+          "kind": "jmp",
+          "target": 6382399,
+          "symbols": []
+        },
+        {
+          "instruction": 6388855,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388860,
+          "kind": "jmp",
+          "target": 6380615,
+          "symbols": []
+        },
+        {
+          "instruction": 6388875,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388880,
+          "kind": "jmp",
+          "target": 6382953,
+          "symbols": []
+        },
+        {
+          "instruction": 6388895,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388900,
+          "kind": "jmp",
+          "target": 6383248,
+          "symbols": []
+        },
+        {
+          "instruction": 6388915,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388920,
+          "kind": "jmp",
+          "target": 6383619,
+          "symbols": []
+        },
+        {
+          "instruction": 6388935,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388940,
+          "kind": "jmp",
+          "target": 6383335,
+          "symbols": []
+        },
+        {
+          "instruction": 6388955,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388960,
+          "kind": "jmp",
+          "target": 6379908,
+          "symbols": []
+        },
+        {
+          "instruction": 6388975,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6388980,
+          "kind": "jmp",
+          "target": 6379818,
+          "symbols": []
+        },
+        {
+          "instruction": 6388995,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6389000,
+          "kind": "jmp",
+          "target": 6379496,
+          "symbols": []
+        },
+        {
+          "instruction": 6389015,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6389020,
+          "kind": "jmp",
+          "target": 6383709,
+          "symbols": []
+        },
+        {
+          "instruction": 6389035,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6389040,
+          "kind": "jmp",
+          "target": 6383425,
+          "symbols": []
+        },
+        {
+          "instruction": 6389055,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6389060,
+          "kind": "jmp",
+          "target": 6387189,
+          "symbols": []
+        },
+        {
+          "instruction": 6389075,
+          "kind": "call",
+          "target": 20754320,
+          "symbols": [
+            "_ZN10QArrayData10deallocateEPS_mm"
+          ]
+        },
+        {
+          "instruction": 6389080,
+          "kind": "jmp",
+          "target": 6387150,
+          "symbols": []
+        },
+        {
+          "instruction": 6389097,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6389121,
+          "kind": "call",
+          "target": 21163152,
+          "symbols": [
+            "_ZN7QString16fromAscii_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 6389154,
+          "kind": "call",
+          "target": 15301216,
+          "symbols": [
+            "_ZN11QMessageBox11informationEP7QWidgetRK7QStringS4_6QFlagsINS_14StandardButtonEES6_"
+          ]
+        },
+        {
+          "instruction": 6389162,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6389170,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6389178,
+          "kind": "call",
+          "target": 21514368,
+          "symbols": [
+            "_ZN5QFileD2Ev",
+            "_ZN5QFileD1Ev"
+          ]
+        },
+        {
+          "instruction": 6389190,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 6389198,
+          "kind": "call",
+          "target": 6267728,
+          "symbols": [
+            "_ZN9OCTVB_NVLD2Ev",
+            "_ZN9OCTVB_NVLD1Ev"
+          ]
+        },
+        {
+          "instruction": 6389257,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6389277,
+          "kind": "jmp",
+          "target": 6388141,
+          "symbols": []
+        },
+        {
+          "instruction": 6389288,
+          "kind": "call",
+          "target": 1351984,
+          "symbols": [
+            "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt"
+          ]
+        },
+        {
+          "instruction": 6389293,
+          "kind": "jmp",
+          "target": 6387628,
+          "symbols": []
+        },
+        {
+          "instruction": 6389305,
+          "kind": "jmp",
+          "target": 6385110,
+          "symbols": []
+        },
+        {
+          "instruction": 6389334,
+          "kind": "call",
+          "target": 1351984,
+          "symbols": [
+            "_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt"
+          ]
+        },
+        {
+          "instruction": 6389339,
+          "kind": "jmp",
+          "target": 6387699,
+          "symbols": []
+        },
+        {
+          "instruction": 6389372,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 6389389,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 6389394,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 6389420,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 6389432,
+          "kind": "jmp",
+          "target": 1613158,
+          "symbols": [
+            "_ZN10intel_ctl624on_pushButton_11_clickedEv.cold"
+          ]
+        },
+        {
+          "instruction": 6389444,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389456,
+          "kind": "jmp",
+          "target": 1613190,
+          "symbols": []
+        },
+        {
+          "instruction": 6389468,
+          "kind": "jmp",
+          "target": 1613302,
+          "symbols": []
+        },
+        {
+          "instruction": 6389480,
+          "kind": "jmp",
+          "target": 1613320,
+          "symbols": []
+        },
+        {
+          "instruction": 6389492,
+          "kind": "jmp",
+          "target": 1613210,
+          "symbols": []
+        },
+        {
+          "instruction": 6389504,
+          "kind": "jmp",
+          "target": 1613202,
+          "symbols": []
+        },
+        {
+          "instruction": 6389516,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389528,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389540,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389552,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389564,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389576,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389588,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389600,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389612,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389624,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389636,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389648,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389660,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389672,
+          "kind": "jmp",
+          "target": 1613335,
+          "symbols": []
+        },
+        {
+          "instruction": 6389684,
+          "kind": "jmp",
+          "target": 1613343,
+          "symbols": []
+        },
+        {
+          "instruction": 6389696,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389708,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389720,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389732,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389744,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389756,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389768,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389780,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389792,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389804,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389816,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389828,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389840,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389852,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389864,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389876,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389888,
+          "kind": "jmp",
+          "target": 1613310,
+          "symbols": []
+        },
+        {
+          "instruction": 6389900,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389912,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389924,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389936,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389948,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389960,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389972,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389984,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6389996,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390008,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390020,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390032,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390044,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390056,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390068,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390080,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390092,
+          "kind": "jmp",
+          "target": 1613361,
+          "symbols": []
+        },
+        {
+          "instruction": 6390104,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390116,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390128,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390140,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390152,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390164,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390176,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390188,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390200,
+          "kind": "jmp",
+          "target": 1613242,
+          "symbols": []
+        },
+        {
+          "instruction": 6390212,
+          "kind": "jmp",
+          "target": 1613250,
+          "symbols": []
+        },
+        {
+          "instruction": 6390224,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390236,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390248,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390260,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390272,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390284,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390296,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390308,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390320,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390332,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390344,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390356,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        },
+        {
+          "instruction": 6390368,
+          "kind": "jmp",
+          "target": 1613282,
+          "symbols": []
+        },
+        {
+          "instruction": 6390380,
+          "kind": "jmp",
+          "target": 1613270,
+          "symbols": []
+        },
+        {
+          "instruction": 6390392,
+          "kind": "jmp",
+          "target": 1613351,
+          "symbols": []
+        },
+        {
+          "instruction": 6390404,
+          "kind": "jmp",
+          "target": 1613262,
+          "symbols": []
+        },
+        {
+          "instruction": 6390416,
+          "kind": "jmp",
+          "target": 1613418,
+          "symbols": []
+        },
+        {
+          "instruction": 6390428,
+          "kind": "jmp",
+          "target": 1613385,
+          "symbols": []
+        },
+        {
+          "instruction": 6390440,
+          "kind": "jmp",
+          "target": 1613218,
+          "symbols": []
+        },
+        {
+          "instruction": 6390452,
+          "kind": "jmp",
+          "target": 1613374,
+          "symbols": []
+        },
+        {
+          "instruction": 6390464,
+          "kind": "jmp",
+          "target": 1613174,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN11NVL_MEM_CFG21get_ufs_min_max_ratioEbi",
+      "address": 2382960,
+      "size": 100,
+      "code_hex": "f30f1efa41544989fc4883ec10448b86140b000064488b042528000000488944240831c085c97e07448b86180b0000488d7e304489c6e8a5b826004c89e789c6e89b8d1500488b44240864482b042528000000750a4883c4104c89e0415cc3e83c4cf0ff",
+      "code_sha256": "114cf0bc3345a0ec404bb775177fb7f423a43577ab2fd215080e140ecd06c265",
+      "calls": [
+        {
+          "instruction": 2383014,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 2383024,
+          "kind": "call",
+          "target": 3795536,
+          "symbols": [
+            "_Z14Rd_Ratio_cachem"
+          ]
+        },
+        {
+          "instruction": 2383055,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN11NVL_MEM_CFG21set_ufs_min_max_ratioEbiii",
+      "address": 2383072,
+      "size": 195,
+      "code_hex": "f30f1efa415541544189cc55534489c34883ec18448baf140b000064488b042528000000488944240831c085d27e07448baf180b0000488d6f304489ee0fb6dbc70424000000004889efc744240400000000e819b82600488d5424044889e6bf2006000089c1e8359b1200448b0424410fb6c44489ee48c1e0084889ef664531c04109d84109c044890424e8e0b726008b5424048b3424bf2006000089c1e8ed981200488b44240864482b042528000000750b4883c4185b5d415c415dc3e86d4bf0ff",
+      "code_sha256": "9d34894c11a81a03dab2e78fc7176d92aa0311c1b9b09e2dccb6f18902abd530",
+      "calls": [
+        {
+          "instruction": 2383154,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 2383174,
+          "kind": "call",
+          "target": 3602560,
+          "symbols": [
+            "_Z7RdmsrTxjPjS_m"
+          ]
+        },
+        {
+          "instruction": 2383211,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 2383230,
+          "kind": "call",
+          "target": 3602032,
+          "symbols": [
+            "_Z7WrmsrTxjjjm"
+          ]
+        },
+        {
+          "instruction": 2383262,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z14Rd_Ratio_cachem",
+      "address": 3795536,
+      "size": 222,
+      "code_hex": "f30f1efa41554889f141544989fcbf200600004883ec2864488b042528000000488944241831c0488d542410488d74240cc744240c00000000c7442410000000004c8d6c2414e8e50dfdff0fb644240c4c89ea31f649c70424000000004c89e749c74424080000000049c74424100000000089442414e8e5b3e8ff0fb644240d498b74240889442414493b742410743089064883c6044989742408488b44241864482b04252800000075224883c4284c89e0415c415dc3660f1f8400000000004c89ea4c89e7e895b3e8ffebcee8eebddafff30f1efa4989c5e963b8dcff",
+      "code_sha256": "78edd6df305baacca269ba97b73605abc7978eb09b06acfa0f3fbba4ce738e41",
+      "calls": [
+        {
+          "instruction": 3795606,
+          "kind": "call",
+          "target": 3602560,
+          "symbols": [
+            "_Z7RdmsrTxjPjS_m"
+          ]
+        },
+        {
+          "instruction": 3795654,
+          "kind": "call",
+          "target": 2268848,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 3795734,
+          "kind": "call",
+          "target": 2268848,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 3795739,
+          "kind": "jmp",
+          "target": 3795691,
+          "symbols": []
+        },
+        {
+          "instruction": 3795741,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 3795753,
+          "kind": "jmp",
+          "target": 1483665,
+          "symbols": [
+            "_Z14Rd_Ratio_cachem.cold"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z11Wr_ARL_Bclkdb",
+      "address": 3643904,
+      "size": 311,
+      "code_hex": "f30f1efa415666490f7ec641544189fc55534883ec1864488b042528000000488944240831c0c70424000000004084ff0f84ea000000c744240422000080ba2200008031f6bf50010000488d6c24044889e3e8c95cffff660f1f8400000000004889ea4889debf50010000e8605dffff8b54240485d278e84889de4889eabf50010000e8485dffff66490f6ec68b0424f20f5905986e2a01250000e0fff20f2cf081e6ffff1f0009c68934244584e47457c744240423000080ba23000080bf50010000e8585cffff0f1f8400000000004889ea4889debf50010000e8f05cffff8b44240485c078e8488b44240864482b042528000000753a4883c4185b5d415c415ec30f1f440000c744240423020080ba23020080eba7660f1f840000000000c744240422020080ba22020080e911ffffffe8d90dddff",
+      "code_sha256": "14aab04df94b41ebcf9b7bf9ab8df8a37739ebcc11998ed07a7d05900cb4dbac",
+      "calls": [
+        {
+          "instruction": 3643986,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3644011,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3644035,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3644099,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3644123,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3644181,
+          "kind": "jmp",
+          "target": 3644094,
+          "symbols": []
+        },
+        {
+          "instruction": 3644205,
+          "kind": "jmp",
+          "target": 3643971,
+          "symbols": []
+        },
+        {
+          "instruction": 3644210,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z21Wr_VFPoint_offset_nvliii",
+      "address": 3714240,
+      "size": 400,
+      "code_hex": "f30f1efa4157415641554189d541544189fc5569ee00a00f00534863dd4869db83de1b434883ec1864488b042528000000488944240831c089e8c1f81f48c1fb3229c3e8b894feff4c8d3d19198f01c7042400000000c7442404000000004d8b374d85f60f84e6000000498b86d80d0000493b86e00d00000f84ef0000008b1041c1e50841c1e41b31f64181e5001f00004181e400000078c1e20d4181cd0000008081e200e0ff034409ea4409e281ca330000048954240481fdc1bdf0ff0f8c7c00000031c085dbbf500100004889e50f9fc04c8d64240429c381e3ff03000048c1e31509de893424e87249feff66904c89e24889eebf50010000e8104afeff8b44240485c078e84c89e24889eebf50010000e8f849feff488b44240864482b04252800000075574883c4185b5d415c415d415e415fc3660f1f84000000000081e3ff030000be00000080e974ffffffbf280e0000e89618dcff4889c74989c6e80b47f1ff4d8937e9fdfeffff31d231f6488d3dd82a240131c0e821f5dbffe8ccfadbfff30f1efa4889c5e950e8ddff",
+      "code_sha256": "d2874b67b728d1a24d9a3dcbcf0440104728716070ef43365e5c7994d7098150",
+      "calls": [
+        {
+          "instruction": 3714307,
+          "kind": "call",
+          "target": 3621312,
+          "symbols": [
+            "_Z18percoreoverride_env"
+          ]
+        },
+        {
+          "instruction": 3714473,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3714491,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3714515,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3714571,
+          "kind": "jmp",
+          "target": 3714436,
+          "symbols": []
+        },
+        {
+          "instruction": 3714581,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 3714592,
+          "kind": "call",
+          "target": 2749744,
+          "symbols": [
+            "_ZN11NVL_MEM_CFGC2Ev",
+            "_ZN11NVL_MEM_CFGC1Ev"
+          ]
+        },
+        {
+          "instruction": 3714600,
+          "kind": "jmp",
+          "target": 3714346,
+          "symbols": []
+        },
+        {
+          "instruction": 3714618,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 3714623,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 3714635,
+          "kind": "jmp",
+          "target": 1480352,
+          "symbols": [
+            "_Z21Wr_VFPoint_offset_nvliii.cold"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN9OCTVB_NVLC2Ev",
+      "address": 3790416,
+      "size": 2536,
+      "code_hex": "f30f1efa41574c8dbf58020000415641554154554889fd534881ecb800000064488b04252800000048898424a800000031c0488d471848c7070000000048890424488d47784889442448488d87900000004889442450488d87a800000048c747080000000048c747100000000048c747180000000048c747200000000048c747280000000048c747300000000048c747380000000048c747400000000048c747480000000048c747500000000048c747580000000048c747600000000048c747680000000048c747700000000048c747780000000048c787800000000000000048c787880000000000000048c787900000000000000048c787980000000000000048c787a0000000000000004889442458488d87c00000004889442460488d87d80000004889442408488d87f00000004889442410488d87080100004889442418488d87200100004889442420488d87380100004889842498000000488d87500100004889442428488d87b001000048c787a80000000000000048c787b00000000000000048c787b80000000000000048c787c00000000000000048c787c80000000000000048c787d00000000000000048c787d80000000000000048c787e00000000000000048c787e80000000000000048c787f00000000000000048c787f80000000000000048c787000100000000000048c787080100000000000048c787100100000000000048c787180100000000000048c787200100000000000048c787280100000000000048c787300100000000000048c787380100000000000048c787400100000000000048c787480100000000000048c787500100000000000048c787580100000000000048c787600100000000000048c78768010000000000004889442468488d87c80100004889442470488d87e00100004889442478488d87f80100004889842480000000488d87100200004889442430488d87280200004889442438488d874002000048c787700100000000000048c787780100000000000048c787800100000000000048c787880100000000000048c787900100000000000048c787980100000000000048c787a00100000000000048c787a80100000000000048c787b00100000000000048c787b80100000000000048c787c00100000000000048c787c80100000000000048c787d00100000000000048c787d80100000000000048c787e00100000000000048c787e80100000000000048c787f00100000000000048c787f80100000000000048c787000200000000000048c787080200000000000048c787100200000000000048c787180200000000000048c787200200000000000048c787280200000000000048c787300200000000000048c787380200000000000048894424404c8d35e1eb8d01488d87980200004889842488000000488d87b00200004d8b2648c787400200000000000048c787480200000000000048c787500200000000000048c787580200000000000048c787600200000000000048c7876802000000000000488984249000000048c787780200000000000048c787800200000000000048c787880200000000000048c787900200000000000048c787980200000000000048c787a00200000000000048c787a80200000000000048c787b00200000000000048c787b80200000000000048c787c0020000000000004d85e40f8497040000498d442430498b4c2470c78424a0000000000000004889857002000049394c24780f840001000041bd0100000041bc0100000031f6488d9c24a4000000eb2f8b8424a00000008d7001488b857002000089b424a00000004863f6488b4840488b50484829ca4839d60f83b9000000803c310175cb498b16488b82280c0000488b92300c00004829c248c1fa024839d60f8349040000c78424a4000000000000008b0cb04889de85c90f8529030000488b7c2458e847faffff488b7c24604889dec78424a400000000000000e82ffaffff488b7c24484889dec78424a400000000000000e817faffff488b7c24504889dec78424a400000000000000e8fff9ffff4183fc080f8f35ffffff488db424a00000004889efe835b1eeff4183c401e91cffffff0f1f4000c78424a000000000000000488b885001000031f631db41bd01000000483b88580100000f85fc000000e952020000662e0f1f8400000000004839d60f83680300008b04b74c8da424a4000000c78424a4000000000000004c89e685c00f858c010000488b3c24e86df9ffff488b7c24184c89e6c78424a400000000000000e855f9ffff488b7c24204c89e6c78424a400000000000000e83df9ffff488b7c24084c89e6c78424a400000000000000e825f9ffff488b7c24104c89e6c78424a400000000000000e80df9ffff488bb5a0020000483bb5a80200000f8471020000891e4883c6044889b5a00200008b8424a00000008d5801488b85700200004863f3899c24a0000000488b8850010000488b90580100004829ca48c1fa024839d60f835b010000486334b1488b9030010000488b88200100008bb8380100004829ca488d14d74839d60f83400200004885f6488d563f480f49d648c1fa06488d3cd14889f248c1fa3f48c1ea3a488d0c1683e13f4829d179084883c1404883ef084c89ea48d3e24823170f855effffff488b4840488b50484829ca4839d60f83f9010000498b06488bb8280c0000488b90300c00004829fa48c1fa02803c31010f8574feffff4839d60f83f80100008b14b74c8da424a4000000c78424a4000000010000004c89e685d20f8474feffff488b7c2428e8e0f7ffff488b7c24404c89e6c78424a400000000000000e8c8f7ffff4c89e64c89ffc78424a400000000000000e8b2f7ffff488b7c24304c89e6c78424a400000000000000e89af7ffff488b7c24384c89e6c78424a400000000000000e882f7ffff488bb5b8020000483bb5c00200000f84c6000000891e4883c6044889b5b8020000e970feffff0f1f4000488b8424a800000064482b0425280000000f853c0100004881c4b80000005b5d415c415d415e415fc30f1f8000000000488b7c2478e81ef7ffff488bbc24800000004889dec78424a400000000000000e803f7ffff488b7c24684889dec78424a400000000000000e8ebf6ffff488b7c24704889dec78424a400000000000000e8d3f6ffff4183fd080f8f09fcffff488bbc2498000000488db424a0000000e804aeeeff4183c501e9ebfbffff0f1f00488bbc2490000000488d9424a0000000e833b7e8ffe9a2fdffff660f1f440000488bbc2488000000488d9424a0000000e813b7e8ffe982fdffff660f1f440000bf280e0000e8eee6daff4889c74989c4e86315f0ff4d8926e94cfbffff488d3d146a230131c0e87dc3daff488d3d26f9220131c0e86fc3daff488d3d18f9220131c0e861c3daff488d3d0af9220131c0e853c3daff488d3dfcf8220131c0e845c3daffe8f0c8dafff30f1efa4889c3e9a4c1dcfff30f1efa4889c3e9a5c1dcff",
+      "code_sha256": "c462ea3d9eb1b1ef7e56763ef3fc486ca40ff509235ea4782e3022f5d187a385",
+      "calls": [
+        {
+          "instruction": 3791710,
+          "kind": "jmp",
+          "target": 3791759,
+          "symbols": []
+        },
+        {
+          "instruction": 3791828,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3791852,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3791876,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3791900,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3791926,
+          "kind": "call",
+          "target": 2657648,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE9push_backERKi"
+          ]
+        },
+        {
+          "instruction": 3791935,
+          "kind": "jmp",
+          "target": 3791712,
+          "symbols": []
+        },
+        {
+          "instruction": 3791985,
+          "kind": "jmp",
+          "target": 3792584,
+          "symbols": []
+        },
+        {
+          "instruction": 3792046,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3792070,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3792094,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3792118,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3792142,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3792443,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3792467,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3792489,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3792513,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3792537,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3792575,
+          "kind": "jmp",
+          "target": 3792180,
+          "symbols": []
+        },
+        {
+          "instruction": 3792637,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3792664,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3792688,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3792712,
+          "kind": "call",
+          "target": 3790368,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0"
+          ]
+        },
+        {
+          "instruction": 3792743,
+          "kind": "call",
+          "target": 2657648,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE9push_backERKi"
+          ]
+        },
+        {
+          "instruction": 3792752,
+          "kind": "jmp",
+          "target": 3791712,
+          "symbols": []
+        },
+        {
+          "instruction": 3792776,
+          "kind": "call",
+          "target": 2266816,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJRKiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 3792781,
+          "kind": "jmp",
+          "target": 3792180,
+          "symbols": []
+        },
+        {
+          "instruction": 3792808,
+          "kind": "call",
+          "target": 2266816,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJRKiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 3792813,
+          "kind": "jmp",
+          "target": 3792180,
+          "symbols": []
+        },
+        {
+          "instruction": 3792829,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 3792840,
+          "kind": "call",
+          "target": 2749744,
+          "symbols": [
+            "_ZN11NVL_MEM_CFGC2Ev",
+            "_ZN11NVL_MEM_CFGC1Ev"
+          ]
+        },
+        {
+          "instruction": 3792848,
+          "kind": "jmp",
+          "target": 3791649,
+          "symbols": []
+        },
+        {
+          "instruction": 3792862,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 3792876,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 3792890,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 3792904,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 3792918,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 3792923,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 3792935,
+          "kind": "jmp",
+          "target": 1483216,
+          "symbols": [
+            "_ZN9OCTVB_NVLC2Ev.cold"
+          ]
+        },
+        {
+          "instruction": 3792947,
+          "kind": "jmp",
+          "target": 1483229,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN9OCTVB_NVLD2Ev",
+      "address": 6267728,
+      "size": 738,
+      "code_hex": "f30f1efa534889fb488bbfb00200004885ff740f488bb3c00200004829fee82dffb4ff488bbb980200004885ff740f488bb3a80200004829fee812ffb4ff488bbb580200004885ff740f488bb3680200004829fee8f7feb4ff488bbb400200004885ff740f488bb3500200004829fee8dcfeb4ff488bbb280200004885ff740f488bb3380200004829fee8c1feb4ff488bbb100200004885ff740f488bb3200200004829fee8a6feb4ff488bbbf80100004885ff740f488bb3080200004829fee88bfeb4ff488bbbe00100004885ff740f488bb3f00100004829fee870feb4ff488bbbc80100004885ff740f488bb3d80100004829fee855feb4ff488bbbb00100004885ff740f488bb3c00100004829fee83afeb4ff488bbb980100004885ff740f488bb3a80100004829fee81ffeb4ff488bbb800100004885ff740f488bb3900100004829fee804feb4ff488bbb680100004885ff740f488bb3780100004829fee8e9fdb4ff488bbb500100004885ff740f488bb3600100004829fee8cefdb4ff488bbb380100004885ff740f488bb3480100004829fee8b3fdb4ff488bbb200100004885ff740f488bb3300100004829fee898fdb4ff488bbb080100004885ff740f488bb3180100004829fee87dfdb4ff488bbbf00000004885ff740f488bb3000100004829fee862fdb4ff488bbbd80000004885ff740f488bb3e80000004829fee847fdb4ff488bbbc00000004885ff740f488bb3d00000004829fee82cfdb4ff488bbba80000004885ff740f488bb3b80000004829fee811fdb4ff488bbb900000004885ff740f488bb3a00000004829fee8f6fcb4ff488b7b784885ff740f488bb3880000004829fee8defcb4ff488b7b604885ff740c488b73704829fee8c9fcb4ff488b7b484885ff740c488b73584829fee8b4fcb4ff488b7b304885ff740c488b73404829fee89ffcb4ff488b7b184885ff740c488b73284829fee88afcb4ff488b3b4885ff7412488b73105b4829fee975fcb4ff0f1f4400005bc3",
+      "code_sha256": "931e799b3f41cb58ce459da1dacd7fd15d3e3523c5b96f0290684282ad2f5a72",
+      "calls": [
+        {
+          "instruction": 6267758,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6267785,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6267812,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6267839,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6267866,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6267893,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6267920,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6267947,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6267974,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268001,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268028,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268055,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268082,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268109,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268136,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268163,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268190,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268217,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268244,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268271,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268298,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268325,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268349,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268370,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268391,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268412,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268433,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 6268454,
+          "kind": "jmp",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN9OCTVB_NVL11get_percoreEv",
+      "address": 3715136,
+      "size": 1150,
+      "code_hex": "f30f1efa4157415641554989fd415455534883ec2864488b042528000000488944241831c0c744241024000080488b4718c744241400000000483947200f84e90100004531f64c8d6424100f1f440000498b8d98020000498b95a0020000498b85700200004829ca48c1fa024939d60f83ed0300004a8d34b500000000488b905801000048897424084a6334b1488b88500100004829ca48c1fa024839d60f83b00300004c8d3d3d158f0189d848630cb1662500e0498b1783c82448890c246689c3488b82d80d0000488b92e00d00004829c248c1fa024839d10f8371030000488b0c2431f6bf50010000488d6c241481e3ff1f00008b0488c744241400000000c1e00d2500e0ff030d0000008009c389da895c2410e8c545feff0f1f4400004889ee4c89e2bf50010000e86046feff8b74241085f678e84c89e24889eebf50010000e84846feff0fb6542414488b4c2408498b8508010000891408498b85d80000000fb6542415891408498b17488b82d80d0000488b92e00d00004829c248c1fa02483914240f83e6020000488b0c2481e3ff1f00cc31f6bf500100008b0488c744241400000000c1e00d2500e0ff030d0000001009c389da895c2410e81d45feff0f1f4400004c89e24889eebf50010000e8b845feff8b4c241085c978e84c89e24889eebf500100004983c601e89c45feff0fb6542414488b4c2408498b8520010000891408498b85f00000000fb6542415891408498b4520492b451848c1f8024c39f00f8724feffff498b8550010000493985580100000f84f20100004531f64c8d6424100f1f840000000000498b8db0020000498b95b8020000498b85700200004829ca48c1fa024939d60f83ed0100004a6334b1488b90580100004a8d3cb500000000488b885001000048897c24084829ca48c1fa024839d60f83b00100004c8d3d3d138f0189d848630cb1662500e0498b1783c82448890c246689c3488b82d80d0000488b92e00d00004829c248c1fa024839d10f8371010000488b342481e3ff1f0000bf50010000488d6c24148b04b031f6c744241400000000c1e00d2500e0ff030d0000008009c389da895c2410e8c543feff0f1f4400004c89e24889eebf50010000e86044feff8b54241085d278e84c89e24889eebf50010000e84844feff0fb6542414488b4c2408498b8540020000891408498b85100200000fb6542415891408498b17488b82d80d0000488b92e00d00004829c248c1fa02483914240f83e6000000488b3c2481e3ff1f00cc31f68b04b8bf50010000c744241400000000c1e00d2500e0ff030d0000001009c389da895c2410e81d43feff0f1f4400004c89e24889eebf50010000e8b843feff8b44241085c078e84c89e2bf500100004889ee4983c601e89c43feff0fb6542414488b7c2408498b8558020000891438498b85280200000fb6542415891438498b8558010000492b855001000048c1f8024c39f00f871efeffff488b44241864482b04252800000075374883c4285b5d415c415d415e415fc34889ce488d3d7524240131c0e8beeedbff4c89f6488d3d6424240131c0e8adeedbff488b3424ebdbe852f4dbff",
+      "code_sha256": "d1935fe7274581073ae5b67ed57d62c7b79bcade1e3235187f6138f1b17e1616",
+      "calls": [
+        {
+          "instruction": 3715414,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3715435,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3715459,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3715582,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3715603,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3715631,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3715926,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3715947,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3715971,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3716094,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3716115,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3716143,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3716253,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 3716270,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 3716279,
+          "kind": "jmp",
+          "target": 3716244,
+          "symbols": []
+        },
+        {
+          "instruction": 3716281,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN9OCTVB_NVL7get_trlEv",
+      "address": 3717536,
+      "size": 686,
+      "code_hex": "f30f1efa41574156415541544989fc55534883ec1864488b042528000000488944240831c0c7042424000080488b4708c7442404000000004839070f84120100004531f64889e5488d5c24040f1f40004d89f531f6bf50010000c7442404000000004183e51f4e8d3cb50000000041c1e5084181cd240000844489ea44892c24e8fb3cfeff0f1f004889de4889eabf50010000e8983dfeff8b342485f678e94889ea4889debf50010000e8813dfeff0fb654240431f6498b8424a8000000bf5001000042891438498b4424780fb6542405428914384489ea81ca00000010c744240400000000891424e8923cfeff66904889ea4889debf50010000e8303dfeff8b0c2485c978e94889ea4889debf500100004983c601e8153dfeff498b8424c00000000fb654240442891438498b8424900000000fb654240542891438498b442408492b042448c1f8024c39f00f87fdfeffff498b84244001000049398424380100000f84210100004531f64889e5488d5c24040f1f40004d89f531f6bf50010000c7442404000000004183e51f4e8d3cb50000000041c1e5084181cd240020844489ea44892c24e8d33bfeff0f1f004889ea4889debf50010000e8703cfeff8b142485d278e94889ea4889debf50010000e8593cfeff0fb654240431f6498b8424e0010000bf5001000042891438498b8424b00100000fb6542405428914384489ea81ca00000010c744240400000000891424e8673bfeff0f1f80000000004889ea4889debf50010000e8003cfeff8b042485c078e94889ea4889debf500100004983c601e8e53bfeff498b8424f80100000fb654240442891438498b8424c80100000fb654240542891438498b842440010000492b84243801000048c1f8024c39f00f87eefeffff488b44240864482b042528000000750f4883c4185b5d415c415d415e415fc3e8c2ecdbff",
+      "code_sha256": "24e5f875a77969e3aecdba294930b40f9880e57fce0f87916eed61f2bc9b5460",
+      "calls": [
+        {
+          "instruction": 3717664,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3717683,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3717706,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3717769,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3717787,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3717814,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3717960,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3717979,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3718002,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3718068,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3718091,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3718118,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3718217,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN9OCTVB_NVL11set_percoreEv",
+      "address": 3716288,
+      "size": 1244,
+      "code_hex": "f30f1efa41574156415541544989fc55534883ec2864488b042528000000488944241831c0c744241025000080488b4718c744241400000000483947200f841502000048c70424000000004c8d6c2410498bb42498020000498b9424a00200004829f248c1fa02483b14240f864d040000488b0424498b8c24080100004c8d3485000000004c01f18339647e06c70164000000498b8424200100004c01f08338697e06c70069000000498b8424700200004a633436488bb850010000488b90580100004829fa48c1fa024839d60f83dd0300004c8d3d8e108f0189e848631cb7662500e0498b1783c82548895c24086689c5488b82d80d0000488b92e00d00004829c248c1fa024839d30f839d030000488b7c240881e5ff1f0000488d5c24148b04b8c744241400000000bf50010000c1e00d2500e0ff030d0000008009c5498b8424d8000000896c24100fb63189ea89742414420fb6043048c1e00809c689742414e8f840feff0f1f8400000000004889de4c89eabf50010000e89041feff8b74241085f678e84c89ea4889debf50010000e87841feff498b17488b82d80d0000488b92e00d00004829c248c1fa0248395424080f8315030000488b4c240881e5ff1f00ccbf500100008b0488c744241400000000c1e00d2500e0ff030d0000001009c5498b842420010000896c241089ea420fb63430498b8424f000000089742414420fb6043048c1e00809c689742414e84840feff0f1f8400000000004c89ea4889debf50010000e8e040feff8b4c241085c978e84883042401498b442420488b0c24492b44241848c1f8024839c80f87f8fdffff498b84245001000049398424580100000f842002000048c70424000000004c8d6c24100f1f440000498bb424b0020000498b9424b80200004829f248c1fa02483b14240f861d020000488b0424498b8c24400200004c8d3485000000004c01f18339647e06c70164000000498b8424580200004c01f08338697e06c70069000000498b8424700200004a633436488bb850010000488b90580100004829fa48c1fa024839d60f83ad0100004c8d3d5e0e8f0189e848631cb7662500e0498b1783c82548895c24086689c5488b82d80d0000488b92e00d00004829c248c1fa024839d30f836d010000488b7c240881e5ff1f0000488d5c24148b04b8c744241400000000bf50010000c1e00d2500e0ff030d0000008009c5498b842410020000896c24100fb63189ea89742414420fb6043048c1e00809c689742414e8c83efeff0f1f8400000000004c89ea4889debf50010000e8603ffeff8b54241085d278e84c89ea4889debf50010000e8483ffeff498b17488b82d80d0000488b92e00d00004829c248c1fa0248395424080f83e5000000488b4c240881e5ff1f00ccbf500100008b0488c744241400000000c1e00d2500e0ff030d0000001009c5498b842458020000896c241089ea420fb63430498b84242802000089742414420fb6043048c1e00809c689742414e8183efeff0f1f8400000000004c89ea4889debf50010000e8b03efeff8b44241085c078e84883042401498b842458010000488b0c24492b84245001000048c1f8024839c80f87f2fdffff488b44241864482b04252800000075394883c4285b5d415c415d415e415fc34889de488d3d991f240131c0e8e2e9dbff488b3424488d3d871f240131c0e8d0e9dbff488b742408ebd9e874efdbff",
+      "code_sha256": "616a829534c62132b415846a6ac17d12dafccedf23e86da4ed6a7957629322f3",
+      "calls": [
+        {
+          "instruction": 3716643,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3716667,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3716691,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3716819,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3716843,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3717203,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3717227,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3717251,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3717379,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3717403,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3717497,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 3717515,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 3717525,
+          "kind": "jmp",
+          "target": 3717488,
+          "symbols": []
+        },
+        {
+          "instruction": 3717527,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN9OCTVB_NVL7set_trlEv",
+      "address": 3718224,
+      "size": 772,
+      "code_hex": "f30f1efa41574156415541544989fc55534883ec1864488b042528000000488944240831c0c7042425000080488b07c744240400000000483947080f84400100004531ff4889e5488d5c24040f1f4000498b8424a80000004e8d34bd000000004c01f08338647e06c70064000000498b9424c00000004c01f2833a697e06c702690000004d89fdc744240400000000bf500100004183e51f41c1e5084181cd2500008444892c240fb6304489ea498b44247889742404420fb6043048c1e00809c689742404e8063afeff660f1f4400004889de4889eabf50010000e8a03afeff8b342485f678e94889ea4889debf50010000e8893afeff498b8424c00000004489eac74424040000000081ca00000010bf50010000891424420fb63430498b84249000000089742404420fb6043048c1e00809c689742404e89339feff0f1f004889ea4889debf50010000e8303afeff8b0c2485c978e94889ea4889debf500100004983c701e8153afeff498b442408492b042448c1f8024c39f80f87cffeffff498b84244001000049398424380100000f84490100004531ff4889e5488d5c2404660f1f440000498b8424e00100004e8d34bd000000004c01f08338647e06c70064000000498b9424f80100004c01f2833a697e06c702690000004d89fdc744240400000000bf500100004183e51f41c1e5084181cd2500208444892c240fb6304489ea498b8424b001000089742404420fb6043048c1e00809c689742404e8ab38feff0f1f004889ea4889debf50010000e84839feff8b142485d278e94889ea4889debf50010000e83139feff498b8424f80100004489eac74424040000000081ca00000010bf50010000891424420fb63430498b8424c801000089742404420fb6043048c1e00809c689742404e83b38feff0f1f004889ea4889debf50010000e8d838feff8b042485c078e94889ea4889debf500100004983c701e8bd38feff498b842440010000492b84243801000048c1f8024c39f80f87c8feffff488b44240864482b042528000000750f4883c4185b5d415c415d415e415fc3e8bce9dbff",
+      "code_sha256": "310b6847496642fd4d8de1a1703e1c2746143b735b2674d5a2ba8e03ca0c59a8",
+      "calls": [
+        {
+          "instruction": 3718421,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3718443,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3718466,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3718536,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3718555,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3718582,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3718768,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3718787,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3718810,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3718880,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3718899,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3718926,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3718991,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z11Rd_PC_Ratioi",
+      "address": 3641168,
+      "size": 660,
+      "code_hex": "f30f1efa415541544c63e755534881ec9801000064488b0425280000004889842488010000488d05b43690018038000f84bb000000488d1d9c369001488b2b4885ed0f84d0010000488b85d80d0000488b95e00d0000c744241c1c000080c7442420000000004829c248c1fa024939d40f83e4010000428b14a031f6bf50010000488d5c241c488d6c242081e2ff1f0000c1e20d81ca1c0000808954241ce82d67ffff0f1f4400004889da4889eebf50010000e8c867ffff8b4c241c85c978e80fb6442420488b94248801000064482b1425280000000f858f0100004881c4980100005b5d415c415dc3660f1f440000488d05fa3590018038000f8490000000488d1de1359001488b2b4885ed0f8425010000488b8570050000488b9578050000c744241c1c000080c7442420000000004829c248c1fa024939d40f8319010000428b14a031f6bf50010000488d5c241c488d6c242081e2ff1f0000c1e20d81ca1c0000808954241ce86266ffff66904889da4889eebf50010000e80067ffff8b54241c85d278e8e933ffffff0f1f00488d6c24204889efe8e34915004489e64889efe8588413004189c4ba1c00008031f6bf500100004c89e1c74424181c000080c744241c00000000e85165ffff4c8d6c2418488d5c241c0f1f80000000004c89e14c89ea4889debf50010000e83d67ffff8b44241885c078e50fb644241c4889ef8944240ce85454eaff8b44240ce9b0feffff0f1f00bf280e0000e83e35ddff4889c74889c5e8b363f2ff48892be913feffff0f1f00bf88050000e81e35ddffbe010000004889c74889c5e8bef3fcff48892be9b9feffff4c89e6488d3d5c47250131c0e8a511ddffe85017ddfff30f1efa4989c4e9c0fbdefff30f1efa4989c4e9c4fbdefff30f1efa4989c4e9cdfbdeff",
+      "code_sha256": "d36e8ff5142c2b31f6b49cb3c37b4ae6794505ac394f6977d1ac9c099c870469",
+      "calls": [
+        {
+          "instruction": 3641326,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3641347,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3641529,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3641547,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3641560,
+          "kind": "jmp",
+          "target": 3641360,
+          "symbols": []
+        },
+        {
+          "instruction": 3641576,
+          "kind": "call",
+          "target": 5036752,
+          "symbols": [
+            "_ZN18My_Processor_CoresC1Ev",
+            "_ZN18My_Processor_CoresC2Ev"
+          ]
+        },
+        {
+          "instruction": 3641587,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 3641626,
+          "kind": "call",
+          "target": 3602032,
+          "symbols": [
+            "_Z7WrmsrTxjjjm"
+          ]
+        },
+        {
+          "instruction": 3641662,
+          "kind": "call",
+          "target": 3602560,
+          "symbols": [
+            "_Z7RdmsrTxjPjS_m"
+          ]
+        },
+        {
+          "instruction": 3641687,
+          "kind": "call",
+          "target": 2221488,
+          "symbols": [
+            "_ZN18My_Processor_CoresD1Ev",
+            "_ZN18My_Processor_CoresD2Ev"
+          ]
+        },
+        {
+          "instruction": 3641696,
+          "kind": "jmp",
+          "target": 3641365,
+          "symbols": []
+        },
+        {
+          "instruction": 3641709,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 3641720,
+          "kind": "call",
+          "target": 2749744,
+          "symbols": [
+            "_ZN11NVL_MEM_CFGC2Ev",
+            "_ZN11NVL_MEM_CFGC1Ev"
+          ]
+        },
+        {
+          "instruction": 3641728,
+          "kind": "jmp",
+          "target": 3641240,
+          "symbols": []
+        },
+        {
+          "instruction": 3641741,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 3641757,
+          "kind": "call",
+          "target": 3442016,
+          "symbols": [
+            "_ZN14GNR_SP_MEM_CFGC2Ei",
+            "_ZN14GNR_SP_MEM_CFGC1Ei"
+          ]
+        },
+        {
+          "instruction": 3641765,
+          "kind": "jmp",
+          "target": 3641443,
+          "symbols": []
+        },
+        {
+          "instruction": 3641782,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 3641787,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 3641799,
+          "kind": "jmp",
+          "target": 1478028,
+          "symbols": [
+            "_Z11Rd_PC_Ratioi.cold"
+          ]
+        },
+        {
+          "instruction": 3641811,
+          "kind": "jmp",
+          "target": 1478044,
+          "symbols": []
+        },
+        {
+          "instruction": 3641823,
+          "kind": "jmp",
+          "target": 1478065,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "_Z14check_vfpt_nvli",
+      "address": 3749168,
+      "size": 834,
+      "code_hex": "f30f1efa4157660fefc0415641554989fd41544189f455534883ec4864488b042528000000488944243831c0488d05c5908e010f1107c744241800000000488b28c744241c0000000048c74710000000004885ed0f847d02000041c1e4084531f64181e4001f00004181cc00000080448964240c89d8488b95d80d00002500fffffb0d32000004483b95e00d00000f84670200008b1a4489f225ff00000431f6c1e21bbf50010000c744241800000000c1e30d81e300e0ff030b5c240c09d309c389da895c241ce824c1fdff4c8d64241c488d6c2418bf500100004c89e24889eee8bac1fdffeb0d0f1f840000000000e8abc1fdff8b44241c4c89e24889eebf5001000085c078e8e893c1fdff448b6424184489e7c1ef1581e7ff0300004585e40f886901000069c740420f004889c74869c0d34d621048c1e83069d000a00f0039d70f8507010000807c241c000f850c01000048c1e020450fb6e4bf0800000048c74424200000000048c7442428000000004909c448c744243000000000e8fc8fdbff4889c54889442420488d40084c8965004d8b6508488944243048894424284d3b6510747849c7042400000000bf080000004c8d7c242049c74424080000000049c744241000000000e8af8fdbff488d50084989442408be08000000498904244989542410488b4d00488908498954240849834508184889efe86f6bdbff4183c6014183fe107455488d05e68e8e01488b28e95afeffff660f1f4400004c8d7c24204c89e64c89ef4c89fae85d88efff488b6c24204885ed74c4488b7424304829eeebb2660f1f84000000000083c001807c241c000f84f6feffff6690488b44243864482b0425280000000f85990000004883c4484c89e85b5d415c415d415e415fc3662e0f1f840000000000e88b9cffff25ff03000089c2f7d269d240420f004863c289d14869c0d34d6210c1f91f48c1f83029c869c800a00f0039ca0f8482feffff81fa0160f0ff7d8183e801e972feffffbf280e0000e89f8edbff4889c74889c5e814bdf0ff488d05058e8e01488928e95ffdffff31d231f6488d3ddaa0230131c0e8236bdbffe8ce70dbfff30f1efa4889c3e93464ddfff30f1efa4889c5e93a64ddfff30f1efa4889c5e94664ddfff30f1efa4889c5e92a64ddff",
+      "code_sha256": "f1ab7f29ccbdf094adb51a46811183431e662f54e1827885c0d98a6d445fa0b8",
+      "calls": [
+        {
+          "instruction": 3749367,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3749393,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3749398,
+          "kind": "jmp",
+          "target": 3749413,
+          "symbols": []
+        },
+        {
+          "instruction": 3749408,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3749432,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3749551,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 3749628,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 3749676,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 3749701,
+          "kind": "jmp",
+          "target": 3749284,
+          "symbols": []
+        },
+        {
+          "instruction": 3749726,
+          "kind": "call",
+          "target": 2670528,
+          "symbols": [
+            "_ZNSt6vectorIS_IiSaIiEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 3749749,
+          "kind": "jmp",
+          "target": 3749673,
+          "symbols": []
+        },
+        {
+          "instruction": 3749824,
+          "kind": "call",
+          "target": 3724368,
+          "symbols": [
+            "_Z10invertBitsIiEDtfp_ET_"
+          ]
+        },
+        {
+          "instruction": 3749890,
+          "kind": "jmp",
+          "target": 3749497,
+          "symbols": []
+        },
+        {
+          "instruction": 3749900,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 3749911,
+          "kind": "call",
+          "target": 2749744,
+          "symbols": [
+            "_ZN11NVL_MEM_CFGC2Ev",
+            "_ZN11NVL_MEM_CFGC1Ev"
+          ]
+        },
+        {
+          "instruction": 3749926,
+          "kind": "jmp",
+          "target": 3749258,
+          "symbols": []
+        },
+        {
+          "instruction": 3749944,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 3749949,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 3749961,
+          "kind": "jmp",
+          "target": 1481858,
+          "symbols": [
+            "_Z14check_vfpt_nvli.cold"
+          ]
+        },
+        {
+          "instruction": 3749973,
+          "kind": "jmp",
+          "target": 1481876,
+          "symbols": []
+        },
+        {
+          "instruction": 3749985,
+          "kind": "jmp",
+          "target": 1481900,
+          "symbols": []
+        },
+        {
+          "instruction": 3749997,
+          "kind": "jmp",
+          "target": 1481884,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "_Z22check_vfpt_percore_nvli",
+      "address": 3750016,
+      "size": 850,
+      "code_hex": "f30f1efa4157660fefc0415641554989fd41544189f455534883ec4864488b042528000000488944243831c048c74710000000000f1107c744241800000000c744241c00000000e8f408feff488d05558d8e01488b284885ed0f84880200004963c44531f64889042448c1e0024889442408488b8dd80d0000488b95e00d000089d82500fffffb4829ca0d3200000448c1fa02483914240f836e020000488b5c24084489f225ff00000431f6c1e21bbf500100008b1c19c744241800000000c1e30d81e300e0ff0381cb0000008009d309c389da895c241ce8c3bdfdff4c8d64241c488d6c2418bf500100004c89e24889eee859befdffeb0c0f1f8000000000e84bbefdff8b44241c4c89e24889eebf5001000085c078e8e833befdff448b6424184489e7c1ef1581e7ff0300004585e40f886901000069c740420f004889c74869c0d34d621048c1e83069d000a00f0039d70f8507010000807c241c000f850c01000048c1e020450fb6e4bf0800000048c74424200000000048c7442428000000004909c448c744243000000000e89c8cdbff4889c54889442420488d40084c8965004d8b6508488944243048894424284d3b6510747849c7042400000000bf080000004c8d7c242049c74424080000000049c744241000000000e84f8cdbff488d50084989442408be08000000498904244989542410488b4d00488908498954240849834508184889efe80f68dbff4183c6014183fe107455488d05868b8e01488b28e948feffff660f1f4400004c8d7c24204c89e64c89ef4c89fae8fd84efff488b6c24204885ed74c4488b7424304829eeebb2660f1f84000000000083c001807c241c000f84f6feffff6690488b44243864482b0425280000000f85990000004883c4484c89e85b5d415c415d415e415fc3662e0f1f840000000000e82b99ffff25ff03000089c2f7d269d240420f004863c289d14869c0d34d6210c1f91f48c1f83029c869c800a00f0039ca0f8482feffff81fa0160f0ff7d8183e801e972feffffbf280e0000e83f8bdbff4889c74889c5e8b4b9f0ff488d05a58a8e01488928e954fdffff488b3424488d3d7a9d230131c0e8c367dbffe86e6ddbfff30f1efa4889c3e90a61ddfff30f1efa4889c5e90e61ddfff30f1efa4889c5e91261ddfff30f1efa4889c5e91061ddff",
+      "code_sha256": "3040b03e49b9917b2299c0540ce34e7c67fd6a58608a35e98aa5893ebe8fe673",
+      "calls": [
+        {
+          "instruction": 3750087,
+          "kind": "call",
+          "target": 3621312,
+          "symbols": [
+            "_Z18percoreoverride_env"
+          ]
+        },
+        {
+          "instruction": 3750232,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3750258,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3750263,
+          "kind": "jmp",
+          "target": 3750277,
+          "symbols": []
+        },
+        {
+          "instruction": 3750272,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3750296,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3750415,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 3750492,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 3750540,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 3750565,
+          "kind": "jmp",
+          "target": 3750130,
+          "symbols": []
+        },
+        {
+          "instruction": 3750590,
+          "kind": "call",
+          "target": 2670528,
+          "symbols": [
+            "_ZNSt6vectorIS_IiSaIiEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 3750613,
+          "kind": "jmp",
+          "target": 3750537,
+          "symbols": []
+        },
+        {
+          "instruction": 3750688,
+          "kind": "call",
+          "target": 3724368,
+          "symbols": [
+            "_Z10invertBitsIiEDtfp_ET_"
+          ]
+        },
+        {
+          "instruction": 3750754,
+          "kind": "jmp",
+          "target": 3750361,
+          "symbols": []
+        },
+        {
+          "instruction": 3750764,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 3750775,
+          "kind": "call",
+          "target": 2749744,
+          "symbols": [
+            "_ZN11NVL_MEM_CFGC2Ev",
+            "_ZN11NVL_MEM_CFGC1Ev"
+          ]
+        },
+        {
+          "instruction": 3750790,
+          "kind": "jmp",
+          "target": 3750111,
+          "symbols": []
+        },
+        {
+          "instruction": 3750808,
+          "kind": "call",
+          "target": 1352544,
+          "symbols": [
+            "_ZSt24__throw_out_of_range_fmtPKcz@plt"
+          ]
+        },
+        {
+          "instruction": 3750813,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 3750825,
+          "kind": "jmp",
+          "target": 1481912,
+          "symbols": [
+            "_Z22check_vfpt_percore_nvli.cold"
+          ]
+        },
+        {
+          "instruction": 3750837,
+          "kind": "jmp",
+          "target": 1481928,
+          "symbols": []
+        },
+        {
+          "instruction": 3750849,
+          "kind": "jmp",
+          "target": 1481944,
+          "symbols": []
+        },
+        {
+          "instruction": 3750861,
+          "kind": "jmp",
+          "target": 1481954,
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "symbol": "_Z5Wr199v",
+      "address": 3664848,
+      "size": 261,
+      "code_hex": "f30f1efa415741564155415455534883ec7864488b042528000000488944246831c0488d7c2410e8e4461300448b642434448b6c243c4585e47e5d4c89e531db458d7c24ffeb42660f1f840000000000e80b9fffff84c07409e8029fffff84c0755e4889d931d2be00ff0000bf99010000e82a0affff4883c301bfe8030000e84cd4dcff4c39e3740f4439ed7fc2e8cd9effffebcd0f1f00488b44246864482b04252800000075584883c4785b5d415c415d415e415fc3660f1f8400000000004489ff4531f6e8259dffff8944240c4585ff7519eb8c662e0f1f8400000000004183c6014539f70f8475ffffff4489f7e8fb9cffff3944240c75e5e962ffffffe83bbcdcff",
+      "code_sha256": "dc21a8170a68d37b5ccb2d3e9a94dd30d877b0cc553089bfe898d3b9974ac5bd",
+      "calls": [
+        {
+          "instruction": 3664887,
+          "kind": "call",
+          "target": 4928224,
+          "symbols": [
+            "_ZN10proc_classC1Ev",
+            "_ZN10proc_classC2Ev"
+          ]
+        },
+        {
+          "instruction": 3664917,
+          "kind": "jmp",
+          "target": 3664985,
+          "symbols": []
+        },
+        {
+          "instruction": 3664928,
+          "kind": "call",
+          "target": 3640112,
+          "symbols": [
+            "_Z8isit_adlv"
+          ]
+        },
+        {
+          "instruction": 3664937,
+          "kind": "call",
+          "target": 3640112,
+          "symbols": [
+            "_Z8isit_adlv"
+          ]
+        },
+        {
+          "instruction": 3664961,
+          "kind": "call",
+          "target": 3602032,
+          "symbols": [
+            "_Z7WrmsrTxjjjm"
+          ]
+        },
+        {
+          "instruction": 3664975,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 3664990,
+          "kind": "call",
+          "target": 3640112,
+          "symbols": [
+            "_Z8isit_adlv"
+          ]
+        },
+        {
+          "instruction": 3664995,
+          "kind": "jmp",
+          "target": 3664946,
+          "symbols": []
+        },
+        {
+          "instruction": 3665046,
+          "kind": "call",
+          "target": 3639744,
+          "symbols": [
+            "_Z18get_intel_coretypei"
+          ]
+        },
+        {
+          "instruction": 3665060,
+          "kind": "jmp",
+          "target": 3664946,
+          "symbols": []
+        },
+        {
+          "instruction": 3665088,
+          "kind": "call",
+          "target": 3639744,
+          "symbols": [
+            "_Z18get_intel_coretypei"
+          ]
+        },
+        {
+          "instruction": 3665099,
+          "kind": "jmp",
+          "target": 3664946,
+          "symbols": []
+        },
+        {
+          "instruction": 3665104,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_@0x229eb0",
+      "address": 2268848,
+      "size": 359,
+      "code_hex": "f30f1efa41574889d148baffffffffffffff1f41564155415455534883ec184c8b67084c8b3f4c89e04c29f848c1f8024839d00f84220100004885c0ba010000004989f64889fd480f45d031f64801d04c89f2400f92c64c29fa4885f60f85a50000004885c00f85d400000031db4531ed4d89e08b014d8d4c15044d29f041894415004f8d24014885d27f2c4d85c07f5f4d85ff75444c896d004c89650848895d104883c4185b5d415c415d415e415fc30f1f80000000004c89fe4c89ef4c894424084c890c24e8e404f2ff4c8b4424084c8b0c244d85c07f16488b75104c89ff4c29fee80703f2ffebab0f1f4400004c89c24c89f64c89cfe86226f2ff4d85ff7493ebd50f1f0048bbfcffffffffffff7f4889df48894c240848891424e8dd26f2ff488b1424488b4c24084989c54801c3e93affffff660f1f84000000000048beffffffffffffff1f4839f0480f47c6488d1c8500000000ebb7488d3d972f3a01e87912f2ff",
+      "code_sha256": "fd2b1c2714deddb90ddf96ae44724e800b4204f3c40bf56cd67ef3ce5acda2a6",
+      "calls": [
+        {
+          "instruction": 2269047,
+          "kind": "call",
+          "target": 1352800,
+          "symbols": [
+            "memmove@plt"
+          ]
+        },
+        {
+          "instruction": 2269076,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 2269081,
+          "kind": "jmp",
+          "target": 2268998,
+          "symbols": []
+        },
+        {
+          "instruction": 2269097,
+          "kind": "call",
+          "target": 1361424,
+          "symbols": [
+            "memcpy@plt"
+          ]
+        },
+        {
+          "instruction": 2269107,
+          "kind": "jmp",
+          "target": 2269066,
+          "symbols": []
+        },
+        {
+          "instruction": 2269134,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 2269154,
+          "kind": "jmp",
+          "target": 2268961,
+          "symbols": []
+        },
+        {
+          "instruction": 2269193,
+          "kind": "jmp",
+          "target": 2269122,
+          "symbols": []
+        },
+        {
+          "instruction": 2269202,
+          "kind": "call",
+          "target": 1356432,
+          "symbols": [
+            "_ZSt20__throw_length_errorPKc@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZNSt6vectorIiSaIiEE12emplace_backIJiEEERiDpOT_.isra.0@0x39d620",
+      "address": 3790368,
+      "size": 37,
+      "code_hex": "4889f2488b7708483b771074138b024883c6048946fc48897708c30f1f440000e96bc8e8ff",
+      "code_sha256": "b34824ba4bb455912b0ee01c5c48099847be6262973b3acc6a134c1db045661e",
+      "calls": [
+        {
+          "instruction": 3790400,
+          "kind": "jmp",
+          "target": 2268848,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZNSt6vectorIiSaIiEE9push_backERKi@0x288d70",
+      "address": 2657648,
+      "size": 37,
+      "code_hex": "f30f1efa4889f2488b7708483b7710740f8b024883c6048946fc48897708c390e92b09faff",
+      "code_sha256": "1a2985e9774c384742fdf0970867224a83864e5b7b57623787ec5c3e6d695aca",
+      "calls": [
+        {
+          "instruction": 2657680,
+          "kind": "jmp",
+          "target": 2266816,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJRKiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJRKiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_@0x2296c0",
+      "address": 2266816,
+      "size": 359,
+      "code_hex": "f30f1efa41574889d148baffffffffffffff1f41564155415455534883ec184c8b67084c8b3f4c89e04c29f848c1f8024839d00f84220100004885c0ba010000004989f64889fd480f45d031f64801d04c89f2400f92c64c29fa4885f60f85a50000004885c00f85d400000031db4531ed4d89e08b014d8d4c15044d29f041894415004f8d24014885d27f2c4d85c07f5f4d85ff75444c896d004c89650848895d104883c4185b5d415c415d415e415fc30f1f80000000004c89fe4c89ef4c894424084c890c24e8d40cf2ff4c8b4424084c8b0c244d85c07f16488b75104c89ff4c29fee8f70af2ffebab0f1f4400004c89c24c89f64c89cfe8522ef2ff4d85ff7493ebd50f1f0048bbfcffffffffffff7f4889df48894c240848891424e8cd2ef2ff488b1424488b4c24084989c54801c3e93affffff660f1f84000000000048beffffffffffffff1f4839f0480f47c6488d1c8500000000ebb7488d3d87373a01e8691af2ff",
+      "code_sha256": "f44ce24ed6c0c72096bcdeb0688d2ada021e48a267c9c21732e2fa88800194eb",
+      "calls": [
+        {
+          "instruction": 2267015,
+          "kind": "call",
+          "target": 1352800,
+          "symbols": [
+            "memmove@plt"
+          ]
+        },
+        {
+          "instruction": 2267044,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 2267049,
+          "kind": "jmp",
+          "target": 2266966,
+          "symbols": []
+        },
+        {
+          "instruction": 2267065,
+          "kind": "call",
+          "target": 1361424,
+          "symbols": [
+            "memcpy@plt"
+          ]
+        },
+        {
+          "instruction": 2267075,
+          "kind": "jmp",
+          "target": 2267034,
+          "symbols": []
+        },
+        {
+          "instruction": 2267102,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 2267122,
+          "kind": "jmp",
+          "target": 2266929,
+          "symbols": []
+        },
+        {
+          "instruction": 2267161,
+          "kind": "jmp",
+          "target": 2267090,
+          "symbols": []
+        },
+        {
+          "instruction": 2267170,
+          "kind": "call",
+          "target": 1356432,
+          "symbols": [
+            "_ZSt20__throw_length_errorPKc@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZNSt6vectorIS_IiSaIiEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@0x28bfc0",
+      "address": 2670528,
+      "size": 704,
+      "code_hex": "f30f1efa48b95555555555555505415741564155415455534883ec28488b6f084c8b37488954240848baabaaaaaaaaaaaaaa4889e84c29f048c1f803480fafc24839c80f84290200004885c0ba010000004989f44989fd480f45d04889f34801c20f92c048895424184d29f40fb6c04885c00f85980100004885d20f85cc0100004531ff488b7424084d01fc49c704240000000049c744240800000000488b460849c744241000000000488b364889c74829f748897c24100f844201000048b8fcffffffffffff7f4839c70f875b010000488b7c2410e81506ecff488b7c24084889c1488b4708488b374989c04929f0488b54241049890c2449894c24084801ca49895424104839c674184c89c24889cf4c89442408e885e3ebff4c8b4424084889c14c01c149894c24084c39f30f840c0100004c89f04c89fa660f1f440000488b084883c0184883c21848894ae8488b48f048894af0488b48f848894af84839c375dc488d43e84c29f048c1e8034d8d64c7184983c4184839eb743f4889d84c89e20f1f440000488b084883c0184883c21848894ae8488b48f048894af0488b48f848894af84839c575dc4829dd488d45e848c1e8034d8d64c4184d85f6740f498b75104c89f74c29f6e810e1ebff488b4424184d897d004d896508488d0440498d04c7498945104883c4285b5d415c415d415e415fc30f1f8400000000004531c031c9e9e6feffff660f1f44000048bff8ffffffffffff7f48894c2418e8cc04ecff4989c7e958feffff4885ff7917e81a0eecff662e0f1f8400000000004d89fce92cffffffe89304ecff48b85555555555555505488b7c24184839c7480f46c7488d3c40488944241848c1e703ebad488d3d700d3401e852f0ebfff30f1efa4889c7e8e6dfebff4d85ff750d4c89e7e8b993f9ffe8d418ecff486b742418184c89ffe836e0ebffebebf30f1efa4889c5e8c817ecff4889efe8f0f0ebff",
+      "code_sha256": "d2a9aa56cb463e8abad48950d3f0222d3fd44d10c5b3747d9eda19b8ba0fe9eb",
+      "calls": [
+        {
+          "instruction": 2670742,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 2670806,
+          "kind": "call",
+          "target": 1352800,
+          "symbols": [
+            "memmove@plt"
+          ]
+        },
+        {
+          "instruction": 2670987,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 2671045,
+          "kind": "jmp",
+          "target": 2670768,
+          "symbols": []
+        },
+        {
+          "instruction": 2671071,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 2671079,
+          "kind": "jmp",
+          "target": 2670660,
+          "symbols": []
+        },
+        {
+          "instruction": 2671089,
+          "kind": "call",
+          "target": 1363984,
+          "symbols": [
+            "_ZSt28__throw_bad_array_new_lengthv@plt"
+          ]
+        },
+        {
+          "instruction": 2671107,
+          "kind": "jmp",
+          "target": 2670900,
+          "symbols": []
+        },
+        {
+          "instruction": 2671112,
+          "kind": "call",
+          "target": 1361568,
+          "symbols": [
+            "_ZSt17__throw_bad_allocv@plt"
+          ]
+        },
+        {
+          "instruction": 2671152,
+          "kind": "jmp",
+          "target": 2671071,
+          "symbols": []
+        },
+        {
+          "instruction": 2671161,
+          "kind": "call",
+          "target": 1356432,
+          "symbols": [
+            "_ZSt20__throw_length_errorPKc@plt"
+          ]
+        },
+        {
+          "instruction": 2671173,
+          "kind": "call",
+          "target": 1352240,
+          "symbols": [
+            "__cxa_begin_catch@plt"
+          ]
+        },
+        {
+          "instruction": 2671186,
+          "kind": "call",
+          "target": 2250256,
+          "symbols": [
+            "_ZNSt12_Vector_baseIiSaIiEED2Ev",
+            "_ZNSt12_Vector_baseIiSaIiEED1Ev"
+          ]
+        },
+        {
+          "instruction": 2671191,
+          "kind": "call",
+          "target": 1366832,
+          "symbols": [
+            "__cxa_rethrow@plt"
+          ]
+        },
+        {
+          "instruction": 2671205,
+          "kind": "call",
+          "target": 1352352,
+          "symbols": [
+            "_ZdlPvm@plt"
+          ]
+        },
+        {
+          "instruction": 2671210,
+          "kind": "jmp",
+          "target": 2671191,
+          "symbols": []
+        },
+        {
+          "instruction": 2671219,
+          "kind": "call",
+          "target": 1366592,
+          "symbols": [
+            "__cxa_end_catch@plt"
+          ]
+        },
+        {
+          "instruction": 2671227,
+          "kind": "call",
+          "target": 1356656,
+          "symbols": [
+            "_Unwind_Resume@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z10invertBitsIiEDtfp_ET_@0x38d450",
+      "address": 3724368,
+      "size": 73,
+      "code_hex": "f30f1efa415485ff7437660fefc04189fcf20f2ac7e83606dcfff20f5805b6342901f20f2cc085c07e1131d20f1f4000410fbbd483c20139d075f54489e0415cc341bcffffffffebf2",
+      "code_sha256": "f4b70987d1ef2dae74470ce923242e2ece8eb7ee72e03027223661c0399c2b15",
+      "calls": [
+        {
+          "instruction": 3724389,
+          "kind": "call",
+          "target": 1366688,
+          "symbols": [
+            "log2@plt"
+          ]
+        },
+        {
+          "instruction": 3724439,
+          "kind": "jmp",
+          "target": 3724427,
+          "symbols": []
+        }
+      ]
+    }
+  ],
+  "objects": {
+    "GLOBAL_NVL_MEM_CFG": {
+      "address": 29869608,
+      "size": 8,
+      "source_initial_hex": "0000000000000000"
+    },
+    "_ZN10intel_ctl616staticMetaObjectE": {
+      "address": 29489664,
+      "size": 48,
+      "source_initial_hex": "a057c4010000000020b3670100000000e0af67010000000030fca6000000000000000000000000000000000000000000"
+    },
+    "GLOBAL_IS_NVL": {
+      "address": 29869616,
+      "size": 1,
+      "source_initial_hex": "00"
+    },
+    "GLOBAL_IS_GNR_SP": {
+      "address": 29869633,
+      "size": 1,
+      "source_initial_hex": "00"
+    },
+    "GLOBAL_GNR_SP_MEM_CFG": {
+      "address": 29869624,
+      "size": 8,
+      "source_initial_hex": "0000000000000000"
+    }
+  },
+  "literals": [
+    {
+      "instruction": 6386984,
+      "address": 23310132,
+      "text": "Profiles (*.pro)"
+    },
+    {
+      "instruction": 6387004,
+      "address": 23310149,
+      "text": "profile.pro"
+    },
+    {
+      "instruction": 6387021,
+      "address": 23257559,
+      "text": "Save Profile"
+    },
+    {
+      "instruction": 6387732,
+      "address": 23485263,
+      "text": "Saved!"
+    },
+    {
+      "instruction": 6387749,
+      "address": 24126497,
+      "text": "Save"
+    },
+    {
+      "instruction": 6389090,
+      "address": 23257718,
+      "text": "File not saved"
+    },
+    {
+      "instruction": 3750799,
+      "address": 22862096,
+      "text": "vector::_M_range_check: __n (which is %zu) >= this->size() (which is %zu)"
+    },
+    {
+      "instruction": 3792853,
+      "address": 22890992,
+      "text": "vector<bool>::_M_range_check: __n (which is %zu) >= this->size() (which is %zu)"
+    },
+    {
+      "instruction": 2671154,
+      "address": 22859689,
+      "text": "vector::_M_realloc_insert"
+    }
+  ],
+  "data": [
+    {
+      "address": 22860096,
+      "bytes_hex": "00000000000059400000000000000000"
+    },
+    {
+      "address": 24885393,
+      "bytes_hex": "2e2e002e2e23232323232e2e2e002e2e"
+    },
+    {
+      "address": 23202096,
+      "bytes_hex": "0000000000408f400000000000003440"
+    },
+    {
+      "address": 23202088,
+      "bytes_hex": "000000000000f03f0000000000408f40"
+    }
+  ],
+  "relocations": [
+    {
+      "address": 29822896,
+      "type": 6,
+      "symbol": "_ZTVSt9basic_iosIcSt11char_traitsIcEE"
+    },
+    {
+      "address": 29822424,
+      "type": 6,
+      "symbol": "_ZTTSt14basic_ofstreamIcSt11char_traitsIcEE"
+    },
+    {
+      "address": 29822120,
+      "type": 6,
+      "symbol": "_ZTVSt14basic_ofstreamIcSt11char_traitsIcEE"
+    },
+    {
+      "address": 29822928,
+      "type": 6,
+      "symbol": "_ZTVSt13basic_filebufIcSt11char_traitsIcEE"
+    },
+    {
+      "address": 29822816,
+      "type": 6,
+      "symbol": "_ZTVSt15basic_streambufIcSt11char_traitsIcEE"
+    }
+  ],
+  "scope": "Complete original Save/Load callers and original UFS, VF queries/writes, OCTVB construction/query/destruction, Wr199 and ARL clock helpers. Original NGU/MMIO request chain reused. Qt/streams/libc/config are synthetic; 9595 clock calls and final refresh are explicitly recorded boundaries, not recovered bodies."
+}

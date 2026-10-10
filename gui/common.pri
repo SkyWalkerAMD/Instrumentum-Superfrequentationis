@@ -16,6 +16,8 @@ SOURCES += $$PWD/core/register_update.cpp $$PWD/core/intel_controls.cpp $$PWD/co
 HEADERS += $$PWD/core/register_update.h $$PWD/core/intel_controls.h $$PWD/core/amd_smu.h $$PWD/core/spd.h
 SOURCES += $$PWD/platformpanels.cpp
 HEADERS += $$PWD/platformpanels.h
+SOURCES += $$PWD/core/amd_umc.cpp $$PWD/umcpanel.cpp
+HEADERS += $$PWD/core/amd_umc.h $$PWD/umcpanel.h
 HEADERS += $$PWD/access.h $$PWD/registerpanel.h $$PWD/platform/hardware_factory.h
 linux {
     SOURCES += $$PWD/platform/linux_hwio.cpp $$PWD/platform/linux_helper.cpp $$PWD/../port/hal/octool_hwio.c
