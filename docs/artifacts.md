@@ -1,5 +1,19 @@
 # 安装包与源码归档
 
+<!-- headless-cli-b2ef0a3 -->
+2026-10-10 无界面交付：`dist/headless-cli-b2ef0a3/`，生产代码 `b2ef0a3cebd44c6bceb6b4e8282deaed4bd03c4d`。
+
+- 每个目标子目录提供一个 `octool-cli` 包和一个可选 `octool-hwio-dkms` 包；合计 20 包。
+- `octool-2.0.1-src.tar.gz`、对应 `.sha256`、`SHA256SUMS` 与安装包一并保存。
+- CLI 包无需图形库，体积 138,156–173,404 字节；安装后的可执行文件 324,256–380,240 字节。
+- [CLI 工作流](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466064) 12/12，[现有 Linux 回归](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047) 23/23。
+- 安装、命令、退出码和限制见[无界面说明](headless-cli.md)，逐目标字节数见[本轮验证](headless-cli-validation.md)。
+
+版本号仍为研究阶段 `2.0.1`，以提交目录和校验表区分产物。CLI 包可独立安装；DKMS 包需按目标内核安装。
+此目录不包含 GUI 包，已有 GUI 交付仍在下方历史目录。
+
+以下保留此前记录。
+
 <!-- amd-curve-recovery-06b477c -->
 最新生产代码 `06b477c` 已验证：[核心 4/4](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841095)、[Linux 23/23](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147)。
 新增 [Shimada 曲线原值查询](amd-curve-query-recovery.md)，输入为显式固件编号，失败结果不会显示为有效值。

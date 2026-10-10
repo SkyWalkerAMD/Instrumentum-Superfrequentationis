@@ -1,5 +1,14 @@
 # 功能还原状态
 
+<!-- headless-cli-b2ef0a3 -->
+2026-10-10 无界面入口已增加：`octool-cli`，验证源码 `b2ef0a3`。
+它复用本页已有的核心功能边界，提供 SSH/终端操作和 JSON 输出，不新增未还原的硬件语义。
+主板/传感器/SPD 读取移入 GUI、CLI 共用的无 Qt 实现。
+[使用说明](headless-cli.md)、[验证记录](headless-cli-validation.md)：十个发行版各 9 CTest，独立 CLI 安装/运行/卸载重装通过，既有 Linux 23/23 回归通过。
+PStates 写入、曲线写入、Intel server VF/fabric、板级专用控制等缺口及四台真机验收仍保留。
+
+以下保留此前记录。
+
 当前验证生产代码为 `06b477c`，新增 [Shimada 原始曲线查询](amd-curve-query-recovery.md)，并保留此前 Intel offset / 最大 OC 倍频、UMC 和拓扑功能。
 [本轮验证](validation/amd-curve-recovery-ci-06b477c.json)为核心 4/4、Linux 23/23；安装包与原目录源码均已同步。
 原版全部功能仍未完成。安装兼容、自动化回归、原指令研究和真实硬件验收分别记录，

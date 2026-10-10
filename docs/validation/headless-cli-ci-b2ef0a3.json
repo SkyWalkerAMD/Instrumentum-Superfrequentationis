@@ -1,0 +1,1631 @@
+{
+  "schema": 1,
+  "date": "2026-10-10",
+  "source_commit": "b2ef0a3cebd44c6bceb6b4e8282deaed4bd03c4d",
+  "branch": "refactor/platform-recovery",
+  "scope": "Independent Qt-free Linux x86_64 CLI, existing recovered core controls and shared native inventory",
+  "headless_cli": {
+    "source_commit": "b2ef0a3cebd44c6bceb6b4e8282deaed4bd03c4d",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466064",
+    "jobs": [
+      {
+        "name": "matrix",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466064/job/114107725664",
+        "startedAt": "2026-10-10T02:18:17Z",
+        "completedAt": "2026-10-10T02:18:21Z"
+      },
+      {
+        "name": "cli (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466064/job/114107747886",
+        "startedAt": "2026-10-10T02:18:24Z",
+        "completedAt": "2026-10-10T02:19:35Z"
+      },
+      {
+        "name": "cli (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466064/job/114107747887",
+        "startedAt": "2026-10-10T02:18:24Z",
+        "completedAt": "2026-10-10T02:19:40Z"
+      },
+      {
+        "name": "cli (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466064/job/114107747891",
+        "startedAt": "2026-10-10T02:18:24Z",
+        "completedAt": "2026-10-10T02:19:34Z"
+      },
+      {
+        "name": "cli (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466064/job/114107747923",
+        "startedAt": "2026-10-10T02:18:24Z",
+        "completedAt": "2026-10-10T02:20:14Z"
+      },
+      {
+        "name": "cli (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466064/job/114107747924",
+        "startedAt": "2026-10-10T02:18:24Z",
+        "completedAt": "2026-10-10T02:19:43Z"
+      },
+      {
+        "name": "cli (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466064/job/114107747951",
+        "startedAt": "2026-10-10T02:18:24Z",
+        "completedAt": "2026-10-10T02:19:46Z"
+      },
+      {
+        "name": "cli (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466064/job/114107747952",
+        "startedAt": "2026-10-10T02:18:24Z",
+        "completedAt": "2026-10-10T02:19:32Z"
+      },
+      {
+        "name": "cli (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466064/job/114107747996",
+        "startedAt": "2026-10-10T02:18:24Z",
+        "completedAt": "2026-10-10T02:19:52Z"
+      },
+      {
+        "name": "cli (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466064/job/114107748004",
+        "startedAt": "2026-10-10T02:18:24Z",
+        "completedAt": "2026-10-10T02:19:39Z"
+      },
+      {
+        "name": "cli (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466064/job/114107748008",
+        "startedAt": "2026-10-10T02:18:24Z",
+        "completedAt": "2026-10-10T02:19:37Z"
+      },
+      {
+        "name": "gate",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466064/job/114108103365",
+        "startedAt": "2026-10-10T02:20:18Z",
+        "completedAt": "2026-10-10T02:20:20Z"
+      }
+    ],
+    "log": {
+      "path": "build/headless-cli-b2ef0a3/cli-run.log",
+      "bytes": 1687334,
+      "sha256": "02e707497b41d6922a1c3b8dc7a41463a1663be7300d935fb49e215301384f56"
+    },
+    "artifact_metadata": {
+      "path": "build/headless-cli-b2ef0a3/cli-artifacts.json",
+      "bytes": 9428,
+      "sha256": "ab31554ffcbec454a14c36cc334ff215f67c358db96a2e32923f92afae7e86be"
+    }
+  },
+  "targets": [
+    {
+      "target": "el8",
+      "ctests": 9,
+      "core_scenario_groups": 56,
+      "cli_scenario_groups": 5,
+      "invalid_commands_before_device_open": 31,
+      "json_reports_in_process_test": 53,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f45c9310000)\n\tlibpthread.so.0 => /lib64/libpthread.so.0 (0x00007f45c8de0000)\n\tlibstdc++.so.6 => /lib64/libstdc++.so.6 (0x00007f45c8a4b000)\n\tlibm.so.6 => /lib64/libm.so.6 (0x00007f45c86c9000)\n\tlibgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00007f45c84b1000)\n\tlibc.so.6 => /lib64/libc.so.6 (0x00007f45c80ec000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f45c9000000)\n",
+        "guide_installed": true,
+        "binary_bytes": 324256
+      },
+      "packages": [
+        {
+          "path": "dist/headless-cli-b2ef0a3/el8/octool-cli-2.0.1-1.el8.x86_64.rpm",
+          "bytes": 138156,
+          "sha256": "a0ac0b4e6175c1888db71c9932a1990fe9ec54d70661675f64015854a136ec5d"
+        },
+        {
+          "path": "dist/headless-cli-b2ef0a3/el8/octool-hwio-dkms-2.0.1-1.el8.noarch.rpm",
+          "bytes": 19072,
+          "sha256": "a8ada1b59d2043a8919cb48a09802c2fe5e70f408574a1c23e95d75dc6c977b9"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el8/ctest.txt",
+          "bytes": 975,
+          "sha256": "db08625d18010bcbe783fae5e0ed0734a22f25b7c5084be5369e1e1351d121c3"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el8/LastTest.log",
+          "bytes": 5117,
+          "sha256": "9a860b0f9154d19e78989404e0dd05654ac4de03ce3c812f991dd00ce2abb1e9"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el8/runtime.json",
+          "bytes": 1467,
+          "sha256": "17f38fe5f0da0ff48f627387c11566065da809a4f181a947d8d2a5818d3601d4"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el8/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el8/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el8/packages/cli-elf.json",
+          "bytes": 486,
+          "sha256": "ff5c6ca6bfef69cd7641afc144bc13389751193232140413509c37a05706609a"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/linux-artifacts/kernel-el8/guest-boot/results.json",
+          "bytes": 504,
+          "sha256": "80bff81cb7427bb9118879ee73b5223757d0ffbbc77a6630d1eb4fd540c149d0"
+        }
+      ],
+      "gui_regression_tests": 32,
+      "kernel_boots": [
+        {
+          "kernel": "4.18.0-553.el8_10.x86_64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "4df48703b86574bb20576b14f9c209e6149aabe6ad06ccb709131fee48b46fed",
+          "module_sha256": "280061455aa3944d9b74ccb627b43f4399447fa73236e96eb7b68782cee52882"
+        }
+      ]
+    },
+    {
+      "target": "el9",
+      "ctests": 9,
+      "core_scenario_groups": 56,
+      "cli_scenario_groups": 5,
+      "invalid_commands_before_device_open": 31,
+      "json_reports_in_process_test": 53,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007faf1e403000)\n\tlibstdc++.so.6 => /lib64/libstdc++.so.6 (0x00007faf1e1d2000)\n\tlibm.so.6 => /lib64/libm.so.6 (0x00007faf1e0f7000)\n\tlibgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00007faf1e0dc000)\n\tlibc.so.6 => /lib64/libc.so.6 (0x00007faf1ded3000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007faf1e405000)\n",
+        "guide_installed": true,
+        "binary_bytes": 324296
+      },
+      "packages": [
+        {
+          "path": "dist/headless-cli-b2ef0a3/el9/octool-cli-2.0.1-1.el9.x86_64.rpm",
+          "bytes": 143710,
+          "sha256": "e81cab9fd5fe7620f3ea2234b6577b953d5b7a284f5501bfdadb413483dcb992"
+        },
+        {
+          "path": "dist/headless-cli-b2ef0a3/el9/octool-hwio-dkms-2.0.1-1.el9.noarch.rpm",
+          "bytes": 19059,
+          "sha256": "e70025df8ae31761e7489690516c23f829947ce08e7a9ab7197e674f4675b4c1"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el9/ctest.txt",
+          "bytes": 975,
+          "sha256": "f558c598e77a49eff0015795482d41b4056cca0b57b4541972d168f5ed1bbae6"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el9/LastTest.log",
+          "bytes": 5115,
+          "sha256": "b7b46c6edf5cbb46042075b576033f0ef1b4a81b0e4a6a3ace8683260172cb3b"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el9/runtime.json",
+          "bytes": 1401,
+          "sha256": "a89d793ff5bbf7cc2880a715ba9e68a8b1ae741ff4df7b229c4725b740074c6a"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el9/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el9/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el9/packages/cli-elf.json",
+          "bytes": 539,
+          "sha256": "482bd42a7ec89d830ff75def76e957cb1971dc585b54bfc67323d5e6e92253c9"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/linux-artifacts/kernel-el9/guest-boot/results.json",
+          "bytes": 508,
+          "sha256": "1f7451192c95a25a02f2957c3d58500a47b018f528d797881057a0b2213c68d3"
+        }
+      ],
+      "gui_regression_tests": 32,
+      "kernel_boots": [
+        {
+          "kernel": "5.14.0-687.56.1.el9_8.x86_64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "ffd08603dbd630a7d5f4501f8f5dc6b6488a5165b362281120ab21a9a18e4fdf",
+          "module_sha256": "2eb72f664a74d0477e9a1649033f8e1c3d0f2fb7731ec36add48cae6f408cadc"
+        }
+      ]
+    },
+    {
+      "target": "el10",
+      "ctests": 9,
+      "core_scenario_groups": 56,
+      "cli_scenario_groups": 5,
+      "invalid_commands_before_device_open": 31,
+      "json_reports_in_process_test": 53,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 26,
+              "model": 2,
+              "stepping": 1,
+              "signature": "0x00b00f21"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007fea2be21000)\n\tlibstdc++.so.6 => /lib64/libstdc++.so.6 (0x00007fea2bba1000)\n\tlibm.so.6 => /lib64/libm.so.6 (0x00007fea2baf3000)\n\tlibgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00007fea2bac6000)\n\tlibc.so.6 => /lib64/libc.so.6 (0x00007fea2b8ed000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fea2be23000)\n",
+        "guide_installed": false,
+        "binary_bytes": 340664
+      },
+      "packages": [
+        {
+          "path": "dist/headless-cli-b2ef0a3/el10/octool-cli-2.0.1-1.el10.x86_64.rpm",
+          "bytes": 153925,
+          "sha256": "4e0e83276c7d236297f3c4d1443e2fc2eb1681f62b4208548e2890e9465ce59c"
+        },
+        {
+          "path": "dist/headless-cli-b2ef0a3/el10/octool-hwio-dkms-2.0.1-1.el10.noarch.rpm",
+          "bytes": 19164,
+          "sha256": "ae378dd14c21866e2e54df8453e60f94c4ca14eb7475c39617a6fcc66d894d61"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el10/ctest.txt",
+          "bytes": 975,
+          "sha256": "04bd095cb97d3c15d909a5deca9efd956d20bc4576d3b22ab7f71ead3e6bf76a"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el10/LastTest.log",
+          "bytes": 5115,
+          "sha256": "88df8054243c6a88618c564048692a6e2b4153edd3b2977c55d8e319a90c0f6e"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el10/runtime.json",
+          "bytes": 1402,
+          "sha256": "e78f439f49c091816586fa276a86262a44a4ae793d108d3b3abf869c759f11c8"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el10/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "35a7c19fb77152b9c2604c7ede5dcd4ccbc699bf79dc9817ecef9f2eb0edb0cf"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el10/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "b333f31e5cdc38ecd68af68e5921dd7eb86fe21eb7d9a58cfca45e6e33aed48b"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-el10/packages/cli-elf.json",
+          "bytes": 561,
+          "sha256": "637a6156bb23cc90328cdcda306e783d056b5e2953d9bff36ebb07eeea9c4db6"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/linux-artifacts/kernel-el10/guest-boot/results.json",
+          "bytes": 509,
+          "sha256": "bc3c64eb10a9127fea532717703bd37afb9189b2679fb98cdd448250840d75e1"
+        }
+      ],
+      "gui_regression_tests": 32,
+      "kernel_boots": [
+        {
+          "kernel": "6.12.0-211.64.1.el10_2.x86_64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "a399dcb2241af997473ba3992590df526ebedb81e27f8ee053602de895722b22",
+          "module_sha256": "1dcaa565942f926c83e460bbd3d1a3cbb3a375deaa40ab1bd6054c94f5908b0a"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu20.04",
+      "ctests": 9,
+      "core_scenario_groups": 56,
+      "cli_scenario_groups": 5,
+      "invalid_commands_before_device_open": 31,
+      "json_reports_in_process_test": 53,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f4b88e52000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f4b88dc9000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f4b88be7000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f4b88a98000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f4b88a7d000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f4b8888b000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f4b88e54000)\n",
+        "guide_installed": false,
+        "binary_bytes": 370648
+      },
+      "packages": [
+        {
+          "path": "dist/headless-cli-b2ef0a3/ubuntu20.04/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 163688,
+          "sha256": "0ffde39a2d8cd1df288f40182ca97edc5196de81bc86059f6008090963591460"
+        },
+        {
+          "path": "dist/headless-cli-b2ef0a3/ubuntu20.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10670,
+          "sha256": "12ac57b107b3efb50a1088a0324d4ddb35e3da9b5f1234f08d9fc842e8dfb4f7"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu20.04/ctest.txt",
+          "bytes": 975,
+          "sha256": "a017d57d8e93f1906c71353ea0199e29a3918c9145bedac1db1bae6e2d4b09b8"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu20.04/LastTest.log",
+          "bytes": 5115,
+          "sha256": "4e71d618aefa0ada7624edce528fa15f278b8053c9bb35463429a78650588cf3"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu20.04/runtime.json",
+          "bytes": 1543,
+          "sha256": "b9d4a3cbb1d2c2770725e83ca55117d4ddc622b5074b8c9d6bcab22cc0ab824c"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu20.04/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu20.04/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu20.04/packages/cli-elf.json",
+          "bytes": 503,
+          "sha256": "0a84fa1618747eb1e54460289e2e12c9e696b9a681c9f9f58213e5f3f6b267f8"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/linux-artifacts/kernel-ubuntu20.04/guest-boot/results.json",
+          "bytes": 497,
+          "sha256": "5069d6d94c8c6834bee1a40fd6d8ae4a3cc1fa82034d59045e002d8bffe87a08"
+        }
+      ],
+      "gui_regression_tests": 32,
+      "kernel_boots": [
+        {
+          "kernel": "5.4.0-216-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "c5bb7de4df4416f77e8eb33547a30673d84542c7b0ae789954ce82e8f8b26f09",
+          "module_sha256": "b28ffc18c890f3c39dbfd2894dd00da00bb850f10c15d49528d08a06b95c261b"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu22.04",
+      "ctests": 9,
+      "core_scenario_groups": 56,
+      "cli_scenario_groups": 5,
+      "invalid_commands_before_device_open": 31,
+      "json_reports_in_process_test": 53,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 26,
+              "model": 2,
+              "stepping": 1,
+              "signature": "0x00b00f21"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f98509bb000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f985072d000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f9850646000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f9850626000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f98503fd000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f98509bd000)\n",
+        "guide_installed": false,
+        "binary_bytes": 354264
+      },
+      "packages": [
+        {
+          "path": "dist/headless-cli-b2ef0a3/ubuntu22.04/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 160850,
+          "sha256": "2abed2f50f52f3d73521b402411e1cfd4d443636514093d40ec77ae33d91d0d6"
+        },
+        {
+          "path": "dist/headless-cli-b2ef0a3/ubuntu22.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10668,
+          "sha256": "3ae374ea36fdfa14109d43ae9706e91a81db1ad920bc3d09f500da79090daa76"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu22.04/ctest.txt",
+          "bytes": 975,
+          "sha256": "04bd095cb97d3c15d909a5deca9efd956d20bc4576d3b22ab7f71ead3e6bf76a"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu22.04/LastTest.log",
+          "bytes": 5115,
+          "sha256": "88df8054243c6a88618c564048692a6e2b4153edd3b2977c55d8e319a90c0f6e"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu22.04/runtime.json",
+          "bytes": 1462,
+          "sha256": "7856f1b29970e846a2b0e58a5a586453c69548e8116e50956a177a06aaef28c0"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu22.04/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "35a7c19fb77152b9c2604c7ede5dcd4ccbc699bf79dc9817ecef9f2eb0edb0cf"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu22.04/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "b333f31e5cdc38ecd68af68e5921dd7eb86fe21eb7d9a58cfca45e6e33aed48b"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu22.04/packages/cli-elf.json",
+          "bytes": 556,
+          "sha256": "130480922c3d54d39a445c578e0f0a08bbb6f32eca9dbf9c253e417afc8d4f77"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/linux-artifacts/kernel-ubuntu22.04/guest-boot/results.json",
+          "bytes": 992,
+          "sha256": "8c38c0bcb70f2f13662a3edf841ff5eef5847b35b7376d4b3ed9d8e1e3a3b2d8"
+        }
+      ],
+      "gui_regression_tests": 32,
+      "kernel_boots": [
+        {
+          "kernel": "5.15.0-198-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "e674dce98d3b3f3bca3ffaca1d2a22ed50c36fa2ff530a74c0908867363cd001",
+          "module_sha256": "11ba48722faca8e5e051d40b1d6459daa920fe58628d72b77f77401bc59953bc"
+        },
+        {
+          "kernel": "6.8.0-138-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "81ea8d2ef9c2d6a46e95c961c8c7c282941c80d4fd4106a3fcf9c87911243d3d",
+          "module_sha256": "ee8cd2475fd1e7c24dccb22130257053a444adc9db808684bad44a00297494bb"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu24.04",
+      "ctests": 9,
+      "core_scenario_groups": 56,
+      "cli_scenario_groups": 5,
+      "invalid_commands_before_device_open": 31,
+      "json_reports_in_process_test": 53,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007ff062b56000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007ff062877000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007ff06278e000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007ff062760000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007ff06254d000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007ff062b58000)\n",
+        "guide_installed": false,
+        "binary_bytes": 354264
+      },
+      "packages": [
+        {
+          "path": "dist/headless-cli-b2ef0a3/ubuntu24.04/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 164648,
+          "sha256": "1c7fc440fac67804888a8a1ae925419d13b4b14a7166623230e811fa5edcc189"
+        },
+        {
+          "path": "dist/headless-cli-b2ef0a3/ubuntu24.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10668,
+          "sha256": "480bd2b43b1cb6d3a4fb08d07a4b082db19377a66e877dd8decb57ce7e3dfb75"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu24.04/ctest.txt",
+          "bytes": 975,
+          "sha256": "4ede2359e4913892c42b6ee998503e15cf199af0e3febe8adbe732ec5921eaa4"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu24.04/LastTest.log",
+          "bytes": 5115,
+          "sha256": "2ea7235ee876bb4324c9683d002253c4de8d4e60499ee5f4fe6e96efa0d98ef4"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu24.04/runtime.json",
+          "bytes": 1462,
+          "sha256": "27cd33e1661f9f34d9a2f47e66e982c8c09a7a056ab10eb890daddfd9c0554e9"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu24.04/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu24.04/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu24.04/packages/cli-elf.json",
+          "bytes": 578,
+          "sha256": "c395b15fc046ad2e59b7c7e7c793df150f80c81cd99dd3622f187755794e2874"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/linux-artifacts/kernel-ubuntu24.04/guest-boot/results.json",
+          "bytes": 497,
+          "sha256": "a2f81c8e62f2150734dcc205d0d69f2e41a39990cd40721ffc3dfbe6237192c3"
+        }
+      ],
+      "gui_regression_tests": 32,
+      "kernel_boots": [
+        {
+          "kernel": "6.8.0-146-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "bae162f72d687f8f87909f1dfedea1dfe16adefe40da51f649d9a9b6d498342b",
+          "module_sha256": "9214c5560954f3d1cadee11b8d77f923048b9b41e336e986531a0c36c0e3a97d"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu26.04",
+      "ctests": 9,
+      "core_scenario_groups": 56,
+      "cli_scenario_groups": 5,
+      "invalid_commands_before_device_open": 31,
+      "json_reports_in_process_test": 53,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 26,
+              "model": 2,
+              "stepping": 1,
+              "signature": "0x00b00f21"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007fa97b7f4000)\n\tlibstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fa97b4ec000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x00007fa97b3c6000)\n\tlibgcc_s.so.1 => /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fa97b398000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x00007fa97b177000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fa97b7f6000)\n",
+        "guide_installed": false,
+        "binary_bytes": 380240
+      },
+      "packages": [
+        {
+          "path": "dist/headless-cli-b2ef0a3/ubuntu26.04/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 173404,
+          "sha256": "fd1870e5924c2b59c59ec7d412238eb1a8a8be51e6debead22f7d9bd5c229ac5"
+        },
+        {
+          "path": "dist/headless-cli-b2ef0a3/ubuntu26.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10668,
+          "sha256": "5f7c54a16d91f8c54f1216f951a9444c352159f845434de234ed0557436d948a"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu26.04/ctest.txt",
+          "bytes": 975,
+          "sha256": "04bd095cb97d3c15d909a5deca9efd956d20bc4576d3b22ab7f71ead3e6bf76a"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu26.04/LastTest.log",
+          "bytes": 5115,
+          "sha256": "a8f36b451d430078de2d9d4a2702015ad020beccc592e296cd9bfdd092104188"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu26.04/runtime.json",
+          "bytes": 1478,
+          "sha256": "8c5bc1d56306efae37141b57aa3e583dfcec751cf963f7cd787a6b12d645ca11"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu26.04/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "35a7c19fb77152b9c2604c7ede5dcd4ccbc699bf79dc9817ecef9f2eb0edb0cf"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu26.04/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "b333f31e5cdc38ecd68af68e5921dd7eb86fe21eb7d9a58cfca45e6e33aed48b"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-ubuntu26.04/packages/cli-elf.json",
+          "bytes": 556,
+          "sha256": "7f6fdce8cfd54529a95e8d3cbf3b20909ccadf36a303ab72c862ea85621f06ea"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/linux-artifacts/kernel-ubuntu26.04/guest-boot/results.json",
+          "bytes": 496,
+          "sha256": "9d7f93c2f9429f1b81fbc993a68c192f2051c9a61b29e18de831f3ec0499699f"
+        }
+      ],
+      "gui_regression_tests": 32,
+      "kernel_boots": [
+        {
+          "kernel": "7.0.0-38-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "9f55ef7253055a9cf68f8a04323c93dead2fca617386d842fbde9ca7b178b27e",
+          "module_sha256": "60e4a9e6f9c9362dabc05e1df8e89e5c69e5ecbb21d7e490e762f4df9636b71a"
+        }
+      ]
+    },
+    {
+      "target": "debian11",
+      "ctests": 9,
+      "core_scenario_groups": 56,
+      "cli_scenario_groups": 5,
+      "invalid_commands_before_device_open": 31,
+      "json_reports_in_process_test": 53,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f99d86fe000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f99d867d000)\n\tlibstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f99d84b0000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f99d836c000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f99d8352000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f99d817e000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f99d8700000)\n",
+        "guide_installed": true,
+        "binary_bytes": 342944
+      },
+      "packages": [
+        {
+          "path": "dist/headless-cli-b2ef0a3/debian11/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 157082,
+          "sha256": "076f899a5b9a174b90bbbe88e1d7a1c9a5df69e4d37d1de79445d326079e118e"
+        },
+        {
+          "path": "dist/headless-cli-b2ef0a3/debian11/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10668,
+          "sha256": "17ddda046e917f290580e1801ef9368086974487be8603d2b6a907890f8a738a"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian11/ctest.txt",
+          "bytes": 975,
+          "sha256": "38c72d25263f5b01c9d3c5663172db204a170ed10f6c11d8effd01588aa0bf15"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian11/LastTest.log",
+          "bytes": 5115,
+          "sha256": "19883bdac6cf5f59ca3c5b5b3ad51d3c89d6016eac7b974943761e38e9b19cec"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian11/runtime.json",
+          "bytes": 1546,
+          "sha256": "279c7315d112a2da7efa978556812f883449c258f5ce7a165b0957bdb236c4e6"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian11/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian11/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian11/packages/cli-elf.json",
+          "bytes": 504,
+          "sha256": "61402aa49e0c1ec4e0ae5637ffc5fad200ead984d5295f0ca88a489c97dab4ee"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/linux-artifacts/kernel-debian11/guest-boot/results.json",
+          "bytes": 495,
+          "sha256": "4b9794ffff202191af850d0abf23b259a3ef0faa983a570ad0cb909c45824239"
+        }
+      ],
+      "gui_regression_tests": 32,
+      "kernel_boots": [
+        {
+          "kernel": "5.10.0-46-amd64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "8568fbc5dcc1a357e02c5ea67c1462174425aef5e8c9c74970253999c9613eb6",
+          "module_sha256": "afb0de05ae56d3823f32259a1d46ee1d1dc9feb99266a37e5b6cd20cb57a3333"
+        }
+      ]
+    },
+    {
+      "target": "debian12",
+      "ctests": 9,
+      "core_scenario_groups": 56,
+      "cli_scenario_groups": 5,
+      "invalid_commands_before_device_open": 31,
+      "json_reports_in_process_test": 53,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f4eadd4c000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f4eadad8000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f4ead9f8000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f4ead9d8000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f4ead7f6000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f4eadd4e000)\n",
+        "guide_installed": true,
+        "binary_bytes": 326640
+      },
+      "packages": [
+        {
+          "path": "dist/headless-cli-b2ef0a3/debian12/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 153886,
+          "sha256": "b58622846d3a04d640b39764d2215f07b0ac9b59295da364132f05d476fa176d"
+        },
+        {
+          "path": "dist/headless-cli-b2ef0a3/debian12/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10676,
+          "sha256": "00df572000b4f50cce59776a6f6919743816ff36064d56c8f76790748d95931d"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian12/ctest.txt",
+          "bytes": 975,
+          "sha256": "b99792fb4d8c039a7dde0f1672e46e4e72b5d4fed918061b0847844e25b55ff0"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian12/LastTest.log",
+          "bytes": 5115,
+          "sha256": "3fbe5336ae054c4ea491c7f93f1552428253144dbd1ad75dad1342e9368409d5"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian12/runtime.json",
+          "bytes": 1461,
+          "sha256": "9fb96d678ef9389b0f21278e8c095bfe6cbcbfadd34212e76e020883d6bb8022"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian12/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian12/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian12/packages/cli-elf.json",
+          "bytes": 539,
+          "sha256": "482bd42a7ec89d830ff75def76e957cb1971dc585b54bfc67323d5e6e92253c9"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/linux-artifacts/kernel-debian12/guest-boot/results.json",
+          "bytes": 494,
+          "sha256": "389f49888874587416a70e96dcf5cb878fb74bb1633c227c9c98d378d9dc0cd8"
+        }
+      ],
+      "gui_regression_tests": 32,
+      "kernel_boots": [
+        {
+          "kernel": "6.1.0-53-amd64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "d66b8bc4b8330f4e98257602449feeeed696b860bf147a40477e7f4cfc48e704",
+          "module_sha256": "7fc256dc67c263a8f82a65c0550ddcc9b03852f481a65b110eddc32496696258"
+        }
+      ]
+    },
+    {
+      "target": "debian13",
+      "ctests": 9,
+      "core_scenario_groups": 56,
+      "cli_scenario_groups": 5,
+      "invalid_commands_before_device_open": 31,
+      "json_reports_in_process_test": 53,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007fdcf953b000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fdcf9274000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fdcf9184000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fdcf9157000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fdcf8f63000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fdcf953d000)\n",
+        "guide_installed": true,
+        "binary_bytes": 356680
+      },
+      "packages": [
+        {
+          "path": "dist/headless-cli-b2ef0a3/debian13/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 164660,
+          "sha256": "2bb386f08d5bbb6b154080f421e403f43f93517bac9dde169eec601da48a92b9"
+        },
+        {
+          "path": "dist/headless-cli-b2ef0a3/debian13/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10668,
+          "sha256": "62f517a5714a46ae7f3506d6352e6bb5076eaa4c938850e6854c881bb4df9cd9"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian13/ctest.txt",
+          "bytes": 975,
+          "sha256": "87740971ee19a3a3b9c6b261c485d13bd15ff033ead1c73d7c319c28c3c409f3"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian13/LastTest.log",
+          "bytes": 5115,
+          "sha256": "df68baa4b0e1fdb8d934ab70e9bf1aa75bec92c4fa14f0558ef6cd0acf427875"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian13/runtime.json",
+          "bytes": 1461,
+          "sha256": "27ff5a7476dd7bf538a0c898a1e0839242285b29c95dcaa60cf95157e7ba0f45"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian13/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian13/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/cli-artifacts/cli-debian13/packages/cli-elf.json",
+          "bytes": 561,
+          "sha256": "637a6156bb23cc90328cdcda306e783d056b5e2953d9bff36ebb07eeea9c4db6"
+        },
+        {
+          "path": "build/headless-cli-b2ef0a3/linux-artifacts/kernel-debian13/guest-boot/results.json",
+          "bytes": 500,
+          "sha256": "5412f0c812831eabd1dd733139b383f4b836141363fadcc1687df2797c8e567f"
+        }
+      ],
+      "gui_regression_tests": 32,
+      "kernel_boots": [
+        {
+          "kernel": "6.12.111+deb13-amd64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "6d8a7f745280cc06a6d2877c932f4dfa9079b694eb4227b61b27232642340794",
+          "module_sha256": "5a22c7337d1cb3e52c5c8b0f96ef3665550f26f8e223036fc98ac688d3b84d23"
+        }
+      ]
+    }
+  ],
+  "physical_hardware_acceptance": "not_run",
+  "cli_package_bytes": {
+    "minimum": 138156,
+    "maximum": 173404
+  },
+  "cli_executable_bytes": {
+    "minimum": 324256,
+    "maximum": 380240
+  },
+  "existing_linux_regressions": {
+    "source_commit": "b2ef0a3cebd44c6bceb6b4e8282deaed4bd03c4d",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047",
+    "jobs": [
+      {
+        "name": "baseline",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114107779886",
+        "startedAt": "2026-10-10T02:18:34Z",
+        "completedAt": "2026-10-10T02:20:38Z"
+      },
+      {
+        "name": "matrix",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114107780029",
+        "startedAt": "2026-10-10T02:18:34Z",
+        "completedAt": "2026-10-10T02:23:47Z"
+      },
+      {
+        "name": "kernel (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108776968",
+        "startedAt": "2026-10-10T02:23:50Z",
+        "completedAt": "2026-10-10T02:26:22Z"
+      },
+      {
+        "name": "kernel (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108776983",
+        "startedAt": "2026-10-10T02:23:51Z",
+        "completedAt": "2026-10-10T02:26:36Z"
+      },
+      {
+        "name": "desktop (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108776992",
+        "startedAt": "2026-10-10T02:23:50Z",
+        "completedAt": "2026-10-10T02:27:38Z"
+      },
+      {
+        "name": "kernel (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108776999",
+        "startedAt": "2026-10-10T02:23:50Z",
+        "completedAt": "2026-10-10T02:26:23Z"
+      },
+      {
+        "name": "desktop (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108777004",
+        "startedAt": "2026-10-10T02:23:51Z",
+        "completedAt": "2026-10-10T02:28:58Z"
+      },
+      {
+        "name": "desktop (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108777006",
+        "startedAt": "2026-10-10T02:23:50Z",
+        "completedAt": "2026-10-10T02:28:58Z"
+      },
+      {
+        "name": "kernel (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108777014",
+        "startedAt": "2026-10-10T02:23:51Z",
+        "completedAt": "2026-10-10T02:27:02Z"
+      },
+      {
+        "name": "kernel (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108777022",
+        "startedAt": "2026-10-10T02:23:50Z",
+        "completedAt": "2026-10-10T02:26:44Z"
+      },
+      {
+        "name": "kernel (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108777024",
+        "startedAt": "2026-10-10T02:23:51Z",
+        "completedAt": "2026-10-10T02:27:35Z"
+      },
+      {
+        "name": "kernel (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108777035",
+        "startedAt": "2026-10-10T02:23:51Z",
+        "completedAt": "2026-10-10T02:26:39Z"
+      },
+      {
+        "name": "desktop (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108777037",
+        "startedAt": "2026-10-10T02:23:50Z",
+        "completedAt": "2026-10-10T02:27:34Z"
+      },
+      {
+        "name": "kernel (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108777048",
+        "startedAt": "2026-10-10T02:23:51Z",
+        "completedAt": "2026-10-10T02:26:19Z"
+      },
+      {
+        "name": "desktop (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108777065",
+        "startedAt": "2026-10-10T02:23:51Z",
+        "completedAt": "2026-10-10T02:27:05Z"
+      },
+      {
+        "name": "kernel (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108777069",
+        "startedAt": "2026-10-10T02:23:50Z",
+        "completedAt": "2026-10-10T02:26:45Z"
+      },
+      {
+        "name": "desktop (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108777082",
+        "startedAt": "2026-10-10T02:23:51Z",
+        "completedAt": "2026-10-10T02:26:57Z"
+      },
+      {
+        "name": "desktop (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108777084",
+        "startedAt": "2026-10-10T02:23:51Z",
+        "completedAt": "2026-10-10T02:29:11Z"
+      },
+      {
+        "name": "kernel (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108777101",
+        "startedAt": "2026-10-10T02:23:50Z",
+        "completedAt": "2026-10-10T02:27:02Z"
+      },
+      {
+        "name": "desktop (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108777128",
+        "startedAt": "2026-10-10T02:23:50Z",
+        "completedAt": "2026-10-10T02:26:36Z"
+      },
+      {
+        "name": "desktop (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108777138",
+        "startedAt": "2026-10-10T02:23:51Z",
+        "completedAt": "2026-10-10T02:26:13Z"
+      },
+      {
+        "name": "desktop (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114108777245",
+        "startedAt": "2026-10-10T02:23:51Z",
+        "completedAt": "2026-10-10T02:26:51Z"
+      },
+      {
+        "name": "gate",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047/job/114109804007",
+        "startedAt": "2026-10-10T02:29:14Z",
+        "completedAt": "2026-10-10T02:29:21Z"
+      }
+    ],
+    "kernel_vm_boots": 11,
+    "analysis_tests": 65,
+    "baseline_qt_tests": 32,
+    "log": {
+      "path": "build/headless-cli-b2ef0a3/linux-run.log",
+      "bytes": 9938221,
+      "sha256": "e2db389f2bd0737bdeb178b2a1d74bec235f7e332d68e46418353572d8ee0377"
+    },
+    "artifact_metadata": {
+      "path": "build/headless-cli-b2ef0a3/linux-artifacts.json",
+      "bytes": 21726,
+      "sha256": "a9dcb83cdef26c854f9241cf4ad19e1c525b8a6ff8df5732a8728efacbeb9a35"
+    }
+  },
+  "source_archive": {
+    "path": "dist/headless-cli-b2ef0a3/octool-2.0.1-src.tar.gz",
+    "bytes": 3683748,
+    "sha256": "8bef8de65ec56d740b2ad820b64af968efcff8e79f63b88193bd29344ee2c4ff"
+  },
+  "local_sources_matching_cloud": {
+    ".github/workflows/headless-cli.yml": "04f5bb2af82e2205e5c442f28dc1be4d2d11ae5c0bb87458fc29e8ac07d082c6",
+    "cli/CMakeLists.txt": "2317507ed13b21877788ddac30f0b8a856fe431a65b21dfc61afc7bb73f2d320",
+    "cli/commands.cpp": "439fdac29ee0522faf3bf52415493868148eb7679e2765d9727f357167c3b9fe",
+    "cli/commands.h": "e12e3779aed567a99cbe38769d293338f9751296e9875216653c5e875da8fe0d",
+    "cli/json.cpp": "c672ed56cdb35108fae875bcaf9e5bb6b0c9d7507da0a6fd2d57face06f87330",
+    "cli/json.h": "20f6b1254b3c65872b4e8bd74c9c1dbe241d944c2f10ad4d0ec1ed361e5b22e7",
+    "cli/main.cpp": "e8655f93a0921b41503400a62fe1fb87edaa4d3db7090c8261749299ac6135f3",
+    "cli/test_process.py": "c4eecb9218df33a88604f6cc6f721285819826c47af8514bab5a72285548af8c",
+    "cli/tests.cpp": "30f164056022904302e2a2f40ed8765944dd4c7aafdd94e8c344cd275eadce09",
+    "docs/headless-cli.md": "8a04c9f0a9ac50f0a189876c5488f47f9fedf2579e5634ff1413dcb047fe17e8",
+    "gui/common.pri": "c14d407f4509a417f2885e97e24f25d374b8f683fc155b17b43035bcf019d2d7",
+    "gui/platform/linux_inventory.cpp": "b0ea272add62590e54777d9b209efea05f03a712b7991fd795387a3b0f0513ee",
+    "gui/platform/linux_inventory_native.cpp": "999ddbb2a3bdb8175505cadaf6cd1aa2d533d59a722a5c0b1ea5e98ac1a88f9b",
+    "gui/platform/linux_inventory_native.h": "a85f0ea1f92adf7b49bf6582497a7c737dce3e84eec826af832dbbe97d3bd3d8",
+    "port/ci/cli-in-container.sh": "86e692c9e3091fcf006d8ac6a329cca72694881181dd6d953cdcb1b86944db67",
+    "port/ci/cli-smoke.py": "2728fd2ce9e570f0f7a9a794a171291de87146435a27f4b2bea6eac141f935d3",
+    "port/packaging/octool-cli.spec.in": "f2fdfbb1d2dc079720d283ca8f9c0ab40823d65d00f0f8186878ffad659293b4",
+    "port/tools/build_cli.py": "fae98daee38f9c14080ff55df11a0fca5a7f0c1a502c717f3e37cec0a2cf1e6e"
+  },
+  "driver_hal_abi_unchanged_from": "6d58cfc16149be216b3f1e086b9a02b6928fc908",
+  "local_tests": {
+    "total": 48,
+    "passed": 36,
+    "skipped": 12,
+    "failed": 0,
+    "report": {
+      "path": "build/cli-local-tests.txt",
+      "bytes": 7623,
+      "sha256": "993d2f18d5107b4dcf2c80ac7063c2a612b3abb7852ee93cb9a23107d21e2dd9"
+    },
+    "note": "No local C++/Linux toolchain; executable CLI and core tests ran in all ten cloud Linux targets."
+  },
+  "limits": [
+    "Linux x86_64 only; each CLI package uses its target distribution C/C++ runtime",
+    "No Qt, X11, Wayland, polkit or graphical session required; optional separate DKMS package",
+    "Simulated register/firmware tests and target-kernel VM tests are not physical motherboard acceptance",
+    "Only existing recovered settings are exposed; no new PStates/curve/Intel server/board-specific settings",
+    "RAPL/HWP writes report submitted values without firmware readback; OC reports checked register readback",
+    "Transaction serialization is process-local; no interprocess or kernel-wide mailbox locking",
+    "CLI UMC JSON is not directly importable by the existing GUI UMC snapshot importer",
+    "No cross-version package upgrade or Secure Boot enrollment acceptance"
+  ]
+}

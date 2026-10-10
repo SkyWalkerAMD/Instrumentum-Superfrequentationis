@@ -1,5 +1,20 @@
 # 项目知识入口
 
+<!-- headless-cli-b2ef0a3 -->
+2026-10-10：新增独立无桌面版 **`octool-cli`**，验证提交 `b2ef0a3`，分支 `refactor/platform-recovery`。
+不依赖 Qt、X11、Wayland 或图形授权，可在 SSH/本地终端调用现有已还原核心。
+提供诊断、CPU/PStates/Intel/AMD/UMC 查询、主板/传感器/SPD 及受限设置命令；设置需要明确 `--apply`。
+
+- [无界面使用说明](headless-cli.md)、[本轮验证与大小](headless-cli-validation.md)、[证据清单](validation/headless-cli-ci-b2ef0a3.json)。
+- [CLI 云端验证](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466064) 12/12，十目标各 9 CTest，无显示环境安装、普通用户诊断、卸载重装通过。
+- [既有 Linux 回归](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38016466047) 23/23，每目标 32 Qt 测试，11 套目标内核 VM 启动通过。
+- CLI 包 138,156–173,404 字节，可执行文件 324,256–380,240 字节；不含可选 DKMS 和系统运行库。
+- `dist/headless-cli-b2ef0a3/` 含 10 个 CLI + 10 个独立 DKMS 包、对应源码和 SHA256SUMS。
+
+GUI 与 CLI 共用硬件核心和无 Qt 清单读取；驱动/HAL/ABI 未变。CLI 没有扩大硬件支持范围，四台真机仍未验收。
+
+以下保留此前记录。
+
 <!-- amd-curve-recovery-06b477c -->
 2026-10-10：最新验证生产代码为 `06b477c`，研究分支 `refactor/platform-recovery`。
 新增限定 Shimada 身份的[原始曲线查询](amd-curve-query-recovery.md)：独立 B8/BC 通道、有界等待、严格返回检查和界面失效清理。
