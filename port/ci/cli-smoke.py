@@ -39,8 +39,12 @@ assert "--apply" in invalid["error_message"]
 run("amd-curve-read", "--cpu", cpu, "--ccd", "16", "--core", "0", expected=2)
 run("spd-decode", "--file", "/nonexistent-octool-spd", expected=3)
 assert "no Qt" in subprocess.check_output(["octool-cli", "--help"], text=True)
-assert Path("/usr/share/doc/octool-cli/headless-cli.md").is_file()
+# Minimal Ubuntu images exclude /usr/share/doc via dpkg path-exclude; some
+# RPM images similarly enable nodocs. The package contains the guide, but a
+# target's installation policy may omit it without breaking the CLI.
+guide_installed = Path("/usr/share/doc/octool-cli/headless-cli.md").is_file()
 args.output.write_text(json.dumps({"passed": True, "no_display": True, "no_build_tools": True,
     "no_hardware_device": True, "register_access_tested": False, "diagnose": diagnose,
-    "identity": identity, "ldd": linkage, "binary_bytes": Path("/usr/bin/octool-cli").stat().st_size}, indent=2) + "\n")
+    "identity": identity, "ldd": linkage, "guide_installed": guide_installed,
+    "binary_bytes": Path("/usr/bin/octool-cli").stat().st_size}, indent=2) + "\n")
 print("Installed CLI passed without GUI, compiler, DKMS or a hardware device")
