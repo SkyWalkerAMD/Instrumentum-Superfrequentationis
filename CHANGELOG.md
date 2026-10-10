@@ -1,5 +1,18 @@
 # CHANGELOG
 
+<!-- intel-oc-recovery-90e16fb -->
+## 未发布 — 2026-10-10（Intel client offset 与后续 AMD 限制研究）
+
+- 新增 Intel Controls 的 core/cache voltage 子页与独立 C++ 核心；仅开放 Family 6 Model B7，保持 server/VF 独立边界。
+- 修改 offset 保留 target/mode/ratio，重读比较、锁检查、有界 busy、错误状态及完整回读；不重试未确认写入。
+- 90e16fb 核心 4/4、Linux 23/23：45 核心场景组、27 Qt / 31 Python、11 内核 VM、20 包和 200 图归档。
+- UMC 原指令实验新增 16 刷新槽各连续执行两次，已进入该生产提交的云端研究门禁。
+- 本地新增 AMD 六字段槽 882 项原指令实验和 3 项回归，发现乘法回绕、MP1 命令重用、参数丢弃和无条件成功提示。
+- 四模块全功能还原及真机验收仍未完成，具体阻碍集中记录在 docs/recovery-status.md。
+
+
+以下为此前记录；最新生产代码及验收结果以上述版本为准。
+
 <!-- umc-recovery-728671d -->
 ## 未发布 — 2026-10-10（UMC 与 CPU 拓扑恢复）
 
