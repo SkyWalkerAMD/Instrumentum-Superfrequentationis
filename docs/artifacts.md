@@ -1,5 +1,18 @@
 # 安装包与源码归档
 
+<!-- intel-vf-544f0b6 -->
+2026-10-10：GUI 与独立 CLI 同时新增 **Intel V/F 点查询**，验证生产提交 `544f0b6`。
+支持现有 Raptor Lake-S B7 profile 的 core/cache 单点或 1..15 候选点读取，显示配置倍率、offset、
+原始数据与逐点错误；未开放 V/F 写入、逐核 override 或 Xeon server 配置。
+
+- [实现与研究](intel-vf-recovery.md)、[GUI/CLI 功能对照](frontend-progress.md)、[验证及交付](intel-vf-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38018798924) 4/4；各 7 CTest / 62 场景组。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38018796517) 12/12；十目标各 9 CTest，65 份 JSON 输出验证。
+- [Linux GUI/驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38018795844) 23/23；十目标各 35 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-vf-544f0b6/`：10 个 GUI + 10 个 CLI + 10 个可选 DKMS 包、对应源码与 SHA256SUMS。
+
+驱动/HAL/ABI 未改；四台真机尚未验收。以下保留此前记录。
+
 <!-- headless-cli-b2ef0a3 -->
 2026-10-10 无界面交付：`dist/headless-cli-b2ef0a3/`，生产代码 `b2ef0a3cebd44c6bceb6b4e8282deaed4bd03c4d`。
 
