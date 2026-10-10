@@ -32,7 +32,7 @@ void encoding() {
             assert((word & ~UINT64_C(0x7f7f)) == (raw & ~UINT64_C(0x7f7f)));
         }
     }
-    for (const auto pair : {std::make_pair(0u, 40u), {1u, 0u}, {40u, 39u}, {1u, 128u}, {UINT32_MAX, UINT32_MAX}}) {
+    for (const auto &pair : {std::make_pair(0u, 40u), {1u, 0u}, {40u, 39u}, {1u, 128u}, {UINT32_MAX, UINT32_MAX}}) {
         std::uint64_t word = 123;
         assert(encodeIntelUncoreRange(0, pair.first, pair.second, word) == -ERANGE && word == 123);
     }
@@ -58,7 +58,7 @@ void readsAndGates() {
     }
 }
 void updates() {
-    for (unsigned model : {0xb7, 0x8f}) for (const auto pair : {std::make_pair(1u, 1u), {1u, 127u}, {127u, 127u}, {12u, 42u}}) {
+    for (unsigned model : {0xb7, 0x8f}) for (const auto &pair : {std::make_pair(1u, 1u), {1u, 127u}, {127u, 127u}, {12u, 42u}}) {
         Test t; t.device->model = model; const auto old = t.read();
         const auto out = t.apply(old, pair.first, pair.second);
         assert(!out.error && out.verified && out.writeAttempted && out.completed == 1 && !out.unchanged);
