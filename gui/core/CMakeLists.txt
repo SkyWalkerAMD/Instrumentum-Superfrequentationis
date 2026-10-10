@@ -7,7 +7,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(Threads REQUIRED)
 
 add_library(octool_core STATIC amd_pstates.cpp hardware.cpp helper_protocol.cpp
-    register_update.cpp intel_controls.cpp amd_smu.cpp amd_umc.cpp spd.cpp)
+    register_update.cpp intel_controls.cpp amd_smu.cpp amd_umc.cpp amd_topology.cpp spd.cpp)
 target_include_directories(octool_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(octool_core PUBLIC Threads::Threads)
 if(MSVC)

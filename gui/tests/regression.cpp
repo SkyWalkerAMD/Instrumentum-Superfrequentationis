@@ -55,6 +55,12 @@ struct PstateReference {
             case 1: values[0] = state.signature; break;
             case 0x80000000: values[0] = state.extendedMaximum; break;
             case 0x80000007: values[3] = state.hardwarePstate ? 0x80 : 0; break;
+            case 0x80000026: {
+                const unsigned sub=unsigned(r.data1);
+                if(sub<4) { values[0]=sub==0 ? 1 : sub==3 ? 8 : 4; values[1]=sub==0 ? 2 : sub==3 ? 144 : 12;
+                    values[2]=((sub+1)<<8)|sub; values[3]=0xaf; }
+                break;
+            }
             default: return -EINVAL;
             }
             for (int i = 0; i < 4; ++i) mailbox[1 + i] = values[i];
@@ -142,6 +148,20 @@ private slots:
         QCOMPARE(reference.writes.load(),0); QVERIFY(reference.msrs.empty());
         QCOMPARE(panel.findChild<QTableWidget *>("umcTable")->rowCount(),0);
         QVERIFY(panel.findChild<QLabel *>("umcStatus")->text().contains("Read failed"));
+    }
+    void amdTopologyShowsSparseIdsWithoutPreparingACommand() {
+        PstateReference reference; reference.extendedMaximum=0x80000026;
+        AmdTuningPanel panel(reference.access(),nullptr,3);
+        auto *read=panel.findChild<QPushButton *>("smuTopology"); read->click(); QTRY_VERIFY(read->isEnabled());
+        auto *table=panel.findChild<QTableWidget *>("smuTable"); QVERIFY(table);
+        QCOMPARE(table->rowCount(),10);
+        QCOMPARE(table->item(3,1)->text(),QString("10"));
+        QCOMPARE(table->item(4,1)->text(),QString("7"));
+        QCOMPARE(panel.findChild<QLineEdit *>("smuArg0")->text(),QString("0"));
+        QCOMPARE(reference.writes.load(),0); QCOMPARE(reference.wrongCpu.load(),0); QVERIFY(reference.msrs.empty());
+        reference.extendedMaximum=0x80000025; read->click(); QTRY_VERIFY(read->isEnabled());
+        QCOMPARE(table->rowCount(),0);
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("unavailable"));
     }
     void unsupportedIntelProfileDoesNotReadOrWriteMsrs() {
         PstateReference reference; reference.amd=false; auto access=reference.access();

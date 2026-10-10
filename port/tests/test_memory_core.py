@@ -20,10 +20,10 @@ class MemoryCore(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix='octool-memory-') as temp:
             binary = Path(temp) / ('memory.exe' if os.name == 'nt' else 'memory')
             command = [compiler, '-std=c++11', '-Wall', '-Wextra', '-Werror', '-pthread', '-I', str(core)]
-            command += [str(core / (name + '.cpp')) for name in ('hardware', 'register_update', 'amd_umc')]
+            command += [str(core / (name + '.cpp')) for name in ('hardware', 'register_update', 'amd_umc', 'amd_topology')]
             command += [str(ROOT / 'gui/tests/memory_core_test.cpp'), '-o', str(binary)]
             result = subprocess.run(command, capture_output=True, text=True, timeout=90)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             result = subprocess.run([str(binary)], capture_output=True, text=True, timeout=120)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertEqual(result.stdout.strip(), '7 memory scenario groups passed')
+            self.assertEqual(result.stdout.strip(), '9 memory and topology scenario groups passed')

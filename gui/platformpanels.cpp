@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "platformpanels.h"
 #include "core/amd_smu.h"
+#include "core/amd_topology.h"
 #include "core/spd.h"
 #include "platform/linux_inventory.h"
 #include <QApplication>
@@ -166,6 +167,8 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     form->addRow("Arg0 … Arg5 (32-bit hex)", args); layout->addLayout(form);
     auto *buttons = new QHBoxLayout; auto *probe = new QPushButton("Probe", this); probe->setObjectName("smuProbe"); buttons->addWidget(probe);
     auto *send = new QPushButton("Send command…", this); send->setObjectName("smuSend"); buttons->addWidget(send); layout->addLayout(buttons);
+    auto *topology = new QPushButton("Read CPU topology",this); topology->setObjectName("smuTopology"); buttons->addWidget(topology);
+    connect(topology,&QPushButton::clicked,this,[this] { readTopology(); });
     table_ = table({"Item", "Result"}, this, layout); table_->setObjectName("smuTable");
     status_ = description("Ready. No hardware access has been performed.", layout, this); status_->setObjectName("smuStatus");
     copyButton(this, buttons, table_, status_);
@@ -190,6 +193,36 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     connect(profile_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, clear);
 }
 AmdTuningPanel::~AmdTuningPanel() { cancelled_->store(true); }
+void AmdTuningPanel::readTopology() {
+    using namespace octool::core;
+    quint64 cpu=0;
+    if(!parseNumber(cpu_->text(),10,UINT32_MAX,cpu)) { table_->setRowCount(0); status_->setText("Invalid logical CPU."); return; }
+    table_->setRowCount(0); setEnabled(false); status_->setText("Reading selected CPU topology…");
+    auto *watcher=new QFutureWatcher<AmdTopology>(this);
+    connect(watcher,&QFutureWatcher<AmdTopology>::finished,this,[this,watcher] {
+        const auto t=watcher->result(); setEnabled(true);
+        if(t.error) status_->setText(failure(t.error)+" Extended AMD topology is unavailable or inconsistent; no firmware target inferred.");
+        else {
+            append(table_,{"Logical CPU",QString::number(t.cpu)});
+            append(table_,{"Extended APIC ID",hexValue(t.apicId,4)});
+            append(table_,{"CPUID socket ID",QString::number(t.socketId)});
+            append(table_,{"CPUID CCD within socket",QString::number(t.ccdInSocket)});
+            append(table_,{"CPUID core within CCD",QString::number(t.coreInCcd)});
+            append(table_,{"Thread within core",QString::number(t.threadInCore)});
+            for(const auto &l:t.levels) append(table_,{QString("CPUID level %1").arg(l.type),
+                QString("%1 logical processors · APIC shift %2 · global ID %3").arg(l.logicalCount).arg(l.shift).arg(l.globalId)});
+            status_->setText("CPUID topology read. Sparse IDs are preserved. Firmware CCD/core mapping is not assumed; no command was prepared or sent.");
+        }
+        watcher->deleteLater();
+    });
+    const auto access=access_; const auto cancelled=cancelled_;
+    watcher->setFuture(QtConcurrent::run([access,cancelled,cpu] {
+        AmdTopology out;
+        const int error=access->transaction([&](HardwareSession &s) { out=readAmdTopology(s,unsigned(cpu)); return out.error; },10000,cancelled.get());
+        if(error) out.error=error;
+        return out;
+    }));
+}
 void AmdTuningPanel::submit(bool probeOnly) {
     using namespace octool::core;
     SmuTarget target; target.profile = SmuProfile(profile_->currentData().toInt());

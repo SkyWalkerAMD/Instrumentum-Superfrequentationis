@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "amd_umc.h"
+#include "amd_topology.h"
 #include <cassert>
 #include <cerrno>
 #include <iostream>
@@ -143,9 +144,76 @@ void cancellationStopsBeforeDataRead() {
     },10000,&cancelled);
     assert(error==-ECANCELED && d.fake->calls.size()==2 && out.decoded.values.empty());
 }
+struct TopologyFake : HardwareBackend {
+    bool amd=true;
+    unsigned calls=0,failAt=UINT32_MAX;
+    std::uint32_t maximum=0x80000026;
+    std::vector<std::array<std::uint32_t,4>> levels;
+    TopologyFake() {
+        // Sparse ID: socket 1, CCD 10, core 7, thread 1. Counts intentionally
+        // exclude fused cores; shifts (not counts) determine identity.
+        levels={{{1,2,0x100,0x1af}},{{4,12,0x201,0x1af}},
+                {{4,12,0x302,0x1af}},{{8,144,0x403,0x1af}}};
+    }
+    Reply execute(const Request &) override { assert(false); return {}; }
+    CpuIdReply cpuid(unsigned cpu,std::uint32_t leaf,std::uint32_t subleaf) override {
+        assert(cpu==4095); CpuIdReply r;
+        if(++calls==failAt) { r.error=-EACCES; return r; }
+        if(!leaf) { r.words[0]=1; r.words[1]=amd?0x68747541:0x756e6547; r.words[3]=amd?0x69746e65:0x49656e69; r.words[2]=amd?0x444d4163:0x6c65746e; }
+        else if(leaf==1) r.words[0]=0x00b00f20;
+        else if(leaf==0x80000000) r.words[0]=maximum;
+        else {
+            assert(leaf==0x80000026);
+            if(subleaf<levels.size()) for(unsigned i=0;i<4;++i) r.words[i]=levels[subleaf][i];
+        }
+        return r;
+    }
+    Backend backend(Space) const override { return Backend::Unavailable; }
+};
+AmdTopology topology(TopologyFake &fake) {
+    // Borrowed test adapter; the owning service keeps its normal validation.
+    struct Adapter : HardwareBackend {
+        TopologyFake &f; explicit Adapter(TopologyFake &value):f(value) {}
+        Reply execute(const Request &r) override { return f.execute(r); }
+        CpuIdReply cpuid(unsigned c,std::uint32_t l,std::uint32_t sub) override { return f.cpuid(c,l,sub); }
+        Backend backend(Space s) const override { return f.backend(s); }
+    };
+    HardwareService service{std::unique_ptr<HardwareBackend>(new Adapter(fake))};
+    AmdTopology out; service.transaction([&](HardwareSession &s) { out=readAmdTopology(s,4095); return out.error; });
+    return out;
+}
+void topologyUsesShiftsAndSparseIds() {
+    TopologyFake fake; auto t=topology(fake);
+    assert(!t.error && t.apicId==0x1af && t.socketId==1 && t.ccdInSocket==10 && t.coreInCcd==7 && t.threadInCore==1);
+    assert(t.levels.size()==4 && t.levels[1].logicalCount==12 && t.levels[1].globalId==26);
+    fake.levels={{{0,1,0x100,0}},{{3,8,0x201,0}},{{3,8,0x302,0}},{{3,8,0x403,0}}};
+    t=topology(fake); assert(!t.error && !t.socketId && !t.ccdInSocket && !t.threadInCore);
+}
+void topologyRejectsMalformedAndUnavailableLeaves() {
+    for(unsigned failure=1;failure<=8;++failure) {
+        TopologyFake fake; fake.failAt=failure; const auto t=topology(fake);
+        assert(t.error==-EACCES && fake.calls==failure);
+    }
+    for(unsigned variant=0;variant<9;++variant) {
+        TopologyFake fake;
+        switch(variant) {
+        case 0: fake.amd=false; break;
+        case 1: fake.maximum=0x80000025; break;
+        case 2: fake.levels.clear(); break;
+        case 3: fake.levels[1][0]=0; break;
+        case 4: fake.levels[2][2]=0x202; break;
+        case 5: fake.levels[3][2]=0x503; break;
+        case 6: fake.levels[2][3]=0x1ae; break;
+        case 7: fake.levels[1][1]=32; break;
+        case 8: fake.levels[3][2]=0x402; break;
+        }
+        const auto t=topology(fake); assert(t.error && !t.socketId && !t.ccdInSocket && !t.coreInCcd);
+    }
+}
 }
 int main() {
     originalVectors(); offlineBoundaries(); refreshSelections(); identityGates(); explicitRead();
     failedReadsStop(); cancellationStopsBeforeDataRead();
-    std::cout << "7 memory scenario groups passed\n";
+    topologyUsesShiftsAndSparseIds(); topologyRejectsMalformedAndUnavailableLeaves();
+    std::cout << "9 memory and topology scenario groups passed\n";
 }

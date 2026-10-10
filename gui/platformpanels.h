@@ -31,6 +31,7 @@ public:
     ~AmdTuningPanel() override;
 private:
     void submit(bool probeOnly);
+    void readTopology();
     std::shared_ptr<HardwareAccess> access_;
     std::shared_ptr<std::atomic<bool>> cancelled_;
     QLineEdit *cpu_, *bus_, *device_, *function_, *args_[6];

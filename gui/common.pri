@@ -18,6 +18,8 @@ SOURCES += $$PWD/platformpanels.cpp
 HEADERS += $$PWD/platformpanels.h
 SOURCES += $$PWD/core/amd_umc.cpp $$PWD/umcpanel.cpp
 HEADERS += $$PWD/core/amd_umc.h $$PWD/umcpanel.h
+SOURCES += $$PWD/core/amd_topology.cpp
+HEADERS += $$PWD/core/amd_topology.h
 HEADERS += $$PWD/access.h $$PWD/registerpanel.h $$PWD/platform/hardware_factory.h
 linux {
     SOURCES += $$PWD/platform/linux_hwio.cpp $$PWD/platform/linux_helper.cpp $$PWD/../port/hal/octool_hwio.c
