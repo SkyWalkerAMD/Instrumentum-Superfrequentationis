@@ -23,8 +23,8 @@ int waitReady(HardwareSession &s, unsigned cpu, std::uint64_t &value) {
     }
     return -ETIMEDOUT;
 }
-IntelOcResponse exchange(HardwareSession &s, unsigned cpu, IntelOcDomain domain,
-                         bool write, std::uint32_t data, unsigned point = 0) {
+IntelOcResponse exchangeCommand(HardwareSession &s, unsigned cpu, IntelOcDomain domain,
+                                unsigned command, std::uint32_t data, unsigned point = 0) {
     IntelOcResponse out;
     std::uint64_t value = 0;
     if ((out.error = waitReady(s, cpu, value))) return out;
@@ -32,7 +32,7 @@ IntelOcResponse exchange(HardwareSession &s, unsigned cpu, IntelOcDomain domain,
     request.write = true;
     request.value = busy | (std::uint64_t(unsigned(domain)) << 40) |
                     (std::uint64_t(point) << 48) |
-                    (std::uint64_t(write ? 0x11 : 0x10) << 32) | data;
+                    (std::uint64_t(command) << 32) | data;
     if ((out.error = s.checkpoint())) return out;
     out.commandAttempted = true;
     if ((out.error = s.execute(request).error)) return out;
@@ -45,6 +45,10 @@ IntelOcResponse exchange(HardwareSession &s, unsigned cpu, IntelOcDomain domain,
     if (out.firmwareStatus) { out.error = -EIO; return out; }
     out.data = std::uint32_t(value);
     return out;
+}
+IntelOcResponse exchange(HardwareSession &s, unsigned cpu, IntelOcDomain domain,
+                         bool write, std::uint32_t data, unsigned point = 0) {
+    return exchangeCommand(s, cpu, domain, write ? 0x11 : 0x10, data, point);
 }
 }
 bool hasIntelOcProfile(const CpuIdentity &id) {
@@ -123,6 +127,80 @@ IntelVfSnapshot readIntelVf(HardwareSession &s, unsigned cpu, IntelOcDomain doma
         }
     }
     out.scanCompleted = true;
+    return out;
+}
+namespace {
+bool responseValid(const IntelOcResponse &r) {
+    return !r.error && r.completed && !r.firmwareStatus;
+}
+bool vfSnapshotValid(const IntelVfEditSnapshot &s) {
+    return !s.error && s.valid && s.point >= 1 && s.point <= 15 && validDomain(s.domain) &&
+        hasIntelOcProfile(s.identity) && responseValid(s.control) &&
+        responseValid(s.legacy) && responseValid(s.value);
+}
+bool sameVfContext(const IntelVfEditSnapshot &a, const IntelVfEditSnapshot &b) {
+    return a.identity.signature == b.identity.signature && a.flexRatio == b.flexRatio &&
+        a.control.data == b.control.data && a.legacy.data == b.legacy.data;
+}
+}
+bool intelVfDomainDefault(const IntelVfEditSnapshot &s) {
+    // Conservative profile policy: adaptive, zero target, zero domain offset.
+    // Do not silently clear another voltage setting to activate point editing.
+    return (s.legacy.data & UINT32_C(0xffffff00)) == 0;
+}
+bool intelVfEditable(const IntelVfEditSnapshot &s) {
+    return vfSnapshotValid(s) && !(s.flexRatio & ocLock) && intelVfDomainDefault(s) &&
+        (s.domain != IntelOcDomain::Core || !(s.control.data & 8));
+}
+IntelVfEditSnapshot readIntelVfEdit(HardwareSession &s, unsigned cpu, IntelOcDomain domain, unsigned point) {
+    IntelVfEditSnapshot out; out.cpu = cpu; out.domain = domain; out.point = point;
+    if (!validDomain(domain) || !point || point > 15) { out.error = -EINVAL; return out; }
+    out.identity = identifyCpu(s, cpu);
+    if ((out.error = out.identity.error)) return out;
+    if (!hasIntelOcProfile(out.identity)) { out.error = -ENOTSUP; return out; }
+    const auto features = s.cpuid(cpu, 1);
+    if ((out.error = features.error)) return out;
+    if (!(features.words[3] & (1u << 5))) { out.error = -ENOTSUP; return out; }
+    const auto flex = s.execute(msrRequest(cpu, 0x194));
+    if ((out.error = flex.error)) return out;
+    out.flexRatio = flex.value;
+    out.control = exchangeCommand(s, cpu, IntelOcDomain::Core, 0x14, 0);
+    if ((out.error = out.control.error)) return out;
+    out.legacy = exchange(s, cpu, domain, false, 0);
+    if ((out.error = out.legacy.error)) return out;
+    out.value = exchange(s, cpu, domain, false, 0, point);
+    if ((out.error = out.value.error)) return out;
+    if ((out.error = s.checkpoint())) return out;
+    out.valid = true; return out;
+}
+IntelVfUpdate applyIntelVfOffset(HardwareSession &s, const IntelVfEditSnapshot &old, double millivolts) {
+    IntelVfUpdate out;
+    if (!vfSnapshotValid(old)) { out.error = -EINVAL; return out; }
+    if ((out.error = encodeIntelOcOffset(millivolts, old.value.data, out.expected))) return out;
+    out.submitted = out.expected & UINT32_C(0xffe00000);
+    if (!intelVfEditable(old)) { out.error = -EPERM; return out; }
+    out.stage = IntelOcStage::Preflight;
+    const auto fresh = readIntelVfEdit(s, old.cpu, old.domain, old.point);
+    if ((out.error = fresh.error)) return out;
+    if (fresh.identity.signature != old.identity.signature) { out.error = -ENODEV; return out; }
+    if (!intelVfEditable(fresh)) { out.error = -EPERM; return out; }
+    out.stage = IntelOcStage::Compare;
+    if (!sameVfContext(old, fresh) || old.value.data != fresh.value.data) { out.error = -EAGAIN; return out; }
+    if (out.expected == fresh.value.data) out.readback = fresh;
+    else {
+        out.stage = IntelOcStage::Write;
+        out.response = exchange(s, old.cpu, old.domain, true, out.submitted, old.point);
+        out.writeAttempted = out.response.commandAttempted;
+        if ((out.error = out.response.error)) return out;
+        out.stage = IntelOcStage::Verify;
+        out.readback = readIntelVfEdit(s, old.cpu, old.domain, old.point);
+    }
+    if ((out.error = out.readback.error)) return out;
+    if (out.readback.identity.signature != old.identity.signature) { out.error = -ENODEV; return out; }
+    if (!sameVfContext(old, out.readback) || !intelVfEditable(out.readback)) { out.error = -EAGAIN; return out; }
+    if (out.readback.value.data != out.expected) { out.error = -EIO; return out; }
+    if ((out.error = s.checkpoint())) return out;
+    out.verified = true; out.unchanged = !out.writeAttempted; out.stage = IntelOcStage::Complete;
     return out;
 }
 namespace {

@@ -72,7 +72,7 @@ PStates 写入、曲线写入、Intel server VF/fabric、板级专用控制等�
 | 用户要求的模块 | 已接入可编译程序 | 尚未还原的部分 |
 |---|---|---|
 | AMD PStates | 按逻辑 CPU 采样 P0–P7、上限/能力检查、频率、64 位原值、完整 9 位 VID / Idd 编码 | 型号专用 mV/A 换算；满足跨核/跨 coherent fabric 一致性的设置 |
-| Intel Controls | RAPL、HWP 含活动窗口，13 项设置完整读回；温度；Raptor Lake-S core/cache offset、最大 OC ratio、目标电压与 Adaptive/Override；VF 点查询；P/E 睿频分组读取及单组倍率设置 | W790/W890 电压域；VF 写入、逐物理核心 override、活动核心阈值编辑、TVB、VID rank/SP、fabric/BCLK |
+| Intel Controls | RAPL、HWP 含活动窗口，13 项设置完整读回；温度；Raptor Lake-S core/cache offset、最大 OC ratio、目标电压与 Adaptive/Override；VF 点查询及受条件限制的单点 offset；P/E 睿频分组读取及单组倍率设置 | W790/W890 电压域；其它型号 VF、逐物理核心 override、活动核心阈值编辑、TVB、VID rank/SP、fabric/BCLK |
 | AMD 调参 | 三套独立 BIOS SMUIO；Shimada 已提取命令和逐核频率参数准备；CPUID 稀疏拓扑；限定身份的原始曲线查询 | CPUID 与固件目标 ID 对应；MP1/PBO 高层单位、曲线设置/电流/温度限制、PM 表、profiles/hotkeys |
 | 内存与主板 | DMI/BIOS、内核传感器、绑定驱动的 SPD、DDR4/5 基础 CRC/组织/基础时序；AMD UMC 212 字段、离线快照与 CLI 报告导入 GUI | UMC 各型号物理单位/通道标签；Intel 训练时序；PMIC/VRM/EC/时钟芯片和训练写入 |
 

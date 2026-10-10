@@ -8,7 +8,7 @@
 | AMD PStates | AMD PStates 页 | `amd-pstates` | Family 1Ah 定义读取，未恢复设置 |
 | Intel RAPL / HWP / DTS | Power / performance | `intel-read` / `intel-set` | 型号/能力门控；含 HWP 活动窗口，13 项设置完整回读 |
 | Intel core/cache offset、最大倍率、目标电压与模式 | Core / cache voltage and ratio | `intel-oc-read` / `intel-oc-set` | B7；[目标电压 + Adaptive/Override](intel-voltage-recovery.md)，锁、旧值与完整回读 |
-| Intel V/F 点 | V/F points | `intel-vf-read` | B7，两域，单点/候选 1..15，查询 |
+| Intel V/F 点 | V/F points 查询、准备与设置 | `intel-vf-read` / `intel-vf-set` | B7，两域，候选 1..15 查询及单点 offset；[完整上下文核对](intel-vf-write-recovery.md)，不改变 override 模式 |
 | Intel 睿频分组 | Turbo ratio groups | `intel-turbo-read` / `intel-turbo-set` | B7；P/E 两表，读取活动核心阈值，单组倍率设置与完整读回；不改阈值 |
 | AMD SMU | AMD tuning | `amd-smu-probe/read/send` | 现有身份/命令白名单与原始参数 |
 | AMD 曲线读取 | AMD tuning 曲线查询 | `amd-curve-read` | Shimada；显式固件 CCD/core；不推导 mV |
@@ -22,5 +22,5 @@ CLI 本身也输出全部解码字段，尚无读取 GUI 快照文件的独立�
 [本轮实现说明](control-register-recovery.md)记录编码、读回与导入边界。
 
 双方共同未完成：AMD PStates 写入、曲线设置与物理目标映射、完整 PBO 高层限制、
-Intel VF 写入及 W790/W890 电压/逐核/fabric、Intel 内存训练时序、板级 PMIC/VRM/EC/时钟写入。
+Intel 其它型号的 VF 及 W790/W890 电压/逐核/fabric、Intel 内存训练时序、板级 PMIC/VRM/EC/时钟写入。
 四台目标真机验收与 Secure Boot 实机签名部署也未完成。详见[还原状态](recovery-status.md)。

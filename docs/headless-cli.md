@@ -79,9 +79,19 @@ GUI 的 AMD UMC → Open snapshot 中打开；GUI 重新解码原始寄存器，
 `--cpu` 是执行查询的逻辑 CPU，不是逐核 VF 目标编号；不修改 VF 或 override。
 固件拒绝的点数值为 `null`，仍继续查询后续点；传输失败/超时/取消则终止查询。
 `scan_completed` 仅表示全部请求得到完成状态；存在任一点错误时 `ok:false`、退出码 3。
-该 JSON 可保存作记录，目前没有 GUI 文件导入或写回功能。
+该 JSON 可保存作记录，目前没有 GUI 文件导入。单点设置使用下面独立的准备/提交入口。
 
 ## 已还原的设置入口
+
+`intel-vf-read --cpu N --domain core|cache --point P --for-edit` 查询选定点及编辑条件，
+与 GUI 的 **Prepare selected point** 相同。成功读取但不可编辑时仍返回配置及限制状态。
+`intel-vf-set --cpu N --domain core|cache --point P --value MILLIVOLTS --apply` 修改一个点的 offset。
+要求 B7、点 1..15、OC_LOCK 清除、该域 Adaptive 且全域目标/offset 为零；core 还要求 per-core override 关闭。
+不会自动复位其它电压设置或切换 override。可编码范围 -1000..999.0234375 mV，按 1/1024 V 就近取整。
+提交前完整比较准备上下文，提交后完整读回点与上下文；相同编码值不发设置命令，失败不重试。
+JSON 的 `edit_context` / `after` 提供配置，`write_attempted` / `verified` / `unchanged` 区分结果，
+`settings_firmware_status` 仅描述本次设置。倍率只读，配置读回不代表实际电压测量。
+详见[单点偏移设置](intel-vf-write-recovery.md)。
 
 `intel-turbo-set --cpu N --core-type p|e --group 0..7 --value RATIO --apply`：
 修改 Raptor Lake-S B7 的一个睿频分组倍率（整数 1..85），保留活动核心数量阈值与其它组。

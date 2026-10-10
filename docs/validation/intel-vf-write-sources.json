@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "sources": [
+    {
+      "repository": "psyq321/PowerMonkey",
+      "commit": "5ca34dc2e68226368a8fc9728340850a19a94043",
+      "path": "PowerMonkeyApp/VFTuning.c",
+      "git_blob": "700e03cff1c4c5d5ff9d2c1ea28bfa8dd8e43106",
+      "url": "https://github.com/psyq321/PowerMonkey/blob/5ca34dc2e68226368a8fc9728340850a19a94043/PowerMonkeyApp/VFTuning.c",
+      "sha256": "b93d661f3f4552d5737e53f26b23e9a743404243b1382438124089bd339f8079",
+      "bytes": 10225
+    },
+    {
+      "repository": "psyq321/PowerMonkey",
+      "commit": "5ca34dc2e68226368a8fc9728340850a19a94043",
+      "path": "PowerMonkeyApp/CpuData.c",
+      "git_blob": "7df8ef04f0b9cc2cb1eabccd407e099592e1d77c",
+      "url": "https://github.com/psyq321/PowerMonkey/blob/5ca34dc2e68226368a8fc9728340850a19a94043/PowerMonkeyApp/CpuData.c",
+      "sha256": "142a85c2a3995b54b2754b40632df2d72d02183b32e0f83893703cf1809f7a87",
+      "bytes": 10458
+    },
+    {
+      "repository": "psyq321/PowerMonkey",
+      "commit": "5ca34dc2e68226368a8fc9728340850a19a94043",
+      "path": "PowerMonkeyApp/OcMailbox.c",
+      "git_blob": "394737f580eb43c929e86eb00375e2b48b10b6c9",
+      "url": "https://github.com/psyq321/PowerMonkey/blob/5ca34dc2e68226368a8fc9728340850a19a94043/PowerMonkeyApp/OcMailbox.c",
+      "sha256": "df5c7694f0662531cb6809cb2a9b6e3702b5f6656c52345571ba4fbca06a0bff",
+      "bytes": 4591
+    },
+    {
+      "repository": "psyq321/PowerMonkey",
+      "commit": "5ca34dc2e68226368a8fc9728340850a19a94043",
+      "path": "PowerMonkeyApp/OcMailbox.h",
+      "git_blob": "e7ed080ed86a4e947365e25014dc7e5ee7081ff9",
+      "url": "https://github.com/psyq321/PowerMonkey/blob/5ca34dc2e68226368a8fc9728340850a19a94043/PowerMonkeyApp/OcMailbox.h",
+      "sha256": "d261cd633b6c8dfaf7f7b22c4d8b43a3ca4efc369919e7eaf3c1e9ea9dd4f7ab",
+      "bytes": 2378
+    },
+    {
+      "repository": "psyq321/PowerMonkey",
+      "commit": "5ca34dc2e68226368a8fc9728340850a19a94043",
+      "path": "PowerMonkeyApp/VFTuning.h",
+      "git_blob": "5cc32d41442b2d44b7a55afe551b04a67879bfae",
+      "url": "https://github.com/psyq321/PowerMonkey/blob/5ca34dc2e68226368a8fc9728340850a19a94043/PowerMonkeyApp/VFTuning.h",
+      "sha256": "2c2f9dee7d998b4a0c3ec65a6a44da11bc96a9878d8a621e3d3453e987815a22",
+      "bytes": 3350
+    },
+    {
+      "repository": "intel/FSP",
+      "commit": "d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8",
+      "path": "RaptorLakeFspBinPkg/Client/RaptorLakeS/Include/FspmUpd.h",
+      "url": "https://github.com/intel/FSP/blob/d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8/RaptorLakeFspBinPkg/Client/RaptorLakeS/Include/FspmUpd.h",
+      "sha256": "3ce5c6b4bb17b4c8d816552835f9b58279a37b699a951dab8d8e7fbc603ef57c",
+      "bytes": 137967
+    }
+  ],
+  "original_binary_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "original_evidence": [
+    "docs/validation/legacy-intel-vf-static.json",
+    "docs/validation/legacy-intel-vf-emulation.json"
+  ],
+  "findings": [
+    "VFTuning.c lines 146-162: query 0x10, 1-based point selector, ratio low byte and 11-bit offset at bit21.",
+    "VFTuning.c lines 305-339: point set 0x11 submits only the 11-bit offset shifted left by 21; other payload bits are zero.",
+    "The legacy domain programming in VFTuning.c lines 255-297 is separate from the point payload and is not copied into the new setter.",
+    "FSP core and ring arrays contain 15 entries; this is a candidate bound, not a supported-point count on every processor.",
+    "CpuData.c includes older client families through Alder Lake; it is not a Raptor Lake-S hardware validation certificate."
+  ],
+  "limits": [
+    "Profile scope remains the existing original-derived GenuineIntel family6/modelB7 client path.",
+    "Default-domain gating is a conservative implementation policy; no assertion is made that all other combinations are invalid in firmware.",
+    "No setting of command0x15, no global configuration reset, no per-physical-core or Xeon profile restoration.",
+    "Synthetic tests do not establish physical voltage, curve-wide effects or stability."
+  ]
+}

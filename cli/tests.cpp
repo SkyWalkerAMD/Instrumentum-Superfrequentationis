@@ -116,7 +116,23 @@ void invalidBeforeOpen() {
         {"intel-turbo-set", "--cpu", "0", "--core-type", "p", "--group", "0", "--value", "86", "--apply"},
         {"intel-turbo-set", "--cpu", "0", "--core-type", "p", "--group", "0", "--value", "1.5", "--apply"},
         {"intel-turbo-set", "--cpu", "0", "--core-type", "p", "--group", "0", "--value", "nan", "--apply"},
-        {"intel-turbo-set", "--cpu", "0", "--core-type", "p", "--group", "0", "--value", "60", "--num-cores", "1", "--apply"}
+        {"intel-turbo-set", "--cpu", "0", "--core-type", "p", "--group", "0", "--value", "60", "--num-cores", "1", "--apply"},
+        {"intel-vf-read", "--cpu", "0", "--domain", "core", "--for-edit"},
+        {"intel-vf-read", "--cpu", "0", "--domain", "core", "--point", "8", "--value", "-50"},
+        {"intel-vf-set", "--cpu", "0", "--domain", "core", "--point", "8", "--value", "-50"},
+        {"intel-vf-set", "--cpu", "0", "--domain", "core", "--value", "-50", "--apply"},
+        {"intel-vf-set", "--cpu", "0", "--domain", "core", "--point", "0", "--value", "-50", "--apply"},
+        {"intel-vf-set", "--cpu", "0", "--domain", "core", "--point", "16", "--value", "-50", "--apply"},
+        {"intel-vf-set", "--cpu", "0", "--domain", "core", "--point", "-1", "--value", "-50", "--apply"},
+        {"intel-vf-set", "--cpu", "0", "--point", "8", "--value", "-50", "--apply"},
+        {"intel-vf-set", "--cpu", "0", "--domain", "fabric", "--point", "8", "--value", "-50", "--apply"},
+        {"intel-vf-set", "--cpu", "0", "--domain", "core", "--point", "8", "--value", "nan", "--apply"},
+        {"intel-vf-set", "--cpu", "0", "--domain", "core", "--point", "8", "--value", "inf", "--apply"},
+        {"intel-vf-set", "--cpu", "0", "--domain", "core", "--point", "8", "--value", "1000", "--apply"},
+        {"intel-vf-set", "--cpu", "0", "--domain", "core", "--point", "8", "--value", "-1000.01", "--apply"},
+        {"intel-vf-set", "--cpu", "0", "--domain", "core", "--point", "8", "--value", "1,5", "--apply"},
+        {"intel-vf-set", "--cpu", "0", "--domain", "core", "--point", "8", "--point", "9", "--value", "-50", "--apply"},
+        {"intel-vf-set", "--cpu", "0", "--domain", "core", "--point", "8", "--value", "-50", "--for-edit", "--apply"}
     };
     unsigned opens = 0;
     const auto factory = [&]() { ++opens; return std::unique_ptr<HardwareBackend>(); };
@@ -349,6 +365,48 @@ void vfCommands() {
     command(intel, {"intel-vf-read", "--cpu", "130", "--domain", "core"}, 3);
     assert(intel.requests.empty() && !intel.mutationCount && !intel.wrongCpu);
 }
+void vfEditingCommands() {
+    for (const std::string domain : {"core", "cache"}) {
+        IntelVfEditFixture d;
+        command(d, {"intel-vf-read", "--cpu", "130", "--domain", domain, "--point", "8", "--for-edit"}, 0);
+        auto args = std::vector<std::string>{"intel-vf-set", "--cpu", "130", "--domain", domain, "--point", "8", "--value", "-50", "--apply"};
+        const auto changed = command(d, args, 0); assert(d.mutationCount == 1 && !d.wrongCpu);
+        assert(changed.find("\"verified\":true") != std::string::npos);
+        const auto same = command(d, args, 0); assert(d.mutationCount == 1);
+        assert(same.find("\"unchanged\":true") != std::string::npos);
+        args[8] = "0"; command(d, args, 0); assert(d.mutationCount == 2);
+    }
+    for (unsigned mode = 0; mode < 13; ++mode) {
+        IntelVfEditFixture d; unsigned selectedQueries = 0;
+        if (mode == 0) d.locked = true;
+        if (mode == 1) d.control |= 8;
+        if (mode == 2) d.settings[0] |= 1u << 8;
+        if (mode == 3) d.settings[0] |= 1u << 20;
+        if (mode == 4) d.settings[0] |= 1u << 21;
+        if (mode == 5) d.discardChange = true;
+        if (mode == 6) d.failAt = 0;
+        if (mode == 7) d.model = 0x8f;
+        if (mode == 8) { d.failCommand = 0x11; d.status = 0xfe; }
+        if (mode == 9) { d.failCommand = 0x14; d.status = 3; }
+        if (mode >= 10) d.afterRequest = [&] {
+            const auto &r = d.requests.back(); const auto command = (r.value >> 32) & 255;
+            if (mode == 10 && r.write && command == 0x10 && ((r.value >> 48) & 255) == 8 && ++selectedQueries == 1) d.vfSettings[0][8] ^= 1;
+            if (mode == 11 && r.write && command == 0x11) d.control ^= 1;
+            if (mode == 12 && r.write && command == 0x11) d.vfSettings[0][8] ^= 1;
+        };
+        const auto output = command(d, {"intel-vf-set", "--cpu", "130", "--domain", "core", "--point", "8", "--value", "-50", "--apply"}, 3);
+        const bool attempted = mode == 5 || mode == 8 || mode == 11 || mode == 12;
+        assert(output.find(attempted ? "\"write_attempted\":true" : "\"write_attempted\":false") != std::string::npos);
+        assert(output.find("\"verified\":false") != std::string::npos);
+    }
+    IntelVfEditFixture locked; locked.locked = true;
+    command(locked, {"intel-vf-read", "--cpu", "130", "--domain", "core", "--point", "8", "--for-edit"}, 0);
+    assert(!locked.mutationCount);
+    IntelVfEditFixture cache; cache.control |= 8;
+    command(cache, {"intel-vf-read", "--cpu", "130", "--domain", "cache", "--point", "8", "--for-edit"}, 0);
+    command(cache, {"intel-vf-set", "--cpu", "130", "--domain", "cache", "--point", "8", "--value", "-50", "--apply"}, 0);
+    assert(cache.control == 0x12345008 && cache.mutationCount == 1);
+}
 struct PciDevice : Registers {
     std::uint32_t index = 0, response = 1, message = 0;
     bool fail = false;
@@ -407,8 +465,8 @@ void inventory(const std::string &root) {
 int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--inventory-fixture") { inventory(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
-    invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands();
+    invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "11 CLI scenario groups passed (93 rejected commands, real core with simulated devices)\n";
+    if (!emit) std::cout << "12 CLI scenario groups passed (109 rejected commands, real core with simulated devices)\n";
 }

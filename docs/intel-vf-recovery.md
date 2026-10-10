@@ -1,5 +1,8 @@
 # Intel V/F 点查询恢复
 
+后续已加入两端同步的[单点偏移设置](intel-vf-write-recovery.md)。本文说明普通查询及最初的原版实验，
+不包含 `--for-edit` 的额外上下文查询；候选扫描仍保持原来的只查询行为。
+
 GUI 的 Intel Controls → V/F points 和 CLI 的 `intel-vf-read` 同时接入共同核心
 `readIntelVf`。仅接受 GenuineIntel family 6/model B7、具有 MSR 能力的 client 配置。
 支持 core/domain 0 与 cache/domain 2，单点 1..15 或全部候选点读取。
@@ -35,12 +38,13 @@ GUI 的 Intel Controls → V/F points 和 CLI 的 `intel-vf-read` 同时接入�
 单独的 `IntelVfSnapshot` 类型不能传入全域电压/倍率写入函数。
 事务锁目前仍只保护同一进程；GUI/CLI 不能协调同时运行的其它调参程序。
 
-## 尚未开放的写入
+## 原版写入研究与后续实现
 
 原 core VF setter **先读 0x14，再写 0x15 清除 data bit3**，然后访问选定点；
 原 cache setter没有这一步。两者都丢弃 data[20:0]，忽略包装器失败和固件错误，忙等待无软件期限。
 实验覆盖选择器截断、正负参数、错误返回和持续 busy，证实不能直接包装为可靠 setter。
-新查询不会调用这些旧写入函数。VF offset 设置、逐核 override/目标选择及 SPR/GNR/NVL 配置仍待恢复。
+新查询不会调用这些旧写入函数。后续交叉来源确认点设置低 21 位应为零，独立实现了
+[受条件限制的 VF offset 设置](intel-vf-write-recovery.md)；逐核 override/目标选择及 SPR/GNR/NVL 配置仍待恢复。
 
 ## 验证范围
 

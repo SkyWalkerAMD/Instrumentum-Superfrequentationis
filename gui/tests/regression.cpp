@@ -220,6 +220,104 @@ private slots:
         QCOMPARE(device->writes, 0u); QCOMPARE(panel.findChild<QTableWidget *>("turboTable")->rowCount(), 0);
         QVERIFY(panel.findChild<QLabel *>("turboStatus")->text().contains("No settings write"));
     }
+    void intelVfEditPreparationAndTargetChanges() {
+        auto *device = new IntelVfEditFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelVfPanel panel(access, nullptr, 130); panel.show();
+        auto *prepare = panel.findChild<QPushButton *>("vfPrepare");
+        auto *apply = panel.findChild<QPushButton *>("vfApply");
+        auto *table = panel.findChild<QTableWidget *>("vfTable");
+        auto *offset = panel.findChild<QLineEdit *>("vfOffset");
+        auto *context = panel.findChild<QLabel *>("vfContext");
+        prepare->click(); QCOMPARE(device->calls, 0u); QVERIFY(!apply->isEnabled());
+        panel.findChild<QComboBox *>("vfPoint")->setCurrentIndex(8);
+        prepare->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(), 1); QVERIFY(apply->isEnabled()); QCOMPARE(device->mutationCount, 0u);
+        panel.findChild<QPushButton *>("vfCopy")->click();
+        const auto copy = QApplication::clipboard()->text();
+        QVERIFY(copy.contains("CPU 130 - Core - point 8") && copy.contains("Control:"));
+        offset->setText("-50"); const unsigned calls = device->calls;
+        panel.findChild<QComboBox *>("vfDomain")->setCurrentIndex(1);
+        QVERIFY(offset->text().isEmpty() && context->text().isEmpty());
+        QCOMPARE(table->rowCount(), 0); QVERIFY(!apply->isEnabled()); QCOMPARE(device->calls, calls);
+        device->control |= 8; prepare->click(); QTRY_VERIFY(panel.isEnabled());
+        QVERIFY(apply->isEnabled()); QCOMPARE(table->item(0, 3)->text(), hexValue(device->vfSettings[2][8], 4));
+        const unsigned before = device->calls;
+        panel.findChild<QLineEdit *>("vfCpu")->setText("-1"); prepare->click();
+        QCOMPARE(device->calls, before); QCOMPARE(table->rowCount(), 0); QVERIFY(!apply->isEnabled());
+    }
+    void intelVfEditInvalidCancelApplyAndSameValue() {
+        auto *device = new IntelVfEditFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelVfPanel panel(access, nullptr, 130); panel.resize(1100, 720); panel.show();
+        panel.findChild<QComboBox *>("vfPoint")->setCurrentIndex(8);
+        panel.findChild<QPushButton *>("vfPrepare")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *apply = panel.findChild<QPushButton *>("vfApply");
+        auto *offset = panel.findChild<QLineEdit *>("vfOffset");
+        auto *status = panel.findChild<QLabel *>("vfStatus");
+        const auto previous = device->vfSettings[0][8]; const unsigned calls = device->calls;
+        for (const auto &value : {"nan", "1000", "-1000.01", "1,5"}) {
+            offset->setText(value); apply->click(); QCOMPARE(device->calls, calls);
+        }
+        offset->setText("-50");
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Cancel)->click(); });
+        apply->click(); QCOMPARE(device->calls, calls); QCOMPARE(device->mutationCount, 0u);
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->mutationCount, 1u);
+        QCOMPARE(device->vfSettings[0][8] & 0x1fffffu, previous & 0x1fffffu);
+        QCOMPARE(panel.findChild<QTableWidget *>("vfTable")->item(0, 2)->text(), QString("-49.8046875"));
+        QVERIFY(offset->text().isEmpty()); QVERIFY(status->text().contains("Full point readback verified"));
+        const QString capture = qEnvironmentVariable("OCTOOL_VF_EDIT_TEST_SCREENSHOT");
+        if (!capture.isEmpty()) QVERIFY(panel.grab().save(capture));
+        offset->setText("-50");
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->mutationCount, 1u);
+        QVERIFY(offset->text().isEmpty()); QVERIFY(status->text().contains("no settings write performed"));
+        QCOMPARE(device->wrongCpu, 0u);
+    }
+    void intelVfEditPermissionsAndFailedReadback() {
+        auto *device = new IntelVfEditFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelVfPanel panel(access, nullptr, 130); panel.show();
+        panel.findChild<QComboBox *>("vfPoint")->setCurrentIndex(8);
+        auto *prepare = panel.findChild<QPushButton *>("vfPrepare");
+        auto *apply = panel.findChild<QPushButton *>("vfApply");
+        auto *context = panel.findChild<QLabel *>("vfContext");
+        auto *table = panel.findChild<QTableWidget *>("vfTable");
+        auto *status = panel.findChild<QLabel *>("vfStatus");
+        for (unsigned mode = 0; mode < 3; ++mode) {
+            device->locked = mode == 0; device->control = mode == 1 ? 8 : 0;
+            device->settings[0] = mode == 2 ? 0x100032 : 50;
+            prepare->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(table->rowCount(), 1); QVERIFY(!apply->isEnabled());
+            QVERIFY(context->text().contains(mode == 0 ? "locked" : mode == 1 ? "Per-core override" : "not default"));
+        }
+        device->settings[0] = 50; prepare->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(apply->isEnabled());
+        device->discardChange = true; panel.findChild<QLineEdit *>("vfOffset")->setText("-50");
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->mutationCount, 1u);
+        QCOMPARE(table->rowCount(), 0); QVERIFY(!apply->isEnabled()); QVERIFY(context->text().isEmpty());
+        QVERIFY(panel.findChild<QLineEdit *>("vfOffset")->text().isEmpty()); QVERIFY(status->text().contains("not verified"));
+        device->failAt = int(device->calls); prepare->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(), 0); QVERIFY(!apply->isEnabled()); QVERIFY(status->text().contains("Preparation failed"));
+    }
+    void intelVfEditStaleContextAndQueriesClearPreparation() {
+        auto *device = new IntelVfEditFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelVfPanel panel(access, nullptr, 130); panel.show();
+        panel.findChild<QComboBox *>("vfPoint")->setCurrentIndex(8);
+        auto *prepare = panel.findChild<QPushButton *>("vfPrepare");
+        auto *apply = panel.findChild<QPushButton *>("vfApply");
+        prepare->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(apply->isEnabled());
+        device->control ^= 1; panel.findChild<QLineEdit *>("vfOffset")->setText("-50");
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->mutationCount, 0u); QVERIFY(!apply->isEnabled());
+        QVERIFY(panel.findChild<QLabel *>("vfStatus")->text().contains("No settings write was attempted"));
+        prepare->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(apply->isEnabled());
+        panel.findChild<QPushButton *>("vfRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(panel.findChild<QTableWidget *>("vfTable")->rowCount(), 1); QVERIFY(!apply->isEnabled());
+        QVERIFY(panel.findChild<QLabel *>("vfContext")->text().isEmpty()); QCOMPARE(device->mutationCount, 0u);
+    }
     void intelVfReadsBothDomainsAndInvalidates() {
         auto *device = new IntelOcFixture;
         auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));

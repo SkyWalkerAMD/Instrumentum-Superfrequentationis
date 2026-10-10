@@ -34,8 +34,44 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 180, len(reports)
-assert len([r for r in reports if r["error"] == -22]) >= 93
+assert len(reports) == 220, len(reports)
+assert len([r for r in reports if r["error"] == -22]) >= 109
+vf_edit = [r for r in reports if "edit_context" in r.get("data", {})]
+assert len(vf_edit) == 24
+for index, result in enumerate(vf_edit[:8]):
+    data = result["data"]
+    assert result["ok"] and not data["hardware_effect_measured"]
+    before = data["edit_context"]
+    assert before["valid"] and before["editable"] and before["domain_configuration_default"]
+    assert before["flex_ratio_raw"] == "0x8000000000000000"
+    if index % 4 == 0:
+        assert result["command"] == "intel-vf-read" and "after" not in data
+        continue
+    after = data["after"]
+    assert data["verified"] and data["unchanged"] == (index % 4 == 2)
+    assert data["write_attempted"] == (index % 4 != 2)
+    assert after["offset_mv"] == (0 if index % 4 == 3 else -49.8046875)
+    assert after["point_raw"] == data["expected_point_raw"]
+    assert (int(before["point_raw"], 16) & 0x1fffff) == (int(after["point_raw"], 16) & 0x1fffff)
+    assert all(before[k] == after[k] for k in ("control_raw", "domain_raw", "flex_ratio_raw", "ratio", "per_core_override"))
+    if data["write_attempted"]:
+        assert (int(data["submitted_raw"], 16) & 0x1fffff) == 0
+        assert data["settings_completed"] and data["settings_firmware_status"] == 0
+    else:
+        assert data["submitted_raw"] is None and not data["settings_completed"]
+assert [r["error"] for r in vf_edit[8:21]] == [-1, -1, -1, -1, -1, -5, -13, -95, -5, -5, -11, -11, -5]
+for mode, result in enumerate(vf_edit[8:21]):
+    data = result["data"]
+    assert not result["ok"] and not data["verified"]
+    assert data["write_attempted"] == (mode in (5, 8, 11, 12))
+    for snapshot in (data["edit_context"], data["after"]):
+        if not snapshot["valid"]:
+            assert not snapshot["editable"]
+            assert all(snapshot[k] is None for k in ("control_raw", "domain_raw", "point_raw", "flex_ratio_raw", "ratio", "offset_mv", "locked", "per_core_override", "domain_configuration_default"))
+assert vf_edit[16]["data"]["settings_firmware_status"] == 254
+assert vf_edit[21]["ok"] and vf_edit[21]["data"]["edit_context"]["locked"] and not vf_edit[21]["data"]["edit_context"]["editable"]
+assert all(r["data"]["edit_context"]["per_core_override"] and r["data"]["edit_context"]["editable"] for r in vf_edit[22:])
+assert vf_edit[23]["data"]["verified"] and vf_edit[23]["data"]["after"]["control_raw"] == "0x12345008"
 turbo = [r for r in reports if r["command"] in ("intel-turbo-read", "intel-turbo-set") and "before" in r["data"]]
 assert len(turbo) == 19
 for result in turbo:
@@ -122,7 +158,7 @@ for result in reports:
             assert snapshot["target_mode"] == ("override" if raw & (1 << 20) else "adaptive")
         else:
             assert snapshot["target_mv"] is None and snapshot["target_mode"] is None
-vf = [r for r in reports if r["command"] == "intel-vf-read" and r["error"] != -22]
+vf = [r for r in reports if r["command"] == "intel-vf-read" and "points" in r.get("data", {})]
 assert len(vf) == 6
 all_points = vf[0]["data"]
 assert all_points["scan_completed"] and all_points["selected_point"] is None
@@ -199,4 +235,4 @@ with tempfile.TemporaryDirectory(prefix="octool-cli-") as directory:
     path.write_bytes(spd)
     result = run("spd-decode", "--file", str(path), code=3)["data"]["spd"]
     assert result["crc_checked"] and not result["crc_valid"]
-print(f"CLI process checks passed: no display, sparse affinity, {len(reports)} JSON reports, exact 64-bit registers, RAPL/HWP readback and activity window, voltage preservation and VF partial errors, turbo groups and full readback, inventory limits, SPD CRC/errors")
+print(f"CLI process checks passed: no display, sparse affinity, {len(reports)} JSON reports, exact 64-bit registers, RAPL/HWP readback and activity window, voltage preservation and VF query/edit errors, turbo groups and full readback, inventory limits, SPD CRC/errors")

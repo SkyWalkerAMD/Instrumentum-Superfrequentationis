@@ -68,6 +68,34 @@ struct IntelVfSnapshot {
 // Only query 0x10 is sent: no VF setting, override, or mode change.
 IntelVfSnapshot readIntelVf(HardwareSession &session, unsigned cpu,
                           IntelOcDomain domain, unsigned point = 0);
+// Editing has a separate snapshot: ordinary VF reads remain queries of 0x10.
+// Preparation also reads the lock, global control (0x14) and domain-wide
+// configuration. This API never changes override mode (command 0x15).
+struct IntelVfEditSnapshot {
+    int error = 0;
+    unsigned cpu = 0, point = 0;
+    IntelOcDomain domain = IntelOcDomain::Core;
+    CpuIdentity identity;
+    bool valid = false;
+    std::uint64_t flexRatio = 0;
+    IntelOcResponse control, legacy, value;
+};
+struct IntelVfUpdate {
+    int error = 0;
+    IntelOcStage stage = IntelOcStage::Validate;
+    bool writeAttempted = false, verified = false, unchanged = false;
+    // VF setting payload bits 20:0 are zero; the expected READ value retains
+    // those bits (including the read-only ratio) from the point snapshot.
+    std::uint32_t submitted = 0, expected = 0;
+    IntelOcResponse response;
+    IntelVfEditSnapshot readback;
+};
+bool intelVfDomainDefault(const IntelVfEditSnapshot &snapshot);
+bool intelVfEditable(const IntelVfEditSnapshot &snapshot);
+IntelVfEditSnapshot readIntelVfEdit(HardwareSession &session, unsigned cpu,
+                                  IntelOcDomain domain, unsigned point);
+IntelVfUpdate applyIntelVfOffset(HardwareSession &session,
+                               const IntelVfEditSnapshot &snapshot, double millivolts);
 IntelOcUpdate applyIntelOcOffset(HardwareSession &session, const IntelOcSnapshot &snapshot,
                                 double millivolts);
 IntelOcUpdate applyIntelOcRatio(HardwareSession &session, const IntelOcSnapshot &snapshot,

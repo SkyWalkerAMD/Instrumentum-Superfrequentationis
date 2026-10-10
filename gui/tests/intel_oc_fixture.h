@@ -14,6 +14,8 @@ struct IntelOcFixture : octool::core::HardwareBackend {
     bool busyBefore = false;
     unsigned busyCommand = 0;
     unsigned failVfPoint = 0, vfStatus = 0xfe;
+    std::uint32_t control = 0;
+    std::uint64_t flexExtra = 0;
     std::uint32_t settings[3] = {0xf3512345, 0, 0x012abcde};
     std::uint32_t vfSettings[3][16]{};
     std::uint64_t mailbox = 0;
@@ -35,7 +37,7 @@ struct IntelOcFixture : octool::core::HardwareBackend {
         requests.push_back(r); Reply out;
         if (failing(r.cpu)) { out.error = -EACCES; out.value = UINT64_MAX; return out; }
         if (r.space != Space::Msr || r.width != 8) { out.error = -EINVAL; return out; }
-        if (r.address == 0x194 && !r.write) out.value = locked ? UINT64_C(1) << 20 : 0;
+        if (r.address == 0x194 && !r.write) out.value = flexExtra | (locked ? UINT64_C(1) << 20 : 0);
         else if (r.address == 0x150 && !r.write) {
             out.value = mailbox;
             if ((busyBefore && commands.empty()) ||
@@ -44,17 +46,22 @@ struct IntelOcFixture : octool::core::HardwareBackend {
             const unsigned command = unsigned((r.value >> 32) & 255), domain = unsigned((r.value >> 40) & 255);
             const unsigned point = unsigned((r.value >> 48) & 255);
             commands.push_back(command);
-            if ((domain != 0 && domain != 2) || (command != 0x10 && command != 0x11) || !(r.value >> 63) ||
-                point > 15 || (point && (command != 0x10 || std::uint32_t(r.value)))) {
+            if ((domain != 0 && domain != 2) || (command != 0x10 && command != 0x11 && command != 0x14) || !(r.value >> 63) ||
+                point > 15 || (command == 0x14 && (domain || point || std::uint32_t(r.value))) ||
+                (point && ((command == 0x10 && std::uint32_t(r.value)) ||
+                    (command == 0x11 && (std::uint32_t(r.value) & 0x1fffff))))) {
                 out.error = -EINVAL; return out;
             }
             const unsigned response = command == failCommand ? status : point && point == failVfPoint ? vfStatus : 0;
             if (command == 0x11 && !response) {
                 ++mutationCount;
-                if (!discardChange) settings[domain] = std::uint32_t(r.value);
+                if (!discardChange) {
+                    if (point) vfSettings[domain][point] = (vfSettings[domain][point] & 0x1fffff) | std::uint32_t(r.value);
+                    else settings[domain] = std::uint32_t(r.value);
+                }
             }
             mailbox = (std::uint64_t(domain) << 40) | (std::uint64_t(response) << 32) |
-                (point ? vfSettings[domain][point] : settings[domain]);
+                (command == 0x14 ? control : point ? vfSettings[domain][point] : settings[domain]);
         } else out.error = -EINVAL;
         if (afterRequest) afterRequest();
         return out;
@@ -73,4 +80,12 @@ struct IntelOcFixture : octool::core::HardwareBackend {
     }
     octool::core::Backend backend(octool::core::Space) const override { return octool::core::Backend::Module; }
     void clearTrace() { calls = 0; failAt = -1; requests.clear(); commands.clear(); }
+};
+
+struct IntelVfEditFixture : IntelOcFixture {
+    IntelVfEditFixture() {
+        settings[0] = 50; settings[2] = 45;
+        control = 0x12345000; // Unrelated control bits must survive unchanged.
+        flexExtra = UINT64_C(1) << 63;
+    }
 };
