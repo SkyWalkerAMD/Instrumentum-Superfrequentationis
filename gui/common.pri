@@ -31,6 +31,8 @@ linux {
     SOURCES += $$PWD/platform/linux_cpu.cpp
     SOURCES += $$PWD/platform/linux_inventory.cpp
     HEADERS += $$PWD/platform/linux_inventory.h
+    SOURCES += $$PWD/platform/linux_inventory_native.cpp
+    HEADERS += $$PWD/platform/linux_inventory_native.h
     HEADERS += $$PWD/platform/system_info.h $$PWD/platform/linux_cpu.h
     HEADERS += $$PWD/platform/linux_hwio.h $$PWD/../port/hal/octool_hwio.h
 } else {

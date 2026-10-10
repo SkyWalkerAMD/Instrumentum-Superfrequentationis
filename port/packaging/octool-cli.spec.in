@@ -1,0 +1,27 @@
+%global debug_package %{nil}
+Name:           octool-cli
+Version:        @VERSION@
+Release:        1%{?dist}
+Summary:        OCTool command-line hardware interface without a desktop
+License:        GPL-2.0-only
+Source0:        octool-cli-%{version}.tar.gz
+ExclusiveArch:  x86_64
+Suggests:       octool-hwio-dkms
+
+%description
+Uses the shared OCTool core and Linux backend, without Qt, X11, Wayland,
+polkit or a background daemon. Each package uses its target system C/C++ runtime.
+
+%prep
+%setup -q
+
+%build
+
+%install
+mkdir -p %{buildroot}
+cp -a usr %{buildroot}/
+
+%files
+/usr/bin/octool-cli
+%doc /usr/share/doc/octool-cli
+%license /usr/share/licenses/octool-cli

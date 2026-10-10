@@ -1,0 +1,69 @@
+name: headless CLI
+on:
+  push:
+    paths: ['cli/**', 'gui/core/**', 'gui/platform/**', 'port/hal/**', 'port/tools/build_cli.py', 'port/packaging/octool-cli.spec.in', 'port/ci/cli-*', 'docs/headless-cli.md', '.github/workflows/headless-cli.yml']
+  pull_request:
+    paths: ['cli/**', 'gui/core/**', 'gui/platform/**', 'port/hal/**', 'port/tools/build_cli.py', 'port/packaging/octool-cli.spec.in', 'port/ci/cli-*', 'docs/headless-cli.md', '.github/workflows/headless-cli.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: headless-cli-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  matrix:
+    runs-on: ubuntu-24.04
+    outputs:
+      targets: ${{ steps.targets.outputs.targets }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: targets
+        run: |
+          python3 - <<'PY'
+          import json, os
+          targets = json.load(open('port/ci/targets.json'))
+          assert len(targets) == 10 and len({t['id'] for t in targets}) == 10
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write('targets=' + json.dumps({'include': targets}) + '\n')
+          PY
+  cli:
+    name: cli (${{ matrix.id }})
+    needs: matrix
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.matrix.outputs.targets) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile and test without Qt
+        run: |
+          mkdir -p build/cli-artifacts
+          docker pull '${{ matrix.image }}'
+          docker image inspect '${{ matrix.image }}' > build/cli-artifacts/image.json
+          docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -v "$PWD:/src" -v "$PWD/build/cli-artifacts:/out" \
+            -w /src '${{ matrix.image }}' bash port/ci/cli-in-container.sh build '${{ matrix.id }}'
+      - name: Install, use, remove and reinstall in a fresh headless image
+        run: |
+          docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -v "$PWD:/src:ro" -v "$PWD/build/cli-artifacts:/out" \
+            -w /src '${{ matrix.image }}' bash port/ci/cli-in-container.sh runtime '${{ matrix.id }}'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cli-${{ matrix.id }}
+          path: build/cli-artifacts/
+          if-no-files-found: error
+          retention-days: 7
+  gate:
+    if: always()
+    needs: [matrix, cli]
+    runs-on: ubuntu-24.04
+    steps:
+      - env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          failed = {k:v['result'] for k,v in json.loads(os.environ['RESULTS']).items() if v['result'] != 'success'}
+          assert not failed, failed
+          PY
