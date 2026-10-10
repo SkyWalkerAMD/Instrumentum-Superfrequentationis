@@ -38,7 +38,7 @@ void require(bool condition, const std::string &message) {
 std::string get(const Options &o, const std::string &key) {
     auto i = o.find(key); require(i != o.end(), "Required option: " + key); return i->second;
 }
-std::uint32_t integer(const std::string &text, std::uint32_t maximum, const std::string &key) {
+std::uint64_t wideInteger(const std::string &text, std::uint64_t maximum, const std::string &key) {
     const bool hexadecimal = text.size() > 2 && text[0] == '0' && (text[1] == 'x' || text[1] == 'X');
     std::uint64_t value = 0; const unsigned base = hexadecimal ? 16 : 10;
     require(!text.empty(), "Empty number: " + key);
@@ -46,12 +46,12 @@ std::uint32_t integer(const std::string &text, std::uint32_t maximum, const std:
         const char c = text[i];
         const unsigned digit = c >= '0' && c <= '9' ? unsigned(c - '0') : c >= 'a' && c <= 'f' ? unsigned(c - 'a' + 10) : c >= 'A' && c <= 'F' ? unsigned(c - 'A' + 10) : 255;
         require(digit < base, "Invalid unsigned number: " + key);
+        require(digit <= maximum && value <= (maximum - digit) / base, "Number out of range: " + key);
         value = value * base + digit;
-        require(value <= maximum, "Number out of range: " + key);
     }
-    return std::uint32_t(value);
+    return value;
 }
-unsigned uintOption(const Options &o, const std::string &key, unsigned max) { return integer(get(o, key), max, key); }
+unsigned uintOption(const Options &o, const std::string &key, unsigned max) { return unsigned(wideInteger(get(o, key), max, key)); }
 unsigned optional(const Options &o, const std::string &key, unsigned max, unsigned fallback = 0) {
     return o.count(key) ? uintOption(o, key, max) : fallback;
 }
@@ -65,24 +65,31 @@ const std::map<std::string, IntelField> intelFields = {
     {"pl1", IntelField::Pl1}, {"pl2", IntelField::Pl2}, {"pl1-enable", IntelField::Pl1Enable},
     {"pl2-enable", IntelField::Pl2Enable}, {"pl1-clamp", IntelField::Pl1Clamp}, {"pl2-clamp", IntelField::Pl2Clamp},
     {"pl1-window", IntelField::Pl1Window}, {"pl2-window", IntelField::Pl2Window},
-    {"hwp-min", IntelField::HwpMin}, {"hwp-max", IntelField::HwpMax}, {"hwp-desired", IntelField::HwpDesired}, {"hwp-epp", IntelField::HwpEpp}
+    {"hwp-min", IntelField::HwpMin}, {"hwp-max", IntelField::HwpMax}, {"hwp-desired", IntelField::HwpDesired}, {"hwp-epp", IntelField::HwpEpp},
+    {"hwp-window-us", IntelField::HwpActivityWindow}
 };
 struct Command {
     std::string name, path, field;
     unsigned cpu = 0, timeout = 10000, ccd = 0, core = 0, point = 0;
     double value = 0;
     SmuTarget smu; SmuCommand message; UmcTarget umc;
+    Request reg;
     IntelOcDomain domain = IntelOcDomain::Core;
     IntelOcVoltageMode mode = IntelOcVoltageMode::Adaptive;
 };
 Command parse(const std::vector<std::string> &args) {
     Command c; c.name = args.at(0);
     const std::set<std::string> hardware = {"cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read",
-        "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read"};
+        "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
     require(hardware.count(c.name) || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode", "Unknown command: " + c.name);
     std::set<std::string> keys = {"--json"};
     if (hardware.count(c.name)) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
-    const bool writing = c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "amd-smu-send";
+    const bool rawRegister = c.name == "register-read" || c.name == "register-write";
+    const bool writing = c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "amd-smu-send" || c.name == "register-write";
+    if (rawRegister) {
+        for (const char *key : {"--space", "--address", "--width", "--bus", "--device", "--function"}) keys.insert(key);
+        if (writing) keys.insert("--value");
+    }
     if (writing) keys.insert("--apply");
     if (c.name == "intel-set" || c.name == "intel-oc-set") { keys.insert("--field"); keys.insert("--value"); }
     if (c.name == "intel-oc-read" || c.name == "intel-oc-set" || c.name == "intel-vf-read") keys.insert("--domain");
@@ -105,8 +112,26 @@ Command parse(const std::vector<std::string> &args) {
         if (!flag) require(i + 1 < args.size() && args[i + 1].compare(0, 2, "--") != 0, "Missing value: " + key);
         options[key] = flag ? "true" : args[++i];
     }
+    if (rawRegister) {
+        const auto space = get(options, "--space");
+        require(space == "msr" || space == "mmio" || space == "pci", "--space must be msr, mmio or pci");
+        c.reg.space = space == "msr" ? Space::Msr : space == "pci" ? Space::Pci : Space::Memory;
+        c.reg.write = writing;
+        c.reg.width = c.reg.space == Space::Msr ? int(optional(options, "--width", 8, 8)) : int(uintOption(options, "--width", 8));
+        c.reg.address = wideInteger(get(options, "--address"), c.reg.space == Space::Msr ? UINT32_MAX : c.reg.space == Space::Pci ? 255 : UINT64_MAX, "--address");
+        if (writing) c.reg.value = wideInteger(get(options, "--value"), UINT64_MAX, "--value");
+        if (c.reg.space == Space::Pci) {
+            c.reg.bus = uintOption(options, "--bus", 255); c.reg.device = uintOption(options, "--device", 31);
+            c.reg.function = uintOption(options, "--function", 7);
+        } else {
+            require(!options.count("--bus") && !options.count("--device") && !options.count("--function"), "PCI target options require --space pci");
+        }
+        require(validateRequest(c.reg) == ValidationError::None, "Invalid register width, alignment, address range or value width");
+    }
     if (hardware.count(c.name)) {
-        c.cpu = uintOption(options, "--cpu", 1048575);
+        if (!rawRegister || c.reg.space == Space::Msr) c.cpu = uintOption(options, "--cpu", 1048575);
+        else require(!options.count("--cpu"), "--cpu is only used with MSR registers; select an address or PCI target instead");
+        c.reg.cpu = c.cpu;
         c.timeout = optional(options, "--timeout-ms", 120000, 10000);
         require(c.timeout > 0, "--timeout-ms must be 1..120000");
     }
@@ -120,6 +145,7 @@ Command parse(const std::vector<std::string> &args) {
             if (f == IntelField::Pl1 || f == IntelField::Pl2) require(c.value > 0 && c.value <= 32767, "Power must be >0 and <=32767 W; hardware units impose further limits");
             else if (f == IntelField::Pl1Window || f == IntelField::Pl2Window) require(c.value > 0 && c.value <= raplWindowSeconds(127, 0), "Averaging window is out of range");
             else if (f <= IntelField::Pl2Clamp) require(c.value == 0 || c.value == 1, "Enable/clamp must be 0 or 1");
+            else if (f == IntelField::HwpActivityWindow) require(c.value >= 0 && c.value <= 1270000000 && std::floor(c.value) == c.value, "HWP window must be an integer 0..1270000000 us (0 = automatic)");
             else require(c.value >= 0 && c.value <= 255 && std::floor(c.value) == c.value, "HWP value must be an integer 0..255");
         } else {
             require(c.field == "offset-mv" || c.field == "max-ratio" || c.field == "target-mv", "OC field must be offset-mv, max-ratio or target-mv");
@@ -205,8 +231,28 @@ public:
 private: HardwareSession &s_;
 };
 Result hardware(const Command &c, HardwareSession &s) {
-    Result out; out.data.push_back({"cpu", number(c.cpu)});
-    if (c.name == "cpu") {
+    Result out;
+    const bool rawRegister = c.name == "register-read" || c.name == "register-write";
+    if (!rawRegister || c.reg.space == Space::Msr) out.data.push_back({"cpu", number(c.cpu)});
+    if (rawRegister) {
+        const auto &r = c.reg;
+        out.data.push_back({"space", quote(r.space == Space::Msr ? "msr" : r.space == Space::Pci ? "pci" : "mmio")});
+        out.data.push_back({"address", hex(r.address, r.space == Space::Memory ? 16 : 8)});
+        out.data.push_back({"width", number(r.width)});
+        if (r.space == Space::Pci) out.data.push_back({"pci", pci(r.bus, r.device, r.function)});
+        const int ready = s.checkpoint();
+        Reply reply;
+        if (ready) reply.error = ready;
+        else reply = s.execute(r);
+        out.error = reply.error;
+        out.data.push_back({"value", !r.write && !out.error ? hex(reply.value, unsigned(r.width) * 2) : "null"});
+        out.data.push_back({"write_attempted", boolean(r.write && !ready)});
+        out.data.push_back({"completed_writes", number(r.write && !out.error ? 1 : 0)});
+        out.data.push_back({"submitted", r.write && !out.error ? hex(r.value, unsigned(r.width) * 2) : "null"});
+        // Arbitrary registers can be write-only, volatile, W1C or commands.
+        // An automatic read, comparison or replay would change their semantics.
+        out.data.push_back({"verified", "false"});
+    } else if (c.name == "cpu") {
         const auto id = identifyCpu(s, c.cpu); out.error = id.error; out.data.push_back({"identity", identity(id)});
     } else if (c.name == "amd-pstates") {
         Pstates reader(s); const auto p = readAmdPstates(reader, c.cpu);
@@ -231,14 +277,18 @@ Result hardware(const Command &c, HardwareSession &s) {
         const auto snapshot = readIntelControls(s, c.cpu); out.error = snapshot.error;
         out.data.push_back({"identity", identity(snapshot.identity)});
         if (c.name == "intel-set") {
-            UpdateResult result;
+            IntelControlUpdate result;
             if (!out.error) { result = applyIntelControl(s, snapshot, intelFields.at(c.field), c.value); out.error = result.error; }
             out.data.push_back({"field", quote(c.field)}); out.data.push_back({"requested", number(c.value)});
             out.data.push_back({"write_attempted", boolean(result.writeAttempted)});
             out.data.push_back({"completed_writes", number(result.completed)});
-            // The shared RAPL/HWP API checks old values and locks but does not
-            // promise firmware readback. Keep submitted and verified distinct.
-            out.data.push_back({"verified", "false"});
+            out.data.push_back({"verified", boolean(result.verified && !out.error)});
+            out.data.push_back({"unchanged", boolean(result.unchanged)});
+            out.data.push_back({"msr", result.msr ? hex(result.msr) : "null"});
+            out.data.push_back({"readback_value", result.verified && !out.error ? number(result.readbackValue) : "null"});
+            out.data.push_back({"expected_raw", result.msr ? hex(result.expected, 16) : "null"});
+            const auto &observed = result.msr == 0x610 ? result.after.powerLimit : result.after.hwpRequest;
+            out.data.push_back({"readback_raw", result.readbackValid ? hex(observed.value, 16) : "null"});
             std::vector<std::string> submitted;
             for (auto v : result.submitted) submitted.push_back(hex(v, 16));
             out.data.push_back({"submitted", array(submitted)});
@@ -382,6 +432,10 @@ Usage: octool-cli COMMAND [OPTIONS]
   inventory                        BIOS, hwmon and bound-driver DDR4/DDR5 SPD
   spd-decode --file PATH            Decode a bounded offline SPD file
   cpu --cpu N                      CPU identity
+  register-read --space msr --cpu N --address A
+  register-read --space mmio --address A --width 1|2|4|8
+  register-read --space pci --address A --width 1|2|4 --bus B --device D --function F
+  register-write [same target options] --value V --apply
   amd-pstates --cpu N               Family 1Ah P0..P7 (read only)
   intel-read --cpu N                RAPL, HWP and supported temperature readings
   intel-set --cpu N --field F --value V --apply
@@ -399,8 +453,15 @@ Usage: octool-cli COMMAND [OPTIONS]
 PCI: --bus N --device N --function N (domain 0; defaults 0:0.0).
 Intel fields: pl1/pl2 (W), pl1-window/pl2-window (s), pl1-enable/pl2-enable,
   pl1-clamp/pl2-clamp (0 or 1), hwp-min/hwp-max/hwp-desired/hwp-epp (0..255).
-Hardware commands require explicit --cpu and accept --timeout-ms 1..120000.
-Unsigned indices accept decimal or 0x-prefixed hex; --value uses decimal.
+  hwp-window-us (0 = automatic; integer 1..1270000000 us, rounds down) requires
+  CPUID activity-window support and HWP desired = 0. RAPL/HWP changes check full
+  register readback; these are configured hints, not measured performance.
+CPU commands require explicit --cpu; raw MMIO/PCI commands select their own target.
+All hardware commands accept --timeout-ms 1..120000. PCI raw access is domain 0,
+first 256 bytes only; all three BDF components and the access width are required.
+Unsigned indices and raw register values accept decimal or 0x-prefixed hex.
+Tuning --value uses decimal. Raw writes submit exactly once, without a readback;
+they have no model/lock/bit-preservation checks and are intended for known registers.
 Voltage target requires integer 1..2000 mV and an explicit mode; this is not a safe operating range.
 Results are JSON (optional --json); raw registers are exact hexadecimal strings.
 Exit: 0 success, 2 invalid command/options, 3 failed operation or partial read.

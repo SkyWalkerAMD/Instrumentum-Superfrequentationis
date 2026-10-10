@@ -4,6 +4,7 @@
 #include "platform/linux_inventory_native.h"
 #include "tests/amd_curve_fixture.h"
 #include "tests/intel_oc_fixture.h"
+#include "tests/intel_controls_fixture.h"
 #include <cassert>
 #include <cerrno>
 #include <iostream>
@@ -70,7 +71,37 @@ void invalidBeforeOpen() {
         {"amd-curve-read", "--cpu", "0", "--ccd", "0", "--core", "8"},
         {"amd-umc-read", "--cpu", "0", "--bank", "23", "--refresh-slot", "0"},
         {"amd-umc-read", "--cpu", "0", "--bank", "0"},
-        {"spd-decode", "--file", ""}, {"inventory", "--apply"}
+        {"spd-decode", "--file", ""}, {"inventory", "--apply"},
+        {"register-read", "--space", "bad", "--address", "0"},
+        {"register-read", "--space", "msr", "--address", "0x606"},
+        {"register-read", "--space", "msr", "--cpu", "0", "--address", "0x606", "--width", "4"},
+        {"register-read", "--space", "msr", "--cpu", "0", "--address", "4294967296"},
+        {"register-read", "--space", "msr", "--cpu", "0", "--address", "1", "--value", "0"},
+        {"register-read", "--space", "msr", "--cpu", "0", "--address", "1", "--apply"},
+        {"register-write", "--space", "msr", "--cpu", "0", "--address", "1", "--value", "0"},
+        {"register-write", "--space", "msr", "--cpu", "0", "--address", "1", "--apply"},
+        {"register-write", "--space", "msr", "--cpu", "0", "--address", "1", "--value", "18446744073709551616", "--apply"},
+        {"register-write", "--space", "msr", "--cpu", "0", "--address", "1", "--value", "0x10000000000000000", "--apply"},
+        {"register-write", "--space", "msr", "--cpu", "0", "--address", "1", "--value", "-1", "--apply"},
+        {"register-write", "--space", "msr", "--cpu", "0", "--address", "1", "--value", "0x", "--apply"},
+        {"register-write", "--space", "msr", "--cpu", "0", "--address", "1", "--value", "", "--apply"},
+        {"register-write", "--space", "msr", "--cpu", "0", "--address", "1", "--value", "1.0", "--apply"},
+        {"register-read", "--space", "mmio", "--address", "0x1001", "--width", "4"},
+        {"register-read", "--space", "mmio", "--address", "0x10000000000000000", "--width", "1"},
+        {"register-read", "--space", "mmio", "--address", "0x1000", "--width", "0"},
+        {"register-read", "--space", "mmio", "--address", "0x1000", "--width", "3"},
+        {"register-write", "--space", "mmio", "--address", "0x1000", "--width", "1", "--value", "256", "--apply"},
+        {"register-read", "--space", "pci", "--bus", "0", "--device", "0", "--function", "0", "--address", "0", "--width", "8"},
+        {"register-read", "--space", "pci", "--bus", "0", "--device", "0", "--function", "0", "--address", "253", "--width", "4"},
+        {"register-read", "--space", "pci", "--bus", "256", "--device", "0", "--function", "0", "--address", "0", "--width", "4"},
+        {"register-read", "--space", "pci", "--bus", "0", "--device", "32", "--function", "0", "--address", "0", "--width", "4"},
+        {"register-read", "--space", "pci", "--bus", "0", "--device", "0", "--function", "8", "--address", "0", "--width", "4"},
+        {"register-read", "--space", "pci", "--bus", "0", "--device", "0", "--address", "0", "--width", "4"},
+        {"register-read", "--space", "mmio", "--cpu", "0", "--address", "0x1000", "--width", "4"},
+        {"register-read", "--space", "msr", "--cpu", "0", "--bus", "0", "--address", "1"},
+        {"intel-set", "--cpu", "0", "--field", "hwp-window-us", "--value", "-1", "--apply"},
+        {"intel-set", "--cpu", "0", "--field", "hwp-window-us", "--value", "1270000001", "--apply"},
+        {"intel-set", "--cpu", "0", "--field", "hwp-window-us", "--value", "0.5", "--apply"}
     };
     unsigned opens = 0;
     const auto factory = [&]() { ++opens; return std::unique_ptr<HardwareBackend>(); };
@@ -152,6 +183,73 @@ void ocAndCurveCommands() {
     amd.completion = 0xfe;
     command(amd, {"amd-curve-read", "--cpu", "130", "--ccd", "0", "--core", "0"}, 3);
     assert(amd.commands == 2 && amd.argumentReads == 1);
+}
+void verifiedControls() {
+    IntelControlsFixture device; device.expectedCpu = 130;
+    const std::vector<std::string> power = {"intel-set", "--cpu", "130", "--field", "pl1", "--value", "100.12", "--apply"};
+    auto result = command(device, power, 0);
+    assert(result.find("\"verified\":true") != std::string::npos && result.find("\"readback_value\":100") != std::string::npos);
+    result = command(device, power, 0);
+    assert(result.find("\"unchanged\":true") != std::string::npos && device.writes == 1);
+    result = command(device, {"intel-set", "--cpu", "130", "--field", "hwp-epp", "--value", "192", "--apply"}, 0);
+    assert(result.find("\"verified\":true") != std::string::npos && device.writes == 2);
+    device.discardChange = true;
+    result = command(device, {"intel-set", "--cpu", "130", "--field", "hwp-epp", "--value", "64", "--apply"}, 3);
+    assert(result.find("\"verified\":false") != std::string::npos && result.find("\"readback_value\":null") != std::string::npos);
+    assert(device.writes == 3 && !device.wrongCpu);
+}
+void rawRegisters() {
+    struct Raw : HardwareBackend {
+        std::vector<Request> requests;
+        int error = 0;
+        Reply execute(const Request &r) override {
+            requests.push_back(r); Reply out; out.error = error;
+            out.value = r.width == 8 ? UINT64_C(0xfedcba9876543210) : (UINT64_C(1) << (8 * r.width)) - 1;
+            return out;
+        }
+        CpuIdReply cpuid(unsigned, std::uint32_t, std::uint32_t) override { assert(false); return {}; }
+        Backend backend(Space) const override { return Backend::Module; }
+    } device;
+    auto result = command(device, {"register-read", "--space", "msr", "--cpu", "130", "--address", "0xffffffff"}, 0);
+    assert(device.requests.size() == 1 && device.requests.back().cpu == 130 && device.requests.back().address == UINT32_MAX);
+    assert(result.find("\"value\":\"0xfedcba9876543210\"") != std::string::npos);
+    for (const auto &value : {"18446744073709551615", "0xffffffffffffffff"}) {
+        result = command(device, {"register-write", "--space", "msr", "--cpu", "130", "--address", "1", "--value", value, "--apply"}, 0);
+        assert(device.requests.back().write && device.requests.back().value == UINT64_MAX);
+        assert(result.find("\"submitted\":\"0xffffffffffffffff\"") != std::string::npos);
+    }
+    for (unsigned width : {1,2,4,8}) {
+        const auto count = device.requests.size();
+        const auto w = std::to_string(width);
+        const auto address = std::to_string(UINT64_MAX - width + 1);
+        command(device, {"register-read", "--space", "mmio", "--address", address, "--width", w}, 0);
+        command(device, {"register-write", "--space", "mmio", "--address", address, "--width", w, "--value", "0", "--apply"}, 0);
+        assert(device.requests.size() == count + 2 && device.requests.back().address == UINT64_MAX - width + 1);
+        assert(device.requests.back().space == Space::Memory && device.requests.back().width == int(width));
+    }
+    for (unsigned width : {1,2,4}) {
+        const auto w = std::to_string(width), address = std::to_string(256 - width);
+        command(device, {"register-read", "--space", "pci", "--bus", "255", "--device", "31", "--function", "7", "--address", address, "--width", w}, 0);
+        command(device, {"register-write", "--space", "pci", "--bus", "255", "--device", "31", "--function", "7", "--address", address, "--width", w, "--value", "0", "--apply"}, 0);
+        const auto &r = device.requests.back();
+        assert(r.space == Space::Pci && r.bus == 255 && r.device == 31 && r.function == 7 && r.address == 256 - width);
+    }
+    const auto count = device.requests.size(); device.error = -EACCES;
+    result = command(device, {"register-read", "--space", "msr", "--cpu", "130", "--address", "0x606"}, 3);
+    assert(result.find("\"value\":null") != std::string::npos);
+    result = command(device, {"register-write", "--space", "msr", "--cpu", "130", "--address", "1", "--value", "0", "--apply"}, 3);
+    assert(result.find("\"write_attempted\":true") != std::string::npos && result.find("\"submitted\":null") != std::string::npos);
+    assert(device.requests.size() == count + 2); // No pre-read, retry or readback.
+}
+void activityWindowCommands() {
+    IntelControlsFixture device; device.expectedCpu = 130;
+    auto result = command(device, {"intel-set", "--cpu", "130", "--field", "hwp-window-us", "--value", "15333", "--apply"}, 0);
+    assert(result.find("\"readback_value\":15000") != std::string::npos && device.writes == 1);
+    result = command(device, {"intel-set", "--cpu", "130", "--field", "hwp-window-us", "--value", "0", "--apply"}, 0);
+    assert(result.find("\"readback_value\":0") != std::string::npos && device.writes == 2);
+    device.activityWindow = false;
+    command(device, {"intel-set", "--cpu", "130", "--field", "hwp-window-us", "--value", "100", "--apply"}, 3);
+    assert(device.writes == 2 && !device.wrongCpu);
 }
 void voltageCommands() {
     for (const std::string domain : {"core", "cache"}) {
@@ -254,8 +352,8 @@ void inventory(const std::string &root) {
 int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--inventory-fixture") { inventory(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
-    invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands();
+    invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "7 CLI scenario groups passed (49 rejected commands, real core with simulated devices)\n";
+    if (!emit) std::cout << "10 CLI scenario groups passed (79 rejected commands, real core with simulated devices)\n";
 }

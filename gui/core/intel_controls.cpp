@@ -34,6 +34,23 @@ int encodeRaplWindow(double seconds, unsigned exponent, unsigned &code) {
     }
     return 0;
 }
+std::uint32_t hwpActivityWindowMicroseconds(unsigned code) {
+    if (code > 1023) return 0;
+    std::uint32_t value = code & 127;
+    for (unsigned i = 0; i < (code >> 7); ++i) value *= 10;
+    return value;
+}
+int encodeHwpActivityWindow(std::uint32_t microseconds, unsigned &code) {
+    if (microseconds > 1270000000u) return -ERANGE;
+    // Intel SDM 16.4.4: 7-bit mantissa * 10^(3-bit exponent), in us.
+    // Zero requests the hardware-selected window; otherwise round down.
+    unsigned selected = 0; std::uint32_t best = 0;
+    for (unsigned c = 1; c < 1024; ++c) {
+        const auto candidate = hwpActivityWindowMicroseconds(c);
+        if (candidate > best && candidate <= microseconds) { best = candidate; selected = c; }
+    }
+    code = selected; return 0;
+}
 IntelSnapshot readIntelControls(HardwareSession &s, unsigned cpu) {
     IntelSnapshot out; out.cpu = cpu; out.identity = identifyCpu(s, cpu);
     if ((out.error = out.identity.error)) return out;
@@ -67,6 +84,7 @@ IntelSnapshot readIntelControls(HardwareSession &s, unsigned cpu) {
         if (features.error) { out.error = features.error; return out; }
         out.hwp = (features.words[0] & (1u << 7)) != 0;
         out.epp = (features.words[0] & (1u << 10)) != 0;
+        out.hwpActivityWindow = (features.words[0] & (1u << 9)) != 0;
         if (out.hwp) {
             const auto enable = s.execute(msrRequest(cpu, 0x770));
             out.hwpEnabled = !enable.error && (enable.value & 1);
@@ -78,6 +96,9 @@ IntelSnapshot readIntelControls(HardwareSession &s, unsigned cpu) {
             add("HWP maximum", "performance level", 0x774, r, double((r.value >> 8) & 255), editable, IntelField::HwpMax);
             add("HWP desired (0 = autonomous)", "performance level", 0x774, r, double((r.value >> 16) & 255), editable, IntelField::HwpDesired);
             if (out.epp) add("HWP energy preference", "0..255", 0x774, r, double((r.value >> 24) & 255), editable, IntelField::HwpEpp);
+            if (out.hwpActivityWindow) add("HWP activity window (0 = automatic)", "us", 0x774, r,
+                hwpActivityWindowMicroseconds(unsigned((r.value >> 32) & 1023)),
+                editable && !((r.value >> 16) & 255), IntelField::HwpActivityWindow);
             add("HWP highest capability", "performance level", 0x771, out.hwpCapabilities, double(out.hwpCapabilities.value & 255), false, IntelField::HwpMax);
             add("HWP lowest capability", "performance level", 0x771, out.hwpCapabilities, double((out.hwpCapabilities.value >> 24) & 255), false, IntelField::HwpMin);
         }
@@ -92,10 +113,11 @@ IntelSnapshot readIntelControls(HardwareSession &s, unsigned cpu) {
     }
     return out;
 }
-UpdateResult applyIntelControl(HardwareSession &s, const IntelSnapshot &old, IntelField field, double value) {
-    UpdateResult result;
+IntelControlUpdate applyIntelControl(HardwareSession &s, const IntelSnapshot &old, IntelField field, double value) {
+    IntelControlUpdate result;
     auto fail = [&result](int e) { result.error = e; return result; };
-    if (!std::isfinite(value) || old.error) return fail(-EINVAL);
+    if (!std::isfinite(value) || old.error || old.identity.error || !old.identity.intel ||
+        field < IntelField::Pl1 || field > IntelField::HwpActivityWindow) return fail(-EINVAL);
     const auto fresh = readIntelControls(s, old.cpu);
     if (fresh.error) return fail(fresh.error);
     if (fresh.identity.signature != old.identity.signature || !fresh.identity.intel) return fail(-ENODEV);
@@ -126,19 +148,66 @@ UpdateResult applyIntelControl(HardwareSession &s, const IntelSnapshot &old, Int
     } else {
         if (!old.hwp || old.hwpRequest.error || old.hwpCapabilities.error ||
             old.hwpCapabilities.value != fresh.hwpCapabilities.value) return fail(-EAGAIN);
-        if (value < 0 || value > 255 || value != std::floor(value)) return fail(-ERANGE);
+        const bool window = field == IntelField::HwpActivityWindow;
+        if (value < 0 || value > (window ? 1270000000.0 : 255.0) || value != std::floor(value)) return fail(-ERANGE);
         raw = std::uint64_t(value);
         const unsigned lo = unsigned((fresh.hwpCapabilities.value >> 24) & 255), hi = unsigned(fresh.hwpCapabilities.value & 255);
         if (lo > hi) return fail(-ERANGE);
-        if (field != IntelField::HwpEpp && !(field == IntelField::HwpDesired && raw == 0) && (raw < lo || raw > hi)) return fail(-ERANGE);
+        if (!window && field != IntelField::HwpEpp && !(field == IntelField::HwpDesired && raw == 0) && (raw < lo || raw > hi)) return fail(-ERANGE);
         shift = field == IntelField::HwpMin ? 0 : field == IntelField::HwpMax ? 8 : field == IntelField::HwpDesired ? 16 : 24;
-        u.mask = UINT64_C(255) << shift; u.target = msrRequest(old.cpu, 0x774);
+        if (window) {
+            unsigned encoded = 0;
+            const int error = encodeHwpActivityWindow(std::uint32_t(raw), encoded);
+            if (error) return fail(error);
+            raw = encoded; shift = 32;
+        }
+        u.mask = (window ? UINT64_C(1023) : UINT64_C(255)) << shift; u.target = msrRequest(old.cpu, 0x774);
         u.expected = old.hwpRequest.value; u.compareMask = UINT64_MAX;
         const auto next = (fresh.hwpRequest.value & ~u.mask) | (raw << shift);
         const auto minimum = next & 255, maximum = (next >> 8) & 255, desired = (next >> 16) & 255;
         if (minimum > maximum || (desired && (desired < minimum || desired > maximum))) return fail(-ERANGE);
     }
     u.bits = raw << shift;
-    return updateRegisters(s, {u});
+    result.msr = std::uint32_t(u.target.address);
+    result.expected = (u.expected & ~u.mask) | u.bits;
+    const bool rapl = field <= IntelField::Pl2Window;
+    const auto &current = rapl ? fresh.powerLimit : fresh.hwpRequest;
+    if (current.error) return fail(current.error);
+    if (current.value != u.expected) return fail(-EAGAIN);
+    if (result.expected != u.expected) {
+        static_cast<UpdateResult &>(result) = updateRegisters(s, {u});
+        if (result.error) return result;
+        result.after = readIntelControls(s, old.cpu);
+    } else {
+        // A fresh, identical snapshot is sufficient for a no-op. Do not write
+        // simply to confirm a setting that is already present.
+        result.after = fresh;
+    }
+    const auto &after = result.after;
+    const auto &observed = rapl ? after.powerLimit : after.hwpRequest;
+    result.readbackValid = !after.error && !observed.error && (rapl ? after.rapl : after.hwp);
+    if (after.error) return fail(after.error);
+    if (observed.error) return fail(observed.error);
+    if (!after.identity.intel || after.identity.signature != old.identity.signature) return fail(-ENODEV);
+    if (rapl) {
+        if (after.units.error) return fail(after.units.error);
+        if (!after.rapl || after.units.value != old.units.value) return fail(-EAGAIN);
+    } else {
+        if (after.hwpCapabilities.error) return fail(after.hwpCapabilities.error);
+        if (!after.hwp || !after.hwpEnabled || (field == IntelField::HwpEpp && !after.epp) ||
+            (field == IntelField::HwpActivityWindow && !after.hwpActivityWindow) ||
+            after.hwpCapabilities.value != old.hwpCapabilities.value) return fail(-EAGAIN);
+    }
+    if (observed.value != result.expected) return fail(-EIO);
+    if ((result.error = s.checkpoint())) return result;
+    for (const auto &item : after.readings) {
+        if (item.msr == result.msr && item.field == field && item.decoded && !item.error) {
+            result.readbackValue = item.value;
+            result.verified = true;
+            result.unchanged = !result.writeAttempted;
+            return result;
+        }
+    }
+    return fail(-ENODATA);
 }
 } }

@@ -34,8 +34,40 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 91, len(reports)
-assert len([r for r in reports if r["error"] == -22]) >= 49
+assert len(reports) == 147, len(reports)
+assert len([r for r in reports if r["error"] == -22]) >= 79
+registers = [r for r in reports if r["command"] in ("register-read", "register-write") and r["error"] != -22]
+assert len(registers) == 19
+assert registers[0]["data"]["value"] == "0xfedcba9876543210"
+assert all(r["data"]["submitted"] == "0xffffffffffffffff" for r in registers[1:3])
+assert registers[3]["data"]["address"] == "0xffffffffffffffff"
+for result in registers:
+    data = result["data"]
+    assert not data["verified"]
+    if data["space"] != "msr":
+        assert "cpu" not in data
+    if data["space"] == "pci":
+        assert data["pci"] == {"domain": 0, "bus": 255, "device": 31, "function": 7}
+    if result["command"] == "register-write":
+        assert data["value"] is None and data["write_attempted"]
+        assert data["completed_writes"] == int(result["ok"])
+    elif not result["ok"]:
+        assert data["value"] is None
+controls = [r for r in reports if r["command"] == "intel-set" and "verified" in r.get("data", {})]
+assert len(controls) == 10
+for result in controls:
+    data = result["data"]
+    assert data["verified"] == result["ok"]
+    if result["ok"]:
+        assert data["readback_raw"] == data["expected_raw"]
+        assert data["readback_value"] in (100, 192, 15000, 0)
+        assert data["completed_writes"] == (0 if data["unchanged"] else 1)
+    else:
+        assert data["readback_value"] is None
+assert controls[4]["data"]["unchanged"] and not controls[4]["data"]["write_attempted"]
+assert controls[6]["error"] == -5 and controls[6]["data"]["readback_raw"] != controls[6]["data"]["expected_raw"]
+assert [r["data"]["readback_value"] for r in controls[-3:]] == [15000, 0, None]
+assert controls[-1]["error"] == -1 and not controls[-1]["data"]["write_attempted"]
 voltage = [r for r in reports if r["command"] == "intel-oc-set" and r.get("data", {}).get("field") == "target-mv"]
 assert len(voltage) == 14
 assert [r["data"]["write_attempted"] for r in voltage[:8]] == [True, False] * 4
@@ -135,4 +167,4 @@ with tempfile.TemporaryDirectory(prefix="octool-cli-") as directory:
     path.write_bytes(spd)
     result = run("spd-decode", "--file", str(path), code=3)["data"]["spd"]
     assert result["crc_checked"] and not result["crc_valid"]
-print("CLI process checks passed: no display, sparse affinity, 91 JSON reports, voltage preservation and VF partial errors, inventory limits, SPD CRC/errors")
+print("CLI process checks passed: no display, sparse affinity, 147 JSON reports, exact 64-bit registers, RAPL/HWP readback and activity window, voltage preservation and VF partial errors, inventory limits, SPD CRC/errors")

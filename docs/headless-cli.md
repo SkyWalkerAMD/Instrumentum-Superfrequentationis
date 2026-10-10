@@ -46,7 +46,8 @@ octool-cli inventory > inventory.json
 octool-cli spd-decode --file memory.spd > spd.json
 ```
 
-硬件命令必须明确指定 `--cpu`，从 `diagnose` 的 `data.allowed_cpus` 选择。
+CPU 硬件命令必须明确指定 `--cpu`，从 `diagnose` 的 `data.allowed_cpus` 选择。
+原始 MMIO/PCI 命令分别指定物理地址或 BDF，不使用 `--cpu`。
 以下 `0` 仅为示例；受限容器、CPU 亲和性和多路机器未必允许 CPU 0。
 
 ```sh
@@ -86,13 +87,18 @@ CLI 的 UMC JSON 是下述统一命令格式，目前不能直接导入 GUI 的�
 | `pl1-window`, `pl2-window` | 秒，按核心的窗口规则向下取可编码值 |
 | `pl1-enable`, `pl2-enable`, `pl1-clamp`, `pl2-clamp` | 0 或 1 |
 | `hwp-min`, `hwp-max`, `hwp-desired`, `hwp-epp` | 整数 0..255，额外检查实际硬件能力和字段关系 |
+| `hwp-window-us` | 整数 0..1270000000 微秒，0 为自动；需要活动窗口能力和 desired=0，向下编码 |
 
 `intel-oc-set --cpu N --domain core|cache --field offset-mv|max-ratio --value VALUE --apply`：
 沿用 Raptor Lake-S family 6/model B7 配置的型号/锁/旧值检查，保留其它字段并回读。
 offset 的可编码范围是 -1000..999.0234375 mV，最大 OC 倍频是整数 1..85；
 这些是编码范围，不是某颗 CPU 的稳定参数建议。W790/W890 的 server 电压域尚不支持。
-RAPL/HWP API 目前报告提交结果，`verified:false`，没有声称完成硬件效果验证；
-Intel OC 的 `verified` 只表示寄存器回读一致，不代表稳定性验证。
+RAPL/HWP 与 Intel OC 均检查完整寄存器回读；`verified` 只表示回读一致，不代表稳定性验证。
+RAPL/HWP 的 `readback_value` 是实际编码后的配置值，相同配置不重复写入。
+HWP 配置属于硬件提示，不等于实测频率或功耗。
+
+原始寄存器命令 `register-read` / `register-write` 已与 GUI 对齐，支持 MSR、MMIO、PCI；
+完整参数、宽度和提交语义见[控制与寄存器说明](control-register-recovery.md)。
 
 目标电压与模式使用同一命令的 `--field target-mv --value MILLIVOLTS --mode adaptive|override --apply`，
 同时保留 `--cpu N --domain core|cache`。目标必须是整数 1..2000 mV，模式必须明确选择，

@@ -110,19 +110,26 @@ void IntelControlsPanel::apply() {
     bool ok = false; const double value = value_->text().toDouble(&ok);
     if (!ok || field_->currentIndex() < 0) { status_->setText("Read a snapshot and enter a valid value."); return; }
     const auto field = octool::core::IntelField(field_->currentData().toInt()); const auto snapshot = snapshot_;
-    if (QMessageBox::question(this, "Apply Intel control", QString("CPU %1: set %2 to %3?\nPower and time values round down to the register encoding. A fresh comparison precedes the write.")
+    if (QMessageBox::question(this, "Apply Intel control", QString("CPU %1: set %2 to %3?\nPower and time values round down to the register encoding. An HWP window of 0 lets hardware choose. A fresh comparison precedes the write.")
         .arg(snapshot.cpu).arg(field_->currentText()).arg(value, 0, 'g', 12), QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Yes) return;
-    setEnabled(false); status_->setText("Checking and submitting…");
-    auto *watcher = new QFutureWatcher<octool::core::UpdateResult>(this);
-    connect(watcher, &QFutureWatcher<octool::core::UpdateResult>::finished, this, [this, watcher] {
+    setEnabled(false); status_->setText("Checking, applying and reading back…");
+    auto *watcher = new QFutureWatcher<octool::core::IntelControlUpdate>(this);
+    connect(watcher, &QFutureWatcher<octool::core::IntelControlUpdate>::finished, this, [this, watcher] {
         const auto r = watcher->result(); invalidate(); setEnabled(true);
-        status_->setText((r.error ? failure(r.error) : "Write submitted successfully (not read back).") +
-            QString(" %1 register(s) submitted. Read a new snapshot.").arg(r.completed) +
-            (r.error && r.writeAttempted ? " A failed write may have reached the hardware; it was not retried." : "")); watcher->deleteLater();
+        if (!r.error && r.verified) {
+            present(r.after);
+            status_->setText(QString("CPU %1: %2 Full register readback verified; configured value %3. OS power management may later change it.")
+                .arg(r.after.cpu).arg(r.unchanged ? "Already set; no write needed." : "Applied.")
+                .arg(r.readbackValue, 0, 'g', 12));
+        } else {
+            status_->setText(failure(r.error ? r.error : -EIO) + " Read a new snapshot." +
+                (r.writeAttempted ? " The write may have taken effect; readback was not verified. No retry or rollback was attempted." : " No write was attempted."));
+        }
+        watcher->deleteLater();
     });
     auto access = access_; auto cancelled = cancelled_;
     watcher->setFuture(QtConcurrent::run([access, cancelled, snapshot, field, value] {
-        octool::core::UpdateResult result;
+        octool::core::IntelControlUpdate result;
         const int e = access->transaction([&](octool::core::HardwareSession &s) { result = octool::core::applyIntelControl(s, snapshot, field, value); return result.error; }, 10000, cancelled.get());
         if (e) result.error = e; return result;
     }));

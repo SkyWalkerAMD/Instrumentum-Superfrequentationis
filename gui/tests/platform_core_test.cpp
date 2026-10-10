@@ -3,6 +3,7 @@
 #include "amd_smu.h"
 #include "amd_pstates.h"
 #include "spd.h"
+#include "intel_controls_fixture.h"
 #include <algorithm>
 #include <iterator>
 #include <cassert>
@@ -12,39 +13,11 @@
 #include <thread>
 #include <future>
 #include <iostream>
+#include <limits>
 
 using namespace octool::core;
 namespace {
-struct Fake : HardwareBackend {
-    bool amd = false, hwp = true, epp = true;
-    unsigned model = 0xb7;
-    int failRead = -1, failWrite = -1;
-    unsigned reads = 0, writes = 0;
-    std::vector<Request> requests;
-    std::map<std::uint64_t,std::uint64_t> regs;
-    Fake() {
-        regs[0x606] = UINT64_C(0xa0e03); // 1/8 W, 1/1024 s.
-        regs[0x610] = UINT64_C(0x800000000000000) | (UINT64_C(2000) << 32) | (UINT64_C(1) << 47) | 1000 | (1 << 15);
-        regs[0x770] = 1; regs[0x771] = 0x08203040; regs[0x774] = UINT64_C(0x8000100080004008);
-    }
-    Reply execute(const Request &r) override {
-        requests.push_back(r); Reply out;
-        if (r.write) {
-            if (int(writes++) == failWrite) { out.error = -EIO; return out; }
-            regs[r.address] = r.value; return out;
-        }
-        if (int(reads++) == failRead) { out.error = -EACCES; out.value = UINT64_MAX; return out; }
-        out.value = regs[r.address]; return out;
-    }
-    CpuIdReply cpuid(unsigned, std::uint32_t leaf, std::uint32_t) override {
-        CpuIdReply r;
-        if (!leaf) { r.words[0]=6; r.words[1]=amd?0x68747541:0x756e6547; r.words[3]=amd?0x69746e65:0x49656e69; r.words[2]=amd?0x444d4163:0x6c65746e; }
-        if (leaf==1) r.words[0]=amd?0x00b00f20:0x600|((model&15)<<4)|((model&240)<<12);
-        if (leaf==6) r.words[0]=(hwp?1u<<7:0)|(epp?1u<<10:0);
-        return r;
-    }
-    Backend backend(Space) const override { return Backend::Module; }
-};
+using Fake = IntelControlsFixture;
 struct TestService {
     Fake *fake;
     HardwareService service;
@@ -125,6 +98,133 @@ void intelHwpAndGating() {
     t.fake->amd=true;
     t.service.transaction([&](HardwareSession &s) { snap=readIntelControls(s,0); return snap.error; });
     assert(snap.error==-ENOTSUP && t.fake->requests.empty());
+}
+IntelSnapshot snapshot(TestService &t) {
+    IntelSnapshot out;
+    assert(!t.service.transaction([&](HardwareSession &s) { out = readIntelControls(s, 130); return out.error; }));
+    return out;
+}
+IntelControlUpdate apply(TestService &t, const IntelSnapshot &old, IntelField field, double value) {
+    IntelControlUpdate out;
+    t.service.transaction([&](HardwareSession &s) { out = applyIntelControl(s, old, field, value); return out.error; });
+    return out;
+}
+void intelVerifiedFields() {
+    struct Case { IntelField field; double input, expected; std::uint64_t mask; };
+    const Case cases[] = {
+        {IntelField::Pl1, 100.12, 100, 0x7fff}, {IntelField::Pl2, 150.12, 150, UINT64_C(0x7fff) << 32},
+        {IntelField::Pl1Enable, 0, 0, 1u << 15}, {IntelField::Pl2Enable, 0, 0, UINT64_C(1) << 47},
+        {IntelField::Pl1Clamp, 1, 1, 1u << 16}, {IntelField::Pl2Clamp, 1, 1, UINT64_C(1) << 48},
+        {IntelField::Pl1Window, 1.76, 1.75, 127u << 17}, {IntelField::Pl2Window, 1.76, 1.75, UINT64_C(127) << 49},
+        {IntelField::HwpMin, 16, 16, 255}, {IntelField::HwpMax, 48, 48, 255u << 8},
+        {IntelField::HwpDesired, 32, 32, 255u << 16}, {IntelField::HwpEpp, 192, 192, UINT64_C(255) << 24},
+        {IntelField::HwpActivityWindow, 15333, 15000, UINT64_C(1023) << 32}
+    };
+    for (const auto &c : cases) {
+        TestService t; t.fake->expectedCpu = 130;
+        const auto old = snapshot(t); const auto r = apply(t, old, c.field, c.input);
+        const auto before = r.msr == 0x610 ? old.powerLimit.value : old.hwpRequest.value;
+        assert(!r.error && r.verified && r.readbackValid && !r.unchanged && r.writeAttempted);
+        assert(r.readbackValue == c.expected && r.completed == 1 && r.submitted.size() == 1);
+        assert(r.expected == t.fake->regs[r.msr] && !((r.expected ^ before) & ~c.mask));
+        const auto again = apply(t, r.after, c.field, c.input);
+        assert(!again.error && again.verified && again.unchanged && !again.writeAttempted && again.completed == 0);
+        assert(again.submitted.empty() && again.readbackValue == c.expected && t.fake->writes == 1 && !t.fake->wrongCpu);
+    }
+}
+void intelVerificationFailures() {
+    for (int kind = 0; kind < 10; ++kind) {
+        TestService t; const auto old = snapshot(t);
+        const bool hwp = kind >= 5;
+        t.fake->afterRequest = [&](const Request &r) {
+            if (!r.write) return;
+            switch (kind) {
+            case 0: t.fake->regs[r.address] = old.powerLimit.value; break; // Ignored write.
+            case 1: t.fake->regs[r.address] ^= UINT64_C(1) << 59; break; // Unrelated bit changed.
+            case 2: t.fake->regs[0x606] ^= 1; break; // Unit changed.
+            case 3: t.fake->model = 0xba; break;
+            case 4: t.fake->failRead = int(t.fake->reads + 1); break; // Target readback fails.
+            case 5: t.fake->regs[0x771] ^= 1; break;
+            case 6: t.fake->regs[0x770] = 0; break;
+            case 7: t.fake->epp = false; break;
+            case 8: t.fake->regs[r.address] ^= 1; break; // Another HWP field changed.
+            case 9: t.fake->hwp = false; break;
+            }
+        };
+        const auto r = apply(t, old, hwp ? IntelField::HwpEpp : IntelField::Pl1, hwp ? 192 : 100);
+        assert(r.error && !r.verified && !r.unchanged && r.writeAttempted && r.completed == 1 && t.fake->writes == 1);
+        if (kind == 4 || kind == 9) assert(!r.readbackValid);
+    }
+    TestService t; const auto old = snapshot(t); t.fake->failWrite = 0;
+    const auto r = apply(t, old, IntelField::Pl1, 100);
+    assert(r.error == -EIO && r.writeAttempted && !r.verified && !r.readbackValid && !r.completed && t.fake->writes == 1);
+}
+void intelVerificationFaults() {
+    for (bool hwp : {false, true}) {
+        // Inject a failure into each identity/feature read, including readback.
+        for (unsigned pos = 0; pos < 6; ++pos) {
+            TestService t; const auto old = snapshot(t); t.fake->failCpuid = int(t.fake->cpuCalls + pos);
+            const auto r = apply(t, old, hwp ? IntelField::HwpEpp : IntelField::Pl1, hwp ? 192 : 100);
+            assert(r.error && !r.verified && t.fake->writes <= 1);
+        }
+        // Target and unit/capability read failures must never become zero data.
+        const std::vector<unsigned> positions = hwp ? std::vector<unsigned>{2,3,4,5,8,9,10} : std::vector<unsigned>{0,1,5,6,7};
+        for (unsigned pos : positions) {
+            TestService t; const auto old = snapshot(t); t.fake->failRead = int(t.fake->reads + pos);
+            const auto r = apply(t, old, hwp ? IntelField::HwpEpp : IntelField::Pl1, hwp ? 192 : 100);
+            assert(r.error && !r.verified && t.fake->writes <= 1);
+        }
+    }
+}
+void intelVerificationGuards() {
+    TestService t; const auto old = snapshot(t);
+    for (auto field : {IntelField(-1), IntelField(13)}) {
+        const auto calls = t.fake->cpuCalls, reads = t.fake->reads;
+        assert(apply(t, old, field, 1).error == -EINVAL);
+        assert(t.fake->cpuCalls == calls && t.fake->reads == reads && !t.fake->writes);
+    }
+    assert(apply(t, old, IntelField::Pl1, std::numeric_limits<double>::infinity()).error == -EINVAL);
+    t.fake->regs[0x610] ^= UINT64_C(1) << 59;
+    assert(apply(t, old, IntelField::Pl1, 125).error == -EAGAIN && !t.fake->writes); // Stale no-op.
+    t.fake->regs[0x610] = old.powerLimit.value;
+    std::atomic<bool> cancelled{false};
+    t.fake->afterRequest = [&](const Request &r) { if (r.write) cancelled = true; };
+    IntelControlUpdate r;
+    assert(t.service.transaction([&](HardwareSession &s) { r = applyIntelControl(s, old, IntelField::Pl1, 100); return r.error; }, 1000, &cancelled) == -ECANCELED);
+    assert(!r.verified && r.writeAttempted && r.completed == 1 && t.fake->writes == 1);
+}
+void intelActivityWindow() {
+    unsigned code = 9999;
+    assert(!encodeHwpActivityWindow(0, code) && code == 0);
+    assert(!encodeHwpActivityWindow(1, code) && code == 1);
+    assert(!encodeHwpActivityWindow(1270000000, code) && code == 1023);
+    assert(encodeHwpActivityWindow(1270000001, code) == -ERANGE && code == 1023);
+    // Exhaust every encoding, including duplicate values and zero mantissas.
+    for (unsigned c = 0; c < 1024; ++c) {
+        const auto us = hwpActivityWindowMicroseconds(c);
+        assert(!encodeHwpActivityWindow(us, code) && hwpActivityWindowMicroseconds(code) == us);
+        if (us > 1) {
+            assert(!encodeHwpActivityWindow(us - 1, code));
+            const auto rounded = hwpActivityWindowMicroseconds(code);
+            assert(rounded < us && rounded > 0);
+            for (unsigned other = 0; other < 1024; ++other) {
+                const auto candidate = hwpActivityWindowMicroseconds(other);
+                assert(candidate >= us || candidate <= rounded);
+            }
+        }
+    }
+    TestService t; auto old = snapshot(t);
+    for (double invalid : {-1.0, 0.5, 1270000001.0})
+        assert(apply(t, old, IntelField::HwpActivityWindow, invalid).error == -ERANGE && !t.fake->writes);
+    t.fake->activityWindow = false;
+    assert(apply(t, old, IntelField::HwpActivityWindow, 100).error == -EPERM && !t.fake->writes);
+    t.fake->activityWindow = true; t.fake->regs[0x774] |= UINT64_C(32) << 16;
+    old = snapshot(t);
+    assert(apply(t, old, IntelField::HwpActivityWindow, 100).error == -EPERM && !t.fake->writes);
+    t.fake->regs[0x774] &= ~(UINT64_C(255) << 16); old = snapshot(t);
+    t.fake->afterRequest = [&](const Request &r) { if (r.write) t.fake->activityWindow = false; };
+    const auto r = apply(t, old, IntelField::HwpActivityWindow, 100);
+    assert(r.error == -EAGAIN && !r.verified && r.completed == 1 && t.fake->writes == 1);
 }
 struct SmuFake : Fake {
     std::uint32_t index=0, response=1, completion=1, id=0x153a1022, message=0;
@@ -222,5 +322,7 @@ void spdAndPstateBits() {
 }
 int main() {
     maskedUpdates(); partialFailure(); transactionBoundaries(); intelRAPL(); intelHwpAndGating(); smuProtocol(); smuTimeouts(); spdAndPstateBits();
-    std::cout << "8 platform scenario groups passed\n";
+    intelVerifiedFields(); intelVerificationFailures(); intelVerificationFaults(); intelVerificationGuards();
+    intelActivityWindow();
+    std::cout << "13 platform scenario groups passed\n";
 }

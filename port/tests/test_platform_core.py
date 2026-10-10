@@ -28,4 +28,4 @@ class PlatformCore(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             result = subprocess.run([str(binary)], capture_output=True, text=True, timeout=30)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertEqual(result.stdout.strip(), '8 platform scenario groups passed')
+            self.assertEqual(result.stdout.strip(), '13 platform scenario groups passed')

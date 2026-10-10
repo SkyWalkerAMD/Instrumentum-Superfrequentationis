@@ -5,7 +5,7 @@
 
 namespace octool { namespace core {
 enum class IntelField { Pl1, Pl2, Pl1Enable, Pl2Enable, Pl1Clamp, Pl2Clamp,
-    Pl1Window, Pl2Window, HwpMin, HwpMax, HwpDesired, HwpEpp };
+    Pl1Window, Pl2Window, HwpMin, HwpMax, HwpDesired, HwpEpp, HwpActivityWindow };
 struct IntelReading {
     std::string name, unit;
     std::uint32_t msr = 0;
@@ -19,14 +19,25 @@ struct IntelSnapshot {
     unsigned cpu = 0;
     CpuIdentity identity;
     int error = 0;
-    bool rapl = false, hwp = false, epp = false, hwpEnabled = false;
+    bool rapl = false, hwp = false, epp = false, hwpEnabled = false, hwpActivityWindow = false;
     Reply units, powerLimit, hwpRequest, hwpCapabilities;
     std::vector<IntelReading> readings;
+};
+struct IntelControlUpdate : UpdateResult {
+    bool verified = false, unchanged = false, readbackValid = false;
+    std::uint32_t msr = 0;
+    std::uint64_t expected = 0;
+    double readbackValue = 0;
+    IntelSnapshot after;
 };
 bool hasIntelRaplProfile(const CpuIdentity &id);
 double raplWindowSeconds(unsigned code, unsigned timeExponent);
 int encodeRaplWindow(double seconds, unsigned timeExponent, unsigned &code);
+std::uint32_t hwpActivityWindowMicroseconds(unsigned code);
+int encodeHwpActivityWindow(std::uint32_t microseconds, unsigned &code);
 IntelSnapshot readIntelControls(HardwareSession &session, unsigned cpu);
-UpdateResult applyIntelControl(HardwareSession &session, const IntelSnapshot &snapshot,
-                               IntelField field, double value);
+// Verify the entire configuration register and its decoding context after one
+// write. A mismatch is reported without retry or rollback; OS policy may race.
+IntelControlUpdate applyIntelControl(HardwareSession &session, const IntelSnapshot &snapshot,
+                                    IntelField field, double value);
 } }

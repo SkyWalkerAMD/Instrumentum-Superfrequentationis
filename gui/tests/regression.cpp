@@ -6,6 +6,7 @@
 #include "intelocpanel.h"
 #include "intelvfpanel.h"
 #include "intel_oc_fixture.h"
+#include "intel_controls_fixture.h"
 #include "amd_curve_fixture.h"
 #include "platform/linux_inventory.h"
 #include "platform/linux_hwio.h"
@@ -424,6 +425,79 @@ private slots:
         QVERIFY(reference.msrs.empty()); QCOMPARE(reference.writes.load(),0);
         QCOMPARE(intel.findChild<QComboBox *>("intelField")->count(),0);
         QVERIFY(intel.findChild<QLabel *>("intelStatus")->text().contains("No verified RAPL profile"));
+    }
+    void intelPowerReadbackShowsConfiguredValueAndSkipsUnchanged() {
+        auto *device = new IntelControlsFixture; device->expectedCpu = 130;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelControlsPanel panel(access, nullptr, 130); panel.resize(1100, 760); panel.show();
+        panel.findChild<QPushButton *>("intelRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *value = panel.findChild<QLineEdit *>("intelValue");
+        auto *apply = panel.findChild<QPushButton *>("intelApply");
+        auto *status = panel.findChild<QLabel *>("intelStatus");
+        auto *table = panel.findChild<QTableWidget *>("intelTable");
+        value->setText("100.12");
+        const auto count = device->requests.size();
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Cancel)->click(); });
+        apply->click(); QCOMPARE(device->requests.size(), count); QCOMPARE(device->writes, 0u);
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->writes, 1u); QCOMPARE(device->wrongCpu, 0u);
+        QCOMPARE(table->item(0, 1)->text(), QString("100")); QVERIFY(value->text().isEmpty());
+        QVERIFY(status->text().contains("readback verified") && status->text().contains("configured value 100"));
+        const auto capture = qEnvironmentVariable("OCTOOL_CONTROL_TEST_SCREENSHOT");
+        if (!capture.isEmpty()) QVERIFY(panel.grab().save(capture));
+        value->setText("100.12");
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->writes, 1u); QVERIFY(status->text().contains("Already set; no write needed"));
+        panel.findChild<QLineEdit *>("intelCpu")->setText("131"); QCOMPARE(table->rowCount(), 0);
+    }
+    void intelHwpReadbackFailureClearsEditableSnapshot() {
+        auto *device = new IntelControlsFixture; device->expectedCpu = 130;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelControlsPanel panel(access, nullptr, 130); panel.show();
+        panel.findChild<QPushButton *>("intelRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *field = panel.findChild<QComboBox *>("intelField");
+        field->setCurrentIndex(field->findData(int(octool::core::IntelField::HwpEpp)));
+        auto *value = panel.findChild<QLineEdit *>("intelValue"); value->setText("192");
+        auto *apply = panel.findChild<QPushButton *>("intelApply");
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->writes, 1u);
+        QVERIFY(panel.findChild<QLabel *>("intelStatus")->text().contains("configured value 192"));
+        device->discardChange = true;
+        field->setCurrentIndex(field->findData(int(octool::core::IntelField::HwpEpp))); value->setText("64");
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->writes, 2u); QCOMPARE(device->wrongCpu, 0u);
+        QCOMPARE(field->count(), 0); QCOMPARE(panel.findChild<QTableWidget *>("intelTable")->rowCount(), 0);
+        QVERIFY(value->text().isEmpty());
+        QVERIFY(panel.findChild<QLabel *>("intelStatus")->text().contains("readback was not verified"));
+        value->setText("192"); apply->click(); QCOMPARE(device->writes, 2u);
+    }
+    void intelActivityWindowUsesMicrosecondsAndChecksAutonomousMode() {
+        auto *device = new IntelControlsFixture; device->expectedCpu = 130;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelControlsPanel panel(access, nullptr, 130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("intelRead");
+        auto *field = panel.findChild<QComboBox *>("intelField");
+        auto *value = panel.findChild<QLineEdit *>("intelValue");
+        auto *apply = panel.findChild<QPushButton *>("intelApply");
+        const int window = int(octool::core::IntelField::HwpActivityWindow);
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        QVERIFY(field->findData(window) >= 0); field->setCurrentIndex(field->findData(window));
+        value->setText("15333");
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->writes, 1u);
+        QVERIFY(panel.findChild<QLabel *>("intelStatus")->text().contains("configured value 15000"));
+        field->setCurrentIndex(field->findData(window)); value->setText("0");
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->writes, 2u);
+        QVERIFY(panel.findChild<QLabel *>("intelStatus")->text().contains("configured value 0"));
+        device->regs[0x774] |= UINT64_C(32) << 16;
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(field->findData(window), -1);
+        device->regs[0x774] &= ~(UINT64_C(255) << 16); device->activityWindow = false;
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(field->findData(window), -1); QCOMPARE(device->writes, 2u);
     }
     void smuProbeRejectsInvalidInputsBeforeAnyAccess() {
         Reference reference; AmdTuningPanel panel(reference.access());
