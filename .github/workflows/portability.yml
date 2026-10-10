@@ -75,6 +75,9 @@ jobs:
       - name: Verify original Intel client ratio fields and ignored firmware failures
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-ratio.py --output build/intel-ratio.json
+      - name: Verify original AMD curve constructor and failed-query results
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-amd-curve-query.py --output build/amd-curve-query.json
       - name: Verify Intel NGU input and original MMIO request addresses
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-ngu.py \
@@ -116,6 +119,7 @@ jobs:
             build/amd-limit-bindings.json
             build/amd-limits.json
             build/intel-ratio.json
+            build/amd-curve-query.json
             build/intel-ngu.json
             build/mmio-clients.json
             build/mmio-services.json

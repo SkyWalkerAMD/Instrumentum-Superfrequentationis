@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "platformpanels.h"
 #include "core/amd_smu.h"
+#include "core/amd_curve.h"
 #include "core/amd_topology.h"
 #include "core/spd.h"
 #include "platform/linux_inventory.h"
@@ -129,7 +130,7 @@ void IntelControlsPanel::apply() {
 AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *parent, unsigned cpu)
     : QWidget(parent), access_(std::move(access)), cancelled_(std::make_shared<std::atomic<bool>>(false)) {
     setObjectName("amdTuning"); auto *layout = new QVBoxLayout(this);
-    description("AMD tuning / SMUIO · recovered BIOS mailbox\n"
+    description("AMD tuning · firmware commands and curve query\n"
         "Probe checks CPU family and the selected PCI device without sending a command. "
         "Arguments are firmware encodings in hex; physical units and board-specific presets are still being verified. "
         "Shimada control names come from the original program, with no target-machine validation yet.", layout, this);
@@ -162,6 +163,14 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     }
     auto *encode = new QPushButton("Prepare frequency",this); encode->setObjectName("smuEncodeFrequency"); frequency->addWidget(encode);
     form->addRow("Shimada frequency (decimal firmware indices)",frequency);
+    auto *curve = new QHBoxLayout;
+    curveCcd_ = edit("curveCcd", "", this); curveCore_ = edit("curveCore", "", this);
+    curveCcd_->setPlaceholderText("CCD 0..15"); curveCore_->setPlaceholderText("Core 0..7");
+    curve->addWidget(curveCcd_); curve->addWidget(curveCore_);
+    auto *readCurveButton = new QPushButton("Read curve", this); readCurveButton->setObjectName("curveRead");
+    curve->addWidget(readCurveButton);
+    form->addRow("Shimada curve (decimal firmware indices)", curve);
+    connect(readCurveButton, &QPushButton::clicked, this, [this] { readCurve(); });
     auto *args = new QHBoxLayout;
     for (unsigned i = 0; i < 6; ++i) { args_[i] = edit(qPrintable(QString("smuArg%1").arg(i)), "0", this); args_[i]->setPlaceholderText(QString("Arg%1").arg(i)); args->addWidget(args_[i]); }
     form->addRow("Arg0 … Arg5 (32-bit hex)", args); layout->addLayout(form);
@@ -188,11 +197,51 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
         status_->setText("Frequency command prepared. CCD/core are firmware indices, not Linux CPU numbers; their presence is not verified. Review before sending.");
     });
     connect(probe, &QPushButton::clicked, this, [this] { submit(true); }); connect(send, &QPushButton::clicked, this, [this] { submit(false); });
-    auto clear = [this] { table_->setRowCount(0); status_->setText("Inputs changed. Probe again to check the target."); };
-    for (auto *e : {cpu_, bus_, device_, function_}) connect(e, &QLineEdit::textChanged, this, clear);
+    auto clear = [this] { table_->setRowCount(0); status_->setText("Inputs changed. Previous results cleared."); };
+    for (auto *e : {cpu_, bus_, device_, function_, curveCcd_, curveCore_}) connect(e, &QLineEdit::textChanged, this, clear);
     connect(profile_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, clear);
 }
 AmdTuningPanel::~AmdTuningPanel() { cancelled_->store(true); }
+void AmdTuningPanel::readCurve() {
+    using namespace octool::core;
+    table_->setRowCount(0);
+    quint64 cpu = 0, bus = 0, device = 0, function = 0, ccd = 0, core = 0;
+    if (profile_->currentData().toInt() != int(SmuProfile::Shimada) ||
+        !parseNumber(cpu_->text(), 10, UINT32_MAX, cpu) || !parseNumber(bus_->text(), 16, 0, bus) ||
+        !parseNumber(device_->text(), 16, 0, device) || !parseNumber(function_->text(), 16, 0, function) ||
+        !parseNumber(curveCcd_->text(), 10, 15, ccd) || !parseNumber(curveCore_->text(), 10, 7, core)) {
+        status_->setText("Curve query requires Shimada at 0000:00:00.0, a valid logical CPU, and decimal firmware CCD 0..15 / core 0..7. No query sent.");
+        return;
+    }
+    SmuTarget target; target.cpu = unsigned(cpu); target.profile = SmuProfile::Shimada;
+    setEnabled(false); status_->setText("Reading curve for the specified firmware CCD/core…");
+    auto *watcher = new QFutureWatcher<AmdCurveReply>(this);
+    connect(watcher, &QFutureWatcher<AmdCurveReply>::finished, this, [this, watcher, ccd, core] {
+        const auto r = watcher->result();
+        if (r.error || !r.valid) {
+            status_->setText(failure(r.error ? r.error : -EIO) +
+                QString(" Curve value unavailable. Firmware response: %1. No retry performed.").arg(hexValue(r.response, 4)));
+        } else {
+            append(table_, {"Firmware CCD", QString::number(ccd)});
+            append(table_, {"Firmware core in CCD", QString::number(core)});
+            append(table_, {"Firmware response", hexValue(r.response, 4)});
+            append(table_, {"Curve raw (hex)", hexValue(r.raw, 4)});
+            const qint64 signedRaw = r.raw <= 0x7fffffffu ? qint64(r.raw) : qint64(r.raw) - (Q_INT64_C(1) << 32);
+            append(table_, {"Curve raw (signed decimal)", QString::number(signedRaw)});
+            status_->setText("Curve query completed. Raw firmware value, not mV. Physical-core mapping is unverified; no curve setting changed.");
+        }
+        setEnabled(true); watcher->deleteLater();
+    });
+    const auto access = access_; const auto cancelled = cancelled_;
+    watcher->setFuture(QtConcurrent::run([access, cancelled, target, ccd, core] {
+        AmdCurveReply out;
+        const int error = access->transaction([&](HardwareSession &s) {
+            out = readShimadaCurve(s, target, unsigned(ccd), unsigned(core)); return out.error;
+        }, 10000, cancelled.get());
+        if (error) { out.error = error; out.valid = false; out.raw = 0; }
+        return out;
+    }));
+}
 void AmdTuningPanel::readTopology() {
     using namespace octool::core;
     quint64 cpu=0;

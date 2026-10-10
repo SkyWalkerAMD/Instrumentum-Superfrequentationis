@@ -5,6 +5,7 @@
 #include "umcpanel.h"
 #include "intelocpanel.h"
 #include "intel_oc_fixture.h"
+#include "amd_curve_fixture.h"
 #include "platform/linux_inventory.h"
 #include "platform/linux_hwio.h"
 #include "platform/linux_cpu.h"
@@ -304,6 +305,57 @@ private slots:
         panel.findChild<QPushButton *>("smuEncodeFrequency")->click();
         QCOMPARE(panel.findChild<QLineEdit *>("smuArg0")->text(),QString("30701770"));
         QCOMPARE(reference.calls.load(),0);
+    }
+    void curveRejectsInvalidInputsWithoutHardware() {
+        Reference reference; AmdTuningPanel panel(reference.access());
+        auto *read = panel.findChild<QPushButton *>("curveRead");
+        auto *ccd = panel.findChild<QLineEdit *>("curveCcd");
+        auto *core = panel.findChild<QLineEdit *>("curveCore");
+        read->click(); QCOMPARE(reference.calls.load(), 0);
+        core->setText("7");
+        for (const QString &value : {QString("-1"), QString("16"), QString("0x3"), QString("3.5"), QString("4294967296")}) {
+            ccd->setText(value); read->click(); QCOMPARE(reference.calls.load(), 0);
+        }
+        ccd->setText("3"); core->setText("8"); read->click(); QCOMPARE(reference.calls.load(), 0);
+        core->setText("7"); panel.findChild<QLineEdit *>("smuBus")->setText("01");
+        read->click(); QCOMPARE(reference.calls.load(), 0);
+        panel.findChild<QLineEdit *>("smuBus")->setText("00");
+        panel.findChild<QComboBox *>("smuProfile")->setCurrentIndex(1);
+        read->click(); QCOMPARE(reference.calls.load(), 0);
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("No query sent"));
+    }
+    void curveDisplaysRawAndInvalidatesChangedTarget() {
+        auto *device = new AmdCurveFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        AmdTuningPanel panel(access, nullptr, 130); panel.show();
+        panel.findChild<QLineEdit *>("curveCcd")->setText("3");
+        panel.findChild<QLineEdit *>("curveCore")->setText("7");
+        auto *read = panel.findChild<QPushButton *>("curveRead");
+        auto *table = panel.findChild<QTableWidget *>("smuTable");
+        QCOMPARE(device->calls, 0u); read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(), 5); QCOMPARE(table->item(3, 1)->text(), hexValue(0xffffffe2, 4));
+        QCOMPARE(table->item(4, 1)->text(), QString("-30"));
+        QCOMPARE(device->submitted, 0x30700000u); QCOMPARE(device->commands, 1u); QCOMPARE(device->wrongCpu, 0u);
+        QCOMPARE(panel.findChild<QLineEdit *>("smuArg0")->text(), QString("0"));
+        QCOMPARE(panel.findChild<QLineEdit *>("smuCcd")->text(), QString("0"));
+        panel.findChild<QLineEdit *>("curveCore")->setText("6"); QCOMPARE(table->rowCount(), 0);
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(), 5);
+        panel.findChild<QLineEdit *>("smuCpu")->setText("1"); QCOMPARE(table->rowCount(), 0);
+    }
+    void curveNeverDisplaysFailedOrStaleResults() {
+        auto *device = new AmdCurveFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        AmdTuningPanel panel(access, nullptr, 130);
+        panel.findChild<QLineEdit *>("curveCcd")->setText("0");
+        panel.findChild<QLineEdit *>("curveCore")->setText("0");
+        auto *read = panel.findChild<QPushButton *>("curveRead");
+        auto *table = panel.findChild<QTableWidget *>("smuTable");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(), 5);
+        device->completion = 0xfe; read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(), 0); QCOMPARE(device->argumentReads, 1u);
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("unavailable"));
+        device->pciId = 0x14d81022; read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(), 0); QCOMPARE(device->commands, 2u);
     }
     void inventoryReadsUnitsErrorsAndBoundSpdFixtures() {
         QTemporaryDir root; QVERIFY(root.isValid());

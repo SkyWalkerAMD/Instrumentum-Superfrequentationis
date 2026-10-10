@@ -2,6 +2,7 @@
 
 当前验证生产代码为 `fa39af6`，包含 Raptor Lake-S core/cache offset 与[最大 OC 倍频](intel-ratio-recovery.md)。
 [本轮验证](validation/intel-ratio-recovery-ci-fa39af6.json)为核心 4/4、Linux 23/23；安装包与原目录源码均已同步。
+本轮后续源码已加入[Shimada 原始曲线查询](amd-curve-query-recovery.md)，尚待独立云端验证与产物记录。
 原版全部功能仍未完成。安装兼容、自动化回归、原指令研究和真实硬件验收分别记录，
 没有能代表四大模块全部功能的可靠百分比；212 个 UMC 字段也不是整个软件的功能分母。
 
@@ -9,7 +10,7 @@
 |---|---|---|
 | AMD PStates | 按逻辑 CPU 采样 P0–P7、上限/能力检查、频率、64 位原值、完整 9 位 VID / Idd 编码 | 型号专用 mV/A 换算；满足跨核/跨 coherent fabric 一致性的设置 |
 | Intel Controls | RAPL 功耗/时间窗、HWP、温度；Raptor Lake-S 单域 core/cache offset 与最大 OC ratio、保留其它字段、锁/旧值检查及回读 | W790/W890 电压域；VF 点、逐核 turbo/ratio/VID rank/SP、fabric/BCLK |
-| AMD 调参 | 三套独立 BIOS SMUIO；Shimada 已提取命令和逐核频率参数准备；CPUID 稀疏拓扑 | CPUID 与固件目标 ID 对应；MP1/PBO 高层单位、曲线/电流/温度限制、PM 表、profiles/hotkeys |
+| AMD 调参 | 三套独立 BIOS SMUIO；Shimada 已提取命令和逐核频率参数准备；CPUID 稀疏拓扑；新增限定身份的原始曲线查询源码 | CPUID 与固件目标 ID 对应；MP1/PBO 高层单位、曲线设置/电流/温度限制、PM 表、profiles/hotkeys |
 | 内存与主板 | DMI/BIOS、内核传感器、绑定驱动的 SPD、DDR4/5 基础 CRC/组织/基础时序；AMD UMC 212 字段与离线快照 | UMC 各型号物理单位/通道标签；Intel 训练时序；PMIC/VRM/EC/时钟芯片和训练写入 |
 
 入口与代码：[平台控制](platform-controls.md)、[Intel offset](intel-oc-recovery.md)、
@@ -28,7 +29,7 @@ NVL 也有独立按核心表。缺少的是这些表的完整目标绑定与相�
 
 AMD [六字段完整槽实验](amd-limits-recovery.md)确认大多数字段走 MP1，FIT 的一部分路径才走 BIOS。
 原乘法会回绕、部分消息重用、失败仍提示 Applied；六个入口标签和第二个对象标志已由原 UI/构造指令补齐，
-仍需要完成 MP1 隐含写入、参数语义和返回校验；[曲线查询候选路径](amd-curve-query-recovery.md)另有静态追踪。
+仍需要完成 MP1 隐含写入、参数语义和返回校验；[曲线查询](amd-curve-query-recovery.md)已有原指令实验与独立实现。
 把同名 BIOS 命令换上这些输入单位，并不足以还原原硬件行为。
 
 内存与主板寄存器依赖内存代际、通道/插槽路由、芯片 ID 和固件状态；当前 UMC 先按原编码显示。

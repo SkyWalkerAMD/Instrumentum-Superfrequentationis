@@ -32,9 +32,11 @@ public:
 private:
     void submit(bool probeOnly);
     void readTopology();
+    void readCurve();
     std::shared_ptr<HardwareAccess> access_;
     std::shared_ptr<std::atomic<bool>> cancelled_;
     QLineEdit *cpu_, *bus_, *device_, *function_, *args_[6];
+    QLineEdit *curveCcd_, *curveCore_;
     QComboBox *profile_, *command_;
     QLabel *status_;
     QTableWidget *table_;
