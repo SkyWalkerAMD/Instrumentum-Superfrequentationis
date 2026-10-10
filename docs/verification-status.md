@@ -1,5 +1,20 @@
 # 验证状态与输入证据
 
+<!-- umc-recovery-728671d -->
+2026-10-10：新增 AMD UMC 212 字段 / 12 分组、显式地址组和刷新槽、离线 JSON 快照，
+以及 AMD 扩展 CPUID 拓扑读取；验证源码为 `728671d`。
+原构造的通道搜索和同名字段问题已从原指令复现，重构版不会沿用错误地址或以名称覆盖字段。
+功能说明见 [UMC](amd-umc-recovery.md)、[CPU 拓扑 / PStates 剩余问题](amd-topology-recovery.md)。
+
+- [Linux 验证](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38007763354) 23/23；十目标各 24 Qt / 30 Python，11 套目标内核 VM 启动。
+- [核心验证](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38007763396) 四环境通过，各 5 CTest / 35 场景组。
+- 20 份 DEB/RPM、源码包及 SHA256SUMS 已保存于 `dist/umc-recovery-728671d/`；[逐项报告](validation/umc-recovery-ci-728671d.json)包含 180 张截图及产物哈希。
+
+PStates 写入、Intel 电压 / VF、AMD 完整调参和主板专用写入仍未完成；
+UMC 当前显示原始编码，没有把型号未确认的字段换算为周期。四台目标机器尚无真机验收。
+
+以下保留此前记录；本次新增功能与验证以以上链接为准。
+
 
 2026-10-10 平台恢复增量已接入，验证代码为 `0b514bb`（分支 `refactor/platform-recovery`）。
 AMD PStates 增加完整 VID/Idd 原始字段；Intel Controls 增加 RAPL/HWP 读写和温度；

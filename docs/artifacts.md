@@ -1,5 +1,24 @@
 # 安装包与源码归档
 
+<!-- umc-recovery-728671d -->
+2026-10-10：新增 AMD UMC 212 字段 / 12 分组、显式地址组和刷新槽、离线 JSON 快照，
+以及 AMD 扩展 CPUID 拓扑读取；验证源码为 `728671d`。
+原构造的通道搜索和同名字段问题已从原指令复现，重构版不会沿用错误地址或以名称覆盖字段。
+功能说明见 [UMC](amd-umc-recovery.md)、[CPU 拓扑 / PStates 剩余问题](amd-topology-recovery.md)。
+
+- [Linux 验证](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38007763354) 23/23；十目标各 24 Qt / 30 Python，11 套目标内核 VM 启动。
+- [核心验证](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38007763396) 四环境通过，各 5 CTest / 35 场景组。
+- 20 份 DEB/RPM、源码包及 SHA256SUMS 已保存于 `dist/umc-recovery-728671d/`；[逐项报告](validation/umc-recovery-ci-728671d.json)包含 180 张截图及产物哈希。
+
+PStates 写入、Intel 电压 / VF、AMD 完整调参和主板专用写入仍未完成；
+UMC 当前显示原始编码，没有把型号未确认的字段换算为周期。四台目标机器尚无真机验收。
+
+安装目标：Ubuntu 20.04/22.04/24.04/26.04、Debian 11/12/13、Rocky Linux 8/9/10，均为 x86_64。
+每目标子目录各含 GUI 包和 DKMS 包；内核版本见逐项报告。GUI 可以单独安装。
+`.ko` 仍由 DKMS 为用户实际内核构建，不直接跨内核复制验证用模块。
+
+以下保留此前记录；本次新增功能与验证以以上链接为准。
+
 
 最新平台恢复构建为 `0b514bb` / [Actions](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38005068664)，23/23 成功。
 20 份目标 DEB/RPM、源码归档和 SHA256SUMS 已保存到 `dist/platform-recovery-0b514bb/`。
