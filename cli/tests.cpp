@@ -7,6 +7,7 @@
 #include "tests/intel_controls_fixture.h"
 #include "tests/intel_turbo_fixture.h"
 #include "tests/intel_uncore_fixture.h"
+#include "tests/spd_fixture.h"
 #include <cassert>
 #include <cerrno>
 #include <iostream>
@@ -519,6 +520,33 @@ void offlineUmcDoesNotCreateBackend() {
     assert(octool::platform::readBoundedFile(std::string(path) + '\0' + "suffix", buffer, 65536) == -EINVAL);
     assert(!opens);
 }
+void offlineSpdDoesNotCreateBackend() {
+    char path[] = "/tmp/octool-spd-XXXXXX"; const int fd = mkstemp(path); assert(fd >= 0); close(fd);
+    struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
+    unsigned opens = 0;
+    const auto factory = [&]() { ++opens; return std::unique_ptr<HardwareBackend>(); };
+    for (unsigned scenario = 0; scenario < 9; ++scenario) {
+        auto bytes = octool::test::spdFixture();
+        int expected = 0;
+        if (scenario == 1) { bytes[720] ^= 1; expected = 3; }
+        if (scenario == 2) { bytes[660] ^= 1; expected = 3; }
+        if (scenario == 3) { bytes.resize(800); expected = 3; }
+        if (scenario == 4) bytes.resize(512);
+        if (scenario == 5) { bytes[642] = 0x31; octool::test::spdSeal(bytes,640,62); expected = 3; }
+        if (scenario == 6) {
+            bytes[643] = 3; const std::string expo = "EXPO"; std::copy(expo.begin(),expo.end(),bytes.begin()+832);
+            octool::test::spdSeal(bytes,640,62);
+        }
+        if (scenario == 7) { bytes[655] = 0xff; octool::test::spdSeal(bytes,640,62); }
+        if (scenario == 8) { bytes.resize(4097); expected = 3; }
+        std::ofstream file(path,std::ios::binary);
+        file.write(reinterpret_cast<const char *>(bytes.data()), std::streamsize(bytes.size())); file.close(); assert(file);
+        std::ostringstream out; assert(run({"spd-decode", "--file", path},out,factory) == expected);
+        if (emit) std::cout << out.str();
+        if (!scenario) assert(out.str().find("\"name\":\"Performance\"") != std::string::npos);
+    }
+    assert(!opens);
+}
 void inventory(const std::string &root) {
     const auto result = octool::platform::linuxInventoryNative(root);
     bool temperature = false, board = false, invalid = false, power = false, oversized = false;
@@ -540,8 +568,8 @@ int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--inventory-fixture") { inventory(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
-    offlineUmcDoesNotCreateBackend(); uncoreCommands();
+    offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "14 CLI scenario groups passed (132 rejected commands, real core with simulated devices)\n";
+    if (!emit) std::cout << "15 CLI scenario groups passed (132 rejected commands, real core with simulated devices)\n";
 }

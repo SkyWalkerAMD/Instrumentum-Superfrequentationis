@@ -44,6 +44,7 @@ private:
 class MemoryBoardPanel : public QWidget {
 public:
     explicit MemoryBoardPanel(QWidget *parent = nullptr);
+    bool loadSpdFile(const QString &path);
 private:
     void refresh();
     void showSpd(const QString &path, const QByteArray &bytes, const QString &error = QString());

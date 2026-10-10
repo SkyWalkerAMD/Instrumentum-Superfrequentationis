@@ -66,7 +66,7 @@ UMC 当前显示原始编码，没有把型号未确认的字段换算为周期�
 | Intel Controls | 指定逻辑 CPU 的 RAPL PL1/PL2、使能、clamp、时间窗读取和保留位更新；HWP min/max/desired/EPP；DTS 温度 | RAPL 限明确型号，HWP 限 CPUID 能力并检查是否已启用、是否由 package 控制；不写锁位；没有 VF/OC mailbox、全平台 turbo/fabric/电压域 |
 | AMD tuning / SMUIO | 三套互不混用的原 BIOS mailbox 地址、无写入 probe、选择命令/六参数、完整握手和固件返回；Shimada CCD/core/MHz 频率命令准备 | 仅 Shimada 开放已提取的控制命令；Phoenix/GPT 仅测试和版本查询；其它调参为原始编码，没有伪造物理单位/默认优化值 |
 | Memory / Motherboard | DMI 主板和 BIOS、hwmon 温度/电压/电流/功耗/风扇/频率、驱动已绑定的 SPD；离线 SPD 文件 | 读取已有内核接口；不枚举探测裸 SMBus/EC、不装载驱动、不写 SPD；权限错误逐项显示 |
-| SPD 解码 | DDR4/DDR5 基本类型、组织、料号/序列号、完整基础区 CRC、限定单片对称容量；修订版 1 的基础时序要求 | DDR5 不足 512 字节时明确标注 CRC 未验证；不解码 3DS/混合容量；SPD 时序不等于实际运行时序或 XMP/EXPO |
+| SPD 解码 | DDR4/DDR5 基本类型、组织、料号/序列号、完整基础区 CRC、限定单片对称容量；修订版 1 的基础时序要求；DDR5 XMP 3.0 三个厂家档案的名称、电压、时序和逐区 CRC | DDR5 不足 512 字节时标注基础 CRC 未验证；不解码 3DS/混合容量；XMP 档案值不等于实际运行值，EXPO 与用户档案尚未解码；[说明](ddr5-xmp-recovery.md) |
 | 事务 | 同一 HardwareService 的整段独占、等待锁时计入截止时间、取消检查；多寄存器完整预检、旧值比较、保留位/锁位、失败立即停止 | 不是跨进程/内核驱动的硬件锁；不能中断已进入后端的系统调用；多写不具备原子回滚 |
 
 这些对象构造、切换页签都不读取寄存器。只有明确点击读取/探测/发送才产生操作；关闭 Intel/AMD 页面会取消尚未提交的后续工作。

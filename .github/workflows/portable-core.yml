@@ -43,9 +43,9 @@ jobs:
           cmake -S gui/core -B build/sanitized-core -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_CXX_FLAGS='-fsanitize=address,undefined -fno-omit-frame-pointer' \
             -DCMAKE_EXE_LINKER_FLAGS='-fsanitize=address,undefined'
-          cmake --build build/sanitized-core --target umc_capture_core_test --parallel 2
+          cmake --build build/sanitized-core --target umc_capture_core_test spd_core_test --parallel 2
           ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 \
-            ctest --test-dir build/sanitized-core -R '^umc_capture_core$' --output-on-failure
+            ctest --test-dir build/sanitized-core -R '^(umc_capture|spd)_core$' --output-on-failure
       - uses: actions/upload-artifact@v4
         if: always()
         with:

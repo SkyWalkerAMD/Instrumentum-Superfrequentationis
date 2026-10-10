@@ -18,7 +18,7 @@ endif()
 
 include(CTest)
 if(BUILD_TESTING)
-    foreach(component pstates hardware helper_protocol platform memory intel_oc intel_turbo intel_uncore intel_vf amd_curve umc_capture)
+    foreach(component pstates hardware helper_protocol platform memory intel_oc intel_turbo intel_uncore intel_vf amd_curve umc_capture spd)
         add_executable(${component}_core_test ../tests/${component}_core_test.cpp)
         target_link_libraries(${component}_core_test PRIVATE octool_core)
         # These regressions use assertions. Release builds must test too.

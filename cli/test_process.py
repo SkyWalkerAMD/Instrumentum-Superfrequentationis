@@ -34,7 +34,33 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 259, len(reports)
+assert len(reports) == 268, len(reports)
+spd_reports = [r for r in reports if r["command"] == "spd-decode" and "spd" in r["data"]]
+assert len(spd_reports) == 9
+assert [r["ok"] for r in spd_reports] == [True, False, False, False, True, False, True, True, False]
+for i, r in enumerate(spd_reports):
+    xmp = r["data"]["spd"]["xmp"]
+    assert not xmp["active_configuration_measured"]
+    if i in (0, 1, 3, 6, 7):
+        assert len(xmp["profiles"]) == 3 and xmp["crc"]["valid"]
+        for p in xmp["profiles"]:
+            if p["error"] or not p["enabled"]:
+                assert p["values"] == []
+            else:
+                assert p["crc"]["valid"] and len(p["raw_hex"]) == 128
+                assert len(p["values"]) == 14
+    if i == 1:
+        assert r["data"]["spd"]["crc_valid"] and xmp["profiles"][0]["error"] == -84
+        assert xmp["profiles"][1]["values"]
+    if i == 4:
+        assert not xmp["inspected"] and xmp["present"] is None
+    if i == 6:
+        assert xmp["expo_present"] and xmp["profiles"][2]["blocked_by_expo"]
+    if i == 7:
+        assert xmp["profiles"][0]["name"] is None and not xmp["profiles"][0]["name_valid"]
+values = {v["name"]: v for v in spd_reports[0]["data"]["spd"]["xmp"]["profiles"][0]["values"]}
+assert values["VDD"] == {"name": "VDD", "value": 1250, "unit": "mV"}
+assert values["tRFC1 minimum"] == {"name": "tRFC1 minimum", "value": 295, "unit": "ns"}
 assert len([r for r in reports if r["error"] == -22]) >= 132
 uncore = [r for r in reports if r["command"] in ("intel-uncore-read", "intel-uncore-set") and "before" in r["data"]]
 assert len(uncore) == 16

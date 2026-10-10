@@ -11,6 +11,7 @@
 #include "intel_turbo_fixture.h"
 #include "inteluncorepanel.h"
 #include "intel_uncore_fixture.h"
+#include "spd_fixture.h"
 #include "amd_curve_fixture.h"
 #include "platform/linux_inventory.h"
 #include "platform/linux_hwio.h"
@@ -945,6 +946,51 @@ private slots:
         QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("unavailable"));
         device->pciId = 0x14d81022; read->click(); QTRY_VERIFY(panel.isEnabled());
         QCOMPARE(table->rowCount(), 0); QCOMPARE(device->commands, 2u);
+    }
+    void spdXmpOfflineValuesAndSectionErrors() {
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("profiles.spd");
+        auto bytes = octool::test::spdFixture();
+        const auto save = [&] { QFile file(path); if (!file.open(QIODevice::WriteOnly)) return false;
+            return file.write(reinterpret_cast<const char *>(bytes.data()), qint64(bytes.size())) == qint64(bytes.size()); };
+        QVERIFY(save()); MemoryBoardPanel panel; panel.resize(1100,760); panel.show();
+        auto *table = panel.findChild<QTableWidget *>("inventoryTable"); QVERIFY(table); QCOMPARE(table->rowCount(),0);
+        QVERIFY(panel.loadSpdFile(path));
+        const auto row = [&](const QString &group, const QString &name) {
+            for (int i = 0; i < table->rowCount(); ++i)
+                if (table->item(i,0)->text() == group && table->item(i,1)->text() == name) return i;
+            return -1;
+        };
+        const int voltage = row("XMP 1","VDD"), refresh = row("XMP 1","tRFC1 minimum");
+        QVERIFY(voltage >= 0 && refresh >= 0);
+        QCOMPARE(table->item(voltage,2)->text(),QString("1250")); QCOMPARE(table->item(voltage,3)->text(),QString("mV"));
+        QCOMPARE(table->item(refresh,2)->text(),QString("295")); QCOMPARE(table->item(refresh,3)->text(),QString("ns"));
+        const int header = row("XMP","Header"); QVERIFY(header >= 0);
+        QTRY_VERIFY(panel.findChild<QLabel *>("inventoryStatus")->isVisible());
+        table->scrollToItem(table->item(header,0),QAbstractItemView::PositionAtTop);
+        const auto screenshot = qEnvironmentVariable("OCTOOL_SPD_TEST_SCREENSHOT");
+        if (!screenshot.isEmpty()) { QTest::qWait(50); QVERIFY(panel.grab().save(screenshot)); }
+        bytes[720] ^= 1; QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("XMP 1","VDD"),-1); QVERIFY(row("XMP 2","VDD") >= 0);
+        QVERIFY(table->item(row("XMP 1","Profile name"),4)->text().contains("CRC mismatch"));
+        QCOMPARE(table->item(row("SPD","Captured bytes"),4)->text(),QString("Base CRC valid"));
+        bytes = octool::test::spdFixture(); bytes[643] = 3;
+        std::memcpy(bytes.data()+832,"EXPO",4); octool::test::spdSeal(bytes,640,62);
+        QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QVERIFY(row("EXPO","Shared profile area") >= 0); QCOMPARE(row("XMP 3","VDD"),-1);
+        bytes.resize(512); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("XMP 1","VDD"),-1);
+        QCOMPARE(table->item(row("XMP","Header"),4)->text(),QString("Header not captured"));
+    }
+    void spdFileFailuresClearPriorRows() {
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("profiles.spd");
+        auto bytes = octool::test::spdFixture(); QFile file(path); QVERIFY(file.open(QIODevice::WriteOnly));
+        QCOMPARE(file.write(reinterpret_cast<const char *>(bytes.data()),qint64(bytes.size())),qint64(bytes.size())); file.close();
+        MemoryBoardPanel panel; QVERIFY(panel.loadSpdFile(path));
+        auto *table = panel.findChild<QTableWidget *>("inventoryTable"); QVERIFY(table->rowCount() > 0);
+        QVERIFY(!panel.loadSpdFile(dir.filePath("missing.spd"))); QCOMPARE(table->rowCount(),0);
+        QVERIFY(panel.loadSpdFile(path)); QVERIFY(!panel.loadSpdFile(dir.path())); QCOMPARE(table->rowCount(),0);
+        QVERIFY(file.open(QIODevice::WriteOnly)); QCOMPARE(file.write(QByteArray(4097,0)),qint64(4097)); file.close();
+        QVERIFY(!panel.loadSpdFile(path)); QCOMPARE(table->rowCount(),0);
     }
     void inventoryReadsUnitsErrorsAndBoundSpdFixtures() {
         QTemporaryDir root; QVERIFY(root.isValid());

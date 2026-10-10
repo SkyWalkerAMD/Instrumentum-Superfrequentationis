@@ -5,6 +5,81 @@
 #include <sstream>
 
 namespace octool { namespace core {
+namespace {
+unsigned word(const std::vector<std::uint8_t> &b, unsigned offset) {
+    return unsigned(b[offset]) | (unsigned(b[offset + 1]) << 8);
+}
+SpdCrc blockCrc(const std::vector<std::uint8_t> &b, unsigned offset) {
+    SpdCrc crc;
+    crc.checked = true;
+    crc.stored = word(b, offset + 62);
+    crc.computed = spdCrc16(b.data() + offset, 62);
+    crc.valid = crc.stored == crc.computed;
+    return crc;
+}
+void profileName(const std::vector<std::uint8_t> &b, unsigned offset, SpdXmpProfile &p) {
+    p.nameValid = true;
+    for (unsigned i = 0; i < 16 && b[offset + i]; ++i) {
+        const auto c = b[offset + i];
+        if (c < 32 || c > 126) { p.nameValid = false; p.name.clear(); return; }
+        p.name += char(c);
+    }
+    while (!p.name.empty() && p.name.back() == ' ') p.name.pop_back();
+}
+SpdXmp decodeXmp(const std::vector<std::uint8_t> &b) {
+    SpdXmp out;
+    // A short base-only capture cannot establish absence of an extension.
+    if (b.size() < 642) return out;
+    out.inspected = true;
+    out.present = b[640] == 0x0c && b[641] == 0x4a;
+    if (b.size() >= 836) {
+        out.expoInspected = true;
+        out.expoPresent = b[832] == 'E' && b[833] == 'X' && b[834] == 'P' && b[835] == 'O';
+    }
+    if (!out.present) return out;
+    if (b.size() < 704) { out.error = -EMSGSIZE; return out; }
+    out.revision = b[642];
+    out.crc = blockCrc(b, 640);
+    if (!out.crc.valid) { out.error = -EILSEQ; return out; }
+    if (out.revision != 0x30) { out.error = -ENOTSUP; return out; }
+    out.enabledMask = b[643] & 7;
+    for (unsigned i = 0; i < 3; ++i) {
+        SpdXmpProfile p;
+        p.index = i + 1; p.offset = 704 + 64 * i;
+        p.enabled = (out.enabledMask & (1u << i)) != 0;
+        p.blockedByExpo = i == 2 && out.expoPresent;
+        profileName(b, 654 + 16 * i, p);
+        if (p.enabled) {
+            if (p.blockedByExpo) p.error = -EINVAL;
+            else if (b.size() < p.offset + 64) p.error = -EMSGSIZE;
+            else {
+                p.raw.assign(b.begin() + p.offset, b.begin() + p.offset + 64);
+                p.crc = blockCrc(b, p.offset);
+                if (!p.crc.valid) p.error = -EILSEQ;
+                else if (!word(b, p.offset + 5)) p.error = -EINVAL;
+                else {
+                    const char *rails[] = {"VPP", "VDD", "VDDQ", "Memory controller voltage"};
+                    const unsigned voltageOffsets[] = {0, 1, 2, 4};
+                    for (unsigned v = 0; v < 4; ++v) {
+                        const unsigned code = b[p.offset + voltageOffsets[v]];
+                        p.values.push_back({rails[v], "mV", (code >> 5) * 1000 + (code & 31) * 50});
+                    }
+                    // Explicit little-endian loads: no packed-struct casts or
+                    // host-endianness assumptions. Refresh timings use ns.
+                    const char *names[] = {"tCK minimum", "tAA minimum", "tRCD minimum", "tRP minimum",
+                        "tRAS minimum", "tRC minimum", "tWR minimum", "tRFC1 minimum", "tRFC2 minimum", "tRFCsb minimum"};
+                    const unsigned offsets[] = {5, 13, 15, 17, 19, 21, 23, 25, 27, 29};
+                    for (unsigned t = 0; t < 10; ++t)
+                        p.values.push_back({names[t], t >= 7 ? "ns" : "ps", word(b, p.offset + offsets[t])});
+                }
+            }
+        }
+        if (!out.error && p.error) out.error = p.error;
+        out.profiles.push_back(p);
+    }
+    return out;
+}
+}
 std::uint16_t spdCrc16(const std::uint8_t *bytes, std::size_t length) {
     std::uint16_t crc = 0;
     for (std::size_t i = 0; i < length; ++i) {
@@ -109,6 +184,7 @@ SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &b) {
         for (unsigned i = serial; i < serial+4; ++i) hex << std::setw(2) << unsigned(b[i]);
         add("Serial number (hex)", hex.str());
     }
+    if (ddr5) out.xmp = decodeXmp(b);
     return out;
 }
 } }

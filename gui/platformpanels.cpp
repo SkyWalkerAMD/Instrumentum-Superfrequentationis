@@ -5,6 +5,7 @@
 #include "core/amd_topology.h"
 #include "core/spd.h"
 #include "platform/linux_inventory.h"
+#include "platform/linux_inventory_native.h"
 #include <QApplication>
 #include <QClipboard>
 #include <QComboBox>
@@ -322,7 +323,8 @@ MemoryBoardPanel::MemoryBoardPanel(QWidget *parent) : QWidget(parent) {
     setObjectName("memoryBoard"); auto *layout=new QVBoxLayout(this);
     description("Memory and motherboard · BIOS identity, kernel sensors and DDR4 / DDR5 SPD\n"
         "SPD describes the module, not the currently trained timings. Sensors depend on the installed kernel driver. "
-        "Base CRC is checked when the full block is available. Timing writes, PMIC / VRM controls and board-specific clocks are not yet recovered.",layout,this);
+        "DDR5 XMP 3.0 manufacturer profiles include stored voltages, timings and separate CRC checks. "
+        "Timing writes, PMIC / VRM controls and board-specific clocks are not yet recovered.",layout,this);
     auto *buttons=new QHBoxLayout; auto *read=new QPushButton("Read once",this); read->setObjectName("inventoryRead"); buttons->addWidget(read);
     auto *open=new QPushButton("Open SPD dump…",this); open->setObjectName("spdOpen"); buttons->addWidget(open); layout->addLayout(buttons);
     table_=table({"Device", "Item", "Value", "Unit", "Status", "Source"},this,layout); table_->setObjectName("inventoryTable");
@@ -331,10 +333,17 @@ MemoryBoardPanel::MemoryBoardPanel(QWidget *parent) : QWidget(parent) {
     connect(read,&QPushButton::clicked,this,[this] { refresh(); });
     connect(open,&QPushButton::clicked,this,[this] {
         const QString path=QFileDialog::getOpenFileName(this,"Open binary SPD dump",{},"SPD dump (*.bin *.spd);;All files (*)"); if(path.isEmpty()) return;
-        QFile f(path); if(!f.open(QIODevice::ReadOnly)) { status_->setText(f.errorString()); return; }
-        const QByteArray bytes=f.read(4097); if(bytes.size()>4096 || f.error()!=QFileDevice::NoError) { status_->setText("SPD dump exceeds 4096 bytes or could not be read."); return; }
-        table_->setRowCount(0); showSpd(path,bytes); status_->setText("Offline SPD file: "+path+" · "+QDateTime::currentDateTime().toString(Qt::ISODate));
+        loadSpdFile(path);
     });
+}
+bool MemoryBoardPanel::loadSpdFile(const QString &path) {
+    table_->setRowCount(0);
+    std::vector<std::uint8_t> bytes;
+    const int error = octool::platform::readBoundedFile(path.toStdString(), bytes, 4096);
+    if (error) { status_->setText("SPD file: " + failure(error)); return false; }
+    showSpd(path, QByteArray(reinterpret_cast<const char *>(bytes.data()), int(bytes.size())));
+    status_->setText("Offline SPD file: " + path + " · Stored profiles; current settings are not measured. Check each section's status.");
+    return true;
 }
 void MemoryBoardPanel::showSpd(const QString &path,const QByteArray &bytes,const QString &error) {
     if(!error.isEmpty()) { append(table_,{"SPD","EEPROM","","",error,path}); return; }
@@ -343,6 +352,23 @@ void MemoryBoardPanel::showSpd(const QString &path,const QByteArray &bytes,const
     const QString state=decoded.error ? failure(decoded.error) : decoded.crcChecked ? "Base CRC valid" : "CRC not verified";
     append(table_,{"SPD","Captured bytes",QString::number(bytes.size()),"bytes",state,path});
     for(const auto &field:decoded.fields) append(table_,{"SPD",QString::fromStdString(field.name),QString::fromStdString(field.value),"",state,path});
+    if (decoded.memoryType != 0x12 || decoded.error) return;
+    const auto &xmp = decoded.xmp;
+    const QString headerState = !xmp.inspected ? "Header not captured" : !xmp.present ? "Not present" :
+        !xmp.crc.checked ? "Header truncated" : !xmp.crc.valid ? "Header CRC mismatch" :
+        xmp.revision != 0x30 ? "Unsupported revision" : "Header CRC valid";
+    append(table_,{"XMP", "Header", xmp.crc.checked ? QString("Revision 0x%1").arg(xmp.revision,2,16,QChar('0')) : QString(), "", headerState, path});
+    if (xmp.expoInspected && xmp.expoPresent)
+        append(table_,{"EXPO", "Shared profile area", "Detected", "", "EXPO decoding is not implemented", path});
+    for (const auto &p : xmp.profiles) {
+        const QString group = QString("XMP %1").arg(p.index);
+        const QString status = p.blockedByExpo ? (p.enabled ? "Conflicting XMP enable bit / EXPO region" : "EXPO region") :
+            !p.enabled ? "Disabled" : p.crc.checked && !p.crc.valid ? "Profile CRC mismatch" :
+            p.error ? failure(p.error) : "Profile CRC valid";
+        append(table_,{group, "Profile name", p.nameValid ? QString::fromStdString(p.name) : "Invalid name bytes", "", status, path});
+        if (p.crc.checked) append(table_,{group,"CRC stored / computed",QString("%1 / %2").arg(p.crc.stored,4,16,QChar('0')).arg(p.crc.computed,4,16,QChar('0')), "", status, path});
+        for (const auto &v : p.values) append(table_,{group,QString::fromStdString(v.name),QString::number(v.value),QString::fromStdString(v.unit),status,path});
+    }
 }
 void MemoryBoardPanel::refresh() {
     table_->setRowCount(0); setEnabled(false); status_->setText("Reading BIOS, hwmon and bound SPD devices…");
