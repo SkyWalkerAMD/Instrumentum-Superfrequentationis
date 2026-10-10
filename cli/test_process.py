@@ -34,8 +34,36 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 230, len(reports)
-assert len([r for r in reports if r["error"] == -22]) >= 119
+assert len(reports) == 259, len(reports)
+assert len([r for r in reports if r["error"] == -22]) >= 132
+uncore = [r for r in reports if r["command"] in ("intel-uncore-read", "intel-uncore-set") and "before" in r["data"]]
+assert len(uncore) == 16
+for result in uncore:
+    data = result["data"]
+    assert data["msr"] == "0x00000620" and not data["hardware_effect_measured"]
+    for key in ("before", "after"):
+        if key not in data:
+            continue
+        snapshot = data[key]
+        if snapshot["valid"]:
+            raw = int(snapshot["raw"], 16)
+            assert snapshot["minimum_ratio"] == (raw >> 8) & 127
+            assert snapshot["maximum_ratio"] == raw & 127
+            assert snapshot["editable"] == (0 < snapshot["minimum_ratio"] <= snapshot["maximum_ratio"])
+        else:
+            assert not snapshot["editable"]
+            assert all(snapshot[k] is None for k in ("raw", "minimum_ratio", "maximum_ratio"))
+    if result["command"] == "intel-uncore-set":
+        assert data["verified"] == result["ok"]
+        if result["ok"]:
+            assert data["after"]["raw"] == data["expected_raw"]
+            assert data["after"]["minimum_ratio"] == data["requested_minimum_ratio"] == 12
+            assert data["after"]["maximum_ratio"] == data["requested_maximum_ratio"] == 42
+            assert (int(data["before"]["raw"], 16) ^ int(data["after"]["raw"], 16)) & ~0x7f7f == 0
+            assert data["write_attempted"] == (not data["unchanged"])
+            assert data["completed_writes"] == int(not data["unchanged"])
+assert [r["error"] for r in uncore[6:15]] == [-95, -95, -13, -5, -5, -11, -5, -22, -13]
+assert uncore[-1]["ok"] and not uncore[-1]["data"]["before"]["editable"]
 vf_edit = [r for r in reports if "edit_context" in r.get("data", {})]
 assert len(vf_edit) == 24
 for index, result in enumerate(vf_edit[:8]):

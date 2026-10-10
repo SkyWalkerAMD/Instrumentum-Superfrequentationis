@@ -9,6 +9,8 @@
 #include "intel_oc_fixture.h"
 #include "intel_controls_fixture.h"
 #include "intel_turbo_fixture.h"
+#include "inteluncorepanel.h"
+#include "intel_uncore_fixture.h"
 #include "amd_curve_fixture.h"
 #include "platform/linux_inventory.h"
 #include "platform/linux_hwio.h"
@@ -124,6 +126,7 @@ private slots:
         IntelOcPanel oc(access,nullptr,7);
         IntelVfPanel vf(access,nullptr,7);
         IntelTurboPanel turbo(access,nullptr,7);
+        IntelUncorePanel uncore(access,nullptr,7);
         QCOMPARE(reference.calls.load(),0);
         QCOMPARE(intel.findChild<QLineEdit *>("intelCpu")->text(),QString("7"));
         QCOMPARE(amd.findChild<QLineEdit *>("smuCpu")->text(),QString("7"));
@@ -138,9 +141,82 @@ private slots:
         QCOMPARE(vf.findChild<QTableWidget *>("vfTable")->rowCount(),0);
         QCOMPARE(turbo.findChild<QLineEdit *>("turboCpu")->text(),QString("7"));
         QVERIFY(!turbo.findChild<QPushButton *>("turboApply")->isEnabled());
+        QCOMPARE(uncore.findChild<QLineEdit *>("uncoreCpu")->text(),QString("7"));
+        QVERIFY(!uncore.findChild<QPushButton *>("uncoreApply")->isEnabled());
         intel.findChild<QLineEdit *>("intelValue")->setText("125");
         intel.findChild<QPushButton *>("intelApply")->click();
         QCOMPARE(reference.calls.load(),0);
+    }
+    void intelUncoreReadAndTargetChange() {
+        auto *device = new IntelUncoreFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelUncorePanel panel(access, nullptr, 130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("uncoreRead"); auto *table = panel.findChild<QTableWidget *>("uncoreTable");
+        auto *apply = panel.findChild<QPushButton *>("uncoreApply");
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(), 2); QCOMPARE(table->item(0, 1)->text(), QString("8"));
+        QCOMPARE(table->item(1, 1)->text(), QString("45")); QVERIFY(apply->isEnabled());
+        panel.findChild<QPushButton *>("uncoreCopy")->click();
+        QVERIFY(QApplication::clipboard()->text().contains(hexValue(device->regs[0x620], 8)));
+        const auto calls = device->cpuCalls;
+        panel.findChild<QLineEdit *>("uncoreCpu")->setText("-1"); read->click();
+        QCOMPARE(device->cpuCalls, calls); QCOMPARE(table->rowCount(), 0); QVERIFY(!apply->isEnabled());
+        panel.findChild<QLineEdit *>("uncoreCpu")->setText("130"); device->hypervisor = true;
+        const auto reads = device->reads; read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->reads, reads); QCOMPARE(table->rowCount(), 0); QVERIFY(!apply->isEnabled());
+        device->hypervisor = false; device->model = 0x8f; device->regs[0x620] = 0;
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(), 2); QVERIFY(!apply->isEnabled());
+        QCOMPARE(device->writes, 0u); QCOMPARE(device->wrongCpu, 0u);
+    }
+    void intelUncoreValidateCancelApplyAndNoop() {
+        auto *device = new IntelUncoreFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelUncorePanel panel(access, nullptr, 130); panel.resize(1100, 640); panel.show();
+        panel.findChild<QPushButton *>("uncoreRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *minimum = panel.findChild<QLineEdit *>("uncoreMinimum"); auto *maximum = panel.findChild<QLineEdit *>("uncoreMaximum");
+        auto *apply = panel.findChild<QPushButton *>("uncoreApply"); auto *status = panel.findChild<QLabel *>("uncoreStatus");
+        const auto calls = device->cpuCalls;
+        for (const QString &value : {QString("0"), QString("128"), QString("46"), QString("8.5")}) {
+            minimum->setText(value); apply->click(); QCOMPARE(device->cpuCalls, calls);
+        }
+        minimum->setText("12"); maximum->setText("42");
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Cancel)->click(); });
+        apply->click(); QCOMPARE(device->cpuCalls, calls); QCOMPARE(device->writes, 0u);
+        const auto original = device->regs[0x620];
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->writes, 1u); QCOMPARE(device->wrongCpu, 0u);
+        QCOMPARE(device->regs[0x620] & ~UINT64_C(0x7f7f), original & ~UINT64_C(0x7f7f));
+        QCOMPARE(minimum->text(), QString("12")); QCOMPARE(maximum->text(), QString("42"));
+        QVERIFY(status->text().contains("readback verified"));
+        QTRY_VERIFY(status->height() >= status->heightForWidth(status->width()));
+        QVERIFY(status->geometry().bottom() < panel.height());
+        const auto screenshot = qEnvironmentVariable("OCTOOL_UNCORE_TEST_SCREENSHOT");
+        if (!screenshot.isEmpty()) QVERIFY(panel.grab().save(screenshot));
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->writes, 1u); QVERIFY(status->text().contains("no write performed"));
+    }
+    void intelUncoreStaleAndFailedWritesClearSnapshot() {
+        for (unsigned mode = 0; mode < 3; ++mode) {
+            auto *device = new IntelUncoreFixture;
+            auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+            IntelUncorePanel panel(access, nullptr, 130); panel.show();
+            panel.findChild<QPushButton *>("uncoreRead")->click(); QTRY_VERIFY(panel.isEnabled());
+            panel.findChild<QLineEdit *>("uncoreMinimum")->setText("12");
+            panel.findChild<QLineEdit *>("uncoreMaximum")->setText("42");
+            if (mode == 0) device->regs[0x620] ^= UINT64_C(1) << 63;
+            if (mode == 1) device->discardChange = true;
+            if (mode == 2) device->failWrite = 0;
+            QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+            panel.findChild<QPushButton *>("uncoreApply")->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(device->writes, mode == 0 ? 0u : 1u);
+            QCOMPARE(panel.findChild<QTableWidget *>("uncoreTable")->rowCount(), 0);
+            QVERIFY(!panel.findChild<QPushButton *>("uncoreApply")->isEnabled());
+            QVERIFY(panel.findChild<QLabel *>("uncoreRaw")->text().isEmpty());
+            QVERIFY(panel.findChild<QLineEdit *>("uncoreMinimum")->text().isEmpty());
+            QVERIFY(panel.findChild<QLabel *>("uncoreStatus")->text().contains(mode == 0 ? "No settings write" : "not verified"));
+        }
     }
     void intelTurboReadsGroupsAndInvalidatesTargets() {
         auto *device = new IntelTurboFixture;

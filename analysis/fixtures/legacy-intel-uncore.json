@@ -1,0 +1,147 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "functions": [
+    {
+      "symbol": "_Z14Wr_Ratio_cachei",
+      "address": 3636656,
+      "size": 352,
+      "code_hex": "f30f1efa4155ba100200804189fd31f64154bf50010000554883ec1064488b042528000000488944240831c04c8d6424044889e5c7042400000000c744240410020080e82879ffff0f1f8400000000004c89e24889eebf50010000e8c079ffff8b44240485c078e84c89e24889eebf50010000450fb6ede8a479ffff8b04244489ef89c289c10fb6f4c1ea10c1e9180fb6d2e849b21300ba11020080bf50010000c74424041102008089c6890424e8bd78ffffbfe8030000e83342ddff4c89e24889eebf20060000c7042400000000c744240400000000e84479ffffbfe8030000e80a42ddff8b14244489ee4489ef89d1c1ea10c1e9180fb6d2e8e1b113008b542404bf2006000089c6890424e85e78ffff488d0579479001803800752a488d055b479001803800751e488b44240864482b04252800000075214883c4105d415c415dc30f1f40008b5424048b3424bf20060000e81778ffffebcfe8002addff",
+      "code_sha256": "0ce01611d26aff3b43f6208125d8fbe99f694eb92193d30c7226478c56c3c5be",
+      "calls": [
+        {
+          "instruction": 3636723,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3636747,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3636775,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3636802,
+          "kind": "call",
+          "target": 4927632,
+          "symbols": [
+            "_Z9get_32bithhhh"
+          ]
+        },
+        {
+          "instruction": 3636830,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3636840,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 3636871,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3636881,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 3636906,
+          "kind": "call",
+          "target": 4927632,
+          "symbols": [
+            "_Z9get_32bithhhh"
+          ]
+        },
+        {
+          "instruction": 3636925,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3636996,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3637001,
+          "kind": "jmp",
+          "target": 3636954,
+          "symbols": []
+        },
+        {
+          "instruction": 3637003,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z9get_32bithhhh",
+      "address": 4927632,
+      "size": 72,
+      "code_hex": "f30f1efa4883ec3864488b042528000000488944242831c0884c240b8854240a408874240940887c24088b442408488b54242864482b14252800000075054883c438c3e83878c9ff",
+      "code_sha256": "0dd387af48bda55c335ba3131776353139dbc082b2ff429fcf03a9a740234b93",
+      "calls": [
+        {
+          "instruction": 4927699,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    }
+  ],
+  "objects": {
+    "IS_ARL_GLOBAL": {
+      "address": 29869634,
+      "size": 1,
+      "source_initial_hex": "00"
+    },
+    "GLOBAL_IS_NVL": {
+      "address": 29869616,
+      "size": 1,
+      "source_initial_hex": "00"
+    }
+  },
+  "literals": []
+}

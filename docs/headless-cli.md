@@ -59,6 +59,7 @@ sudo octool-cli intel-vf-read --cpu 0 --domain core
 sudo octool-cli intel-vf-read --cpu 0 --domain cache --point 8
 sudo octool-cli intel-turbo-read --cpu 0 --core-type p
 sudo octool-cli intel-turbo-read --cpu 0 --core-type e
+sudo octool-cli intel-uncore-read --cpu 0
 sudo octool-cli amd-smu-probe --cpu 0 --profile shimada
 sudo octool-cli amd-smu-read --cpu 0 --profile shimada --message 2
 octool-cli amd-topology --cpu 0
@@ -104,6 +105,11 @@ JSON 的 `edit_context` / `after` 提供配置，`write_attempted` / `verified` 
 相同值不写，失败不重试；返回 `verified`、`unchanged`、`write_attempted`、`completed_writes` 和前后快照。
 E 核表需要 CPUID 混合架构能力；分组编号不是物理核心编号，配置倍率不代表实测频率。
 详见[睿频分组还原](intel-turbo-recovery.md)。
+
+`intel-uncore-set --cpu N --minimum-ratio MIN --maximum-ratio MAX --apply`：
+同时设置 B7/8F 的共享 Ring/LLC 最小、最大倍率，要求 `1 <= MIN <= MAX <= 127`。
+保留其它位，重新检查身份与旧值，再完整读回；相同值不重复写入。
+此功能不改变 OC mailbox，也不把倍率显示为实测频率。参见[Ring/LLC 说明](intel-uncore-recovery.md)。
 
 `intel-set --cpu N --field FIELD --value VALUE --apply`：
 

@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "accessed": "2026-10-10",
+  "sources": [
+    {
+      "name": "linux-v612-uncore-frequency.c",
+      "url": "https://github.com/torvalds/linux/blob/v6.12/drivers/platform/x86/intel/uncore-frequency/uncore-frequency.c",
+      "bytes": 8173,
+      "sha256": "54d19ae80225d1ea5b7cb3a363d2750a5a3c6a310c86b62aa25e8646e2a796dc",
+      "git_blob": "a450b8a6bcec10c45003f0b3fdc21420a4fbd27e"
+    },
+    {
+      "name": "linux-v612-intel-family.h",
+      "url": "https://github.com/torvalds/linux/blob/v6.12/arch/x86/include/asm/intel-family.h",
+      "bytes": 6646,
+      "sha256": "40d6ec4b096e05e92c1e4d469ec09c5c0d000c39d303be3254ddc813613b64af",
+      "git_blob": "1a42f829667a37d65e96221c4a79e7d9f699e7a7"
+    },
+    {
+      "name": "intel-sdm4-835765.pdf",
+      "url": "https://cdrdv2-public.intel.com/835765/335592-sdm-vol-4.pdf",
+      "bytes": 2981074,
+      "sha256": "de47347b8d3827abf4ac1e8c9e72379e6c74f47403ad8976cdb27f38d2e172b9",
+      "git_blob": null
+    }
+  ],
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "evidence": [
+    {
+      "path": "analysis/fixtures/legacy-intel-uncore.json",
+      "sha256": "ee0cb4a9a4168c166d7875cf0f895d67d9de8d93ad98528f11d7a9f06e433193"
+    },
+    {
+      "path": "docs/validation/legacy-intel-uncore-static.json",
+      "sha256": "a9bfa2654cad50566d1d6f48c28a074e4e218f71dbe4352cb5ba3b32c16920f8"
+    },
+    {
+      "path": "docs/validation/legacy-intel-uncore-local.json",
+      "sha256": "ef19cf18edf1569f7e99ed6c5361f0690d0dbb6b67c5a56a0b875ad428743362"
+    }
+  ],
+  "implemented_profiles": [
+    "GenuineIntel family 6 model B7",
+    "GenuineIntel family 6 model 8F"
+  ],
+  "constraints": [
+    "CPUID MSR capability required; hypervisor rejected before MSR access.",
+    "MSR 620 bits 6:0 maximum and 14:8 minimum; preserve all other bits.",
+    "Explicit pair 1 <= minimum <= maximum <= 127; full readback; no OC mailbox changes.",
+    "Linux v6.12 driver is the primary model-support and access contract source.",
+    "SDM definitions for other models are semantic context, not additional B7/8F certification.",
+    "No target-machine or stability validation. Original experiment uses synthetic boundaries."
+  ]
+}

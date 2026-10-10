@@ -25,6 +25,7 @@ def stage_cli(stage, binary):
     copy(ROOT / "gui/LICENSE", stage / "usr/share/licenses/octool-cli/LICENSE")
     copy(ROOT / "docs/headless-cli.md", stage / "usr/share/doc/octool-cli/headless-cli.md")
     copy(ROOT / "docs/umc-offline.md", stage / "usr/share/doc/octool-cli/umc-offline.md")
+    copy(ROOT / "docs/intel-uncore-recovery.md", stage / "usr/share/doc/octool-cli/intel-uncore-recovery.md")
     return info
 
 

@@ -10,6 +10,7 @@
 #include "core/intel_controls.h"
 #include "core/intel_oc.h"
 #include "core/intel_turbo.h"
+#include "core/intel_uncore.h"
 #include "core/spd.h"
 #include "platform/linux_inventory_native.h"
 #include "platform/system_info.h"
@@ -73,6 +74,7 @@ const std::map<std::string, IntelField> intelFields = {
 struct Command {
     std::string name, path, otherPath, field;
     unsigned cpu = 0, timeout = 10000, ccd = 0, core = 0, point = 0, group = 0;
+    unsigned minimumRatio = 0, maximumRatio = 0;
     double value = 0;
     bool forEdit = false;
     SmuTarget smu; SmuCommand message; UmcTarget umc;
@@ -84,17 +86,18 @@ struct Command {
 Command parse(const std::vector<std::string> &args) {
     Command c; c.name = args.at(0);
     const std::set<std::string> hardware = {"cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read", "intel-vf-set", "intel-turbo-read", "intel-turbo-set",
-        "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
+        "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
     require(hardware.count(c.name) || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline, "Unknown command: " + c.name);
     std::set<std::string> keys = {"--json"};
     if (hardware.count(c.name)) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
-    const bool writing = c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "amd-smu-send" || c.name == "register-write";
+    const bool writing = c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "intel-uncore-set" || c.name == "amd-smu-send" || c.name == "register-write";
     const bool vf = c.name == "intel-vf-read" || c.name == "intel-vf-set";
     const bool turbo = c.name == "intel-turbo-read" || c.name == "intel-turbo-set";
     if (turbo) keys.insert("--core-type");
     if (c.name == "intel-turbo-set") { keys.insert("--group"); keys.insert("--value"); }
+    if (c.name == "intel-uncore-set") { keys.insert("--minimum-ratio"); keys.insert("--maximum-ratio"); }
     if (rawRegister) {
         for (const char *key : {"--space", "--address", "--width", "--bus", "--device", "--function"}) keys.insert(key);
         if (writing) keys.insert("--value");
@@ -149,6 +152,12 @@ Command parse(const std::vector<std::string> &args) {
         require(c.timeout > 0, "--timeout-ms must be 1..120000");
     }
     if (writing) require(options.count("--apply") != 0, "Settings commands require --apply; nothing was opened or changed");
+    if (c.name == "intel-uncore-set") {
+        c.minimumRatio = uintOption(options, "--minimum-ratio", 127);
+        c.maximumRatio = uintOption(options, "--maximum-ratio", 127);
+        std::uint64_t encoded = 0;
+        require(!encodeIntelUncoreRange(0, c.minimumRatio, c.maximumRatio, encoded), "Ring / LLC range requires 1 <= minimum <= maximum <= 127");
+    }
     if (turbo) {
         const auto kind = get(options, "--core-type");
         require(kind == "p" || kind == "e", "--core-type must be p or e");
@@ -248,6 +257,13 @@ std::string ocSnapshot(const IntelOcSnapshot &s) {
         {"target_mv", s.valid && !s.error ? number(intelOcTargetMillivolts(s.response.data)) : "null"},
         {"target_mode", s.valid && !s.error ? quote(intelOcVoltageMode(s.response.data) == IntelOcVoltageMode::Adaptive ? "adaptive" : "override") : "null"},
         {"max_ratio", s.valid && !s.error ? number(s.response.data & 255) : "null"}});
+}
+std::string uncoreSnapshot(const IntelUncoreSnapshot &s) {
+    const bool valid = s.valid && !s.error;
+    return object({{"error", number(s.error)}, {"valid", boolean(valid)}, {"identity", identity(s.identity)},
+        {"editable", boolean(intelUncoreEditable(s))}, {"raw", valid ? hex(s.raw, 16) : "null"},
+        {"minimum_ratio", valid ? number(intelUncoreMinimum(s.raw)) : "null"},
+        {"maximum_ratio", valid ? number(intelUncoreMaximum(s.raw)) : "null"}});
 }
 std::string turboSnapshot(const IntelTurboSnapshot &s) {
     const bool valid = s.valid && !s.error;
@@ -381,6 +397,24 @@ Result hardware(const Command &c, HardwareSession &s) {
             if (c.field == "target-mv") out.data.push_back({"requested_mode", quote(c.mode == IntelOcVoltageMode::Adaptive ? "adaptive" : "override")});
             out.data.push_back({"write_attempted", boolean(result.writeAttempted)}); out.data.push_back({"verified", boolean(result.verified)});
             out.data.push_back({"stage", number(unsigned(result.stage))}); out.data.push_back({"after", ocSnapshot(result.readback)});
+        }
+    } else if (c.name == "intel-uncore-read" || c.name == "intel-uncore-set") {
+        const auto snapshot = readIntelUncore(s, c.cpu); out.error = snapshot.error;
+        out.data.push_back({"msr", hex(0x620)});
+        out.data.push_back({"scope", quote("shared Ring / LLC domain of selected CPU")});
+        out.data.push_back({"before", uncoreSnapshot(snapshot)});
+        out.data.push_back({"hardware_effect_measured", "false"});
+        if (c.name == "intel-uncore-set") {
+            IntelUncoreUpdate result;
+            if (!out.error) { result = applyIntelUncoreRange(s, snapshot, c.minimumRatio, c.maximumRatio); out.error = result.error; }
+            out.data.push_back({"requested_minimum_ratio", number(c.minimumRatio)});
+            out.data.push_back({"requested_maximum_ratio", number(c.maximumRatio)});
+            out.data.push_back({"write_attempted", boolean(result.writeAttempted)});
+            out.data.push_back({"completed_writes", number(result.completed)});
+            out.data.push_back({"verified", boolean(result.verified && !out.error)});
+            out.data.push_back({"unchanged", boolean(result.unchanged)});
+            out.data.push_back({"expected_raw", result.expected ? hex(result.expected, 16) : "null"});
+            out.data.push_back({"after", uncoreSnapshot(result.after)});
         }
     } else if (c.name == "intel-turbo-read" || c.name == "intel-turbo-set") {
         const auto snapshot = readIntelTurbo(s, c.cpu, c.turboKind); out.error = snapshot.error;
@@ -593,6 +627,8 @@ Usage: octool-cli COMMAND [OPTIONS]
   intel-vf-read --cpu N --domain core|cache [--point 1..15 [--for-edit]]
   intel-vf-set --cpu N --domain core|cache --point 1..15 --value MV --apply
   intel-turbo-read --cpu N --core-type p|e
+  intel-uncore-read --cpu N
+  intel-uncore-set --cpu N --minimum-ratio MIN --maximum-ratio MAX --apply
   intel-turbo-set --cpu N --core-type p|e --group 0..7 --value RATIO --apply
   intel-oc-set --cpu N --domain core|cache --field offset-mv|max-ratio --value V --apply
   intel-oc-set --cpu N --domain core|cache --field target-mv --value INTEGER_MV --mode adaptive|override --apply

@@ -6,6 +6,7 @@
 #include "tests/intel_oc_fixture.h"
 #include "tests/intel_controls_fixture.h"
 #include "tests/intel_turbo_fixture.h"
+#include "tests/intel_uncore_fixture.h"
 #include <cassert>
 #include <cerrno>
 #include <iostream>
@@ -35,6 +36,19 @@ std::string command(HardwareBackend &device, const std::vector<std::string> &arg
 }
 void invalidBeforeOpen() {
     const std::vector<std::vector<std::string>> invalid = {
+        {"intel-uncore-read"},
+        {"intel-uncore-read", "--cpu", "0", "--apply"},
+        {"intel-uncore-read", "--cpu", "0", "--minimum-ratio", "8"},
+        {"intel-uncore-set", "--cpu", "0", "--minimum-ratio", "8", "--maximum-ratio", "45"},
+        {"intel-uncore-set", "--cpu", "0", "--minimum-ratio", "8", "--apply"},
+        {"intel-uncore-set", "--cpu", "0", "--maximum-ratio", "45", "--apply"},
+        {"intel-uncore-set", "--cpu", "0", "--minimum-ratio", "0", "--maximum-ratio", "45", "--apply"},
+        {"intel-uncore-set", "--cpu", "0", "--minimum-ratio", "46", "--maximum-ratio", "45", "--apply"},
+        {"intel-uncore-set", "--cpu", "0", "--minimum-ratio", "8", "--maximum-ratio", "128", "--apply"},
+        {"intel-uncore-set", "--cpu", "0", "--minimum-ratio", "-1", "--maximum-ratio", "45", "--apply"},
+        {"intel-uncore-set", "--cpu", "0", "--minimum-ratio", "8.5", "--maximum-ratio", "45", "--apply"},
+        {"intel-uncore-set", "--cpu", "0", "--minimum-ratio", "8", "--maximum-ratio", "4294967296", "--apply"},
+        {"intel-uncore-set", "--cpu", "0", "--minimum-ratio", "8", "--maximum-ratio", "45", "--maximum-ratio", "50", "--apply"},
         {"unknown"}, {"diagnose", "--cpu", "0"}, {"cpu"}, {"cpu", "--cpu"}, {"cpu", "--cpu", "-1"},
         {"cpu", "--cpu", "0x"}, {"cpu", "--cpu", "1junk"}, {"cpu", "--cpu", " 1"},
         {"cpu", "--cpu", "42949672960"}, {"cpu", "--cpu", "0", "--cpu", "1"},
@@ -319,6 +333,38 @@ void voltageCommands() {
         assert(intel.mutationCount == (failure == 2 ? 1u : 0u));
     }
 }
+void uncoreCommands() {
+    const std::vector<std::string> args = {"intel-uncore-set", "--cpu", "130", "--minimum-ratio", "12", "--maximum-ratio", "42", "--apply"};
+    for (unsigned model : {0xb7, 0x8f}) {
+        IntelUncoreFixture d; d.model = model; const auto original = d.regs[0x620];
+        command(d, {"intel-uncore-read", "--cpu", "130"}, 0);
+        assert(!d.writes && !d.wrongCpu);
+        const auto result = command(d, args, 0);
+        assert(result.find("\"verified\":true") != std::string::npos && d.writes == 1);
+        assert((original & ~UINT64_C(0x7f7f)) == (d.regs[0x620] & ~UINT64_C(0x7f7f)));
+        const auto unchanged = command(d, args, 0);
+        assert(unchanged.find("\"unchanged\":true") != std::string::npos && d.writes == 1 && !d.wrongCpu);
+    }
+    for (unsigned mode = 0; mode < 9; ++mode) {
+        IntelUncoreFixture d;
+        if (mode == 0) d.hypervisor = true;
+        if (mode == 1) d.model = 0xad;
+        if (mode == 2) d.failRead = 0;
+        if (mode == 3) d.failWrite = 0;
+        if (mode == 4) d.discardChange = true;
+        if (mode == 5) d.afterRequest = [&](const Request &r) { if (!r.write && d.reads == 1) d.regs[0x620] ^= UINT64_C(1) << 40; };
+        if (mode == 6) d.afterRequest = [&](const Request &r) { if (r.write) d.regs[0x620] ^= UINT64_C(1) << 63; };
+        if (mode == 7) d.regs[0x620] = 0;
+        if (mode == 8) d.failRead = 3;
+        const auto result = command(d, args, 3);
+        assert(result.find("\"verified\":false") != std::string::npos);
+        assert(d.writes == (mode == 3 || mode == 4 || mode == 6 || mode == 8 ? 1u : 0u));
+        if (mode <= 1) assert(d.requests.empty());
+    }
+    IntelUncoreFixture malformed; malformed.regs[0x620] = 0;
+    const auto result = command(malformed, {"intel-uncore-read", "--cpu", "130"}, 0);
+    assert(result.find("\"editable\":false") != std::string::npos && !malformed.writes);
+}
 void turboCommands() {
     for (const char *kind : {"p", "e"}) {
         IntelTurboFixture d;
@@ -494,8 +540,8 @@ int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--inventory-fixture") { inventory(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
-    offlineUmcDoesNotCreateBackend();
+    offlineUmcDoesNotCreateBackend(); uncoreCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "13 CLI scenario groups passed (119 rejected commands, real core with simulated devices)\n";
+    if (!emit) std::cout << "14 CLI scenario groups passed (132 rejected commands, real core with simulated devices)\n";
 }
