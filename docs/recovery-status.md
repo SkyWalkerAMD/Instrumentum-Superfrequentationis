@@ -1,5 +1,19 @@
 # 功能还原状态
 
+<!-- intel-turbo-e43bad7 -->
+2026-10-10：最新验证生产提交 `e43bad7`，GUI 与 CLI 同时新增 **Intel P/E 睿频分组**。
+读取八组倍率和活动核心数量阈值，支持选定组倍率设置、旧值检查与完整读回；
+当前限定 family 6/model B7，保留核心数量阈值，不视为逐物理核心设置。
+
+- [实现说明](intel-turbo-recovery.md)、[功能对照](frontend-progress.md)、[验证及交付](intel-turbo-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38028784706) 4/4，各 8 CTest / 81 场景组。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38028751967) 12/12，十目标各 10 CTest、180 份 JSON 验证。
+- [Linux GUI/驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38028751963) 23/23，十目标各 47 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-turbo-e43bad7/`：10 个 GUI + 10 个 CLI + 10 个可选 DKMS 包、对应源码和 SHA256SUMS。
+
+原版全部功能与四台真机验收仍未完成；驱动/HAL/ABI 未改，模拟测试不等于硬件调参验收。
+以下保留此前记录。
+
 <!-- controls-register-c0f97cc -->
 2026-10-10：最新验证生产提交 `c0f97cc`，GUI 与 CLI 同步更新。
 新增 **HWP 活动窗口**，全部 13 项 RAPL/HWP 设置检查完整配置读回；
@@ -51,14 +65,14 @@ PStates 写入、曲线写入、Intel server VF/fabric、板级专用控制等�
 
 `06b477c` 是此前 [Shimada 原始曲线查询](amd-curve-query-recovery.md)的历史版本，
 [当时验证](validation/amd-curve-recovery-ci-06b477c.json)为核心 4/4、Linux 23/23。
-最新生产版本以本页顶部为准，下表已更新到 `c0f97cc`。
+最新生产版本以本页顶部为准，下表已更新到 `e43bad7`。
 原版全部功能仍未完成。安装兼容、自动化回归、原指令研究和真实硬件验收分别记录，
 没有能代表四大模块全部功能的可靠百分比；212 个 UMC 字段也不是整个软件的功能分母。
 
 | 用户要求的模块 | 已接入可编译程序 | 尚未还原的部分 |
 |---|---|---|
 | AMD PStates | 按逻辑 CPU 采样 P0–P7、上限/能力检查、频率、64 位原值、完整 9 位 VID / Idd 编码 | 型号专用 mV/A 换算；满足跨核/跨 coherent fabric 一致性的设置 |
-| Intel Controls | RAPL、HWP 含活动窗口，13 项设置完整读回；温度；Raptor Lake-S core/cache offset、最大 OC ratio、目标电压与 Adaptive/Override；VF 点查询 | W790/W890 电压域；VF 写入、逐核 turbo/ratio/VID rank/SP、fabric/BCLK |
+| Intel Controls | RAPL、HWP 含活动窗口，13 项设置完整读回；温度；Raptor Lake-S core/cache offset、最大 OC ratio、目标电压与 Adaptive/Override；VF 点查询；P/E 睿频分组读取及单组倍率设置 | W790/W890 电压域；VF 写入、逐物理核心 override、活动核心阈值编辑、TVB、VID rank/SP、fabric/BCLK |
 | AMD 调参 | 三套独立 BIOS SMUIO；Shimada 已提取命令和逐核频率参数准备；CPUID 稀疏拓扑；限定身份的原始曲线查询 | CPUID 与固件目标 ID 对应；MP1/PBO 高层单位、曲线设置/电流/温度限制、PM 表、profiles/hotkeys |
 | 内存与主板 | DMI/BIOS、内核传感器、绑定驱动的 SPD、DDR4/5 基础 CRC/组织/基础时序；AMD UMC 212 字段、离线快照与 CLI 报告导入 GUI | UMC 各型号物理单位/通道标签；Intel 训练时序；PMIC/VRM/EC/时钟芯片和训练写入 |
 

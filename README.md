@@ -1,5 +1,19 @@
 # Instrumentum Superfrequentationis
 
+<!-- intel-turbo-e43bad7 -->
+2026-10-10：最新验证生产提交 `e43bad7`，GUI 与 CLI 同时新增 **Intel P/E 睿频分组**。
+读取八组倍率和活动核心数量阈值，支持选定组倍率设置、旧值检查与完整读回；
+当前限定 family 6/model B7，保留核心数量阈值，不视为逐物理核心设置。
+
+- [实现说明](docs/intel-turbo-recovery.md)、[功能对照](docs/frontend-progress.md)、[验证及交付](docs/intel-turbo-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38028784706) 4/4，各 8 CTest / 81 场景组。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38028751967) 12/12，十目标各 10 CTest、180 份 JSON 验证。
+- [Linux GUI/驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38028751963) 23/23，十目标各 47 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-turbo-e43bad7/`：10 个 GUI + 10 个 CLI + 10 个可选 DKMS 包、对应源码和 SHA256SUMS。
+
+原版全部功能与四台真机验收仍未完成；驱动/HAL/ABI 未改，模拟测试不等于硬件调参验收。
+以下保留此前记录。
+
 <!-- controls-register-c0f97cc -->
 2026-10-10：最新验证生产提交 `c0f97cc`，GUI 与 CLI 同步更新。
 新增 **HWP 活动窗口**，全部 13 项 RAPL/HWP 设置检查完整配置读回；
