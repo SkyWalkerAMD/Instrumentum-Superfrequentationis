@@ -70,7 +70,7 @@ void gatesAndOverlap() {
         }
     }
     auto b = spdFixture(); b[643] = 0; spdSeal(b,640,62);
-    std::fill(b.begin()+704,b.end(),0xff);
+    std::fill(b.begin()+704,b.end(),std::uint8_t(0xff));
     auto r = decodeSpd(b); assert(!r.xmp.error);
     for (const auto &p : r.xmp.profiles) assert(!p.enabled && !p.crc.checked && p.values.empty());
     b = spdFixture(); b[642] = 0x31; spdSeal(b,640,62);
