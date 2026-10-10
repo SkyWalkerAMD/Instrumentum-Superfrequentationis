@@ -29,6 +29,12 @@ struct Test {
         const int error = service.transaction([&](HardwareSession &s) { out = applyIntelOcRatio(s, old, value); return out.error; });
         assert(error == out.error); return out;
     }
+    IntelOcUpdate voltage(const IntelOcSnapshot &old, unsigned value = 1234,
+                          IntelOcVoltageMode mode = IntelOcVoltageMode::Adaptive) {
+        IntelOcUpdate out;
+        const int error = service.transaction([&](HardwareSession &s) { out = applyIntelOcVoltage(s, old, value, mode); return out.error; });
+        assert(error == out.error); return out;
+    }
     IntelVfSnapshot vf(unsigned point = 0, IntelOcDomain domain = IntelOcDomain::Core) {
         IntelVfSnapshot out;
         const int error = service.transaction([&](HardwareSession &s) { out = readIntelVf(s, 130, domain, point); return out.error; });
@@ -223,6 +229,113 @@ void ratioGuardsAndCancellation() {
     const auto pending = busy.ratio(original);
     assert(pending.error == -ETIMEDOUT && pending.writeAttempted && !pending.verified && busy.device->mutationCount == 1);
 }
+void voltageEncoding() {
+    for (const auto mode : {IntelOcVoltageMode::Adaptive, IntelOcVoltageMode::Override}) {
+        for (unsigned mv = 1; mv <= 2000; ++mv) {
+            for (const auto old : {UINT32_C(0), UINT32_MAX, UINT32_C(0xf3512345), UINT32_C(0x012abcde)}) {
+                std::uint32_t encoded = 0;
+                assert(!encodeIntelOcVoltage(mv, mode, old, encoded));
+                assert(intelOcVoltageMode(encoded) == mode);
+                assert((encoded & 0xffe000ffu) == (old & 0xffe000ffu));
+                assert(std::abs(intelOcTargetMillivolts(encoded) - mv) <= 500.0 / 1024.0);
+            }
+        }
+    }
+    std::uint32_t value = 0;
+    assert(!encodeIntelOcVoltage(1234, IntelOcVoltageMode::Override, 0xf3512345, value) && value == 0xf354f045);
+    assert(intelOcTargetMillivolts(value) == 1234.375);
+    assert(!encodeIntelOcVoltage(2000, IntelOcVoltageMode::Adaptive, 0, value) && value == 0x80000);
+    for (unsigned invalid : {0u, 2001u, 4096u, UINT32_MAX}) {
+        value = 7;
+        assert(encodeIntelOcVoltage(invalid, IntelOcVoltageMode::Adaptive, 0, value) == -ERANGE && value == 7);
+        Test t; const auto old = t.read(); t.device->clearTrace();
+        assert(t.voltage(old, invalid).error == -ERANGE && !t.device->calls);
+    }
+    for (const auto mode : {IntelOcVoltageMode(-1), IntelOcVoltageMode(2)}) {
+        value = 7;
+        assert(encodeIntelOcVoltage(1000, mode, 0, value) == -EINVAL && value == 7);
+        Test t; const auto old = t.read(); t.device->clearTrace();
+        assert(t.voltage(old, 1000, mode).error == -EINVAL && !t.device->calls);
+    }
+}
+void voltagePreservesAndNoop() {
+    for (const auto domain : {IntelOcDomain::Core, IntelOcDomain::Cache}) {
+        for (const auto mode : {IntelOcVoltageMode::Adaptive, IntelOcVoltageMode::Override}) {
+            Test t; const auto old = t.read(domain); const auto other = t.device->settings[2 - unsigned(domain)];
+            t.device->clearTrace(); const auto out = t.voltage(old, 1234, mode);
+            assert(!out.error && out.verified && out.writeAttempted && out.stage == IntelOcStage::Complete);
+            assert((out.submitted & 0xffe000ffu) == (old.response.data & 0xffe000ffu));
+            assert(intelOcVoltageMode(out.readback.response.data) == mode && intelOcTargetMillivolts(out.readback.response.data) == 1234.375);
+            assert(t.device->settings[2 - unsigned(domain)] == other && !t.device->wrongCpu && t.device->mutationCount == 1);
+            assert(t.device->commands == std::vector<unsigned>({0x10, 0x11, 0x10}));
+            t.device->clearTrace(); const auto same = t.voltage(out.readback, 1234, mode);
+            assert(!same.error && same.verified && !same.writeAttempted && t.device->mutationCount == 1);
+            assert(t.device->commands == std::vector<unsigned>{0x10});
+            const auto offset = t.apply(same.readback); const auto ratio = t.ratio(offset.readback);
+            assert(offset.verified && ratio.verified && (ratio.submitted & 0x1fff00u) == (out.submitted & 0x1fff00u));
+        }
+    }
+}
+void voltageFailuresAndReadback() {
+    Test baseline; const auto old = baseline.read(); baseline.device->clearTrace(); assert(baseline.voltage(old).verified);
+    for (unsigned index = 0; index < baseline.device->calls; ++index) {
+        Test t; const auto before = t.read(); t.device->clearTrace(); t.device->failAt = int(index);
+        const auto out = t.voltage(before);
+        assert(out.error == -EACCES && !out.verified && t.device->calls == index + 1);
+        unsigned attempts = 0;
+        for (const auto &r : t.device->requests) if (r.write && ((r.value >> 32) & 255) == 0x11) ++attempts;
+        assert(attempts <= 1 && out.writeAttempted == (attempts != 0));
+    }
+    Test reject; const auto before = reject.read(); reject.device->failCommand = 0x11; reject.device->status = 3;
+    const auto denied = reject.voltage(before);
+    assert(denied.error == -EIO && !denied.verified && denied.response.firmwareStatus == 3 && !reject.device->mutationCount);
+    Test ignored; const auto previous = ignored.read(); ignored.device->discardChange = true;
+    const auto out = ignored.voltage(previous);
+    assert(out.error == -EIO && !out.verified && out.stage == IntelOcStage::Verify && ignored.device->mutationCount == 1);
+    // Verify every bit: correct target/mode alone cannot certify preservation.
+    for (unsigned bit = 0; bit < 32; ++bit) {
+        Test t; const auto initial = t.read(); bool changed = false;
+        t.device->afterRequest = [&] {
+            if (!changed && t.device->mutationCount == 1) { t.device->settings[0] ^= 1u << bit; changed = true; }
+        };
+        const auto mismatch = t.voltage(initial);
+        assert(mismatch.error == -EIO && !mismatch.verified && mismatch.stage == IntelOcStage::Verify && t.device->mutationCount == 1);
+    }
+}
+void voltageGuards() {
+    Test stale; const auto old = stale.read(); stale.device->settings[0] ^= 1u << 31;
+    assert(stale.voltage(old).error == -EAGAIN && !stale.device->mutationCount);
+    Test locked; const auto unlocked = locked.read(); locked.device->locked = true;
+    assert(locked.voltage(unlocked).error == -EPERM && !locked.device->mutationCount);
+    const auto nowLocked = locked.read(); locked.device->clearTrace();
+    assert(locked.voltage(nowLocked).error == -EPERM && !locked.device->calls);
+    Test invalid; auto snapshot = invalid.read(); snapshot.valid = false; invalid.device->clearTrace();
+    assert(invalid.voltage(snapshot).error == -EINVAL && !invalid.device->calls);
+    Test changed; const auto client = changed.read(); changed.device->model = 0x8f;
+    assert(changed.voltage(client).error == -ENOTSUP && !changed.device->mutationCount);
+    Test busy; const auto original = busy.read(); busy.device->busyCommand = 0x11;
+    const auto pending = busy.voltage(original);
+    assert(pending.error == -ETIMEDOUT && pending.writeAttempted && !pending.verified && busy.device->mutationCount == 1);
+}
+void voltageCancellationAndDeadline() {
+    for (bool timeout : {false, true}) {
+        for (unsigned boundary : {4u, 6u, 11u}) {
+            Test t; const auto before = t.read(); t.device->clearTrace(); std::atomic<bool> cancelled{false};
+            t.device->afterRequest = [&] {
+                if (t.device->requests.size() == boundary) {
+                    if (timeout) std::this_thread::sleep_for(std::chrono::milliseconds(20));
+                    else cancelled.store(true);
+                }
+            };
+            IntelOcUpdate out;
+            const int error = t.service.transaction([&](HardwareSession &s) {
+                out = applyIntelOcVoltage(s, before, 1234, IntelOcVoltageMode::Override); return out.error;
+            }, timeout ? 10 : 1000, &cancelled);
+            assert(error == (timeout ? -ETIMEDOUT : -ECANCELED) && out.error == error && !out.verified);
+            assert(out.writeAttempted == (boundary > 4) && t.device->mutationCount == unsigned(boundary > 4));
+        }
+    }
+}
 void vfDomainsAndSelection() {
     for (const auto domain : {IntelOcDomain::Core, IntelOcDomain::Cache}) {
         Test t; t.device->locked = true; const auto all = t.vf(0, domain);
@@ -312,6 +425,7 @@ int main() {
     encoding(); readDomains(); identityRejection(); readFailures(); applyPreservesAndNoop();
     staleAndLock(); applyFailures(); firmwareAndReadback(); waitBounds(); cancellation();
     ratioEncoding(); ratioPreservesVoltageAndNoop(); ratioFailurePositionsAndReadback(); ratioGuardsAndCancellation();
+    voltageEncoding(); voltagePreservesAndNoop(); voltageFailuresAndReadback(); voltageGuards(); voltageCancellationAndDeadline();
     vfDomainsAndSelection(); vfRejectionsBeforeIo(); vfFirmwareHoles(); vfTransportFailures(); vfBusyBounds(); vfCancellationAndDeadline();
-    std::cout << "20 Intel OC / VF scenario groups passed\n";
+    std::cout << "25 Intel OC / VF scenario groups passed\n";
 }

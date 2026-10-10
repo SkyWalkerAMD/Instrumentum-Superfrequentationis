@@ -26,4 +26,4 @@ class IntelOcCore(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             result = subprocess.run([str(binary)], capture_output=True, text=True, timeout=45)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertEqual(result.stdout.strip(), '20 Intel OC / VF scenario groups passed')
+            self.assertEqual(result.stdout.strip(), '25 Intel OC / VF scenario groups passed')

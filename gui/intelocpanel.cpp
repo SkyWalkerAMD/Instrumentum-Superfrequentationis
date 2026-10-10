@@ -23,12 +23,15 @@ QString failure(int error, const octool::core::IntelOcResponse &r) {
     if (r.completed && r.firmwareStatus) text += QString(" Firmware status: 0x%1.").arg(r.firmwareStatus, 2, 16, QChar('0'));
     return text;
 }
+QString modeName(octool::core::IntelOcVoltageMode mode) {
+    return mode == octool::core::IntelOcVoltageMode::Override ? "Override" : "Adaptive";
+}
 }
 IntelOcPanel::IntelOcPanel(std::shared_ptr<HardwareAccess> access, QWidget *parent, unsigned cpu)
     : QWidget(parent), access_(std::move(access)), cancelled_(std::make_shared<std::atomic<bool>>(false)) {
     setObjectName("intelOc"); auto *layout = new QVBoxLayout(this);
     auto *scope = new QLabel("Intel core / cache voltage and maximum ratio · Raptor Lake-S client profile\n"
-        "Read sends a firmware query. Each apply changes one setting in the selected domain and checks the full readback. "
+        "Read sends a firmware query. Apply changes the selected domain and checks the full readback. "
         "BIOS locks and undervolt protection may reject changes. Xeon W790 / W890 and per-core VF controls use separate interfaces and are not enabled here.", this);
     scope->setWordWrap(true); layout->addWidget(scope);
     auto *buttons = new QHBoxLayout;
@@ -52,6 +55,18 @@ IntelOcPanel::IntelOcPanel(std::shared_ptr<HardwareAccess> access, QWidget *pare
     ratio_->setPlaceholderText("Integer 1..85; no preset"); ratioRow->addWidget(ratio_);
     applyRatio_ = new QPushButton("Apply ratio…", this); applyRatio_->setObjectName("ocApplyRatio"); applyRatio_->setEnabled(false);
     ratioRow->addWidget(applyRatio_); layout->addLayout(ratioRow);
+    auto *voltageRow = new QHBoxLayout;
+    voltageRow->addWidget(new QLabel("Target (mV)", this));
+    target_ = new QLineEdit(this); target_->setObjectName("ocTarget");
+    target_->setPlaceholderText("Integer 1..2000; no preset"); voltageRow->addWidget(target_);
+    mode_ = new QComboBox(this); mode_->setObjectName("ocMode");
+    mode_->addItem("Choose mode…", -1);
+    mode_->addItem("Adaptive", int(octool::core::IntelOcVoltageMode::Adaptive));
+    mode_->addItem("Override", int(octool::core::IntelOcVoltageMode::Override)); voltageRow->addWidget(mode_);
+    applyVoltage_ = new QPushButton("Apply target + mode…", this); applyVoltage_->setObjectName("ocApplyVoltage");
+    applyVoltage_->setEnabled(false); voltageRow->addWidget(applyVoltage_); layout->addLayout(voltageRow);
+    auto *voltageScope = new QLabel("Adaptive configures the turbo voltage target; Override configures a fixed target. The input range is not an operating recommendation. BIOS and CPU limits still apply.", this);
+    voltageScope->setWordWrap(true); layout->addWidget(voltageScope);
     auto *ratioScope = new QLabel("Ratio is a domain limit. Actual frequency depends on other limits and the reference clock. Per-core and active-core turbo tables are separate.", this);
     ratioScope->setWordWrap(true); layout->addWidget(ratioScope);
     status_ = new QLabel("Ready. Read settings before making a change. No hardware access has been performed.", this);
@@ -60,8 +75,9 @@ IntelOcPanel::IntelOcPanel(std::shared_ptr<HardwareAccess> access, QWidget *pare
     connect(cpu_, &QLineEdit::textChanged, this, clear);
     connect(domain_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, clear);
     connect(read, &QPushButton::clicked, this, [this] { refresh(); });
-    connect(apply_, &QPushButton::clicked, this, [this] { apply(); });
-    connect(applyRatio_, &QPushButton::clicked, this, [this] { apply(true); });
+    connect(apply_, &QPushButton::clicked, this, [this] { apply(Change::Offset); });
+    connect(applyRatio_, &QPushButton::clicked, this, [this] { apply(Change::Ratio); });
+    connect(applyVoltage_, &QPushButton::clicked, this, [this] { apply(Change::Voltage); });
     connect(copy, &QPushButton::clicked, this, [this] {
         QString text = status_->text()+"\n";
         for (int row = 0; row < table_->rowCount(); ++row)
@@ -71,8 +87,8 @@ IntelOcPanel::IntelOcPanel(std::shared_ptr<HardwareAccess> access, QWidget *pare
 }
 IntelOcPanel::~IntelOcPanel() { cancelled_->store(true); }
 void IntelOcPanel::invalidate() {
-    snapshot_ = {}; table_->setRowCount(0); value_->clear(); ratio_->clear();
-    apply_->setEnabled(false); applyRatio_->setEnabled(false);
+    snapshot_ = {}; table_->setRowCount(0); value_->clear(); ratio_->clear(); target_->clear(); mode_->setCurrentIndex(0);
+    apply_->setEnabled(false); applyRatio_->setEnabled(false); applyVoltage_->setEnabled(false);
 }
 void IntelOcPanel::present(const octool::core::IntelOcSnapshot &snapshot) {
     using namespace octool::core;
@@ -86,12 +102,12 @@ void IntelOcPanel::present(const octool::core::IntelOcSnapshot &snapshot) {
     };
     const auto data = snapshot.response.data;
     add("Voltage offset", QString::number(intelOcOffsetMillivolts(data), 'g', 12), "mV (configured offset)");
-    add("Voltage target", QString::number(double((data >> 8) & 4095) / 1024.0, 'g', 12), "V (encoded target, not measured voltage)");
-    add("Target mode", data & (1u << 20) ? "Override" : "Adaptive", "Preserved on both applies");
+    add("Voltage target", QString::number(intelOcTargetMillivolts(data), 'g', 12), "mV (configured target, not measured voltage)");
+    add("Target mode", modeName(intelOcVoltageMode(data)), "Adaptive turbo target / Override fixed target");
     add("Maximum OC ratio", QString::number(data & 255), "Domain limit encoding; not measured frequency");
     add("Mailbox data", hexValue(data, 4), "Raw 32-bit setting");
     add("OC lock", snapshot.locked ? "Locked" : "Not locked", "Firmware may impose additional restrictions");
-    apply_->setEnabled(!snapshot.locked); applyRatio_->setEnabled(!snapshot.locked);
+    apply_->setEnabled(!snapshot.locked); applyRatio_->setEnabled(!snapshot.locked); applyVoltage_->setEnabled(!snapshot.locked);
     status_->setText(QString("CPU %1 · %2 · signature %3 · %4. Configured values read; physical voltage is not measured.")
         .arg(snapshot.cpu).arg(snapshot.domain == IntelOcDomain::Core ? "Core" : "Cache / ring")
         .arg(hexValue(snapshot.identity.signature, 4)).arg(QDateTime::currentDateTime().toString(Qt::ISODate)));
@@ -114,35 +130,44 @@ void IntelOcPanel::refresh() {
         return out;
     }));
 }
-void IntelOcPanel::apply(bool ratio) {
+void IntelOcPanel::apply(Change kind) {
     using namespace octool::core;
-    bool ok = false; std::uint32_t encoded = 0; quint64 requestedRatio = 0;
-    const double requested = ratio ? 0.0 : value_->text().toDouble(&ok);
+    bool ok = false; std::uint32_t encoded = 0; quint64 requestedInteger = 0;
+    const double requested = kind == Change::Offset ? value_->text().toDouble(&ok) : 0.0;
+    const auto mode = IntelOcVoltageMode(mode_->currentData().toInt());
     int encodingError = 0;
-    if (ratio) {
-        ok = parseNumber(ratio_->text(), 10, 85, requestedRatio);
-        encodingError = encodeIntelOcRatio(unsigned(requestedRatio), snapshot_.response.data, encoded);
+    if (kind == Change::Ratio) {
+        ok = parseNumber(ratio_->text(), 10, 85, requestedInteger);
+        encodingError = encodeIntelOcRatio(unsigned(requestedInteger), snapshot_.response.data, encoded);
+    } else if (kind == Change::Voltage) {
+        ok = parseNumber(target_->text(), 10, 2000, requestedInteger);
+        encodingError = encodeIntelOcVoltage(unsigned(requestedInteger), mode, snapshot_.response.data, encoded);
     } else encodingError = encodeIntelOcOffset(requested, snapshot_.response.data, encoded);
     if (!ok || !snapshot_.valid || snapshot_.locked || encodingError) {
-        status_->setText(ratio ? "Read an unlocked snapshot and enter an integer ratio from 1 to 85. This range is not an operating recommendation."
+        status_->setText(kind == Change::Voltage ? "Read an unlocked snapshot, enter an integer target from 1 to 2000 mV and choose a mode. This range is not an operating recommendation."
+            : kind == Change::Ratio ? "Read an unlocked snapshot and enter an integer ratio from 1 to 85. This range is not an operating recommendation."
                               : "Read an unlocked snapshot and enter a finite offset within the register's encoding range."); return;
     }
     const auto old = snapshot_;
-    const QString change = ratio ? QString("Maximum OC ratio: %1 → %2.\nVoltage offset, target and mode are preserved.").arg(old.response.data & 255).arg(requestedRatio)
+    const QString change = kind == Change::Voltage ? QString("Target: %1 mV (%2) → %3 mV (%4) after encoding.\nVoltage offset and ratio are preserved.")
+            .arg(intelOcTargetMillivolts(old.response.data), 0, 'g', 12).arg(modeName(intelOcVoltageMode(old.response.data)))
+            .arg(intelOcTargetMillivolts(encoded), 0, 'g', 12).arg(modeName(mode))
+        : kind == Change::Ratio ? QString("Maximum OC ratio: %1 → %2.\nVoltage offset, target and mode are preserved.").arg(old.response.data & 255).arg(requestedInteger)
         : QString("Offset: %1 mV → %2 mV after encoding.\nRatio, voltage target and mode are preserved.")
             .arg(intelOcOffsetMillivolts(old.response.data), 0, 'g', 12).arg(intelOcOffsetMillivolts(encoded), 0, 'g', 12);
-    if (QMessageBox::question(this, ratio ? "Apply Intel maximum ratio" : "Apply Intel voltage offset",
+    if (QMessageBox::question(this, kind == Change::Voltage ? "Apply Intel voltage target and mode" : kind == Change::Ratio ? "Apply Intel maximum ratio" : "Apply Intel voltage offset",
         QString("CPU %1 · %2\n%3\nChanging operating settings can make the system unstable. The full setting is read back after one write; failures are not automatically retried.")
         .arg(old.cpu).arg(old.domain == IntelOcDomain::Core ? "Core" : "Cache / ring")
         .arg(change),
         QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Yes) return;
     invalidate(); setEnabled(false); status_->setText("Comparing fresh settings, applying the change and checking readback…");
     auto *watcher = new QFutureWatcher<IntelOcUpdate>(this);
-    connect(watcher, &QFutureWatcher<IntelOcUpdate>::finished, this, [this, watcher, ratio] {
+    connect(watcher, &QFutureWatcher<IntelOcUpdate>::finished, this, [this, watcher, kind] {
         const auto r = watcher->result(); setEnabled(true);
         if (!r.error && r.verified) {
             present(r.readback);
-            status_->setText(status_->text()+(r.writeAttempted ? (ratio ? " Ratio accepted and full setting read back unchanged outside the ratio field."
+            status_->setText(status_->text()+(r.writeAttempted ? (kind == Change::Voltage ? " Target and mode accepted; full setting read back with offset and ratio preserved."
+                : kind == Change::Ratio ? " Ratio accepted and full setting read back unchanged outside the ratio field."
                 : " Offset accepted and full setting read back unchanged outside the offset field.") : " Requested encoding already present; no settings-change command sent."));
         } else {
             invalidate(); status_->setText(failure(r.error ? r.error : -EIO, r.response)+
@@ -151,10 +176,11 @@ void IntelOcPanel::apply(bool ratio) {
         watcher->deleteLater();
     });
     const auto access = access_; const auto cancelled = cancelled_;
-    watcher->setFuture(QtConcurrent::run([access, cancelled, old, requested, ratio, requestedRatio] {
+    watcher->setFuture(QtConcurrent::run([access, cancelled, old, requested, kind, requestedInteger, mode] {
         IntelOcUpdate out;
         const int error = access->transaction([&](HardwareSession &s) {
-            out = ratio ? applyIntelOcRatio(s, old, unsigned(requestedRatio)) : applyIntelOcOffset(s, old, requested);
+            out = kind == Change::Voltage ? applyIntelOcVoltage(s, old, unsigned(requestedInteger), mode)
+                : kind == Change::Ratio ? applyIntelOcRatio(s, old, unsigned(requestedInteger)) : applyIntelOcOffset(s, old, requested);
             return out.error;
         }, 5000, cancelled.get());
         if (error) out.error = error;

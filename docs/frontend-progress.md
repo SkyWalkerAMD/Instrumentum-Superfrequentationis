@@ -7,8 +7,8 @@
 |---|---|---|---|
 | AMD PStates | AMD PStates 页 | `amd-pstates` | Family 1Ah 定义读取，未恢复设置 |
 | Intel RAPL / HWP / DTS | Power / performance | `intel-read` / `intel-set` | 已支持的型号与能力；设置返回提交结果 |
-| Intel core/cache offset 与最大倍率 | Core / cache voltage and ratio | `intel-oc-read` / `intel-oc-set` | Raptor Lake-S B7；锁、旧值与完整回读 |
-| Intel V/F 点 | V/F points | `intel-vf-read` | **本轮新增**；B7，两域，单点/候选 1..15，查询 |
+| Intel core/cache offset、最大倍率、目标电压与模式 | Core / cache voltage and ratio | `intel-oc-read` / `intel-oc-set` | B7；[本轮新增目标电压 + Adaptive/Override](intel-voltage-recovery.md)，锁、旧值与完整回读 |
+| Intel V/F 点 | V/F points | `intel-vf-read` | B7，两域，单点/候选 1..15，查询 |
 | AMD SMU | AMD tuning | `amd-smu-probe/read/send` | 现有身份/命令白名单与原始参数 |
 | AMD 曲线读取 | AMD tuning 曲线查询 | `amd-curve-read` | Shimada；显式固件 CCD/core；不推导 mV |
 | AMD 拓扑 | AMD tuning | `amd-topology` | CPUID 拓扑，不作为固件目标映射 |

@@ -56,6 +56,20 @@ double intelOcOffsetMillivolts(std::uint32_t data) {
     if (code & 1024) code -= 2048;
     return double(code) * (1000.0 / 1024.0);
 }
+double intelOcTargetMillivolts(std::uint32_t data) {
+    return double((data >> 8) & 4095) * (1000.0 / 1024.0);
+}
+IntelOcVoltageMode intelOcVoltageMode(std::uint32_t data) {
+    return (data & (1u << 20)) ? IntelOcVoltageMode::Override : IntelOcVoltageMode::Adaptive;
+}
+int encodeIntelOcVoltage(unsigned millivolts, IntelOcVoltageMode mode,
+                         std::uint32_t previous, std::uint32_t &encoded) {
+    if (mode != IntelOcVoltageMode::Adaptive && mode != IntelOcVoltageMode::Override) return -EINVAL;
+    if (!millivolts || millivolts > 2000) return -ERANGE;
+    const unsigned code = (millivolts * 1024u + 500u) / 1000u;
+    encoded = (previous & UINT32_C(0xffe000ff)) | (code << 8) | (unsigned(mode) << 20);
+    return 0;
+}
 int encodeIntelOcOffset(double millivolts, std::uint32_t previous, std::uint32_t &encoded) {
     // Bounds are representation limits, not recommended operating voltages.
     if (!std::isfinite(millivolts) || millivolts < -1000.0 ||
@@ -155,6 +169,12 @@ IntelOcUpdate applyIntelOcOffset(HardwareSession &s, const IntelOcSnapshot &old,
 IntelOcUpdate applyIntelOcRatio(HardwareSession &s, const IntelOcSnapshot &old, unsigned ratio) {
     std::uint32_t encoded = 0;
     const int error = encodeIntelOcRatio(ratio, old.response.data, encoded);
+    return applyEncoded(s, old, error, encoded);
+}
+IntelOcUpdate applyIntelOcVoltage(HardwareSession &s, const IntelOcSnapshot &old,
+                                 unsigned millivolts, IntelOcVoltageMode mode) {
+    std::uint32_t encoded = 0;
+    const int error = encodeIntelOcVoltage(millivolts, mode, old.response.data, encoded);
     return applyEncoded(s, old, error, encoded);
 }
 } }

@@ -17,14 +17,15 @@ public:
 private:
     void invalidate();
     void refresh();
-    void apply(bool ratio = false);
+    enum class Change { Offset, Ratio, Voltage };
+    void apply(Change change);
     void present(const octool::core::IntelOcSnapshot &snapshot);
     std::shared_ptr<HardwareAccess> access_;
     std::shared_ptr<std::atomic<bool>> cancelled_;
     octool::core::IntelOcSnapshot snapshot_;
-    QLineEdit *cpu_, *value_, *ratio_;
-    QComboBox *domain_;
-    QPushButton *apply_, *applyRatio_;
+    QLineEdit *cpu_, *value_, *ratio_, *target_;
+    QComboBox *domain_, *mode_;
+    QPushButton *apply_, *applyRatio_, *applyVoltage_;
     QTableWidget *table_;
     QLabel *status_;
 };

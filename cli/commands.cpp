@@ -73,6 +73,7 @@ struct Command {
     double value = 0;
     SmuTarget smu; SmuCommand message; UmcTarget umc;
     IntelOcDomain domain = IntelOcDomain::Core;
+    IntelOcVoltageMode mode = IntelOcVoltageMode::Adaptive;
 };
 Command parse(const std::vector<std::string> &args) {
     Command c; c.name = args.at(0);
@@ -85,6 +86,7 @@ Command parse(const std::vector<std::string> &args) {
     if (writing) keys.insert("--apply");
     if (c.name == "intel-set" || c.name == "intel-oc-set") { keys.insert("--field"); keys.insert("--value"); }
     if (c.name == "intel-oc-read" || c.name == "intel-oc-set" || c.name == "intel-vf-read") keys.insert("--domain");
+    if (c.name == "intel-oc-set") keys.insert("--mode");
     if (c.name == "intel-vf-read") keys.insert("--point");
     const bool smu = c.name == "amd-smu-probe" || c.name == "amd-smu-read" || c.name == "amd-smu-send";
     if (smu) keys.insert("--profile");
@@ -120,10 +122,19 @@ Command parse(const std::vector<std::string> &args) {
             else if (f <= IntelField::Pl2Clamp) require(c.value == 0 || c.value == 1, "Enable/clamp must be 0 or 1");
             else require(c.value >= 0 && c.value <= 255 && std::floor(c.value) == c.value, "HWP value must be an integer 0..255");
         } else {
-            require(c.field == "offset-mv" || c.field == "max-ratio", "OC field must be offset-mv or max-ratio");
+            require(c.field == "offset-mv" || c.field == "max-ratio" || c.field == "target-mv", "OC field must be offset-mv, max-ratio or target-mv");
             std::uint32_t encoded = 0;
-            if (c.field == "offset-mv") require(!encodeIntelOcOffset(c.value, 0, encoded), "Voltage offset is out of range");
-            else require(c.value >= 1 && c.value <= 85 && std::floor(c.value) == c.value, "Maximum ratio must be an integer 1..85");
+            if (c.field == "target-mv") {
+                const auto mode = get(options, "--mode");
+                require(mode == "adaptive" || mode == "override", "--mode must be adaptive or override");
+                c.mode = mode == "adaptive" ? IntelOcVoltageMode::Adaptive : IntelOcVoltageMode::Override;
+                require(c.value >= 1 && c.value <= 2000 && std::floor(c.value) == c.value, "Voltage target must be an integer 1..2000 mV");
+                require(!encodeIntelOcVoltage(unsigned(c.value), c.mode, 0, encoded), "Invalid voltage target or mode");
+            } else {
+                require(!options.count("--mode"), "--mode is only valid with --field target-mv");
+                if (c.field == "offset-mv") require(!encodeIntelOcOffset(c.value, 0, encoded), "Voltage offset is out of range");
+                else require(c.value >= 1 && c.value <= 85 && std::floor(c.value) == c.value, "Maximum ratio must be an integer 1..85");
+            }
         }
     }
     if (c.name == "intel-oc-read" || c.name == "intel-oc-set" || c.name == "intel-vf-read") {
@@ -176,6 +187,8 @@ std::string ocSnapshot(const IntelOcSnapshot &s) {
         {"locked", boolean(s.locked)}, {"firmware_status", number(s.response.firmwareStatus)},
         {"raw", s.valid && !s.error ? hex(s.response.data) : "null"},
         {"offset_mv", s.valid && !s.error ? number(intelOcOffsetMillivolts(s.response.data)) : "null"},
+        {"target_mv", s.valid && !s.error ? number(intelOcTargetMillivolts(s.response.data)) : "null"},
+        {"target_mode", s.valid && !s.error ? quote(intelOcVoltageMode(s.response.data) == IntelOcVoltageMode::Adaptive ? "adaptive" : "override") : "null"},
         {"max_ratio", s.valid && !s.error ? number(s.response.data & 255) : "null"}});
 }
 class Pstates final : public PstateReader {
@@ -247,10 +260,12 @@ Result hardware(const Command &c, HardwareSession &s) {
         if (c.name == "intel-oc-set") {
             IntelOcUpdate result;
             if (!out.error) {
-                result = c.field == "offset-mv" ? applyIntelOcOffset(s, snapshot, c.value) : applyIntelOcRatio(s, snapshot, unsigned(c.value));
+                result = c.field == "target-mv" ? applyIntelOcVoltage(s, snapshot, unsigned(c.value), c.mode)
+                    : c.field == "offset-mv" ? applyIntelOcOffset(s, snapshot, c.value) : applyIntelOcRatio(s, snapshot, unsigned(c.value));
                 out.error = result.error;
             }
             out.data.push_back({"field", quote(c.field)}); out.data.push_back({"requested", number(c.value)});
+            if (c.field == "target-mv") out.data.push_back({"requested_mode", quote(c.mode == IntelOcVoltageMode::Adaptive ? "adaptive" : "override")});
             out.data.push_back({"write_attempted", boolean(result.writeAttempted)}); out.data.push_back({"verified", boolean(result.verified)});
             out.data.push_back({"stage", number(unsigned(result.stage))}); out.data.push_back({"after", ocSnapshot(result.readback)});
         }
@@ -373,6 +388,7 @@ Usage: octool-cli COMMAND [OPTIONS]
   intel-oc-read --cpu N --domain core|cache
   intel-vf-read --cpu N --domain core|cache [--point 1..15]
   intel-oc-set --cpu N --domain core|cache --field offset-mv|max-ratio --value V --apply
+  intel-oc-set --cpu N --domain core|cache --field target-mv --value INTEGER_MV --mode adaptive|override --apply
   amd-smu-probe --cpu N --profile shimada|phoenix|gpt [PCI]
   amd-smu-read --cpu N --profile P --message 1|2 [PCI]
   amd-smu-send --cpu N --profile P --message M --arg0 A [--arg1 A ... --arg5 A] [PCI] --apply
@@ -384,7 +400,8 @@ PCI: --bus N --device N --function N (domain 0; defaults 0:0.0).
 Intel fields: pl1/pl2 (W), pl1-window/pl2-window (s), pl1-enable/pl2-enable,
   pl1-clamp/pl2-clamp (0 or 1), hwp-min/hwp-max/hwp-desired/hwp-epp (0..255).
 Hardware commands require explicit --cpu and accept --timeout-ms 1..120000.
-Integers are decimal or 0x-prefixed hex. No signs, whitespace or truncation.
+Unsigned indices accept decimal or 0x-prefixed hex; --value uses decimal.
+Voltage target requires integer 1..2000 mV and an explicit mode; this is not a safe operating range.
 Results are JSON (optional --json); raw registers are exact hexadecimal strings.
 Exit: 0 success, 2 invalid command/options, 3 failed operation or partial read.
 Run diagnose first; choose a CPU from allowed_cpus. Device access may need sudo.

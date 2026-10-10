@@ -123,6 +123,9 @@ private slots:
         QCOMPARE(umc.findChild<QTableWidget *>("umcTable")->rowCount(),0);
         QVERIFY(!oc.findChild<QPushButton *>("ocApply")->isEnabled());
         QVERIFY(!oc.findChild<QPushButton *>("ocApplyRatio")->isEnabled());
+        QVERIFY(!oc.findChild<QPushButton *>("ocApplyVoltage")->isEnabled());
+        QVERIFY(oc.findChild<QLineEdit *>("ocTarget")->text().isEmpty());
+        QCOMPARE(oc.findChild<QComboBox *>("ocMode")->currentData().toInt(), -1);
         QCOMPARE(vf.findChild<QLineEdit *>("vfCpu")->text(),QString("7"));
         QCOMPARE(vf.findChild<QTableWidget *>("vfTable")->rowCount(),0);
         intel.findChild<QLineEdit *>("intelValue")->setText("125");
@@ -290,6 +293,84 @@ private slots:
         QCOMPARE(device->mutationCount, 1u); QVERIFY(!apply->isEnabled());
         QCOMPARE(panel.findChild<QTableWidget *>("ocTable")->rowCount(), 0);
         QVERIFY(panel.findChild<QLabel *>("ocStatus")->text().contains("not verified"));
+    }
+    void intelOcVoltageValidatesCancelsAndPreservesDomains() {
+        for (int domain : {0, 1}) for (int mode : {1, 2}) {
+            auto *device = new IntelOcFixture;
+            auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+            IntelOcPanel panel(access, nullptr, 130); panel.show();
+            panel.findChild<QComboBox *>("ocDomain")->setCurrentIndex(domain);
+            panel.findChild<QPushButton *>("ocRead")->click(); QTRY_VERIFY(panel.isEnabled());
+            auto *apply = panel.findChild<QPushButton *>("ocApplyVoltage");
+            auto *value = panel.findChild<QLineEdit *>("ocTarget"); auto *choice = panel.findChild<QComboBox *>("ocMode");
+            const auto calls = device->calls;
+            value->setText("1234"); apply->click(); QCOMPARE(device->calls, calls); // No implicit mode.
+            choice->setCurrentIndex(mode);
+            for (const auto &invalid : {QString(), QString("-1"), QString("0"), QString("2001"), QString("1234.5"), QString("0x4d2"), QString("4294967295")}) {
+                value->setText(invalid); apply->click(); QCOMPARE(device->calls, calls);
+            }
+            value->setText("1234");
+            QTimer::singleShot(0, [] {
+                auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget());
+                if (box) box->button(QMessageBox::Cancel)->click();
+            });
+            apply->click(); QCOMPARE(device->calls, calls);
+            const auto previous = device->settings[domain * 2], other = device->settings[2 - domain * 2];
+            QTimer::singleShot(0, [] {
+                auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget());
+                if (box) box->button(QMessageBox::Yes)->click();
+            });
+            apply->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(device->settings[domain * 2], (previous & 0xffe000ffu) | 0x4f000u | (mode == 2 ? 1u << 20 : 0));
+            QCOMPARE(device->settings[2 - domain * 2], other); QCOMPARE(device->mutationCount, 1u); QCOMPARE(device->wrongCpu, 0u);
+            auto *table = panel.findChild<QTableWidget *>("ocTable");
+            QCOMPARE(table->item(1, 1)->text(), QString("1234.375"));
+            QCOMPARE(table->item(2, 1)->text(), mode == 2 ? QString("Override") : QString("Adaptive"));
+            QVERIFY(panel.findChild<QLabel *>("ocStatus")->text().contains("Target and mode accepted"));
+            QVERIFY(value->text().isEmpty()); QCOMPARE(choice->currentData().toInt(), -1);
+            value->setText("1500"); choice->setCurrentIndex(2);
+            panel.findChild<QLineEdit *>("ocCpu")->setText("131");
+            QVERIFY(value->text().isEmpty()); QCOMPARE(choice->currentData().toInt(), -1);
+            QVERIFY(!apply->isEnabled()); QCOMPARE(table->rowCount(), 0);
+        }
+    }
+    void intelOcVoltageLocksStaleAndUnverified() {
+        auto *device = new IntelOcFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelOcPanel panel(access, nullptr, 130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("ocRead"); auto *apply = panel.findChild<QPushButton *>("ocApplyVoltage");
+        device->locked = true; read->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(!apply->isEnabled());
+        device->locked = false;
+        for (bool stale : {true, false}) {
+            read->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(apply->isEnabled());
+            if (stale) device->settings[0] ^= 1u << 31;
+            else device->discardChange = true;
+            panel.findChild<QLineEdit *>("ocTarget")->setText("1234");
+            panel.findChild<QComboBox *>("ocMode")->setCurrentIndex(2);
+            QTimer::singleShot(0, [] {
+                auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget());
+                if (box) box->button(QMessageBox::Yes)->click();
+            });
+            apply->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(device->mutationCount, stale ? 0u : 1u); QVERIFY(!apply->isEnabled());
+            QCOMPARE(panel.findChild<QTableWidget *>("ocTable")->rowCount(), 0);
+            QVERIFY(panel.findChild<QLabel *>("ocStatus")->text().contains(stale ? "No settings-change command" : "not verified"));
+        }
+    }
+    void intelOcVoltageSameEncodingDoesNotSubmitAgain() {
+        auto *device = new IntelOcFixture; device->settings[0] = 0xf354f045;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelOcPanel panel(access, nullptr, 130); panel.show();
+        panel.findChild<QPushButton *>("ocRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        panel.findChild<QLineEdit *>("ocTarget")->setText("1234");
+        panel.findChild<QComboBox *>("ocMode")->setCurrentIndex(2);
+        QTimer::singleShot(0, [] {
+            auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget());
+            if (box) box->button(QMessageBox::Yes)->click();
+        });
+        panel.findChild<QPushButton *>("ocApplyVoltage")->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->mutationCount, 0u); QCOMPARE(device->settings[0], 0xf354f045u);
+        QVERIFY(panel.findChild<QLabel *>("ocStatus")->text().contains("already present"));
     }
     void umcOfflineCaptureKeepsDistinctFieldsAndClearsInvalidInput() {
         Reference reference; UmcPanel panel(reference.access());

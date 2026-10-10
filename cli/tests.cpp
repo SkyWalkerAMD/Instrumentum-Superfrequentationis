@@ -43,6 +43,18 @@ void invalidBeforeOpen() {
         {"intel-oc-set", "--cpu", "0", "--domain", "core", "--field", "max-ratio", "--value", "86", "--apply"},
         {"intel-oc-set", "--cpu", "0", "--domain", "cache", "--field", "offset-mv", "--value", "-1001", "--apply"},
         {"intel-oc-read", "--cpu", "0", "--domain", "fabric"},
+        {"intel-oc-set", "--cpu", "0", "--domain", "core", "--field", "target-mv", "--value", "1000", "--apply"},
+        {"intel-oc-set", "--cpu", "0", "--domain", "core", "--field", "target-mv", "--value", "1000", "--mode", "auto", "--apply"},
+        {"intel-oc-set", "--cpu", "0", "--domain", "core", "--field", "target-mv", "--value", "0", "--mode", "adaptive", "--apply"},
+        {"intel-oc-set", "--cpu", "0", "--domain", "core", "--field", "target-mv", "--value", "2001", "--mode", "adaptive", "--apply"},
+        {"intel-oc-set", "--cpu", "0", "--domain", "core", "--field", "target-mv", "--value", "-1", "--mode", "adaptive", "--apply"},
+        {"intel-oc-set", "--cpu", "0", "--domain", "core", "--field", "target-mv", "--value", "1000.5", "--mode", "override", "--apply"},
+        {"intel-oc-set", "--cpu", "0", "--domain", "core", "--field", "target-mv", "--value", "nan", "--mode", "override", "--apply"},
+        {"intel-oc-set", "--cpu", "0", "--domain", "core", "--field", "target-mv", "--value", "4294967295", "--mode", "override", "--apply"},
+        {"intel-oc-set", "--cpu", "0", "--domain", "core", "--field", "offset-mv", "--value", "0", "--mode", "adaptive", "--apply"},
+        {"intel-oc-set", "--cpu", "0", "--domain", "core", "--field", "max-ratio", "--value", "50", "--mode", "override", "--apply"},
+        {"intel-oc-set", "--cpu", "0", "--domain", "core", "--field", "target-mv", "--value", "1000", "--mode", "override"},
+        {"intel-oc-set", "--cpu", "0", "--domain", "core", "--field", "target-mv", "--value", "1000", "--mode", "override", "--mode", "adaptive", "--apply"},
         {"intel-vf-read", "--cpu", "0", "--domain", "fabric"},
         {"intel-vf-read", "--cpu", "0"},
         {"intel-vf-read", "--cpu", "0", "--domain", "core", "--point", "0"},
@@ -141,6 +153,36 @@ void ocAndCurveCommands() {
     command(amd, {"amd-curve-read", "--cpu", "130", "--ccd", "0", "--core", "0"}, 3);
     assert(amd.commands == 2 && amd.argumentReads == 1);
 }
+void voltageCommands() {
+    for (const std::string domain : {"core", "cache"}) {
+        for (const std::string mode : {"adaptive", "override"}) {
+            IntelOcFixture intel;
+            const unsigned index = domain == "core" ? 0 : 2;
+            const auto previous = intel.settings[index], other = intel.settings[2 - index];
+            const std::vector<std::string> args = {"intel-oc-set", "--cpu", "130", "--domain", domain,
+                "--field", "target-mv", "--value", "1234", "--mode", mode, "--apply"};
+            command(intel, args, 0);
+            assert(intel.settings[index] == ((previous & 0xffe000ffu) | 0x4f000u | (mode == "override" ? 1u << 20 : 0)));
+            assert(intel.mutationCount == 1 && !intel.wrongCpu && intel.settings[2 - index] == other);
+            const auto same = command(intel, args, 0);
+            assert(same.find("\"write_attempted\":false") != std::string::npos && intel.mutationCount == 1);
+        }
+    }
+    const std::vector<std::string> args = {"intel-oc-set", "--cpu", "130", "--domain", "core",
+        "--field", "target-mv", "--value", "1234", "--mode", "override", "--apply"};
+    for (unsigned failure = 0; failure < 6; ++failure) {
+        IntelOcFixture intel;
+        if (failure == 0) intel.locked = true;
+        if (failure == 1) intel.model = 0x8f;
+        if (failure == 2) intel.discardChange = true;
+        if (failure == 3) { intel.failCommand = 0x11; intel.status = 3; }
+        if (failure == 4) intel.afterRequest = [&] { if (intel.requests.size() == 4) intel.settings[0] ^= 1u << 31; };
+        if (failure == 5) intel.failAt = 0;
+        const auto result = command(intel, args, 3);
+        assert(result.find("\"verified\":false") != std::string::npos);
+        assert(intel.mutationCount == (failure == 2 ? 1u : 0u));
+    }
+}
 void vfCommands() {
     IntelOcFixture intel;
     command(intel, {"intel-vf-read", "--cpu", "130", "--domain", "core"}, 0);
@@ -212,8 +254,8 @@ void inventory(const std::string &root) {
 int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--inventory-fixture") { inventory(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
-    invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); vfCommands(); pciCommands();
+    invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "6 CLI scenario groups passed (37 rejected commands, real core with simulated devices)\n";
+    if (!emit) std::cout << "7 CLI scenario groups passed (49 rejected commands, real core with simulated devices)\n";
 }

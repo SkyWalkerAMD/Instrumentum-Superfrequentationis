@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "primary_sources": [
+    {
+      "repository": "coreboot/coreboot",
+      "commit": "cdd0aaaa8e0c2e52a57b515e801b339549e53283",
+      "path": "src/drivers/intel/oc_mailbox/oc_mailbox.c",
+      "url": "https://raw.githubusercontent.com/coreboot/coreboot/cdd0aaaa8e0c2e52a57b515e801b339549e53283/src/drivers/intel/oc_mailbox/oc_mailbox.c",
+      "sha256": "f55a742cfd9ae2d82d566f6360d0e02c5678a79244ba7a8f73284ac190ae9922",
+      "retrieved": "2026-10-10"
+    },
+    {
+      "repository": "intel/FSP",
+      "commit": "d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8",
+      "path": "RaptorLakeFspBinPkg/Client/RaptorLakeS/Include/FspmUpd.h",
+      "url": "https://raw.githubusercontent.com/intel/FSP/d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8/RaptorLakeFspBinPkg/Client/RaptorLakeS/Include/FspmUpd.h",
+      "sha256": "3ce5c6b4bb17b4c8d816552835f9b58279a37b699a951dab8d8e7fbc603ef57c",
+      "retrieved": "2026-10-10"
+    }
+  ],
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "files": [
+    {
+      "path": "analysis/fixtures/legacy-intel-voltage.json",
+      "sha256": "72f5a01e7b203f8b5098fe8425eb185f63455148495ad10c89cc1c9f03b7f3af"
+    },
+    {
+      "path": "docs/validation/intel-voltage-static.json",
+      "sha256": "aa4c940327b6a1bb502122b758d0d65b2dd6b5bbe9105023052e69636f4a8c21"
+    },
+    {
+      "path": "docs/validation/intel-voltage-local.json",
+      "sha256": "cb04fd54e690458a4fdb5cb559f168428bfd2378f06d28cd5f64fbe520c03ed4"
+    }
+  ],
+  "runtime_profile": "GenuineIntel family 6/model B7; MSR capability; explicit CPU and core/cache domain 0/2.",
+  "fields": {
+    "target": "data[19:8], 1000/1024 mV per step",
+    "mode": "data[20], Adaptive 0 / Override 1",
+    "preserved": "data[31:21] offset and data[7:0] ratio"
+  },
+  "chosen_range": {
+    "minimum_mv": 1,
+    "maximum_mv": 2000,
+    "rounding": "nearest step",
+    "reason": "Raptor Lake-S FSP Core/Ring target configuration range; excludes unresolved runtime zero/default semantics; not a safe operating range."
+  },
+  "legacy_literal": {
+    "address": "0x1620af0",
+    "little_endian_hex": "47414bb26940ef3f",
+    "double": 0.9766129
+  },
+  "limits": [
+    "FSP configuration is not runtime register addresses or machine acceptance.",
+    "Only original adaptive/cache override/byte-combiner routines are emulated; core manual setter is static evidence.",
+    "NVL/GNR paths and hardware boundaries are not executed.",
+    "New tests use synthetic devices; no physical voltage or stability verification."
+  ]
+}

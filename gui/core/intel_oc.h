@@ -5,6 +5,7 @@
 
 namespace octool { namespace core {
 enum class IntelOcDomain { Core = 0, Cache = 2 };
+enum class IntelOcVoltageMode { Adaptive = 0, Override = 1 };
 struct IntelOcResponse {
     int error = 0;
     bool commandAttempted = false, completed = false;
@@ -32,6 +33,13 @@ struct IntelOcUpdate {
 // This recovered client profile is deliberately separate from SPR/GNR/NVL.
 bool hasIntelOcProfile(const CpuIdentity &identity);
 double intelOcOffsetMillivolts(std::uint32_t data);
+double intelOcTargetMillivolts(std::uint32_t data);
+IntelOcVoltageMode intelOcVoltageMode(std::uint32_t data);
+// Explicit target and mode for one domain, preserving offset and ratio.
+// Integer 1..2000 mV is a profile input range, not a safe operating range.
+// Zero/default semantics and VF-point/per-core targets are not implemented.
+int encodeIntelOcVoltage(unsigned millivolts, IntelOcVoltageMode mode,
+                         std::uint32_t previous, std::uint32_t &encoded);
 int encodeIntelOcOffset(double millivolts, std::uint32_t previous,
                         std::uint32_t &encoded);
 // Low-byte maximum OC ratio. Restrict to 1..85 using the Raptor Lake-S FSP
@@ -64,4 +72,6 @@ IntelOcUpdate applyIntelOcOffset(HardwareSession &session, const IntelOcSnapshot
                                 double millivolts);
 IntelOcUpdate applyIntelOcRatio(HardwareSession &session, const IntelOcSnapshot &snapshot,
                                unsigned ratio);
+IntelOcUpdate applyIntelOcVoltage(HardwareSession &session, const IntelOcSnapshot &snapshot,
+                                 unsigned millivolts, IntelOcVoltageMode mode);
 } }

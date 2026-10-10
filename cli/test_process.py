@@ -34,8 +34,33 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 65, len(reports)
-assert len([r for r in reports if r["error"] == -22]) >= 37
+assert len(reports) == 91, len(reports)
+assert len([r for r in reports if r["error"] == -22]) >= 49
+voltage = [r for r in reports if r["command"] == "intel-oc-set" and r.get("data", {}).get("field") == "target-mv"]
+assert len(voltage) == 14
+assert [r["data"]["write_attempted"] for r in voltage[:8]] == [True, False] * 4
+for result in voltage[:8]:
+    data = result["data"]
+    assert result["ok"] and data["verified"] and data["requested"] == 1234
+    before, after = (int(data[k]["raw"], 16) for k in ("before", "after"))
+    assert (before & 0xffe000ff) == (after & 0xffe000ff)
+    assert data["after"]["target_mv"] == 1234.375
+    assert data["after"]["target_mode"] == data["requested_mode"]
+assert all(not r["ok"] and not r["data"]["verified"] for r in voltage[8:])
+assert [r["error"] for r in voltage[8:]] == [-1, -95, -5, -5, -11, -13]
+for result in reports:
+    if result["command"] not in ("intel-oc-read", "intel-oc-set"):
+        continue
+    for key in ("before", "after"):
+        snapshot = result.get("data", {}).get(key)
+        if snapshot is None:
+            continue
+        if snapshot["valid"]:
+            raw = int(snapshot["raw"], 16)
+            assert snapshot["target_mv"] == ((raw >> 8) & 4095) * 1000 / 1024
+            assert snapshot["target_mode"] == ("override" if raw & (1 << 20) else "adaptive")
+        else:
+            assert snapshot["target_mv"] is None and snapshot["target_mode"] is None
 vf = [r for r in reports if r["command"] == "intel-vf-read" and r["error"] != -22]
 assert len(vf) == 6
 all_points = vf[0]["data"]
@@ -70,7 +95,7 @@ assert len(umc["data"]["fields"]) == 212 and len(umc["data"]["registers"]) == 56
 assert len({f["id"] for f in umc["data"]["fields"]}) == 212
 for result in reports:
     if result["command"] == "intel-oc-set" and result["ok"]:
-        assert result["data"]["write_attempted"] and result["data"]["verified"]
+        assert result["data"]["verified"]
 
 with tempfile.TemporaryDirectory(prefix="octool-cli-") as directory:
     root = Path(directory)
@@ -110,4 +135,4 @@ with tempfile.TemporaryDirectory(prefix="octool-cli-") as directory:
     path.write_bytes(spd)
     result = run("spd-decode", "--file", str(path), code=3)["data"]["spd"]
     assert result["crc_checked"] and not result["crc_valid"]
-print("CLI process checks passed: no display, sparse affinity, 65 JSON reports, VF partial errors, inventory limits, SPD CRC/errors")
+print("CLI process checks passed: no display, sparse affinity, 91 JSON reports, voltage preservation and VF partial errors, inventory limits, SPD CRC/errors")

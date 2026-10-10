@@ -94,6 +94,13 @@ offset 的可编码范围是 -1000..999.0234375 mV，最大 OC 倍频是整数 1
 RAPL/HWP API 目前报告提交结果，`verified:false`，没有声称完成硬件效果验证；
 Intel OC 的 `verified` 只表示寄存器回读一致，不代表稳定性验证。
 
+目标电压与模式使用同一命令的 `--field target-mv --value MILLIVOLTS --mode adaptive|override --apply`，
+同时保留 `--cpu N --domain core|cache`。目标必须是整数 1..2000 mV，模式必须明确选择，
+零值自动/默认语义未开放。该范围不是安全工作电压范围。
+只修改选中的域，保留 offset 与倍率；Adaptive 配置 turbo 目标，Override 配置固定目标。
+`before` / `after` 含取整后的 `target_mv` 和 `target_mode`（失败为 `null`）。
+详见[目标电压与模式还原](intel-voltage-recovery.md)。
+
 AMD 原始固件入口：
 
 ```text
@@ -109,7 +116,8 @@ Shimada 的已恢复调参消息在当前核心白名单内；Phoenix/GPT 仅开
 尚不提供 PStates 设置、曲线设置、完整 PBO 高层参数、Intel server VF/fabric 或板级专用写入。
 
 PCI 目标选项 `--bus`/`--device`/`--function` 默认全为 0，域固定为 0；曲线查询固定 0000:00:00.0。
-所有整数使用十进制或 `0x` 前缀十六进制，禁止截断、负数和重复/未知选项。
+目标索引等无符号整数使用十进制或 `0x` 前缀十六进制；设置的 `--value` 使用十进制，
+offset 等有符号字段可接受负数。禁止截断、重复/未知选项；目标电压和倍率须为整数值。
 设置命令缺少 `--apply` 会在打开硬件前返回错误。不会通过交互提示阻塞批处理。
 
 ## 输出与自动化
