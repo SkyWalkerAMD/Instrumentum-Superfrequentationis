@@ -1,5 +1,18 @@
 # 功能还原状态
 
+<!-- umc-offline-672422a -->
+2026-10-10：最新验证生产提交 `672422a`，GUI 与 CLI 同步新增 **UMC 离线快照导入与比较**。
+GUI 保存的快照可以在 CLI 解码；两端共用 212 字段比较，区分字段值、原始字变化与数据缺失。
+无需硬件访问，支持部分离线快照；文件身份和物理通道对应关系仍未经验证。
+
+- [使用说明](umc-offline.md)、[功能对照](frontend-progress.md)、[验证交付](umc-offline-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38039881978) 4/4，各 10 CTest / 98 场景组，另有 ASan/UBSan 检查。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38039885515) 12/12，十目标各 12 CTest、230 份模拟 JSON 报告及离线实际进程检查。
+- [Linux GUI/驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38039881391) 23/23，十目标各 54 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-umc-offline-672422a/`：10 个 GUI + 10 个 CLI + 10 个可选 DKMS 包、源码与 SHA256SUMS。
+
+原版全部功能仍未还原；目标真机调参与稳定性尚未验收。以下保留此前记录。
+
 <!-- intel-vf-edit-32c89ae -->
 2026-10-10：最新验证生产提交 `32c89ae`，GUI 与 CLI 同时新增 **Intel V/F 单点偏移设置**。
 支持 B7 client 的 core/cache，明确选择单点；提交前核对配置，提交后复核完整点值与上下文。
@@ -78,7 +91,7 @@ PStates 写入、曲线写入、Intel server VF/fabric、板级专用控制等�
 
 `06b477c` 是此前 [Shimada 原始曲线查询](amd-curve-query-recovery.md)的历史版本，
 [当时验证](validation/amd-curve-recovery-ci-06b477c.json)为核心 4/4、Linux 23/23。
-最新生产版本以本页顶部为准，下表已更新到 `32c89ae`。
+最新生产版本以本页顶部为准，下表已更新到 `672422a`。
 原版全部功能仍未完成。安装兼容、自动化回归、原指令研究和真实硬件验收分别记录，
 没有能代表四大模块全部功能的可靠百分比；212 个 UMC 字段也不是整个软件的功能分母。
 
@@ -87,7 +100,7 @@ PStates 写入、曲线写入、Intel server VF/fabric、板级专用控制等�
 | AMD PStates | 按逻辑 CPU 采样 P0–P7、上限/能力检查、频率、64 位原值、完整 9 位 VID / Idd 编码 | 型号专用 mV/A 换算；满足跨核/跨 coherent fabric 一致性的设置 |
 | Intel Controls | RAPL、HWP 含活动窗口，13 项设置完整读回；温度；Raptor Lake-S core/cache offset、最大 OC ratio、目标电压与 Adaptive/Override；VF 点查询及受条件限制的单点 offset；P/E 睿频分组读取及单组倍率设置 | W790/W890 电压域；其它型号 VF、逐物理核心 override、活动核心阈值编辑、TVB、VID rank/SP、fabric/BCLK |
 | AMD 调参 | 三套独立 BIOS SMUIO；Shimada 已提取命令和逐核频率参数准备；CPUID 稀疏拓扑；限定身份的原始曲线查询 | CPUID 与固件目标 ID 对应；MP1/PBO 高层单位、曲线设置/电流/温度限制、PM 表、profiles/hotkeys |
-| 内存与主板 | DMI/BIOS、内核传感器、绑定驱动的 SPD、DDR4/5 基础 CRC/组织/基础时序；AMD UMC 212 字段、离线快照与 CLI 报告导入 GUI | UMC 各型号物理单位/通道标签；Intel 训练时序；PMIC/VRM/EC/时钟芯片和训练写入 |
+| 内存与主板 | DMI/BIOS、内核传感器、绑定驱动的 SPD、DDR4/5 基础 CRC/组织/基础时序；AMD UMC 212 字段、GUI/CLI 快照双向离线导入及同 bank/slot 比较 | UMC 各型号物理单位/通道标签；Intel 训练时序；PMIC/VRM/EC/时钟芯片和训练写入 |
 
 入口与代码：[平台控制](platform-controls.md)、[Intel offset](intel-oc-recovery.md)、
 [UMC](amd-umc-recovery.md)、[AMD 拓扑与 PStates](amd-topology-recovery.md)。

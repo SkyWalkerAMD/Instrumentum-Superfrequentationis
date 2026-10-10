@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-10",
+  "repository": "Bjorgz/ryzen_smu",
+  "commit": "c12c1e60ba8eb25a2cf19d76a3d5b57ca82057fd",
+  "base": "d2983668300dd2a598e5a7dc40e71ce0678cc270",
+  "pull_request": "https://github.com/amkillam/ryzen_smu/pull/62",
+  "observed_state": "open",
+  "issue": "https://github.com/amkillam/ryzen_smu/issues/60",
+  "sources": [
+    {
+      "path": "smu.c",
+      "git_blob_sha": "64051e5a1a3f7a747dccf600d533b086d9e9dfb7",
+      "sha256": "b6d1feedcf73fcf366798ce4e75c5103288de02ae614b710cbb33e46efb9725b",
+      "url": "https://github.com/Bjorgz/ryzen_smu/blob/c12c1e60ba8eb25a2cf19d76a3d5b57ca82057fd/smu.c"
+    },
+    {
+      "path": "smu.h",
+      "git_blob_sha": "c01e690d95879c3099ce6e968d101d84bdb96abc",
+      "sha256": "01ac0dc066fff4962a16c6e3263e457cfbb44036726ac4edf2cc3cd73e69b223",
+      "url": "https://github.com/Bjorgz/ryzen_smu/blob/c12c1e60ba8eb25a2cf19d76a3d5b57ca82057fd/smu.h"
+    },
+    {
+      "path": "drv.c",
+      "git_blob_sha": "7f26dca749f18a7bcce4875ea604fc36271e1e38",
+      "sha256": "683a0eca9f2a0a4ff355a1db1788f595557bbfa405efb1571917d1204142a691",
+      "url": "https://github.com/Bjorgz/ryzen_smu/blob/c12c1e60ba8eb25a2cf19d76a3d5b57ca82057fd/drv.c"
+    }
+  ],
+  "physical_hardware_acceptance": "not_run_by_this_project",
+  "scope": "Source crosscheck and author-reported hardware observations only; no runtime write support added",
+  "confirmed_in_source": {
+    "family": "0x1a",
+    "model": "0x08",
+    "pci_index": "0xc4",
+    "pci_data": "0xc8",
+    "rsmu_command": "0x03b10924",
+    "rsmu_response": "0x03b10970",
+    "rsmu_arguments": "0x03b10a40",
+    "pm_table_version_message": "0x05",
+    "pm_table_base_message": "0x04",
+    "pm_table_transfer_message": "0x03",
+    "mp1": "not assigned for Shimada",
+    "hsmp": "not assigned for Shimada",
+    "root_selection": "atomic claim by first matching root, not explicit 0000:00:00.0",
+    "pm_table_sizes": {
+      "730204": 2844,
+      "730404": 4100,
+      "730604": 5356,
+      "730804": 6612,
+      "730a04": 7868,
+      "730c04": 9124,
+      "730e04": 10380,
+      "731004": 11636
+    }
+  },
+  "remaining": [
+    "C4/C8 versus original B8/BC and F8/FC transport equivalence is unproven",
+    "No verified per-core fuse mapping or end-to-end curve/PBO setter/readback evidence",
+    "PM table transfer is not a pure register read and requires physical-memory ownership checks",
+    "Issue proposals for root selection and reserved-memory gating are not all present in the pinned code"
+  ]
+}
