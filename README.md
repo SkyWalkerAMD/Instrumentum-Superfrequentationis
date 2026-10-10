@@ -1,5 +1,18 @@
 # Instrumentum Superfrequentationis
 
+<!-- intel-vf-edit-32c89ae -->
+2026-10-10：最新验证生产提交 `32c89ae`，GUI 与 CLI 同时新增 **Intel V/F 单点偏移设置**。
+支持 B7 client 的 core/cache，明确选择单点；提交前核对配置，提交后复核完整点值与上下文。
+只在锁和配置条件允许时开放，不自动改变全域电压或 per-core override。
+
+- [实现及来源](docs/intel-vf-write-recovery.md)、[功能对照](docs/frontend-progress.md)、[验证与交付](docs/intel-vf-edit-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688225) 4/4，各 9 CTest / 90 场景组。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688257) 12/12，十目标各 11 CTest、220 份 JSON。
+- [Linux GUI/驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308) 23/23，十目标各 51 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-vf-edit-32c89ae/`：10 个 GUI + 10 个 CLI + 10 个可选 DKMS 包、对应源码与 SHA256SUMS。
+
+仍有其它型号及功能缺口；未进行目标真机调参或稳定性验收。以下保留此前记录。
+
 <!-- intel-turbo-e43bad7 -->
 2026-10-10：最新验证生产提交 `e43bad7`，GUI 与 CLI 同时新增 **Intel P/E 睿频分组**。
 读取八组倍率和活动核心数量阈值，支持选定组倍率设置、旧值检查与完整读回；

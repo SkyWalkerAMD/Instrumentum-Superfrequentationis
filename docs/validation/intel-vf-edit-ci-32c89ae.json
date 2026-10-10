@@ -1,0 +1,3323 @@
+{
+  "schema": 1,
+  "date": "2026-10-10",
+  "source_commit": "32c89ae389174a0c822e56ec401d65ccc88f4b03",
+  "branch": "refactor/platform-recovery",
+  "scope": "Intel single V/F point offset setting for core/cache, preserving domain and override configuration with full selected-point/context readback; shared core, GUI and CLI; family6/modelB7 only",
+  "portable_core": {
+    "source_commit": "32c89ae389174a0c822e56ec401d65ccc88f4b03",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688225",
+    "jobs": [
+      {
+        "name": "core (macos-14)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688225/job/114156746199",
+        "startedAt": "2026-10-10T06:56:53Z",
+        "completedAt": "2026-10-10T06:58:29Z"
+      },
+      {
+        "name": "core (windows-2022)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688225/job/114156746282",
+        "startedAt": "2026-10-10T06:56:48Z",
+        "completedAt": "2026-10-10T06:59:05Z"
+      },
+      {
+        "name": "core (ubuntu-24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688225/job/114156746328",
+        "startedAt": "2026-10-10T06:56:47Z",
+        "completedAt": "2026-10-10T06:57:30Z"
+      },
+      {
+        "name": "core (ubuntu-22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688225/job/114156746348",
+        "startedAt": "2026-10-10T06:56:48Z",
+        "completedAt": "2026-10-10T06:57:31Z"
+      }
+    ],
+    "log": {
+      "path": "build/intel-vf-edit-32c89ae/core-run.log",
+      "bytes": 142595,
+      "sha256": "223e2064b2a477862678e607ab1fdc2cf677afd1faf2cd9048287e591d5acf6f"
+    },
+    "artifact_metadata": {
+      "path": "build/intel-vf-edit-32c89ae/core-artifacts.json",
+      "bytes": 3845,
+      "sha256": "aaa26c621337f0057ebfd1af6e9f7c5cc3359c302c4a093cae83565f5344f4bc"
+    },
+    "targets": [
+      {
+        "target": "portable-core-macos-14",
+        "ctests": 9,
+        "scenario_groups": 90,
+        "evidence": [
+          {
+            "path": "build/intel-vf-edit-32c89ae/core-artifacts/portable-core-macos-14/results.xml",
+            "bytes": 1946,
+            "sha256": "a2aa95bb00da14ca1143e3ba2fb1f851e11b51377f8e252620565aa698024626"
+          },
+          {
+            "path": "build/intel-vf-edit-32c89ae/core-artifacts/portable-core-macos-14/Testing/Temporary/LastTest.log",
+            "bytes": 6573,
+            "sha256": "aa44b84a2c5cc1a7ba23868e5a94868976eb56a631dba83c365b63e795298256"
+          }
+        ]
+      },
+      {
+        "target": "portable-core-ubuntu-22.04",
+        "ctests": 9,
+        "scenario_groups": 90,
+        "evidence": [
+          {
+            "path": "build/intel-vf-edit-32c89ae/core-artifacts/portable-core-ubuntu-22.04/results.xml",
+            "bytes": 1895,
+            "sha256": "5441d99f19c7db0def7112bec24d9feecc11b08184fca87801b899944b7bcad3"
+          },
+          {
+            "path": "build/intel-vf-edit-32c89ae/core-artifacts/portable-core-ubuntu-22.04/Testing/Temporary/LastTest.log",
+            "bytes": 6555,
+            "sha256": "b0a461d94b6d28db10dca84920768c7f68820fbab2a1e2f56fc0e7d242a38b46"
+          }
+        ]
+      },
+      {
+        "target": "portable-core-ubuntu-24.04",
+        "ctests": 9,
+        "scenario_groups": 90,
+        "evidence": [
+          {
+            "path": "build/intel-vf-edit-32c89ae/core-artifacts/portable-core-ubuntu-24.04/results.xml",
+            "bytes": 1896,
+            "sha256": "54d107fbd18a5ea1f25445c4acb8f624adf80735bcdcc39310f5f19a2a4d448d"
+          },
+          {
+            "path": "build/intel-vf-edit-32c89ae/core-artifacts/portable-core-ubuntu-24.04/Testing/Temporary/LastTest.log",
+            "bytes": 6555,
+            "sha256": "928e1fd8a23454c9e0b5f16bfab5748f9ac76a81cee40a9090436d318e0a0e40"
+          }
+        ]
+      },
+      {
+        "target": "portable-core-windows-2022",
+        "ctests": 9,
+        "scenario_groups": 90,
+        "evidence": [
+          {
+            "path": "build/intel-vf-edit-32c89ae/core-artifacts/portable-core-windows-2022/results.xml",
+            "bytes": 1949,
+            "sha256": "dfb229863be88c6551b6cc4df3d007fe557af1865f079e571333d0c89a3e1d6b"
+          },
+          {
+            "path": "build/intel-vf-edit-32c89ae/core-artifacts/portable-core-windows-2022/Testing/Temporary/LastTest.log",
+            "bytes": 7036,
+            "sha256": "c1dc7034a7fba5e1f3c764ca356761348724b3168d141ab19f3f5a24136bdffa"
+          }
+        ]
+      }
+    ]
+  },
+  "headless_cli": {
+    "source_commit": "32c89ae389174a0c822e56ec401d65ccc88f4b03",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688257",
+    "jobs": [
+      {
+        "name": "matrix",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688257/job/114156746227",
+        "startedAt": "2026-10-10T06:56:47Z",
+        "completedAt": "2026-10-10T06:56:51Z"
+      },
+      {
+        "name": "cli (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688257/job/114156765638",
+        "startedAt": "2026-10-10T06:56:54Z",
+        "completedAt": "2026-10-10T06:58:29Z"
+      },
+      {
+        "name": "cli (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688257/job/114156765654",
+        "startedAt": "2026-10-10T06:56:54Z",
+        "completedAt": "2026-10-10T06:58:25Z"
+      },
+      {
+        "name": "cli (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688257/job/114156765663",
+        "startedAt": "2026-10-10T06:56:54Z",
+        "completedAt": "2026-10-10T06:58:25Z"
+      },
+      {
+        "name": "cli (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688257/job/114156765671",
+        "startedAt": "2026-10-10T06:56:54Z",
+        "completedAt": "2026-10-10T06:58:11Z"
+      },
+      {
+        "name": "cli (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688257/job/114156765693",
+        "startedAt": "2026-10-10T06:56:54Z",
+        "completedAt": "2026-10-10T06:58:51Z"
+      },
+      {
+        "name": "cli (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688257/job/114156765705",
+        "startedAt": "2026-10-10T06:56:54Z",
+        "completedAt": "2026-10-10T06:58:26Z"
+      },
+      {
+        "name": "cli (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688257/job/114156765709",
+        "startedAt": "2026-10-10T06:56:54Z",
+        "completedAt": "2026-10-10T06:58:15Z"
+      },
+      {
+        "name": "cli (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688257/job/114156765716",
+        "startedAt": "2026-10-10T06:56:54Z",
+        "completedAt": "2026-10-10T06:58:10Z"
+      },
+      {
+        "name": "cli (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688257/job/114156765728",
+        "startedAt": "2026-10-10T06:56:55Z",
+        "completedAt": "2026-10-10T06:58:09Z"
+      },
+      {
+        "name": "cli (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688257/job/114156765729",
+        "startedAt": "2026-10-10T06:56:54Z",
+        "completedAt": "2026-10-10T06:58:02Z"
+      },
+      {
+        "name": "gate",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688257/job/114157094415",
+        "startedAt": "2026-10-10T06:58:54Z",
+        "completedAt": "2026-10-10T06:58:56Z"
+      }
+    ],
+    "log": {
+      "path": "build/intel-vf-edit-32c89ae/cli-run.log",
+      "bytes": 1702364,
+      "sha256": "e9381c7c3a61d401aadb97d643de362479031675c17cc01541bff95ad74b7d2e"
+    },
+    "artifact_metadata": {
+      "path": "build/intel-vf-edit-32c89ae/cli-artifacts.json",
+      "bytes": 9428,
+      "sha256": "77dc67d202324f2f7e15b1768fffde67d77e57dd23b8bd28768980215ac4ac46"
+    }
+  },
+  "linux": {
+    "source_commit": "32c89ae389174a0c822e56ec401d65ccc88f4b03",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308",
+    "jobs": [
+      {
+        "name": "baseline",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114156810592",
+        "startedAt": "2026-10-10T06:57:09Z",
+        "completedAt": "2026-10-10T06:59:36Z"
+      },
+      {
+        "name": "matrix",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114156810796",
+        "startedAt": "2026-10-10T06:57:09Z",
+        "completedAt": "2026-10-10T07:02:28Z"
+      },
+      {
+        "name": "kernel (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157727943",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:05:01Z"
+      },
+      {
+        "name": "kernel (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157727959",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:06:33Z"
+      },
+      {
+        "name": "kernel (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157727964",
+        "startedAt": "2026-10-10T07:02:32Z",
+        "completedAt": "2026-10-10T07:06:02Z"
+      },
+      {
+        "name": "kernel (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157727970",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:05:07Z"
+      },
+      {
+        "name": "kernel (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157727993",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:05:19Z"
+      },
+      {
+        "name": "kernel (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157727994",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:05:56Z"
+      },
+      {
+        "name": "kernel (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157727998",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:05:56Z"
+      },
+      {
+        "name": "desktop (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157728021",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:06:04Z"
+      },
+      {
+        "name": "kernel (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157728024",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:04:57Z"
+      },
+      {
+        "name": "desktop (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157728029",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:05:39Z"
+      },
+      {
+        "name": "desktop (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157728040",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:05:41Z"
+      },
+      {
+        "name": "desktop (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157728050",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:07:56Z"
+      },
+      {
+        "name": "desktop (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157728067",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:05:59Z"
+      },
+      {
+        "name": "kernel (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157728085",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:05:33Z"
+      },
+      {
+        "name": "desktop (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157728089",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:05:42Z"
+      },
+      {
+        "name": "kernel (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157728095",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:04:42Z"
+      },
+      {
+        "name": "desktop (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157728098",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:07:54Z"
+      },
+      {
+        "name": "desktop (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157728107",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:05:32Z"
+      },
+      {
+        "name": "desktop (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157728113",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:07:55Z"
+      },
+      {
+        "name": "desktop (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114157728187",
+        "startedAt": "2026-10-10T07:02:31Z",
+        "completedAt": "2026-10-10T07:05:07Z"
+      },
+      {
+        "name": "gate",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38032688308/job/114158669352",
+        "startedAt": "2026-10-10T07:07:59Z",
+        "completedAt": "2026-10-10T07:08:08Z"
+      }
+    ],
+    "log": {
+      "path": "build/intel-vf-edit-32c89ae/linux-run.log",
+      "bytes": 10253790,
+      "sha256": "ed3db4a92aa18211270f1aeee27715b416c1aa9813865b235b3662849163a652"
+    },
+    "artifact_metadata": {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts.json",
+      "bytes": 21726,
+      "sha256": "15a440c1cd1d13d44580d8fa46e54f413f0fb613bf39153c47cc27f93280b91c"
+    },
+    "kernel_vm_boots": 11,
+    "analysis_tests": 73,
+    "baseline_qt_tests": 51
+  },
+  "targets": [
+    {
+      "target": "el8",
+      "ctests": 11,
+      "core_scenario_groups": 90,
+      "cli_scenario_groups": 12,
+      "invalid_commands_before_device_open": 109,
+      "json_reports_in_process_test": 220,
+      "gui_regression_tests": 51,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f7d95b5d000)\n\tlibpthread.so.0 => /lib64/libpthread.so.0 (0x00007f7d955e0000)\n\tlibstdc++.so.6 => /lib64/libstdc++.so.6 (0x00007f7d9524b000)\n\tlibm.so.6 => /lib64/libm.so.6 (0x00007f7d94ec9000)\n\tlibgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00007f7d94cb1000)\n\tlibc.so.6 => /lib64/libc.so.6 (0x00007f7d948ec000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f7d95800000)\n",
+        "guide_installed": true,
+        "binary_bytes": 397984
+      },
+      "kernel_boots": [
+        {
+          "kernel": "4.18.0-553.el8_10.x86_64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "4df48703b86574bb20576b14f9c209e6149aabe6ad06ccb709131fee48b46fed",
+          "module_sha256": "280061455aa3944d9b74ccb627b43f4399447fa73236e96eb7b68782cee52882"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/el8/octool-cli-2.0.1-1.el8.x86_64.rpm",
+          "bytes": 163568,
+          "sha256": "ae56da4e8e160810e3ef8b8cf698ad9e8aace23edf598a854e9d7a914bb9a7ea"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/el8/octool-2.0.1-1.el8.x86_64.rpm",
+          "bytes": 10683272,
+          "sha256": "37bdc1d9f489bb8b1d0ff89a58af58bd0665e78a3a15f5be0b597885823fb789"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/el8/octool-hwio-dkms-2.0.1-1.el8.noarch.rpm",
+          "bytes": 19068,
+          "sha256": "aa22a651c15cd9b4a532ca85f22201e125f0f2bd71291ad076a92bf5805f6fbc"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-el8/ctest.txt",
+          "bytes": 1237,
+          "sha256": "71f707e035e200fde6a0e06401083e0ad10d9ce882fef8c7415842edb903d8e3"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-el8/LastTest.log",
+          "bytes": 6385,
+          "sha256": "44c78c08c3a3b90b70bab8b2636490431a0b00c769d98ff30245e6f57ffa6d0c"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-el8/runtime.json",
+          "bytes": 1467,
+          "sha256": "1d814602abb9cb6daab76e084f78d2d366b330ac3256958c834a593017dd344a"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-el8/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-el8/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/gui-tests.txt",
+          "bytes": 15624,
+          "sha256": "767baf371adca9b60285d82a0a590c353c01a166993d5c9a0bcf0c1197477fdd"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/helper-smoke.json",
+          "bytes": 1027,
+          "sha256": "4aa478f0774260e7cd2c161bd5b25e37962b434f54f8bde4450734ba5b54af15"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/kernel-el8/guest-boot/results.json",
+          "bytes": 504,
+          "sha256": "80bff81cb7427bb9118879ee73b5223757d0ffbbc77a6630d1eb4fd540c149d0"
+        }
+      ]
+    },
+    {
+      "target": "el9",
+      "ctests": 11,
+      "core_scenario_groups": 90,
+      "cli_scenario_groups": 12,
+      "invalid_commands_before_device_open": 109,
+      "json_reports_in_process_test": 220,
+      "gui_regression_tests": 51,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "GenuineIntel",
+              "family": 6,
+              "model": 106,
+              "stepping": 6,
+              "signature": "0x000606a6"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007faa155c0000)\n\tlibstdc++.so.6 => /lib64/libstdc++.so.6 (0x00007faa1538f000)\n\tlibm.so.6 => /lib64/libm.so.6 (0x00007faa152b4000)\n\tlibgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00007faa15299000)\n\tlibc.so.6 => /lib64/libc.so.6 (0x00007faa15090000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007faa155c2000)\n",
+        "guide_installed": true,
+        "binary_bytes": 385736
+      },
+      "kernel_boots": [
+        {
+          "kernel": "5.14.0-687.56.1.el9_8.x86_64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "ffd08603dbd630a7d5f4501f8f5dc6b6488a5165b362281120ab21a9a18e4fdf",
+          "module_sha256": "2eb72f664a74d0477e9a1649033f8e1c3d0f2fb7731ec36add48cae6f408cadc"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/el9/octool-cli-2.0.1-1.el9.x86_64.rpm",
+          "bytes": 167044,
+          "sha256": "627649111fccbffaf92e20b4faf8b865267f0639a0eb348d57775423c04e1315"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/el9/octool-2.0.1-1.el9.x86_64.rpm",
+          "bytes": 10381280,
+          "sha256": "c204e48c765aa36ad421fe6b28405e760f19f14bd20a9a39105b4274cd4b321b"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/el9/octool-hwio-dkms-2.0.1-1.el9.noarch.rpm",
+          "bytes": 19059,
+          "sha256": "550f0fee099a264380e99578979273b6c720fef211a23e402677ac888899a562"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-el9/ctest.txt",
+          "bytes": 1237,
+          "sha256": "f2eb030cd306aaec3003e6cf29d31d7e715feb3cd4f6e8fcd77cd0bb5f17f765"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-el9/LastTest.log",
+          "bytes": 6383,
+          "sha256": "d7e83e3b12dca87079d77ef347f70f3817ac1ea9fd93f8086b252a2276c3c114"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-el9/runtime.json",
+          "bytes": 1416,
+          "sha256": "e956233038a34deb3fba9d097de599ccdfbb9d758978794c3b2ed249f04c462f"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-el9/unprivileged-diagnose.json",
+          "bytes": 381,
+          "sha256": "ecfd0ef8b34f6b943cc7967051b557b4d4f1acba1460f0bd2425471ba3d7a215"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-el9/reinstalled-diagnose.json",
+          "bytes": 377,
+          "sha256": "07b4f85e82ae667e10f71c69cf3e5d240c152671695164e0ab52bbd497e69099"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/gui-tests.txt",
+          "bytes": 15396,
+          "sha256": "f519da78305ffbf653802b90e4808bb084cfed54d045d9139dc1f1d7de2f2c16"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/helper-smoke.json",
+          "bytes": 1022,
+          "sha256": "d9181a17a1293ba6e8d7903983fe94a062d373cc549c5a3101dcc774823f2fa3"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/kernel-el9/guest-boot/results.json",
+          "bytes": 508,
+          "sha256": "1f7451192c95a25a02f2957c3d58500a47b018f528d797881057a0b2213c68d3"
+        }
+      ]
+    },
+    {
+      "target": "el10",
+      "ctests": 11,
+      "core_scenario_groups": 90,
+      "cli_scenario_groups": 12,
+      "invalid_commands_before_device_open": 109,
+      "json_reports_in_process_test": 220,
+      "gui_regression_tests": 51,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 26,
+              "model": 2,
+              "stepping": 1,
+              "signature": "0x00b00f21"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f262cd8f000)\n\tlibstdc++.so.6 => /lib64/libstdc++.so.6 (0x00007f262cb0f000)\n\tlibm.so.6 => /lib64/libm.so.6 (0x00007f262ca61000)\n\tlibgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00007f262ca34000)\n\tlibc.so.6 => /lib64/libc.so.6 (0x00007f262c85b000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f262cd91000)\n",
+        "guide_installed": false,
+        "binary_bytes": 385720
+      },
+      "kernel_boots": [
+        {
+          "kernel": "6.12.0-211.64.1.el10_2.x86_64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "a399dcb2241af997473ba3992590df526ebedb81e27f8ee053602de895722b22",
+          "module_sha256": "1dcaa565942f926c83e460bbd3d1a3cbb3a375deaa40ab1bd6054c94f5908b0a"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/el10/octool-cli-2.0.1-1.el10.x86_64.rpm",
+          "bytes": 172323,
+          "sha256": "ef83a1c6c9073859797252f5a01f521b7161342f6758b8cf1d663b18da9f6c1f"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/el10/octool-2.0.1-1.el10.x86_64.rpm",
+          "bytes": 10379503,
+          "sha256": "0fcfc09b87f0de8691f5cedc99ea02f5070b72f50eb43ad36ce9472024ed9ff3"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/el10/octool-hwio-dkms-2.0.1-1.el10.noarch.rpm",
+          "bytes": 19161,
+          "sha256": "2880ae035a03ab8264807ae21bf27f44d6ee78a277b11e049bc006b5ee35cfcc"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-el10/ctest.txt",
+          "bytes": 1237,
+          "sha256": "a72761d9d70b382b5de79a53dbb87882bf4823df790fdb2b92f152d0532fe2eb"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-el10/LastTest.log",
+          "bytes": 6383,
+          "sha256": "18367d031f35e430942a58399b9e6c7dce51c420706a98f985fc243c57f6a046"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-el10/runtime.json",
+          "bytes": 1402,
+          "sha256": "452c4d9ee858586b6c464088b7464f7298b30d5e6a103c655835ba7159b3a03c"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-el10/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "35a7c19fb77152b9c2604c7ede5dcd4ccbc699bf79dc9817ecef9f2eb0edb0cf"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-el10/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "b333f31e5cdc38ecd68af68e5921dd7eb86fe21eb7d9a58cfca45e6e33aed48b"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/gui-tests.txt",
+          "bytes": 15855,
+          "sha256": "8edb0e1b9cd7a4f17b9107fad9d8d6f0e5ca629664e6b118ffc50f0f8ae4462f"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/helper-smoke.json",
+          "bytes": 1022,
+          "sha256": "fbe1b4e772c503897c1f0a78fe25541901ec0fd304a5951c1b4eb2c15a01063e"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/kernel-el10/guest-boot/results.json",
+          "bytes": 509,
+          "sha256": "bc3c64eb10a9127fea532717703bd37afb9189b2679fb98cdd448250840d75e1"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu20.04",
+      "ctests": 11,
+      "core_scenario_groups": 90,
+      "cli_scenario_groups": 12,
+      "invalid_commands_before_device_open": 109,
+      "json_reports_in_process_test": 220,
+      "gui_regression_tests": 51,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 17,
+              "stepping": 1,
+              "signature": "0x00a10f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f034ba92000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f034b9f8000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f034b816000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f034b6c7000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f034b6ac000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f034b4ba000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f034ba94000)\n",
+        "guide_installed": false,
+        "binary_bytes": 440280
+      },
+      "kernel_boots": [
+        {
+          "kernel": "5.4.0-216-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "c5bb7de4df4416f77e8eb33547a30673d84542c7b0ae789954ce82e8f8b26f09",
+          "module_sha256": "b28ffc18c890f3c39dbfd2894dd00da00bb850f10c15d49528d08a06b95c261b"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/ubuntu20.04/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 194402,
+          "sha256": "e48ed85ee4c1c17c0488c57bfafdef13f77518edb63138d2b2628c130b5c740c"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/ubuntu20.04/octool-2.0.1-1.amd64.deb",
+          "bytes": 14098368,
+          "sha256": "2b9160586252a648f31f6393a0946bd918e46a6c385f1c8c8ad6324448a526bb"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/ubuntu20.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10670,
+          "sha256": "e6eaa4f64260e004915bed477383fde3436c1b499aea3fdbc0e81a3ee2374a51"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu20.04/ctest.txt",
+          "bytes": 1237,
+          "sha256": "f151f121a5f847a244bbc6519b02c119c7f93547f632ae5cb0a5a96c98ad8029"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu20.04/LastTest.log",
+          "bytes": 6383,
+          "sha256": "f12def42425dc3b60cd1429e0976bb9c5c0fd5a65cb55c0718d1e01d527eb1e6"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu20.04/runtime.json",
+          "bytes": 1544,
+          "sha256": "956cd021beb735b5b995f0fd1a7077cca91f1a32c5886811eccf49e1a23629f7"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu20.04/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "e661623b4840f9e9fec6afeb366b53b9c8b07098d338360c99e2bff982892316"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu20.04/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "507715fc9c450d2fe9cb25a35b592e84748652284ba185066a356962b1bb12cf"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/gui-tests.txt",
+          "bytes": 15511,
+          "sha256": "4dc7d775b0186025455b2539fec7db7cdcd9e8dc893d4c92d4c7496c21f4acbf"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/helper-smoke.json",
+          "bytes": 1016,
+          "sha256": "58c345e215841b181b68532e08c3112f2aaf8dafed1fc00bda0ef15626f72c1d"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/kernel-ubuntu20.04/guest-boot/results.json",
+          "bytes": 497,
+          "sha256": "5069d6d94c8c6834bee1a40fd6d8ae4a3cc1fa82034d59045e002d8bffe87a08"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu22.04",
+      "ctests": 11,
+      "core_scenario_groups": 90,
+      "cli_scenario_groups": 12,
+      "invalid_commands_before_device_open": 109,
+      "json_reports_in_process_test": 220,
+      "gui_regression_tests": 51,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 26,
+              "model": 2,
+              "stepping": 1,
+              "signature": "0x00b00f21"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f0687f6d000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f0687cd0000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f0687be9000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f0687bc9000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f06879a0000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f0687f6f000)\n",
+        "guide_installed": false,
+        "binary_bytes": 415704
+      },
+      "kernel_boots": [
+        {
+          "kernel": "5.15.0-198-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "e674dce98d3b3f3bca3ffaca1d2a22ed50c36fa2ff530a74c0908867363cd001",
+          "module_sha256": "11ba48722faca8e5e051d40b1d6459daa920fe58628d72b77f77401bc59953bc"
+        },
+        {
+          "kernel": "6.8.0-138-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "81ea8d2ef9c2d6a46e95c961c8c7c282941c80d4fd4106a3fcf9c87911243d3d",
+          "module_sha256": "ee8cd2475fd1e7c24dccb22130257053a444adc9db808684bad44a00297494bb"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/ubuntu22.04/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 188740,
+          "sha256": "0bea5cfb9b902a5f804789c55eba0aa691eb820a4af6e7501751eee38fc51eda"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/ubuntu22.04/octool-2.0.1-1.amd64.deb",
+          "bytes": 14098314,
+          "sha256": "4cc1f194829c0b53aaac789208d5d4e214faf1b1742eb2cc923723aa4c303802"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/ubuntu22.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10666,
+          "sha256": "09360fe0acb549e3539226b83e4a71ffa0c0b248f3eb6bc933ba79694371edf7"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu22.04/ctest.txt",
+          "bytes": 1237,
+          "sha256": "42458b83cc99b123f4be468d101d7279222b34f2dfa172b99c6ef43bf805e5c6"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu22.04/LastTest.log",
+          "bytes": 6383,
+          "sha256": "0f39f970322684fd5ac1c8999d6a1f4c4ddba2f4b238971fdf688c9661524932"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu22.04/runtime.json",
+          "bytes": 1462,
+          "sha256": "e3961c301f39319a06b59094934ce6a4061856461d3bb0d54db97bdc0b4e5122"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu22.04/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "35a7c19fb77152b9c2604c7ede5dcd4ccbc699bf79dc9817ecef9f2eb0edb0cf"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu22.04/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "b333f31e5cdc38ecd68af68e5921dd7eb86fe21eb7d9a58cfca45e6e33aed48b"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/gui-tests.txt",
+          "bytes": 15511,
+          "sha256": "6fa7e1b1ced12035833dff43ce6719d430fe9ab2a6960690f34c35fd3e83d6a7"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/helper-smoke.json",
+          "bytes": 1008,
+          "sha256": "7ecff0d9f76a4d7ab349e494ab45cbd3fa43294587cea877f6b6d35943c9fa9b"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/kernel-ubuntu22.04/guest-boot/results.json",
+          "bytes": 992,
+          "sha256": "8c38c0bcb70f2f13662a3edf841ff5eef5847b35b7376d4b3ed9d8e1e3a3b2d8"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu24.04",
+      "ctests": 11,
+      "core_scenario_groups": 90,
+      "cli_scenario_groups": 12,
+      "invalid_commands_before_device_open": 109,
+      "json_reports_in_process_test": 220,
+      "gui_regression_tests": 51,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 17,
+              "stepping": 1,
+              "signature": "0x00a10f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f2a2cde8000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f2a2cafc000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f2a2ca13000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f2a2c9e5000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f2a2c7d2000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f2a2cdea000)\n",
+        "guide_installed": false,
+        "binary_bytes": 407512
+      },
+      "kernel_boots": [
+        {
+          "kernel": "6.8.0-146-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "bae162f72d687f8f87909f1dfedea1dfe16adefe40da51f649d9a9b6d498342b",
+          "module_sha256": "9214c5560954f3d1cadee11b8d77f923048b9b41e336e986531a0c36c0e3a97d"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/ubuntu24.04/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 188434,
+          "sha256": "fe67f2b5ee3d08e257a442cb2b0bc2345d4caeaae41451cf6552616f4fb0aa32"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/ubuntu24.04/octool-2.0.1-1.amd64.deb",
+          "bytes": 14098312,
+          "sha256": "ad9200c0d0e1d90a4a332547773efaf2767eb529ab1836020ded27fd114ff4d9"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/ubuntu24.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10666,
+          "sha256": "95c4946f6a1f1485b389c697636c74bbb391bcea8bca0bd78eba9e258c88da11"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu24.04/ctest.txt",
+          "bytes": 1237,
+          "sha256": "31c4772662869d53df94db2de9b4a047806561c9392988c80fac1121ff17e337"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu24.04/LastTest.log",
+          "bytes": 6383,
+          "sha256": "f9b159d6c1d06af027bcc09d91e7fa32c7cfa4ee3cb0ede4c04b568c53364272"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu24.04/runtime.json",
+          "bytes": 1463,
+          "sha256": "20f43ea4773470d2088dba47e533e16584d5d9a7d620bd2da3aa874e3c3a6ed7"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu24.04/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "e661623b4840f9e9fec6afeb366b53b9c8b07098d338360c99e2bff982892316"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu24.04/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "507715fc9c450d2fe9cb25a35b592e84748652284ba185066a356962b1bb12cf"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/gui-tests.txt",
+          "bytes": 15511,
+          "sha256": "3f04ad3c7213a758e08b4fc84a16ab21feb3d8e2fe594344a7322b50d3f7d982"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/helper-smoke.json",
+          "bytes": 1011,
+          "sha256": "9ed9c893465370f645dc9b21159d76ea2614f38fcbd45eeb8a1a920fa1b2c48f"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/kernel-ubuntu24.04/guest-boot/results.json",
+          "bytes": 497,
+          "sha256": "a2f81c8e62f2150734dcc205d0d69f2e41a39990cd40721ffc3dfbe6237192c3"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu26.04",
+      "ctests": 11,
+      "core_scenario_groups": 90,
+      "cli_scenario_groups": 12,
+      "invalid_commands_before_device_open": 109,
+      "json_reports_in_process_test": 220,
+      "gui_regression_tests": 51,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "GenuineIntel",
+              "family": 6,
+              "model": 207,
+              "stepping": 2,
+              "signature": "0x000c06f2"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007fbd6c3be000)\n\tlibstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fbd6c0ab000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x00007fbd6bf85000)\n\tlibgcc_s.so.1 => /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fbd6bf57000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x00007fbd6bd36000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fbd6c3c0000)\n",
+        "guide_installed": false,
+        "binary_bytes": 425296
+      },
+      "kernel_boots": [
+        {
+          "kernel": "7.0.0-38-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "9f55ef7253055a9cf68f8a04323c93dead2fca617386d842fbde9ca7b178b27e",
+          "module_sha256": "60e4a9e6f9c9362dabc05e1df8e89e5c69e5ecbb21d7e490e762f4df9636b71a"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/ubuntu26.04/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 196614,
+          "sha256": "1cdbb85733c5caa36a07b28a8f2a2889111596ac696dff17d04b6a9437deec7a"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/ubuntu26.04/octool-2.0.1-1.amd64.deb",
+          "bytes": 14098352,
+          "sha256": "9cdff8bcd52535dc7afb8b5009ea030c00b5b7b46f3f1df53a7672682bccf743"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/ubuntu26.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10666,
+          "sha256": "8d996eda0bb480f59e2c5a108b633afc15031cf3291770ac44178228e56d08a8"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu26.04/ctest.txt",
+          "bytes": 1237,
+          "sha256": "6836933680ed33e87f031ac08204b2c96035967cf570dae847b46d51a0734590"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu26.04/LastTest.log",
+          "bytes": 6383,
+          "sha256": "f9514df9f7b2e6ed0d1aa859b56fb96d3dcd5d3f509bef2237e2ae400eb2874f"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu26.04/runtime.json",
+          "bytes": 1479,
+          "sha256": "8f1538e1452e5bfb868f352ecae544aa32bf2a1037397e8259837eeb524db092"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu26.04/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "3018787c8f4004043fbfe1a9bef8071f0961d2f0c79ec4295bc89c5a0685d9b3"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-ubuntu26.04/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "0e9188832e83cc4e068b0cff0daabc4d351097c19be3fdc2a416ec9d44e46ded"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/gui-tests.txt",
+          "bytes": 15284,
+          "sha256": "4ae5ef292508a7efa4f3055a90b0b53838aa51b10578df344fe75bc3594ed962"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/helper-smoke.json",
+          "bytes": 1011,
+          "sha256": "f44760fd351bfea2001f250d13d411d8d95751154b32f10da4c34d27a832095f"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/kernel-ubuntu26.04/guest-boot/results.json",
+          "bytes": 496,
+          "sha256": "9d7f93c2f9429f1b81fbc993a68c192f2051c9a61b29e18de831f3ec0499699f"
+        }
+      ]
+    },
+    {
+      "target": "debian11",
+      "ctests": 11,
+      "core_scenario_groups": 90,
+      "cli_scenario_groups": 12,
+      "invalid_commands_before_device_open": 109,
+      "json_reports_in_process_test": 220,
+      "gui_regression_tests": 51,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "GenuineIntel",
+              "family": 6,
+              "model": 106,
+              "stepping": 6,
+              "signature": "0x000606a6"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f1865ead000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f1865e1d000)\n\tlibstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f1865c50000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f1865b0c000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f1865af2000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f186591e000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f1865eaf000)\n",
+        "guide_installed": true,
+        "binary_bytes": 404384
+      },
+      "kernel_boots": [
+        {
+          "kernel": "5.10.0-46-amd64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "8568fbc5dcc1a357e02c5ea67c1462174425aef5e8c9c74970253999c9613eb6",
+          "module_sha256": "afb0de05ae56d3823f32259a1d46ee1d1dc9feb99266a37e5b6cd20cb57a3333"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/debian11/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 184928,
+          "sha256": "e22babbf7fdbc36499cfaf06624dc296e95fd25652d4bd1da8c7b789390a2661"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/debian11/octool-2.0.1-1.amd64.deb",
+          "bytes": 14098308,
+          "sha256": "2d6a033bfa58ad2f14fec50dd60a8598e761c9967d7cbd4a96ec7a53c31bdd40"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/debian11/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10670,
+          "sha256": "4bfa3b92d083425abfe494d5a5aa89d013ada009c7100cd2f5f6dee4038d2516"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-debian11/ctest.txt",
+          "bytes": 1237,
+          "sha256": "7977c5496ee71f87359cc801a4f35ae5b81b7f25726eab9f7575c5da113ed3fb"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-debian11/LastTest.log",
+          "bytes": 6383,
+          "sha256": "14146eb940995e070b57f698f9c759e45030cbe6928b6ef6c38be664cdfe57c6"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-debian11/runtime.json",
+          "bytes": 1561,
+          "sha256": "112ccf9f6ce0b0e2642be51195ce7fcaa2f3b6aa10e6ce68b6ab41990d45e947"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-debian11/unprivileged-diagnose.json",
+          "bytes": 381,
+          "sha256": "ecfd0ef8b34f6b943cc7967051b557b4d4f1acba1460f0bd2425471ba3d7a215"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-debian11/reinstalled-diagnose.json",
+          "bytes": 377,
+          "sha256": "07b4f85e82ae667e10f71c69cf3e5d240c152671695164e0ab52bbd497e69099"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/gui-tests.txt",
+          "bytes": 15056,
+          "sha256": "1af598d25b396888c8fbcfa910c10548cb7a0ee02b576adaca9e53432bf8a0bc"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/helper-smoke.json",
+          "bytes": 1020,
+          "sha256": "8e2a4a57b0a478ee7cdac3c24c71ea1db8f3d396b99dc2233fa410c8d439b1ba"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/kernel-debian11/guest-boot/results.json",
+          "bytes": 495,
+          "sha256": "4b9794ffff202191af850d0abf23b259a3ef0faa983a570ad0cb909c45824239"
+        }
+      ]
+    },
+    {
+      "target": "debian12",
+      "ctests": 11,
+      "core_scenario_groups": 90,
+      "cli_scenario_groups": 12,
+      "invalid_commands_before_device_open": 109,
+      "json_reports_in_process_test": 220,
+      "gui_regression_tests": 51,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 26,
+              "model": 2,
+              "stepping": 1,
+              "signature": "0x00b00f21"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007fdb61da7000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fdb61b25000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fdb61a45000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fdb61a25000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fdb61843000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fdb61da9000)\n",
+        "guide_installed": true,
+        "binary_bytes": 383984
+      },
+      "kernel_boots": [
+        {
+          "kernel": "6.1.0-53-amd64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "d66b8bc4b8330f4e98257602449feeeed696b860bf147a40477e7f4cfc48e704",
+          "module_sha256": "7fc256dc67c263a8f82a65c0550ddcc9b03852f481a65b110eddc32496696258"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/debian12/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 179404,
+          "sha256": "13037c525b1fc2a02c8bb769a63d53c26df4ca83d122bb225064c73d2d82e095"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/debian12/octool-2.0.1-1.amd64.deb",
+          "bytes": 14098362,
+          "sha256": "86047150babba37b0bfc95e3754b11bc7c2a352135dd3e930eb829119d3830cb"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/debian12/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10664,
+          "sha256": "0fc5f6b9ec2a1454f7721955889253fcbeefafa929004c3345d686284420a67f"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-debian12/ctest.txt",
+          "bytes": 1237,
+          "sha256": "d805538c4c2521aafb1a7e4e1a9f17585aa8bed6f026dfce1be08ea55bb5ce5c"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-debian12/LastTest.log",
+          "bytes": 6383,
+          "sha256": "0f39f970322684fd5ac1c8999d6a1f4c4ddba2f4b238971fdf688c9661524932"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-debian12/runtime.json",
+          "bytes": 1461,
+          "sha256": "24c33ceb58eb7da0833bbb87f2db968b9a55b472be07353f1499fcbaf9274bbb"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-debian12/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "35a7c19fb77152b9c2604c7ede5dcd4ccbc699bf79dc9817ecef9f2eb0edb0cf"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-debian12/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "b333f31e5cdc38ecd68af68e5921dd7eb86fe21eb7d9a58cfca45e6e33aed48b"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/gui-tests.txt",
+          "bytes": 15619,
+          "sha256": "32172144062f867ce4d6d9207b03505079c44be35ea96868c027f3c640d6fb42"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/helper-smoke.json",
+          "bytes": 1037,
+          "sha256": "bb49af52f79f8052683288db3dbaee933db926156ebc06d938389dbac79b3d82"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/kernel-debian12/guest-boot/results.json",
+          "bytes": 494,
+          "sha256": "389f49888874587416a70e96dcf5cb878fb74bb1633c227c9c98d378d9dc0cd8"
+        }
+      ]
+    },
+    {
+      "target": "debian13",
+      "ctests": 11,
+      "core_scenario_groups": 90,
+      "cli_scenario_groups": 12,
+      "invalid_commands_before_device_open": 109,
+      "json_reports_in_process_test": 220,
+      "gui_regression_tests": 51,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f0a7a38d000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f0a7a0bc000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f0a79fcc000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f0a79f9f000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f0a79dab000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f0a7a38f000)\n",
+        "guide_installed": true,
+        "binary_bytes": 397640
+      },
+      "kernel_boots": [
+        {
+          "kernel": "6.12.111+deb13-amd64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "6d8a7f745280cc06a6d2877c932f4dfa9079b694eb4227b61b27232642340794",
+          "module_sha256": "5a22c7337d1cb3e52c5c8b0f96ef3665550f26f8e223036fc98ac688d3b84d23"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/debian13/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 186674,
+          "sha256": "8ed163d3c5d12aeea1d25621058e62a85449b5f557a150d1848ec7bca2e3cd65"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/debian13/octool-2.0.1-1.amd64.deb",
+          "bytes": 14098158,
+          "sha256": "3e78304e7722f22f9f917a57b9cf2cdc76542f88454bc5cad6e998301c91017c"
+        },
+        {
+          "path": "dist/gui-cli-vf-edit-32c89ae/debian13/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10672,
+          "sha256": "344d121b671e64b6a6aabaf67ce41d23b8323675e4dcf9d174fc0b4e20d4ab22"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-debian13/ctest.txt",
+          "bytes": 1237,
+          "sha256": "401243b0bfe006ba5161ad2913a1ddb684e5c7b81e6537a687d63b917494227c"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-debian13/LastTest.log",
+          "bytes": 6383,
+          "sha256": "5ae19556a1df13bdfae4a879d348923203cf35a83d8584bf8344601c8776f0f2"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-debian13/runtime.json",
+          "bytes": 1461,
+          "sha256": "7f37e9d1b2c099837ae100b84c95b9fac5ee3e4d62291acbe125dfa9975a0731"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-debian13/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/cli-artifacts/cli-debian13/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/gui-tests.txt",
+          "bytes": 15059,
+          "sha256": "a87ea7369ac5a28d3d7046d5ea8fa9d53ce5f8cd5127d3407fa93fe676cbae4c"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/helper-smoke.json",
+          "bytes": 1021,
+          "sha256": "d9267f5a72d2bc9d3c1c3eb63fad7d0a8b9e1afdd78d0296323549e76096be44"
+        },
+        {
+          "path": "build/intel-vf-edit-32c89ae/linux-artifacts/kernel-debian13/guest-boot/results.json",
+          "bytes": 500,
+          "sha256": "5412f0c812831eabd1dd733139b383f4b836141363fadcc1687df2797c8e567f"
+        }
+      ]
+    }
+  ],
+  "physical_hardware_acceptance": "not_run",
+  "screenshots": [
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/native-0.png",
+      "bytes": 61263,
+      "sha256": "add474937a52c07c5024d3ab6f4b21fdde0943e4383137b7dd62e910bfbb6b47"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/native-5-turbo.png",
+      "bytes": 54354,
+      "sha256": "03c8aa7868f3ebd1d84393d665df86bc1f58bbe68962e8691c902a3630116c86"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/native-5-vf.png",
+      "bytes": 74619,
+      "sha256": "fe7bc60282f73e4192b2fed3f30b70d1551539d0a279d82efdf484a8143d5b65"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/native-5-voltage.png",
+      "bytes": 85642,
+      "sha256": "dbb421314bbbf2016bfc473f2cb22cd8f7d10db9b3b2b3fd7c5d49abf806ee2b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/native-5.png",
+      "bytes": 53697,
+      "sha256": "1669e95d0124cf0b0999bc9d97cc5e9a96e19b584c3aa386e3d05b8d67cb4a36"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/native-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/native-7.png",
+      "bytes": 43168,
+      "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/native-8.png",
+      "bytes": 54563,
+      "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/release-0.png",
+      "bytes": 61263,
+      "sha256": "add474937a52c07c5024d3ab6f4b21fdde0943e4383137b7dd62e910bfbb6b47"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/release-5-turbo.png",
+      "bytes": 54354,
+      "sha256": "03c8aa7868f3ebd1d84393d665df86bc1f58bbe68962e8691c902a3630116c86"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/release-5-vf.png",
+      "bytes": 74619,
+      "sha256": "fe7bc60282f73e4192b2fed3f30b70d1551539d0a279d82efdf484a8143d5b65"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/release-5-voltage.png",
+      "bytes": 85642,
+      "sha256": "dbb421314bbbf2016bfc473f2cb22cd8f7d10db9b3b2b3fd7c5d49abf806ee2b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/release-5.png",
+      "bytes": 53697,
+      "sha256": "1669e95d0124cf0b0999bc9d97cc5e9a96e19b584c3aa386e3d05b8d67cb4a36"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/release-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/release-7.png",
+      "bytes": 43168,
+      "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/smoke/release-8.png",
+      "bytes": 54563,
+      "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/turbo-fixture.png",
+      "bytes": 97513,
+      "sha256": "a8fc2a3bd04c6a94c5a2b4c1e7180a742b688374bbe377d7bb38fd0f06c20c7b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/vf-edit-fixture.png",
+      "bytes": 123449,
+      "sha256": "a0515a72a675697b6848c41d90f38bad7e981c5c508d9a2944b43e7a0262f6d2"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/vf-fixture.png",
+      "bytes": 152790,
+      "sha256": "9dcf57a6df3a4e7b061a879a6205c3078bb6bdde1ceb02ce8c6238568baddd51"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/native-0.png",
+      "bytes": 60258,
+      "sha256": "5830cb2609e88e0049bfe31a752ff1c400cdde843e9f768509c0482baac720dc"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/native-5-turbo.png",
+      "bytes": 54354,
+      "sha256": "03c8aa7868f3ebd1d84393d665df86bc1f58bbe68962e8691c902a3630116c86"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/native-5-vf.png",
+      "bytes": 74619,
+      "sha256": "fe7bc60282f73e4192b2fed3f30b70d1551539d0a279d82efdf484a8143d5b65"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/native-5-voltage.png",
+      "bytes": 85642,
+      "sha256": "dbb421314bbbf2016bfc473f2cb22cd8f7d10db9b3b2b3fd7c5d49abf806ee2b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/native-5.png",
+      "bytes": 53697,
+      "sha256": "1669e95d0124cf0b0999bc9d97cc5e9a96e19b584c3aa386e3d05b8d67cb4a36"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/native-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/native-7.png",
+      "bytes": 43168,
+      "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/native-8.png",
+      "bytes": 54563,
+      "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/release-0.png",
+      "bytes": 60258,
+      "sha256": "5830cb2609e88e0049bfe31a752ff1c400cdde843e9f768509c0482baac720dc"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/release-5-turbo.png",
+      "bytes": 54354,
+      "sha256": "03c8aa7868f3ebd1d84393d665df86bc1f58bbe68962e8691c902a3630116c86"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/release-5-vf.png",
+      "bytes": 74619,
+      "sha256": "fe7bc60282f73e4192b2fed3f30b70d1551539d0a279d82efdf484a8143d5b65"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/release-5-voltage.png",
+      "bytes": 85642,
+      "sha256": "dbb421314bbbf2016bfc473f2cb22cd8f7d10db9b3b2b3fd7c5d49abf806ee2b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/release-5.png",
+      "bytes": 53697,
+      "sha256": "1669e95d0124cf0b0999bc9d97cc5e9a96e19b584c3aa386e3d05b8d67cb4a36"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/release-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/release-7.png",
+      "bytes": 43168,
+      "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/smoke/release-8.png",
+      "bytes": 54563,
+      "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/turbo-fixture.png",
+      "bytes": 97513,
+      "sha256": "a8fc2a3bd04c6a94c5a2b4c1e7180a742b688374bbe377d7bb38fd0f06c20c7b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/vf-edit-fixture.png",
+      "bytes": 123285,
+      "sha256": "0a148e0a970e27b6ebeb9e852976b0d28b4d0e8504110efef2fec9a4f8499ff8"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el9/vf-fixture.png",
+      "bytes": 152506,
+      "sha256": "2d5936b36531c834d81558020b84e780286e21eaec2ea74324efc0a64c138f71"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/controls-fixture.png",
+      "bytes": 163204,
+      "sha256": "3ea98939845341f696954bacc03c70519230698150d5259897642348384c82d9"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/native-0.png",
+      "bytes": 57401,
+      "sha256": "96158c4e6dd3ba9e3d113d33ca53642b266df4f4977eab46d773f558e3d6946f"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/native-1.png",
+      "bytes": 30301,
+      "sha256": "becfca1cc65f886a79a86f2ec435f604f0d85f41f4d3d664377da9961d07e763"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/native-2.png",
+      "bytes": 28500,
+      "sha256": "559eb0466a1fe08a56a8f5693cf2a6e2ea44f60897b7d0786fae99278f184c75"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/native-3.png",
+      "bytes": 31674,
+      "sha256": "b1ecaca9da6c14426cc34b218213df1231eb6d3af24df2f5a3d9d06e68c735a2"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/native-4.png",
+      "bytes": 66427,
+      "sha256": "bc873c8a3b79f60a4f54c0c2e8cba6a4a246339b8e9ae7d2c1960bb3508d84cc"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/native-5-turbo.png",
+      "bytes": 51652,
+      "sha256": "56dd82830676aa6aa1e351cb199a52e78f572613d73fbf5f8686ef7f97c8165e"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/native-5-vf.png",
+      "bytes": 70769,
+      "sha256": "3d1b764af4ef159853f7da3303e0422e70ca3a96d51861807abd9812c25d2d5d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/native-5-voltage.png",
+      "bytes": 81676,
+      "sha256": "491c989a5f6f001d646efc19979e624fa17c95bbb614f26149e52c526b20db0c"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/native-5.png",
+      "bytes": 49649,
+      "sha256": "67ddff11bae8815120b1c5c30af2be3b2a6c997bc8498b4f420d5b3a5360596d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/native-6.png",
+      "bytes": 67798,
+      "sha256": "91a2e6e737898b0bfadb3a7f0ca2557ac4f089dccbc15c938bc5b33c0c9c569b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/native-7.png",
+      "bytes": 41886,
+      "sha256": "23d5b59a8b24f5ebc7100611c09e5d31e6bf9245527abc6d75262996fcdec31f"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/native-8.png",
+      "bytes": 49124,
+      "sha256": "ae48e8a97919bd2757d0112caf5b2a80445ccb3ed279d38172b8404cacccf898"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/release-0.png",
+      "bytes": 57401,
+      "sha256": "96158c4e6dd3ba9e3d113d33ca53642b266df4f4977eab46d773f558e3d6946f"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/release-1.png",
+      "bytes": 30301,
+      "sha256": "becfca1cc65f886a79a86f2ec435f604f0d85f41f4d3d664377da9961d07e763"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/release-2.png",
+      "bytes": 28500,
+      "sha256": "559eb0466a1fe08a56a8f5693cf2a6e2ea44f60897b7d0786fae99278f184c75"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/release-3.png",
+      "bytes": 31674,
+      "sha256": "b1ecaca9da6c14426cc34b218213df1231eb6d3af24df2f5a3d9d06e68c735a2"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/release-4.png",
+      "bytes": 66427,
+      "sha256": "bc873c8a3b79f60a4f54c0c2e8cba6a4a246339b8e9ae7d2c1960bb3508d84cc"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/release-5-turbo.png",
+      "bytes": 51652,
+      "sha256": "56dd82830676aa6aa1e351cb199a52e78f572613d73fbf5f8686ef7f97c8165e"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/release-5-vf.png",
+      "bytes": 70769,
+      "sha256": "3d1b764af4ef159853f7da3303e0422e70ca3a96d51861807abd9812c25d2d5d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/release-5-voltage.png",
+      "bytes": 81676,
+      "sha256": "491c989a5f6f001d646efc19979e624fa17c95bbb614f26149e52c526b20db0c"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/release-5.png",
+      "bytes": 49649,
+      "sha256": "67ddff11bae8815120b1c5c30af2be3b2a6c997bc8498b4f420d5b3a5360596d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/release-6.png",
+      "bytes": 67798,
+      "sha256": "91a2e6e737898b0bfadb3a7f0ca2557ac4f089dccbc15c938bc5b33c0c9c569b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/release-7.png",
+      "bytes": 41886,
+      "sha256": "23d5b59a8b24f5ebc7100611c09e5d31e6bf9245527abc6d75262996fcdec31f"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/smoke/release-8.png",
+      "bytes": 49124,
+      "sha256": "ae48e8a97919bd2757d0112caf5b2a80445ccb3ed279d38172b8404cacccf898"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/turbo-fixture.png",
+      "bytes": 88005,
+      "sha256": "c75b51c2563bea049b8dc939b5f05951c529d41342cd5a2dab66a2e940ba1895"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/vf-edit-fixture.png",
+      "bytes": 114104,
+      "sha256": "203ffd81bf84191e8f1dd5e08109cc647f9e0eef9c556e8922cff9db163888b6"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el10/vf-fixture.png",
+      "bytes": 135527,
+      "sha256": "df2cccb5760e6688f94ebc5e5b54ac375b6b2dd90b13298a3afecabcf0564f2c"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/native-0.png",
+      "bytes": 60083,
+      "sha256": "1ec759e59654058160b9c0da507b63cd8b5c4b7cdbcf7774737b4b453dd96620"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/native-5-turbo.png",
+      "bytes": 54354,
+      "sha256": "03c8aa7868f3ebd1d84393d665df86bc1f58bbe68962e8691c902a3630116c86"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/native-5-vf.png",
+      "bytes": 74619,
+      "sha256": "fe7bc60282f73e4192b2fed3f30b70d1551539d0a279d82efdf484a8143d5b65"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/native-5-voltage.png",
+      "bytes": 85642,
+      "sha256": "dbb421314bbbf2016bfc473f2cb22cd8f7d10db9b3b2b3fd7c5d49abf806ee2b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/native-5.png",
+      "bytes": 53697,
+      "sha256": "1669e95d0124cf0b0999bc9d97cc5e9a96e19b584c3aa386e3d05b8d67cb4a36"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/native-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/native-7.png",
+      "bytes": 43168,
+      "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/native-8.png",
+      "bytes": 54563,
+      "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/release-0.png",
+      "bytes": 60083,
+      "sha256": "1ec759e59654058160b9c0da507b63cd8b5c4b7cdbcf7774737b4b453dd96620"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/release-5-turbo.png",
+      "bytes": 54354,
+      "sha256": "03c8aa7868f3ebd1d84393d665df86bc1f58bbe68962e8691c902a3630116c86"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/release-5-vf.png",
+      "bytes": 74619,
+      "sha256": "fe7bc60282f73e4192b2fed3f30b70d1551539d0a279d82efdf484a8143d5b65"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/release-5-voltage.png",
+      "bytes": 85642,
+      "sha256": "dbb421314bbbf2016bfc473f2cb22cd8f7d10db9b3b2b3fd7c5d49abf806ee2b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/release-5.png",
+      "bytes": 53697,
+      "sha256": "1669e95d0124cf0b0999bc9d97cc5e9a96e19b584c3aa386e3d05b8d67cb4a36"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/release-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/release-7.png",
+      "bytes": 43168,
+      "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/smoke/release-8.png",
+      "bytes": 54563,
+      "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/turbo-fixture.png",
+      "bytes": 97513,
+      "sha256": "a8fc2a3bd04c6a94c5a2b4c1e7180a742b688374bbe377d7bb38fd0f06c20c7b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/vf-edit-fixture.png",
+      "bytes": 123261,
+      "sha256": "3262e7d03586109ee95aa30405ec0ceb7975e0d44d48fff302f1a7facadc80f9"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu20.04/vf-fixture.png",
+      "bytes": 152748,
+      "sha256": "9668d9d15128bd56bf5042615bd2577fec5f99f206f16e66dc4a816389d795ca"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/native-0.png",
+      "bytes": 60032,
+      "sha256": "b12c3b6912cce2cbd39b34226a275c2d5dbe994fae51f0707bc16a99c7eb7578"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/native-5-turbo.png",
+      "bytes": 54354,
+      "sha256": "03c8aa7868f3ebd1d84393d665df86bc1f58bbe68962e8691c902a3630116c86"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/native-5-vf.png",
+      "bytes": 74619,
+      "sha256": "fe7bc60282f73e4192b2fed3f30b70d1551539d0a279d82efdf484a8143d5b65"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/native-5-voltage.png",
+      "bytes": 85642,
+      "sha256": "dbb421314bbbf2016bfc473f2cb22cd8f7d10db9b3b2b3fd7c5d49abf806ee2b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/native-5.png",
+      "bytes": 53697,
+      "sha256": "1669e95d0124cf0b0999bc9d97cc5e9a96e19b584c3aa386e3d05b8d67cb4a36"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/native-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/native-7.png",
+      "bytes": 43168,
+      "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/native-8.png",
+      "bytes": 54563,
+      "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/release-0.png",
+      "bytes": 60032,
+      "sha256": "b12c3b6912cce2cbd39b34226a275c2d5dbe994fae51f0707bc16a99c7eb7578"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/release-5-turbo.png",
+      "bytes": 54354,
+      "sha256": "03c8aa7868f3ebd1d84393d665df86bc1f58bbe68962e8691c902a3630116c86"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/release-5-vf.png",
+      "bytes": 74619,
+      "sha256": "fe7bc60282f73e4192b2fed3f30b70d1551539d0a279d82efdf484a8143d5b65"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/release-5-voltage.png",
+      "bytes": 85642,
+      "sha256": "dbb421314bbbf2016bfc473f2cb22cd8f7d10db9b3b2b3fd7c5d49abf806ee2b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/release-5.png",
+      "bytes": 53697,
+      "sha256": "1669e95d0124cf0b0999bc9d97cc5e9a96e19b584c3aa386e3d05b8d67cb4a36"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/release-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/release-7.png",
+      "bytes": 43168,
+      "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/smoke/release-8.png",
+      "bytes": 54563,
+      "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/turbo-fixture.png",
+      "bytes": 97513,
+      "sha256": "a8fc2a3bd04c6a94c5a2b4c1e7180a742b688374bbe377d7bb38fd0f06c20c7b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/vf-edit-fixture.png",
+      "bytes": 123287,
+      "sha256": "09a5d9b2cb3eea8d830f6bb6ac62f8e754d101dd2490434bd6f093ee551062de"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu22.04/vf-fixture.png",
+      "bytes": 152508,
+      "sha256": "780deb17cbccb525e386a5c0de2251c08cd336f6f969d9ccd1d2cbc0b4bfc897"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/controls-fixture.png",
+      "bytes": 208944,
+      "sha256": "b6a3c75969f5daa8751279df94a3c2e20ed0a9c2d0dd5928fac15797ab0594d9"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/native-0.png",
+      "bytes": 69164,
+      "sha256": "709694a9de91340e677136e99169aad542f3b5d4e7bae90fd2724ceb2a162b1b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/native-1.png",
+      "bytes": 35483,
+      "sha256": "bc7aac42669d26cb301cfc2165a272b47c506682e79af25b8706f629ebef62f2"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/native-2.png",
+      "bytes": 33708,
+      "sha256": "229b48333f366e215ad7b246085f798370d149f595db486b1f06d5f96348e667"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/native-3.png",
+      "bytes": 36960,
+      "sha256": "a604fe89dbb3ccfb7dcf3d30a0fe83643b809a858a931e17c7b358752d8b5d0c"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/native-4.png",
+      "bytes": 80357,
+      "sha256": "11fe99e920968309e8386f2f94e0ed9a9aca648b1ba38202433ea63b70751841"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/native-5-turbo.png",
+      "bytes": 61428,
+      "sha256": "4edc9a87e99e8fc931534c82fee8d9e6d179968cd63bc58ef09cb5ec3c75e7cf"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/native-5-vf.png",
+      "bytes": 86045,
+      "sha256": "e36fc5efdbff3dd705de2ba61ba4dd1f3cc835caff87c7be9c84fd58e50bb2eb"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/native-5-voltage.png",
+      "bytes": 96393,
+      "sha256": "5fde3a6911d330b32cc48aeff5b7e672bb41c02f8666159ba860853a4737ade9"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/native-5.png",
+      "bytes": 60115,
+      "sha256": "883e1a6e558b30e9edfd02f0556f230ba4d66f2cb39d003c9ef5840e15e6be57"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/native-6.png",
+      "bytes": 82279,
+      "sha256": "6111ec871f389acf2583a9542f76f40f874a003fa54f3c0b25022f40baeb63c8"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/native-7.png",
+      "bytes": 47597,
+      "sha256": "ec59361de65e04e029cc0a983e34a2c0159dfe6f0b724dca46a7a1b6460a77c0"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/native-8.png",
+      "bytes": 62043,
+      "sha256": "cdab8cc2666c46e5bbc331d2fb691e9f519c2af2a600344a4b6ccda4bf62db7b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/release-0.png",
+      "bytes": 69164,
+      "sha256": "709694a9de91340e677136e99169aad542f3b5d4e7bae90fd2724ceb2a162b1b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/release-1.png",
+      "bytes": 35483,
+      "sha256": "bc7aac42669d26cb301cfc2165a272b47c506682e79af25b8706f629ebef62f2"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/release-2.png",
+      "bytes": 33708,
+      "sha256": "229b48333f366e215ad7b246085f798370d149f595db486b1f06d5f96348e667"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/release-3.png",
+      "bytes": 36960,
+      "sha256": "a604fe89dbb3ccfb7dcf3d30a0fe83643b809a858a931e17c7b358752d8b5d0c"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/release-4.png",
+      "bytes": 80357,
+      "sha256": "11fe99e920968309e8386f2f94e0ed9a9aca648b1ba38202433ea63b70751841"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/release-5-turbo.png",
+      "bytes": 61428,
+      "sha256": "4edc9a87e99e8fc931534c82fee8d9e6d179968cd63bc58ef09cb5ec3c75e7cf"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/release-5-vf.png",
+      "bytes": 86045,
+      "sha256": "e36fc5efdbff3dd705de2ba61ba4dd1f3cc835caff87c7be9c84fd58e50bb2eb"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/release-5-voltage.png",
+      "bytes": 96393,
+      "sha256": "5fde3a6911d330b32cc48aeff5b7e672bb41c02f8666159ba860853a4737ade9"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/release-5.png",
+      "bytes": 60115,
+      "sha256": "883e1a6e558b30e9edfd02f0556f230ba4d66f2cb39d003c9ef5840e15e6be57"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/release-6.png",
+      "bytes": 82279,
+      "sha256": "6111ec871f389acf2583a9542f76f40f874a003fa54f3c0b25022f40baeb63c8"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/release-7.png",
+      "bytes": 47597,
+      "sha256": "ec59361de65e04e029cc0a983e34a2c0159dfe6f0b724dca46a7a1b6460a77c0"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/release-8.png",
+      "bytes": 62043,
+      "sha256": "cdab8cc2666c46e5bbc331d2fb691e9f519c2af2a600344a4b6ccda4bf62db7b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/turbo-fixture.png",
+      "bytes": 112666,
+      "sha256": "1ffc5d2e4a57b81189178d3aeb49ce5002d37578e57b426c6131274c3a60b059"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/vf-edit-fixture.png",
+      "bytes": 144072,
+      "sha256": "54fe4ae774b48b05ab185a89c671ac12ddb3df70175cd90ccf9e53ba589efd47"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/vf-fixture.png",
+      "bytes": 178052,
+      "sha256": "316d7c5942e29100c6acc7a403a5a7a34f1395505803395a9fc836a35ca93eae"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/controls-fixture.png",
+      "bytes": 209039,
+      "sha256": "eef4961237db5871414af920efc56338ad30857eaea29f309113608a9c444a50"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/native-0.png",
+      "bytes": 65395,
+      "sha256": "3922d3b3e0c688a1e612f73f73ae48da7caa3e6b5b565118204e499ebd8acc32"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/native-1.png",
+      "bytes": 33907,
+      "sha256": "c96e203432d92377a6db81369199c270c8c93a6351e0a31a1c0659045345b52a"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/native-2.png",
+      "bytes": 31570,
+      "sha256": "761888d87daa3735be75e6ab4236ec19cc9df062486085495945c72e9cdd64a6"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/native-3.png",
+      "bytes": 35274,
+      "sha256": "71233adda2b16dcea7d3e9e8172c7aaf7a7e6c4d5ddd3423fb720062761a0ea4"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/native-4.png",
+      "bytes": 76514,
+      "sha256": "4ac658788aa2398c24477499a8ebd6bd92807a481af7ea782016be2f09e8530d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/native-5-turbo.png",
+      "bytes": 59710,
+      "sha256": "bcdfa266a6c69cdbb67a7290264c77032bdfc2a638c33f4deab3b18758d1a633"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/native-5-vf.png",
+      "bytes": 82832,
+      "sha256": "7bb7b746bd4440ff9206a6cbca9c194fe882083fc20df601611dcb8a6825b07d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/native-5-voltage.png",
+      "bytes": 93576,
+      "sha256": "c7b339f0c8efe45550738e6047842eb4d27d384050b1a99a5bd08c2e33878870"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/native-5.png",
+      "bytes": 57926,
+      "sha256": "306dd1a86f5c81d5e96d619427333e44523a3d236b460942f0c5272fad8edc3e"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/native-6.png",
+      "bytes": 79886,
+      "sha256": "5c0d3d780c0189f4e56471e9601eea773c00a30a2aca1f4ceae2d9f4272ec16c"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/native-7.png",
+      "bytes": 46532,
+      "sha256": "de838ac2c02d1be0d0938d1cd65eb87dd069afb555c3920dbf4b7f2fbb1b5244"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/native-8.png",
+      "bytes": 57664,
+      "sha256": "be457c22a7f06a3dc75b8c828c23e782be8b8569de141deccdb71662b1504a75"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/release-0.png",
+      "bytes": 65395,
+      "sha256": "3922d3b3e0c688a1e612f73f73ae48da7caa3e6b5b565118204e499ebd8acc32"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/release-1.png",
+      "bytes": 33907,
+      "sha256": "c96e203432d92377a6db81369199c270c8c93a6351e0a31a1c0659045345b52a"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/release-2.png",
+      "bytes": 31570,
+      "sha256": "761888d87daa3735be75e6ab4236ec19cc9df062486085495945c72e9cdd64a6"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/release-3.png",
+      "bytes": 35274,
+      "sha256": "71233adda2b16dcea7d3e9e8172c7aaf7a7e6c4d5ddd3423fb720062761a0ea4"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/release-4.png",
+      "bytes": 76514,
+      "sha256": "4ac658788aa2398c24477499a8ebd6bd92807a481af7ea782016be2f09e8530d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/release-5-turbo.png",
+      "bytes": 59710,
+      "sha256": "bcdfa266a6c69cdbb67a7290264c77032bdfc2a638c33f4deab3b18758d1a633"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/release-5-vf.png",
+      "bytes": 82832,
+      "sha256": "7bb7b746bd4440ff9206a6cbca9c194fe882083fc20df601611dcb8a6825b07d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/release-5-voltage.png",
+      "bytes": 93576,
+      "sha256": "c7b339f0c8efe45550738e6047842eb4d27d384050b1a99a5bd08c2e33878870"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/release-5.png",
+      "bytes": 57926,
+      "sha256": "306dd1a86f5c81d5e96d619427333e44523a3d236b460942f0c5272fad8edc3e"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/release-6.png",
+      "bytes": 79886,
+      "sha256": "5c0d3d780c0189f4e56471e9601eea773c00a30a2aca1f4ceae2d9f4272ec16c"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/release-7.png",
+      "bytes": 46532,
+      "sha256": "de838ac2c02d1be0d0938d1cd65eb87dd069afb555c3920dbf4b7f2fbb1b5244"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/smoke/release-8.png",
+      "bytes": 57664,
+      "sha256": "be457c22a7f06a3dc75b8c828c23e782be8b8569de141deccdb71662b1504a75"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/turbo-fixture.png",
+      "bytes": 91818,
+      "sha256": "f003c820d986ed2fa73968f28cb9b26d22e457970585b971b79bd9962984a530"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/vf-edit-fixture.png",
+      "bytes": 122145,
+      "sha256": "dea037deb2c0ca481b3d765dfb10d48ff3ab3e606a648ffbc27999e359fa07ec"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu26.04/vf-fixture.png",
+      "bytes": 178883,
+      "sha256": "dcbbb4a01f6e7857cd8218bacc8d466ba902d4bacd9e575165d95ce999c3a6c4"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/native-0.png",
+      "bytes": 60788,
+      "sha256": "9966d4217b0b24c30f1acf36585440920e448753a89ec16064f6a88a93185e3a"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/native-5-turbo.png",
+      "bytes": 54354,
+      "sha256": "03c8aa7868f3ebd1d84393d665df86bc1f58bbe68962e8691c902a3630116c86"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/native-5-vf.png",
+      "bytes": 74619,
+      "sha256": "fe7bc60282f73e4192b2fed3f30b70d1551539d0a279d82efdf484a8143d5b65"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/native-5-voltage.png",
+      "bytes": 85642,
+      "sha256": "dbb421314bbbf2016bfc473f2cb22cd8f7d10db9b3b2b3fd7c5d49abf806ee2b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/native-5.png",
+      "bytes": 53697,
+      "sha256": "1669e95d0124cf0b0999bc9d97cc5e9a96e19b584c3aa386e3d05b8d67cb4a36"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/native-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/native-7.png",
+      "bytes": 43168,
+      "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/native-8.png",
+      "bytes": 54563,
+      "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/release-0.png",
+      "bytes": 60788,
+      "sha256": "9966d4217b0b24c30f1acf36585440920e448753a89ec16064f6a88a93185e3a"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/release-5-turbo.png",
+      "bytes": 54354,
+      "sha256": "03c8aa7868f3ebd1d84393d665df86bc1f58bbe68962e8691c902a3630116c86"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/release-5-vf.png",
+      "bytes": 74619,
+      "sha256": "fe7bc60282f73e4192b2fed3f30b70d1551539d0a279d82efdf484a8143d5b65"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/release-5-voltage.png",
+      "bytes": 85642,
+      "sha256": "dbb421314bbbf2016bfc473f2cb22cd8f7d10db9b3b2b3fd7c5d49abf806ee2b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/release-5.png",
+      "bytes": 53697,
+      "sha256": "1669e95d0124cf0b0999bc9d97cc5e9a96e19b584c3aa386e3d05b8d67cb4a36"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/release-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/release-7.png",
+      "bytes": 43168,
+      "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/smoke/release-8.png",
+      "bytes": 54563,
+      "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/turbo-fixture.png",
+      "bytes": 97513,
+      "sha256": "a8fc2a3bd04c6a94c5a2b4c1e7180a742b688374bbe377d7bb38fd0f06c20c7b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/vf-edit-fixture.png",
+      "bytes": 123307,
+      "sha256": "a7c9317afeb4046d8f6edba3a2b3fe4edb1902d598d0ec31b61de12b35b8df8e"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian11/vf-fixture.png",
+      "bytes": 152710,
+      "sha256": "89b1a302e4836293a7573a39d4f836e9dc3da0a6a942597c7e0199d25251e261"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/native-0.png",
+      "bytes": 62330,
+      "sha256": "5ef4374b40f4518e16d38049fce67d27b77ea2960bb9ae83dcb207a8c861300a"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/native-5-turbo.png",
+      "bytes": 54354,
+      "sha256": "03c8aa7868f3ebd1d84393d665df86bc1f58bbe68962e8691c902a3630116c86"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/native-5-vf.png",
+      "bytes": 74619,
+      "sha256": "fe7bc60282f73e4192b2fed3f30b70d1551539d0a279d82efdf484a8143d5b65"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/native-5-voltage.png",
+      "bytes": 85642,
+      "sha256": "dbb421314bbbf2016bfc473f2cb22cd8f7d10db9b3b2b3fd7c5d49abf806ee2b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/native-5.png",
+      "bytes": 53697,
+      "sha256": "1669e95d0124cf0b0999bc9d97cc5e9a96e19b584c3aa386e3d05b8d67cb4a36"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/native-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/native-7.png",
+      "bytes": 43168,
+      "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/native-8.png",
+      "bytes": 54563,
+      "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/release-0.png",
+      "bytes": 62330,
+      "sha256": "5ef4374b40f4518e16d38049fce67d27b77ea2960bb9ae83dcb207a8c861300a"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/release-5-turbo.png",
+      "bytes": 54354,
+      "sha256": "03c8aa7868f3ebd1d84393d665df86bc1f58bbe68962e8691c902a3630116c86"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/release-5-vf.png",
+      "bytes": 74619,
+      "sha256": "fe7bc60282f73e4192b2fed3f30b70d1551539d0a279d82efdf484a8143d5b65"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/release-5-voltage.png",
+      "bytes": 85642,
+      "sha256": "dbb421314bbbf2016bfc473f2cb22cd8f7d10db9b3b2b3fd7c5d49abf806ee2b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/release-5.png",
+      "bytes": 53697,
+      "sha256": "1669e95d0124cf0b0999bc9d97cc5e9a96e19b584c3aa386e3d05b8d67cb4a36"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/release-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/release-7.png",
+      "bytes": 43168,
+      "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/smoke/release-8.png",
+      "bytes": 54563,
+      "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/turbo-fixture.png",
+      "bytes": 97513,
+      "sha256": "a8fc2a3bd04c6a94c5a2b4c1e7180a742b688374bbe377d7bb38fd0f06c20c7b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/vf-edit-fixture.png",
+      "bytes": 123578,
+      "sha256": "b9d05dd957fd3ee0edee7a5bce1471383f2e57c1117d87cc85ce2061858d51f1"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian12/vf-fixture.png",
+      "bytes": 152861,
+      "sha256": "260187b141224160a70067791a8f8a9ecc491592621c82a6869d0ae08b8434fc"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/native-0.png",
+      "bytes": 60550,
+      "sha256": "b1589ead9c0a78cf9e4ab565da68994864576deb3b6155e4cd73199361a6ba39"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/native-5-turbo.png",
+      "bytes": 54354,
+      "sha256": "03c8aa7868f3ebd1d84393d665df86bc1f58bbe68962e8691c902a3630116c86"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/native-5-vf.png",
+      "bytes": 74619,
+      "sha256": "fe7bc60282f73e4192b2fed3f30b70d1551539d0a279d82efdf484a8143d5b65"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/native-5-voltage.png",
+      "bytes": 85642,
+      "sha256": "dbb421314bbbf2016bfc473f2cb22cd8f7d10db9b3b2b3fd7c5d49abf806ee2b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/native-5.png",
+      "bytes": 53697,
+      "sha256": "1669e95d0124cf0b0999bc9d97cc5e9a96e19b584c3aa386e3d05b8d67cb4a36"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/native-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/native-7.png",
+      "bytes": 43168,
+      "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/native-8.png",
+      "bytes": 54563,
+      "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/release-0.png",
+      "bytes": 60550,
+      "sha256": "b1589ead9c0a78cf9e4ab565da68994864576deb3b6155e4cd73199361a6ba39"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/release-5-turbo.png",
+      "bytes": 54354,
+      "sha256": "03c8aa7868f3ebd1d84393d665df86bc1f58bbe68962e8691c902a3630116c86"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/release-5-vf.png",
+      "bytes": 74619,
+      "sha256": "fe7bc60282f73e4192b2fed3f30b70d1551539d0a279d82efdf484a8143d5b65"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/release-5-voltage.png",
+      "bytes": 85642,
+      "sha256": "dbb421314bbbf2016bfc473f2cb22cd8f7d10db9b3b2b3fd7c5d49abf806ee2b"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/release-5.png",
+      "bytes": 53697,
+      "sha256": "1669e95d0124cf0b0999bc9d97cc5e9a96e19b584c3aa386e3d05b8d67cb4a36"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/release-6.png",
+      "bytes": 73406,
+      "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/release-7.png",
+      "bytes": 43168,
+      "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/smoke/release-8.png",
+      "bytes": 54563,
+      "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/turbo-fixture.png",
+      "bytes": 79809,
+      "sha256": "83e49b5e6036413a8b8ec9f8e741cd1c1e472efa9e4d25a3e24653b087b7f846"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/vf-edit-fixture.png",
+      "bytes": 104323,
+      "sha256": "689e8280eb27bede13eaca0ceae9174ab65c233601f76913a00db58d586028b5"
+    },
+    {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-debian13/vf-fixture.png",
+      "bytes": 152497,
+      "sha256": "39730ba1a1b85fc46329e69fbb666268744ed139c1ccef8b01a9e21af7439fea"
+    }
+  ],
+  "visual_review": {
+    "scope": "Inspected Ubuntu 24.04 and Rocky 8 VF edit fixture windows and Ubuntu 24.04 native/release VF tabs for readable target, context, single-point input, readback status and cleared input.",
+    "screenshots": [
+      {
+        "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/vf-edit-fixture.png",
+        "bytes": 144072,
+        "sha256": "54fe4ae774b48b05ab185a89c671ac12ddb3df70175cd90ccf9e53ba589efd47"
+      },
+      {
+        "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/native-5-vf.png",
+        "bytes": 86045,
+        "sha256": "e36fc5efdbff3dd705de2ba61ba4dd1f3cc835caff87c7be9c84fd58e50bb2eb"
+      },
+      {
+        "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-ubuntu24.04/smoke/release-5-vf.png",
+        "bytes": 86045,
+        "sha256": "e36fc5efdbff3dd705de2ba61ba4dd1f3cc835caff87c7be9c84fd58e50bb2eb"
+      },
+      {
+        "path": "build/intel-vf-edit-32c89ae/linux-artifacts/desktop-el8/vf-edit-fixture.png",
+        "bytes": 123449,
+        "sha256": "a0515a72a675697b6848c41d90f38bad7e981c5c508d9a2944b43e7a0262f6d2"
+      }
+    ],
+    "fixture_values_are_hardware_measurements": false
+  },
+  "cli_package_bytes": {
+    "minimum": 163568,
+    "maximum": 196614
+  },
+  "gui_package_bytes": {
+    "minimum": 10379503,
+    "maximum": 14098368
+  },
+  "original_vf_emulation": {
+    "scenarios": 135,
+    "cloud_unittest_reexecuted_scenarios": true,
+    "hardware_access": false,
+    "evidence": [
+      {
+        "path": "analysis/fixtures/legacy-intel-vf.json",
+        "bytes": 12342,
+        "sha256": "0d0b237fd7eae253ffc4dccff0dd7951a275b859a8ddde18b6182238f050078d"
+      },
+      {
+        "path": "docs/validation/legacy-intel-vf-static.json",
+        "bytes": 127388,
+        "sha256": "ced8270459fa20272874ca7d6592c5dbef087872260a4b1bc655c174cede6f7d"
+      },
+      {
+        "path": "docs/validation/legacy-intel-vf-emulation.json",
+        "bytes": 56039,
+        "sha256": "70fa93d7b7ce2f31fe2b8b6382c8c3084d9c902ed28e9470fae96e59cba48098"
+      }
+    ]
+  },
+  "original_voltage_emulation": {
+    "scenarios": 82,
+    "source_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+    "evidence": [
+      {
+        "path": "analysis/fixtures/legacy-intel-voltage.json",
+        "bytes": 11734,
+        "sha256": "72f5a01e7b203f8b5098fe8425eb185f63455148495ad10c89cc1c9f03b7f3af"
+      },
+      {
+        "path": "docs/validation/intel-voltage-static.json",
+        "bytes": 98846,
+        "sha256": "aa4c940327b6a1bb502122b758d0d65b2dd6b5bbe9105023052e69636f4a8c21"
+      },
+      {
+        "path": "docs/validation/intel-voltage-local.json",
+        "bytes": 36719,
+        "sha256": "cb04fd54e690458a4fdb5cb559f168428bfd2378f06d28cd5f64fbe520c03ed4"
+      }
+    ],
+    "cloud_matches_local_execution": true,
+    "cloud_evidence": {
+      "path": "build/intel-vf-edit-32c89ae/linux-artifacts/mailbox-contract-evidence/intel-voltage.json",
+      "bytes": 36719,
+      "sha256": "cb04fd54e690458a4fdb5cb559f168428bfd2378f06d28cd5f64fbe520c03ed4"
+    }
+  },
+  "source_archive": {
+    "path": "dist/gui-cli-vf-edit-32c89ae/octool-2.0.1-src.tar.gz",
+    "bytes": 3854328,
+    "sha256": "82682caf46b9c7d2e3b2cfc4bc72a7b9be66004e0b58ec932aecf2f3fd369b0e"
+  },
+  "local_sources_matching_cloud": {
+    "cli/commands.cpp": "2ac3e060b8c6021d9aac372e0512801659f8874a54cabfc2e5e0322b8462050d",
+    "cli/test_process.py": "0ad72d636b8ed945a8c224407e17e97e517658de9804718f1476fe61b14de6d4",
+    "cli/tests.cpp": "0e788412afa5cdf6a4f3eefb8ea1a8e764d58568568ebb2efbc97da42b1b2d3c",
+    "docs/frontend-progress.md": "f9ce80336334be3a5de66d8b329a5642f516eed82a2a0cb0525fdd283376b316",
+    "docs/headless-cli.md": "16a4019ffc36911917dcc5e58a713708179adf5030e938bf487ba4e62a4e1866",
+    "docs/intel-vf-recovery.md": "fb28706e9cbe7fc83e57fc8fd1794aef4b1be174df6242667242525796bb0c2f",
+    "docs/intel-vf-write-recovery.md": "3707746cba4666e71457b32d41f0507af649980378d409cb53396b5a27bc400b",
+    "docs/recovery-status.md": "e96da52deeab573627b5fc11e3d0d4375854f9be61efa667c346187bd45a9819",
+    "docs/validation/intel-vf-write-sources.json": "5990efc8cdb6933a7c3165c6eaaf265918436c6ca40f9e02d4bb02ca404f487e",
+    "gui/core/CMakeLists.txt": "3a93e15918fcc9ce17c9ce53ca2f630238c15a76693fa5b51515d8bf0779d2f4",
+    "gui/core/intel_oc.cpp": "86fb3e2695d7296bf97680642c6629f1b54496a45810b4a127c761ed07d8910e",
+    "gui/core/intel_oc.h": "d5cbac53aa7e4da45a8b00abd3c83b573a34137dd57a08b252d5959be1c25d20",
+    "gui/intelvfpanel.cpp": "e9adc03e61b1d9aaba06d407346234fe63c67231fe951c6d5475d63aee4b1380",
+    "gui/intelvfpanel.h": "639a62df92244253eb8acdadd59bd6f44ccbf7d57ca8ca26d731a9941c07cdb4",
+    "gui/tests/intel_oc_fixture.h": "8f76524fe56638a5a7fb8348abf31292276e82d0f78a7cc2c8fe3911984ad91e",
+    "gui/tests/intel_vf_core_test.cpp": "8382dfcf456d2de69a28b0c9aff6ebafb626031a00d0c3c3734c850d1ed281a4",
+    "gui/tests/regression.cpp": "e706ec784a91c64c44a589a64874d6de21bd2a56b93153e1e6b70c75aefaf9b9",
+    "port/ci/in-container.sh": "660f455244c9bb736aea9a4c56ec2a7e02485cc94db1babdee69400104102978",
+    "port/tools/build_gui.py": "4130139215d37817f4c002734031c8ae46617cc2b76def179125810c0dd62e57"
+  },
+  "preserved_original_document_difference": {
+    "path": "docs/recovery-status.md",
+    "scope": "Existing local UMC implementation link preserved; all other bytes match the archived production file."
+  },
+  "driver_hal_abi_unchanged_from": "6d58cfc16149be216b3f1e086b9a02b6928fc908",
+  "local_tests": {
+    "total": 48,
+    "passed": 36,
+    "skipped": 12,
+    "failed": 0,
+    "report": {
+      "path": "build/vf-edit-local-tests.txt",
+      "bytes": 7623,
+      "sha256": "a9ac41c5a22a589d48dfcfc5c4770d0c95d829351d8edd4c5ee78c7d03eab660"
+    },
+    "note": "Local host lacks C++/Qt/Linux toolchain; executable coverage supplied by cloud runs."
+  },
+  "limits": [
+    "Linux x86_64 packages; portable core tests do not establish Windows/macOS hardware support",
+    "VF setting requires family6/modelB7, an unlocked adaptive domain with zero target/global offset, and core per-core override disabled; only the selected point and context are reread, not the whole curve",
+    "No physical hardware tuning, stability, Secure Boot enrollment or cross-version upgrade acceptance",
+    "Other previously documented restoration gaps and process-local transaction locking remain"
+  ]
+}
