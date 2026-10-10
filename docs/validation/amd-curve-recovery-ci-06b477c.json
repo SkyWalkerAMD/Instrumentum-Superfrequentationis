@@ -1,0 +1,2560 @@
+{
+  "schema": 1,
+  "date": "2026-10-10",
+  "source_commit": "06b477ccf06572434ab98b377bbd1341a6e8702b",
+  "branch": "refactor/platform-recovery",
+  "scope": "Shimada raw curve query with identity and range gates, bounded B8/BC mailbox, strict completion/error handling, and explicit firmware indices; earlier Intel, UMC and platform controls retained",
+  "portable_core": {
+    "source_commit": "06b477ccf06572434ab98b377bbd1341a6e8702b",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841095",
+    "jobs": [
+      {
+        "name": "core (ubuntu-24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841095/job/114099663796",
+        "startedAt": "2026-10-10T01:36:45Z",
+        "completedAt": "2026-10-10T01:37:14Z"
+      },
+      {
+        "name": "core (ubuntu-22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841095/job/114099663955",
+        "startedAt": "2026-10-10T01:36:46Z",
+        "completedAt": "2026-10-10T01:37:17Z"
+      },
+      {
+        "name": "core (windows-2022)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841095/job/114099663960",
+        "startedAt": "2026-10-10T01:36:45Z",
+        "completedAt": "2026-10-10T01:38:46Z"
+      },
+      {
+        "name": "core (macos-14)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841095/job/114099663972",
+        "startedAt": "2026-10-10T01:36:53Z",
+        "completedAt": "2026-10-10T01:38:49Z"
+      }
+    ],
+    "targets": [
+      {
+        "target": "portable-core-macos-14",
+        "ctests": 7,
+        "scenario_groups": 56,
+        "output": [
+          "amd_pstates core: 7 scenario groups passed",
+          "hardware core: 7 scenario groups passed",
+          "helper protocol: 4 scenario groups passed",
+          "8 platform scenario groups passed",
+          "9 memory and topology scenario groups passed",
+          "14 Intel OC scenario groups passed",
+          "7 AMD curve query scenario groups passed"
+        ],
+        "report": {
+          "path": "build/amd-curve-recovery-06b477c/core-artifacts/portable-core-macos-14/results.xml",
+          "bytes": 1566,
+          "sha256": "54fa1fae015e3a8c373ef347b03cdfdc2b2f8299c5dc33c7918325e93356e5e9"
+        }
+      },
+      {
+        "target": "portable-core-ubuntu-22.04",
+        "ctests": 7,
+        "scenario_groups": 56,
+        "output": [
+          "amd_pstates core: 7 scenario groups passed",
+          "hardware core: 7 scenario groups passed",
+          "helper protocol: 4 scenario groups passed",
+          "8 platform scenario groups passed",
+          "9 memory and topology scenario groups passed",
+          "14 Intel OC scenario groups passed",
+          "7 AMD curve query scenario groups passed"
+        ],
+        "report": {
+          "path": "build/amd-curve-recovery-06b477c/core-artifacts/portable-core-ubuntu-22.04/results.xml",
+          "bytes": 1512,
+          "sha256": "0658f019b14df9b081d586548fbb4dcb06ba6c95030bc8a7bd56536fc885e06f"
+        }
+      },
+      {
+        "target": "portable-core-ubuntu-24.04",
+        "ctests": 7,
+        "scenario_groups": 56,
+        "output": [
+          "amd_pstates core: 7 scenario groups passed",
+          "hardware core: 7 scenario groups passed",
+          "helper protocol: 4 scenario groups passed",
+          "8 platform scenario groups passed",
+          "9 memory and topology scenario groups passed",
+          "14 Intel OC scenario groups passed",
+          "7 AMD curve query scenario groups passed"
+        ],
+        "report": {
+          "path": "build/amd-curve-recovery-06b477c/core-artifacts/portable-core-ubuntu-24.04/results.xml",
+          "bytes": 1512,
+          "sha256": "0668c3c99eec682c80ef177b944f7bf4fdbacd271879314ac2fdf9504fb9454a"
+        }
+      },
+      {
+        "target": "portable-core-windows-2022",
+        "ctests": 7,
+        "scenario_groups": 56,
+        "output": [
+          "amd_pstates core: 7 scenario groups passed",
+          "hardware core: 7 scenario groups passed",
+          "helper protocol: 4 scenario groups passed",
+          "8 platform scenario groups passed",
+          "9 memory and topology scenario groups passed",
+          "14 Intel OC scenario groups passed",
+          "7 AMD curve query scenario groups passed"
+        ],
+        "report": {
+          "path": "build/amd-curve-recovery-06b477c/core-artifacts/portable-core-windows-2022/results.xml",
+          "bytes": 1559,
+          "sha256": "973f9c7174e93bfa4b99476018174fa6cd9b1444ebe52f49e02aafbc8803d353"
+        }
+      }
+    ],
+    "workflow_log": {
+      "path": "build/amd-curve-recovery-06b477c/core-run.log",
+      "bytes": 134690,
+      "sha256": "84106a58af4175a1ad66b72ca3f093af91389c3ab8ec10278058944a33517435"
+    },
+    "artifact_metadata": {
+      "path": "build/amd-curve-recovery-06b477c/core-artifacts.json",
+      "bytes": 3845,
+      "sha256": "ef45e8df0af8271f649ef8d8b9e2093cc92d7912f3710d7c4542044762c0f4e1"
+    }
+  },
+  "linux": {
+    "source_commit": "06b477ccf06572434ab98b377bbd1341a6e8702b",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147",
+    "jobs": [
+      {
+        "name": "matrix",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114099664039",
+        "startedAt": "2026-10-10T01:36:45Z",
+        "completedAt": "2026-10-10T01:41:46Z"
+      },
+      {
+        "name": "baseline",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114099664245",
+        "startedAt": "2026-10-10T01:36:45Z",
+        "completedAt": "2026-10-10T01:39:17Z"
+      },
+      {
+        "name": "desktop (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659708",
+        "startedAt": "2026-10-10T01:41:49Z",
+        "completedAt": "2026-10-10T01:46:52Z"
+      },
+      {
+        "name": "desktop (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659724",
+        "startedAt": "2026-10-10T01:41:48Z",
+        "completedAt": "2026-10-10T01:44:35Z"
+      },
+      {
+        "name": "desktop (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659732",
+        "startedAt": "2026-10-10T01:41:49Z",
+        "completedAt": "2026-10-10T01:47:06Z"
+      },
+      {
+        "name": "kernel (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659736",
+        "startedAt": "2026-10-10T01:41:49Z",
+        "completedAt": "2026-10-10T01:44:40Z"
+      },
+      {
+        "name": "desktop (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659739",
+        "startedAt": "2026-10-10T01:41:49Z",
+        "completedAt": "2026-10-10T01:45:31Z"
+      },
+      {
+        "name": "desktop (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659743",
+        "startedAt": "2026-10-10T01:41:49Z",
+        "completedAt": "2026-10-10T01:44:10Z"
+      },
+      {
+        "name": "kernel (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659747",
+        "startedAt": "2026-10-10T01:41:49Z",
+        "completedAt": "2026-10-10T01:44:26Z"
+      },
+      {
+        "name": "desktop (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659750",
+        "startedAt": "2026-10-10T01:41:49Z",
+        "completedAt": "2026-10-10T01:44:55Z"
+      },
+      {
+        "name": "kernel (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659759",
+        "startedAt": "2026-10-10T01:41:49Z",
+        "completedAt": "2026-10-10T01:44:29Z"
+      },
+      {
+        "name": "kernel (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659760",
+        "startedAt": "2026-10-10T01:41:49Z",
+        "completedAt": "2026-10-10T01:44:44Z"
+      },
+      {
+        "name": "kernel (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659767",
+        "startedAt": "2026-10-10T01:41:49Z",
+        "completedAt": "2026-10-10T01:45:10Z"
+      },
+      {
+        "name": "desktop (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659773",
+        "startedAt": "2026-10-10T01:41:49Z",
+        "completedAt": "2026-10-10T01:44:55Z"
+      },
+      {
+        "name": "kernel (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659775",
+        "startedAt": "2026-10-10T01:41:49Z",
+        "completedAt": "2026-10-10T01:54:07Z"
+      },
+      {
+        "name": "kernel (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659777",
+        "startedAt": "2026-10-10T01:41:49Z",
+        "completedAt": "2026-10-10T01:44:00Z"
+      },
+      {
+        "name": "kernel (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659778",
+        "startedAt": "2026-10-10T01:41:50Z",
+        "completedAt": "2026-10-10T01:44:25Z"
+      },
+      {
+        "name": "desktop (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659811",
+        "startedAt": "2026-10-10T01:41:49Z",
+        "completedAt": "2026-10-10T01:45:21Z"
+      },
+      {
+        "name": "desktop (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659813",
+        "startedAt": "2026-10-10T01:41:49Z",
+        "completedAt": "2026-10-10T01:46:26Z"
+      },
+      {
+        "name": "kernel (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659815",
+        "startedAt": "2026-10-10T01:41:50Z",
+        "completedAt": "2026-10-10T01:45:34Z"
+      },
+      {
+        "name": "kernel (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659816",
+        "startedAt": "2026-10-10T01:41:49Z",
+        "completedAt": "2026-10-10T01:44:26Z"
+      },
+      {
+        "name": "desktop (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114100659900",
+        "startedAt": "2026-10-10T01:41:49Z",
+        "completedAt": "2026-10-10T01:45:33Z"
+      },
+      {
+        "name": "gate",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147/job/114103041033",
+        "startedAt": "2026-10-10T01:54:10Z",
+        "completedAt": "2026-10-10T01:54:19Z"
+      }
+    ],
+    "targets": [
+      {
+        "target": "el8",
+        "qt_tests": 32,
+        "python_tests": 32,
+        "display": "xvfb",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/lib/polkit-1/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 0.115",
+          "pkaction_exit": 0,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Rocky Linux 8.9 (Green Obsidian)",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "4.18.0-553.el8_10.x86_64",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "4df48703b86574bb20576b14f9c209e6149aabe6ad06ccb709131fee48b46fed",
+            "module_sha256": "280061455aa3944d9b74ccb627b43f4399447fa73236e96eb7b68782cee52882"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/amd-curve-recovery-06b477c/el8/octool-2.0.1-1.el8.x86_64.rpm",
+            "bytes": 10480196,
+            "sha256": "03ed75042401486dd3248ce204df87bd0dc897f1d4b5559a3f52bc7795b8f486"
+          },
+          {
+            "path": "dist/amd-curve-recovery-06b477c/el8/octool-hwio-dkms-2.0.1-1.el8.noarch.rpm",
+            "bytes": 19072,
+            "sha256": "e54a2836d298c8bd9d759f5525c4b82b7f2698fc3db2fe0d22369fe917deac6f"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/gui-tests.txt",
+            "bytes": 4853,
+            "sha256": "9801bb32406712302e5118fce2c47100d8858715a26c4612221764948b6f0423"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/helper-smoke.json",
+            "bytes": 1027,
+            "sha256": "4aa478f0774260e7cd2c161bd5b25e37962b434f54f8bde4450734ba5b54af15"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/kernel-el8/guest-boot/results.json",
+            "bytes": 504,
+            "sha256": "80bff81cb7427bb9118879ee73b5223757d0ffbbc77a6630d1eb4fd540c149d0"
+          }
+        ],
+        "kernel_selection": {
+          "selected": "4.18.0-553.el8_10.x86_64",
+          "initial_headers": [
+            "4.18.0-553.172.1.el8_10.x86_64"
+          ],
+          "headers_without_image": [],
+          "selection": "newest common kernel-devel/kernel-core",
+          "scope": "disposable CI container only"
+        },
+        "container_account_fixture": {
+          "scope": "disposable EL8 container only; local accounts",
+          "pid1": "docker-init",
+          "removed_provider": "systemd",
+          "changed_databases": [
+            "passwd",
+            "group"
+          ],
+          "before": "#\n# /etc/nsswitch.conf\n#\n# Name Service Switch config file. This file should be\n# sorted with the most-used services at the beginning.\n#\n# Valid databases are: aliases, ethers, group, gshadow, hosts,\n# initgroups, netgroup, networks, passwd, protocols, publickey,\n# rpc, services, and shadow.\n#\n# Valid service provider entries include (in alphabetical order):\n#\n#\tcompat\t\t\tUse /etc files plus *_compat pseudo-db\n#\tdb\t\t\tUse the pre-processed /var/db files\n#\tdns\t\t\tUse DNS (Domain Name Service)\n#\tfiles\t\t\tUse the local files in /etc\n#\thesiod\t\t\tUse Hesiod (DNS) for user lookups\n#\tnis\t\t\tUse NIS (NIS version 2), also called YP\n#\tnisplus\t\t\tUse NIS+ (NIS version 3)\n#\n# See `info libc 'NSS Basics'` for more information.\n#\n# Commonly used alternative service providers (may need installation):\n#\n#\tldap\t\t\tUse LDAP directory server\n#\tmyhostname\t\tUse systemd host names\n#\tmymachines\t\tUse systemd machine names\n#\tmdns*, mdns*_minimal\tUse Avahi mDNS/DNS-SD\n#\tresolve\t\t\tUse systemd resolved resolver\n#\tsss\t\t\tUse System Security Services Daemon (sssd)\n#\tsystemd\t\t\tUse systemd for dynamic user option\n#\twinbind\t\t\tUse Samba winbind support\n#\twins\t\t\tUse Samba wins support\n#\twrapper\t\t\tUse wrapper module for testing\n#\n# Notes:\n#\n# 'sssd' performs its own 'files'-based caching, so it should generally\n# come before 'files'.\n#\n# WARNING: Running nscd with a secondary caching service like sssd may\n# \t   lead to unexpected behaviour, especially with how long\n# \t   entries are cached.\n#\n# Installation instructions:\n#\n# To use 'db', install the appropriate package(s) (provide 'makedb' and\n# libnss_db.so.*), and place the 'db' in front of 'files' for entries\n# you want to be looked up first in the databases, like this:\n#\n# passwd:    db files\n# shadow:    db files\n# group:     db files\n\n# In order of likelihood of use to accelerate lookup.\npasswd:      sss files systemd\nshadow:     files sss\ngroup:       sss files systemd\nhosts:      files dns myhostname\nservices:   files sss\nnetgroup:   sss\nautomount:  files sss\n\naliases:    files\nethers:     files\ngshadow:    files\n# Allow initgroups to default to the setting for group.\n# initgroups: files\nnetworks:   files dns\nprotocols:  files\npublickey:  files\nrpc:        files\n",
+          "after": "#\n# /etc/nsswitch.conf\n#\n# Name Service Switch config file. This file should be\n# sorted with the most-used services at the beginning.\n#\n# Valid databases are: aliases, ethers, group, gshadow, hosts,\n# initgroups, netgroup, networks, passwd, protocols, publickey,\n# rpc, services, and shadow.\n#\n# Valid service provider entries include (in alphabetical order):\n#\n#\tcompat\t\t\tUse /etc files plus *_compat pseudo-db\n#\tdb\t\t\tUse the pre-processed /var/db files\n#\tdns\t\t\tUse DNS (Domain Name Service)\n#\tfiles\t\t\tUse the local files in /etc\n#\thesiod\t\t\tUse Hesiod (DNS) for user lookups\n#\tnis\t\t\tUse NIS (NIS version 2), also called YP\n#\tnisplus\t\t\tUse NIS+ (NIS version 3)\n#\n# See `info libc 'NSS Basics'` for more information.\n#\n# Commonly used alternative service providers (may need installation):\n#\n#\tldap\t\t\tUse LDAP directory server\n#\tmyhostname\t\tUse systemd host names\n#\tmymachines\t\tUse systemd machine names\n#\tmdns*, mdns*_minimal\tUse Avahi mDNS/DNS-SD\n#\tresolve\t\t\tUse systemd resolved resolver\n#\tsss\t\t\tUse System Security Services Daemon (sssd)\n#\tsystemd\t\t\tUse systemd for dynamic user option\n#\twinbind\t\t\tUse Samba winbind support\n#\twins\t\t\tUse Samba wins support\n#\twrapper\t\t\tUse wrapper module for testing\n#\n# Notes:\n#\n# 'sssd' performs its own 'files'-based caching, so it should generally\n# come before 'files'.\n#\n# WARNING: Running nscd with a secondary caching service like sssd may\n# \t   lead to unexpected behaviour, especially with how long\n# \t   entries are cached.\n#\n# Installation instructions:\n#\n# To use 'db', install the appropriate package(s) (provide 'makedb' and\n# libnss_db.so.*), and place the 'db' in front of 'files' for entries\n# you want to be looked up first in the databases, like this:\n#\n# passwd:    db files\n# shadow:    db files\n# group:     db files\n\n# In order of likelihood of use to accelerate lookup.\npasswd: sss files\nshadow:     files sss\ngroup: sss files\nhosts:      files dns myhostname\nservices:   files sss\nnetgroup:   sss\nautomount:  files sss\n\naliases:    files\nethers:     files\ngshadow:    files\n# Allow initgroups to default to the setting for group.\n# initgroups: files\nnetworks:   files dns\nprotocols:  files\npublickey:  files\nrpc:        files\n"
+        }
+      },
+      {
+        "target": "el9",
+        "qt_tests": 32,
+        "python_tests": 32,
+        "display": "xvfb",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/lib/polkit-1/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 0.117",
+          "pkaction_exit": 0,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Rocky Linux 9.3 (Blue Onyx)",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "5.14.0-687.56.1.el9_8.x86_64",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "ffd08603dbd630a7d5f4501f8f5dc6b6488a5165b362281120ab21a9a18e4fdf",
+            "module_sha256": "2eb72f664a74d0477e9a1649033f8e1c3d0f2fb7731ec36add48cae6f408cadc"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/amd-curve-recovery-06b477c/el9/octool-2.0.1-1.el9.x86_64.rpm",
+            "bytes": 10196193,
+            "sha256": "d7c716460e1452e4840e4a6cd7b07582ca64d0efa10cee55197e4b58cc7f58d4"
+          },
+          {
+            "path": "dist/amd-curve-recovery-06b477c/el9/octool-hwio-dkms-2.0.1-1.el9.noarch.rpm",
+            "bytes": 19058,
+            "sha256": "fbaf2d80ca01626e04527f5014c3a3e06530334d789b8e08e394baf48e18cfef"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/gui-tests.txt",
+            "bytes": 4853,
+            "sha256": "8ca5762624604f92967e61d334be59ea200f0739c7312ab3b2a34523fe3deb26"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/helper-smoke.json",
+            "bytes": 1022,
+            "sha256": "e57a54a3683fe2a4567adb87687f5f1723ed4a4e4876e6abf061d1926e165366"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/kernel-el9/guest-boot/results.json",
+            "bytes": 508,
+            "sha256": "1f7451192c95a25a02f2957c3d58500a47b018f528d797881057a0b2213c68d3"
+          }
+        ],
+        "kernel_selection": {
+          "selected": "5.14.0-687.56.1.el9_8.x86_64",
+          "initial_headers": [
+            "5.14.0-687.56.1.el9_8.x86_64"
+          ],
+          "headers_without_image": [],
+          "selection": "newest common kernel-devel/kernel-core",
+          "scope": "disposable CI container only"
+        }
+      },
+      {
+        "target": "el10",
+        "qt_tests": 32,
+        "python_tests": 32,
+        "display": "xwayland",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/lib/polkit-1/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 125",
+          "pkaction_exit": 0,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Rocky Linux 10.2 (Red Quartz)",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "6.12.0-211.64.1.el10_2.x86_64",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "a399dcb2241af997473ba3992590df526ebedb81e27f8ee053602de895722b22",
+            "module_sha256": "1dcaa565942f926c83e460bbd3d1a3cbb3a375deaa40ab1bd6054c94f5908b0a"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/amd-curve-recovery-06b477c/el10/octool-2.0.1-1.el10.x86_64.rpm",
+            "bytes": 10195748,
+            "sha256": "379d2f996c3f9c9ef6e6f2ec1e53ce2e38917789fe1fd4ee07933aa9377c7364"
+          },
+          {
+            "path": "dist/amd-curve-recovery-06b477c/el10/octool-hwio-dkms-2.0.1-1.el10.noarch.rpm",
+            "bytes": 19164,
+            "sha256": "2223df3cf0336c9cf8f1f36b987216dc433bb1e4927330cbc9f4cdf3931e3a15"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/gui-tests.txt",
+            "bytes": 4854,
+            "sha256": "bc740b399cf8a32b98453510d69b383bdc1255b86f54178084bf23bc6a6b3c88"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/helper-smoke.json",
+            "bytes": 1022,
+            "sha256": "fbe1b4e772c503897c1f0a78fe25541901ec0fd304a5951c1b4eb2c15a01063e"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/kernel-el10/guest-boot/results.json",
+            "bytes": 509,
+            "sha256": "bc3c64eb10a9127fea532717703bd37afb9189b2679fb98cdd448250840d75e1"
+          }
+        ],
+        "kernel_selection": {
+          "selected": "6.12.0-211.64.1.el10_2.x86_64",
+          "initial_headers": [
+            "6.12.0-211.64.1.el10_2.x86_64"
+          ],
+          "headers_without_image": [],
+          "selection": "newest common kernel-devel/kernel-core",
+          "scope": "disposable CI container only"
+        }
+      },
+      {
+        "target": "ubuntu20.04",
+        "qt_tests": 32,
+        "python_tests": 32,
+        "display": "xvfb",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/lib/policykit-1/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 0.105",
+          "pkaction_exit": 1,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Ubuntu 20.04.6 LTS",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "5.4.0-216-generic",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "c5bb7de4df4416f77e8eb33547a30673d84542c7b0ae789954ce82e8f8b26f09",
+            "module_sha256": "b28ffc18c890f3c39dbfd2894dd00da00bb850f10c15d49528d08a06b95c261b"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/amd-curve-recovery-06b477c/ubuntu20.04/octool-2.0.1-1.amd64.deb",
+            "bytes": 13815930,
+            "sha256": "6dd7bf649a84b616952b82072ed7f6e67b1a5df25c5e92bfb208df84d137a15f"
+          },
+          {
+            "path": "dist/amd-curve-recovery-06b477c/ubuntu20.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+            "bytes": 10668,
+            "sha256": "1bf74af444f32924a5d61be472afc99f6c040a35474a8b8f9d04bfbf0e799f5d"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/gui-tests.txt",
+            "bytes": 4856,
+            "sha256": "078582bf4e12195e9fab259f7399e05e78cafabfd50f437d0c450eca88ccd112"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/helper-smoke.json",
+            "bytes": 1016,
+            "sha256": "58c345e215841b181b68532e08c3112f2aaf8dafed1fc00bda0ef15626f72c1d"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/kernel-ubuntu20.04/guest-boot/results.json",
+            "bytes": 497,
+            "sha256": "5069d6d94c8c6834bee1a40fd6d8ae4a3cc1fa82034d59045e002d8bffe87a08"
+          }
+        ]
+      },
+      {
+        "target": "ubuntu22.04",
+        "qt_tests": 32,
+        "python_tests": 32,
+        "display": "xvfb",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/libexec/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 0.105",
+          "pkaction_exit": 1,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Ubuntu 22.04.5 LTS",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "5.15.0-198-generic",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "e674dce98d3b3f3bca3ffaca1d2a22ed50c36fa2ff530a74c0908867363cd001",
+            "module_sha256": "11ba48722faca8e5e051d40b1d6459daa920fe58628d72b77f77401bc59953bc"
+          },
+          {
+            "kernel": "6.8.0-138-generic",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "81ea8d2ef9c2d6a46e95c961c8c7c282941c80d4fd4106a3fcf9c87911243d3d",
+            "module_sha256": "ee8cd2475fd1e7c24dccb22130257053a444adc9db808684bad44a00297494bb"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/amd-curve-recovery-06b477c/ubuntu22.04/octool-2.0.1-1.amd64.deb",
+            "bytes": 13815936,
+            "sha256": "206adf5a59573eb32689ee225424de585910f9db2862e8f73d9052ee1206e6e1"
+          },
+          {
+            "path": "dist/amd-curve-recovery-06b477c/ubuntu22.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+            "bytes": 10670,
+            "sha256": "3c31b6f06f35eaa36d94cf0c031d613fa697b64ea0f96fdeb88faaac2216b8fa"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/gui-tests.txt",
+            "bytes": 4856,
+            "sha256": "a4ec111979c4b7b95998f7294579c50eb015830b09cda90b5ba5a91bfc2a4246"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/helper-smoke.json",
+            "bytes": 1008,
+            "sha256": "7ecff0d9f76a4d7ab349e494ab45cbd3fa43294587cea877f6b6d35943c9fa9b"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/kernel-ubuntu22.04/guest-boot/results.json",
+            "bytes": 992,
+            "sha256": "8c38c0bcb70f2f13662a3edf841ff5eef5847b35b7376d4b3ed9d8e1e3a3b2d8"
+          }
+        ]
+      },
+      {
+        "target": "ubuntu24.04",
+        "qt_tests": 32,
+        "python_tests": 32,
+        "display": "xvfb",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/lib/polkit-1/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 124",
+          "pkaction_exit": 0,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Ubuntu 24.04.5 LTS",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "6.8.0-146-generic",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "bae162f72d687f8f87909f1dfedea1dfe16adefe40da51f649d9a9b6d498342b",
+            "module_sha256": "9214c5560954f3d1cadee11b8d77f923048b9b41e336e986531a0c36c0e3a97d"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/amd-curve-recovery-06b477c/ubuntu24.04/octool-2.0.1-1.amd64.deb",
+            "bytes": 13815956,
+            "sha256": "bbab273af9c835b9ce8b28072c186d3987e01460ca7681c7c9a008192351d228"
+          },
+          {
+            "path": "dist/amd-curve-recovery-06b477c/ubuntu24.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+            "bytes": 10670,
+            "sha256": "2d95f9c8010b66c38e2426d7512613bcad21bf2c74c9d6999ae3d29e1ef083b5"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/gui-tests.txt",
+            "bytes": 4856,
+            "sha256": "074756043841c9454c7c11dff09ed3295af26734d4bf6fc28bdfc68cdcb42de3"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/helper-smoke.json",
+            "bytes": 1011,
+            "sha256": "9ed9c893465370f645dc9b21159d76ea2614f38fcbd45eeb8a1a920fa1b2c48f"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/kernel-ubuntu24.04/guest-boot/results.json",
+            "bytes": 497,
+            "sha256": "a2f81c8e62f2150734dcc205d0d69f2e41a39990cd40721ffc3dfbe6237192c3"
+          }
+        ]
+      },
+      {
+        "target": "ubuntu26.04",
+        "qt_tests": 32,
+        "python_tests": 32,
+        "display": "xwayland",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/lib/polkit-1/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 127",
+          "pkaction_exit": 0,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Ubuntu 26.04.1 LTS",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "7.0.0-38-generic",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "9f55ef7253055a9cf68f8a04323c93dead2fca617386d842fbde9ca7b178b27e",
+            "module_sha256": "60e4a9e6f9c9362dabc05e1df8e89e5c69e5ecbb21d7e490e762f4df9636b71a"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/amd-curve-recovery-06b477c/ubuntu26.04/octool-2.0.1-1.amd64.deb",
+            "bytes": 13815738,
+            "sha256": "7fa09b9ba6c424f3313b3f1e071fd34265ffbaa81bbbc4f6b73360d42caa51e8"
+          },
+          {
+            "path": "dist/amd-curve-recovery-06b477c/ubuntu26.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+            "bytes": 10674,
+            "sha256": "20d653509a4da8bd6b25f451dd5ea233a6d261b2ebb405636df649e7a3861b38"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/gui-tests.txt",
+            "bytes": 4856,
+            "sha256": "baeecf9b18e817f1569a83f90799b4196a826158bfe177913ef9266f9a8b2514"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/helper-smoke.json",
+            "bytes": 1011,
+            "sha256": "5aee0c74e4df6bcafe309696844e2bf0396f96d5caf5cb649be7d647fb012936"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/kernel-ubuntu26.04/guest-boot/results.json",
+            "bytes": 496,
+            "sha256": "9d7f93c2f9429f1b81fbc993a68c192f2051c9a61b29e18de831f3ec0499699f"
+          }
+        ]
+      },
+      {
+        "target": "debian11",
+        "qt_tests": 32,
+        "python_tests": 32,
+        "display": "xvfb",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/libexec/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 0.105",
+          "pkaction_exit": 1,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Debian GNU/Linux 11 (bullseye)",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "5.10.0-46-amd64",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "8568fbc5dcc1a357e02c5ea67c1462174425aef5e8c9c74970253999c9613eb6",
+            "module_sha256": "afb0de05ae56d3823f32259a1d46ee1d1dc9feb99266a37e5b6cd20cb57a3333"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/amd-curve-recovery-06b477c/debian11/octool-2.0.1-1.amd64.deb",
+            "bytes": 13815928,
+            "sha256": "0afa4bed04030fc74ce346972fceff388a64a0180fe231f762a51d788019cb25"
+          },
+          {
+            "path": "dist/amd-curve-recovery-06b477c/debian11/octool-hwio-dkms-2.0.1-1.amd64.deb",
+            "bytes": 10672,
+            "sha256": "99974c1c5dede51c0040c2be01cb2994f47359d296da762a7c1435a7398fceb7"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/gui-tests.txt",
+            "bytes": 4853,
+            "sha256": "497a77acc89bc14c4d5a987479d092d78b24f39977be47d7280ad3697bdbe64b"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/helper-smoke.json",
+            "bytes": 1020,
+            "sha256": "7140363cb5086336584a1db7c6e4cdd442f5a225e00d972d8487a87d817e522b"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/kernel-debian11/guest-boot/results.json",
+            "bytes": 495,
+            "sha256": "4b9794ffff202191af850d0abf23b259a3ef0faa983a570ad0cb909c45824239"
+          }
+        ]
+      },
+      {
+        "target": "debian12",
+        "qt_tests": 32,
+        "python_tests": 32,
+        "display": "xvfb",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/lib/polkit-1/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 122",
+          "pkaction_exit": 0,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "GenuineIntel",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Debian GNU/Linux 12 (bookworm)",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "6.1.0-53-amd64",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "d66b8bc4b8330f4e98257602449feeeed696b860bf147a40477e7f4cfc48e704",
+            "module_sha256": "7fc256dc67c263a8f82a65c0550ddcc9b03852f481a65b110eddc32496696258"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/amd-curve-recovery-06b477c/debian12/octool-2.0.1-1.amd64.deb",
+            "bytes": 13815942,
+            "sha256": "b78dd1da94c8b0118d0da8dccfdf3b8764bebd66bc8a28e3104a6c618a7ad214"
+          },
+          {
+            "path": "dist/amd-curve-recovery-06b477c/debian12/octool-hwio-dkms-2.0.1-1.amd64.deb",
+            "bytes": 10666,
+            "sha256": "827f2dff28aaca6acf574fe8b254994f9e16469e6f22fe033cc9730ed589c104"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/gui-tests.txt",
+            "bytes": 4854,
+            "sha256": "0c26551fd4c4b733854bbce3a3f41583d1da0c7ad6bbcf6652c5f93caee390df"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/helper-smoke.json",
+            "bytes": 1037,
+            "sha256": "bb49af52f79f8052683288db3dbaee933db926156ebc06d938389dbac79b3d82"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/kernel-debian12/guest-boot/results.json",
+            "bytes": 494,
+            "sha256": "389f49888874587416a70e96dcf5cb878fb74bb1633c227c9c98d378d9dc0cd8"
+          }
+        ]
+      },
+      {
+        "target": "debian13",
+        "qt_tests": 32,
+        "python_tests": 32,
+        "display": "xvfb",
+        "authorization": {
+          "policy": "auth_admin",
+          "helper_mode": "0755",
+          "polkit_service_command": [
+            "/usr/lib/polkit-1/polkitd"
+          ],
+          "bus_startup_nss_direct_lookup": true,
+          "pkaction_version": "pkaction version 126",
+          "pkaction_exit": 0,
+          "root_pkexec": {
+            "cpu": 0,
+            "vendor": "AuthenticAMD",
+            "register_access_tested": false
+          },
+          "no_agent_denial": {
+            "authorization_error": -13
+          },
+          "direct_unprivileged_exit": 77,
+          "unconnected_exit": 64,
+          "headless_diagnostics": {
+            "affinity_error": 0,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+            "helper_installed": true,
+            "kernel": "6.17.0-1022-azure",
+            "module_loaded": false,
+            "online_cpus": 4,
+            "os": "Debian GNU/Linux 13 (trixie)",
+            "register_access_tested": false,
+            "version": "2.0.1"
+          },
+          "restricted_cpu": 3,
+          "helper_exited_after_disconnect": true,
+          "interactive_password_dialog_tested": false,
+          "register_access_tested": false
+        },
+        "kernel_boots": [
+          {
+            "kernel": "6.12.111+deb13-amd64",
+            "cpus": 2,
+            "module_hal_cpuid": true,
+            "caps_ioctl": true,
+            "invalid_cpu": true,
+            "capability_denial": true,
+            "node_mode": "0600",
+            "register_access_tested": false,
+            "load_unload": true,
+            "emulator": "QEMU TCG",
+            "secure_boot_tested": false,
+            "kernel_sha256": "6d8a7f745280cc06a6d2877c932f4dfa9079b694eb4227b61b27232642340794",
+            "module_sha256": "5a22c7337d1cb3e52c5c8b0f96ef3665550f26f8e223036fc98ac688d3b84d23"
+          }
+        ],
+        "packages": [
+          {
+            "path": "dist/amd-curve-recovery-06b477c/debian13/octool-2.0.1-1.amd64.deb",
+            "bytes": 13815926,
+            "sha256": "9f3f8957ff5e5f32e3e937dfe2546792f6148eebaa126a3b9debb847ce4b7fa0"
+          },
+          {
+            "path": "dist/amd-curve-recovery-06b477c/debian13/octool-hwio-dkms-2.0.1-1.amd64.deb",
+            "bytes": 10672,
+            "sha256": "8cebf8bfd89811d059f4bfefd6ae2c57d0b6ae876a83ed7e8143cf5f97571ef2"
+          }
+        ],
+        "reports": [
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/gui-tests.txt",
+            "bytes": 4853,
+            "sha256": "82ae10c25b8822cba84af7ee4d77eb35de837af043c285d76ff0dfddfa57b0e4"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/helper-smoke.json",
+            "bytes": 1021,
+            "sha256": "0713705bb2bcd37dcef2e248783a575d6c28684c1a485611a90ff0e93c09bdde"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/helper-smoke.policy.txt",
+            "bytes": 441,
+            "sha256": "6e9a678ced4f9b5f67fdf179cfba0d735af567a075a976b232a3153cc54047c8"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/minimal-runtime.txt",
+            "bytes": 61,
+            "sha256": "57fe8b95f0406994cc475ca8bb3c95af7ce1b3a6d781a0978fe7e78cddbb9306"
+          },
+          {
+            "path": "build/amd-curve-recovery-06b477c/linux-artifacts/kernel-debian13/guest-boot/results.json",
+            "bytes": 500,
+            "sha256": "5412f0c812831eabd1dd733139b383f4b836141363fadcc1687df2797c8e567f"
+          }
+        ]
+      }
+    ],
+    "kernel_boots": 11,
+    "screenshots": [
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/native-0.png",
+        "bytes": 61263,
+        "sha256": "add474937a52c07c5024d3ab6f4b21fdde0943e4383137b7dd62e910bfbb6b47"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/native-1.png",
+        "bytes": 32671,
+        "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/native-2.png",
+        "bytes": 30574,
+        "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/native-3.png",
+        "bytes": 34321,
+        "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/native-4.png",
+        "bytes": 71702,
+        "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/native-5-voltage.png",
+        "bytes": 67437,
+        "sha256": "01bed16f73917802e1b012c3c1931c2cdc84903cbfff7f61771612bb878e853a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/native-5.png",
+        "bytes": 51597,
+        "sha256": "bf5f27f12644e1b154b1ecab85789a2d0e239e75a2d630dcdfe6db008faee5d5"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/native-6.png",
+        "bytes": 73406,
+        "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/native-7.png",
+        "bytes": 43168,
+        "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/native-8.png",
+        "bytes": 54563,
+        "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/release-0.png",
+        "bytes": 61263,
+        "sha256": "add474937a52c07c5024d3ab6f4b21fdde0943e4383137b7dd62e910bfbb6b47"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/release-1.png",
+        "bytes": 32671,
+        "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/release-2.png",
+        "bytes": 30574,
+        "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/release-3.png",
+        "bytes": 34321,
+        "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/release-4.png",
+        "bytes": 71702,
+        "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/release-5-voltage.png",
+        "bytes": 67437,
+        "sha256": "01bed16f73917802e1b012c3c1931c2cdc84903cbfff7f61771612bb878e853a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/release-5.png",
+        "bytes": 51597,
+        "sha256": "bf5f27f12644e1b154b1ecab85789a2d0e239e75a2d630dcdfe6db008faee5d5"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/release-6.png",
+        "bytes": 73406,
+        "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/release-7.png",
+        "bytes": 43168,
+        "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el8/smoke/release-8.png",
+        "bytes": 54563,
+        "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/native-0.png",
+        "bytes": 60509,
+        "sha256": "9a3a1b9ea02d2149764b06a62de30cbf133ad535da9fa03d8c8f3731466745e9"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/native-1.png",
+        "bytes": 32671,
+        "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/native-2.png",
+        "bytes": 30574,
+        "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/native-3.png",
+        "bytes": 34321,
+        "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/native-4.png",
+        "bytes": 71702,
+        "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/native-5-voltage.png",
+        "bytes": 67437,
+        "sha256": "01bed16f73917802e1b012c3c1931c2cdc84903cbfff7f61771612bb878e853a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/native-5.png",
+        "bytes": 51597,
+        "sha256": "bf5f27f12644e1b154b1ecab85789a2d0e239e75a2d630dcdfe6db008faee5d5"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/native-6.png",
+        "bytes": 73406,
+        "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/native-7.png",
+        "bytes": 43168,
+        "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/native-8.png",
+        "bytes": 54563,
+        "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/release-0.png",
+        "bytes": 60509,
+        "sha256": "9a3a1b9ea02d2149764b06a62de30cbf133ad535da9fa03d8c8f3731466745e9"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/release-1.png",
+        "bytes": 32671,
+        "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/release-2.png",
+        "bytes": 30574,
+        "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/release-3.png",
+        "bytes": 34321,
+        "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/release-4.png",
+        "bytes": 71702,
+        "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/release-5-voltage.png",
+        "bytes": 67437,
+        "sha256": "01bed16f73917802e1b012c3c1931c2cdc84903cbfff7f61771612bb878e853a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/release-5.png",
+        "bytes": 51597,
+        "sha256": "bf5f27f12644e1b154b1ecab85789a2d0e239e75a2d630dcdfe6db008faee5d5"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/release-6.png",
+        "bytes": 73406,
+        "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/release-7.png",
+        "bytes": 43168,
+        "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el9/smoke/release-8.png",
+        "bytes": 54563,
+        "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/native-0.png",
+        "bytes": 57401,
+        "sha256": "96158c4e6dd3ba9e3d113d33ca53642b266df4f4977eab46d773f558e3d6946f"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/native-1.png",
+        "bytes": 30301,
+        "sha256": "becfca1cc65f886a79a86f2ec435f604f0d85f41f4d3d664377da9961d07e763"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/native-2.png",
+        "bytes": 28500,
+        "sha256": "559eb0466a1fe08a56a8f5693cf2a6e2ea44f60897b7d0786fae99278f184c75"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/native-3.png",
+        "bytes": 31674,
+        "sha256": "b1ecaca9da6c14426cc34b218213df1231eb6d3af24df2f5a3d9d06e68c735a2"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/native-4.png",
+        "bytes": 66427,
+        "sha256": "bc873c8a3b79f60a4f54c0c2e8cba6a4a246339b8e9ae7d2c1960bb3508d84cc"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/native-5-voltage.png",
+        "bytes": 65518,
+        "sha256": "1a9b9b4aea0a86f7f152885083860491d62886b31e13972409bed81ab6f92fdf"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/native-5.png",
+        "bytes": 48161,
+        "sha256": "cb002128ab1567f6cc495942b68ef94a3d25d61299dbc2152232fa1077db46de"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/native-6.png",
+        "bytes": 67798,
+        "sha256": "91a2e6e737898b0bfadb3a7f0ca2557ac4f089dccbc15c938bc5b33c0c9c569b"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/native-7.png",
+        "bytes": 41886,
+        "sha256": "23d5b59a8b24f5ebc7100611c09e5d31e6bf9245527abc6d75262996fcdec31f"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/native-8.png",
+        "bytes": 49124,
+        "sha256": "ae48e8a97919bd2757d0112caf5b2a80445ccb3ed279d38172b8404cacccf898"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/release-0.png",
+        "bytes": 57401,
+        "sha256": "96158c4e6dd3ba9e3d113d33ca53642b266df4f4977eab46d773f558e3d6946f"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/release-1.png",
+        "bytes": 30301,
+        "sha256": "becfca1cc65f886a79a86f2ec435f604f0d85f41f4d3d664377da9961d07e763"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/release-2.png",
+        "bytes": 28500,
+        "sha256": "559eb0466a1fe08a56a8f5693cf2a6e2ea44f60897b7d0786fae99278f184c75"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/release-3.png",
+        "bytes": 31674,
+        "sha256": "b1ecaca9da6c14426cc34b218213df1231eb6d3af24df2f5a3d9d06e68c735a2"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/release-4.png",
+        "bytes": 66427,
+        "sha256": "bc873c8a3b79f60a4f54c0c2e8cba6a4a246339b8e9ae7d2c1960bb3508d84cc"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/release-5-voltage.png",
+        "bytes": 65518,
+        "sha256": "1a9b9b4aea0a86f7f152885083860491d62886b31e13972409bed81ab6f92fdf"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/release-5.png",
+        "bytes": 48161,
+        "sha256": "cb002128ab1567f6cc495942b68ef94a3d25d61299dbc2152232fa1077db46de"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/release-6.png",
+        "bytes": 67798,
+        "sha256": "91a2e6e737898b0bfadb3a7f0ca2557ac4f089dccbc15c938bc5b33c0c9c569b"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/release-7.png",
+        "bytes": 41886,
+        "sha256": "23d5b59a8b24f5ebc7100611c09e5d31e6bf9245527abc6d75262996fcdec31f"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/release-8.png",
+        "bytes": 49124,
+        "sha256": "ae48e8a97919bd2757d0112caf5b2a80445ccb3ed279d38172b8404cacccf898"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/native-0.png",
+        "bytes": 60083,
+        "sha256": "1ec759e59654058160b9c0da507b63cd8b5c4b7cdbcf7774737b4b453dd96620"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/native-1.png",
+        "bytes": 32671,
+        "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/native-2.png",
+        "bytes": 30574,
+        "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/native-3.png",
+        "bytes": 34321,
+        "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/native-4.png",
+        "bytes": 71702,
+        "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/native-5-voltage.png",
+        "bytes": 67437,
+        "sha256": "01bed16f73917802e1b012c3c1931c2cdc84903cbfff7f61771612bb878e853a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/native-5.png",
+        "bytes": 51597,
+        "sha256": "bf5f27f12644e1b154b1ecab85789a2d0e239e75a2d630dcdfe6db008faee5d5"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/native-6.png",
+        "bytes": 73406,
+        "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/native-7.png",
+        "bytes": 43168,
+        "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/native-8.png",
+        "bytes": 54563,
+        "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/release-0.png",
+        "bytes": 60083,
+        "sha256": "1ec759e59654058160b9c0da507b63cd8b5c4b7cdbcf7774737b4b453dd96620"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/release-1.png",
+        "bytes": 32671,
+        "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/release-2.png",
+        "bytes": 30574,
+        "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/release-3.png",
+        "bytes": 34321,
+        "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/release-4.png",
+        "bytes": 71702,
+        "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/release-5-voltage.png",
+        "bytes": 67437,
+        "sha256": "01bed16f73917802e1b012c3c1931c2cdc84903cbfff7f61771612bb878e853a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/release-5.png",
+        "bytes": 51597,
+        "sha256": "bf5f27f12644e1b154b1ecab85789a2d0e239e75a2d630dcdfe6db008faee5d5"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/release-6.png",
+        "bytes": 73406,
+        "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/release-7.png",
+        "bytes": 43168,
+        "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu20.04/smoke/release-8.png",
+        "bytes": 54563,
+        "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/native-0.png",
+        "bytes": 60032,
+        "sha256": "b12c3b6912cce2cbd39b34226a275c2d5dbe994fae51f0707bc16a99c7eb7578"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/native-1.png",
+        "bytes": 32671,
+        "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/native-2.png",
+        "bytes": 30574,
+        "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/native-3.png",
+        "bytes": 34321,
+        "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/native-4.png",
+        "bytes": 71702,
+        "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/native-5-voltage.png",
+        "bytes": 67437,
+        "sha256": "01bed16f73917802e1b012c3c1931c2cdc84903cbfff7f61771612bb878e853a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/native-5.png",
+        "bytes": 51597,
+        "sha256": "bf5f27f12644e1b154b1ecab85789a2d0e239e75a2d630dcdfe6db008faee5d5"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/native-6.png",
+        "bytes": 73406,
+        "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/native-7.png",
+        "bytes": 43168,
+        "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/native-8.png",
+        "bytes": 54563,
+        "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/release-0.png",
+        "bytes": 60032,
+        "sha256": "b12c3b6912cce2cbd39b34226a275c2d5dbe994fae51f0707bc16a99c7eb7578"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/release-1.png",
+        "bytes": 32671,
+        "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/release-2.png",
+        "bytes": 30574,
+        "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/release-3.png",
+        "bytes": 34321,
+        "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/release-4.png",
+        "bytes": 71702,
+        "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/release-5-voltage.png",
+        "bytes": 67437,
+        "sha256": "01bed16f73917802e1b012c3c1931c2cdc84903cbfff7f61771612bb878e853a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/release-5.png",
+        "bytes": 51597,
+        "sha256": "bf5f27f12644e1b154b1ecab85789a2d0e239e75a2d630dcdfe6db008faee5d5"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/release-6.png",
+        "bytes": 73406,
+        "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/release-7.png",
+        "bytes": 43168,
+        "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu22.04/smoke/release-8.png",
+        "bytes": 54563,
+        "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/native-0.png",
+        "bytes": 69164,
+        "sha256": "709694a9de91340e677136e99169aad542f3b5d4e7bae90fd2724ceb2a162b1b"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/native-1.png",
+        "bytes": 35483,
+        "sha256": "bc7aac42669d26cb301cfc2165a272b47c506682e79af25b8706f629ebef62f2"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/native-2.png",
+        "bytes": 33708,
+        "sha256": "229b48333f366e215ad7b246085f798370d149f595db486b1f06d5f96348e667"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/native-3.png",
+        "bytes": 36960,
+        "sha256": "a604fe89dbb3ccfb7dcf3d30a0fe83643b809a858a931e17c7b358752d8b5d0c"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/native-4.png",
+        "bytes": 80357,
+        "sha256": "11fe99e920968309e8386f2f94e0ed9a9aca648b1ba38202433ea63b70751841"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/native-5-voltage.png",
+        "bytes": 75977,
+        "sha256": "8cd8d9e489df593b2670e04d93c0783cacfaab84d997bf829f408ba5f79031eb"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/native-5.png",
+        "bytes": 57873,
+        "sha256": "5e42e9112e163703ad4986177927b46007d5df05c944b8dcb3c5f1e03d1e147b"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/native-6.png",
+        "bytes": 82279,
+        "sha256": "6111ec871f389acf2583a9542f76f40f874a003fa54f3c0b25022f40baeb63c8"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/native-7.png",
+        "bytes": 47597,
+        "sha256": "ec59361de65e04e029cc0a983e34a2c0159dfe6f0b724dca46a7a1b6460a77c0"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/native-8.png",
+        "bytes": 62043,
+        "sha256": "cdab8cc2666c46e5bbc331d2fb691e9f519c2af2a600344a4b6ccda4bf62db7b"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/release-0.png",
+        "bytes": 69164,
+        "sha256": "709694a9de91340e677136e99169aad542f3b5d4e7bae90fd2724ceb2a162b1b"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/release-1.png",
+        "bytes": 35483,
+        "sha256": "bc7aac42669d26cb301cfc2165a272b47c506682e79af25b8706f629ebef62f2"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/release-2.png",
+        "bytes": 33708,
+        "sha256": "229b48333f366e215ad7b246085f798370d149f595db486b1f06d5f96348e667"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/release-3.png",
+        "bytes": 36960,
+        "sha256": "a604fe89dbb3ccfb7dcf3d30a0fe83643b809a858a931e17c7b358752d8b5d0c"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/release-4.png",
+        "bytes": 80357,
+        "sha256": "11fe99e920968309e8386f2f94e0ed9a9aca648b1ba38202433ea63b70751841"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/release-5-voltage.png",
+        "bytes": 75977,
+        "sha256": "8cd8d9e489df593b2670e04d93c0783cacfaab84d997bf829f408ba5f79031eb"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/release-5.png",
+        "bytes": 57873,
+        "sha256": "5e42e9112e163703ad4986177927b46007d5df05c944b8dcb3c5f1e03d1e147b"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/release-6.png",
+        "bytes": 82279,
+        "sha256": "6111ec871f389acf2583a9542f76f40f874a003fa54f3c0b25022f40baeb63c8"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/release-7.png",
+        "bytes": 47597,
+        "sha256": "ec59361de65e04e029cc0a983e34a2c0159dfe6f0b724dca46a7a1b6460a77c0"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/release-8.png",
+        "bytes": 62043,
+        "sha256": "cdab8cc2666c46e5bbc331d2fb691e9f519c2af2a600344a4b6ccda4bf62db7b"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/native-0.png",
+        "bytes": 65366,
+        "sha256": "9f51c1cd86557a239573abcaa0893a94e8931d34cde0233ba53254268c5203f3"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/native-1.png",
+        "bytes": 33907,
+        "sha256": "c96e203432d92377a6db81369199c270c8c93a6351e0a31a1c0659045345b52a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/native-2.png",
+        "bytes": 31570,
+        "sha256": "761888d87daa3735be75e6ab4236ec19cc9df062486085495945c72e9cdd64a6"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/native-3.png",
+        "bytes": 35274,
+        "sha256": "71233adda2b16dcea7d3e9e8172c7aaf7a7e6c4d5ddd3423fb720062761a0ea4"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/native-4.png",
+        "bytes": 76514,
+        "sha256": "4ac658788aa2398c24477499a8ebd6bd92807a481af7ea782016be2f09e8530d"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/native-5-voltage.png",
+        "bytes": 73865,
+        "sha256": "08e72a68771cb30ada60d5a11c217c324daed8bdfd493f88f5a0466a7b0bf244"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/native-5.png",
+        "bytes": 55643,
+        "sha256": "f76a2385fc531b83cb386967398120396a7061511bdaa29b3a6da718f29f94f8"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/native-6.png",
+        "bytes": 79886,
+        "sha256": "5c0d3d780c0189f4e56471e9601eea773c00a30a2aca1f4ceae2d9f4272ec16c"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/native-7.png",
+        "bytes": 46532,
+        "sha256": "de838ac2c02d1be0d0938d1cd65eb87dd069afb555c3920dbf4b7f2fbb1b5244"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/native-8.png",
+        "bytes": 57664,
+        "sha256": "be457c22a7f06a3dc75b8c828c23e782be8b8569de141deccdb71662b1504a75"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/release-0.png",
+        "bytes": 65366,
+        "sha256": "9f51c1cd86557a239573abcaa0893a94e8931d34cde0233ba53254268c5203f3"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/release-1.png",
+        "bytes": 33907,
+        "sha256": "c96e203432d92377a6db81369199c270c8c93a6351e0a31a1c0659045345b52a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/release-2.png",
+        "bytes": 31570,
+        "sha256": "761888d87daa3735be75e6ab4236ec19cc9df062486085495945c72e9cdd64a6"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/release-3.png",
+        "bytes": 35274,
+        "sha256": "71233adda2b16dcea7d3e9e8172c7aaf7a7e6c4d5ddd3423fb720062761a0ea4"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/release-4.png",
+        "bytes": 76514,
+        "sha256": "4ac658788aa2398c24477499a8ebd6bd92807a481af7ea782016be2f09e8530d"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/release-5-voltage.png",
+        "bytes": 73865,
+        "sha256": "08e72a68771cb30ada60d5a11c217c324daed8bdfd493f88f5a0466a7b0bf244"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/release-5.png",
+        "bytes": 55643,
+        "sha256": "f76a2385fc531b83cb386967398120396a7061511bdaa29b3a6da718f29f94f8"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/release-6.png",
+        "bytes": 79886,
+        "sha256": "5c0d3d780c0189f4e56471e9601eea773c00a30a2aca1f4ceae2d9f4272ec16c"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/release-7.png",
+        "bytes": 46532,
+        "sha256": "de838ac2c02d1be0d0938d1cd65eb87dd069afb555c3920dbf4b7f2fbb1b5244"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu26.04/smoke/release-8.png",
+        "bytes": 57664,
+        "sha256": "be457c22a7f06a3dc75b8c828c23e782be8b8569de141deccdb71662b1504a75"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/native-0.png",
+        "bytes": 60717,
+        "sha256": "a2ccc5547addbabc2f58cdc0cea98eb8c9636e5efc53c6217400e09565ce5650"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/native-1.png",
+        "bytes": 32671,
+        "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/native-2.png",
+        "bytes": 30574,
+        "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/native-3.png",
+        "bytes": 34321,
+        "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/native-4.png",
+        "bytes": 71702,
+        "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/native-5-voltage.png",
+        "bytes": 67437,
+        "sha256": "01bed16f73917802e1b012c3c1931c2cdc84903cbfff7f61771612bb878e853a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/native-5.png",
+        "bytes": 51597,
+        "sha256": "bf5f27f12644e1b154b1ecab85789a2d0e239e75a2d630dcdfe6db008faee5d5"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/native-6.png",
+        "bytes": 73406,
+        "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/native-7.png",
+        "bytes": 43168,
+        "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/native-8.png",
+        "bytes": 54563,
+        "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/release-0.png",
+        "bytes": 60717,
+        "sha256": "a2ccc5547addbabc2f58cdc0cea98eb8c9636e5efc53c6217400e09565ce5650"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/release-1.png",
+        "bytes": 32671,
+        "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/release-2.png",
+        "bytes": 30574,
+        "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/release-3.png",
+        "bytes": 34321,
+        "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/release-4.png",
+        "bytes": 71702,
+        "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/release-5-voltage.png",
+        "bytes": 67437,
+        "sha256": "01bed16f73917802e1b012c3c1931c2cdc84903cbfff7f61771612bb878e853a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/release-5.png",
+        "bytes": 51597,
+        "sha256": "bf5f27f12644e1b154b1ecab85789a2d0e239e75a2d630dcdfe6db008faee5d5"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/release-6.png",
+        "bytes": 73406,
+        "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/release-7.png",
+        "bytes": 43168,
+        "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian11/smoke/release-8.png",
+        "bytes": 54563,
+        "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/native-0.png",
+        "bytes": 62330,
+        "sha256": "5ef4374b40f4518e16d38049fce67d27b77ea2960bb9ae83dcb207a8c861300a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/native-1.png",
+        "bytes": 32671,
+        "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/native-2.png",
+        "bytes": 30574,
+        "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/native-3.png",
+        "bytes": 34321,
+        "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/native-4.png",
+        "bytes": 71702,
+        "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/native-5-voltage.png",
+        "bytes": 67437,
+        "sha256": "01bed16f73917802e1b012c3c1931c2cdc84903cbfff7f61771612bb878e853a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/native-5.png",
+        "bytes": 51597,
+        "sha256": "bf5f27f12644e1b154b1ecab85789a2d0e239e75a2d630dcdfe6db008faee5d5"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/native-6.png",
+        "bytes": 73406,
+        "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/native-7.png",
+        "bytes": 43168,
+        "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/native-8.png",
+        "bytes": 54563,
+        "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/release-0.png",
+        "bytes": 62330,
+        "sha256": "5ef4374b40f4518e16d38049fce67d27b77ea2960bb9ae83dcb207a8c861300a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/release-1.png",
+        "bytes": 32671,
+        "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/release-2.png",
+        "bytes": 30574,
+        "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/release-3.png",
+        "bytes": 34321,
+        "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/release-4.png",
+        "bytes": 71702,
+        "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/release-5-voltage.png",
+        "bytes": 67437,
+        "sha256": "01bed16f73917802e1b012c3c1931c2cdc84903cbfff7f61771612bb878e853a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/release-5.png",
+        "bytes": 51597,
+        "sha256": "bf5f27f12644e1b154b1ecab85789a2d0e239e75a2d630dcdfe6db008faee5d5"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/release-6.png",
+        "bytes": 73406,
+        "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/release-7.png",
+        "bytes": 43168,
+        "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian12/smoke/release-8.png",
+        "bytes": 54563,
+        "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/native-0.png",
+        "bytes": 60518,
+        "sha256": "432e7d07047719911f49324ef929bbf3a74f99cf3d45f798e24e99f03361bd03"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/native-1.png",
+        "bytes": 32671,
+        "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/native-2.png",
+        "bytes": 30574,
+        "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/native-3.png",
+        "bytes": 34321,
+        "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/native-4.png",
+        "bytes": 71702,
+        "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/native-5-voltage.png",
+        "bytes": 67437,
+        "sha256": "01bed16f73917802e1b012c3c1931c2cdc84903cbfff7f61771612bb878e853a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/native-5.png",
+        "bytes": 51597,
+        "sha256": "bf5f27f12644e1b154b1ecab85789a2d0e239e75a2d630dcdfe6db008faee5d5"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/native-6.png",
+        "bytes": 73406,
+        "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/native-7.png",
+        "bytes": 43168,
+        "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/native-8.png",
+        "bytes": 54563,
+        "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/release-0.png",
+        "bytes": 60518,
+        "sha256": "432e7d07047719911f49324ef929bbf3a74f99cf3d45f798e24e99f03361bd03"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/release-1.png",
+        "bytes": 32671,
+        "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/release-2.png",
+        "bytes": 30574,
+        "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/release-3.png",
+        "bytes": 34321,
+        "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/release-4.png",
+        "bytes": 71702,
+        "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/release-5-voltage.png",
+        "bytes": 67437,
+        "sha256": "01bed16f73917802e1b012c3c1931c2cdc84903cbfff7f61771612bb878e853a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/release-5.png",
+        "bytes": 51597,
+        "sha256": "bf5f27f12644e1b154b1ecab85789a2d0e239e75a2d630dcdfe6db008faee5d5"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/release-6.png",
+        "bytes": 73406,
+        "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/release-7.png",
+        "bytes": 43168,
+        "sha256": "cbf1e116719e0468c82bd8677f050f7088f65608422a0a8f8f06811f7661710d"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/release-8.png",
+        "bytes": 54563,
+        "sha256": "c3664cc5893060ed577b7f2bb479b21859c53e723fc7884fae04a7f4ab0b1cad"
+      }
+    ],
+    "baseline_qt_tests": 32,
+    "python_tests_per_kernel_target": 32,
+    "source_archive": {
+      "path": "dist/amd-curve-recovery-06b477c/octool-2.0.1-src.tar.gz",
+      "bytes": 3640030,
+      "sha256": "b505a93ebc97d2be5aa5297f1d4422b7fb1a6eec9510c4cd2b909213662d4580"
+    },
+    "analysis_tests": 65,
+    "visual_review": {
+      "reviewer": "Codex",
+      "screenshots": [
+        {
+          "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-debian13/smoke/release-6.png",
+          "bytes": 73406,
+          "sha256": "5d30d71d03c68df4b015f2a2ef49a91b156487d0407b1a5430b08552758f3eda"
+        },
+        {
+          "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-ubuntu24.04/smoke/release-6.png",
+          "bytes": 82279,
+          "sha256": "6111ec871f389acf2583a9542f76f40f874a003fa54f3c0b25022f40baeb63c8"
+        },
+        {
+          "path": "build/amd-curve-recovery-06b477c/linux-artifacts/desktop-el10/smoke/release-6.png",
+          "bytes": 67798,
+          "sha256": "91a2e6e737898b0bfadb3a7f0ca2557ac4f089dccbc15c938bc5b33c0c9c569b"
+        }
+      ],
+      "result": "Reviewed actual Debian 13, Ubuntu 24.04 and EL10 AMD tuning windows. Explicit curve CCD/core input and Read curve button, original command controls, table, scope and status visible without clipping; initial blank curve inputs and no fabricated hardware readings."
+    },
+    "environment_note": "Desktop containers report runner-host kernels; the target kernel versions are verified independently in QEMU boot records.",
+    "workflow_log": {
+      "path": "build/amd-curve-recovery-06b477c/linux-run.log",
+      "bytes": 9919144,
+      "sha256": "80a2971aa20a282893d91b1a22c7c95edb18e8f3bcdea27b993cfbfb98be6921"
+    },
+    "artifact_metadata": {
+      "path": "build/amd-curve-recovery-06b477c/linux-artifacts.json",
+      "bytes": 21726,
+      "sha256": "3a3116303045c09234571238dc9e9c4bb16085e039ce3052ae5e9a3fbe59c025"
+    }
+  },
+  "source_sha256_lf": {
+    "gui/common.pri": "78d03309c247dffaeac7f6c14fbd3b7c7cd4ea4bcb81060d66f626457cd9894a",
+    "gui/core/CMakeLists.txt": "411b3ccdcfd3e889ce8da07251d928e382d82ee68a99cdd729321ab10d0b93f6",
+    "gui/core/amd_curve.cpp": "6bdae1c19a88b0a0dbbc819bb12a7d047ec926198c53be2810c61a6a3d7da3e6",
+    "gui/core/amd_curve.h": "75c009bfcddfbcd0fec8cb95c9cc190125a3e0e227aafad31d12b7a523a9e544",
+    "gui/core/amd_topology.cpp": "e3e629fd1c43ea1318adcc2a8b65913c6e698388aaffa4c3eea2aaca0b3b2169",
+    "gui/core/amd_topology.h": "b3abc86821662864abd5dbdb846d73062953386e580ae33467020b4153647b53",
+    "gui/core/amd_umc.cpp": "cab8e0fb24111375c4620976b270dea233988c4a4990d1fc060fb90618a49b13",
+    "gui/core/amd_umc.h": "3aab2ca48a89f417f6a0b3c7729203271564dbcbd24375765e8ceef0f66061f4",
+    "gui/core/amd_umc_fields.inc": "e7df51883a999bd46340fcfed8db72411752bf786b2561d4f6ef1c770214c53c",
+    "gui/core/intel_oc.cpp": "839c3ee1f221e00405919596b1cf6622aad40c3b6272bd861274eae274a745ca",
+    "gui/core/intel_oc.h": "b4beff91aab267a225d091003426075f8938114c6435a4a6e779cdc628b00d1e",
+    "gui/intelocpanel.cpp": "239f8661a51a943a8228d28f82253cb2be1f997824ed622e411c2b0fb7b9a82a",
+    "gui/intelocpanel.h": "f023ac4399a2af5a27fc36116e8b4a698613f2bc976976bbec7e427675ceea84",
+    "gui/main.cpp": "0f6e3246d50eda06f5d141b77f56a4218d22505bd2178dff437cc436c33d4539",
+    "gui/platformpanels.cpp": "651638fafc2e5504b8a8ca326fc30e8af7d68bfd32ae6591d4d4fa98350305e5",
+    "gui/platformpanels.h": "78c793fc1dc9f0f2470e262ced58a08883b26f8706ec0d6bf93b0c20ee8ddcda",
+    "gui/tests/amd_curve_core_test.cpp": "9e87b9a7cdf75438fa4344cdfd9f5661e091c1058611adb4fb30c63184914aa9",
+    "gui/tests/amd_curve_fixture.h": "fdff6f4a111b246f9b6666cd175f3e4d4e9106f8b5102e7ec21f0a1622eb8c74",
+    "gui/tests/amd_umc_vectors.inc": "4c70e65ca1f4263c820ee84a586d3ffaa51722ed36df91aa128d917131317668",
+    "gui/tests/intel_oc_core_test.cpp": "e2c0c18d6525927ed5cc01fceab1432779586d34cd6c8ec928a1e8f92df524ab",
+    "gui/tests/intel_oc_fixture.h": "aab2f815fb954094a92eedbf007ca54a3766507319f23faedb535ac9220cdc3a",
+    "gui/tests/memory_core_test.cpp": "578f69dc67bcc20537bec9dbf8e0475994c65d64f200f4adef02c9d3809b8436",
+    "gui/tests/regression.cpp": "819775b237ac660aa486cce1f7c718d246da4cf513745bdcd210b99c3733bf7a",
+    "gui/umcpanel.cpp": "ca3d39ef99cdcf702456576d6314511cccc16f2b8277bdfbc063647b521924de",
+    "gui/umcpanel.h": "4b891bf198d2d4d026a3ffb3704a7980811240b22dcb359161cf4e4002d532cf",
+    "port/tests/test_amd_curve_core.py": "bb8fb18d789dc939ad529704075113dbf7b780fb7272d54c61a31684a8943723",
+    "port/tests/test_intel_oc_core.py": "308c6ffb4d98362221b559b0722a13d7f7c02b994f75a3b1ba4ec1387dc89759",
+    "port/tests/test_memory_core.py": "3713f8cb70481ed509b15cc4b2c71d5363257d6ad39358600b1f8c1b03563f1c"
+  },
+  "local_files_matching_cloud": [
+    "gui/common.pri",
+    "gui/core/CMakeLists.txt",
+    "gui/core/amd_curve.cpp",
+    "gui/core/amd_curve.h",
+    "gui/core/amd_topology.cpp",
+    "gui/core/amd_topology.h",
+    "gui/core/amd_umc.cpp",
+    "gui/core/amd_umc.h",
+    "gui/core/amd_umc_fields.inc",
+    "gui/core/intel_oc.cpp",
+    "gui/core/intel_oc.h",
+    "gui/intelocpanel.cpp",
+    "gui/intelocpanel.h",
+    "gui/main.cpp",
+    "gui/platformpanels.cpp",
+    "gui/platformpanels.h",
+    "gui/tests/amd_curve_core_test.cpp",
+    "gui/tests/amd_curve_fixture.h",
+    "gui/tests/amd_umc_vectors.inc",
+    "gui/tests/intel_oc_core_test.cpp",
+    "gui/tests/intel_oc_fixture.h",
+    "gui/tests/memory_core_test.cpp",
+    "gui/tests/regression.cpp",
+    "gui/umcpanel.cpp",
+    "gui/umcpanel.h",
+    "port/tests/test_amd_curve_core.py",
+    "port/tests/test_intel_oc_core.py",
+    "port/tests/test_memory_core.py"
+  ],
+  "driver_hal_abi_unchanged_from": "6d58cfc16149be216b3f1e086b9a02b6928fc908",
+  "local_tests": {
+    "tests": 48,
+    "passed": 36,
+    "skipped": 12,
+    "failed": 0,
+    "report": {
+      "path": "build/amd-curve-local-tests.txt",
+      "bytes": 7722,
+      "sha256": "9813369cb5a61cb669571a3dafd42c770a6da1dbf400eaccab997cd48c7be268"
+    },
+    "note": "Windows lacks the C++/Linux execution environment; these cases are covered by cloud tests. Other original local research changes remain outside this cloud commit."
+  },
+  "original_code_emulation": {
+    "field_scenarios": 5,
+    "constructor_scenarios": 19,
+    "refresh_slots": 16,
+    "repeated_populates_per_slot": 2,
+    "reports": [
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/mailbox-contract-evidence/amd-umc.json",
+        "bytes": 61096,
+        "sha256": "c3232cd87518bc08d68ecbd010c4aa9d8fc0ae5525cc3602e4d15bb961be1941"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/mailbox-contract-evidence/amd-umc-selection.json",
+        "bytes": 170600,
+        "sha256": "e0fdc57d86c43b7904f0f1f2db4b1bc53811d1680d656771e15653ac1bc8b70a"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/mailbox-contract-evidence/intel-ratio.json",
+        "bytes": 40578,
+        "sha256": "ee362c95b7e9a8da53a3c8226699930b56368bc3f67ec10e4353d85a6dd30049"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/mailbox-contract-evidence/amd-limit-bindings.json",
+        "bytes": 25891,
+        "sha256": "bff34d7556eda9a548e237d6451aee838a402805ea608fa17958524a4549f59d"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/mailbox-contract-evidence/amd-limits.json",
+        "bytes": 858524,
+        "sha256": "d34ca1b6cd7d158596d885474ed2b5a1886754fdc7d56eb000aad9b699b74822"
+      },
+      {
+        "path": "build/amd-curve-recovery-06b477c/linux-artifacts/mailbox-contract-evidence/amd-curve-query.json",
+        "bytes": 266333,
+        "sha256": "f1d58059f086b2f9faaabf0685921b17c90ee8e75aa1fc4be297eec9b621b64d"
+      }
+    ],
+    "intel_ratio_scenarios": 108,
+    "amd_limit_flag_cases": 80,
+    "amd_limit_ui_rows": 6,
+    "amd_limit_scenarios": 882,
+    "amd_curve_constructor_cases": 98,
+    "amd_curve_query_cases": 71
+  },
+  "limits": [
+    "No physical register/firmware acceptance on the four target machines",
+    "PStates writes and physical voltage/current conversions remain incomplete",
+    "Intel server voltage domains, VF points, per-core turbo, fabric and BCLK controls remain incomplete",
+    "AMD firmware-to-CPUID target mapping, physical-unit limit tuning, curve settings and profile/hotkey behavior remain incomplete",
+    "UMC values are original encodings, not certified platform timing units; Intel timings, training writes, PMIC/VRM/EC configuration and board clocks remain incomplete",
+    "Windows/macOS validate portable core only, not GUI or hardware backends",
+    "x86_64 Linux only; no Secure Boot enrollment, physical desktop password dialog or cross-version upgrade acceptance"
+  ]
+}

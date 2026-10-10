@@ -1,5 +1,16 @@
 # Instrumentum Superfrequentationis
 
+<!-- amd-curve-recovery-06b477c -->
+2026-10-10：最新验证生产代码为 `06b477c`，研究分支 `refactor/platform-recovery`。
+新增限定 Shimada 身份的[原始曲线查询](docs/amd-curve-query-recovery.md)：独立 B8/BC 通道、有界等待、严格返回检查和界面失效清理。
+手动填写固件 CCD/core；保留 32 位原值，不推导物理核心映射或 mV，不设置曲线。
+
+- [核心验证](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841095) 4/4，各 7 CTest / 56 场景组；[Linux 验证](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147) 23/23，十目标各 32 Qt / 32 Python。
+- 新增 98 组原构造、71 组原查询实验；分析测试共 65 项。11 套内核 VM、20 个 DEB/RPM、200 张截图已归档。
+- [验证明细](docs/validation/amd-curve-recovery-ci-06b477c.json)、[安装产物](docs/artifacts.md)、[剩余还原项](docs/recovery-status.md)。四台真机验收仍未完成。
+
+以下保留此前验证记录。
+
 <!-- intel-ratio-recovery-fa39af6 -->
 2026-10-10：最新验证生产代码为 `fa39af6`，研究分支 `refactor/platform-recovery`。
 新增 Raptor Lake-S 核心/缓存最大 OC 倍频设置；保留电压 offset、target、mode，检查锁/旧值并完整回读。

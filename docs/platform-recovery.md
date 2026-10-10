@@ -1,5 +1,15 @@
 # 平台面板恢复：证据与待确认规格
 
+<!-- amd-curve-recovery-06b477c -->
+最新生产代码 `06b477c` 已验证：[核心 4/4](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841095)、[Linux 23/23](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147)。
+新增 [Shimada 曲线原值查询](amd-curve-query-recovery.md)，输入为显式固件编号，失败结果不会显示为有效值。
+十个 x86_64 Linux 目标各 32 Qt / 32 Python；四个核心环境各 7 CTest / 56 场景组；65 分析测试、11 套目标内核 VM。
+安装包位于 `dist/amd-curve-recovery-06b477c/`：每目标 GUI + DKMS，共 20 个 DEB/RPM，另有源码包、侧车 SHA 和 `SHA256SUMS`。
+[完整证据](validation/amd-curve-recovery-ci-06b477c.json)包含产物哈希、源码比对、原指令实验及 200 张截图。
+曲线设置、物理核心映射和四台目标机器的固件行为仍未验收；[剩余功能](recovery-status.md)另列。
+
+以下保留此前验证记录。
+
 <!-- intel-ratio-recovery-fa39af6 -->
 最新生产代码 `fa39af6` 已验证：[核心 4/4](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38011778227)、[Linux 23/23](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38011778246)。
 新增 [core/cache 最大 OC 倍频](intel-ratio-recovery.md)，两种设置均保留其它字段并完整回读。
