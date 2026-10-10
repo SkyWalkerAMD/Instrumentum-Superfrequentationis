@@ -33,9 +33,15 @@ bool hasIntelOcProfile(const CpuIdentity &identity);
 double intelOcOffsetMillivolts(std::uint32_t data);
 int encodeIntelOcOffset(double millivolts, std::uint32_t previous,
                         std::uint32_t &encoded);
-// Queries submit command 0x10 to MSR 0x150 but never a voltage-change command.
+// Low-byte maximum OC ratio. Restrict to 1..85 using the Raptor Lake-S FSP
+// profile's documented maximum. Zero/default semantics are not implemented.
+// This is a domain limit, not a per-core/active-core-count turbo table.
+int encodeIntelOcRatio(unsigned ratio, std::uint32_t previous, std::uint32_t &encoded);
+// Queries submit command 0x10 to MSR 0x150 but never a settings-change command.
 // All calls belong inside one HardwareService transaction.
 IntelOcSnapshot readIntelOc(HardwareSession &session, unsigned cpu, IntelOcDomain domain);
 IntelOcUpdate applyIntelOcOffset(HardwareSession &session, const IntelOcSnapshot &snapshot,
                                 double millivolts);
+IntelOcUpdate applyIntelOcRatio(HardwareSession &session, const IntelOcSnapshot &snapshot,
+                               unsigned ratio);
 } }

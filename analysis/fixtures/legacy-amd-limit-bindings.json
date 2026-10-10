@@ -1,0 +1,1588 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "functions": [
+    {
+      "symbol": "limits.setup-rows",
+      "address": 7604148,
+      "size": 1884,
+      "code_hex": "bf20000000e8f2bea0ff4889c74989c6e8f76f5d004c89b348010000ba10000000488d3548cfee004889efe86ce6ce004889ee4c89f7e8d123df004889efe87958daffbf30000000e8afbea0ff488bb33801000031d24889c74989c6e85b4d69004c89b350010000ba08000000488d35839def004889efe820e6ce004889ee4c89f7e88523df004889efe82d58daff488bbb500100004c89e6e8de2a5f00488bbb48010000488bb35001000031c931d2e827765d00bf30000000e83dbea0ff488bb3380100004889c74989c6e8cbbd69004c89b358010000ba11000000488d3507aef0004889efe8b0e5ce004889ee4c89f7e81523df004889efe8bd57daff488bbb580100004c89e6e86e2a5f00488bbb48010000488bb35801000031c931d2e8b7755d00488bb348010000488bbb4001000031d2e8d2725d00bf20000000e8b8bda0ff4889c74989c6e8bd6e5d004c89b360010000ba12000000488d3522a1ef004889efe832e5ce004889ee4c89f7e89722df004889efe83f57daffbf30000000e875bda0ff488bb33801000031d24889c74989c6e8214c69004c89b368010000ba08000000488d357090ef004889efe8e6e4ce004889ee4c89f7e84b22df004889efe8f356daff488bbb680100004c89e6e8a4295f00488bbb60010000488bb36801000031c931d2e8ed745d00bf30000000e803bda0ff488bb3380100004889c74989c6e891bc69004c89b370010000ba11000000488d35dfacf0004889efe876e4ce004889ee4c89f7e8db21df004889efe88356daff488bbb700100004c89e6e834295f00488bbb60010000488bb37001000031c931d2e87d745d00488bb360010000488bbb4001000031d2e898715d00bf20000000e87ebca0ff4889c74989c6e8836d5d004c89b378010000ba12000000488d3522a0ef004889efe8f8e3ce004889ee4c89f7e85d21df004889efe80556daffbf30000000e83bbca0ff488bb33801000031d24889c74989c6e8e74a69004c89b380010000ba08000000488d353f8fef004889efe8ace3ce004889ee4c89f7e81121df004889efe8b955daff488bbb800100004c89e6e86a285f00488bbb78010000488bb38001000031c931d2e8b3735d00bf30000000e8c9bba0ff488bb3380100004889c74989c6e857bb69004c89b388010000ba11000000488d3587c0f0004889efe83ce3ce004889ee4c89f7e8a120df004889efe84955daff488bbb880100004c89e6e8fa275f00488bbb78010000488bb38801000031c931d2e843735d00488bb378010000488bbb4001000031d2e85e705d00bf20000000e844bba0ff4889c74989c6e8496c5d004c89b390010000ba12000000488d35229fef004889efe8bee2ce004889ee4c89f7e82320df004889efe8cb54daffbf30000000e801bba0ff488bb33801000031d24889c74989c6e8ad4969004c89b398010000ba08000000488d359689ef004889efe872e2ce004889ee4c89f7e8d71fdf004889efe87f54daff488bbb980100004c89e6e830275f00488bbb90010000488bb39801000031c931d2e879725d00bf30000000e88fbaa0ff488bb3380100004889c74989c6e81dba69004c89b3a0010000ba11000000488d355fbff0004889efe802e2ce004889ee4c89f7e8671fdf004889efe80f54daff488bbba00100004c89e6e8c0265f00488bbb90010000488bb3a001000031c931d2e809725d00488bb390010000488bbb4001000031d2e8246f5d00bf20000000e80abaa0ff4889c74989c6e80f6b5d004c89b3a8010000ba12000000488d35229eef004889efe884e1ce004889ee4c89f7e8e91edf004889efe89153daffbf30000000e8c7b9a0ff488bb33801000031d24889c74989c6e8734869004c89b3b0010000ba08000000488d356588ef004889efe838e1ce004889ee4c89f7e89d1edf004889efe84553daff488bbbb00100004c89e6e8f6255f00488bbba8010000488bb3b001000031c931d2e83f715d00bf30000000e855b9a0ff488bb3380100004889c74989c6e8e3b869004c89b3b8010000ba11000000488d3543a9f0004889efe8c8e0ce004889ee4c89f7e82d1edf004889efe8d552daff488bbbb80100004c89e6e886255f00488bbba8010000488bb3b801000031c931d2e8cf705d00488bb3a8010000488bbb4001000031d2e8ea6d5d00bf20000000e8d0b8a0ff4889c74989c6e8d5695d004c89b3c0010000ba12000000488d35229def004889efe84ae0ce004889ee4c89f7e8af1ddf004889efe85752daffbf30000000e88db8a0ff488bb33801000031d24889c74989c6e8394769004c89b3c8010000ba08000000488d359586ef004889efe8fedfce004889ee4c89f7e8631ddf004889efe80b52daff488bbbc80100004c89e6e8bc245f00488bbbc0010000488bb3c801000031c931d2e805705d00bf30000000e81bb8a0ff488bb3380100004889c74989c6e8a9b769004c89b3d0010000ba12000000488d35fdbcf0004889efe88edfce004889ee4c89f7e8f31cdf004889efe89b51daff488bbbd00100004c89e6e84c245f00488bbbc0010000488bb3d001000031c931d2e8956f5d00488bb3c0010000488bbb4001000031d2e8b06c5d00",
+      "code_sha256": "8d0cb57f8e2bb544a4fe664867275d22031e2711662fe291b26c7c4e09a9003f",
+      "parent": "_ZN15Ui_cpufunctions7setupUiEP7QDialog",
+      "parent_code_sha256": "a41673837ac2a635698e653e63eca646d66a87605b8972a141ba657164d3c8b0",
+      "calls": [
+        {
+          "instruction": 7604153,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7604164,
+          "kind": "call",
+          "target": 13727680,
+          "symbols": [
+            "_ZN11QHBoxLayoutC1Ev",
+            "_ZN11QHBoxLayoutC2Ev"
+          ]
+        },
+        {
+          "instruction": 7604191,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7604202,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7604210,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7604220,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7604240,
+          "kind": "call",
+          "target": 14505328,
+          "symbols": [
+            "_ZN6QLabelC2EP7QWidget6QFlagsIN2Qt10WindowTypeEE",
+            "_ZN6QLabelC1EP7QWidget6QFlagsIN2Qt10WindowTypeEE"
+          ]
+        },
+        {
+          "instruction": 7604267,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7604278,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7604286,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7604301,
+          "kind": "call",
+          "target": 13841200,
+          "symbols": [
+            "_ZN7QWidget7setFontERK5QFont"
+          ]
+        },
+        {
+          "instruction": 7604324,
+          "kind": "call",
+          "target": 13729424,
+          "symbols": [
+            "_ZN10QBoxLayout9addWidgetEP7QWidgeti6QFlagsIN2Qt13AlignmentFlagEE"
+          ]
+        },
+        {
+          "instruction": 7604334,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7604352,
+          "kind": "call",
+          "target": 14534224,
+          "symbols": [
+            "_ZN9QLineEditC2EP7QWidget",
+            "_ZN9QLineEditC1EP7QWidget"
+          ]
+        },
+        {
+          "instruction": 7604379,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7604390,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7604398,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7604413,
+          "kind": "call",
+          "target": 13841200,
+          "symbols": [
+            "_ZN7QWidget7setFontERK5QFont"
+          ]
+        },
+        {
+          "instruction": 7604436,
+          "kind": "call",
+          "target": 13729424,
+          "symbols": [
+            "_ZN10QBoxLayout9addWidgetEP7QWidgeti6QFlagsIN2Qt13AlignmentFlagEE"
+          ]
+        },
+        {
+          "instruction": 7604457,
+          "kind": "call",
+          "target": 13728704,
+          "symbols": [
+            "_ZN10QBoxLayout9addLayoutEP7QLayouti"
+          ]
+        },
+        {
+          "instruction": 7604467,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7604478,
+          "kind": "call",
+          "target": 13727680,
+          "symbols": [
+            "_ZN11QHBoxLayoutC1Ev",
+            "_ZN11QHBoxLayoutC2Ev"
+          ]
+        },
+        {
+          "instruction": 7604505,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7604516,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7604524,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7604534,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7604554,
+          "kind": "call",
+          "target": 14505328,
+          "symbols": [
+            "_ZN6QLabelC2EP7QWidget6QFlagsIN2Qt10WindowTypeEE",
+            "_ZN6QLabelC1EP7QWidget6QFlagsIN2Qt10WindowTypeEE"
+          ]
+        },
+        {
+          "instruction": 7604581,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7604592,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7604600,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7604615,
+          "kind": "call",
+          "target": 13841200,
+          "symbols": [
+            "_ZN7QWidget7setFontERK5QFont"
+          ]
+        },
+        {
+          "instruction": 7604638,
+          "kind": "call",
+          "target": 13729424,
+          "symbols": [
+            "_ZN10QBoxLayout9addWidgetEP7QWidgeti6QFlagsIN2Qt13AlignmentFlagEE"
+          ]
+        },
+        {
+          "instruction": 7604648,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7604666,
+          "kind": "call",
+          "target": 14534224,
+          "symbols": [
+            "_ZN9QLineEditC2EP7QWidget",
+            "_ZN9QLineEditC1EP7QWidget"
+          ]
+        },
+        {
+          "instruction": 7604693,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7604704,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7604712,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7604727,
+          "kind": "call",
+          "target": 13841200,
+          "symbols": [
+            "_ZN7QWidget7setFontERK5QFont"
+          ]
+        },
+        {
+          "instruction": 7604750,
+          "kind": "call",
+          "target": 13729424,
+          "symbols": [
+            "_ZN10QBoxLayout9addWidgetEP7QWidgeti6QFlagsIN2Qt13AlignmentFlagEE"
+          ]
+        },
+        {
+          "instruction": 7604771,
+          "kind": "call",
+          "target": 13728704,
+          "symbols": [
+            "_ZN10QBoxLayout9addLayoutEP7QLayouti"
+          ]
+        },
+        {
+          "instruction": 7604781,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7604792,
+          "kind": "call",
+          "target": 13727680,
+          "symbols": [
+            "_ZN11QHBoxLayoutC1Ev",
+            "_ZN11QHBoxLayoutC2Ev"
+          ]
+        },
+        {
+          "instruction": 7604819,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7604830,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7604838,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7604848,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7604868,
+          "kind": "call",
+          "target": 14505328,
+          "symbols": [
+            "_ZN6QLabelC2EP7QWidget6QFlagsIN2Qt10WindowTypeEE",
+            "_ZN6QLabelC1EP7QWidget6QFlagsIN2Qt10WindowTypeEE"
+          ]
+        },
+        {
+          "instruction": 7604895,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7604906,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7604914,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7604929,
+          "kind": "call",
+          "target": 13841200,
+          "symbols": [
+            "_ZN7QWidget7setFontERK5QFont"
+          ]
+        },
+        {
+          "instruction": 7604952,
+          "kind": "call",
+          "target": 13729424,
+          "symbols": [
+            "_ZN10QBoxLayout9addWidgetEP7QWidgeti6QFlagsIN2Qt13AlignmentFlagEE"
+          ]
+        },
+        {
+          "instruction": 7604962,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7604980,
+          "kind": "call",
+          "target": 14534224,
+          "symbols": [
+            "_ZN9QLineEditC2EP7QWidget",
+            "_ZN9QLineEditC1EP7QWidget"
+          ]
+        },
+        {
+          "instruction": 7605007,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7605018,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7605026,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7605041,
+          "kind": "call",
+          "target": 13841200,
+          "symbols": [
+            "_ZN7QWidget7setFontERK5QFont"
+          ]
+        },
+        {
+          "instruction": 7605064,
+          "kind": "call",
+          "target": 13729424,
+          "symbols": [
+            "_ZN10QBoxLayout9addWidgetEP7QWidgeti6QFlagsIN2Qt13AlignmentFlagEE"
+          ]
+        },
+        {
+          "instruction": 7605085,
+          "kind": "call",
+          "target": 13728704,
+          "symbols": [
+            "_ZN10QBoxLayout9addLayoutEP7QLayouti"
+          ]
+        },
+        {
+          "instruction": 7605095,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7605106,
+          "kind": "call",
+          "target": 13727680,
+          "symbols": [
+            "_ZN11QHBoxLayoutC1Ev",
+            "_ZN11QHBoxLayoutC2Ev"
+          ]
+        },
+        {
+          "instruction": 7605133,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7605144,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7605152,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7605162,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7605182,
+          "kind": "call",
+          "target": 14505328,
+          "symbols": [
+            "_ZN6QLabelC2EP7QWidget6QFlagsIN2Qt10WindowTypeEE",
+            "_ZN6QLabelC1EP7QWidget6QFlagsIN2Qt10WindowTypeEE"
+          ]
+        },
+        {
+          "instruction": 7605209,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7605220,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7605228,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7605243,
+          "kind": "call",
+          "target": 13841200,
+          "symbols": [
+            "_ZN7QWidget7setFontERK5QFont"
+          ]
+        },
+        {
+          "instruction": 7605266,
+          "kind": "call",
+          "target": 13729424,
+          "symbols": [
+            "_ZN10QBoxLayout9addWidgetEP7QWidgeti6QFlagsIN2Qt13AlignmentFlagEE"
+          ]
+        },
+        {
+          "instruction": 7605276,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7605294,
+          "kind": "call",
+          "target": 14534224,
+          "symbols": [
+            "_ZN9QLineEditC2EP7QWidget",
+            "_ZN9QLineEditC1EP7QWidget"
+          ]
+        },
+        {
+          "instruction": 7605321,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7605332,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7605340,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7605355,
+          "kind": "call",
+          "target": 13841200,
+          "symbols": [
+            "_ZN7QWidget7setFontERK5QFont"
+          ]
+        },
+        {
+          "instruction": 7605378,
+          "kind": "call",
+          "target": 13729424,
+          "symbols": [
+            "_ZN10QBoxLayout9addWidgetEP7QWidgeti6QFlagsIN2Qt13AlignmentFlagEE"
+          ]
+        },
+        {
+          "instruction": 7605399,
+          "kind": "call",
+          "target": 13728704,
+          "symbols": [
+            "_ZN10QBoxLayout9addLayoutEP7QLayouti"
+          ]
+        },
+        {
+          "instruction": 7605409,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7605420,
+          "kind": "call",
+          "target": 13727680,
+          "symbols": [
+            "_ZN11QHBoxLayoutC1Ev",
+            "_ZN11QHBoxLayoutC2Ev"
+          ]
+        },
+        {
+          "instruction": 7605447,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7605458,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7605466,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7605476,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7605496,
+          "kind": "call",
+          "target": 14505328,
+          "symbols": [
+            "_ZN6QLabelC2EP7QWidget6QFlagsIN2Qt10WindowTypeEE",
+            "_ZN6QLabelC1EP7QWidget6QFlagsIN2Qt10WindowTypeEE"
+          ]
+        },
+        {
+          "instruction": 7605523,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7605534,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7605542,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7605557,
+          "kind": "call",
+          "target": 13841200,
+          "symbols": [
+            "_ZN7QWidget7setFontERK5QFont"
+          ]
+        },
+        {
+          "instruction": 7605580,
+          "kind": "call",
+          "target": 13729424,
+          "symbols": [
+            "_ZN10QBoxLayout9addWidgetEP7QWidgeti6QFlagsIN2Qt13AlignmentFlagEE"
+          ]
+        },
+        {
+          "instruction": 7605590,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7605608,
+          "kind": "call",
+          "target": 14534224,
+          "symbols": [
+            "_ZN9QLineEditC2EP7QWidget",
+            "_ZN9QLineEditC1EP7QWidget"
+          ]
+        },
+        {
+          "instruction": 7605635,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7605646,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7605654,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7605669,
+          "kind": "call",
+          "target": 13841200,
+          "symbols": [
+            "_ZN7QWidget7setFontERK5QFont"
+          ]
+        },
+        {
+          "instruction": 7605692,
+          "kind": "call",
+          "target": 13729424,
+          "symbols": [
+            "_ZN10QBoxLayout9addWidgetEP7QWidgeti6QFlagsIN2Qt13AlignmentFlagEE"
+          ]
+        },
+        {
+          "instruction": 7605713,
+          "kind": "call",
+          "target": 13728704,
+          "symbols": [
+            "_ZN10QBoxLayout9addLayoutEP7QLayouti"
+          ]
+        },
+        {
+          "instruction": 7605723,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7605734,
+          "kind": "call",
+          "target": 13727680,
+          "symbols": [
+            "_ZN11QHBoxLayoutC1Ev",
+            "_ZN11QHBoxLayoutC2Ev"
+          ]
+        },
+        {
+          "instruction": 7605761,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7605772,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7605780,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7605790,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7605810,
+          "kind": "call",
+          "target": 14505328,
+          "symbols": [
+            "_ZN6QLabelC2EP7QWidget6QFlagsIN2Qt10WindowTypeEE",
+            "_ZN6QLabelC1EP7QWidget6QFlagsIN2Qt10WindowTypeEE"
+          ]
+        },
+        {
+          "instruction": 7605837,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7605848,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7605856,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7605871,
+          "kind": "call",
+          "target": 13841200,
+          "symbols": [
+            "_ZN7QWidget7setFontERK5QFont"
+          ]
+        },
+        {
+          "instruction": 7605894,
+          "kind": "call",
+          "target": 13729424,
+          "symbols": [
+            "_ZN10QBoxLayout9addWidgetEP7QWidgeti6QFlagsIN2Qt13AlignmentFlagEE"
+          ]
+        },
+        {
+          "instruction": 7605904,
+          "kind": "call",
+          "target": 1361584,
+          "symbols": [
+            "_Znwm@plt"
+          ]
+        },
+        {
+          "instruction": 7605922,
+          "kind": "call",
+          "target": 14534224,
+          "symbols": [
+            "_ZN9QLineEditC2EP7QWidget",
+            "_ZN9QLineEditC1EP7QWidget"
+          ]
+        },
+        {
+          "instruction": 7605949,
+          "kind": "call",
+          "target": 21163600,
+          "symbols": [
+            "_ZN7QString15fromUtf8_helperEPKci"
+          ]
+        },
+        {
+          "instruction": 7605960,
+          "kind": "call",
+          "target": 22227904,
+          "symbols": [
+            "_ZN7QObject13setObjectNameERK7QString"
+          ]
+        },
+        {
+          "instruction": 7605968,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7605983,
+          "kind": "call",
+          "target": 13841200,
+          "symbols": [
+            "_ZN7QWidget7setFontERK5QFont"
+          ]
+        },
+        {
+          "instruction": 7606006,
+          "kind": "call",
+          "target": 13729424,
+          "symbols": [
+            "_ZN10QBoxLayout9addWidgetEP7QWidgeti6QFlagsIN2Qt13AlignmentFlagEE"
+          ]
+        },
+        {
+          "instruction": 7606027,
+          "kind": "call",
+          "target": 13728704,
+          "symbols": [
+            "_ZN10QBoxLayout9addLayoutEP7QLayouti"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "limits.translate-rows",
+      "address": 7582193,
+      "size": 810,
+      "code_hex": "4c89e64889ef31c94c8bb35001000041b8ffffffff488d157e66e900e8ee46dd004889ee4c89f7e8f3b369004889efe84baedaff4c89e64889ef31c94c8bb35801000041b8ffffffff4c89eae8be46dd004889ee4c89f7e8f3185f004889efe81baedaff488d05a4180e01488bbb580100004889ee4889442410e8f0185f004889efe8f8addaff4c89e64889ef31c94c8bb36801000041b8ffffffff488d150766e900e86746dd004889ee4c89f7e86cb369004889efe8c4addaff4c89e64889ef31c94c8bb37001000041b8ffffffff4c89eae83746dd004889ee4c89f7e86c185f004889efe894addaff488d051d180e01488bbb700100004889ee4889442410e869185f004889efe871addaff4c89e64889ef31c94c8bb38001000041b8ffffffff488d157865e900e8e045dd004889ee4c89f7e8e5b269004889efe83daddaff4c89e64889ef31c94c8bb38801000041b8ffffffff4c89eae8b045dd004889ee4c89f7e8e5175f004889efe80daddaff488d0596170e01488bbb880100004889ee4889442410e8e2175f004889efe8eaacdaff4c89e64889ef31c94c8bb39801000041b8ffffffff488d15fdcdf000e85945dd004889ee4c89f7e85eb269004889efe8b6acdaff4c89e64889ef31c94c8bb3a001000041b8ffffffff4c89eae82945dd004889ee4c89f7e85e175f004889efe886acdaff488d050f170e01488bbba00100004889ee4889442410e85b175f004889efe863acdaff4c89e64889ef31c94c8bb3b001000041b8ffffffff488d1580cdf000e8d244dd004889ee4c89f7e8d7b169004889efe82facdaff4c89e64889ef31c94c8bb3b801000041b8ffffffff4c89eae8a244dd004889ee4c89f7e8d7165f004889efe8ffabdaff488d0588160e01488bbbb80100004889ee4889442410e8d4165f004889efe8dcabdaff4c89e64889ef31c94c8bb3c801000041b8ffffffff488d1534cdf000e84b44dd004889ee4c89f7e850b169004889efe8a8abdaff4c89e64889ef31c94c8bb3d001000041b8ffffffff4c89eae81b44dd004889ee4c89f7e850165f004889efe878abdaff488d0501160e01488bbbd00100004889ee4889442410e84d165f004889efe855abdaff",
+      "code_sha256": "3aa789e06abebc064e3cc4bbb6d7b95e04bd3cf9a386e4826af79c4fd1b39e48",
+      "parent": "_ZN15Ui_cpufunctions13retranslateUiEP7QDialog",
+      "parent_code_sha256": "7048df36d37f6243765287037bd75f865d783ee04b4baa1ff3096f5fb2e5fde8",
+      "calls": [
+        {
+          "instruction": 7582221,
+          "kind": "call",
+          "target": 22083840,
+          "symbols": [
+            "_ZN16QCoreApplication9translateEPKcS1_S1_i"
+          ]
+        },
+        {
+          "instruction": 7582232,
+          "kind": "call",
+          "target": 14509584,
+          "symbols": [
+            "_ZN6QLabel7setTextERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582240,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7582269,
+          "kind": "call",
+          "target": 22083840,
+          "symbols": [
+            "_ZN16QCoreApplication9translateEPKcS1_S1_i"
+          ]
+        },
+        {
+          "instruction": 7582280,
+          "kind": "call",
+          "target": 13814592,
+          "symbols": [
+            "_ZN7QWidget12setStatusTipERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582288,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7582315,
+          "kind": "call",
+          "target": 13814624,
+          "symbols": [
+            "_ZN7QWidget12setWhatsThisERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582323,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7582356,
+          "kind": "call",
+          "target": 22083840,
+          "symbols": [
+            "_ZN16QCoreApplication9translateEPKcS1_S1_i"
+          ]
+        },
+        {
+          "instruction": 7582367,
+          "kind": "call",
+          "target": 14509584,
+          "symbols": [
+            "_ZN6QLabel7setTextERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582375,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7582404,
+          "kind": "call",
+          "target": 22083840,
+          "symbols": [
+            "_ZN16QCoreApplication9translateEPKcS1_S1_i"
+          ]
+        },
+        {
+          "instruction": 7582415,
+          "kind": "call",
+          "target": 13814592,
+          "symbols": [
+            "_ZN7QWidget12setStatusTipERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582423,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7582450,
+          "kind": "call",
+          "target": 13814624,
+          "symbols": [
+            "_ZN7QWidget12setWhatsThisERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582458,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7582491,
+          "kind": "call",
+          "target": 22083840,
+          "symbols": [
+            "_ZN16QCoreApplication9translateEPKcS1_S1_i"
+          ]
+        },
+        {
+          "instruction": 7582502,
+          "kind": "call",
+          "target": 14509584,
+          "symbols": [
+            "_ZN6QLabel7setTextERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582510,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7582539,
+          "kind": "call",
+          "target": 22083840,
+          "symbols": [
+            "_ZN16QCoreApplication9translateEPKcS1_S1_i"
+          ]
+        },
+        {
+          "instruction": 7582550,
+          "kind": "call",
+          "target": 13814592,
+          "symbols": [
+            "_ZN7QWidget12setStatusTipERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582558,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7582585,
+          "kind": "call",
+          "target": 13814624,
+          "symbols": [
+            "_ZN7QWidget12setWhatsThisERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582593,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7582626,
+          "kind": "call",
+          "target": 22083840,
+          "symbols": [
+            "_ZN16QCoreApplication9translateEPKcS1_S1_i"
+          ]
+        },
+        {
+          "instruction": 7582637,
+          "kind": "call",
+          "target": 14509584,
+          "symbols": [
+            "_ZN6QLabel7setTextERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582645,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7582674,
+          "kind": "call",
+          "target": 22083840,
+          "symbols": [
+            "_ZN16QCoreApplication9translateEPKcS1_S1_i"
+          ]
+        },
+        {
+          "instruction": 7582685,
+          "kind": "call",
+          "target": 13814592,
+          "symbols": [
+            "_ZN7QWidget12setStatusTipERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582693,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7582720,
+          "kind": "call",
+          "target": 13814624,
+          "symbols": [
+            "_ZN7QWidget12setWhatsThisERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582728,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7582761,
+          "kind": "call",
+          "target": 22083840,
+          "symbols": [
+            "_ZN16QCoreApplication9translateEPKcS1_S1_i"
+          ]
+        },
+        {
+          "instruction": 7582772,
+          "kind": "call",
+          "target": 14509584,
+          "symbols": [
+            "_ZN6QLabel7setTextERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582780,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7582809,
+          "kind": "call",
+          "target": 22083840,
+          "symbols": [
+            "_ZN16QCoreApplication9translateEPKcS1_S1_i"
+          ]
+        },
+        {
+          "instruction": 7582820,
+          "kind": "call",
+          "target": 13814592,
+          "symbols": [
+            "_ZN7QWidget12setStatusTipERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582828,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7582855,
+          "kind": "call",
+          "target": 13814624,
+          "symbols": [
+            "_ZN7QWidget12setWhatsThisERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582863,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7582896,
+          "kind": "call",
+          "target": 22083840,
+          "symbols": [
+            "_ZN16QCoreApplication9translateEPKcS1_S1_i"
+          ]
+        },
+        {
+          "instruction": 7582907,
+          "kind": "call",
+          "target": 14509584,
+          "symbols": [
+            "_ZN6QLabel7setTextERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582915,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7582944,
+          "kind": "call",
+          "target": 22083840,
+          "symbols": [
+            "_ZN16QCoreApplication9translateEPKcS1_S1_i"
+          ]
+        },
+        {
+          "instruction": 7582955,
+          "kind": "call",
+          "target": 13814592,
+          "symbols": [
+            "_ZN7QWidget12setStatusTipERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582963,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        },
+        {
+          "instruction": 7582990,
+          "kind": "call",
+          "target": 13814624,
+          "symbols": [
+            "_ZN7QWidget12setWhatsThisERK7QString"
+          ]
+        },
+        {
+          "instruction": 7582998,
+          "kind": "call",
+          "target": 5136496,
+          "symbols": [
+            "_ZN7QStringD1Ev",
+            "_ZN7QStringD2Ev"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "limits.constructor-flag",
+      "address": 7743761,
+      "size": 50,
+      "code_hex": "31d2bed8140000bf22100000e88eb2abff488d0dda9b51018039000f84df120000c7858c0f000003000000c685890f000001",
+      "code_sha256": "7f4790e51516d858d846b660bd7abfe60e003ea723a086db9b93bc0138c6fb62",
+      "parent": "_ZN12cpufunctionsC2EP7QWidget",
+      "parent_code_sha256": "5c57785bae2ed506ff37535fd5eb7ed526ad2702ed922a174e1ebf30d4d26c9e",
+      "calls": [
+        {
+          "instruction": 7743773,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "limits.constructor-flag.branch",
+      "address": 7748625,
+      "size": 76,
+      "code_hex": "83f8ff0f8518edffff31d2bea4140000bf22100000e8859fabff83f8ff0f85feecffff31d2beb5140000bf22100000e86b9fabff83f8ff0f84f5ecffffc7858c0f000005000000e9e6ecffff",
+      "code_sha256": "19da9e537c7e30ba119ebc583bbfe71092c4845f58f21a290a55877d1a6947a3",
+      "parent": "_ZN12cpufunctionsC2EP7QWidget",
+      "parent_code_sha256": "5c57785bae2ed506ff37535fd5eb7ed526ad2702ed922a174e1ebf30d4d26c9e",
+      "calls": [
+        {
+          "instruction": 7748646,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 7748672,
+          "kind": "call",
+          "target": 2218928,
+          "symbols": [
+            "_Z18FindPciDeviceById2jjj"
+          ]
+        },
+        {
+          "instruction": 7748696,
+          "kind": "jmp",
+          "target": 7743811,
+          "symbols": []
+        }
+      ]
+    }
+  ],
+  "objects": {
+    "_ZN10QArrayData11shared_nullE": {
+      "address": 25283328,
+      "size": 48,
+      "source_initial_hex": "ffffffff0000000000000000000000001800000000000000000000000000000000000000000000000000000000000000"
+    },
+    "GLOBAL_IS_GRANITE": {
+      "address": 29869315,
+      "size": 1,
+      "source_initial_hex": "00"
+    }
+  },
+  "literals": [
+    {
+      "address": 22878347,
+      "text": "PPT"
+    },
+    {
+      "address": 22878355,
+      "text": "EDC"
+    },
+    {
+      "address": 22878363,
+      "text": "TDC"
+    },
+    {
+      "address": 23254820,
+      "text": "horizontalLayout"
+    },
+    {
+      "address": 23303391,
+      "text": "label_81"
+    },
+    {
+      "address": 23303532,
+      "text": "label_77"
+    },
+    {
+      "address": 23303541,
+      "text": "label_78"
+    },
+    {
+      "address": 23304658,
+      "text": "label_75"
+    },
+    {
+      "address": 23304667,
+      "text": "label_76"
+    },
+    {
+      "address": 23307691,
+      "text": "label_74"
+    },
+    {
+      "address": 23308856,
+      "text": "horizontalLayout_2"
+    },
+    {
+      "address": 23308914,
+      "text": "horizontalLayout_3"
+    },
+    {
+      "address": 23308972,
+      "text": "horizontalLayout_4"
+    },
+    {
+      "address": 23309030,
+      "text": "horizontalLayout_5"
+    },
+    {
+      "address": 23309088,
+      "text": "horizontalLayout_6"
+    },
+    {
+      "address": 23363999,
+      "text": "THM"
+    },
+    {
+      "address": 23364009,
+      "text": "FMax"
+    },
+    {
+      "address": 23364068,
+      "text": "FIT"
+    },
+    {
+      "address": 23377567,
+      "text": "Per_ccx_oc_freq_5"
+    },
+    {
+      "address": 23377585,
+      "text": "Per_ccx_oc_freq_6"
+    },
+    {
+      "address": 23377603,
+      "text": "Per_ccx_oc_freq_9"
+    },
+    {
+      "address": 23382931,
+      "text": "Per_ccx_oc_freq_7"
+    },
+    {
+      "address": 23382949,
+      "text": "Per_ccx_oc_freq_8"
+    },
+    {
+      "address": 23382967,
+      "text": "Per_ccx_oc_freq_11"
+    }
+  ]
+}

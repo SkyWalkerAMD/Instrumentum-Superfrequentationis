@@ -62,6 +62,11 @@ int encodeIntelOcOffset(double millivolts, std::uint32_t previous, std::uint32_t
     encoded = (previous & UINT32_C(0x1fffff)) | ((std::uint32_t(code) & 2047) << 21);
     return 0;
 }
+int encodeIntelOcRatio(unsigned ratio, std::uint32_t previous, std::uint32_t &encoded) {
+    if (!ratio || ratio > 85) return -ERANGE;
+    encoded = (previous & UINT32_C(0xffffff00)) | ratio;
+    return 0;
+}
 IntelOcSnapshot readIntelOc(HardwareSession &s, unsigned cpu, IntelOcDomain domain) {
     IntelOcSnapshot out; out.cpu = cpu; out.domain = domain;
     if (!validDomain(domain)) { out.error = -EINVAL; return out; }
@@ -79,13 +84,16 @@ IntelOcSnapshot readIntelOc(HardwareSession &s, unsigned cpu, IntelOcDomain doma
     out.valid = true;
     return out;
 }
-IntelOcUpdate applyIntelOcOffset(HardwareSession &s, const IntelOcSnapshot &old, double millivolts) {
+namespace {
+IntelOcUpdate applyEncoded(HardwareSession &s, const IntelOcSnapshot &old,
+                          int encodingError, std::uint32_t encoded) {
     IntelOcUpdate out;
     if (old.error || !old.valid || !old.response.completed || old.response.error ||
         old.response.firmwareStatus || !hasIntelOcProfile(old.identity) || !validDomain(old.domain)) {
         out.error = -EINVAL; return out;
     }
-    if ((out.error = encodeIntelOcOffset(millivolts, old.response.data, out.submitted))) return out;
+    if ((out.error = encodingError)) return out;
+    out.submitted = encoded;
     if (old.locked) { out.error = -EPERM; return out; }
     out.stage = IntelOcStage::Preflight;
     const auto fresh = readIntelOc(s, old.cpu, old.domain);
@@ -110,5 +118,16 @@ IntelOcUpdate applyIntelOcOffset(HardwareSession &s, const IntelOcSnapshot &old,
     if (out.readback.response.data != out.submitted) { out.error = -EIO; return out; }
     out.verified = true; out.stage = IntelOcStage::Complete;
     return out;
+}
+}
+IntelOcUpdate applyIntelOcOffset(HardwareSession &s, const IntelOcSnapshot &old, double millivolts) {
+    std::uint32_t encoded = 0;
+    const int error = encodeIntelOcOffset(millivolts, old.response.data, encoded);
+    return applyEncoded(s, old, error, encoded);
+}
+IntelOcUpdate applyIntelOcRatio(HardwareSession &s, const IntelOcSnapshot &old, unsigned ratio) {
+    std::uint32_t encoded = 0;
+    const int error = encodeIntelOcRatio(ratio, old.response.data, encoded);
+    return applyEncoded(s, old, error, encoded);
 }
 } }

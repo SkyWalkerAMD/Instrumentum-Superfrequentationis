@@ -22,6 +22,11 @@ struct Test {
         const int error = service.transaction([&](HardwareSession &s) { out = applyIntelOcOffset(s, old, value); return out.error; });
         assert(error == out.error); return out;
     }
+    IntelOcUpdate ratio(const IntelOcSnapshot &old, unsigned value = 59) {
+        IntelOcUpdate out;
+        const int error = service.transaction([&](HardwareSession &s) { out = applyIntelOcRatio(s, old, value); return out.error; });
+        assert(error == out.error); return out;
+    }
 };
 void encoding() {
     // Exhaust the signed 11-bit field while unrelated target/mode/ratio bits
@@ -137,9 +142,84 @@ void cancellation() {
     const int error = t.service.transaction([&](HardwareSession &s) { out = applyIntelOcOffset(s, old, -50); return out.error; }, 1000, &cancelled);
     assert(error == -ECANCELED && !out.writeAttempted && !out.verified && !t.device->mutationCount);
 }
+void ratioEncoding() {
+    for (unsigned ratio = 1; ratio <= 85; ++ratio) {
+        for (const auto previous : {UINT32_C(0), UINT32_MAX, UINT32_C(0xf3512345), UINT32_C(0x012abcde)}) {
+            std::uint32_t encoded = 0;
+            assert(!encodeIntelOcRatio(ratio, previous, encoded));
+            assert((encoded & 255) == ratio && (encoded & 0xffffff00u) == (previous & 0xffffff00u));
+            assert(intelOcOffsetMillivolts(encoded) == intelOcOffsetMillivolts(previous));
+        }
+    }
+    for (const unsigned invalid : {0u, 86u, 255u, 256u, UINT32_MAX}) {
+        std::uint32_t encoded = 7;
+        assert(encodeIntelOcRatio(invalid, UINT32_MAX, encoded) == -ERANGE && encoded == 7);
+        Test t; const auto old = t.read(); t.device->clearTrace();
+        assert(t.ratio(old, invalid).error == -ERANGE && t.device->calls == 0);
+    }
+}
+void ratioPreservesVoltageAndNoop() {
+    for (const auto domain : {IntelOcDomain::Core, IntelOcDomain::Cache}) {
+        Test t; const auto old = t.read(domain); const auto other = t.device->settings[2 - unsigned(domain)];
+        t.device->clearTrace(); const auto out = t.ratio(old);
+        assert(!out.error && out.verified && out.writeAttempted);
+        assert(out.submitted == ((old.response.data & 0xffffff00u) | 59u));
+        assert(t.device->settings[2 - unsigned(domain)] == other && !t.device->wrongCpu);
+        assert(t.device->commands == std::vector<unsigned>({0x10, 0x11, 0x10}));
+        t.device->clearTrace(); const auto same = t.ratio(out.readback);
+        assert(!same.error && same.verified && !same.writeAttempted && t.device->mutationCount == 1);
+        assert(t.device->commands == std::vector<unsigned>{0x10});
+        // Changing offset afterwards must keep the newly set ratio.
+        assert(t.apply(same.readback).verified && (t.device->settings[unsigned(domain)] & 255) == 59);
+    }
+}
+void ratioFailurePositionsAndReadback() {
+    Test baseline; const auto old = baseline.read(); baseline.device->clearTrace(); assert(baseline.ratio(old).verified);
+    for (unsigned index = 0; index < baseline.device->calls; ++index) {
+        Test t; const auto before = t.read(); t.device->clearTrace(); t.device->failAt = int(index);
+        const auto out = t.ratio(before);
+        assert(out.error == -EACCES && !out.verified && t.device->calls == index + 1);
+        unsigned attempts = 0;
+        for (const auto &r : t.device->requests) if (r.write && ((r.value >> 32) & 255) == 0x11) ++attempts;
+        assert(attempts <= 1 && out.writeAttempted == (attempts != 0));
+    }
+    Test reject; const auto before = reject.read(); reject.device->failCommand = 0x11; reject.device->status = 3;
+    const auto denied = reject.ratio(before);
+    assert(denied.error == -EIO && !denied.verified && denied.response.firmwareStatus == 3 && !reject.device->mutationCount);
+    Test ignored; const auto previous = ignored.read(); ignored.device->discardChange = true;
+    const auto out = ignored.ratio(previous);
+    assert(out.error == -EIO && !out.verified && out.stage == IntelOcStage::Verify && ignored.device->mutationCount == 1);
+    Test corrupted; const auto initial = corrupted.read();
+    // A correct low byte is insufficient: firmware must preserve voltage too.
+    bool changed = false;
+    corrupted.device->afterRequest = [&] {
+        if (!changed && corrupted.device->mutationCount == 1 && corrupted.device->commands.back() == 0x11) {
+            corrupted.device->settings[0] ^= 1u << 20;
+            changed = true;
+        }
+    };
+    assert(!corrupted.ratio(initial).verified);
+}
+void ratioGuardsAndCancellation() {
+    Test stale; const auto old = stale.read(); stale.device->settings[0] ^= 1u << 31;
+    assert(stale.ratio(old).error == -EAGAIN && !stale.device->mutationCount);
+    Test locked; const auto unlocked = locked.read(); locked.device->locked = true;
+    assert(locked.ratio(unlocked).error == -EPERM && !locked.device->mutationCount);
+    Test invalid; auto snapshot = invalid.read(); snapshot.valid = false; invalid.device->clearTrace();
+    assert(invalid.ratio(snapshot).error == -EINVAL && !invalid.device->calls);
+    Test t; const auto before = t.read(); t.device->clearTrace(); std::atomic<bool> cancelled{false};
+    t.device->afterRequest = [&] { if (t.device->requests.size() == 4) cancelled.store(true); };
+    IntelOcUpdate out;
+    assert(t.service.transaction([&](HardwareSession &s) { out = applyIntelOcRatio(s, before, 59); return out.error; }, 1000, &cancelled) == -ECANCELED);
+    assert(!out.verified && !out.writeAttempted && !t.device->mutationCount);
+    Test busy; const auto original = busy.read(); busy.device->busyCommand = 0x11;
+    const auto pending = busy.ratio(original);
+    assert(pending.error == -ETIMEDOUT && pending.writeAttempted && !pending.verified && busy.device->mutationCount == 1);
+}
 }
 int main() {
     encoding(); readDomains(); identityRejection(); readFailures(); applyPreservesAndNoop();
     staleAndLock(); applyFailures(); firmwareAndReadback(); waitBounds(); cancellation();
-    std::cout << "10 Intel OC scenario groups passed\n";
+    ratioEncoding(); ratioPreservesVoltageAndNoop(); ratioFailurePositionsAndReadback(); ratioGuardsAndCancellation();
+    std::cout << "14 Intel OC scenario groups passed\n";
 }

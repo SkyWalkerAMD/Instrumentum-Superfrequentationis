@@ -1,4 +1,7 @@
-# Intel core / cache offset 恢复
+# Intel core / cache offset 与最大倍频恢复
+
+在下述 offset 接口上新增[最大 OC 倍频设置](intel-ratio-recovery.md)，两种修改共用身份/锁/旧值检查与完整回读。
+倍频控制只改变 data[7:0]，offset 只改变 data[31:21]；两者均保留其余字段。
 
 Intel Controls 内新增 Core / cache voltage 子页。它恢复 client OC mailbox 的显式查询、
 单域 offset 修改和完整回读；不同时修改 core 与 cache，不清除目标电压、模式或 ratio。

@@ -17,14 +17,14 @@ public:
 private:
     void invalidate();
     void refresh();
-    void apply();
+    void apply(bool ratio = false);
     void present(const octool::core::IntelOcSnapshot &snapshot);
     std::shared_ptr<HardwareAccess> access_;
     std::shared_ptr<std::atomic<bool>> cancelled_;
     octool::core::IntelOcSnapshot snapshot_;
-    QLineEdit *cpu_, *value_;
+    QLineEdit *cpu_, *value_, *ratio_;
     QComboBox *domain_;
-    QPushButton *apply_;
+    QPushButton *apply_, *applyRatio_;
     QTableWidget *table_;
     QLabel *status_;
 };

@@ -68,6 +68,13 @@ jobs:
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-amd-mp1.py \
             --output build/amd-mp1.json
+      - name: Verify AMD limit labels, constructor flags and six-field routing
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-amd-limit-bindings.py --output build/amd-limit-bindings.json
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-amd-limits.py --output build/amd-limits.json
+      - name: Verify original Intel client ratio fields and ignored firmware failures
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-ratio.py --output build/intel-ratio.json
       - name: Verify Intel NGU input and original MMIO request addresses
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-ngu.py \
@@ -106,6 +113,9 @@ jobs:
             build/amd-initialization.json
             build/amd-transport.json
             build/amd-mp1.json
+            build/amd-limit-bindings.json
+            build/amd-limits.json
+            build/intel-ratio.json
             build/intel-ngu.json
             build/mmio-clients.json
             build/mmio-services.json

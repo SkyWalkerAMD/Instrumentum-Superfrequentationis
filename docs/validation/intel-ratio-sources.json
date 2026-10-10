@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "primary_sources": [
+    {
+      "repository": "coreboot/coreboot",
+      "commit": "cdd0aaaa8e0c2e52a57b515e801b339549e53283",
+      "path": "src/drivers/intel/oc_mailbox/oc_mailbox.c",
+      "url": "https://raw.githubusercontent.com/coreboot/coreboot/cdd0aaaa8e0c2e52a57b515e801b339549e53283/src/drivers/intel/oc_mailbox/oc_mailbox.c",
+      "sha256": "f55a742cfd9ae2d82d566f6360d0e02c5678a79244ba7a8f73284ac190ae9922",
+      "retrieved": "2026-10-10"
+    },
+    {
+      "repository": "intel/FSP",
+      "commit": "d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8",
+      "path": "RaptorLakeFspBinPkg/Client/RaptorLakeS/Include/FspmUpd.h",
+      "url": "https://raw.githubusercontent.com/intel/FSP/d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8/RaptorLakeFspBinPkg/Client/RaptorLakeS/Include/FspmUpd.h",
+      "sha256": "3ce5c6b4bb17b4c8d816552835f9b58279a37b699a951dab8d8e7fbc603ef57c",
+      "retrieved": "2026-10-10"
+    }
+  ],
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "files": [
+    {
+      "path": "analysis/fixtures/legacy-intel-ratio.json",
+      "sha256": "75364fa078d5cee1ebcdd8f0bcef830d3bc0c1ef4049039a0846bd6bf777cbc2"
+    },
+    {
+      "path": "docs/validation/legacy-intel-ratio-static.json",
+      "sha256": "f6385024b08bc0b684c1c3fb4d04076f46644dae021338f7be96d1b3dd8868b6"
+    },
+    {
+      "path": "docs/validation/legacy-intel-ratio-local.json",
+      "sha256": "ee362c95b7e9a8da53a3c8226699930b56368bc3f67ec10e4353d85a6dd30049"
+    },
+    {
+      "path": "analysis/fixtures/legacy-amd-limit-bindings.json",
+      "sha256": "9a889879dc0f9a5c8394499df66b0e2d838c5cb8fad476b567d7ff6bd223775b"
+    },
+    {
+      "path": "docs/validation/legacy-amd-limit-bindings-static.json",
+      "sha256": "afda5242a2e6409ed99a3b134fecaac9721a35789a914e4fcf5aff71f5db2ceb"
+    },
+    {
+      "path": "docs/validation/legacy-amd-limit-bindings-local.json",
+      "sha256": "bff34d7556eda9a548e237d6451aee838a402805ea608fa17958524a4549f59d"
+    }
+  ],
+  "runtime_profile": "GenuineIntel Family 6 Model B7, MSR capability; core 0/cache 2; max OC ratio in data[7:0].",
+  "chosen_range": {
+    "minimum": 1,
+    "maximum": 85,
+    "reason": "Raptor Lake-S FSP CoreMaxOcRatio/RingMaxOcRatio maximum; runtime zero/default semantics deliberately excluded."
+  },
+  "limits": [
+    "FSP UPD is configuration, not runtime addresses or target-machine acceptance.",
+    "Original client paths executed with explicit zero NVL/GNR flags and synthetic MSR/delay boundaries.",
+    "AMD constructor/UI slices exclude intervening code and cannot certify physical parameter units.",
+    "No target-machine hardware validation or physical register writes."
+  ]
+}

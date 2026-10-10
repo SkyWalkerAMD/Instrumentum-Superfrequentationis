@@ -84,7 +84,7 @@ int main(int argc, char **argv)
     tabs->addTab(new PstatesPanel(access, tabs, initialCpu), "AMD PStates");
     auto *intel = new QTabWidget(tabs);
     intel->addTab(new IntelControlsPanel(access, intel, initialCpu), "Power / performance");
-    intel->addTab(new IntelOcPanel(access, intel, initialCpu), "Core / cache voltage");
+    intel->addTab(new IntelOcPanel(access, intel, initialCpu), "Core / cache voltage and ratio");
     tabs->addTab(intel, "Intel Controls");
     tabs->addTab(new AmdTuningPanel(access, tabs, initialCpu), "AMD tuning");
     tabs->addTab(new MemoryBoardPanel(tabs), "Memory / Motherboard");

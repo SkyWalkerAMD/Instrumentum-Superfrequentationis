@@ -118,6 +118,7 @@ private slots:
         QCOMPARE(inventory.findChild<QTableWidget *>("inventoryTable")->rowCount(),0);
         QCOMPARE(umc.findChild<QTableWidget *>("umcTable")->rowCount(),0);
         QVERIFY(!oc.findChild<QPushButton *>("ocApply")->isEnabled());
+        QVERIFY(!oc.findChild<QPushButton *>("ocApplyRatio")->isEnabled());
         intel.findChild<QLineEdit *>("intelValue")->setText("125");
         intel.findChild<QPushButton *>("intelApply")->click();
         QCOMPARE(reference.calls.load(),0);
@@ -185,6 +186,53 @@ private slots:
         device->failCommand = 0x10; device->status = 3;
         read->click(); QTRY_VERIFY(panel.isEnabled());
         QVERIFY(status->text().contains("Firmware status: 0x03")); QCOMPARE(table->rowCount(), 0); QVERIFY(!apply->isEnabled());
+    }
+    void intelOcRatioValidatesCancelsAndPreservesVoltage() {
+        auto *device = new IntelOcFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelOcPanel panel(access, nullptr, 130); panel.show();
+        panel.findChild<QComboBox *>("ocDomain")->setCurrentIndex(1);
+        panel.findChild<QPushButton *>("ocRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *apply = panel.findChild<QPushButton *>("ocApplyRatio");
+        auto *value = panel.findChild<QLineEdit *>("ocRatio"); const auto calls = device->calls;
+        for (const auto &invalid : {QString(), QString("-1"), QString("0"), QString("86"), QString("59.5"), QString("0x3b"), QString("4294967297")}) {
+            value->setText(invalid); apply->click(); QCOMPARE(device->calls, calls);
+        }
+        value->setText("59"); const auto old = device->settings[2], other = device->settings[0];
+        QTimer::singleShot(0, [] {
+            auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget());
+            if (box) box->button(QMessageBox::Cancel)->click();
+        });
+        apply->click(); QCOMPARE(device->calls, calls);
+        QTimer::singleShot(0, [] {
+            auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget());
+            if (box) box->button(QMessageBox::Yes)->click();
+        });
+        apply->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->settings[2], (old & 0xffffff00u) | 59u); QCOMPARE(device->settings[0], other);
+        QCOMPARE(device->mutationCount, 1u); QCOMPARE(device->wrongCpu, 0u);
+        QCOMPARE(panel.findChild<QTableWidget *>("ocTable")->item(3, 1)->text(), QString("59"));
+        QVERIFY(panel.findChild<QLabel *>("ocStatus")->text().contains("Ratio accepted"));
+        panel.findChild<QComboBox *>("ocDomain")->setCurrentIndex(0);
+        QVERIFY(!apply->isEnabled()); QVERIFY(!panel.findChild<QPushButton *>("ocApply")->isEnabled());
+        QVERIFY(value->text().isEmpty());
+    }
+    void intelOcRatioLocksAndUnverifiedResult() {
+        auto *device = new IntelOcFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelOcPanel panel(access, nullptr, 130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("ocRead"); auto *apply = panel.findChild<QPushButton *>("ocApplyRatio");
+        device->locked = true; read->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(!apply->isEnabled());
+        device->locked = false; read->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(apply->isEnabled());
+        device->discardChange = true; panel.findChild<QLineEdit *>("ocRatio")->setText("59");
+        QTimer::singleShot(0, [] {
+            auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget());
+            if (box) box->button(QMessageBox::Yes)->click();
+        });
+        apply->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->mutationCount, 1u); QVERIFY(!apply->isEnabled());
+        QCOMPARE(panel.findChild<QTableWidget *>("ocTable")->rowCount(), 0);
+        QVERIFY(panel.findChild<QLabel *>("ocStatus")->text().contains("not verified"));
     }
     void umcOfflineCaptureKeepsDistinctFieldsAndClearsInvalidInput() {
         Reference reference; UmcPanel panel(reference.access());
