@@ -28,6 +28,46 @@ bool number(const QJsonValue &v, unsigned maximum, unsigned &out) {
     if(!std::isfinite(n) || n<0 || n>maximum || std::floor(n)!=n) return false;
     out=unsigned(n); return true;
 }
+bool hexWord(const QJsonValue &v, unsigned &out) {
+    if (!v.isString()) return false;
+    const auto text = v.toString();
+    if (text.size() != 10 || !text.startsWith("0x")) return false;
+    unsigned value = 0;
+    for (int i = 2; i < text.size(); ++i) {
+        const auto c = text.at(i).unicode();
+        const unsigned digit = c >= '0' && c <= '9' ? c - '0' : c >= 'a' && c <= 'f' ? c - 'a' + 10 : c >= 'A' && c <= 'F' ? c - 'A' + 10 : 16;
+        if (digit > 15) return false;
+        value = (value << 4) | digit;
+    }
+    out = value; return true;
+}
+bool cliCapture(const QJsonObject &report, QJsonObject &out) {
+    unsigned version = 0, error = 0, bank = 0, slot = 0, cpu = 0;
+    if (!number(report.value("schema_version"), 1, version) || version != 1 ||
+        report.value("command").toString() != "amd-umc-read" ||
+        !report.value("ok").isBool() || !report.value("ok").toBool() ||
+        !number(report.value("error"), 0, error) || !report.value("data").isObject()) return false;
+    const auto data = report.value("data").toObject();
+    if (!number(data.value("bank"), 22, bank) || !number(data.value("refresh_slot"), 15, slot) ||
+        !number(data.value("cpu"), UINT32_MAX, cpu) || !data.value("registers").isArray() ||
+        !data.value("pci").isObject()) return false;
+    const auto pci = data.value("pci").toObject(); unsigned domain = 0, bus = 0, device = 0, function = 0;
+    if (!number(pci.value("domain"), 0, domain) || !number(pci.value("bus"), 255, bus) ||
+        !number(pci.value("device"), 31, device) || !number(pci.value("function"), 7, function)) return false;
+    const auto registers = data.value("registers").toArray();
+    if (registers.size() != 56) return false;
+    QJsonArray converted;
+    for (const auto &item : registers) {
+        if (!item.isObject()) return false;
+        const auto reg = item.toObject(); unsigned offset = 0, raw = 0;
+        if (!hexWord(reg.value("offset"), offset) || !hexWord(reg.value("raw"), raw)) return false;
+        converted.append(QJsonObject{{"offset", double(offset)}, {"value", double(raw)}});
+    }
+    out = QJsonObject{{"format", "octool-amd-umc-v1"}, {"bank", int(bank)}, {"refresh_slot", int(slot)},
+        {"registers", converted}, {"cpu", double(cpu)}, {"bus", int(bus)}, {"device", int(device)}, {"function", int(function)},
+        {"origin", "Imported CLI report; origin and platform identity unverified"}};
+    return true;
+}
 QByteArray serialize(const UmcSnapshot &s) {
     QJsonArray regs;
     for(const auto &r:s.registers) regs.append(QJsonObject{{"offset",double(r.offset)},{"value",double(r.value)}});
@@ -116,7 +156,12 @@ bool UmcPanel::loadCapture(const QByteArray &bytes) {
     if(bytes.isEmpty() || bytes.size()>65536) return false;
     QJsonParseError error; const auto doc=QJsonDocument::fromJson(bytes,&error);
     if(error.error!=QJsonParseError::NoError || !doc.isObject()) return false;
-    const auto obj=doc.object(); unsigned bank=0,slot=0;
+    auto obj=doc.object(); unsigned bank=0,slot=0;
+    if (obj.contains("schema_version")) {
+        QJsonObject converted;
+        if (!cliCapture(obj, converted)) return false;
+        obj = converted;
+    }
     if(obj.value("format").toString()!="octool-amd-umc-v1" || !number(obj.value("bank"),22,bank) ||
         !number(obj.value("refresh_slot"),15,slot) || !obj.value("registers").isArray()) return false;
     const auto regs=obj.value("registers").toArray(); if(regs.isEmpty() || regs.size()>56) return false;
@@ -128,7 +173,7 @@ bool UmcPanel::loadCapture(const QByteArray &bytes) {
         UmcRegister r; r.offset=offset; r.value=raw; registers.push_back(r);
     }
     const auto decoded=decodeAmdUmc(registers,slot); if(decoded.error) return false;
-    present(decoded); capture_=doc.toJson(); save_->setEnabled(true);
+    present(decoded); capture_=QJsonDocument(obj).toJson(); save_->setEnabled(true);
     status_->setText(QString("Offline snapshot · bank %1 / refresh slot %2 · %3 registers. Platform identity and capture origin are unverified. Missing values remain blank.")
         .arg(bank).arg(slot).arg(regs.size())); return true;
 }

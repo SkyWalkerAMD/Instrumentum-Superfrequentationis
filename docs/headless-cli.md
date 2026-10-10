@@ -67,7 +67,9 @@ sudo octool-cli amd-umc-read --cpu 0 --bank 0 --refresh-slot 0 > umc.json
 曲线的 CCD/core 是手动确认的固件索引，不由 Linux CPU 号或 CPUID 拓扑推导。
 UMC bank 是地址索引，不能直接当作内存通道/DIMM 标签。输出原始编码，不假设物理单位。
 曲线及 UMC 查询会写入查询邮箱或地址索引，没有修改曲线或内存设置。
-CLI 的 UMC JSON 是下述统一命令格式，目前不能直接导入 GUI 的专用 UMC 快照导入器。
+CLI 的 UMC JSON 使用下述统一命令格式。成功且完整的 `amd-umc-read` 报告可以直接在
+GUI 的 AMD UMC → Open snapshot 中打开；GUI 重新解码原始寄存器，忽略报告中的预解码数值。
+失败、不完整、重复寄存器、越界或未知格式会被拒绝，导入不访问硬件。
 
 `intel-vf-read` 与 GUI 的 Intel Controls → V/F points 共用[同一查询实现](intel-vf-recovery.md)。
 仅开放 Raptor Lake-S family 6/model B7；`--point` 取 1..15，省略时逐个查询 15 个候选点，

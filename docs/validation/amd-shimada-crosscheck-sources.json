@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-10",
+  "scope": "Crosscheck only; no added runtime AMD writes; source documentation is not hardware acceptance",
+  "sources": [
+    {
+      "local_file": "zen5-shimada-settings.cs",
+      "url": "https://github.com/irusanov/ZenStates-Core/blob/869b7e82572337e5a673e92230edc92bddf0e44b/Hardware/Smu/Settings/Zen5Settings_ShimadaPeak.cs",
+      "git_blob_sha": "c9bca93059805ff7c49374458afb28201c1b4f81"
+    },
+    {
+      "local_file": "zen-set-curve-single.cs",
+      "url": "https://github.com/irusanov/ZenStates-Core/blob/869b7e82572337e5a673e92230edc92bddf0e44b/Hardware/Smu/Commands/SetPsmMarginSingleCore.cs",
+      "git_blob_sha": "ad75db84c20b626d282430f3d2367be73dc86a5f"
+    },
+    {
+      "local_file": "zen-utils.cs",
+      "url": "https://github.com/irusanov/ZenStates-Core/blob/869b7e82572337e5a673e92230edc92bddf0e44b/Utils.cs",
+      "git_blob_sha": "c93240128ed1c0e3c98dfb724e40975bbcb0a511"
+    },
+    {
+      "local_file": "ryzen-smu.c",
+      "url": "https://github.com/amkillam/ryzen_smu/blob/d2983668300dd2a598e5a7dc40e71ce0678cc270/smu.c",
+      "git_blob_sha": "e6bf768b2fbbb3f5b6de4becc8643830f186634d"
+    },
+    {
+      "local_file": "ryzen-smu.h",
+      "url": "https://github.com/amkillam/ryzen_smu/blob/d2983668300dd2a598e5a7dc40e71ce0678cc270/smu.h",
+      "git_blob_sha": "c21bf4521b54abfcbd1451daa8308500fe2f49a1"
+    },
+    {
+      "local_file": "corecycler-commands.py",
+      "url": "https://github.com/Daaboulex/linux-corecycler/blob/da74486f9f5e2741ca4c813012bd042082ec1213/src/corecycler/smu/commands.py",
+      "git_blob_sha": "4f5d076b1b656cc2e24d9f54766421eb967d61e0"
+    },
+    {
+      "local_file": "corecycler-ryzen-smu.nix",
+      "url": "https://github.com/Daaboulex/linux-corecycler/blob/da74486f9f5e2741ca4c813012bd042082ec1213/nix/ryzen-smu.nix",
+      "git_blob_sha": "ec0ce5c67318b8e75a5e86bae2e8d22041684fb9"
+    }
+  ]
+}

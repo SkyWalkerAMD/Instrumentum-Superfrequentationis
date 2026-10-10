@@ -123,6 +123,9 @@ pstate = [r for r in reports if r["command"] == "amd-pstates" and r["ok"]][0]
 assert pstate["data"]["rows"][0]["raw"] == "0xfffffffffffffc00"
 assert pstate["data"]["rows"][2]["raw"] is None
 umc = [r for r in reports if r["command"] == "amd-umc-read" and r["ok"]][0]
+contract = json.loads((Path(__file__).resolve().parents[1] / "gui/tests/fixtures/cli-umc.json").read_text())
+assert {k: umc[k] for k in contract if k != "data"} == {k: v for k, v in contract.items() if k != "data"}
+assert {k: umc["data"][k] for k in contract["data"]} == contract["data"]
 assert len(umc["data"]["fields"]) == 212 and len(umc["data"]["registers"]) == 56
 assert len({f["id"] for f in umc["data"]["fields"]}) == 212
 for result in reports:

@@ -25,6 +25,9 @@
 #include <QTemporaryDir>
 #include <QFile>
 #include <QDir>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 #include <atomic>
 #include <cstring>
 #include <cerrno>
@@ -394,6 +397,60 @@ private slots:
             QVERIFY(panel.captureBytes().isEmpty()); QVERIFY(!panel.findChild<QPushButton *>("umcSave")->isEnabled());
         }
         QCOMPARE(reference.calls.load(),0);
+    }
+    void umcImportsCliContractAndRecomputesFieldsWithoutHardware() {
+        QFile input(QFINDTESTDATA("fixtures/cli-umc.json")); QVERIFY(input.open(QIODevice::ReadOnly));
+        const auto report = QJsonDocument::fromJson(input.readAll()).object();
+        Reference reference; UmcPanel panel(reference.access());
+        QVERIFY(panel.loadCapture(QJsonDocument(report).toJson()));
+        QCOMPARE(reference.calls.load(), 0);
+        auto *table = panel.findChild<QTableWidget *>("umcTable"); QCOMPARE(table->rowCount(), 212);
+        QStringList expected;
+        for (int row = 0; row < table->rowCount(); ++row) {
+            QVERIFY(table->item(row, 7)->text() != "Missing register");
+            expected << table->item(row, 6)->text();
+        }
+        auto changed = report; auto data = changed.value("data").toObject();
+        data["fields"] = QJsonArray{QJsonObject{{"id", 0}, {"encoded", -12345}}}; changed["data"] = data;
+        QVERIFY(panel.loadCapture(QJsonDocument(changed).toJson()));
+        for (int row = 0; row < table->rowCount(); ++row) QCOMPARE(table->item(row, 6)->text(), expected.at(row));
+        const auto saved = QJsonDocument::fromJson(panel.captureBytes()).object();
+        QCOMPARE(saved.value("format").toString(), QString("octool-amd-umc-v1"));
+        QCOMPARE(saved.value("bank").toInt(), 22); QCOMPARE(saved.value("refresh_slot").toInt(), 15);
+        QCOMPARE(saved.value("cpu").toInt(), 130); QCOMPARE(saved.value("bus").toInt(), 2);
+        QVERIFY(panel.loadCapture(panel.captureBytes())); QCOMPARE(reference.calls.load(), 0);
+        QVERIFY(panel.findChild<QLabel *>("umcStatus")->text().contains("unverified"));
+    }
+    void umcRejectsFailedOrMalformedCliReports() {
+        QFile input(QFINDTESTDATA("fixtures/cli-umc.json")); QVERIFY(input.open(QIODevice::ReadOnly));
+        const auto report = QJsonDocument::fromJson(input.readAll()).object();
+        Reference reference; UmcPanel panel(reference.access());
+        for (unsigned kind = 0; kind < 14; ++kind) {
+            QVERIFY(panel.loadCapture(QJsonDocument(report).toJson()));
+            auto bad = report; auto data = bad.value("data").toObject(); auto regs = data.value("registers").toArray();
+            auto reg = regs.at(0).toObject();
+            switch (kind) {
+            case 0: bad["ok"] = false; break;
+            case 1: bad["error"] = -5; break;
+            case 2: bad["schema_version"] = 2; break;
+            case 3: bad["command"] = "intel-read"; break;
+            case 4: regs.removeLast(); break;
+            case 5: regs[1] = regs[0]; break;
+            case 6: reg["raw"] = "0x100000000"; regs[0] = reg; break;
+            case 7: reg["raw"] = 305419896; regs[0] = reg; break;
+            case 8: reg["raw"] = "0x+0000001"; regs[0] = reg; break;
+            case 9: reg["offset"] = "0xffffffff"; regs[0] = reg; break;
+            case 10: data["refresh_slot"] = 16; break;
+            case 11: bad["ok"] = "true"; break;
+            case 12: data["bank"] = 0.5; break;
+            case 13: data["pci"] = QJsonObject{{"domain", 1}, {"bus", 2}, {"device", 3}, {"function", 1}}; break;
+            }
+            data["registers"] = regs; bad["data"] = data;
+            QVERIFY(!panel.loadCapture(QJsonDocument(bad).toJson()));
+            QCOMPARE(panel.findChild<QTableWidget *>("umcTable")->rowCount(), 0);
+            QVERIFY(panel.captureBytes().isEmpty()); QVERIFY(!panel.findChild<QPushButton *>("umcSave")->isEnabled());
+        }
+        QCOMPARE(reference.calls.load(), 0);
     }
     void umcRejectsInvalidTargetAndWrongVendorWithoutPci() {
         PstateReference reference; reference.amd=false; UmcPanel panel(reference.access(),nullptr,3);
