@@ -5,6 +5,8 @@
 #include <cmath>
 #include <iostream>
 #include <limits>
+#include <chrono>
+#include <thread>
 
 using namespace octool::core;
 namespace {
@@ -25,6 +27,11 @@ struct Test {
     IntelOcUpdate ratio(const IntelOcSnapshot &old, unsigned value = 59) {
         IntelOcUpdate out;
         const int error = service.transaction([&](HardwareSession &s) { out = applyIntelOcRatio(s, old, value); return out.error; });
+        assert(error == out.error); return out;
+    }
+    IntelVfSnapshot vf(unsigned point = 0, IntelOcDomain domain = IntelOcDomain::Core) {
+        IntelVfSnapshot out;
+        const int error = service.transaction([&](HardwareSession &s) { out = readIntelVf(s, 130, domain, point); return out.error; });
         assert(error == out.error); return out;
     }
 };
@@ -216,10 +223,95 @@ void ratioGuardsAndCancellation() {
     const auto pending = busy.ratio(original);
     assert(pending.error == -ETIMEDOUT && pending.writeAttempted && !pending.verified && busy.device->mutationCount == 1);
 }
+void vfDomainsAndSelection() {
+    for (const auto domain : {IntelOcDomain::Core, IntelOcDomain::Cache}) {
+        Test t; t.device->locked = true; const auto all = t.vf(0, domain);
+        assert(!all.error && all.scanCompleted && all.points.size() == 15 && all.selectedPoint == 0);
+        assert(all.cpu == 130 && all.domain == domain && !t.device->wrongCpu && !t.device->mutationCount);
+        for (unsigned point = 1; point <= 15; ++point) {
+            const auto &r = all.points[point - 1];
+            assert(r.point == point && r.response.completed && !r.response.error);
+            assert(r.response.data == t.device->vfSettings[unsigned(domain)][point]);
+            const std::uint64_t expected = UINT64_C(0x8000001000000000) | (std::uint64_t(point) << 48) | (std::uint64_t(unsigned(domain)) << 40);
+            assert(t.device->requests[(point - 1) * 3 + 1].value == expected);
+            const auto one = t.vf(point, domain);
+            assert(!one.error && one.scanCompleted && one.points.size() == 1 && one.points[0].point == point);
+            assert(one.points[0].response.data == r.response.data);
+        }
+        for (const auto &r : t.device->requests) {
+            assert(r.address == 0x150);
+            if (r.write) assert(((r.value >> 32) & 255) == 0x10 && std::uint32_t(r.value) == 0);
+        }
+    }
+}
+void vfRejectionsBeforeIo() {
+    for (unsigned point : {16u, 255u, 256u, UINT32_MAX}) {
+        Test t; assert(t.vf(point).error == -EINVAL && !t.device->calls);
+    }
+    Test invalid; assert(invalid.vf(1, IntelOcDomain(1)).error == -EINVAL && !invalid.device->calls);
+    for (unsigned model : {0x8fu, 0xadu, 0x97u, 0xcfu}) {
+        Test t; t.device->model = model; const auto r = t.vf();
+        assert(r.error == -ENOTSUP && r.points.empty() && !r.scanCompleted && t.device->requests.empty());
+    }
+    Test amd; amd.device->amd = true; assert(amd.vf().error == -ENOTSUP && amd.device->requests.empty());
+    Test msr; msr.device->msr = false; assert(msr.vf().error == -ENOTSUP && msr.device->requests.empty());
+}
+void vfFirmwareHoles() {
+    for (unsigned point : {1u, 8u, 15u}) {
+        Test t; t.device->failVfPoint = point;
+        const auto r = t.vf(); assert(r.error == -EIO && r.scanCompleted && r.points.size() == 15);
+        for (const auto &row : r.points) {
+            assert(row.response.completed && row.response.commandAttempted);
+            if (row.point == point) assert(row.response.error == -EIO && row.response.firmwareStatus == 0xfe && !row.response.data);
+            else assert(!row.response.error && row.response.data == t.device->vfSettings[0][row.point]);
+        }
+        assert(!t.device->mutationCount && t.device->commands.size() == 15);
+    }
+}
+void vfTransportFailures() {
+    Test base; assert(!base.vf().error); const unsigned calls = base.device->calls;
+    for (unsigned failure = 0; failure < calls; ++failure) {
+        Test t; t.device->failAt = int(failure); const auto out = t.vf();
+        assert(out.error == -EACCES && !out.scanCompleted && t.device->calls == failure + 1);
+        assert(!t.device->mutationCount);
+        if (!out.points.empty()) {
+            const auto &r = out.points.back().response;
+            assert(r.error == -EACCES && !r.completed && !r.data);
+            for (std::size_t i = 0; i + 1 < out.points.size(); ++i) assert(!out.points[i].response.error);
+        }
+    }
+}
+void vfBusyBounds() {
+    Test initial; initial.device->busyBefore = true;
+    const auto r = initial.vf(); assert(r.error == -ETIMEDOUT && !r.scanCompleted && r.points.size() == 1);
+    assert(!r.points[0].response.commandAttempted && initial.device->commands.empty() && initial.device->requests.size() == 100);
+    Test completion; completion.device->busyCommand = 0x10;
+    const auto c = completion.vf(); assert(c.error == -ETIMEDOUT && !c.scanCompleted && c.points.size() == 1);
+    assert(c.points[0].response.commandAttempted && !c.points[0].response.data && completion.device->requests.size() == 102);
+}
+void vfCancellationAndDeadline() {
+    for (bool timeout : {false, true}) {
+        Test t; std::atomic<bool> cancelled{false};
+        // Even cancellation/timeout on the last completion read must not
+        // publish that response or start the next point's query.
+        t.device->afterRequest = [&] {
+            if (t.device->requests.size() == 3) {
+                if (timeout) std::this_thread::sleep_for(std::chrono::milliseconds(20));
+                else cancelled.store(true);
+            }
+        };
+        IntelVfSnapshot out;
+        const int error = t.service.transaction([&](HardwareSession &s) { out = readIntelVf(s, 130, IntelOcDomain::Core); return out.error; }, timeout ? 10 : 1000, &cancelled);
+        assert(error == (timeout ? -ETIMEDOUT : -ECANCELED) && out.error == error && !out.scanCompleted);
+        assert(out.points.size() == 1 && !out.points[0].response.completed && !out.points[0].response.data);
+        assert(t.device->commands.size() == 1 && !t.device->mutationCount);
+    }
+}
 }
 int main() {
     encoding(); readDomains(); identityRejection(); readFailures(); applyPreservesAndNoop();
     staleAndLock(); applyFailures(); firmwareAndReadback(); waitBounds(); cancellation();
     ratioEncoding(); ratioPreservesVoltageAndNoop(); ratioFailurePositionsAndReadback(); ratioGuardsAndCancellation();
-    std::cout << "14 Intel OC scenario groups passed\n";
+    vfDomainsAndSelection(); vfRejectionsBeforeIo(); vfFirmwareHoles(); vfTransportFailures(); vfBusyBounds(); vfCancellationAndDeadline();
+    std::cout << "20 Intel OC / VF scenario groups passed\n";
 }

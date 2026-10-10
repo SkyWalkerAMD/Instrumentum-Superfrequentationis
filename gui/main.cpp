@@ -9,6 +9,7 @@
 #include <QJsonArray>
 #include "umcpanel.h"
 #include "intelocpanel.h"
+#include "intelvfpanel.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFormLayout>
@@ -85,6 +86,7 @@ int main(int argc, char **argv)
     auto *intel = new QTabWidget(tabs);
     intel->addTab(new IntelControlsPanel(access, intel, initialCpu), "Power / performance");
     intel->addTab(new IntelOcPanel(access, intel, initialCpu), "Core / cache voltage and ratio");
+    intel->addTab(new IntelVfPanel(access, intel, initialCpu), "V/F points");
     tabs->addTab(intel, "Intel Controls");
     tabs->addTab(new AmdTuningPanel(access, tabs, initialCpu), "AMD tuning");
     tabs->addTab(new MemoryBoardPanel(tabs), "Memory / Motherboard");
@@ -101,6 +103,8 @@ int main(int argc, char **argv)
             if (page == 5) {
                 intel->setCurrentIndex(1);
                 window.grab().save(capture + "-5-voltage.png");
+                intel->setCurrentIndex(2);
+                window.grab().save(capture + "-5-vf.png");
                 intel->setCurrentIndex(0);
             }
         }

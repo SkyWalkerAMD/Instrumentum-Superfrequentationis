@@ -69,14 +69,14 @@ const std::map<std::string, IntelField> intelFields = {
 };
 struct Command {
     std::string name, path, field;
-    unsigned cpu = 0, timeout = 10000, ccd = 0, core = 0;
+    unsigned cpu = 0, timeout = 10000, ccd = 0, core = 0, point = 0;
     double value = 0;
     SmuTarget smu; SmuCommand message; UmcTarget umc;
     IntelOcDomain domain = IntelOcDomain::Core;
 };
 Command parse(const std::vector<std::string> &args) {
     Command c; c.name = args.at(0);
-    const std::set<std::string> hardware = {"cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set",
+    const std::set<std::string> hardware = {"cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read",
         "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read"};
     require(hardware.count(c.name) || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode", "Unknown command: " + c.name);
     std::set<std::string> keys = {"--json"};
@@ -84,7 +84,8 @@ Command parse(const std::vector<std::string> &args) {
     const bool writing = c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "amd-smu-send";
     if (writing) keys.insert("--apply");
     if (c.name == "intel-set" || c.name == "intel-oc-set") { keys.insert("--field"); keys.insert("--value"); }
-    if (c.name == "intel-oc-read" || c.name == "intel-oc-set") keys.insert("--domain");
+    if (c.name == "intel-oc-read" || c.name == "intel-oc-set" || c.name == "intel-vf-read") keys.insert("--domain");
+    if (c.name == "intel-vf-read") keys.insert("--point");
     const bool smu = c.name == "amd-smu-probe" || c.name == "amd-smu-read" || c.name == "amd-smu-send";
     if (smu) keys.insert("--profile");
     if (smu || c.name == "amd-umc-read") for (const char *key : {"--bus", "--device", "--function"}) keys.insert(key);
@@ -125,10 +126,14 @@ Command parse(const std::vector<std::string> &args) {
             else require(c.value >= 1 && c.value <= 85 && std::floor(c.value) == c.value, "Maximum ratio must be an integer 1..85");
         }
     }
-    if (c.name == "intel-oc-read" || c.name == "intel-oc-set") {
+    if (c.name == "intel-oc-read" || c.name == "intel-oc-set" || c.name == "intel-vf-read") {
         const auto domain = get(options, "--domain");
         require(domain == "core" || domain == "cache", "--domain must be core or cache");
         c.domain = domain == "core" ? IntelOcDomain::Core : IntelOcDomain::Cache;
+    }
+    if (c.name == "intel-vf-read" && options.count("--point")) {
+        c.point = uintOption(options, "--point", 15);
+        require(c.point > 0, "--point must be 1..15; omit it to query all candidates");
     }
     c.smu.cpu = c.umc.cpu = c.cpu;
     if (smu || c.name == "amd-umc-read") {
@@ -249,6 +254,23 @@ Result hardware(const Command &c, HardwareSession &s) {
             out.data.push_back({"write_attempted", boolean(result.writeAttempted)}); out.data.push_back({"verified", boolean(result.verified)});
             out.data.push_back({"stage", number(unsigned(result.stage))}); out.data.push_back({"after", ocSnapshot(result.readback)});
         }
+    } else if (c.name == "intel-vf-read") {
+        const auto snapshot = readIntelVf(s, c.cpu, c.domain, c.point); out.error = snapshot.error;
+        out.data.push_back({"domain", quote(c.domain == IntelOcDomain::Core ? "core" : "cache")});
+        out.data.push_back({"identity", identity(snapshot.identity)});
+        out.data.push_back({"selected_point", c.point ? number(c.point) : "null"});
+        out.data.push_back({"requested_points", number(c.point ? 1 : 15)});
+        out.data.push_back({"scan_completed", boolean(snapshot.scanCompleted)});
+        std::vector<std::string> values;
+        for (const auto &point : snapshot.points) {
+            const auto &r = point.response; const bool valid = r.completed && !r.error;
+            values.push_back(object({{"point", number(point.point)}, {"valid", boolean(valid)},
+                {"error", number(r.error)}, {"query_attempted", boolean(r.commandAttempted)},
+                {"completed", boolean(r.completed)}, {"firmware_status", r.completed ? number(r.firmwareStatus) : "null"},
+                {"raw", valid ? hex(r.data) : "null"}, {"ratio", valid ? number(r.data & 255) : "null"},
+                {"offset_mv", valid ? number(intelOcOffsetMillivolts(r.data)) : "null"}}));
+        }
+        out.data.push_back({"points", array(values)});
     } else if (c.name == "amd-smu-probe" || c.name == "amd-smu-read" || c.name == "amd-smu-send") {
         out.data.push_back({"pci", pci(c.smu.bus, c.smu.device, c.smu.function)});
         out.data.push_back({"profile", quote(c.smu.profile == SmuProfile::Shimada ? "shimada" : c.smu.profile == SmuProfile::Phoenix ? "phoenix" : "gpt")});
@@ -349,6 +371,7 @@ Usage: octool-cli COMMAND [OPTIONS]
   intel-read --cpu N                RAPL, HWP and supported temperature readings
   intel-set --cpu N --field F --value V --apply
   intel-oc-read --cpu N --domain core|cache
+  intel-vf-read --cpu N --domain core|cache [--point 1..15]
   intel-oc-set --cpu N --domain core|cache --field offset-mv|max-ratio --value V --apply
   amd-smu-probe --cpu N --profile shimada|phoenix|gpt [PCI]
   amd-smu-read --cpu N --profile P --message 1|2 [PCI]

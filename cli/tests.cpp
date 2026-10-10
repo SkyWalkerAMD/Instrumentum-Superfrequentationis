@@ -43,6 +43,12 @@ void invalidBeforeOpen() {
         {"intel-oc-set", "--cpu", "0", "--domain", "core", "--field", "max-ratio", "--value", "86", "--apply"},
         {"intel-oc-set", "--cpu", "0", "--domain", "cache", "--field", "offset-mv", "--value", "-1001", "--apply"},
         {"intel-oc-read", "--cpu", "0", "--domain", "fabric"},
+        {"intel-vf-read", "--cpu", "0", "--domain", "fabric"},
+        {"intel-vf-read", "--cpu", "0"},
+        {"intel-vf-read", "--cpu", "0", "--domain", "core", "--point", "0"},
+        {"intel-vf-read", "--cpu", "0", "--domain", "core", "--point", "16"},
+        {"intel-vf-read", "--cpu", "0", "--domain", "core", "--point", "-1"},
+        {"intel-vf-read", "--cpu", "0", "--domain", "core", "--apply"},
         {"amd-smu-read", "--cpu", "0", "--profile", "shimada", "--message", "0x24"},
         {"amd-smu-send", "--cpu", "0", "--profile", "phoenix", "--message", "0x24", "--arg0", "1", "--apply"},
         {"amd-smu-send", "--cpu", "0", "--profile", "shimada", "--message", "0x24", "--arg0", "1"},
@@ -135,6 +141,19 @@ void ocAndCurveCommands() {
     command(amd, {"amd-curve-read", "--cpu", "130", "--ccd", "0", "--core", "0"}, 3);
     assert(amd.commands == 2 && amd.argumentReads == 1);
 }
+void vfCommands() {
+    IntelOcFixture intel;
+    command(intel, {"intel-vf-read", "--cpu", "130", "--domain", "core"}, 0);
+    command(intel, {"intel-vf-read", "--cpu", "130", "--domain", "cache", "--point", "15"}, 0);
+    intel.failVfPoint = 8;
+    command(intel, {"intel-vf-read", "--cpu", "130", "--domain", "core"}, 3);
+    command(intel, {"intel-vf-read", "--cpu", "130", "--domain", "cache", "--point", "8"}, 3);
+    intel.failVfPoint = 0; intel.clearTrace(); intel.failAt = 5;
+    command(intel, {"intel-vf-read", "--cpu", "130", "--domain", "core"}, 3);
+    intel.clearTrace(); intel.model = 0x8f;
+    command(intel, {"intel-vf-read", "--cpu", "130", "--domain", "core"}, 3);
+    assert(intel.requests.empty() && !intel.mutationCount && !intel.wrongCpu);
+}
 struct PciDevice : Registers {
     std::uint32_t index = 0, response = 1, message = 0;
     bool fail = false;
@@ -193,8 +212,8 @@ void inventory(const std::string &root) {
 int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--inventory-fixture") { inventory(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
-    invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); pciCommands();
+    invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); vfCommands(); pciCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "5 CLI scenario groups passed (31 rejected commands, real core with simulated devices)\n";
+    if (!emit) std::cout << "6 CLI scenario groups passed (37 rejected commands, real core with simulated devices)\n";
 }

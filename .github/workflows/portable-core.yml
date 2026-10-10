@@ -4,11 +4,13 @@ on:
     paths:
       - 'gui/core/**'
       - 'gui/tests/*_core_test.cpp'
+      - 'gui/tests/*_fixture.h'
       - '.github/workflows/portable-core.yml'
   pull_request:
     paths:
       - 'gui/core/**'
       - 'gui/tests/*_core_test.cpp'
+      - 'gui/tests/*_fixture.h'
       - '.github/workflows/portable-core.yml'
   workflow_dispatch:
 permissions:

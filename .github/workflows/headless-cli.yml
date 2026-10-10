@@ -1,9 +1,9 @@
 name: headless CLI
 on:
   push:
-    paths: ['cli/**', 'gui/core/**', 'gui/platform/**', 'port/hal/**', 'port/tools/build_cli.py', 'port/packaging/octool-cli.spec.in', 'port/ci/cli-*', 'docs/headless-cli.md', '.github/workflows/headless-cli.yml']
+    paths: ['cli/**', 'gui/core/**', 'gui/tests/*_core_test.cpp', 'gui/tests/*_fixture.h', 'gui/platform/**', 'port/hal/**', 'port/tools/build_cli.py', 'port/packaging/octool-cli.spec.in', 'port/ci/cli-*', 'docs/headless-cli.md', '.github/workflows/headless-cli.yml']
   pull_request:
-    paths: ['cli/**', 'gui/core/**', 'gui/platform/**', 'port/hal/**', 'port/tools/build_cli.py', 'port/packaging/octool-cli.spec.in', 'port/ci/cli-*', 'docs/headless-cli.md', '.github/workflows/headless-cli.yml']
+    paths: ['cli/**', 'gui/core/**', 'gui/tests/*_core_test.cpp', 'gui/tests/*_fixture.h', 'gui/platform/**', 'port/hal/**', 'port/tools/build_cli.py', 'port/packaging/octool-cli.spec.in', 'port/ci/cli-*', 'docs/headless-cli.md', '.github/workflows/headless-cli.yml']
   workflow_dispatch:
 permissions:
   contents: read

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #pragma once
 #include "register_update.h"
+#include <vector>
 
 namespace octool { namespace core {
 enum class IntelOcDomain { Core = 0, Cache = 2 };
@@ -40,6 +41,25 @@ int encodeIntelOcRatio(unsigned ratio, std::uint32_t previous, std::uint32_t &en
 // Queries submit command 0x10 to MSR 0x150 but never a settings-change command.
 // All calls belong inside one HardwareService transaction.
 IntelOcSnapshot readIntelOc(HardwareSession &session, unsigned cpu, IntelOcDomain domain);
+struct IntelVfPoint {
+    unsigned point = 0;
+    IntelOcResponse response;
+};
+struct IntelVfSnapshot {
+    int error = 0;
+    unsigned cpu = 0, selectedPoint = 0;
+    IntelOcDomain domain = IntelOcDomain::Core;
+    CpuIdentity identity;
+    // True when every requested point completed, even if firmware rejected
+    // individual points. A transport failure/deadline stops the scan.
+    bool scanCompleted = false;
+    std::vector<IntelVfPoint> points;
+};
+// point 0 queries candidates 1..15; 1..15 queries exactly that point.
+// This separate snapshot cannot be passed to the domain-wide setters.
+// Only query 0x10 is sent: no VF setting, override, or mode change.
+IntelVfSnapshot readIntelVf(HardwareSession &session, unsigned cpu,
+                          IntelOcDomain domain, unsigned point = 0);
 IntelOcUpdate applyIntelOcOffset(HardwareSession &session, const IntelOcSnapshot &snapshot,
                                 double millivolts);
 IntelOcUpdate applyIntelOcRatio(HardwareSession &session, const IntelOcSnapshot &snapshot,

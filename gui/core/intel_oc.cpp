@@ -24,18 +24,20 @@ int waitReady(HardwareSession &s, unsigned cpu, std::uint64_t &value) {
     return -ETIMEDOUT;
 }
 IntelOcResponse exchange(HardwareSession &s, unsigned cpu, IntelOcDomain domain,
-                         bool write, std::uint32_t data) {
+                         bool write, std::uint32_t data, unsigned point = 0) {
     IntelOcResponse out;
     std::uint64_t value = 0;
     if ((out.error = waitReady(s, cpu, value))) return out;
     Request request = msrRequest(cpu, 0x150);
     request.write = true;
     request.value = busy | (std::uint64_t(unsigned(domain)) << 40) |
+                    (std::uint64_t(point) << 48) |
                     (std::uint64_t(write ? 0x11 : 0x10) << 32) | data;
     if ((out.error = s.checkpoint())) return out;
     out.commandAttempted = true;
     if ((out.error = s.execute(request).error)) return out;
     if ((out.error = waitReady(s, cpu, value))) return out;
+    if ((out.error = s.checkpoint())) return out;
     // Decode the very sample which observed completion, not an extra read
     // that could observe a different command or return to the busy state.
     out.completed = true;
@@ -82,6 +84,31 @@ IntelOcSnapshot readIntelOc(HardwareSession &s, unsigned cpu, IntelOcDomain doma
     out.response = exchange(s, cpu, domain, false, 0);
     if ((out.error = out.response.error)) return out;
     out.valid = true;
+    return out;
+}
+IntelVfSnapshot readIntelVf(HardwareSession &s, unsigned cpu, IntelOcDomain domain, unsigned point) {
+    IntelVfSnapshot out; out.cpu = cpu; out.domain = domain; out.selectedPoint = point;
+    if (!validDomain(domain) || point > 15) { out.error = -EINVAL; return out; }
+    out.identity = identifyCpu(s, cpu);
+    if ((out.error = out.identity.error)) return out;
+    if (!hasIntelOcProfile(out.identity)) { out.error = -ENOTSUP; return out; }
+    const auto features = s.cpuid(cpu, 1);
+    if ((out.error = features.error)) return out;
+    if (!(features.words[3] & (1u << 5))) { out.error = -ENOTSUP; return out; }
+    const unsigned first = point ? point : 1, last = point ? point : 15;
+    for (unsigned index = first; index <= last; ++index) {
+        IntelVfPoint row; row.point = index;
+        row.response = exchange(s, cpu, domain, false, 0, index);
+        out.points.push_back(row);
+        if (row.response.error) {
+            if (!out.error) out.error = row.response.error;
+            // A firmware rejection is local to this point. Preserve its
+            // status and inspect the next candidate; never invent a point
+            // count from a generic error or silently discard later points.
+            if (!row.response.completed) { out.error = row.response.error; return out; }
+        }
+    }
+    out.scanCompleted = true;
     return out;
 }
 namespace {

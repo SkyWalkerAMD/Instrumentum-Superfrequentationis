@@ -34,8 +34,30 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 53, len(reports)
-assert len([r for r in reports if r["error"] == -22]) >= 31
+assert len(reports) == 65, len(reports)
+assert len([r for r in reports if r["error"] == -22]) >= 37
+vf = [r for r in reports if r["command"] == "intel-vf-read" and r["error"] != -22]
+assert len(vf) == 6
+all_points = vf[0]["data"]
+assert all_points["scan_completed"] and all_points["selected_point"] is None
+assert [p["point"] for p in all_points["points"]] == list(range(1, 16))
+assert all(p["valid"] and p["completed"] and p["query_attempted"] for p in all_points["points"])
+for p in all_points["points"]:
+    raw = int(p["raw"], 16)
+    code = raw >> 21
+    assert p["ratio"] == raw & 255
+    assert p["offset_mv"] == (code if code < 1024 else code - 2048) * 1000 / 1024
+assert vf[1]["data"]["domain"] == "cache" and vf[1]["data"]["selected_point"] == 15
+assert len(vf[1]["data"]["points"]) == 1
+partial = vf[2]["data"]
+assert not vf[2]["ok"] and partial["scan_completed"] and len(partial["points"]) == 15
+assert partial["points"][7]["firmware_status"] == 254 and partial["points"][8]["valid"]
+for result in vf[2:5]:
+    failed = [p for p in result["data"]["points"] if not p["valid"]]
+    assert len(failed) == 1
+    assert all(failed[0][key] is None for key in ("raw", "ratio", "offset_mv"))
+assert not vf[4]["data"]["scan_completed"] and vf[4]["data"]["points"][0]["firmware_status"] is None
+assert vf[5]["data"]["points"] == [] and not vf[5]["data"]["scan_completed"]
 curve = [r for r in reports if r["command"] == "amd-curve-read" and r["ok"]][0]
 assert curve["data"]["raw"] == "0xffffffe2" and curve["data"]["raw_signed"] == -30
 curve_fail = [r for r in reports if r["command"] == "amd-curve-read" and r["error"] == -5][0]
@@ -88,4 +110,4 @@ with tempfile.TemporaryDirectory(prefix="octool-cli-") as directory:
     path.write_bytes(spd)
     result = run("spd-decode", "--file", str(path), code=3)["data"]["spd"]
     assert result["crc_checked"] and not result["crc_valid"]
-print("CLI process checks passed: no display, sparse affinity, 53 JSON reports, inventory limits, SPD CRC/errors")
+print("CLI process checks passed: no display, sparse affinity, 65 JSON reports, VF partial errors, inventory limits, SPD CRC/errors")

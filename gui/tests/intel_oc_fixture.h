@@ -13,11 +13,19 @@ struct IntelOcFixture : octool::core::HardwareBackend {
     int failAt = -1;
     bool busyBefore = false;
     unsigned busyCommand = 0;
+    unsigned failVfPoint = 0, vfStatus = 0xfe;
     std::uint32_t settings[3] = {0xf3512345, 0, 0x012abcde};
+    std::uint32_t vfSettings[3][16]{};
     std::uint64_t mailbox = 0;
     std::vector<octool::core::Request> requests;
     std::vector<unsigned> commands;
     std::function<void()> afterRequest;
+    IntelOcFixture() {
+        for (unsigned point = 1; point <= 15; ++point) {
+            vfSettings[0][point] = ((point * 137u & 2047u) << 21) | 0x120000 | (40 + point);
+            vfSettings[2][point] = ((point * 83u & 2047u) << 21) | 0x045100 | (30 + point);
+        }
+    }
     bool failing(unsigned cpu) {
         if (cpu != expectedCpu) ++wrongCpu;
         return int(calls++) == failAt;
@@ -34,16 +42,19 @@ struct IntelOcFixture : octool::core::HardwareBackend {
                 (busyCommand && !commands.empty() && commands.back() == busyCommand)) out.value |= UINT64_C(1) << 63;
         } else if (r.address == 0x150 && r.write) {
             const unsigned command = unsigned((r.value >> 32) & 255), domain = unsigned((r.value >> 40) & 255);
+            const unsigned point = unsigned((r.value >> 48) & 255);
             commands.push_back(command);
-            if ((domain != 0 && domain != 2) || (command != 0x10 && command != 0x11) || !(r.value >> 63)) {
+            if ((domain != 0 && domain != 2) || (command != 0x10 && command != 0x11) || !(r.value >> 63) ||
+                point > 15 || (point && (command != 0x10 || std::uint32_t(r.value)))) {
                 out.error = -EINVAL; return out;
             }
-            const unsigned response = command == failCommand ? status : 0;
+            const unsigned response = command == failCommand ? status : point && point == failVfPoint ? vfStatus : 0;
             if (command == 0x11 && !response) {
                 ++mutationCount;
                 if (!discardChange) settings[domain] = std::uint32_t(r.value);
             }
-            mailbox = (std::uint64_t(domain) << 40) | (std::uint64_t(response) << 32) | settings[domain];
+            mailbox = (std::uint64_t(domain) << 40) | (std::uint64_t(response) << 32) |
+                (point ? vfSettings[domain][point] : settings[domain]);
         } else out.error = -EINVAL;
         if (afterRequest) afterRequest();
         return out;

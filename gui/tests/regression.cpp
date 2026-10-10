@@ -4,6 +4,7 @@
 #include "platformpanels.h"
 #include "umcpanel.h"
 #include "intelocpanel.h"
+#include "intelvfpanel.h"
 #include "intel_oc_fixture.h"
 #include "amd_curve_fixture.h"
 #include "platform/linux_inventory.h"
@@ -13,6 +14,7 @@
 #include "../../port/abi/octool_hwio_abi.h"
 #include <QtTest>
 #include <QComboBox>
+#include <QClipboard>
 #include <QLineEdit>
 #include <QLabel>
 #include <QMessageBox>
@@ -113,6 +115,7 @@ private slots:
         IntelControlsPanel intel(access,nullptr,7); AmdTuningPanel amd(access,nullptr,7); MemoryBoardPanel inventory;
         UmcPanel umc(access,nullptr,7);
         IntelOcPanel oc(access,nullptr,7);
+        IntelVfPanel vf(access,nullptr,7);
         QCOMPARE(reference.calls.load(),0);
         QCOMPARE(intel.findChild<QLineEdit *>("intelCpu")->text(),QString("7"));
         QCOMPARE(amd.findChild<QLineEdit *>("smuCpu")->text(),QString("7"));
@@ -120,9 +123,62 @@ private slots:
         QCOMPARE(umc.findChild<QTableWidget *>("umcTable")->rowCount(),0);
         QVERIFY(!oc.findChild<QPushButton *>("ocApply")->isEnabled());
         QVERIFY(!oc.findChild<QPushButton *>("ocApplyRatio")->isEnabled());
+        QCOMPARE(vf.findChild<QLineEdit *>("vfCpu")->text(),QString("7"));
+        QCOMPARE(vf.findChild<QTableWidget *>("vfTable")->rowCount(),0);
         intel.findChild<QLineEdit *>("intelValue")->setText("125");
         intel.findChild<QPushButton *>("intelApply")->click();
         QCOMPARE(reference.calls.load(),0);
+    }
+    void intelVfReadsBothDomainsAndInvalidates() {
+        auto *device = new IntelOcFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelVfPanel panel(access, nullptr, 130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("vfRead");
+        auto *table = panel.findChild<QTableWidget *>("vfTable");
+        QCOMPARE(device->calls, 0u); read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(), 15); QCOMPARE(table->item(0, 0)->text(), QString("1"));
+        QCOMPARE(table->item(14, 3)->text(), hexValue(device->vfSettings[0][15], 4));
+        const unsigned calls = device->calls;
+        panel.findChild<QComboBox *>("vfDomain")->setCurrentIndex(1);
+        QCOMPARE(table->rowCount(), 0); QCOMPARE(device->calls, calls);
+        panel.findChild<QComboBox *>("vfPoint")->setCurrentIndex(15); read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(), 1); QCOMPARE(table->item(0, 0)->text(), QString("15"));
+        QCOMPARE(table->item(0, 3)->text(), hexValue(device->vfSettings[2][15], 4));
+        QCOMPARE(device->mutationCount, 0u); QCOMPARE(device->wrongCpu, 0u);
+        const unsigned before = device->calls; panel.findChild<QLineEdit *>("vfCpu")->setText("-1"); read->click();
+        QCOMPARE(table->rowCount(), 0); QCOMPARE(device->calls, before);
+        panel.findChild<QLineEdit *>("vfCpu")->setText("130"); device->model = 0x8f; device->clearTrace();
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(device->requests.empty()); QCOMPARE(table->rowCount(), 0);
+        QVERIFY(panel.findChild<QLabel *>("vfStatus")->text().contains("Failed"));
+    }
+    void intelVfRejectedPointsStayBlankAndCopyIncludesTarget() {
+        auto *device = new IntelOcFixture; device->failVfPoint = 8;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelVfPanel panel(access, nullptr, 130); panel.resize(1100, 640); panel.show();
+        panel.findChild<QPushButton *>("vfRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *table = panel.findChild<QTableWidget *>("vfTable"); QCOMPARE(table->rowCount(), 15);
+        for (int col = 1; col <= 3; ++col) QVERIFY(table->item(7, col)->text().isEmpty());
+        QVERIFY(table->item(7, 4)->text().contains("0xfe")); QVERIFY(!table->item(8, 3)->text().isEmpty());
+        auto *status = panel.findChild<QLabel *>("vfStatus"); QVERIFY(status->text().contains("14 valid / 15 requested"));
+        panel.findChild<QPushButton *>("vfCopy")->click();
+        const auto copy = QApplication::clipboard()->text();
+        QVERIFY(copy.contains("CPU 130 - Core") && copy.contains("Offset (mV)") && copy.contains("0xfe"));
+        const QString capture = qEnvironmentVariable("OCTOOL_VF_TEST_SCREENSHOT");
+        if (!capture.isEmpty()) QVERIFY(panel.grab().save(capture));
+        QCOMPARE(device->mutationCount, 0u);
+    }
+    void intelVfReadFailureClearsPreviousValues() {
+        auto *device = new IntelOcFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelVfPanel panel(access, nullptr, 130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("vfRead");
+        auto *table = panel.findChild<QTableWidget *>("vfTable");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(), 15);
+        device->clearTrace(); device->failAt = 5;
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(), 1);
+        for (int col = 1; col <= 3; ++col) QVERIFY(table->item(0, col)->text().isEmpty());
+        QVERIFY(panel.findChild<QLabel *>("vfStatus")->text().contains("Queries incomplete"));
+        QCOMPARE(device->mutationCount, 0u);
     }
     void intelOcQueriesAndInvalidatesTargets() {
         auto *device = new IntelOcFixture;

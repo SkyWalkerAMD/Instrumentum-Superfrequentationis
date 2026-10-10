@@ -124,6 +124,7 @@ case "$action" in
         build_sdk
         python3 port/tools/build_gui.py --stage "$out/gui-stage"
         cp build/gui/regression/gui-tests.txt "$out/gui-tests.txt"
+        cp build/gui/regression/vf-fixture.png "$out/vf-fixture.png"
         python3 port/tools/check_elf.py "$out/gui-stage/opt/octool/bin/octool-real" > "$out/abi.json"
         python3 port/tools/check_elf.py "$out/gui-stage/opt/octool/bin/octool-hwio-helper" > "$out/helper-abi.json"
         tar -czf "$out/gui-stage.tar.gz" -C "$out/gui-stage" .
@@ -139,6 +140,7 @@ case "$action" in
         tar -xzf /inputs/gui-stage.tar.gz -C /tmp/octool-release-stage
         python3 port/tools/build_gui.py --build-dir "$root/build/gui-$target" --stage "$out/native-stage"
         cp "build/gui-$target/regression/gui-tests.txt" "$out/gui-tests.txt"
+        cp "build/gui-$target/regression/vf-fixture.png" "$out/vf-fixture.png"
         python3 port/tools/check_elf.py --inspect "$out/native-stage/opt/octool/bin/octool-real" > "$out/native-abi.json"
         python3 port/tools/check_elf.py --inspect "$out/native-stage/opt/octool/bin/octool-hwio-helper" > "$out/native-helper-abi.json"
         make -C port/tests check 2>&1 | tee "$out/offline.log"

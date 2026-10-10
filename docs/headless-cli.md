@@ -54,6 +54,8 @@ octool-cli cpu --cpu 0
 sudo octool-cli amd-pstates --cpu 0
 sudo octool-cli intel-read --cpu 0
 sudo octool-cli intel-oc-read --cpu 0 --domain core
+sudo octool-cli intel-vf-read --cpu 0 --domain core
+sudo octool-cli intel-vf-read --cpu 0 --domain cache --point 8
 sudo octool-cli amd-smu-probe --cpu 0 --profile shimada
 sudo octool-cli amd-smu-read --cpu 0 --profile shimada --message 2
 octool-cli amd-topology --cpu 0
@@ -65,6 +67,14 @@ sudo octool-cli amd-umc-read --cpu 0 --bank 0 --refresh-slot 0 > umc.json
 UMC bank 是地址索引，不能直接当作内存通道/DIMM 标签。输出原始编码，不假设物理单位。
 曲线及 UMC 查询会写入查询邮箱或地址索引，没有修改曲线或内存设置。
 CLI 的 UMC JSON 是下述统一命令格式，目前不能直接导入 GUI 的专用 UMC 快照导入器。
+
+`intel-vf-read` 与 GUI 的 Intel Controls → V/F points 共用[同一查询实现](intel-vf-recovery.md)。
+仅开放 Raptor Lake-S family 6/model B7；`--point` 取 1..15，省略时逐个查询 15 个候选点，
+这不表示硬件一定支持 15 点。输出每点的 `ratio`、`offset_mv`、`raw` 和固件返回状态。
+`--cpu` 是执行查询的逻辑 CPU，不是逐核 VF 目标编号；不修改 VF 或 override。
+固件拒绝的点数值为 `null`，仍继续查询后续点；传输失败/超时/取消则终止查询。
+`scan_completed` 仅表示全部请求得到完成状态；存在任一点错误时 `ok:false`、退出码 3。
+该 JSON 可保存作记录，目前没有 GUI 文件导入或写回功能。
 
 ## 已还原的设置入口
 
