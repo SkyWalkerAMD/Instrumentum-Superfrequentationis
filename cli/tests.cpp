@@ -11,6 +11,8 @@
 #include <iostream>
 #include <map>
 #include <sstream>
+#include <fstream>
+#include <unistd.h>
 
 using namespace octool::core;
 using namespace octool::cli;
@@ -132,7 +134,12 @@ void invalidBeforeOpen() {
         {"intel-vf-set", "--cpu", "0", "--domain", "core", "--point", "8", "--value", "-1000.01", "--apply"},
         {"intel-vf-set", "--cpu", "0", "--domain", "core", "--point", "8", "--value", "1,5", "--apply"},
         {"intel-vf-set", "--cpu", "0", "--domain", "core", "--point", "8", "--point", "9", "--value", "-50", "--apply"},
-        {"intel-vf-set", "--cpu", "0", "--domain", "core", "--point", "8", "--value", "-50", "--for-edit", "--apply"}
+        {"intel-vf-set", "--cpu", "0", "--domain", "core", "--point", "8", "--value", "-50", "--for-edit", "--apply"},
+        {"amd-umc-decode"}, {"amd-umc-decode", "--file", ""},
+        {"amd-umc-decode", "--file", "x", "--cpu", "0"}, {"amd-umc-decode", "--file", "x", "--apply"},
+        {"amd-umc-decode", "--file", "x", "--timeout-ms", "100"}, {"amd-umc-decode", "--file", "x", "--file", "y"},
+        {"amd-umc-diff"}, {"amd-umc-diff", "--file", "x"}, {"amd-umc-diff", "--compare", "x"},
+        {"amd-umc-diff", "--file", "x", "--compare", ""}
     };
     unsigned opens = 0;
     const auto factory = [&]() { ++opens; return std::unique_ptr<HardwareBackend>(); };
@@ -445,6 +452,27 @@ void pciCommands() {
     command(d, {"amd-umc-read", "--cpu", "130", "--bus", "2", "--device", "3", "--function", "1", "--bank", "22", "--refresh-slot", "15"}, 3);
     assert(d.umcReads == 57);
 }
+void offlineUmcDoesNotCreateBackend() {
+    char path[] = "/tmp/octool-umc-XXXXXX"; const int fd = mkstemp(path); assert(fd >= 0); close(fd);
+    struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
+    const auto write = [&](const std::string &bytes) { std::ofstream file(path, std::ios::binary); file << bytes; file.close(); assert(file); };
+    unsigned opens = 0;
+    const auto factory = [&]() { ++opens; return std::unique_ptr<HardwareBackend>(); };
+    const std::string bytes = R"({"format":"octool-amd-umc-v1","bank":0,"refresh_slot":0,"registers":[{"offset":516,"value":34}]})";
+    write(bytes);
+    for (const auto &args : std::vector<std::vector<std::string>>{{"amd-umc-decode", "--file", path}, {"amd-umc-diff", "--file", path, "--compare", path}}) {
+        std::ostringstream out; assert(!run(args, out, factory));
+        assert(out.str().find("\"hardware_accessed\":false") != std::string::npos);
+    }
+    for (const auto &invalid : {std::string("{}"), std::string(65537, ' ')}) {
+        write(invalid); std::ostringstream out; assert(run({"amd-umc-decode", "--file", path}, out, factory) == 3);
+    }
+    std::vector<std::uint8_t> buffer{1};
+    assert(octool::platform::readBoundedFile(path, buffer, 0) == -EINVAL && buffer.empty());
+    assert(octool::platform::readBoundedFile(path, buffer, 65537) == -EINVAL);
+    assert(octool::platform::readBoundedFile(std::string(path) + '\0' + "suffix", buffer, 65536) == -EINVAL);
+    assert(!opens);
+}
 void inventory(const std::string &root) {
     const auto result = octool::platform::linuxInventoryNative(root);
     bool temperature = false, board = false, invalid = false, power = false, oversized = false;
@@ -466,7 +494,8 @@ int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--inventory-fixture") { inventory(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
+    offlineUmcDoesNotCreateBackend();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "12 CLI scenario groups passed (109 rejected commands, real core with simulated devices)\n";
+    if (!emit) std::cout << "13 CLI scenario groups passed (119 rejected commands, real core with simulated devices)\n";
 }

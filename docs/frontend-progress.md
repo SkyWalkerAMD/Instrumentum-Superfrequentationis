@@ -13,13 +13,13 @@
 | AMD SMU | AMD tuning | `amd-smu-probe/read/send` | 现有身份/命令白名单与原始参数 |
 | AMD 曲线读取 | AMD tuning 曲线查询 | `amd-curve-read` | Shimada；显式固件 CCD/core；不推导 mV |
 | AMD 拓扑 | AMD tuning | `amd-topology` | CPUID 拓扑，不作为固件目标映射 |
-| AMD UMC | AMD UMC | `amd-umc-read` | 212 字段、56 原始寄存器；CLI 成功报告可在 GUI 离线导入；无时序写入 |
+| AMD UMC | AMD UMC，打开/比较快照与差异筛选 | `amd-umc-read/decode/diff` | 212 字段、56 原始寄存器；GUI/CLI 双向离线导入与共用比较；无时序写入 |
 | DMI / 传感器 / SPD | Memory / Motherboard | `inventory` / `spd-decode` | 读取现有系统节点与离线 SPD；不扫描未绑定设备 |
 | 原始 MSR / MMIO / PCI | Register 编辑页 | `register-read` / `register-write` | 相同宽度、范围与对齐校验；明确目标，写入不自动回读 |
 
-GUI 使用图形授权，CLI 使用终端权限。UMC 可从 CLI 采集、转到 GUI 离线查看并另存快照；
-CLI 本身也输出全部解码字段，尚无读取 GUI 快照文件的独立命令。
-[本轮实现说明](control-register-recovery.md)记录编码、读回与导入边界。
+GUI 使用图形授权，CLI 使用终端权限。UMC 的 GUI/CLI 快照和 CLI decode 报告可双向导入，
+两端支持同 bank/slot 的离线比较，区分字段变化、原始字变化与数据缺失。
+[UMC 离线说明](umc-offline.md)记录格式、文件边界和比较语义。
 
 双方共同未完成：AMD PStates 写入、曲线设置与物理目标映射、完整 PBO 高层限制、
 Intel 其它型号的 VF 及 W790/W890 电压/逐核/fabric、Intel 内存训练时序、板级 PMIC/VRM/EC/时钟写入。

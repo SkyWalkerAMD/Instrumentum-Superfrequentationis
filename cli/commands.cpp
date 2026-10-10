@@ -6,6 +6,7 @@
 #include "core/amd_smu.h"
 #include "core/amd_topology.h"
 #include "core/amd_umc.h"
+#include "core/umc_capture.h"
 #include "core/intel_controls.h"
 #include "core/intel_oc.h"
 #include "core/intel_turbo.h"
@@ -70,7 +71,7 @@ const std::map<std::string, IntelField> intelFields = {
     {"hwp-window-us", IntelField::HwpActivityWindow}
 };
 struct Command {
-    std::string name, path, field;
+    std::string name, path, otherPath, field;
     unsigned cpu = 0, timeout = 10000, ccd = 0, core = 0, point = 0, group = 0;
     double value = 0;
     bool forEdit = false;
@@ -84,7 +85,8 @@ Command parse(const std::vector<std::string> &args) {
     Command c; c.name = args.at(0);
     const std::set<std::string> hardware = {"cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read", "intel-vf-set", "intel-turbo-read", "intel-turbo-set",
         "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
-    require(hardware.count(c.name) || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode", "Unknown command: " + c.name);
+    const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
+    require(hardware.count(c.name) || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline, "Unknown command: " + c.name);
     std::set<std::string> keys = {"--json"};
     if (hardware.count(c.name)) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
@@ -112,6 +114,8 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "amd-curve-read") { keys.insert("--ccd"); keys.insert("--core"); }
     if (c.name == "amd-umc-read") { keys.insert("--bank"); keys.insert("--refresh-slot"); }
     if (c.name == "spd-decode") keys.insert("--file");
+    if (umcOffline) keys.insert("--file");
+    if (c.name == "amd-umc-diff") keys.insert("--compare");
     Options options;
     for (std::size_t i = 1; i < args.size(); ++i) {
         const auto key = args[i];
@@ -222,6 +226,10 @@ Command parse(const std::vector<std::string> &args) {
     }
     if (c.name == "amd-umc-read") { c.umc.bank = uintOption(options, "--bank", 22); c.umc.refreshSlot = uintOption(options, "--refresh-slot", 15); }
     if (c.name == "spd-decode") { c.path = get(options, "--file"); require(!c.path.empty(), "Empty SPD path"); }
+    if (umcOffline) {
+        c.path = get(options, "--file"); require(!c.path.empty(), "Empty snapshot path");
+        if (c.name == "amd-umc-diff") { c.otherPath = get(options, "--compare"); require(!c.otherPath.empty(), "Empty comparison path"); }
+    }
     return c;
 }
 std::string identity(const CpuIdentity &id) {
@@ -487,6 +495,53 @@ std::string spd(const std::string &path, const std::vector<std::uint8_t> &bytes,
         {"memory_type", number(decoded.memoryType)}, {"crc_checked", boolean(decoded.crcChecked)},
         {"crc_valid", decoded.crcChecked ? boolean(decoded.crcValid) : "null"}, {"fields", array(fields)}});
 }
+Result offlineUmc(const Command &c) {
+    Result out;
+    out.data = {{"offline", "true"}, {"hardware_accessed", "false"}, {"origin_verified", "false"}, {"path", quote(c.path)}};
+    auto load = [](const std::string &path) {
+        std::vector<std::uint8_t> bytes; UmcCapture capture;
+        capture.error = platform::readBoundedFile(path, bytes, 65536);
+        if (!capture.error) capture = parseUmcCapture(std::string(bytes.begin(), bytes.end()));
+        return capture;
+    };
+    const auto before = load(c.path); out.error = before.error;
+    if (out.error) { out.data.push_back({"detail", quote(before.detail)}); return out; }
+    out.data.push_back({"bank", number(before.target.bank)}); out.data.push_back({"refresh_slot", number(before.target.refreshSlot)});
+    out.data.push_back({"cpu", before.hasCpu ? number(before.target.cpu) : "null"});
+    out.data.push_back({"pci", before.hasPci ? pci(before.target.bus, before.target.device, before.target.function) : "null"});
+    out.data.push_back({"complete", boolean(before.registers.size() == 56)});
+    std::vector<std::string> fields;
+    if (c.name == "amd-umc-decode") {
+        std::vector<std::string> registers;
+        for (const auto &r : before.registers) registers.push_back(object({{"offset", hex(r.offset)}, {"raw", hex(r.value)}}));
+        out.data.push_back({"registers", array(registers)});
+        for (const auto &v : before.decoded.values) {
+            const auto &f = amdUmcFields().at(v.id);
+            fields.push_back(object({{"id", number(v.id)}, {"group", quote(amdUmcGroupName(f.group))}, {"name", quote(f.name)},
+                {"offset", hex(v.offset)}, {"error", number(v.error)}, {"encoded", v.error ? "null" : number(v.encoded)}}));
+        }
+    } else {
+        out.data.push_back({"compare_path", quote(c.otherPath)});
+        const auto after = load(c.otherPath); out.error = after.error;
+        if (out.error) { out.data.push_back({"detail", quote(after.detail)}); return out; }
+        const auto comparison = compareUmcCaptures(before, after); out.error = comparison.error;
+        if (out.error) { out.data.push_back({"detail", quote("Both snapshots must use the same bank and refresh slot")}); return out; }
+        out.data.push_back({"compared_complete", boolean(after.registers.size() == 56)});
+        out.data.push_back({"physical_channel_verified", "false"});
+        Fields counts;
+        for (unsigned i = 0; i < comparison.counts.size(); ++i) counts.push_back({umcChangeName(UmcChange(i)), number(comparison.counts[i])});
+        out.data.push_back({"counts", object(counts)});
+        for (const auto &v : comparison.fields) {
+            const auto &f = amdUmcFields().at(v.before.id);
+            fields.push_back(object({{"id", number(f.id)}, {"group", quote(amdUmcGroupName(f.group))}, {"name", quote(f.name)},
+                {"offset", hex(v.before.offset)}, {"state", quote(umcChangeName(v.state))},
+                {"before_raw", v.before.error ? "null" : hex(v.before.raw)}, {"after_raw", v.after.error ? "null" : hex(v.after.raw)},
+                {"before_encoded", v.before.error ? "null" : number(v.before.encoded)}, {"after_encoded", v.after.error ? "null" : number(v.after.encoded)},
+                {"encoded_delta", v.before.error || v.after.error ? "null" : number(double(v.after.encoded) - double(v.before.encoded))}}));
+        }
+    }
+    out.data.push_back({"fields", array(fields)}); return out;
+}
 Result execute(const Command &c, const BackendFactory &factory) {
     Result out;
     if (c.name == "diagnose") {
@@ -511,6 +566,8 @@ Result execute(const Command &c, const BackendFactory &factory) {
     } else if (c.name == "spd-decode") {
         std::vector<std::uint8_t> bytes; out.error = platform::readBoundedFile(c.path, bytes);
         out.data.push_back({"spd", spd(c.path, bytes, out.error)});
+    } else if (c.name == "amd-umc-decode" || c.name == "amd-umc-diff") {
+        out = offlineUmc(c);
     } else {
         HardwareService service(factory());
         const int error = service.transaction([&](HardwareSession &s) { out = hardware(c, s); return out.error; }, int(c.timeout));
@@ -545,6 +602,8 @@ Usage: octool-cli COMMAND [OPTIONS]
   amd-curve-read --cpu N --ccd N --core N
   amd-topology --cpu N
   amd-umc-read --cpu N --bank N --refresh-slot N [PCI]
+  amd-umc-decode --file SNAPSHOT     Decode GUI/CLI JSON offline, no privileges
+  amd-umc-diff --file BEFORE --compare AFTER   Compare the same bank/refresh slot
 
 PCI: --bus N --device N --function N (domain 0; defaults 0:0.0).
 Intel fields: pl1/pl2 (W), pl1-window/pl2-window (s), pl1-enable/pl2-enable,
@@ -567,6 +626,9 @@ Exit: 0 success, 2 invalid command/options, 3 failed operation or partial read.
 Run diagnose first; choose a CPU from allowed_cpus. Device access may need sudo.
 Firmware queries can write mailbox/index registers; settings require --apply.
 CCD/core are firmware indices, not Linux CPU IDs; UMC values are raw encodings.
+UMC offline commands accept regular JSON files up to 64 KiB, including partial
+GUI snapshots. Missing fields stay null. Diff separates field and raw-only changes;
+equal indices do not certify the same physical channel. No device is opened.
 The shared core retains model/identity/lock checks. There are no automatic retries,
 rollback, module loading, polkit dialogs or background service. Do not run another
 tuning application concurrently; transaction locks are local to this process.

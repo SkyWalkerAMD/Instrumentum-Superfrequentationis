@@ -24,6 +24,7 @@ def stage_cli(stage, binary):
     subprocess.run(["strip", "--strip-unneeded", str(stage / "usr/bin/octool-cli")], check=True)
     copy(ROOT / "gui/LICENSE", stage / "usr/share/licenses/octool-cli/LICENSE")
     copy(ROOT / "docs/headless-cli.md", stage / "usr/share/doc/octool-cli/headless-cli.md")
+    copy(ROOT / "docs/umc-offline.md", stage / "usr/share/doc/octool-cli/umc-offline.md")
     return info
 
 

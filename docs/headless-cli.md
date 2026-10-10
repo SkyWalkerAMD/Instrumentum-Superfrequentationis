@@ -73,6 +73,11 @@ CLI 的 UMC JSON 使用下述统一命令格式。成功且完整的 `amd-umc-re
 GUI 的 AMD UMC → Open snapshot 中打开；GUI 重新解码原始寄存器，忽略报告中的预解码数值。
 失败、不完整、重复寄存器、越界或未知格式会被拒绝，导入不访问硬件。
 
+`amd-umc-decode --file SNAPSHOT` 也能离线读取 GUI 快照及 CLI 的读取/解码报告；
+`amd-umc-diff --file BEFORE --compare AFTER` 比较同 bank/refresh slot 的两份快照。
+两者均无需 root 或内核模块，支持部分 GUI 快照并保留缺失值。GUI 同步增加比较和
+差异筛选。文件边界、状态语义和示例见 [UMC 离线快照与比较](umc-offline.md)。
+
 `intel-vf-read` 与 GUI 的 Intel Controls → V/F points 共用[同一查询实现](intel-vf-recovery.md)。
 仅开放 Raptor Lake-S family 6/model B7；`--point` 取 1..15，省略时逐个查询 15 个候选点，
 这不表示硬件一定支持 15 点。输出每点的 `ratio`、`offset_mv`、`raw` 和固件返回状态。

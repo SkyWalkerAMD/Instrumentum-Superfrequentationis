@@ -37,6 +37,15 @@ jobs:
         run: cmake --build build/portable-core --config Release --parallel 2
       - name: Test synthetic reads, validation, errors, lifetime and concurrency
         run: ctest --test-dir build/portable-core -C Release --output-on-failure --output-junit results.xml
+      - name: Check offline snapshot parsing with memory and undefined-behavior sanitizers
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          cmake -S gui/core -B build/sanitized-core -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_FLAGS='-fsanitize=address,undefined -fno-omit-frame-pointer' \
+            -DCMAKE_EXE_LINKER_FLAGS='-fsanitize=address,undefined'
+          cmake --build build/sanitized-core --target umc_capture_core_test --parallel 2
+          ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 \
+            ctest --test-dir build/sanitized-core -R '^umc_capture_core$' --output-on-failure
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -44,5 +53,6 @@ jobs:
           path: |
             build/portable-core/results.xml
             build/portable-core/Testing/Temporary/LastTest.log
+            build/sanitized-core/Testing/Temporary/LastTest.log
           if-no-files-found: warn
           retention-days: 7

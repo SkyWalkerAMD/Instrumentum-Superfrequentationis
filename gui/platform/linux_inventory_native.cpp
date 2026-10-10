@@ -16,15 +16,16 @@
 #include <unistd.h>
 
 namespace octool { namespace platform {
-int readBoundedFile(const std::string &path, std::vector<std::uint8_t> &bytes) {
+int readBoundedFile(const std::string &path, std::vector<std::uint8_t> &bytes, std::size_t maximum) {
     bytes.clear();
+    if (!maximum || maximum > 65536 || path.find('\0') != std::string::npos) return -EINVAL;
     const int fd = open(path.c_str(), O_RDONLY | O_CLOEXEC | O_NONBLOCK);
     if (fd < 0) return -errno;
     struct Close { int fd; ~Close() { close(fd); } } closeFile{fd};
     struct stat st{};
     if (fstat(fd, &st)) return -errno;
     if (!S_ISREG(st.st_mode)) return -EINVAL;
-    std::vector<std::uint8_t> data(4097);
+    std::vector<std::uint8_t> data(maximum + 1);
     std::size_t size = 0;
     while (size < data.size()) {
         const auto n = read(fd, data.data() + size, data.size() - size);
@@ -32,7 +33,7 @@ int readBoundedFile(const std::string &path, std::vector<std::uint8_t> &bytes) {
         if (!n) break;
         size += std::size_t(n);
     }
-    if (size > 4096) return -EFBIG;
+    if (size > maximum) return -EFBIG;
     data.resize(size); bytes.swap(data); return 0;
 }
 namespace {

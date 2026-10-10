@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "umcpanel.h"
+#include "platform/linux_inventory_native.h"
+#include <QCheckBox>
 #include <QComboBox>
 #include <QDateTime>
 #include <QFile>
@@ -9,7 +11,6 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonParseError>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
@@ -17,57 +18,10 @@
 #include <QTableWidget>
 #include <QVBoxLayout>
 #include <QtConcurrent>
-#include <cmath>
 #include <utility>
 
 using namespace octool::core;
 namespace {
-bool number(const QJsonValue &v, unsigned maximum, unsigned &out) {
-    if(!v.isDouble()) return false;
-    const double n=v.toDouble();
-    if(!std::isfinite(n) || n<0 || n>maximum || std::floor(n)!=n) return false;
-    out=unsigned(n); return true;
-}
-bool hexWord(const QJsonValue &v, unsigned &out) {
-    if (!v.isString()) return false;
-    const auto text = v.toString();
-    if (text.size() != 10 || !text.startsWith("0x")) return false;
-    unsigned value = 0;
-    for (int i = 2; i < text.size(); ++i) {
-        const auto c = text.at(i).unicode();
-        const unsigned digit = c >= '0' && c <= '9' ? c - '0' : c >= 'a' && c <= 'f' ? c - 'a' + 10 : c >= 'A' && c <= 'F' ? c - 'A' + 10 : 16;
-        if (digit > 15) return false;
-        value = (value << 4) | digit;
-    }
-    out = value; return true;
-}
-bool cliCapture(const QJsonObject &report, QJsonObject &out) {
-    unsigned version = 0, error = 0, bank = 0, slot = 0, cpu = 0;
-    if (!number(report.value("schema_version"), 1, version) || version != 1 ||
-        report.value("command").toString() != "amd-umc-read" ||
-        !report.value("ok").isBool() || !report.value("ok").toBool() ||
-        !number(report.value("error"), 0, error) || !report.value("data").isObject()) return false;
-    const auto data = report.value("data").toObject();
-    if (!number(data.value("bank"), 22, bank) || !number(data.value("refresh_slot"), 15, slot) ||
-        !number(data.value("cpu"), UINT32_MAX, cpu) || !data.value("registers").isArray() ||
-        !data.value("pci").isObject()) return false;
-    const auto pci = data.value("pci").toObject(); unsigned domain = 0, bus = 0, device = 0, function = 0;
-    if (!number(pci.value("domain"), 0, domain) || !number(pci.value("bus"), 255, bus) ||
-        !number(pci.value("device"), 31, device) || !number(pci.value("function"), 7, function)) return false;
-    const auto registers = data.value("registers").toArray();
-    if (registers.size() != 56) return false;
-    QJsonArray converted;
-    for (const auto &item : registers) {
-        if (!item.isObject()) return false;
-        const auto reg = item.toObject(); unsigned offset = 0, raw = 0;
-        if (!hexWord(reg.value("offset"), offset) || !hexWord(reg.value("raw"), raw)) return false;
-        converted.append(QJsonObject{{"offset", double(offset)}, {"value", double(raw)}});
-    }
-    out = QJsonObject{{"format", "octool-amd-umc-v1"}, {"bank", int(bank)}, {"refresh_slot", int(slot)},
-        {"registers", converted}, {"cpu", double(cpu)}, {"bus", int(bus)}, {"device", int(device)}, {"function", int(function)},
-        {"origin", "Imported CLI report; origin and platform identity unverified"}};
-    return true;
-}
 QByteArray serialize(const UmcSnapshot &s) {
     QJsonArray regs;
     for(const auto &r:s.registers) regs.append(QJsonObject{{"offset",double(r.offset)},{"value",double(r.value)}});
@@ -107,22 +61,36 @@ UmcPanel::UmcPanel(std::shared_ptr<HardwareAccess> access,QWidget *parent,unsign
     auto *open=new QPushButton("Open snapshot…",this); buttons->addWidget(open);
     save_=new QPushButton("Save snapshot…",this); save_->setObjectName("umcSave"); save_->setEnabled(false); buttons->addWidget(save_);
     layout->addLayout(buttons);
-    table_=new QTableWidget(0,8,this); table_->setObjectName("umcTable");
-    table_->setHorizontalHeaderLabels({"Group","Field","ID","Offset","Bits","Register (hex)","Encoded value","State"});
+    auto *comparison=new QHBoxLayout;
+    compare_=new QPushButton("Compare snapshot…",this); compare_->setObjectName("umcCompare"); compare_->setEnabled(false);
+    resetComparison_=new QPushButton("Clear comparison",this); resetComparison_->setObjectName("umcClearComparison"); resetComparison_->setEnabled(false);
+    differences_=new QCheckBox("Only differences",this); differences_->setObjectName("umcDifferences"); differences_->setChecked(true); differences_->setEnabled(false);
+    comparison->addWidget(compare_); comparison->addWidget(resetComparison_); comparison->addWidget(differences_); comparison->addStretch(); layout->addLayout(comparison);
+    table_=new QTableWidget(0,11,this); table_->setObjectName("umcTable");
+    table_->setHorizontalHeaderLabels({"Group","Field","ID","Offset","Bits","Register (hex)","Encoded value","State","Compared register","Compared value","Comparison"});
+    for (int col=8;col<11;++col) table_->hideColumn(col);
     table_->setEditTriggers(QAbstractItemView::NoEditTriggers); table_->verticalHeader()->hide();
     table_->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     table_->horizontalHeader()->setStretchLastSection(true); layout->addWidget(table_,1);
     status_=new QLabel("Ready. No controller registers have been read.",this); status_->setWordWrap(true); status_->setObjectName("umcStatus");
     layout->addWidget(status_);
     connect(readButton,&QPushButton::clicked,this,[this] { read(); });
-    connect(open,&QPushButton::clicked,this,[this] {
-        const auto path=QFileDialog::getOpenFileName(this,"Open UMC snapshot",{},"UMC snapshot (*.json)"); if(path.isEmpty()) return;
-        QFile file(path);
-        if(!file.open(QIODevice::ReadOnly)) { clear(); status_->setText(file.errorString()); return; }
-        const auto bytes=file.read(65537);
-        if(file.error()!=QFileDevice::NoError) { clear(); status_->setText(file.errorString()); return; }
-        loadCapture(bytes);
-    });
+    auto openFile=[this](bool comparing) {
+        const auto path=QFileDialog::getOpenFileName(this,comparing ? "Compare UMC snapshot" : "Open UMC snapshot",{},"UMC snapshot (*.json)");
+        if(path.isEmpty()) return;
+        std::vector<std::uint8_t> bytes;
+        const int error=octool::platform::readBoundedFile(QFile::encodeName(path).toStdString(),bytes,65536);
+        if(error) {
+            if(comparing) clearComparison(); else clear();
+            status_->setText(QString("Snapshot could not be read (%1). Choose a regular JSON file of at most 64 KiB.").arg(error)); return;
+        }
+        const QByteArray input(reinterpret_cast<const char *>(bytes.data()),int(bytes.size()));
+        if(comparing) compareCapture(input); else loadCapture(input);
+    };
+    connect(open,&QPushButton::clicked,this,[openFile] { openFile(false); });
+    connect(compare_,&QPushButton::clicked,this,[openFile] { openFile(true); });
+    connect(resetComparison_,&QPushButton::clicked,this,[this] { clearComparison(); status_->setText("Comparison cleared. Current snapshot retained; origin and platform identity unverified."); });
+    connect(differences_,&QCheckBox::toggled,this,[this] { filterComparison(); });
     connect(save_,&QPushButton::clicked,this,[this] {
         if(capture_.isEmpty()) return;
         const auto path=QFileDialog::getSaveFileName(this,"Save UMC snapshot","octool-umc.json","UMC snapshot (*.json)"); if(path.isEmpty()) return;
@@ -138,7 +106,27 @@ UmcPanel::UmcPanel(std::shared_ptr<HardwareAccess> access,QWidget *parent,unsign
     connect(slot_,QOverload<int>::of(&QComboBox::currentIndexChanged),this,changed);
 }
 UmcPanel::~UmcPanel() { cancelled_->store(true); }
-void UmcPanel::clear() { table_->setRowCount(0); capture_.clear(); save_->setEnabled(false); }
+void UmcPanel::clear() {
+    table_->setRowCount(0); capture_.clear(); current_=UmcCapture{}; save_->setEnabled(false); compare_->setEnabled(false);
+    clearComparison();
+}
+void UmcPanel::clearComparison() {
+    comparison_=UmcComparison{}; resetComparison_->setEnabled(false); differences_->setEnabled(false);
+    for(int col=8;col<11;++col) table_->hideColumn(col);
+    table_->showColumn(4); table_->showColumn(7);
+    for(int row=0;row<table_->rowCount();++row) {
+        table_->setRowHidden(row,false);
+        for(int col=8;col<11;++col) delete table_->takeItem(row,col);
+    }
+}
+void UmcPanel::filterComparison() {
+    for(int row=0;row<table_->rowCount();++row) {
+        const auto *item=table_->item(row,10);
+        const int state=item ? item->data(Qt::UserRole).toInt() : -1;
+        table_->setRowHidden(row,differences_->isEnabled() && differences_->isChecked() &&
+            (state==int(UmcChange::Unchanged) || state==int(UmcChange::MissingBoth)));
+    }
+}
 QByteArray UmcPanel::captureBytes() const { return capture_; }
 void UmcPanel::present(const UmcDecode &d) {
     table_->setRowCount(0);
@@ -152,30 +140,36 @@ void UmcPanel::present(const UmcDecode &d) {
     }
 }
 bool UmcPanel::loadCapture(const QByteArray &bytes) {
-    clear(); status_->setText("Invalid UMC snapshot. No hardware access performed.");
-    if(bytes.isEmpty() || bytes.size()>65536) return false;
-    QJsonParseError error; const auto doc=QJsonDocument::fromJson(bytes,&error);
-    if(error.error!=QJsonParseError::NoError || !doc.isObject()) return false;
-    auto obj=doc.object(); unsigned bank=0,slot=0;
-    if (obj.contains("schema_version")) {
-        QJsonObject converted;
-        if (!cliCapture(obj, converted)) return false;
-        obj = converted;
-    }
-    if(obj.value("format").toString()!="octool-amd-umc-v1" || !number(obj.value("bank"),22,bank) ||
-        !number(obj.value("refresh_slot"),15,slot) || !obj.value("registers").isArray()) return false;
-    const auto regs=obj.value("registers").toArray(); if(regs.isEmpty() || regs.size()>56) return false;
-    std::vector<UmcRegister> registers;
-    for(const auto &value:regs) {
-        if(!value.isObject()) return false;
-        const auto reg=value.toObject(); unsigned offset=0,raw=0;
-        if(!number(reg.value("offset"),UINT32_MAX,offset) || !number(reg.value("value"),UINT32_MAX,raw)) return false;
-        UmcRegister r; r.offset=offset; r.value=raw; registers.push_back(r);
-    }
-    const auto decoded=decodeAmdUmc(registers,slot); if(decoded.error) return false;
-    present(decoded); capture_=QJsonDocument(obj).toJson(); save_->setEnabled(true);
+    clear();
+    const auto parsed=parseUmcCapture(bytes.toStdString());
+    if(parsed.error) { status_->setText("Invalid UMC snapshot: "+QString::fromStdString(parsed.detail)); return false; }
+    current_=parsed; present(current_.decoded); capture_=QByteArray::fromStdString(current_.snapshotJson);
+    save_->setEnabled(true); compare_->setEnabled(true);
     status_->setText(QString("Offline snapshot · bank %1 / refresh slot %2 · %3 registers. Platform identity and capture origin are unverified. Missing values remain blank.")
-        .arg(bank).arg(slot).arg(regs.size())); return true;
+        .arg(current_.target.bank).arg(current_.target.refreshSlot).arg(current_.registers.size())); return true;
+}
+bool UmcPanel::compareCapture(const QByteArray &bytes) {
+    clearComparison();
+    const auto other=parseUmcCapture(bytes.toStdString());
+    if(current_.error || other.error) { status_->setText("Cannot compare: load two valid UMC snapshots. Current snapshot retained."); return false; }
+    comparison_=compareUmcCaptures(current_,other);
+    if(comparison_.error) { status_->setText("Cannot compare different banks or refresh slots. Current snapshot retained."); return false; }
+    for(int row=0;row<table_->rowCount();++row) {
+        const auto &v=comparison_.fields.at(table_->item(row,2)->text().toUInt());
+        table_->setItem(row,8,new QTableWidgetItem(v.after.error ? "—" : hexValue(v.after.raw,4)));
+        table_->setItem(row,9,new QTableWidgetItem(v.after.error ? "—" : QString::number(v.after.encoded)));
+        const QString state=v.state==UmcChange::Changed ? "Value changed" : v.state==UmcChange::RawOnly ? "Register only" :
+            v.state==UmcChange::MissingBefore ? "Missing current" : v.state==UmcChange::MissingAfter ? "Missing compared" :
+            v.state==UmcChange::MissingBoth ? "Missing both" : "Unchanged";
+        auto *item=new QTableWidgetItem(state); item->setData(Qt::UserRole,int(v.state)); table_->setItem(row,10,item);
+    }
+    for(int col=8;col<11;++col) table_->showColumn(col);
+    table_->hideColumn(4); table_->hideColumn(7);
+    resetComparison_->setEnabled(true); differences_->setEnabled(true); filterComparison();
+    const auto &n=comparison_.counts;
+    status_->setText(QString("Offline comparison · bank %1 / slot %2 · %3 values changed, %4 register-only, %5 unchanged, %6 missing current, %7 missing compared, %8 missing both. Matching indices do not verify the same physical channel. Save snapshot keeps the current capture.")
+        .arg(current_.target.bank).arg(current_.target.refreshSlot).arg(n[1]).arg(n[2]).arg(n[0]).arg(n[3]).arg(n[4]).arg(n[5]));
+    return true;
 }
 void UmcPanel::read() {
     clear(); UmcTarget t; quint64 cpu=0,bus=0,device=0,function=0;
@@ -191,7 +185,7 @@ void UmcPanel::read() {
         const auto r=watcher->result(); setEnabled(true);
         if(r.error) status_->setText(QString("Read failed (%1). %2 registers captured; no timing result published.").arg(r.error).arg(r.registers.size()));
         else {
-            present(r.decoded); capture_=serialize(r); save_->setEnabled(true);
+            present(r.decoded); capture_=serialize(r); current_=parseUmcCapture(capture_.toStdString()); save_->setEnabled(true); compare_->setEnabled(true);
             status_->setText(QString("Read complete · bank %1 / refresh slot %2 · %3 registers. Values are legacy encodings; board / firmware semantics are not certified.")
                 .arg(r.target.bank).arg(r.target.refreshSlot).arg(r.registers.size()));
         }

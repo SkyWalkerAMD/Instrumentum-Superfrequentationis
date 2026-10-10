@@ -17,6 +17,7 @@
 #include "../../port/abi/octool_hwio_abi.h"
 #include <QtTest>
 #include <QComboBox>
+#include <QCheckBox>
 #include <QClipboard>
 #include <QLineEdit>
 #include <QLabel>
@@ -633,6 +634,63 @@ private slots:
             QVERIFY(panel.captureBytes().isEmpty()); QVERIFY(!panel.findChild<QPushButton *>("umcSave")->isEnabled());
         }
         QCOMPARE(reference.calls.load(), 0);
+    }
+    void umcComparisonSharesDecoderAndPreservesSnapshot() {
+        Reference reference; UmcPanel panel(reference.access()); panel.resize(1440,700); panel.show();
+        const QByteArray before=R"({"format":"octool-amd-umc-v1","bank":0,"refresh_slot":0,"registers":[{"offset":516,"value":34},{"offset":4624,"value":258048}]})";
+        const auto after=QByteArray(before).replace("\"value\":34","\"value\":35");
+        QVERIFY(panel.loadCapture(before)); const auto saved=panel.captureBytes();
+        QVERIFY(panel.compareCapture(after)); QCOMPARE(reference.calls.load(),0); QCOMPARE(panel.captureBytes(),saved);
+        auto *table=panel.findChild<QTableWidget *>("umcTable");
+        auto *only=panel.findChild<QCheckBox *>("umcDifferences"); QVERIFY(only->isEnabled() && only->isChecked());
+        for(int row=0;row<table->rowCount();++row) {
+            const auto id=table->item(row,2)->text().toUInt();
+            if(id==32) {
+                QCOMPARE(table->item(row,6)->text(),QString("34")); QCOMPARE(table->item(row,9)->text(),QString("35"));
+                QCOMPARE(table->item(row,10)->text(),QString("Value changed")); QVERIFY(!table->isRowHidden(row));
+            }
+            if(id==203) QVERIFY(table->isRowHidden(row));
+        }
+        const auto screenshot=qEnvironmentVariable("OCTOOL_UMC_DIFF_TEST_SCREENSHOT");
+        if(!screenshot.isEmpty()) QVERIFY(panel.grab().save(screenshot));
+        only->setChecked(false);
+        for(int row=0;row<table->rowCount();++row) QVERIFY(!table->isRowHidden(row));
+        panel.findChild<QPushButton *>("umcClearComparison")->click();
+        QVERIFY(table->isColumnHidden(8)); QVERIFY(!only->isEnabled()); QCOMPARE(panel.captureBytes(),saved);
+        QVERIFY(panel.compareCapture(before));
+        panel.findChild<QComboBox *>("umcBank")->setCurrentIndex(1);
+        QCOMPARE(table->rowCount(),0); QVERIFY(panel.captureBytes().isEmpty());
+        QVERIFY(!panel.findChild<QPushButton *>("umcCompare")->isEnabled()); QCOMPARE(reference.calls.load(),0);
+    }
+    void umcComparisonFailureClearsOnlyComparison() {
+        Reference reference; UmcPanel panel(reference.access());
+        const QByteArray bytes=R"({"format":"octool-amd-umc-v1","bank":0,"refresh_slot":0,"registers":[{"offset":516,"value":34}]})";
+        QVERIFY(!panel.compareCapture(bytes));
+        QVERIFY(panel.loadCapture(bytes));
+        for(const auto &bad:QList<QByteArray>{"{}",QByteArray(bytes).replace("\"bank\":0","\"bank\":1"),
+            QByteArray(bytes).replace("\"refresh_slot\":0","\"refresh_slot\":1"),
+            QByteArray(bytes).replace("\"bank\":0","\"bank\":0,\"bank\":1")}) {
+            QVERIFY(panel.compareCapture(bytes)); QVERIFY(!panel.compareCapture(bad));
+            QCOMPARE(panel.captureBytes(),bytes); QCOMPARE(panel.findChild<QTableWidget *>("umcTable")->rowCount(),212);
+            QVERIFY(panel.findChild<QTableWidget *>("umcTable")->isColumnHidden(10));
+            QVERIFY(panel.findChild<QPushButton *>("umcSave")->isEnabled());
+            QVERIFY(!panel.findChild<QPushButton *>("umcClearComparison")->isEnabled());
+        }
+        QCOMPARE(reference.calls.load(),0);
+    }
+    void umcComparisonAcceptsCliDecodeAndMissingFields() {
+        QFile input(QFINDTESTDATA("fixtures/cli-umc.json")); QVERIFY(input.open(QIODevice::ReadOnly));
+        auto report=QJsonDocument::fromJson(input.readAll()).object();
+        Reference reference; UmcPanel panel(reference.access()); QVERIFY(panel.loadCapture(QJsonDocument(report).toJson()));
+        auto data=report.value("data").toObject(); auto regs=data.value("registers").toArray(); regs.removeLast();
+        data["registers"]=regs; report["data"]=data; report["command"]="amd-umc-decode";
+        QVERIFY(panel.compareCapture(QJsonDocument(report).toJson()));
+        auto *table=panel.findChild<QTableWidget *>("umcTable"); bool missing=false;
+        for(int row=0;row<table->rowCount();++row) if(table->item(row,10)->text()=="Missing compared") {
+            missing=true; QCOMPARE(table->item(row,9)->text(),QString("—")); QVERIFY(!table->isRowHidden(row));
+        }
+        QVERIFY(missing); QVERIFY(panel.loadCapture(QJsonDocument(report).toJson()));
+        QVERIFY(panel.loadCapture(panel.captureBytes())); QCOMPARE(reference.calls.load(),0);
     }
     void umcRejectsInvalidTargetAndWrongVendorWithoutPci() {
         PstateReference reference; reference.amd=false; UmcPanel panel(reference.access(),nullptr,3);

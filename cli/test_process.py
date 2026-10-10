@@ -34,8 +34,8 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 220, len(reports)
-assert len([r for r in reports if r["error"] == -22]) >= 109
+assert len(reports) == 230, len(reports)
+assert len([r for r in reports if r["error"] == -22]) >= 119
 vf_edit = [r for r in reports if "edit_context" in r.get("data", {})]
 assert len(vf_edit) == 24
 for index, result in enumerate(vf_edit[:8]):
@@ -193,6 +193,54 @@ assert {k: umc[k] for k in contract if k != "data"} == {k: v for k, v in contrac
 assert {k: umc["data"][k] for k in contract["data"]} == contract["data"]
 assert len(umc["data"]["fields"]) == 212 and len(umc["data"]["registers"]) == 56
 assert len({f["id"] for f in umc["data"]["fields"]}) == 212
+
+# Exercise both directions through the real executable without Qt or hardware.
+with tempfile.TemporaryDirectory(prefix="octool-umc-") as directory:
+    root = Path(directory)
+    before, after = root / 'before-"-内存.json', root / "after.json"
+    gui = {"format": "octool-amd-umc-v1", "bank": 0, "refresh_slot": 0,
+           "registers": [{"offset": 516, "value": 34}, {"offset": 4624, "value": 258048}]}
+    before.write_text(json.dumps(gui), encoding="utf-8")
+    decoded = run("amd-umc-decode", "--file", str(before))
+    data = decoded["data"]
+    assert data["offline"] and not data["hardware_accessed"] and not data["origin_verified"]
+    assert not data["complete"] and data["cpu"] is None and data["pci"] is None
+    assert data["fields"][32]["encoded"] == 34 and data["fields"][203]["encoded"] == 63
+    assert any(f["encoded"] is None and f["error"] < 0 for f in data["fields"])
+    after.write_text(json.dumps(decoded), encoding="utf-8")
+    roundtrip = run("amd-umc-decode", "--file", str(after))["data"]
+    assert roundtrip["registers"] == data["registers"] and roundtrip["fields"] == data["fields"]
+    same = run("amd-umc-diff", "--file", str(before), "--compare", str(after))["data"]
+    assert sum(same["counts"].values()) == 212 and same["counts"]["changed"] == 0
+    assert same["fields"][32]["state"] == "unchanged" and same["fields"][203]["state"] == "unchanged"
+    gui["registers"][0]["value"] = 35
+    gui["registers"].pop()
+    after.write_text(json.dumps(gui), encoding="utf-8")
+    delta = run("amd-umc-diff", "--file", str(before), "--compare", str(after))["data"]
+    assert delta["fields"][32]["encoded_delta"] == 1 and delta["fields"][32]["state"] == "changed"
+    assert delta["fields"][203]["after_encoded"] is None and delta["fields"][203]["encoded_delta"] is None
+    assert delta["fields"][203]["state"] == "missing_after" and not delta["physical_channel_verified"]
+    gui["bank"] = 1
+    after.write_text(json.dumps(gui), encoding="utf-8")
+    mismatch = run("amd-umc-diff", "--file", str(before), "--compare", str(after), code=3)
+    assert mismatch["error"] == -18 and "fields" not in mismatch["data"]
+    after.write_text(json.dumps(umc), encoding="utf-8")
+    live_import = run("amd-umc-decode", "--file", str(after))["data"]
+    assert live_import["complete"] and live_import["registers"] == umc["data"]["registers"]
+    assert live_import["fields"] == umc["data"]["fields"]
+    content = before.read_bytes()
+    before.write_bytes(content + b" " * (65536 - len(content)))
+    run("amd-umc-decode", "--file", str(before))
+    before.write_bytes(before.read_bytes() + b" ")
+    assert run("amd-umc-decode", "--file", str(before), code=3)["error"] == -27
+    before.write_text('{"format":"octool-amd-umc-v1","bank":0,"bank":1}', encoding="utf-8")
+    assert run("amd-umc-decode", "--file", str(before), code=3)["error"] == -22
+    fifo = root / "fifo"
+    os.mkfifo(fifo)
+    for path in (fifo, root, root / "missing"):
+        failed = run("amd-umc-decode", "--file", str(path), code=3)
+        assert not failed["data"]["hardware_accessed"] and "fields" not in failed["data"]
+print("UMC offline process checks passed: GUI/CLI roundtrips, differences, missing values, 64 KiB boundary and nonblocking FIFO rejection")
 for result in reports:
     if result["command"] == "intel-oc-set" and result["ok"]:
         assert result["data"]["verified"]

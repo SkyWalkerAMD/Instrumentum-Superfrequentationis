@@ -70,7 +70,8 @@ def main():
                    OCTOOL_TURBO_TEST_SCREENSHOT=str((tests / "turbo-fixture.png").resolve()),
                    OCTOOL_CONTROL_TEST_SCREENSHOT=str((tests / "controls-fixture.png").resolve()),
                    OCTOOL_VF_TEST_SCREENSHOT=str((tests / "vf-fixture.png").resolve()),
-                   OCTOOL_VF_EDIT_TEST_SCREENSHOT=str((tests / "vf-edit-fixture.png").resolve()))
+                   OCTOOL_VF_EDIT_TEST_SCREENSHOT=str((tests / "vf-edit-fixture.png").resolve()),
+                   OCTOOL_UMC_DIFF_TEST_SCREENSHOT=str((tests / "umc-diff-fixture.png").resolve()))
         try:
             subprocess.run([str((tests / "gui-regression").resolve()), "-o", "gui-tests.txt,txt"],
                            cwd=tests, env=env, check=True, timeout=120)
