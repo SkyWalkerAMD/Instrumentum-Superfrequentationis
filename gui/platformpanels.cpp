@@ -61,7 +61,7 @@ IntelControlsPanel::IntelControlsPanel(std::shared_ptr<HardwareAccess> access, Q
     setObjectName("intelControls"); auto *layout = new QVBoxLayout(this);
     description("Intel Controls · package power limits and hardware performance requests\n"
         "HWP levels are performance indices, not MHz. BIOS locks and OS power management may restrict or overwrite changes. "
-        "Voltage / VF, per-core turbo ratios and fabric controls are not yet recovered.", layout, this);
+        "Client core / cache offsets have a separate tab. Per-core VF, turbo ratios and fabric controls remain in recovery.", layout, this);
     auto *buttons = new QHBoxLayout; buttons->addWidget(new QLabel("Logical CPU", this));
     cpu_ = edit("intelCpu", QString::number(cpu), this); buttons->addWidget(cpu_);
     auto *read = new QPushButton("Read once", this); read->setObjectName("intelRead"); buttons->addWidget(read);

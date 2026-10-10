@@ -3,6 +3,8 @@
 #include "pstates.h"
 #include "platformpanels.h"
 #include "umcpanel.h"
+#include "intelocpanel.h"
+#include "intel_oc_fixture.h"
 #include "platform/linux_inventory.h"
 #include "platform/linux_hwio.h"
 #include "platform/linux_cpu.h"
@@ -109,14 +111,80 @@ private slots:
         Reference reference; auto access=reference.access();
         IntelControlsPanel intel(access,nullptr,7); AmdTuningPanel amd(access,nullptr,7); MemoryBoardPanel inventory;
         UmcPanel umc(access,nullptr,7);
+        IntelOcPanel oc(access,nullptr,7);
         QCOMPARE(reference.calls.load(),0);
         QCOMPARE(intel.findChild<QLineEdit *>("intelCpu")->text(),QString("7"));
         QCOMPARE(amd.findChild<QLineEdit *>("smuCpu")->text(),QString("7"));
         QCOMPARE(inventory.findChild<QTableWidget *>("inventoryTable")->rowCount(),0);
         QCOMPARE(umc.findChild<QTableWidget *>("umcTable")->rowCount(),0);
+        QVERIFY(!oc.findChild<QPushButton *>("ocApply")->isEnabled());
         intel.findChild<QLineEdit *>("intelValue")->setText("125");
         intel.findChild<QPushButton *>("intelApply")->click();
         QCOMPARE(reference.calls.load(),0);
+    }
+    void intelOcQueriesAndInvalidatesTargets() {
+        auto *device = new IntelOcFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelOcPanel panel(access, nullptr, 130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("ocRead");
+        auto *apply = panel.findChild<QPushButton *>("ocApply");
+        auto *table = panel.findChild<QTableWidget *>("ocTable");
+        QCOMPARE(device->calls, 0u); read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(), 6); QVERIFY(apply->isEnabled());
+        QCOMPARE(table->item(4, 1)->text(), hexValue(device->settings[0], 4));
+        QCOMPARE(device->mutationCount, 0u); QCOMPARE(device->wrongCpu, 0u);
+        const unsigned before = device->calls;
+        panel.findChild<QComboBox *>("ocDomain")->setCurrentIndex(1);
+        QCOMPARE(table->rowCount(), 0); QVERIFY(!apply->isEnabled()); QCOMPARE(device->calls, before);
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->item(4, 1)->text(), hexValue(device->settings[2], 4));
+        const auto after = device->calls; panel.findChild<QLineEdit *>("ocCpu")->setText("-1"); read->click();
+        QCOMPARE(device->calls, after); QCOMPARE(table->rowCount(), 0);
+        panel.findChild<QLineEdit *>("ocCpu")->setText("130"); device->model = 0x8f; device->clearTrace();
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        QVERIFY(device->requests.empty()); QCOMPARE(table->rowCount(), 0); QVERIFY(!apply->isEnabled());
+    }
+    void intelOcCancelThenApplyPreservesOtherFields() {
+        auto *device = new IntelOcFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelOcPanel panel(access, nullptr, 130); panel.show();
+        panel.findChild<QPushButton *>("ocRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        const auto previous = device->settings[0], other = device->settings[2]; const auto calls = device->calls;
+        auto *apply = panel.findChild<QPushButton *>("ocApply"); panel.findChild<QLineEdit *>("ocOffset")->setText("-50");
+        QTimer::singleShot(0, [] {
+            auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget());
+            if (box) box->button(QMessageBox::Cancel)->click();
+        });
+        apply->click(); QCOMPARE(device->calls, calls); QCOMPARE(device->mutationCount, 0u);
+        QTimer::singleShot(0, [] {
+            auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget());
+            if (box) box->button(QMessageBox::Yes)->click();
+        });
+        apply->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->mutationCount, 1u); QCOMPARE(device->settings[0] & 0x1fffffu, previous & 0x1fffffu);
+        QCOMPARE(device->settings[2], other); QCOMPARE(device->wrongCpu, 0u);
+        QCOMPARE(panel.findChild<QTableWidget *>("ocTable")->item(0, 1)->text(), QString("-49.8046875"));
+        QVERIFY(panel.findChild<QLabel *>("ocStatus")->text().contains("read back"));
+    }
+    void intelOcLockedOrUnverifiedWritesNeverShowSuccess() {
+        auto *device = new IntelOcFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelOcPanel panel(access, nullptr, 130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("ocRead"); auto *apply = panel.findChild<QPushButton *>("ocApply");
+        auto *status = panel.findChild<QLabel *>("ocStatus"); auto *table = panel.findChild<QTableWidget *>("ocTable");
+        device->locked = true; read->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(!apply->isEnabled());
+        device->locked = false; read->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(apply->isEnabled());
+        device->discardChange = true;
+        panel.findChild<QLineEdit *>("ocOffset")->setText("-50");
+        QTimer::singleShot(0, [] {
+            auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget());
+            if (box) box->button(QMessageBox::Yes)->click();
+        });
+        apply->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->mutationCount, 1u); QCOMPARE(table->rowCount(), 0); QVERIFY(!apply->isEnabled());
+        QVERIFY(status->text().contains("not verified"));
+        device->failCommand = 0x10; device->status = 3;
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        QVERIFY(status->text().contains("Firmware status: 0x03")); QCOMPARE(table->rowCount(), 0); QVERIFY(!apply->isEnabled());
     }
     void umcOfflineCaptureKeepsDistinctFieldsAndClearsInvalidInput() {
         Reference reference; UmcPanel panel(reference.access());

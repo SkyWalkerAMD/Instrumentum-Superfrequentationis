@@ -1,5 +1,8 @@
 # Intel 电压 / VF 剩余路径核对
 
+后续已接入[client core/cache offset 与回读](intel-oc-recovery.md)，下文保留接入前的静态研究。
+W790/W890、VF 点与逐核 override 的剩余限制仍然适用。
+
 [证据文件](validation/intel-oc-followup.json)保存固定原 ELF 中六个完整函数的静态指令、代码哈希，
 以及 coreboot 官方源码的取得日期和内容哈希。这次没有执行真实 Intel 电压写入，也没有把静态分析
 计入新 UMC / 拓扑的核心测试数。

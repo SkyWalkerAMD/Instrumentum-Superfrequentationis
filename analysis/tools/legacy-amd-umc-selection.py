@@ -116,8 +116,30 @@ def analyze(fixture):
     sentinel = {hex(0x50260+block+lane):0x138 for block in range(0,0x400,0x100) for lane in range(0,16,4)}
     run('rfc-all-sentinels', dict(default=1200, absolute_registers=sentinel),
         dict(standard, lane_offset=0, read_addresses=[0x50200,0x50200,0x50260]+[int(x,16) for x in sentinel]))
+    fields=json.loads((u.ROOT/'analysis/contracts/amd-umc-fields.json').read_bytes())['descriptors']
+    refresh=[]
+    for slot in range(16):
+        m=SelectionMachine(fixture, dict(default=1200))
+        m.prepare(u.CTOR); m.execute_constructor()
+        delta=(slot//4)*0x100+(slot%4)*4
+        m.put32(m.timing_object+0x94, delta)
+        offsets=[f['offset']+(delta if f['offset'] in (0x260,0x2c0) else 0) for f in fields]
+        registers={hex(0x50000+offset):(offset*0x01010101)&0xffffffff for offset in offsets}
+        m.inputs['absolute_registers']=registers
+        expected=[(registers[hex(0x50000+offset)]>>f['lsb'])&((1<<(f['msb']-f['lsb']+1))-1)
+                  for f,offset in zip(fields,offsets)]
+        passes=[]
+        for iteration in range(2):
+            m.pci=[]
+            instructions=m.execute(u.POPULATE)
+            values=m.flat(m.timing_object+0xa8,4)
+            assert values==expected, (slot,iteration)
+            reads=[r['index'] for r in m.pci if not r['write']]
+            assert sorted(reads)==sorted(0x50000+offset for offset in set(offsets))
+            passes.append(dict(instructions=instructions,read_addresses=reads,fields=values))
+        refresh.append(dict(slot=slot,delta=delta,passes=passes))
     return dict(schema=1, source_elf_sha256=u.base.SOURCE_SHA, fixture_sha256=u.FIXTURE_SHA,
-                scope=__doc__, scenarios=cases,
+                scope=__doc__, scenarios=cases, refresh_scenarios=refresh,
                 limitations=['Synthetic PCI discovery and return values only; not hardware compatibility evidence',
                              'RW_MMIO_AMD constructor is a stub, not part of the instruction coverage',
                              'Original search bugs are evidence, not a production selection algorithm'])

@@ -8,6 +8,7 @@
 #include <QCoreApplication>
 #include <QJsonArray>
 #include "umcpanel.h"
+#include "intelocpanel.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFormLayout>
@@ -71,7 +72,7 @@ int main(int argc, char **argv)
     row("OCTool", app.applicationVersion());
     layout->addLayout(form);
     layout->addWidget(new AuthorizationPanel(access, overview));
-    auto *scope = new QLabel("Raw MSR / MMIO / PCI, AMD P-state definitions, Intel power / HWP controls, "
+    auto *scope = new QLabel("Raw MSR / MMIO / PCI, AMD P-state definitions, Intel power / HWP and client voltage offset controls, "
         "AMD BIOS mailbox commands, and memory / motherboard inventory. "
         "Each page states the recovered scope; board-specific tuning and full original feature parity remain in progress.", overview);
     scope->setWordWrap(true); layout->addWidget(scope);
@@ -81,7 +82,10 @@ int main(int argc, char **argv)
     tabs->addTab(new RegisterPanel(Space::Memory, access, tabs), "MMIO");
     tabs->addTab(new RegisterPanel(Space::Pci, access, tabs), "PCI");
     tabs->addTab(new PstatesPanel(access, tabs, initialCpu), "AMD PStates");
-    tabs->addTab(new IntelControlsPanel(access, tabs, initialCpu), "Intel Controls");
+    auto *intel = new QTabWidget(tabs);
+    intel->addTab(new IntelControlsPanel(access, intel, initialCpu), "Power / performance");
+    intel->addTab(new IntelOcPanel(access, intel, initialCpu), "Core / cache voltage");
+    tabs->addTab(intel, "Intel Controls");
     tabs->addTab(new AmdTuningPanel(access, tabs, initialCpu), "AMD tuning");
     tabs->addTab(new MemoryBoardPanel(tabs), "Memory / Motherboard");
     tabs->addTab(new UmcPanel(access,tabs,initialCpu), "AMD UMC");
@@ -90,10 +94,15 @@ int main(int argc, char **argv)
     // CI requests snapshots of these real windows for visual inspection.
     // Normal launches have no screenshot path and create no image files.
     const QString capture = qEnvironmentVariable("OCTOOL_SMOKE_SCREENSHOT");
-    if (!capture.isEmpty()) QTimer::singleShot(1000, &window, [&window, tabs, capture] {
+    if (!capture.isEmpty()) QTimer::singleShot(1000, &window, [&window, tabs, intel, capture] {
         for (int page = 0; page < tabs->count(); ++page) {
             tabs->setCurrentIndex(page);
             window.grab().save(capture + QString("-%1.png").arg(page));
+            if (page == 5) {
+                intel->setCurrentIndex(1);
+                window.grab().save(capture + "-5-voltage.png");
+                intel->setCurrentIndex(0);
+            }
         }
         tabs->setCurrentIndex(0);
     });
