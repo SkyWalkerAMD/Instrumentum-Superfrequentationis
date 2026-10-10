@@ -199,4 +199,4 @@ with tempfile.TemporaryDirectory(prefix="octool-cli-") as directory:
     path.write_bytes(spd)
     result = run("spd-decode", "--file", str(path), code=3)["data"]["spd"]
     assert result["crc_checked"] and not result["crc_valid"]
-print("CLI process checks passed: no display, sparse affinity, 147 JSON reports, exact 64-bit registers, RAPL/HWP readback and activity window, voltage preservation and VF partial errors, inventory limits, SPD CRC/errors")
+print(f"CLI process checks passed: no display, sparse affinity, {len(reports)} JSON reports, exact 64-bit registers, RAPL/HWP readback and activity window, voltage preservation and VF partial errors, turbo groups and full readback, inventory limits, SPD CRC/errors")
