@@ -108,8 +108,91 @@ void numericBoundaries() {
     b.resize(4096); assert(!decodeSpd(b).xmp.error);
     b.resize(4097); assert(decodeSpd(b).error == -EINVAL);
 }
+void expoProfiles() {
+    const auto b = spdExpoFixture(); const auto r = decodeSpd(b);
+    assert(!r.error && !r.xmp.error && !r.expo.error && r.expo.present && r.expo.crc.valid);
+    assert(r.expo.raw.size() == 128 && r.expo.profiles.size() == 2 && r.expo.revision == 0x10);
+    assert(r.expo.configurationRaw == 0x33 && r.expo.featuresRaw == 0x11);
+    assert(r.xmp.profiles[2].blockedByExpo && !r.xmp.profiles[2].enabled);
+    const unsigned expected[][13] = {
+        {1250,1250,1800,333,12654,12654,12654,25974,38628,30000,295,160,130},
+        {1200,1200,1800,357,14280,14280,14280,29988,44268,30000,295,160,130}
+    };
+    for (unsigned i = 0; i < 2; ++i) {
+        const auto &p = r.expo.profiles[i];
+        assert(p.index == i+1 && p.offset == 842+40*i && p.enabled && !p.error && p.raw.size() == 40 && p.values.size() == 13);
+        for (unsigned v = 0; v < 13; ++v) {
+            assert(p.values[v].value == expected[i][v]);
+            assert(p.values[v].unit == (v < 3 ? "mV" : v < 10 ? "ps" : "ns"));
+        }
+    }
+    assert(b == spdExpoFixture());
+}
+void expoTruncation() {
+    const auto b = spdExpoFixture();
+    for (unsigned n = 0; n <= b.size(); ++n) {
+        const auto r = decodeSpd(std::vector<std::uint8_t>(b.begin(),b.begin()+n));
+        if (n < 836) { assert(!r.expo.inspected && !r.expo.error); continue; }
+        assert(!r.error && !r.xmp.error && r.expo.inspected && r.expo.present);
+        assert(r.expo.error == (n < 960 ? -EMSGSIZE : 0));
+        assert(r.expo.crc.checked == (n >= 960) && r.expo.profiles.empty() == (n < 960));
+    }
+}
+void expoCorruptionAndIsolation() {
+    const auto original = spdExpoFixture();
+    for (unsigned bit = 0; bit < 128 * 8; ++bit) {
+        auto b = original; b[832+bit/8] ^= std::uint8_t(1u << (bit%8));
+        const auto r = decodeSpd(b);
+        assert(!r.error && !r.xmp.error && r.xmp.profiles[0].values.size() == 14);
+        assert(r.expo.profiles.empty());
+        if (bit < 32) assert(!r.expo.present && !r.expo.error);
+        else assert(r.expo.present && r.expo.error == -EILSEQ && r.expo.raw.size() == 128);
+    }
+    auto b = original; b[660] ^= 1;
+    auto r = decodeSpd(b); assert(r.xmp.error == -EILSEQ && !r.expo.error && r.expo.profiles.size() == 2);
+    b = original; b[640] = 0;
+    r = decodeSpd(b); assert(!r.xmp.present && !r.expo.error && r.expo.profiles.size() == 2);
+    b = original; b[643] = 7; spdSeal(b,640,62);
+    r = decodeSpd(b); assert(r.xmp.error == -EINVAL && !r.expo.error && r.expo.profiles.size() == 2);
+    b = original; b[20] ^= 1;
+    r = decodeSpd(b); assert(r.error == -EILSEQ && !r.expo.inspected);
+    b = original; b[2] = 0x0c; spdSeal(b,0,126);
+    r = decodeSpd(b); assert(!r.error && !r.expo.inspected);
+}
+void expoFlagsAndRevision() {
+    for (unsigned flags = 0; flags < 256; ++flags) {
+        auto b = spdExpoFixture(); b[837] = std::uint8_t(flags); b[838] = std::uint8_t(255-flags); spdSeal(b,832,126);
+        const auto r = decodeSpd(b); assert(!r.expo.error && r.expo.configurationRaw == flags && r.expo.featuresRaw == 255-flags);
+        for (unsigned i = 0; i < 2; ++i) {
+            const auto &p = r.expo.profiles[i]; const bool enabled = (flags & (1u << (i*4))) != 0;
+            assert(p.enabled == enabled && p.values.empty() == !enabled);
+        }
+    }
+    auto b = spdExpoFixture(); b[837] = 0;
+    std::fill(b.begin()+842,b.begin()+922,std::uint8_t(0xff)); spdSeal(b,832,126);
+    auto r = decodeSpd(b); assert(!r.expo.error && r.expo.profiles[0].values.empty() && r.expo.profiles[1].values.empty());
+    for (unsigned revision : {0u, 0x11u, 0x20u, 0xffu}) {
+        b[836] = std::uint8_t(revision); spdSeal(b,832,126); r = decodeSpd(b);
+        assert(r.expo.error == -ENOTSUP && r.expo.crc.valid && r.expo.profiles.empty() && r.expo.raw.size() == 128);
+    }
+}
+void expoNumericBoundaries() {
+    for (unsigned encoded = 0; encoded < 256; ++encoded) {
+        auto b = spdExpoFixture(); b[842] = std::uint8_t(encoded); spdSeal(b,832,126);
+        assert(decodeSpd(b).expo.profiles[0].values[0].value == (encoded>>5)*1000+(encoded&31)*50);
+    }
+    auto b = spdExpoFixture(); spdWord(b,846,0); spdSeal(b,832,126);
+    auto r = decodeSpd(b); assert(r.expo.error == -EINVAL && r.expo.crc.valid && r.expo.profiles[0].values.empty());
+    assert(!r.expo.profiles[1].error && r.expo.profiles[1].values.size() == 13);
+    spdWord(b,846,65535); spdWord(b,848,0x1234); spdWord(b,860,65535); spdSeal(b,832,126);
+    r = decodeSpd(b); assert(!r.expo.error && r.expo.profiles[0].values[3].value == 65535);
+    assert(r.expo.profiles[0].values[4].value == 0x1234 && r.expo.profiles[0].values[10].value == 65535);
+    b.resize(4096); assert(!decodeSpd(b).expo.error);
+    b.resize(4097); assert(decodeSpd(b).error == -EINVAL);
+}
 }
 int main() {
     threeProfiles(); truncation(); corruptedSections(); gatesAndOverlap(); boundedNames(); numericBoundaries();
-    std::cout << "6 SPD XMP scenario groups passed (all capture lengths and section corruption bits)\n";
+    expoProfiles(); expoTruncation(); expoCorruptionAndIsolation(); expoFlagsAndRevision(); expoNumericBoundaries();
+    std::cout << "11 SPD XMP/EXPO scenario groups passed (all capture lengths and section corruption bits)\n";
 }

@@ -46,7 +46,7 @@ octool-cli inventory > inventory.json
 octool-cli spd-decode --file memory.spd > spd.json
 ```
 
-SPD 报告同时解码 [DDR5 XMP 3.0 厂家档案](ddr5-xmp-recovery.md)：名称、电压、原始时序和独立 CRC。
+SPD 报告同时解码 [DDR5 XMP 3.0 厂家档案](ddr5-xmp-recovery.md)和 [EXPO 1.0 基础档案](ddr5-expo-recovery.md)：电压、原始时序和独立区域 CRC；XMP 另含厂家档案名称。
 档案校验失败仍保留基础字段及其它完整档案；`spd-decode` 返回退出码 3。
 XMP 值不代表已启用或当前训练值；EXPO 区域只识别，不解码或应用。
 

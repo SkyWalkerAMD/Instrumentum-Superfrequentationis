@@ -524,6 +524,7 @@ std::string spd(const std::string &path, const std::vector<std::uint8_t> &bytes,
     SpdSnapshot decoded;
     if (!error) { decoded = decodeSpd(bytes); error = decoded.error; }
     if (!error) error = decoded.xmp.error;
+    if (!error) error = decoded.expo.error;
     std::vector<std::string> fields;
     for (const auto &field : decoded.fields) fields.push_back(object({{"name", quote(field.name)}, {"value", quote(field.value)}}));
     const auto crcJson = [](const SpdCrc &crc) {
@@ -543,13 +544,31 @@ std::string spd(const std::string &path, const std::vector<std::uint8_t> &bytes,
             {"name_valid", boolean(p.nameValid)}, {"name", p.nameValid ? quote(p.name) : "null"},
             {"crc", crcJson(p.crc)}, {"raw_hex", raw.empty() ? "null" : quote(raw)}, {"values", array(values)}}));
     }
+    const auto &expo = decoded.expo;
+    std::vector<std::string> expoProfiles;
+    const auto rawHex = [](const std::vector<std::uint8_t> &bytes) {
+        std::string raw; const char digits[] = "0123456789abcdef";
+        for (auto b : bytes) { raw += digits[b >> 4]; raw += digits[b & 15]; }
+        return raw.empty() ? std::string("null") : quote(raw);
+    };
+    for (const auto &p : expo.profiles) {
+        std::vector<std::string> values;
+        for (const auto &v : p.values) values.push_back(object({{"name", quote(v.name)}, {"value", number(v.value)}, {"unit", quote(v.unit)}}));
+        expoProfiles.push_back(object({{"index", number(p.index)}, {"offset", number(p.offset)}, {"enabled", boolean(p.enabled)},
+            {"error", number(p.error)}, {"raw_hex", rawHex(p.raw)}, {"values", array(values)}}));
+    }
     return object({{"path", quote(path)}, {"error", number(error)}, {"captured_bytes", number(double(bytes.size()))},
         {"memory_type", number(decoded.memoryType)}, {"crc_checked", boolean(decoded.crcChecked)},
         {"crc_valid", decoded.crcChecked ? boolean(decoded.crcValid) : "null"}, {"fields", array(fields)},
         {"xmp", object({{"inspected", boolean(xmp.inspected)}, {"present", xmp.inspected ? boolean(xmp.present) : "null"},
             {"revision", xmp.crc.checked ? number(xmp.revision) : "null"}, {"error", number(xmp.error)}, {"crc", crcJson(xmp.crc)},
             {"expo_present", xmp.expoInspected ? boolean(xmp.expoPresent) : "null"},
-            {"active_configuration_measured", "false"}, {"profiles", array(profiles)}})}});
+            {"active_configuration_measured", "false"}, {"profiles", array(profiles)}})},
+        {"expo", object({{"inspected", boolean(expo.inspected)}, {"present", expo.inspected ? boolean(expo.present) : "null"},
+            {"revision", expo.crc.checked ? number(expo.revision) : "null"}, {"error", number(expo.error)}, {"crc", crcJson(expo.crc)},
+            {"configuration_raw", expo.crc.checked ? number(expo.configurationRaw) : "null"},
+            {"features_raw", expo.crc.checked ? number(expo.featuresRaw) : "null"}, {"raw_hex", rawHex(expo.raw)},
+            {"enhanced_timings_decoded", "false"}, {"active_configuration_measured", "false"}, {"profiles", array(expoProfiles)}})}});
 }
 Result offlineUmc(const Command &c) {
     Result out;

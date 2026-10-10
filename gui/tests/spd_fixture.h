@@ -32,4 +32,24 @@ inline std::vector<std::uint8_t> spdFixture() {
     spdSeal(b, 640, 62);
     return b;
 }
+// Synthetic EXPO/XMP hybrid. Basic quantities match the pinned public hybrid
+// sample; reserved/enhanced bytes deliberately differ (see recovery evidence).
+inline std::vector<std::uint8_t> spdExpoFixture() {
+    auto b = spdFixture(); b[643] = 3; spdSeal(b,640,62);
+    std::fill(b.begin()+832,b.begin()+960,std::uint8_t(0));
+    const std::string magic = "EXPO"; std::copy(magic.begin(),magic.end(),b.begin()+832);
+    b[836] = 0x10; b[837] = 0x33; b[838] = 0x11;
+    const unsigned timings[][10] = {
+        {333,12654,12654,12654,25974,38628,30000,295,160,130},
+        {357,14280,14280,14280,29988,44268,30000,295,160,130}
+    };
+    for (unsigned i = 0; i < 2; ++i) {
+        const unsigned off = 842 + 40 * i;
+        b[off] = b[off+1] = std::uint8_t(0x25-i); b[off+2] = 0x30;
+        for (unsigned t = 0; t < 10; ++t) spdWord(b,off+4+2*t,timings[i][t]);
+        std::fill(b.begin()+off+24,b.begin()+off+40,std::uint8_t(0xa5));
+    }
+    spdSeal(b,832,126);
+    return b;
+}
 } }

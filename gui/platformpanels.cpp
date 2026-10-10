@@ -323,7 +323,8 @@ MemoryBoardPanel::MemoryBoardPanel(QWidget *parent) : QWidget(parent) {
     setObjectName("memoryBoard"); auto *layout=new QVBoxLayout(this);
     description("Memory and motherboard · BIOS identity, kernel sensors and DDR4 / DDR5 SPD\n"
         "SPD describes the module, not the currently trained timings. Sensors depend on the installed kernel driver. "
-        "DDR5 XMP 3.0 manufacturer profiles include stored voltages, timings and separate CRC checks. "
+        "DDR5 XMP 3.0 manufacturer profiles and EXPO 1.0 basic profiles include stored voltages, timings and CRC checks. "
+        "EXPO enhanced timings are not decoded. "
         "Timing writes, PMIC / VRM controls and board-specific clocks are not yet recovered.",layout,this);
     auto *buttons=new QHBoxLayout; auto *read=new QPushButton("Read once",this); read->setObjectName("inventoryRead"); buttons->addWidget(read);
     auto *open=new QPushButton("Open SPD dump…",this); open->setObjectName("spdOpen"); buttons->addWidget(open); layout->addLayout(buttons);
@@ -358,8 +359,6 @@ void MemoryBoardPanel::showSpd(const QString &path,const QByteArray &bytes,const
         !xmp.crc.checked ? "Header truncated" : !xmp.crc.valid ? "Header CRC mismatch" :
         xmp.revision != 0x30 ? "Unsupported revision" : "Header CRC valid";
     append(table_,{"XMP", "Header", xmp.crc.checked ? QString("Revision 0x%1").arg(xmp.revision,2,16,QChar('0')) : QString(), "", headerState, path});
-    if (xmp.expoInspected && xmp.expoPresent)
-        append(table_,{"EXPO", "Shared profile area", "Detected", "", "EXPO decoding is not implemented", path});
     for (const auto &p : xmp.profiles) {
         const QString group = QString("XMP %1").arg(p.index);
         const QString status = p.blockedByExpo ? (p.enabled ? "Conflicting XMP enable bit / EXPO region" : "EXPO region") :
@@ -367,6 +366,21 @@ void MemoryBoardPanel::showSpd(const QString &path,const QByteArray &bytes,const
             p.error ? failure(p.error) : "Profile CRC valid";
         append(table_,{group, "Profile name", p.nameValid ? QString::fromStdString(p.name) : "Invalid name bytes", "", status, path});
         if (p.crc.checked) append(table_,{group,"CRC stored / computed",QString("%1 / %2").arg(p.crc.stored,4,16,QChar('0')).arg(p.crc.computed,4,16,QChar('0')), "", status, path});
+        for (const auto &v : p.values) append(table_,{group,QString::fromStdString(v.name),QString::number(v.value),QString::fromStdString(v.unit),status,path});
+    }
+    const auto &expo = decoded.expo;
+    const QString expoState = !expo.inspected ? "Block not captured" : !expo.present ? "Not present" :
+        !expo.crc.checked ? "Block truncated" : !expo.crc.valid ? "Block CRC mismatch" :
+        expo.revision != 0x10 ? "Unsupported revision" : "Block CRC valid";
+    append(table_,{"EXPO", "Header", expo.crc.checked ? QString("Revision 0x%1").arg(expo.revision,2,16,QChar('0')) : QString(), "", expoState, path});
+    if (expo.crc.checked) {
+        append(table_,{"EXPO","CRC stored / computed",QString("%1 / %2").arg(expo.crc.stored,4,16,QChar('0')).arg(expo.crc.computed,4,16,QChar('0')), "", expoState, path});
+        append(table_,{"EXPO","Configuration / feature bytes",QString("%1 / %2").arg(expo.configurationRaw,2,16,QChar('0')).arg(expo.featuresRaw,2,16,QChar('0')), "hex", expoState, path});
+    }
+    for (const auto &p : expo.profiles) {
+        const QString group = QString("EXPO %1").arg(p.index);
+        const QString status = !p.enabled ? "Disabled" : p.error ? failure(p.error) : "Block CRC valid";
+        append(table_,{group,"Stored profile",p.enabled ? "Enabled" : "Disabled","",status,path});
         for (const auto &v : p.values) append(table_,{group,QString::fromStdString(v.name),QString::number(v.value),QString::fromStdString(v.unit),status,path});
     }
 }

@@ -68,6 +68,7 @@ def main():
         subprocess.run(["make", "-j" + os.environ.get("JOBS", "2")], cwd=tests, check=True)
         env = dict(os.environ, QT_QPA_PLATFORM="offscreen",
                    OCTOOL_SPD_TEST_SCREENSHOT=str((tests / "spd-fixture.png").resolve()),
+                   OCTOOL_EXPO_TEST_SCREENSHOT=str((tests / "expo-fixture.png").resolve()),
                    OCTOOL_UNCORE_TEST_SCREENSHOT=str((tests / "uncore-fixture.png").resolve()),
                    OCTOOL_TURBO_TEST_SCREENSHOT=str((tests / "turbo-fixture.png").resolve()),
                    OCTOOL_CONTROL_TEST_SCREENSHOT=str((tests / "controls-fixture.png").resolve()),

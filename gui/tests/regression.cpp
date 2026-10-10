@@ -966,7 +966,9 @@ private slots:
         QCOMPARE(table->item(refresh,2)->text(),QString("295")); QCOMPARE(table->item(refresh,3)->text(),QString("ns"));
         const int header = row("XMP","Header"); QVERIFY(header >= 0);
         QTRY_VERIFY(panel.findChild<QLabel *>("inventoryStatus")->isVisible());
+        QTest::qWait(50); // Let the initial table layout settle before scrolling.
         table->scrollToItem(table->item(header,0),QAbstractItemView::PositionAtTop);
+        QTRY_VERIFY(table->visualItemRect(table->item(header,0)).top() >= 0 && table->visualItemRect(table->item(header,0)).top() < 20);
         const auto screenshot = qEnvironmentVariable("OCTOOL_SPD_TEST_SCREENSHOT");
         if (!screenshot.isEmpty()) { QTest::qWait(50); QVERIFY(panel.grab().save(screenshot)); }
         bytes[720] ^= 1; QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
@@ -976,10 +978,48 @@ private slots:
         bytes = octool::test::spdFixture(); bytes[643] = 3;
         std::memcpy(bytes.data()+832,"EXPO",4); octool::test::spdSeal(bytes,640,62);
         QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
-        QVERIFY(row("EXPO","Shared profile area") >= 0); QCOMPARE(row("XMP 3","VDD"),-1);
+        QVERIFY(row("EXPO","Header") >= 0); QCOMPARE(row("XMP 3","VDD"),-1);
         bytes.resize(512); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
         QCOMPARE(row("XMP 1","VDD"),-1);
         QCOMPARE(table->item(row("XMP","Header"),4)->text(),QString("Header not captured"));
+    }
+    void spdExpoProfilesAndIndependentFailures() {
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("expo.spd");
+        auto bytes = octool::test::spdExpoFixture();
+        const auto save = [&] { QFile file(path); if (!file.open(QIODevice::WriteOnly)) return false;
+            return file.write(reinterpret_cast<const char *>(bytes.data()),qint64(bytes.size())) == qint64(bytes.size()); };
+        MemoryBoardPanel panel; panel.resize(1100,900); panel.show();
+        auto *table = panel.findChild<QTableWidget *>("inventoryTable"); QVERIFY(table);
+        const auto row = [&](const QString &group, const QString &name) {
+            for (int i = 0; i < table->rowCount(); ++i)
+                if (table->item(i,0)->text() == group && table->item(i,1)->text() == name) return i;
+            return -1;
+        };
+        QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        for (unsigned i = 0; i < 2; ++i) {
+            const auto group = QString("EXPO %1").arg(i+1);
+            const int voltage = row(group,"VDD"), time = row(group,"tCK minimum"), refresh = row(group,"tRFC1 minimum");
+            QVERIFY(voltage >= 0 && time >= 0 && refresh >= 0);
+            QCOMPARE(table->item(voltage,2)->text(),QString::number(1250-50*i)); QCOMPARE(table->item(voltage,3)->text(),QString("mV"));
+            QCOMPARE(table->item(time,2)->text(),QString::number(333+24*i)); QCOMPARE(table->item(time,3)->text(),QString("ps"));
+            QCOMPARE(table->item(refresh,2)->text(),QString("295")); QCOMPARE(table->item(refresh,3)->text(),QString("ns"));
+        }
+        const int header = row("EXPO","Header"); QVERIFY(header >= 0);
+        QTest::qWait(50); table->scrollToItem(table->item(header,0),QAbstractItemView::PositionAtTop);
+        QTRY_VERIFY(table->visualItemRect(table->item(header,0)).top() >= 0 && table->visualItemRect(table->item(header,0)).top() < 20);
+        const auto screenshot = qEnvironmentVariable("OCTOOL_EXPO_TEST_SCREENSHOT");
+        if (!screenshot.isEmpty()) { QTest::qWait(50); QVERIFY(panel.grab().save(screenshot)); }
+        bytes[852] ^= 1; QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("EXPO 1","VDD"),-1); QCOMPARE(row("EXPO 2","VDD"),-1); QVERIFY(row("XMP 1","VDD") >= 0);
+        QCOMPARE(table->item(row("EXPO","Header"),4)->text(),QString("Block CRC mismatch"));
+        bytes = octool::test::spdExpoFixture(); bytes[660] ^= 1; QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("XMP 1","VDD"),-1); QVERIFY(row("EXPO 1","VDD") >= 0);
+        bytes = octool::test::spdExpoFixture(); bytes[837] = 0x10; octool::test::spdSeal(bytes,832,126);
+        QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("EXPO 1","VDD"),-1); QVERIFY(row("EXPO 2","VDD") >= 0);
+        QCOMPARE(table->item(row("EXPO 1","Stored profile"),4)->text(),QString("Disabled"));
+        bytes.resize(959); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("EXPO 2","VDD"),-1); QCOMPARE(table->item(row("EXPO","Header"),4)->text(),QString("Block truncated"));
     }
     void spdFileFailuresClearPriorRows() {
         QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("profiles.spd");

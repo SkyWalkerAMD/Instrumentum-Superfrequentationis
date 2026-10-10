@@ -9,11 +9,11 @@ namespace {
 unsigned word(const std::vector<std::uint8_t> &b, unsigned offset) {
     return unsigned(b[offset]) | (unsigned(b[offset + 1]) << 8);
 }
-SpdCrc blockCrc(const std::vector<std::uint8_t> &b, unsigned offset) {
+SpdCrc blockCrc(const std::vector<std::uint8_t> &b, unsigned offset, unsigned count = 62) {
     SpdCrc crc;
     crc.checked = true;
-    crc.stored = word(b, offset + 62);
-    crc.computed = spdCrc16(b.data() + offset, 62);
+    crc.stored = word(b, offset + count);
+    crc.computed = spdCrc16(b.data() + offset, count);
     crc.valid = crc.stored == crc.computed;
     return crc;
 }
@@ -72,6 +72,44 @@ SpdXmp decodeXmp(const std::vector<std::uint8_t> &b) {
                     for (unsigned t = 0; t < 10; ++t)
                         p.values.push_back({names[t], t >= 7 ? "ns" : "ps", word(b, p.offset + offsets[t])});
                 }
+            }
+        }
+        if (!out.error && p.error) out.error = p.error;
+        out.profiles.push_back(p);
+    }
+    return out;
+}
+SpdExpo decodeExpo(const std::vector<std::uint8_t> &b) {
+    SpdExpo out;
+    if (b.size() < 836) return out;
+    out.inspected = true;
+    out.present = b[832] == 'E' && b[833] == 'X' && b[834] == 'P' && b[835] == 'O';
+    if (!out.present) return out;
+    if (b.size() < 960) { out.error = -EMSGSIZE; return out; }
+    out.raw.assign(b.begin() + 832, b.begin() + 960);
+    out.revision = b[836]; out.configurationRaw = b[837]; out.featuresRaw = b[838];
+    out.crc = blockCrc(b, 832, 126);
+    if (!out.crc.valid) { out.error = -EILSEQ; return out; }
+    if (out.revision != 0x10) { out.error = -ENOTSUP; return out; }
+    for (unsigned i = 0; i < 2; ++i) {
+        SpdExpoProfile p;
+        p.index = i + 1; p.offset = 842 + 40 * i;
+        p.enabled = (out.configurationRaw & (1u << (4 * i))) != 0;
+        p.raw.assign(b.begin() + p.offset, b.begin() + p.offset + 40);
+        // Disabled slots may contain stale data. Neither nonzero bytes nor a
+        // nonzero computed CRC establishes that a profile is enabled.
+        if (p.enabled) {
+            if (!word(b, p.offset + 4)) p.error = -EINVAL;
+            else {
+                const char *rails[] = {"VDD", "VDDQ", "VPP"};
+                for (unsigned v = 0; v < 3; ++v) {
+                    const unsigned code = b[p.offset + v];
+                    p.values.push_back({rails[v], "mV", (code >> 5) * 1000 + (code & 31) * 50});
+                }
+                const char *names[] = {"tCK minimum", "tAA minimum", "tRCD minimum", "tRP minimum",
+                    "tRAS minimum", "tRC minimum", "tWR minimum", "tRFC1 minimum", "tRFC2 minimum", "tRFCsb minimum"};
+                for (unsigned t = 0; t < 10; ++t)
+                    p.values.push_back({names[t], t >= 7 ? "ns" : "ps", word(b, p.offset + 4 + 2 * t)});
             }
         }
         if (!out.error && p.error) out.error = p.error;
@@ -184,7 +222,7 @@ SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &b) {
         for (unsigned i = serial; i < serial+4; ++i) hex << std::setw(2) << unsigned(b[i]);
         add("Serial number (hex)", hex.str());
     }
-    if (ddr5) out.xmp = decodeXmp(b);
+    if (ddr5) { out.xmp = decodeXmp(b); out.expo = decodeExpo(b); }
     return out;
 }
 } }

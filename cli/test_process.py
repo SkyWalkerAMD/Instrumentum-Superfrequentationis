@@ -34,10 +34,11 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 268, len(reports)
+assert len(reports) == 278, len(reports)
 spd_reports = [r for r in reports if r["command"] == "spd-decode" and "spd" in r["data"]]
-assert len(spd_reports) == 9
-assert [r["ok"] for r in spd_reports] == [True, False, False, False, True, False, True, True, False]
+assert len(spd_reports) == 19
+assert [r["ok"] for r in spd_reports] == [True, False, False, False, True, False, True, True, False,
+                                        True, False, False, False, True, False, True, False, False, False]
 for i, r in enumerate(spd_reports):
     xmp = r["data"]["spd"]["xmp"]
     assert not xmp["active_configuration_measured"]
@@ -61,6 +62,36 @@ for i, r in enumerate(spd_reports):
 values = {v["name"]: v for v in spd_reports[0]["data"]["spd"]["xmp"]["profiles"][0]["values"]}
 assert values["VDD"] == {"name": "VDD", "value": 1250, "unit": "mV"}
 assert values["tRFC1 minimum"] == {"name": "tRFC1 minimum", "value": 295, "unit": "ns"}
+for i, r in enumerate(spd_reports):
+    expo = r["data"]["spd"]["expo"]
+    assert not expo["active_configuration_measured"] and not expo["enhanced_timings_decoded"]
+    if i == 4:
+        assert not expo["inspected"] and expo["present"] is None and expo["revision"] is None
+    if i == 0:
+        assert expo["inspected"] and expo["present"] is False
+    if i in (10, 11, 12):
+        assert expo["profiles"] == [] and expo["error"] == {10: -84, 11: -90, 12: -95}[i]
+        assert len(r["data"]["spd"]["xmp"]["profiles"][0]["values"]) == 14
+    if i == 11:
+        assert expo["raw_hex"] is None and expo["crc"]["valid"] is None and expo["configuration_raw"] is None
+    if i in (6, 9, 13, 14, 15, 16, 17, 18):
+        assert expo["present"] and expo["crc"]["valid"] and expo["revision"] == 16 and len(expo["raw_hex"]) == 256
+        assert len(expo["profiles"]) == 2
+        for slot, p in enumerate(expo["profiles"]):
+            assert p["index"] == slot+1 and p["offset"] == 842+40*slot and len(p["raw_hex"]) == 80
+            assert p["enabled"] == bool(expo["configuration_raw"] & (1 << (slot*4)))
+            if p["enabled"] and not p["error"]:
+                assert len(p["values"]) == 13
+                values = {v["name"]: v for v in p["values"]}
+                assert values["VDD"] == {"name": "VDD", "value": 1250-50*slot, "unit": "mV"}
+                assert values["tCK minimum"]["value"] == 333+24*slot and values["tCK minimum"]["unit"] == "ps"
+                assert values["tRFC1 minimum"]["value"] == 295 and values["tRFC1 minimum"]["unit"] == "ns"
+            else:
+                assert p["values"] == []
+    if i in (14, 18):
+        assert expo["error"] == -22 and expo["profiles"][int(i == 18)]["error"] == -22
+    if i in (16, 17):
+        assert expo["error"] == 0 and r["data"]["spd"]["xmp"]["error"] != 0
 assert len([r for r in reports if r["error"] == -22]) >= 132
 uncore = [r for r in reports if r["command"] in ("intel-uncore-read", "intel-uncore-set") and "before" in r["data"]]
 assert len(uncore) == 16

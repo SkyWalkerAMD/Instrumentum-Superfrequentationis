@@ -525,7 +525,7 @@ void offlineSpdDoesNotCreateBackend() {
     struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
     unsigned opens = 0;
     const auto factory = [&]() { ++opens; return std::unique_ptr<HardwareBackend>(); };
-    for (unsigned scenario = 0; scenario < 9; ++scenario) {
+    for (unsigned scenario = 0; scenario < 19; ++scenario) {
         auto bytes = octool::test::spdFixture();
         int expected = 0;
         if (scenario == 1) { bytes[720] ^= 1; expected = 3; }
@@ -533,12 +533,22 @@ void offlineSpdDoesNotCreateBackend() {
         if (scenario == 3) { bytes.resize(800); expected = 3; }
         if (scenario == 4) bytes.resize(512);
         if (scenario == 5) { bytes[642] = 0x31; octool::test::spdSeal(bytes,640,62); expected = 3; }
-        if (scenario == 6) {
-            bytes[643] = 3; const std::string expo = "EXPO"; std::copy(expo.begin(),expo.end(),bytes.begin()+832);
-            octool::test::spdSeal(bytes,640,62);
-        }
+        if (scenario == 6) bytes = octool::test::spdExpoFixture();
         if (scenario == 7) { bytes[655] = 0xff; octool::test::spdSeal(bytes,640,62); }
         if (scenario == 8) { bytes.resize(4097); expected = 3; }
+        if (scenario >= 9) bytes = octool::test::spdExpoFixture();
+        if (scenario == 9) bytes[640] = 0;
+        if (scenario == 10) { bytes[852] ^= 1; expected = 3; }
+        if (scenario == 11) { bytes.resize(959); expected = 3; }
+        if (scenario == 12) { bytes[836] = 0x11; octool::test::spdSeal(bytes,832,126); expected = 3; }
+        if (scenario == 13) { bytes[837] = 0x10; octool::test::spdWord(bytes,846,0); octool::test::spdSeal(bytes,832,126); }
+        if (scenario == 14) { octool::test::spdWord(bytes,846,0); octool::test::spdSeal(bytes,832,126); expected = 3; }
+        if (scenario == 15) {
+            bytes[837] = 0; std::fill(bytes.begin()+842,bytes.begin()+922,std::uint8_t(0xff)); octool::test::spdSeal(bytes,832,126);
+        }
+        if (scenario == 16) { bytes[643] = 7; octool::test::spdSeal(bytes,640,62); expected = 3; }
+        if (scenario == 17) { bytes[660] ^= 1; expected = 3; }
+        if (scenario == 18) { octool::test::spdWord(bytes,886,0); octool::test::spdSeal(bytes,832,126); expected = 3; }
         std::ofstream file(path,std::ios::binary);
         file.write(reinterpret_cast<const char *>(bytes.data()), std::streamsize(bytes.size())); file.close(); assert(file);
         std::ostringstream out; assert(run({"spd-decode", "--file", path},out,factory) == expected);
