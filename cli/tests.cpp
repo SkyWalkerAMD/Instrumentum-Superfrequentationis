@@ -525,7 +525,7 @@ void offlineSpdDoesNotCreateBackend() {
     struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
     unsigned opens = 0;
     const auto factory = [&]() { ++opens; return std::unique_ptr<HardwareBackend>(); };
-    for (unsigned scenario = 0; scenario < 42; ++scenario) {
+    for (unsigned scenario = 0; scenario < 54; ++scenario) {
         auto bytes = octool::test::spdFixture();
         int expected = 0;
         if (scenario == 1) { bytes[720] ^= 1; expected = 3; }
@@ -589,6 +589,23 @@ void offlineSpdDoesNotCreateBackend() {
             bytes[23] |= std::uint8_t(scenario == 39 ? 0x80 : 0x40); octool::test::spdSeal(bytes,0,126);
         }
         if (scenario == 41) { bytes[20] ^= 1; expected = 3; }
+        if (scenario >= 42) bytes = octool::test::spdBaseTimingsFixture(true);
+        if (scenario == 43 || scenario == 46) {
+            bytes[1] = std::uint8_t(scenario == 43 ? 0x11 : 0x20); octool::test::spdSeal(bytes,0,510);
+        }
+        if (scenario == 44 || scenario == 45) {
+            std::fill(bytes.begin()+70,bytes.begin()+103,std::uint8_t(scenario == 44 ? 255 : 0));
+            octool::test::spdSeal(bytes,0,510);
+        }
+        if (scenario == 47) bytes.resize(236);
+        if (scenario == 48) { bytes[70] ^= 1; expected = 3; }
+        if (scenario >= 49) bytes = octool::test::spdBaseTimingsFixture(false);
+        if (scenario == 50 || scenario == 51) {
+            std::fill(bytes.begin()+41,bytes.begin()+46,std::uint8_t(scenario == 50 ? 255 : 0));
+            octool::test::spdSeal(bytes,0,126);
+        }
+        if (scenario == 52) { bytes[17] = 1; octool::test::spdSeal(bytes,0,126); }
+        if (scenario == 53) { bytes[41] ^= 1; expected = 3; }
         std::ofstream file(path,std::ios::binary);
         file.write(reinterpret_cast<const char *>(bytes.data()), std::streamsize(bytes.size())); file.close(); assert(file);
         std::ostringstream out; assert(run({"spd-decode", "--file", path},out,factory) == expected);

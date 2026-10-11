@@ -84,4 +84,19 @@ inline std::vector<std::uint8_t> spdDdr4XmpFixture() {
     }
     return b;
 }
+// Distinct base timing markers, not a hardware dump or suggested settings.
+inline std::vector<std::uint8_t> spdBaseTimingsFixture(bool ddr5) {
+    auto b = ddr5 ? spdFixture() : spdDdr4XmpFixture();
+    if (ddr5) {
+        b[1] = 0x12;
+        for (unsigned i = 0; i < 11; ++i) {
+            spdWord(b,70+3*i,1200+179*i);
+            b[72+3*i] = std::uint8_t(3+5*i);
+        }
+    } else {
+        b[41] = 0xa1; b[42] = 0x23; b[43] = 0x42; b[44] = 0x34; b[45] = 0x56;
+    }
+    spdSeal(b,0,ddr5 ? 510 : 126);
+    return b;
+}
 } }

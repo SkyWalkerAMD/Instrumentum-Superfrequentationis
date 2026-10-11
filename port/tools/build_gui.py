@@ -72,6 +72,8 @@ def main():
                    OCTOOL_DDR4_XMP_TEST_SCREENSHOT=str((tests / "ddr4-xmp-fixture.png").resolve()),
                    OCTOOL_XMP_SECONDARY_TEST_SCREENSHOT=str((tests / "xmp-secondary-fixture.png").resolve()),
                    OCTOOL_CAS_TEST_SCREENSHOT=str((tests / "cas-fixture.png").resolve()),
+                   OCTOOL_SPD_BASE_TEST_SCREENSHOT=str((tests / "base-timings-fixture.png").resolve()),
+                   OCTOOL_DDR4_BASE_TEST_SCREENSHOT=str((tests / "ddr4-base-fixture.png").resolve()),
                    OCTOOL_UNCORE_TEST_SCREENSHOT=str((tests / "uncore-fixture.png").resolve()),
                    OCTOOL_TURBO_TEST_SCREENSHOT=str((tests / "turbo-fixture.png").resolve()),
                    OCTOOL_CONTROL_TEST_SCREENSHOT=str((tests / "controls-fixture.png").resolve()),

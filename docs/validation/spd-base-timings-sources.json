@@ -1,0 +1,164 @@
+{
+  "schema": 1,
+  "date": "2026-10-11",
+  "sources": [
+    {
+      "path": "usr/src/lib/libjedec/common/spd_ddr4.h",
+      "sha": "7a67953a8540c3181fba4d30022a71881746b98f",
+      "repo": "illumos/illumos-gate",
+      "ref": "c029af224ebf0e25e82df1c2347a9c20c97102cd",
+      "url": "https://github.com/illumos/illumos-gate/blob/c029af224ebf0e25e82df1c2347a9c20c97102cd/usr/src/lib/libjedec/common/spd_ddr4.h",
+      "bytes": 26842,
+      "sha256": "7d5c2c0afb3a58f1a70a34c1d032373188c62dccf4fb0595f21fd9dc1111da16"
+    },
+    {
+      "path": "usr/src/lib/libjedec/common/spd_ddr5.h",
+      "sha": "2e2e7b4a63829b2633d1432bf4bf95680f0ed14d",
+      "repo": "illumos/illumos-gate",
+      "ref": "c029af224ebf0e25e82df1c2347a9c20c97102cd",
+      "url": "https://github.com/illumos/illumos-gate/blob/c029af224ebf0e25e82df1c2347a9c20c97102cd/usr/src/lib/libjedec/common/spd_ddr5.h",
+      "bytes": 34611,
+      "sha256": "a36f2598ad2d8978fb993c74c9a9474b75eaafdd5c0882bfbdcc09f7d9e43533"
+    },
+    {
+      "path": "usr/src/lib/libjedec/common/libjedec_spd_ddr4.c",
+      "sha": "e23cc59daeb86e8617f1b60deb45018c94a4ff07",
+      "repo": "illumos/illumos-gate",
+      "ref": "c029af224ebf0e25e82df1c2347a9c20c97102cd",
+      "url": "https://github.com/illumos/illumos-gate/blob/c029af224ebf0e25e82df1c2347a9c20c97102cd/usr/src/lib/libjedec/common/libjedec_spd_ddr4.c",
+      "bytes": 43914,
+      "sha256": "a17fbbad1538f7301da054f0fa9e36ae22691fd20c87ec1ae237030fb1ee6780"
+    },
+    {
+      "repo": "illumos/illumos-gate",
+      "ref": "c029af224ebf0e25e82df1c2347a9c20c97102cd",
+      "path": "usr/src/lib/libjedec/common/libjedec_spd_ddr5.c",
+      "sha": "d8feba09a5921c87d6c60fc4375412d3eea667a8",
+      "url": "https://github.com/illumos/illumos-gate/blob/c029af224ebf0e25e82df1c2347a9c20c97102cd/usr/src/lib/libjedec/common/libjedec_spd_ddr5.c",
+      "bytes": 74415,
+      "sha256": "cb8b80ff844d1572b3c299a3704dab47e9374c1d01beead348fd9aaae3ba0a5b"
+    }
+  ],
+  "public_fixture_checks": [
+    {
+      "url": "https://github.com/illumos/illumos-gate/blob/c029af224ebf0e25e82df1c2347a9c20c97102cd/usr/src/test/util-tests/tests/libjedec/hex2spd/data/ddr4/AQD-SD4U16GN32-SE1.spd",
+      "git_blob": "0a2012e9c54dccb4c6b5c45bcceb47ffeb8b1b18",
+      "text_sha256": "57b171b9d8bb35f0fd561dba60b7359ab5c6100655e0b403ddc6a75c31a76d5e",
+      "decoded_bytes": 512,
+      "decoded_sha256": "5fd7f3bd03882964d46a0b37658270c8d38619cd7260dd4e5330b74ae4c879fb",
+      "revision": 17,
+      "crc": 36736,
+      "raw_timing_hex": "007800143c",
+      "values": {
+        "tWR_ps": 15000,
+        "tWTR_S_ps": 2500,
+        "tWTR_L_ps": 7500
+      },
+      "scope": "Upstream test fixture partly constructed from a datasheet, with explicitly fabricated identity/date bytes. Inspected locally; not a target hardware capture."
+    },
+    {
+      "url": "https://github.com/illumos/illumos-gate/blob/c029af224ebf0e25e82df1c2347a9c20c97102cd/usr/src/test/util-tests/tests/libjedec/hex2spd/data/ddr5/AQD-D5V16GR48-SB.spd",
+      "git_blob": "a4ea84bbe8eb4d26090e86217dc5e57432515056",
+      "text_sha256": "439ba5837fc7c57e2ea2604515f109c49e67820fcc6063b67140b91512090107",
+      "decoded_bytes": 1024,
+      "decoded_sha256": "2db96693971066882e762dc6ca1966ee862f64d8607f6b24d43b505afce07bdf",
+      "revision": 16,
+      "crc": 56183,
+      "raw_timing_hex": "881308881308204e20102710153420102710c409044c1d0c",
+      "values": [
+        {
+          "name": "tRRD_L",
+          "ps": 5000,
+          "nck": 8
+        },
+        {
+          "name": "tCCD_L",
+          "ps": 5000,
+          "nck": 8
+        },
+        {
+          "name": "tCCD_L_WR",
+          "ps": 20000,
+          "nck": 32
+        },
+        {
+          "name": "tCCD_L_WR2",
+          "ps": 10000,
+          "nck": 16
+        },
+        {
+          "name": "tFAW",
+          "ps": 13333,
+          "nck": 32
+        },
+        {
+          "name": "tCCD_L_WTR",
+          "ps": 10000,
+          "nck": 16
+        },
+        {
+          "name": "tCCD_S_WTR",
+          "ps": 2500,
+          "nck": 4
+        },
+        {
+          "name": "tRTP",
+          "ps": 7500,
+          "nck": 12
+        }
+      ],
+      "scope": "Upstream test fixture partly constructed from a datasheet, with explicitly fabricated identity/date bytes. Inspected locally; not a target hardware capture."
+    }
+  ],
+  "ddr4": {
+    "revision_major": 1,
+    "required_timebase_low_nibble": 0,
+    "mtb_ps": 125,
+    "fine_offset": false,
+    "tWR": {
+      "upper_byte": 41,
+      "upper_mask": 15,
+      "low_byte": 42
+    },
+    "tWTR_S": {
+      "upper_byte": 43,
+      "upper_mask": 15,
+      "low_byte": 44
+    },
+    "tWTR_L": {
+      "upper_byte": 43,
+      "upper_mask": 240,
+      "low_byte": 45
+    }
+  },
+  "ddr5": {
+    "revision_major": 1,
+    "first_pair_offset": 70,
+    "stride": 3,
+    "ps_bytes": 2,
+    "nck_bytes": 1,
+    "revision_1_0_pairs": [
+      "tRRD_L",
+      "tCCD_L",
+      "tCCD_L_WR",
+      "tCCD_L_WR2",
+      "tFAW",
+      "tCCD_L_WTR",
+      "tCCD_S_WTR",
+      "tRTP"
+    ],
+    "revision_1_2_additional_pairs": [
+      "tCCD_M",
+      "tCCD_M_WR",
+      "tCCD_M_WTR"
+    ],
+    "additive_revision_gate": 2
+  },
+  "zero_policy": "Preserve zero for every newly decoded quantity; no Auto or effective/current-timing inference.",
+  "scope": "Pinned primary format facts only; no upstream implementation copied or linked. Shared decoder retains independent stored time and cycle requirements, including inconsistent or zero codes.",
+  "exclusions": [
+    "3DS different-logical-rank refresh values and capacity interpretation",
+    "EXPO enhanced timing flags and XMP user-slot presence",
+    "Current trained timings, applying profiles and hardware writes"
+  ]
+}

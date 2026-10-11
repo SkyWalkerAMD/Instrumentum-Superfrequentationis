@@ -326,6 +326,7 @@ MemoryBoardPanel::MemoryBoardPanel(QWidget *parent) : QWidget(parent) {
         "DDR4 XMP 2.0, DDR5 XMP 3.0 and EXPO 1.0 basic profiles show stored voltages and timings. "
         "XMP 3.0 secondary timings include separate ps and nCK lower limits. "
         "CAS support lists and XMP command rates describe stored requirements. "
+        "Base SPD also includes write delays and revision-specific secondary timings. "
         "XMP 2.0 has no profile checksum; DDR5 profiles include CRC checks. "
         "EXPO enhanced timings are not decoded. "
         "Timing writes, PMIC / VRM controls and board-specific clocks are not yet recovered.",layout,this);

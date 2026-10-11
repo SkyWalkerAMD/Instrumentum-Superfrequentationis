@@ -34,14 +34,16 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 301, len(reports)
+assert len(reports) == 313, len(reports)
 spd_reports = [r for r in reports if r["command"] == "spd-decode" and "spd" in r["data"]]
-assert len(spd_reports) == 42
+assert len(spd_reports) == 54
 assert [r["ok"] for r in spd_reports] == [True, False, False, False, True, False, True, True, False,
                                         True, False, False, False, True, False, True, False, False, False,
                                         True, True, False, False, False, False, True, True, False, False,
                                         True, True, False, True, True,
-                                        True, True, True, False, True, True, True, False]
+                                        True, True, True, False, True, True, True, False,
+                                        True, True, True, True, True, True, False,
+                                        True, True, True, True, False]
 for i, r in enumerate(spd_reports):
     xmp = r["data"]["spd"]["xmp"]
     assert not xmp["active_configuration_measured"]
@@ -150,9 +152,9 @@ for i in (0, 29, 30, 31, 32, 33):
 for i, report in enumerate(spd_reports):
     data = report["data"]["spd"]
     cas = data["cas"]
-    if i in (8, 41):
+    if i in (8, 41, 48, 53):
         assert cas is None
-    elif i == 38:
+    elif i in (38, 46):
         assert cas == {"decoded": False, "offset": 24, "raw_hex": "8101000080", "reserved_bits_set": None, "latencies_nck": None}
     elif data["memory_type"] == 12:
         assert cas["decoded"] and cas["offset"] == 20
@@ -176,6 +178,31 @@ for i, report in enumerate(spd_reports):
         assert cas["latencies_nck"] == expected and not cas["reserved_bits_set"]
         code = raw & 15
         assert rate == {"raw": raw, "code": code, "recognized": code <= 3, "cycles": code if 1 <= code <= 3 else None}
+base_names = ["tRRD_L", "tCCD_L", "tCCD_L_WR", "tCCD_L_WR2", "tFAW", "tCCD_L_WTR",
+              "tCCD_S_WTR", "tRTP", "tCCD_M", "tCCD_M_WR", "tCCD_M_WTR"]
+ddr4_names = ["SPD tWR minimum (ps)", "SPD tWTR_S minimum (ps)", "SPD tWTR_L minimum (ps)"]
+for i in range(42, 54):
+    data = spd_reports[i]["data"]["spd"]
+    fields = {f["name"]: f["value"] for f in data["fields"]}
+    assert len(fields) == len(data["fields"])
+    if i < 49:
+        for t, name in enumerate(base_names):
+            time, cycles = "SPD " + name + " minimum (ps)", "SPD " + name + " cycle lower limit (nCK)"
+            if i in (46, 48) or (i == 43 and t >= 8):
+                assert time not in fields and cycles not in fields
+            else:
+                ps, ck = (65535, 255) if i == 44 else (0, 0) if i == 45 else (1200+179*t, 3+5*t)
+                assert fields[time] == str(ps) and fields[cycles] == str(ck)
+        assert data["crc_checked"] is (i != 47)
+        assert data["crc_valid"] is (None if i == 47 else i != 48)
+    else:
+        if i in (52, 53):
+            assert all(name not in fields for name in ddr4_names)
+        else:
+            expected = [511875]*3 if i == 50 else [0]*3 if i == 51 else [36375, 70500, 138750]
+            assert [fields[name] for name in ddr4_names] == list(map(str, expected))
+        if i == 52:
+            assert data["cas"]["decoded"] and len(data["xmp"]["profiles"][0]["values"]) == 13
 assert len([r for r in reports if r["error"] == -22]) >= 132
 uncore = [r for r in reports if r["command"] in ("intel-uncore-read", "intel-uncore-set") and "before" in r["data"]]
 assert len(uncore) == 16

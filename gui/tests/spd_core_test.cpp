@@ -6,6 +6,133 @@
 using namespace octool::core;
 using namespace octool::test;
 namespace {
+const SpdField *baseField(const SpdSnapshot &s, const std::string &name) {
+    const SpdField *found = nullptr;
+    for (const auto &f : s.fields) if (f.name == name) { assert(!found); found = &f; }
+    return found;
+}
+unsigned baseValue(const SpdSnapshot &s, const std::string &name) {
+    const auto *f = baseField(s,name); assert(f); return unsigned(std::stoul(f->value));
+}
+const char *baseSecondary[] = {"tRRD_L", "tCCD_L", "tCCD_L_WR", "tCCD_L_WR2", "tFAW",
+    "tCCD_L_WTR", "tCCD_S_WTR", "tRTP", "tCCD_M", "tCCD_M_WR", "tCCD_M_WTR"};
+std::string baseTimingName(unsigned i, bool cycles) {
+    return "SPD " + std::string(baseSecondary[i]) + (cycles ? " cycle lower limit (nCK)" : " minimum (ps)");
+}
+void ddr4BaseWriteDelays() {
+    const auto original = spdBaseTimingsFixture(false); const auto first = decodeSpd(original);
+    assert(baseValue(first,"SPD tWR minimum (ps)") == 36375);
+    assert(baseValue(first,"SPD tWTR_S minimum (ps)") == 70500);
+    assert(baseValue(first,"SPD tWTR_L minimum (ps)") == 138750);
+    for (unsigned byte = 41; byte <= 45; ++byte) for (unsigned code = 0; code < 256; ++code) {
+        auto b = original; b[byte] = std::uint8_t(code); spdSeal(b,0,126); const auto s = decodeSpd(b);
+        const unsigned wr = byte == 41 ? (code % 16) * 256 + 0x23 : byte == 42 ? 256 + code : 0x123;
+        const unsigned ws = byte == 43 ? (code % 16) * 256 + 0x34 : byte == 44 ? 512 + code : 0x234;
+        const unsigned wl = byte == 43 ? (code / 16) * 256 + 0x56 : byte == 45 ? 1024 + code : 0x456;
+        assert(!s.error && baseValue(s,"SPD tWR minimum (ps)") == wr*125);
+        assert(baseValue(s,"SPD tWTR_S minimum (ps)") == ws*125 && baseValue(s,"SPD tWTR_L minimum (ps)") == wl*125);
+        assert(s.xmp.profiles[0].raw == first.xmp.profiles[0].raw);
+    }
+    for (unsigned code : {0u,255u}) {
+        auto b = original; std::fill(b.begin()+41,b.begin()+46,std::uint8_t(code));
+        std::fill(b.begin()+117,b.begin()+126,std::uint8_t(0x80)); spdSeal(b,0,126);
+        const auto s = decodeSpd(b);
+        for (const char *name : {"SPD tWR minimum (ps)", "SPD tWTR_S minimum (ps)", "SPD tWTR_L minimum (ps)"})
+            assert(baseValue(s,name) == (code ? 511875u : 0u)); // No unrelated fine offset.
+    }
+}
+void ddr5BaseSecondaryValues() {
+    auto b = spdBaseTimingsFixture(true); auto s = decodeSpd(b);
+    for (unsigned i = 0; i < 11; ++i) {
+        assert(baseValue(s,baseTimingName(i,false)) == 1200+179*i);
+        assert(baseValue(s,baseTimingName(i,true)) == 3+5*i);
+    }
+    const auto before = s;
+    spdWord(b,20,65535); spdWord(b,30,1); spdSeal(b,0,510); s = decodeSpd(b);
+    for (unsigned i = 0; i < 11; ++i) for (bool ck : {false,true})
+        assert(baseValue(s,baseTimingName(i,ck)) == baseValue(before,baseTimingName(i,ck)));
+    for (unsigned code : {0u,255u}) {
+        std::fill(b.begin()+70,b.begin()+103,std::uint8_t(code)); spdWord(b,20,0); spdSeal(b,0,510); s = decodeSpd(b);
+        for (unsigned i = 0; i < 11; ++i) {
+            assert(baseValue(s,baseTimingName(i,false)) == (code ? 65535u : 0u));
+            assert(baseValue(s,baseTimingName(i,true)) == code);
+        }
+    }
+}
+void ddr5BaseTimingByteBoundaries() {
+    const auto original = spdBaseTimingsFixture(true); const auto before = decodeSpd(original);
+    for (unsigned byte = 0; byte < 33; ++byte) for (unsigned code = 0; code < 256; ++code) {
+        auto b = original; b[70+byte] = std::uint8_t(code); spdSeal(b,0,510); const auto s = decodeSpd(b);
+        assert(!s.error && s.cas.latencies == before.cas.latencies);
+        for (unsigned i = 0; i < 11; ++i) {
+            unsigned ps = 1200+179*i, ck = 3+5*i;
+            if (byte == i*3) ps = (ps/256)*256+code;
+            if (byte == i*3+1) ps = code*256+ps%256;
+            if (byte == i*3+2) ck = code;
+            assert(baseValue(s,baseTimingName(i,false)) == ps && baseValue(s,baseTimingName(i,true)) == ck);
+        }
+        assert(baseValue(s,"SPD tAA minimum (ps)") == 16000);
+        for (unsigned i = 0; i < 3; ++i) assert(s.xmp.profiles[i].raw == before.xmp.profiles[i].raw);
+    }
+}
+void baseTimingRevisionAndTimebaseGates() {
+    for (unsigned revision = 0; revision < 256; ++revision) {
+        auto b = spdBaseTimingsFixture(true); b[1] = std::uint8_t(revision); spdSeal(b,0,510);
+        const auto s = decodeSpd(b); assert(!s.error && s.xmp.profiles[0].values.size() == 30);
+        for (unsigned i = 0; i < 11; ++i) for (bool ck : {false,true})
+            assert(bool(baseField(s,baseTimingName(i,ck))) == (revision/16 == 1 && (i < 8 || revision%16 >= 2)));
+    }
+    for (unsigned timebase = 0; timebase < 256; ++timebase) {
+        auto b = spdBaseTimingsFixture(false); b[17] = std::uint8_t(timebase); spdSeal(b,0,126);
+        const auto s = decodeSpd(b);
+        assert(bool(baseField(s,"SPD tWR minimum (ps)")) == (timebase%16 == 0));
+        assert(bool(baseField(s,"SPD tWTR_S minimum (ps)")) == (timebase%16 == 0));
+        assert(bool(baseField(s,"SPD tWTR_L minimum (ps)")) == (timebase%16 == 0));
+        assert(s.cas.decoded && s.xmp.profiles[0].values.size() == 13);
+    }
+    auto b = spdBaseTimingsFixture(false); b[1] = 0x20; spdSeal(b,0,126);
+    assert(!baseField(decodeSpd(b),"SPD tWR minimum (ps)"));
+}
+void baseTimingCaptureAndSectionIsolation() {
+    for (bool ddr5 : {false,true}) {
+        const auto original = spdBaseTimingsFixture(ddr5); const unsigned minimum = ddr5 ? 236 : 128;
+        const std::string field = ddr5 ? baseTimingName(10,false) : "SPD tWTR_L minimum (ps)";
+        for (unsigned size = 0; size <= original.size(); ++size) {
+            const auto s = decodeSpd(std::vector<std::uint8_t>(original.begin(),original.begin()+size));
+            assert(bool(baseField(s,field)) == (size >= minimum));
+            if (size >= minimum) assert(s.crcChecked == (!ddr5 || size >= 512));
+        }
+        auto b = original; b[ddr5 ? 70 : 41] ^= 1;
+        auto s = decodeSpd(b); assert(s.error == -EILSEQ && !baseField(s,field) && !s.xmp.inspected);
+    }
+    auto b = spdBaseTimingsFixture(true); b[711] ^= 1;
+    auto s = decodeSpd(b); assert(s.xmp.error == -EILSEQ && baseValue(s,baseTimingName(0,false)) == 1200);
+    b = spdBaseTimingsFixture(true); b[94] ^= 1; b.resize(236); s = decodeSpd(b);
+    assert(!s.error && !s.crcChecked && baseField(s,baseTimingName(10,true)));
+    b = spdBaseTimingsFixture(true); b[1] = 0x11; spdSeal(b,0,510); s = decodeSpd(b);
+    assert(baseValue(s,baseTimingName(7,false)) == 2453 && !baseField(s,baseTimingName(8,false)));
+}
+void basePublicTimingExamples() {
+    // Timing bytes only from the pinned illumos AQD test fixtures. The rest
+    // of these modules remains synthetic; this is not hardware acceptance.
+    auto b = spdFixture();
+    const std::uint8_t bytes[] = {0x88,0x13,8,0x88,0x13,8,0x20,0x4e,32,0x10,0x27,16,
+        0x15,0x34,32,0x10,0x27,16,0xc4,9,4,0x4c,0x1d,12};
+    std::copy(bytes,bytes+sizeof(bytes),b.begin()+70); spdSeal(b,0,510);
+    auto s = decodeSpd(b);
+    const unsigned times[] = {5000,5000,20000,10000,13333,10000,2500,7500};
+    const unsigned cycles[] = {8,8,32,16,32,16,4,12};
+    for (unsigned i = 0; i < 8; ++i) {
+        assert(baseValue(s,baseTimingName(i,false)) == times[i]);
+        assert(baseValue(s,baseTimingName(i,true)) == cycles[i]);
+    }
+    assert(!baseField(s,baseTimingName(8,false)));
+    b = spdDdr4XmpFixture(); b[1] = 0x11;
+    b[41] = 0; b[42] = 0x78; b[43] = 0; b[44] = 0x14; b[45] = 0x3c; spdSeal(b,0,126); s = decodeSpd(b);
+    assert(baseValue(s,"SPD tWR minimum (ps)") == 15000);
+    assert(baseValue(s,"SPD tWTR_S minimum (ps)") == 2500);
+    assert(baseValue(s,"SPD tWTR_L minimum (ps)") == 7500);
+}
 void threeProfiles() {
     const auto bytes = spdFixture(); const auto out = decodeSpd(bytes);
     assert(!out.error && out.crcValid && !out.xmp.error && out.xmp.present && out.xmp.profiles.size() == 3);
@@ -460,5 +587,8 @@ int main() {
     ddr4Profiles(); ddr4Truncation(); ddr4FlagsAndRevision(); ddr4Timebases(); ddr4SignedTimingsAndBounds(); ddr4IntegrityAndTypeIsolation();
     xmpSecondaryValues(); xmpSecondaryByteBoundaries(); xmpSecondaryZerosAndMaximums(); xmpSecondaryIndependentRequirements();
     baseCasBitmaps(); xmpCasBitmaps(); casCombinedBitsAndTimingIndependence(); xmpCommandRateCodes(); casAndCommandCaptureGates();
-    std::cout << "26 SPD XMP/EXPO scenario groups passed (capture lengths, CRC, timings, CAS bitmaps and command-rate codes)\n";
+    ddr4BaseWriteDelays(); ddr5BaseSecondaryValues(); ddr5BaseTimingByteBoundaries();
+    baseTimingRevisionAndTimebaseGates(); baseTimingCaptureAndSectionIsolation();
+    basePublicTimingExamples();
+    std::cout << "32 SPD XMP/EXPO scenario groups passed (capture lengths, CRC, base timings, revision gates, CAS and profiles)\n";
 }

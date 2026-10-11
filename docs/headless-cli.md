@@ -50,6 +50,9 @@ SPD 报告解码 [DDR4 XMP 2.0 两组档案](ddr4-xmp-recovery.md)、[DDR5 XMP 3
 档案校验失败仍保留基础字段及其它完整档案；`spd-decode` 返回退出码 3。
 XMP 3.0 每个有效厂家档案有 30 项数值，含 8 项次级时序及其独立周期下限；
 分别使用 `ps` 和 `nCK`，原有刷新时序仍为 `ns`。请按 `name` 取值，不固定数组长度。
+基础 `fields` 现包含[DDR4 写延迟及 DDR5 次级时序](spd-base-timings.md)，名称标明 ps / nCK，
+值仍为字符串；DDR5 1.2 新增字段按修订版判断，未支持版本不输出这些解释值。
+
 新增独立的[CAS 列表与命令率元数据](spd-cas-recovery.md)：基础 `cas` 以及 XMP 3.0 档案的
 `cas` / `command_rate`。未知版本/代码与空位图区分，不据此推断当前训练值。
 档案启用位不表示 BIOS 已套用；XMP/EXPO 值不代表当前训练值，EXPO 增强时序和档案写入仍未实现。

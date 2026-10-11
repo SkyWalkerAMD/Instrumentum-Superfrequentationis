@@ -72,6 +72,9 @@ struct SpdSnapshot {
 std::uint16_t spdCrc16(const std::uint8_t *bytes, std::size_t length);
 // Bounded offline decoder, also used for sysfs EEPROM reads. Never writes SPD.
 // DDR4/DDR5 base CRC, identity/geometry and revision-1 timing requirements.
+// DDR4 tWR/tWTR_S/tWTR_L use 12-bit MTB counts with no fine correction.
+// DDR5 base has eight independent ps/nCK pairs; revision 1.2 adds three more.
+// Added timing quantities retain zero codes; none imply Auto or trained values.
 // DDR5 XMP 3.0 manufacturer profiles 1..3 have independent CRC checks.
 // Eight secondary timings retain separate ps and nCK lower requirements;
 // no clock conversion or effective/trained timing is inferred from them.

@@ -1075,6 +1075,55 @@ private slots:
         QVERIFY(table->item(row("SPD","Supported CAS latencies"),4)->text().contains("Reserved bit set"));
         QCOMPARE(row("XMP 1","Supported CAS latencies"),-1); QCOMPARE(row("XMP 1","Command rate"),-1);
     }
+    void spdBaseTimingValuesAndRevisionChanges() {
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("base-timings.spd");
+        auto bytes = octool::test::spdBaseTimingsFixture(true);
+        const auto save = [&] { QFile file(path); if (!file.open(QIODevice::WriteOnly)) return false;
+            return file.write(reinterpret_cast<const char *>(bytes.data()),qint64(bytes.size())) == qint64(bytes.size()); };
+        MemoryBoardPanel panel; panel.resize(1280,1050); panel.show();
+        auto *table = panel.findChild<QTableWidget *>("inventoryTable"); QVERIFY(table);
+        const auto row = [&](const QString &name) {
+            for (int i = 0; i < table->rowCount(); ++i)
+                if (table->item(i,0)->text() == "SPD" && table->item(i,1)->text() == name) return i;
+            return -1;
+        };
+        const QStringList names = {"tRRD_L", "tCCD_L", "tCCD_L_WR", "tCCD_L_WR2", "tFAW",
+            "tCCD_L_WTR", "tCCD_S_WTR", "tRTP", "tCCD_M", "tCCD_M_WR", "tCCD_M_WTR"};
+        QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        for (int i = 0; i < names.size(); ++i) {
+            const int ps = row("SPD "+names[i]+" minimum (ps)"), ck = row("SPD "+names[i]+" cycle lower limit (nCK)");
+            QVERIFY(ps >= 0 && ck >= 0);
+            QCOMPARE(table->item(ps,2)->text(),QString::number(1200+179*i));
+            QCOMPARE(table->item(ck,2)->text(),QString::number(3+5*i));
+            QCOMPARE(table->item(ps,4)->text(),QString("Base CRC valid"));
+        }
+        QTest::qWait(50); table->scrollToItem(table->item(row("SPD tRRD_L minimum (ps)"),0),QAbstractItemView::PositionAtTop);
+        const auto ddr5Shot = qEnvironmentVariable("OCTOOL_SPD_BASE_TEST_SCREENSHOT");
+        if (!ddr5Shot.isEmpty()) { QTest::qWait(50); QVERIFY(panel.grab().save(ddr5Shot)); }
+        bytes[1] = 0x11; octool::test::spdSeal(bytes,0,510); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("SPD tCCD_M minimum (ps)"),-1); QVERIFY(row("SPD tRTP minimum (ps)") >= 0);
+        bytes[1] = 0x20; octool::test::spdSeal(bytes,0,510); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("SPD tRTP minimum (ps)"),-1);
+        bytes = octool::test::spdBaseTimingsFixture(true);
+        std::fill(bytes.begin()+70,bytes.begin()+103,std::uint8_t(0)); octool::test::spdSeal(bytes,0,510);
+        QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(table->item(row("SPD tCCD_M_WTR minimum (ps)"),2)->text(),QString("0"));
+        QCOMPARE(table->item(row("SPD tCCD_M_WTR cycle lower limit (nCK)"),2)->text(),QString("0"));
+        bytes[70] ^= 1; QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("SPD tRRD_L minimum (ps)"),-1); QCOMPARE(row("SPD tCCD_M_WTR minimum (ps)"),-1);
+        bytes = octool::test::spdBaseTimingsFixture(false); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(table->item(row("SPD tWR minimum (ps)"),2)->text(),QString("36375"));
+        QCOMPARE(table->item(row("SPD tWTR_S minimum (ps)"),2)->text(),QString("70500"));
+        QCOMPARE(table->item(row("SPD tWTR_L minimum (ps)"),2)->text(),QString("138750"));
+        QCOMPARE(row("SPD tCCD_M minimum (ps)"),-1);
+        QTest::qWait(50); table->scrollToItem(table->item(row("SPD tWR minimum (ps)"),0),QAbstractItemView::PositionAtTop);
+        const auto ddr4Shot = qEnvironmentVariable("OCTOOL_DDR4_BASE_TEST_SCREENSHOT");
+        if (!ddr4Shot.isEmpty()) { QTest::qWait(50); QVERIFY(panel.grab().save(ddr4Shot)); }
+        bytes[17] = 1; octool::test::spdSeal(bytes,0,126); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("SPD tWR minimum (ps)"),-1); QCOMPARE(row("SPD tWTR_S minimum (ps)"),-1);
+        bytes.resize(127); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("SPD tWTR_L minimum (ps)"),-1);
+    }
     void spdExpoProfilesAndIndependentFailures() {
         QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("expo.spd");
         auto bytes = octool::test::spdExpoFixture();

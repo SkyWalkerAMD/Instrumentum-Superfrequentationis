@@ -223,7 +223,7 @@ SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &b) {
     const bool ddr5 = b[2] == 0x12;
     if (b.size() < (ddr5 ? 236u : 128u)) { out.error = -EMSGSIZE; return out; }
     auto add = [&out](const std::string &name, const std::string &value) { out.fields.push_back({name, value}); };
-    auto number = [&add](const char *name, unsigned value) { add(name, std::to_string(value)); };
+    auto number = [&add](const std::string &name, unsigned value) { add(name, std::to_string(value)); };
     add("Memory type", ddr5 ? "DDR5" : "DDR4");
     if (!ddr5 || b.size() >= 512) {
         out.crcChecked = true;
@@ -270,6 +270,11 @@ SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &b) {
             timing("SPD tFAW minimum (ps)",((b[36]&15)<<8)|b[37],0);
             timing("SPD tRRD_S minimum (ps)",b[38],119); timing("SPD tRRD_L minimum (ps)",b[39],118);
             timing("SPD tCCD_L minimum (ps)",b[40],117);
+            // These three timings have 12-bit MTB counts and no fine offset.
+            // Byte 41's high nibble is reserved; byte 43 shares two timings.
+            number("SPD tWR minimum (ps)", (((unsigned(b[41]) & 15) << 8) | b[42]) * 125);
+            number("SPD tWTR_S minimum (ps)", (((unsigned(b[43]) & 15) << 8) | b[44]) * 125);
+            number("SPD tWTR_L minimum (ps)", ((unsigned(b[43] >> 4) << 8) | b[45]) * 125);
         }
     } else {
         static const unsigned densities[] = {0, 4, 8, 12, 16, 24, 32, 48, 64};
@@ -296,6 +301,17 @@ SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &b) {
             for (unsigned i = 0; i < sizeof(offsets)/sizeof(offsets[0]); ++i) {
                 const unsigned off = offsets[i], value = unsigned(b[off]) | (unsigned(b[off+1]) << 8);
                 if (value) number(names[i], value);
+            }
+            // Base SPD has a different order and offset from XMP. Keep the
+            // stored ps and nCK requirements separate, including zero values.
+            // The final three pairs first appeared in additive revision 1.2.
+            const char *secondary[] = {"tRRD_L", "tCCD_L", "tCCD_L_WR", "tCCD_L_WR2",
+                "tFAW", "tCCD_L_WTR", "tCCD_S_WTR", "tRTP", "tCCD_M", "tCCD_M_WR", "tCCD_M_WTR"};
+            const unsigned count = (b[1] & 15) >= 2 ? 11 : 8;
+            for (unsigned i = 0; i < count; ++i) {
+                const unsigned off = 70 + 3 * i;
+                number("SPD " + std::string(secondary[i]) + " minimum (ps)", word(b, off));
+                number("SPD " + std::string(secondary[i]) + " cycle lower limit (nCK)", b[off+2]);
             }
         }
     }
