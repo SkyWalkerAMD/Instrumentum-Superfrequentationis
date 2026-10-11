@@ -35,7 +35,7 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 362, len(reports)
+assert len(reports) == 392, len(reports)
 pm_reports = [r for r in reports if r["command"] == "amd-pm-decode" and "pm" in r["data"]]
 assert len(pm_reports) == 20
 assert [r["ok"] for r in pm_reports] == [True] * 9 + [False, True, True, False, False, False, False, True, True, False, False]
