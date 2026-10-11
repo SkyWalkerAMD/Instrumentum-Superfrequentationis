@@ -26,11 +26,11 @@ IntelMemorySnapshot read(Device &d, const std::atomic<bool> *cancelled = nullptr
 void golden() {
     for (unsigned type = 0; type < 2; ++type) {
         const auto s = decodeIntelMemory(IntelMemoryTarget{},intel_memory_fixture::registers(type));
-        assert(s.valid && !s.error && s.values.size() == 30 && s.rankMask == 3 && s.dramType == type);
+        assert(s.valid && !s.error && s.version == 2 && s.values.size() == 43 && s.rankMask == 3 && s.dramType == type);
         assert(s.gear2 && !s.gear4 && s.commandStretch == 1 && s.nTo1 == 3);
-        for (unsigned i = 0; i < 30; ++i) {
-            const bool unused = (i == 7 && type == 1) || (i == 11 && type == 0);
-            assert(s.values[i].error == (unused ? -ENOTSUP : 0));
+        for (unsigned i = 0; i < 43; ++i) {
+            const bool unused = ((i == 7 || i == 39 || i == 42) && type == 1) || (i == 11 && type == 0);
+            assert(s.values[i].error == (unused ? -ENOTSUP : i == 32 || i == 33 ? -ENODEV : 0));
             assert(s.values[i].encoded == intel_memory_fixture::expected(i));
         }
     }
@@ -41,6 +41,8 @@ void routing() {
         assert(intelMemoryOffset(t,0xd800) == 0xd800+mc*0x10000);
         assert(intelMemoryOffset(t,0xd80c) == 0xd80c+mc*0x10000+channel*4);
         assert(intelMemoryOffset(t,0xe014) == 0xe014+mc*0x10000+channel*0x800);
+        assert(intelMemoryOffset(t,0xe020) == 0xe020+mc*0x10000+channel*0x800);
+        assert(intelMemoryOffset(t,0xe050) == 0xe050+mc*0x10000+channel*0x800);
         assert(!decodeIntelMemory(t,intel_memory_fixture::registers()).error);
         assert(decodeIntelMemory(t,intel_memory_fixture::registers(0)).error == (channel ? -ENODEV : 0));
     }
@@ -76,7 +78,7 @@ void zerosAndUnused() {
     auto sizeOnly = intel_memory_fixture::registers(); sizeOnly[1].raw = 1u<<16;
     assert(decodeIntelMemory({},sizeOnly).valid);
 
-    for (unsigned i = 4; i < 12; ++i) {
+    for (unsigned i = 4; i < 14; ++i) {
         auto v = intel_memory_fixture::registers(); v[i].raw = 0;
         const auto s = decodeIntelMemory({},v); assert(s.error == -ENODATA && s.values.empty());
     }
@@ -129,7 +131,7 @@ void liveSuccess() {
     for (unsigned type = 0; type < 2; ++type) for (unsigned mc = 0; mc < 2; ++mc) for (unsigned ch = 0; ch < (type ? 2u : 1u); ++ch) {
         Device d; d.controller = mc; d.channel = ch; d.memory[0xd800] = type;
         const auto s = read(d); assert(s.valid && !s.offline && !s.error && s.mchbar == d.bar && s.identity.model == 0xb7);
-        assert(d.reads == 39 && !d.writes && d.cpuCalls == 3 && !d.wrongCpu);
+        assert(d.reads == 43 && !d.writes && d.cpuCalls == 3 && !d.wrongCpu);
         for (const auto &r : d.requests) assert(!r.write && r.space != Space::Msr);
         assert(s.values[0].encoded == 36 && s.values[13].encoded == 24000);
     }
@@ -153,17 +155,17 @@ void barGates() {
 }
 void failurePositions() {
     for (int call = 0; call < 3; ++call) { Device d; d.failCpuid = call; const auto s = read(d); assert(s.error == -EACCES && d.requests.empty()); }
-    for (int call = 0; call < 39; ++call) {
+    for (int call = 0; call < 43; ++call) {
         Device d; d.failRead = call; const auto s = read(d);
         assert(s.error == -EACCES && !s.valid && s.values.empty() && s.registers.empty() && int(d.reads) == call+1 && !d.writes);
     }
 }
 void races() {
-    for (unsigned i = 0; i < 12; ++i) {
-        Device d; d.afterRequest = [&](const Request &) { if (d.reads == 17) d.memory[intelMemoryRegisters()[i].offset] ^= 1; };
+    for (unsigned i = 0; i < 14; ++i) {
+        Device d; d.afterRequest = [&](const Request &) { if (d.reads == 19) d.memory[intelMemoryRegisters()[i].offset] ^= 1; };
         assert(read(d).error && !d.writes);
     }
-    Device d; d.afterRequest = [&](const Request &) { if (d.reads == 17) d.bar ^= 0x20000; };
+    Device d; d.afterRequest = [&](const Request &) { if (d.reads == 19) d.bar ^= 0x20000; };
     assert(read(d).error == -EAGAIN);
 }
 void invalidAndCancelled() {
@@ -174,9 +176,92 @@ void invalidAndCancelled() {
     Device active; stop = false; active.afterRequest = [&](const Request &) { if (active.reads == 7) stop = true; };
     assert(read(active,&stop).error == -ECANCELED && active.reads == 7 && !active.writes);
 }
+void legacySnapshots() {
+    for (unsigned type = 0; type < 2; ++type) {
+        auto registers = intel_memory_fixture::registers(type,1);
+        registers[3].raw = UINT64_C(0x180000068); // Original v1 fixture.
+        const auto s = decodeIntelMemory({},registers,1);
+        assert(s.valid && s.version == 1 && s.values.size() == 30);
+        const auto json = intelMemoryJson(s);
+        assert(json.find("octool-intel-memory-v1") != std::string::npos && json.find("RTL_Rank") == std::string::npos);
+        const auto restored = parseIntelMemoryCapture(json);
+        assert(restored.valid && restored.offline && restored.version == 1 && restored.registers.size() == 12);
+        assert(intelMemoryJson(restored) == json);
+        assert(decodeIntelMemory({},registers,2).error == -EINVAL);
+        auto bad = json; bad.replace(bad.find("memory-v1"),9,"memory-v2");
+        assert(parseIntelMemoryCapture(bad).error == -EINVAL);
+        bad = json; bad.replace(bad.find("memory-v1"),9,"memory-v3");
+        assert(parseIntelMemoryCapture(bad).error == -EINVAL);
+    }
+    const auto registers = intel_memory_fixture::registers();
+    assert(decodeIntelMemory({},registers,1).error == -EINVAL);
+    for (unsigned version : {0u,3u,UINT32_MAX}) {
+        assert(intelMemoryRegisters(version).empty() && intelMemoryFields(version).empty());
+        assert(decodeIntelMemory({},registers,version).error == -EINVAL);
+        assert(decodeIntelMemory({}, {},version).error == -EINVAL);
+    }
+    auto json = intelMemoryJson(decodeIntelMemory({},registers));
+    json.replace(json.find("memory-v2"),9,"memory-v1");
+    assert(parseIntelMemoryCapture(json).error == -EINVAL);
+}
+void rankLatencyPresence() {
+    for (unsigned type = 0; type < 2; ++type) for (unsigned ranks = 1; ranks < 16; ++ranks) {
+        auto v = intel_memory_fixture::registers(type); v[2].raw = ranks;
+        // Unoccupied ranks and the LPDDR-only high half may contain any value.
+        for (unsigned rank = 0; rank < 4; ++rank) if (!(ranks & (1u<<rank))) v[12].raw &= ~(UINT64_C(255) << (rank*8));
+        const auto s = decodeIntelMemory({},v); assert(s.valid);
+        for (unsigned rank = 0; rank < 4; ++rank) {
+            assert(s.values[30+rank].error == (ranks & (1u<<rank) ? 0 : -ENODEV));
+            if (ranks & (1u<<rank)) {
+                auto bad = v; bad[12].raw &= ~(UINT64_C(255) << (rank*8));
+                const auto invalid = decodeIntelMemory({},bad);
+                assert(invalid.error == -ENODATA && invalid.values.empty());
+            }
+        }
+        const auto parsed = parseIntelMemoryCapture(intelMemoryJson(s));
+        assert(parsed.valid && parsed.rankMask == ranks && parsed.values.size() == 43);
+    }
+}
+void powerDownFields() {
+    for (unsigned type = 0; type < 2; ++type) for (unsigned index = 34; index < 43; ++index) {
+        auto regs = intel_memory_fixture::registers(type);
+        const auto &field = intelMemoryFields()[index];
+        for (auto &r : regs) if (r.offset == field.offset) r.raw &= ~(((UINT64_C(1) << (field.high-field.low+1))-1) << field.low);
+        const auto s = decodeIntelMemory({},regs);
+        const bool unused = type == 1 && (index == 39 || index == 42);
+        assert(s.valid == (unused || index == 42));
+        if (s.valid) assert(s.values[index].error == (unused ? -ENOTSUP : 0) && !s.values[index].encoded);
+        else assert(s.error == -ENODATA && s.values.empty());
+    }
+    auto regs = intel_memory_fixture::registers(0);
+    // Only reserved bits change, including bits next to the 10-bit tWRPDEN.
+    regs[13].raw ^= (UINT64_C(31)<<54) | (UINT64_C(7)<<29);
+    const auto s = decodeIntelMemory({},regs); assert(s.valid);
+    for (unsigned i = 34; i < 43; ++i) assert(s.values[i].encoded == intel_memory_fixture::expected(i));
+}
+void extendedUnits() {
+    for (unsigned overrides = 0; overrides < 4; ++overrides) {
+        auto regs = intel_memory_fixture::registers(0);
+        if (overrides & 1) regs[3].raw |= UINT64_C(1)<<30;
+        if (overrides & 2) regs[3].raw |= UINT64_C(1)<<16;
+        const auto s = decodeIntelMemory({},regs); assert(s.valid);
+        const auto &fields = intelMemoryFields();
+        for (unsigned i = 0; i < fields.size(); ++i) {
+            const std::string expected = i >= 30 && i <= 33 ? "QCLK" : i == 35 || i == 36 ? "MC_DCLK" : overrides ? "encoded" : "tCK";
+            assert(intelMemoryUnit(s,fields[i]) == expected);
+        }
+        auto json = intelMemoryJson(s);
+        const auto position = json.find("\"encoded\":40",json.find("\"name\":\"RTL_Rank0\""));
+        assert(position != std::string::npos); json.replace(position,12,"\"encoded\":99");
+        json.replace(json.find("\"unit\":\"QCLK\""),13,"\"unit\":\"ns\"");
+        const auto parsed = parseIntelMemoryCapture(json); assert(parsed.valid && parsed.values[30].encoded == 40);
+        assert(std::string(intelMemoryUnit(parsed,fields[30])) == "QCLK");
+    }
+}
 }
 int main() {
     golden(); routing(); malformedRegisters(); presenceAndType(); zerosAndUnused(); gearEncodings(); roundtrip(); malformedJson();
     liveSuccess(); identityGates(); barGates(); failurePositions(); races(); invalidAndCancelled();
-    std::cout << "14 Intel memory scenario groups passed\n";
+    legacySnapshots(); rankLatencyPresence(); powerDownFields(); extendedUnits();
+    std::cout << "18 Intel memory scenario groups passed\n";
 }

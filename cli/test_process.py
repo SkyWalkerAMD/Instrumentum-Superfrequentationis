@@ -35,24 +35,51 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 422, len(reports)
+assert len(reports) == 430, len(reports)
 imc_reports = [r for r in reports if r["command"] in ("intel-memory-read","intel-memory-decode")]
-assert len(imc_reports) == 20
-assert [r["ok"] for r in imc_reports] == ([True]*4+[False]*6)*2
-for i,r in enumerate(imc_reports):
+assert len(imc_reports) == 28
+assert [r["ok"] for r in imc_reports] == ([True]*4+[False]*6)*2 + [True]*4+[False]*4
+for i,r in enumerate(imc_reports[:20]):
     memory = r["data"]["memory"]
     if not r["ok"]:
         assert memory is None
         continue
-    assert len(memory["registers"]) == 12 and len(memory["fields"]) == 30
+    assert memory["format"] == "octool-intel-memory-v2"
+    assert len(memory["registers"]) == 14 and len(memory["fields"]) == 43
     fields = {v["name"]:v for v in memory["fields"]}
     assert fields["tCL"]["encoded"] == 36 and fields["tWRPRE"]["encoded"] == 80
     assert fields["tWRRD_SG"]["encoded"] == 70 and fields["tWRRD_DD"]["encoded"] == 10
     assert fields["tREFI"]["encoded"] == 24000
+    assert fields["RTL_Rank0"]["encoded"] == 40 and fields["RTL_Rank0"]["unit"] == "QCLK"
+    assert fields["RTL_Rank1"]["encoded"] == 44 and fields["RTL_Rank2"]["encoded"] is None
+    assert fields["RTL_Rank2"]["error"] < 0 and fields["RTL_Rank2"]["unit"] is None
+    assert fields["tCSL"]["encoded"] == 9 and fields["tCSL"]["unit"] == "MC_DCLK"
+    assert fields["tCSH"]["encoded"] == 11 and fields["tCSH"]["unit"] == "MC_DCLK"
+    assert fields["tWRPDEN"]["encoded"] == 101 and fields["tCKE"]["encoded"] == 8
+    assert fields["tCPDED"]["encoded"] == (5 if i == 2 else None)
     assert memory["registers"][4]["raw"] == "0x814160500042402a"
     assert fields["tCL"]["unit"] == ("encoded" if i in (3,13) else "tCK")
     assert memory["offline"] == (i >= 10) and not memory["origin_verified"] and not memory["atomic_snapshot_guaranteed"]
     if i >= 10: assert not r["data"]["hardware_accessed"]
+for i,r in enumerate(imc_reports[20:]):
+    assert not r["data"]["hardware_accessed"]
+    memory = r["data"]["memory"]
+    if i >= 4:
+        assert memory is None
+        continue
+    version = 1 if i < 2 else 2
+    assert memory["format"] == "octool-intel-memory-v"+str(version) and memory["offline"]
+    assert len(memory["registers"]) == (12 if version == 1 else 14)
+    assert len(memory["fields"]) == (30 if version == 1 else 43)
+    fields = {v["name"]:v for v in memory["fields"]}
+    if i < 2:
+        assert "RTL_Rank0" not in fields and fields["tCL"]["encoded"] == 36
+    if i == 2:
+        assert memory["rank_mask"] == 8 and fields["RTL_Rank3"]["encoded"] == 52
+        assert all(fields["RTL_Rank"+str(rank)]["encoded"] is None for rank in range(3))
+    if i == 3:
+        assert fields["tCPDED"]["encoded"] == 0 and fields["tCPDED"]["unit"] == "encoded"
+        assert fields["RTL_Rank0"]["unit"] == "QCLK" and fields["tCSL"]["unit"] == "MC_DCLK"
 with tempfile.TemporaryDirectory(prefix="octool-intel-memory-") as directory:
     path = Path(directory)/"内存快照.json"
     for source in (imc_reports[0]["data"]["memory"],imc_reports[0],imc_reports[10]):
@@ -60,6 +87,10 @@ with tempfile.TemporaryDirectory(prefix="octool-intel-memory-") as directory:
         decoded = run("intel-memory-decode","--file",str(path))
         assert decoded["data"]["memory"]["registers"] == imc_reports[0]["data"]["memory"]["registers"]
         assert decoded["data"]["memory"]["fields"][0]["encoded"] == 36
+    for source in imc_reports[20:24]:
+        path.write_text(json.dumps(source),encoding="utf-8")
+        decoded = run("intel-memory-decode","--file",str(path))
+        assert decoded["data"]["memory"] == source["data"]["memory"]
     path.write_text(json.dumps(imc_reports[4]),encoding="utf-8")
     assert run("intel-memory-decode","--file",str(path),code=3)["data"]["memory"] is None
     os.mkfifo(Path(directory)/"fifo")

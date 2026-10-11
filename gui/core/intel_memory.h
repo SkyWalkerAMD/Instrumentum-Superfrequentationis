@@ -17,6 +17,13 @@ struct IntelMemoryField {
     unsigned low, high;
     // Bit 0: DDR4, bit 1: DDR5.
     unsigned dramTypes;
+    const char *unit;
+    // Zero for channel-wide fields, otherwise the required occupied-rank bit.
+    unsigned rankBit;
+    bool zeroAllowed;
+    IntelMemoryField(const char *n, std::uint32_t o, unsigned l, unsigned h,
+                     unsigned types, const char *u = "tCK", unsigned rank = 0, bool zero = false)
+        : name(n), offset(o), low(l), high(h), dramTypes(types), unit(u), rankBit(rank), zeroAllowed(zero) {}
 };
 struct IntelMemoryValue {
     unsigned encoded = 0;
@@ -25,6 +32,7 @@ struct IntelMemoryValue {
 struct IntelMemorySnapshot {
     int error = 0;
     bool valid = false, offline = true;
+    unsigned version = 2;
     IntelMemoryTarget target;
     CpuIdentity identity;
     std::uint32_t pciIdentity = 0;
@@ -35,12 +43,15 @@ struct IntelMemorySnapshot {
     std::vector<IntelMemoryValue> values;
     std::string detail;
 };
-const std::vector<IntelMemoryRegisterSpec> &intelMemoryRegisters();
-const std::vector<IntelMemoryField> &intelMemoryFields();
+// V1: 12 registers / 30 fields. V2 adds RTL and power-down timings.
+// An unknown version has no register or field definitions.
+const std::vector<IntelMemoryRegisterSpec> &intelMemoryRegisters(unsigned version = 2);
+const std::vector<IntelMemoryField> &intelMemoryFields(unsigned version = 2);
+const char *intelMemoryUnit(const IntelMemorySnapshot &snapshot, const IntelMemoryField &field);
 // MC0/channel0-relative offsets. Shared D800 has no channel offset; D80C uses
 // +4 for channel 1, while channel timing/configuration registers use +0x800.
 std::uint32_t intelMemoryOffset(const IntelMemoryTarget &target, std::uint32_t offset);
-IntelMemorySnapshot decodeIntelMemory(const IntelMemoryTarget &target, const std::vector<IntelMemoryRegister> &registers);
+IntelMemorySnapshot decodeIntelMemory(const IntelMemoryTarget &target, const std::vector<IntelMemoryRegister> &registers, unsigned version = 2);
 // Explicit one-channel read, never a write. CPUID 06_B7 and PCI 8086:A700 at
 // 0000:00:00.0 only. Two complete matching reads do not promise atomicity.
 IntelMemorySnapshot readIntelMemory(HardwareSession &session, const IntelMemoryTarget &target);

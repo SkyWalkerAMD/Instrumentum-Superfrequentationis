@@ -719,7 +719,7 @@ void intelMemoryCommands() {
         if (scenario == 6) d.bar &= ~UINT64_C(1);
         if (scenario == 7) d.memory[0xd80c] = 0x10001800;
         if (scenario == 8) d.failRead = 10;
-        if (scenario == 9) d.afterRequest = [&](const Request &) { if (d.reads == 17) d.memory[0xe000] ^= 1; };
+        if (scenario == 9) d.afterRequest = [&](const Request &) { if (d.reads == 19) d.memory[0xe000] ^= 1; };
         const auto report = command(d,{"intel-memory-read","--cpu","130","--controller",std::to_string(d.controller),"--channel",std::to_string(d.channel)},scenario < 4 ? 0 : 3);
         assert(!d.writes && !d.wrongCpu);
         if (scenario >= 4) assert(report.find("\"memory\":null") != std::string::npos);
@@ -753,6 +753,25 @@ void intelMemoryOffline() {
         std::ofstream file(path,std::ios::binary); file << text; file.close(); assert(file);
         std::ostringstream out;
         assert(run({"intel-memory-decode","--file",scenario == 8 ? std::string(path)+"-missing" : path},out,factory) == (scenario < 4 ? 0 : 3));
+        if (emit) std::cout << out.str();
+    }
+    assert(!opens);
+}
+void intelMemoryExtendedCaptures() {
+    char path[] = "/tmp/octool-imc-extended-XXXXXX"; const int fd = mkstemp(path); assert(fd >= 0); close(fd);
+    struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
+    unsigned opens = 0; const auto factory = [&] { ++opens; return std::unique_ptr<HardwareBackend>(); };
+    for (unsigned scenario = 0; scenario < 8; ++scenario) {
+        auto registers = intel_memory_fixture::registers(scenario == 1 ? 1 : 0,scenario < 2 ? 1 : 2);
+        if (scenario == 2) { registers[2].raw = 8; registers[12].raw = UINT64_C(0xffffffc034000000); }
+        if (scenario == 3) { registers[3].raw &= ~(UINT64_C(31)<<56); registers[3].raw |= UINT64_C(1)<<30; }
+        auto text = intelMemoryJson(decodeIntelMemory({},registers,scenario < 2 ? 1 : 2));
+        if (scenario == 4) text.replace(text.find("memory-v2"),9,"memory-v1");
+        if (scenario == 5) text.replace(text.find("0x0000e050"),10,"0x0000e058");
+        if (scenario == 6) text.replace(text.find("0xf0e0d0c034302c28"),18,"0xf0e0d0c034302c00");
+        if (scenario == 7) text.replace(text.find("0x34092c6585a78608"),18,"0xffffffffffffffff");
+        std::ofstream file(path,std::ios::binary); file << text; file.close(); assert(file);
+        std::ostringstream out; assert(run({"intel-memory-decode","--file",path},out,factory) == (scenario < 4 ? 0 : 3));
         if (emit) std::cout << out.str();
     }
     assert(!opens);
@@ -837,8 +856,8 @@ int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--pm-fixture") { pmFilesystem(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
-    offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline();
+    offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "19 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "20 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

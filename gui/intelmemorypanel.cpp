@@ -15,6 +15,7 @@
 #include <QTableWidget>
 #include <QVBoxLayout>
 #include <QtConcurrent>
+#include <cerrno>
 #include <utility>
 
 using namespace octool::core;
@@ -74,21 +75,25 @@ void IntelMemoryPanel::clear() {
 }
 QByteArray IntelMemoryPanel::captureBytes() const { return capture_; }
 void IntelMemoryPanel::present(const IntelMemorySnapshot &s) {
-    const auto &fields = intelMemoryFields(); table_->setRowCount(int(fields.size()));
+    const auto &fields = intelMemoryFields(s.version); table_->setRowCount(int(fields.size()));
     for (std::size_t i = 0; i < fields.size(); ++i) {
         const auto &f = fields[i]; const auto &v = s.values[i]; std::uint64_t raw = 0;
         for (const auto &r : s.registers) if (r.offset == f.offset) raw = r.raw;
-        const QStringList values = {QString::fromLatin1(f.name),v.error ? "Not used" : QString::number(v.encoded),
-            v.error ? "—" : s.noGear2Divide || s.noGear4Divide ? "Encoded" : "tCK",hexValue(f.offset,4),
+        auto unit = QString::fromLatin1(intelMemoryUnit(s,f));
+        if (unit == "encoded") unit = "Encoded";
+        if (unit == "MC_DCLK") unit = "MC DCLK";
+        const QStringList values = {QString::fromLatin1(f.name),v.error == -ENODEV ? "Rank absent" : v.error ? "Not used" : QString::number(v.encoded),
+            v.error ? "—" : unit,hexValue(f.offset,4),
             QString("%1:%2").arg(f.high).arg(f.low),hexValue(raw,8)};
         for (int col = 0; col < values.size(); ++col) table_->setItem(int(i),col,new QTableWidgetItem(values[col]));
     }
-    context_->setText(QString("%1 · controller %2 / channel %3 · rank mask %4 · Gear2 %5 / Gear4 %6 · command-stretch encoding %7")
+    context_->setText(QString("%1 · controller %2 / channel %3 · rank mask %4 · Gear2 %5 / Gear4 %6 · command-stretch encoding %7 · snapshot v%8")
         .arg(s.dramType ? "DDR5" : "DDR4").arg(s.target.controller).arg(s.target.channel).arg(hexValue(s.rankMask,1))
-        .arg(s.gear2 ? "on" : "off").arg(s.gear4 ? "on" : "off").arg(s.commandStretch));
+        .arg(s.gear2 ? "on" : "off").arg(s.gear4 ? "on" : "off").arg(s.commandStretch).arg(s.version));
     capture_ = QByteArray::fromStdString(intelMemoryJson(s)); copy_->setEnabled(true); save_->setEnabled(true);
     status_->setText((s.offline ? QString("Offline snapshot; capture origin unverified. ") : QString("Two matching register reads completed; the capture is not atomic. ")) +
-        (s.noGear2Divide || s.noGear4Divide ? "Gear parameter overrides are active; values retain their register encoding. " : "Timings are programmed tCK values. ") +
+        (s.noGear2Divide || s.noGear4Divide ? "Gear parameter overrides are active; tCK fields retain their register encoding. " : "Programmed timing values; units are shown per field. ") +
+        (s.version == 1 ? "Legacy v1: RTL and power-down timings were not captured. " : "RTL uses QCLK; tCSL and tCSH use MC DCLK. ") +
         "tWRPRE is the write-command-to-precharge interval. No settings were changed.");
 }
 bool IntelMemoryPanel::loadCapture(const QByteArray &bytes) {

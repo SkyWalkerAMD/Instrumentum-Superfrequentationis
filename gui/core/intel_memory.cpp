@@ -38,16 +38,18 @@ std::uint64_t word64(const capture_json::Json &v) {
     return result;
 }
 }
-const std::vector<IntelMemoryRegisterSpec> &intelMemoryRegisters() {
-    // Intel 743846-001, sections 3.2.46, 3.2.49-50, 3.2.70-75, 3.2.80, 3.2.82,
+const std::vector<IntelMemoryRegisterSpec> &intelMemoryRegisters(unsigned version) {
+    // Intel 743846-001, sections 3.2.46, 3.2.49-50, 3.2.70-76, 3.2.79-80, 3.2.82,
     // 3.2.90 and 3.2.94. Context comes before any timing register.
     static const std::vector<IntelMemoryRegisterSpec> specs = {
         {0xd800,4}, {0xd80c,4}, {0xe454,4}, {0xe088,8}, {0xe000,8}, {0xe008,4},
-        {0xe00c,4}, {0xe010,4}, {0xe014,4}, {0xe018,4}, {0xe070,8}, {0xe43c,4}
+        {0xe00c,4}, {0xe010,4}, {0xe014,4}, {0xe018,4}, {0xe070,8}, {0xe43c,4},
+        {0xe020,8}, {0xe050,8}
     };
-    return specs;
+    static const std::vector<IntelMemoryRegisterSpec> legacy(specs.begin(), specs.begin()+12), empty;
+    return version == 2 ? specs : version == 1 ? legacy : empty;
 }
-const std::vector<IntelMemoryField> &intelMemoryFields() {
+const std::vector<IntelMemoryField> &intelMemoryFields(unsigned version) {
     static const std::vector<IntelMemoryField> fields = {
         {"tCL",0xe070,16,22,3}, {"tRCD",0xe000,51,58,3}, {"tRP",0xe000,0,7,3},
         {"tRAS",0xe000,42,50,3}, {"tCWL",0xe070,24,31,3},
@@ -61,17 +63,30 @@ const std::vector<IntelMemoryField> &intelMemoryFields() {
         {"tWRRD_SG",0xe014,0,8,3}, {"tWRRD_DG",0xe014,9,17,3},
         {"tWRRD_DR",0xe014,18,24,3}, {"tWRRD_DD",0xe014,25,31,3},
         {"tWRWR_SG",0xe018,0,6,3}, {"tWRWR_DG",0xe018,8,14,3},
-        {"tWRWR_DR",0xe018,16,22,3}, {"tWRWR_DD",0xe018,24,31,3}
+        {"tWRWR_DR",0xe018,16,22,3}, {"tWRWR_DD",0xe018,24,31,3},
+        {"RTL_Rank0",0xe020,0,7,3,"QCLK",1}, {"RTL_Rank1",0xe020,8,15,3,"QCLK",2},
+        {"RTL_Rank2",0xe020,16,23,3,"QCLK",4}, {"RTL_Rank3",0xe020,24,31,3,"QCLK",8},
+        {"tPRPDEN",0xe050,59,63,3}, {"tCSL",0xe050,48,53,3,"MC_DCLK"},
+        {"tCSH",0xe050,42,47,3,"MC_DCLK"}, {"tWRPDEN",0xe050,32,41,3},
+        {"tRDPDEN",0xe050,21,28,3}, {"tXPDLL",0xe050,14,20,1},
+        {"tXP",0xe050,7,13,3}, {"tCKE",0xe050,0,6,3},
+        {"tCPDED",0xe088,56,60,1,"tCK",0,true}
     };
-    return fields;
+    static const std::vector<IntelMemoryField> legacy(fields.begin(), fields.begin()+30), empty;
+    return version == 2 ? fields : version == 1 ? legacy : empty;
+}
+const char *intelMemoryUnit(const IntelMemorySnapshot &s, const IntelMemoryField &f) {
+    // QCLK and MC DCLK are already controller-domain quantities. Do not apply
+    // the DRAM timing divide override, or guess a tCK/ns conversion, to them.
+    return std::string(f.unit) == "tCK" && (s.noGear2Divide || s.noGear4Divide) ? "encoded" : f.unit;
 }
 std::uint32_t intelMemoryOffset(const IntelMemoryTarget &t, std::uint32_t offset) {
     return offset + t.controller * 0x10000 + (offset == 0xd800 ? 0 : t.channel * (offset == 0xd80c ? 4 : 0x800));
 }
-IntelMemorySnapshot decodeIntelMemory(const IntelMemoryTarget &t, const std::vector<IntelMemoryRegister> &registers) {
-    IntelMemorySnapshot out; out.target = t;
-    const auto &specs = intelMemoryRegisters();
-    if (t.controller > 1 || t.channel > 1 || registers.size() != specs.size()) { out.error = -EINVAL; return out; }
+IntelMemorySnapshot decodeIntelMemory(const IntelMemoryTarget &t, const std::vector<IntelMemoryRegister> &registers, unsigned version) {
+    IntelMemorySnapshot out; out.target = t; out.version = version;
+    const auto &specs = intelMemoryRegisters(version);
+    if (specs.empty() || t.controller > 1 || t.channel > 1 || registers.size() != specs.size()) { out.error = -EINVAL; return out; }
     std::map<std::uint32_t, std::uint64_t> raw;
     for (const auto &r : registers) {
         if (!raw.emplace(r.offset, r.raw).second) { out.error = -EINVAL; return out; }
@@ -97,12 +112,14 @@ IntelMemorySnapshot decodeIntelMemory(const IntelMemoryTarget &t, const std::vec
     out.noGear2Divide = (scheduler & (UINT64_C(1) << 30)) != 0;
     out.noGear4Divide = (scheduler & (UINT64_C(1) << 16)) != 0;
     out.commandStretch = unsigned((scheduler >> 3) & 3); out.nTo1 = unsigned((scheduler >> 5) & 7);
-    for (const auto &field : intelMemoryFields()) {
+    for (const auto &field : intelMemoryFields(version)) {
         IntelMemoryValue v;
         v.encoded = unsigned((raw[field.offset] >> field.low) & ((UINT64_C(1) << (field.high - field.low + 1)) - 1));
         if (!(field.dramTypes & (1u << out.dramType))) v.error = -ENOTSUP;
+        else if (field.rankBit && !(out.rankMask & field.rankBit)) v.error = -ENODEV;
         // Do not turn an uninitialized register into a timing measurement.
-        else if (!v.encoded) { out.error = -ENODATA; out.values.clear(); return out; }
+        // tCPDED explicitly permits zero; absent ranks have no RTL measurement.
+        else if (!v.encoded && !field.zeroAllowed) { out.error = -ENODATA; out.values.clear(); return out; }
         out.values.push_back(v);
     }
     out.registers = registers; out.valid = true; return out;
@@ -149,10 +166,10 @@ IntelMemorySnapshot readIntelMemory(HardwareSession &s, const IntelMemoryTarget 
 }
 std::string intelMemoryJson(const IntelMemorySnapshot &s) {
     if (!s.valid || s.error) return "null";
-    const auto d = decodeIntelMemory(s.target, s.registers);
+    const auto d = decodeIntelMemory(s.target, s.registers, s.version);
     if (d.error) return "null";
     const auto boolean = [](bool v) { return v ? "true" : "false"; };
-    std::string out = "{\"format\":\"octool-intel-memory-v1\",\"layout\":\"raptor-lake-s-743846-001\",\"controller\":" + std::to_string(s.target.controller) +
+    std::string out = "{\"format\":\"octool-intel-memory-v" + std::to_string(d.version) + "\",\"layout\":\"raptor-lake-s-743846-001\",\"controller\":" + std::to_string(s.target.controller) +
         ",\"channel\":" + std::to_string(s.target.channel) + ",\"dram_type\":\"" + (d.dramType ? "DDR5" : "DDR4") +
         "\",\"rank_mask\":" + std::to_string(d.rankMask) + ",\"gear2\":" + boolean(d.gear2) + ",\"gear4\":" + boolean(d.gear4) +
         ",\"no_gear2_divide\":" + boolean(d.noGear2Divide) + ",\"no_gear4_divide\":" + boolean(d.noGear4Divide) +
@@ -163,13 +180,13 @@ std::string intelMemoryJson(const IntelMemorySnapshot &s) {
         out += "{\"offset\":" + hex(r.offset, 8) + ",\"raw\":" + hex(r.raw, 16) + '}';
     }
     out += "],\"fields\":[";
-    const auto &fields = intelMemoryFields();
+    const auto &fields = intelMemoryFields(d.version);
     for (std::size_t i = 0; i < fields.size(); ++i) {
         if (i) out += ',';
         const auto &v = d.values[i]; const auto &f = fields[i];
         out += "{\"name\":\"" + std::string(f.name) + "\",\"offset\":" + hex(f.offset, 8) + ",\"low\":" + std::to_string(f.low) +
             ",\"high\":" + std::to_string(f.high) + ",\"error\":" + std::to_string(v.error) + ",\"encoded\":" +
-            (v.error ? "null" : std::to_string(v.encoded)) + ",\"unit\":" + (v.error ? "null" : d.noGear2Divide || d.noGear4Divide ? "\"encoded\"" : "\"tCK\"") + '}';
+            (v.error ? "null" : std::to_string(v.encoded)) + ",\"unit\":" + (v.error ? "null" : "\"" + std::string(intelMemoryUnit(d,f)) + "\"") + '}';
     }
     return out + "]}";
 }
@@ -185,14 +202,16 @@ IntelMemorySnapshot parseIntelMemoryCapture(const std::string &json) {
             check(equals(root.at("command"), Json::String, "intel-memory-read") || equals(root.at("command"), Json::String, "intel-memory-decode"), "Not an Intel memory report");
             data = &root.at("data").at("memory");
         }
-        check(equals(data->at("format"), Json::String, "octool-intel-memory-v1") &&
+        const unsigned version = equals(data->at("format"), Json::String, "octool-intel-memory-v1") ? 1 :
+            equals(data->at("format"), Json::String, "octool-intel-memory-v2") ? 2 : 0;
+        check(version &&
             equals(data->at("layout"), Json::String, "raptor-lake-s-743846-001"), "Unsupported Intel memory layout");
         IntelMemoryTarget t; t.controller = uint(data->at("controller"), 1); t.channel = uint(data->at("channel"), 1);
         const auto &regs = data->at("registers");
-        check(regs.kind == Json::Array && regs.items.size() == intelMemoryRegisters().size(), "Expected a complete register snapshot");
+        check(regs.kind == Json::Array && regs.items.size() == intelMemoryRegisters(version).size(), "Expected a complete register snapshot for the declared version");
         std::vector<IntelMemoryRegister> registers;
         for (const auto &item : regs.items) { IntelMemoryRegister r; r.offset = word(item.at("offset")); r.raw = word64(item.at("raw")); registers.push_back(r); }
-        out = decodeIntelMemory(t, registers);
+        out = decodeIntelMemory(t, registers, version);
         if (out.error) out.detail = "Invalid, absent or unsupported channel register geometry";
     } catch (const std::invalid_argument &e) { out = IntelMemorySnapshot{}; out.error = -EINVAL; out.detail = e.what(); }
     return out;
