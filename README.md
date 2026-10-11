@@ -1,9 +1,16 @@
 # Instrumentum Superfrequentationis
 
-<!-- ddr4-asymmetric-pending -->
-2026-10-11：GUI / CLI 同步补充 [DDR4 非对称内存容量](docs/ddr4-asymmetric.md)。
-按独立密度等级计算 SDP/DDP 和已确认 3DS 组合，保留第二组编码、分项容量及错误状态。
-云端验证待完成；其它 rank 组合及原版其余功能仍见还原状态，以下保留历史记录。
+<!-- ddr4-asymmetric-57924bb -->
+2026-10-11：最新验证生产提交 `57924bb`，GUI / CLI 同步完成已确认的 **DDR4 非对称容量**：
+SDP/DDP rank 分配、离散密度等级与两组 3DS 层数分别计算，显示容量分项和合计。
+
+- [解码范围](docs/ddr4-asymmetric.md)、[验证交付](docs/ddr4-asymmetric-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38143970745) 4/4，各 191 场景组；SPD / PM / UMC 内存检查通过。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38143970568) 12/12，十目标各 15 CTest、402 份 JSON。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38143970549) 23/23，十目标各 79 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-ddr4-asymmetric-57924bb/`：30 个安装包、源码及 SHA256。
+
+其它原版功能及目标真机验收仍未全部完成。以下保留历史记录。
 
 <!-- mixed-turbo-6433918 -->
 2026-10-11：最新验证生产提交 `6433918`，GUI / CLI 同步完成 **Intel 中间组活动核心阈值编辑**
