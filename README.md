@@ -1,5 +1,18 @@
 # Instrumentum Superfrequentationis
 
+<!-- ddr4-xmp-b1b9adf -->
+2026-10-11：最新验证生产提交 `b1b9adf`，GUI 与 CLI 同步新增 **DDR4 XMP 2.0 档案读取**。
+两组档案的电压、12 项时序、独立启用/时间基准、有符号修正和异常隔离已接通。
+XMP 2.0 无扩展 CRC，界面与 JSON 明确标注；未应用或写入档案。
+
+- [实现说明](docs/ddr4-xmp-recovery.md)、[功能对照](docs/frontend-progress.md)、[验证交付](docs/ddr4-xmp-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38099021180) 4/4，各 12 CTest / 122 场景组，SPD 与 UMC 的 ASan/UBSan 通过。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38099021189) 12/12，十目标各 14 CTest、288 份 JSON 报告。
+- [Linux GUI/驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38099021214) 23/23，十目标各 61 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-ddr4-xmp-b1b9adf/`：10 GUI + 10 CLI + 10 可选 DKMS 包、源码与 SHA256SUMS。
+
+原版全部功能仍未还原；目标真机调参和稳定性未验收。以下保留历史记录。
+
 <!-- ddr5-expo-e4cb81b -->
 2026-10-10：最新验证生产提交 `e4cb81b`，GUI 与 CLI 同步新增 **DDR5 EXPO 1.0 基础档案读取**。
 两组档案的三项电压、十项时序、独立启用状态及整块 CRC 已接通；XMP/EXPO 错误分区保留。
