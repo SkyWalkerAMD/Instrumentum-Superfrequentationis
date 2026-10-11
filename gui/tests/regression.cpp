@@ -434,6 +434,7 @@ private slots:
         auto *value = panel.findChild<QLineEdit *>("turboRatio"); auto *apply = panel.findChild<QPushButton *>("turboApply");
         auto *status = panel.findChild<QLabel *>("turboStatus");
         kind->setCurrentIndex(1); panel.findChild<QPushButton *>("turboRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        QVERIFY(value->isEnabled());
         group->setCurrentIndex(3); value->setText("40"); field->setCurrentIndex(1); QVERIFY(value->text().isEmpty());
         group->setCurrentIndex(7); QVERIFY(!apply->isEnabled()); QVERIFY(!value->isEnabled()); QVERIFY(status->text().contains("last active"));
         field->setCurrentIndex(0); QVERIFY(apply->isEnabled()); field->setCurrentIndex(1); group->setCurrentIndex(3);
@@ -446,6 +447,7 @@ private slots:
         apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->writes,1u);
         QCOMPARE(device->regs[0x651],UINT64_C(0x100e0c0a09060402)); QCOMPARE(device->regs[0x650],before.at(0x650));
         QCOMPARE(device->regs[0x1ae],before.at(0x1ae)); QVERIFY(status->text().contains("all ratios")); QVERIFY(value->text().isEmpty());
+        QVERIFY(value->isEnabled());
         auto *table = panel.findChild<QTableWidget *>("turboTable"); QCOMPARE(table->item(3,1)->text(),QString("9"));
         QCOMPARE(table->item(7,1)->text(),QString("16")); QVERIFY(table->item(7,3)->text().contains("fixed"));
         group->setCurrentIndex(3); value->setText("9");

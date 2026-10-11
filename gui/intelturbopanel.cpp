@@ -68,6 +68,7 @@ IntelTurboPanel::IntelTurboPanel(std::shared_ptr<HardwareAccess> access, QWidget
         }
         QApplication::clipboard()->setText(text);
     });
+    updateEditor();
 }
 IntelTurboPanel::~IntelTurboPanel() { cancelled_->store(true); }
 void IntelTurboPanel::invalidate() {
@@ -78,10 +79,10 @@ void IntelTurboPanel::updateEditor() {
     const bool threshold = field_->currentIndex() == 1;
     ratio_->setPlaceholderText(threshold ? "New active-core threshold" : "New ratio (1..85)");
     const bool editable = snapshot_.valid && snapshot_.programmable && !snapshot_.locked && snapshot_.layoutValid && group_->currentIndex() >= 0;
-    apply_->setEnabled(editable && (!threshold || intelTurboThresholdEditable(snapshot_, group_->currentData().toUInt())));
-    ratio_->setEnabled(apply_->isEnabled());
+    const bool allowed = editable && (!threshold || intelTurboThresholdEditable(snapshot_, group_->currentData().toUInt()));
+    apply_->setEnabled(allowed); ratio_->setEnabled(allowed);
     ratio_->setToolTip(threshold ? "Keep thresholds strictly increasing. The last active threshold cannot be edited." : QString());
-    if (editable && threshold && !apply_->isEnabled()) status_->setText("The last active group keeps its coverage threshold. Choose an earlier group or edit its ratio.");
+    if (editable && threshold && !allowed) status_->setText("The last active group keeps its coverage threshold. Choose an earlier group or edit its ratio.");
 }
 void IntelTurboPanel::present(const IntelTurboSnapshot &snapshot) {
     invalidate(); snapshot_ = snapshot;
