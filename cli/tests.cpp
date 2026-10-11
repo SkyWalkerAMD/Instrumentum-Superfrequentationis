@@ -575,11 +575,11 @@ void offlineSpdDoesNotCreateBackend() {
             octool::test::spdWord(bytes,735,1); bytes[737] = 255; octool::test::spdSeal(bytes,704,62);
         }
         if (scenario == 34) {
-            std::fill(bytes.begin()+24,bytes.begin()+29,0); octool::test::spdSeal(bytes,0,510);
-            std::fill(bytes.begin()+711,bytes.begin()+716,0); bytes[764] = 0; octool::test::spdSeal(bytes,704,62);
+            std::fill(bytes.begin()+24,bytes.begin()+29,std::uint8_t(0)); octool::test::spdSeal(bytes,0,510);
+            std::fill(bytes.begin()+711,bytes.begin()+716,std::uint8_t(0)); bytes[764] = 0; octool::test::spdSeal(bytes,704,62);
         }
         if (scenario == 35) {
-            std::fill(bytes.begin()+711,bytes.begin()+716,255); bytes[764] = 0xf3; octool::test::spdSeal(bytes,704,62);
+            std::fill(bytes.begin()+711,bytes.begin()+716,std::uint8_t(255)); bytes[764] = 0xf3; octool::test::spdSeal(bytes,704,62);
         }
         if (scenario == 36) { bytes[764] = 0xa4; octool::test::spdSeal(bytes,704,62); }
         if (scenario == 37) { bytes[711] ^= 1; expected = 3; }

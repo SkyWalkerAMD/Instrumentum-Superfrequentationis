@@ -185,7 +185,7 @@ void baseCasBitmaps() {
     assert(ddr5.cas.captured && ddr5.cas.decoded && ddr5.cas.offset == 24 && ddr5.cas.raw.size() == 5);
     assert(ddr5.cas.latencies == std::vector<unsigned>({20,34,36,98}));
     for (unsigned high = 0; high < 2; ++high) for (unsigned bit = 0; bit < 32; ++bit) {
-        auto b = spdDdr4XmpFixture(); std::fill(b.begin()+20,b.begin()+24,0);
+        auto b = spdDdr4XmpFixture(); std::fill(b.begin()+20,b.begin()+24,std::uint8_t(0));
         b[23] = std::uint8_t(high ? 0x80 : 0); b[20+bit/8] |= std::uint8_t(1u << (bit%8)); spdSeal(b,0,126);
         const auto r = decodeSpd(b); assert(!r.error && !r.xmp.error && r.cas.decoded);
         assert(r.cas.reservedBitsSet == (bit == 30));
@@ -193,7 +193,7 @@ void baseCasBitmaps() {
         else assert(r.cas.latencies.empty()); // Range/reserved bits are never CL bits.
     }
     for (unsigned bit = 0; bit < 40; ++bit) {
-        auto b = spdFixture(); std::fill(b.begin()+24,b.begin()+29,0);
+        auto b = spdFixture(); std::fill(b.begin()+24,b.begin()+29,std::uint8_t(0));
         b[24+bit/8] = std::uint8_t(1u << (bit%8)); spdSeal(b,0,510);
         const auto r = decodeSpd(b); assert(!r.error && r.cas.latencies == std::vector<unsigned>({20+2*bit}));
     }
@@ -206,7 +206,7 @@ void xmpCasBitmaps() {
         assert(p.cas.latencies == std::vector<unsigned>({22+2*slot,40+2*slot,98-2*slot}));
         for (unsigned bit = 0; bit < 40; ++bit) {
             auto b = original; const unsigned off = 704+64*slot;
-            std::fill(b.begin()+off+7,b.begin()+off+12,0); b[off+7+bit/8] = std::uint8_t(1u << (bit%8)); spdSeal(b,off,62);
+            std::fill(b.begin()+off+7,b.begin()+off+12,std::uint8_t(0)); b[off+7+bit/8] = std::uint8_t(1u << (bit%8)); spdSeal(b,off,62);
             const auto r = decodeSpd(b); assert(!r.xmp.error && r.xmp.profiles[slot].cas.latencies == std::vector<unsigned>({20+2*bit}));
             assert(r.cas.latencies == reference.cas.latencies);
             for (unsigned other = 0; other < 3; ++other) if (other != slot)
@@ -216,18 +216,18 @@ void xmpCasBitmaps() {
 }
 void casCombinedBitsAndTimingIndependence() {
     for (unsigned byte = 0; byte < 5; ++byte) for (unsigned code = 0; code < 256; ++code) {
-        auto b = spdFixture(); std::fill(b.begin()+711,b.begin()+716,0); b[711+byte] = std::uint8_t(code); spdSeal(b,704,62);
+        auto b = spdFixture(); std::fill(b.begin()+711,b.begin()+716,std::uint8_t(0)); b[711+byte] = std::uint8_t(code); spdSeal(b,704,62);
         const auto p = decodeSpd(b).xmp.profiles[0]; std::vector<unsigned> expected;
         for (unsigned bit = 0; bit < 8; ++bit) if (code & (1u << bit)) expected.push_back(20+16*byte+2*bit);
         assert(!p.error && p.cas.latencies == expected && p.values.size() == 30);
     }
-    auto b = spdFixture(); std::fill(b.begin()+711,b.begin()+716,255);
+    auto b = spdFixture(); std::fill(b.begin()+711,b.begin()+716,std::uint8_t(255));
     spdWord(b,709,1); spdWord(b,717,65535); spdSeal(b,704,62);
     auto r = decodeSpd(b); assert(r.xmp.profiles[0].cas.latencies.size() == 40);
     assert(r.xmp.profiles[0].cas.latencies.front() == 20 && r.xmp.profiles[0].cas.latencies.back() == 98);
     spdWord(b,709,65535); spdWord(b,717,1); spdSeal(b,704,62);
     assert(decodeSpd(b).xmp.profiles[0].cas.latencies == r.xmp.profiles[0].cas.latencies);
-    b = spdDdr4XmpFixture(); std::fill(b.begin()+20,b.begin()+24,255); spdSeal(b,0,126); r = decodeSpd(b);
+    b = spdDdr4XmpFixture(); std::fill(b.begin()+20,b.begin()+24,std::uint8_t(255)); spdSeal(b,0,126); r = decodeSpd(b);
     assert(r.cas.reservedBitsSet && r.cas.latencies.size() == 30 && r.cas.latencies.front() == 23 && r.cas.latencies.back() == 52);
 }
 void xmpCommandRateCodes() {

@@ -1047,7 +1047,7 @@ private slots:
         QTest::qWait(50); table->scrollToItem(table->item(row("SPD","CAS bitmap"),0),QAbstractItemView::PositionAtTop);
         const auto screenshot = qEnvironmentVariable("OCTOOL_CAS_TEST_SCREENSHOT");
         if (!screenshot.isEmpty()) { QTest::qWait(50); QVERIFY(panel.grab().save(screenshot)); }
-        std::fill(bytes.begin()+711,bytes.begin()+716,255); bytes[764] = 0xa4; octool::test::spdSeal(bytes,704,62);
+        std::fill(bytes.begin()+711,bytes.begin()+716,std::uint8_t(255)); bytes[764] = 0xa4; octool::test::spdSeal(bytes,704,62);
         QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
         QStringList all;
         for (unsigned part = 0; part < 7; ++part) {
@@ -1058,7 +1058,7 @@ private slots:
         QCOMPARE(all.size(),40); for (int i = 0; i < 40; ++i) QCOMPARE(all[i],QString::number(20+2*i));
         QCOMPARE(table->item(row("XMP 1","Command rate"),2)->text(),QString("Unknown code 4"));
         QCOMPARE(table->item(row("XMP 1","Command rate byte"),2)->text(),QString("0xa4"));
-        std::fill(bytes.begin()+711,bytes.begin()+716,0); bytes[764] = 0; octool::test::spdSeal(bytes,704,62);
+        std::fill(bytes.begin()+711,bytes.begin()+716,std::uint8_t(0)); bytes[764] = 0; octool::test::spdSeal(bytes,704,62);
         QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
         QCOMPARE(table->item(row("XMP 1","Supported CAS latencies"),2)->text(),QString("None encoded"));
         QCOMPARE(row("XMP 1","Supported CAS latencies (2)"),-1);
