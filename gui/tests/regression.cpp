@@ -1024,6 +1024,57 @@ private slots:
         bytes.resize(512); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
         QCOMPARE(row("XMP 2","tRRD_L minimum"),-1);
     }
+    void spdCasListsAndCommandRateStates() {
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("cas.spd");
+        auto bytes = octool::test::spdFixture();
+        const auto save = [&] { QFile file(path); if (!file.open(QIODevice::WriteOnly)) return false;
+            return file.write(reinterpret_cast<const char *>(bytes.data()), qint64(bytes.size())) == qint64(bytes.size()); };
+        QVERIFY(save()); MemoryBoardPanel panel; panel.resize(1200,900); panel.show();
+        auto *table = panel.findChild<QTableWidget *>("inventoryTable"); QVERIFY(table); QCOMPARE(table->rowCount(),0);
+        const auto row = [&](const QString &group, const QString &name) {
+            for (int i = 0; i < table->rowCount(); ++i)
+                if (table->item(i,0)->text() == group && table->item(i,1)->text() == name) return i;
+            return -1;
+        };
+        QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(table->item(row("SPD","Supported CAS latencies"),2)->text(),QString("20, 34, 36, 98"));
+        for (unsigned slot = 0; slot < 3; ++slot) {
+            const QString group = QString("XMP %1").arg(slot+1);
+            QCOMPARE(table->item(row(group,"Supported CAS latencies"),2)->text(),QString("%1, %2, %3").arg(22+2*slot).arg(40+2*slot).arg(98-2*slot));
+            QCOMPARE(table->item(row(group,"Supported CAS latencies"),3)->text(),QString("nCK"));
+            QCOMPARE(table->item(row(group,"Command rate"),2)->text(),QString("%1N").arg(slot+1));
+        }
+        QTest::qWait(50); table->scrollToItem(table->item(row("SPD","CAS bitmap"),0),QAbstractItemView::PositionAtTop);
+        const auto screenshot = qEnvironmentVariable("OCTOOL_CAS_TEST_SCREENSHOT");
+        if (!screenshot.isEmpty()) { QTest::qWait(50); QVERIFY(panel.grab().save(screenshot)); }
+        std::fill(bytes.begin()+711,bytes.begin()+716,255); bytes[764] = 0xa4; octool::test::spdSeal(bytes,704,62);
+        QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QStringList all;
+        for (unsigned part = 0; part < 7; ++part) {
+            const auto name = part ? QString("Supported CAS latencies (%1)").arg(part+1) : "Supported CAS latencies";
+            const int r = row("XMP 1",name); QVERIFY(r >= 0);
+            const auto chunk = table->item(r,2)->text().split(", "); QVERIFY(chunk.size() <= 6); all += chunk;
+        }
+        QCOMPARE(all.size(),40); for (int i = 0; i < 40; ++i) QCOMPARE(all[i],QString::number(20+2*i));
+        QCOMPARE(table->item(row("XMP 1","Command rate"),2)->text(),QString("Unknown code 4"));
+        QCOMPARE(table->item(row("XMP 1","Command rate byte"),2)->text(),QString("0xa4"));
+        std::fill(bytes.begin()+711,bytes.begin()+716,0); bytes[764] = 0; octool::test::spdSeal(bytes,704,62);
+        QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(table->item(row("XMP 1","Supported CAS latencies"),2)->text(),QString("None encoded"));
+        QCOMPARE(row("XMP 1","Supported CAS latencies (2)"),-1);
+        QCOMPARE(table->item(row("XMP 1","Command rate"),2)->text(),QString("Not specified"));
+        bytes[711] ^= 1; QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("XMP 1","CAS bitmap"),-1); QCOMPARE(row("XMP 1","Command rate"),-1);
+        QVERIFY(row("XMP 2","Command rate") >= 0);
+        bytes = octool::test::spdFixture(); bytes[1] = 0x20; octool::test::spdSeal(bytes,0,510);
+        QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(table->item(row("SPD","Supported CAS latencies"),2)->text(),QString("Not decoded"));
+        bytes = octool::test::spdDdr4XmpFixture(); bytes[23] |= 0xc0; octool::test::spdSeal(bytes,0,126);
+        QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(table->item(row("SPD","Supported CAS latencies"),2)->text(),QString("23, 32, 46, 52"));
+        QVERIFY(table->item(row("SPD","Supported CAS latencies"),4)->text().contains("Reserved bit set"));
+        QCOMPARE(row("XMP 1","Supported CAS latencies"),-1); QCOMPARE(row("XMP 1","Command rate"),-1);
+    }
     void spdExpoProfilesAndIndependentFailures() {
         QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("expo.spd");
         auto bytes = octool::test::spdExpoFixture();

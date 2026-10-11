@@ -11,6 +11,16 @@ struct SpdCrc {
     unsigned stored = 0, computed = 0;
 };
 struct SpdQuantity { std::string name, unit; unsigned value; };
+struct SpdCas {
+    bool captured = false, decoded = false, reservedBitsSet = false;
+    unsigned offset = 0;
+    std::vector<std::uint8_t> raw;
+    std::vector<unsigned> latencies;
+};
+struct SpdCommandRate {
+    bool captured = false, recognized = false;
+    unsigned raw = 0, code = 0;
+};
 struct SpdXmpProfile {
     unsigned index = 0, offset = 0;
     bool enabled = false, blockedByExpo = false, nameSupported = false, nameValid = false;
@@ -18,6 +28,8 @@ struct SpdXmpProfile {
     int error = 0;
     std::string name;
     SpdCrc crc;
+    SpdCas cas;
+    SpdCommandRate commandRate;
     std::vector<std::uint8_t> raw;
     std::vector<SpdQuantity> values;
 };
@@ -53,6 +65,7 @@ struct SpdSnapshot {
     unsigned memoryType = 0;
     bool crcChecked = false, crcValid = false;
     std::vector<SpdField> fields;
+    SpdCas cas;
     SpdXmp xmp;
     SpdExpo expo;
 };
@@ -62,6 +75,10 @@ std::uint16_t spdCrc16(const std::uint8_t *bytes, std::size_t length);
 // DDR5 XMP 3.0 manufacturer profiles 1..3 have independent CRC checks.
 // Eight secondary timings retain separate ps and nCK lower requirements;
 // no clock conversion or effective/trained timing is inferred from them.
+// Revision-1 base SPD and XMP 3.0 CAS bitmaps list supported requirements;
+// DDR4 base bit 30 is reserved, bit 31 selects CL7 or CL23 as the origin.
+// XMP 3.0 command-rate codes 1..3 mean 1N..3N; zero means unspecified.
+// DDR4 XMP CAS and DIMMs-per-channel semantics are not decoded.
 // DDR4 XMP 2.0 profiles 1..2 have no extension CRC or descriptive names.
 // Their per-profile time bases must encode 125 ps MTB / signed 1 ps FTB.
 // Timings are stored requirements, never measured or currently trained values.

@@ -5,6 +5,7 @@ GUI 的 Memory / Motherboard 页面与 CLI `spd-decode --file module.spd`、`inv
 VPP/VDD/VDDQ/内存控制器电压，以及 tCK、tAA、tRCD、tRP、tRAS、tRC、tWR、tRFC1/2/sb。
 电压单位 mV；时序保留 SPD 存储的 ps 或 ns。零电压编码只表示存储值，不推断 Auto 含义。
 现也解码 8 项次级时序，各保留 ps 时间值和 nCK 周期下限，详见下表。
+厂家档案的 [CAS 支持列表及命令率](spd-cas-recovery.md)现以独立元数据提供。
 这些值是档案要求值，不表示当前 BIOS 已启用、实际训练结果或稳定性测试结果。
 不把 tAA/tCK 的简单除法当作实际 CAS，也不将量化后的 tCK 反推为额定速度档位。
 

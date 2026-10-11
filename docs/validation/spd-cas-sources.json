@@ -1,0 +1,125 @@
+{
+  "schema": 1,
+  "date": "2026-10-11",
+  "sources": [
+    {
+      "path": "usr/src/lib/libjedec/common/spd_ddr4.h",
+      "sha": "7a67953a8540c3181fba4d30022a71881746b98f",
+      "repo": "illumos/illumos-gate",
+      "ref": "c029af224ebf0e25e82df1c2347a9c20c97102cd",
+      "url": "https://github.com/illumos/illumos-gate/blob/c029af224ebf0e25e82df1c2347a9c20c97102cd/usr/src/lib/libjedec/common/spd_ddr4.h",
+      "bytes": 26842,
+      "sha256": "7d5c2c0afb3a58f1a70a34c1d032373188c62dccf4fb0595f21fd9dc1111da16"
+    },
+    {
+      "path": "usr/src/lib/libjedec/common/spd_ddr5.h",
+      "sha": "2e2e7b4a63829b2633d1432bf4bf95680f0ed14d",
+      "repo": "illumos/illumos-gate",
+      "ref": "c029af224ebf0e25e82df1c2347a9c20c97102cd",
+      "url": "https://github.com/illumos/illumos-gate/blob/c029af224ebf0e25e82df1c2347a9c20c97102cd/usr/src/lib/libjedec/common/spd_ddr5.h",
+      "bytes": 34611,
+      "sha256": "a36f2598ad2d8978fb993c74c9a9474b75eaafdd5c0882bfbdcc09f7d9e43533"
+    },
+    {
+      "path": "usr/src/lib/libjedec/common/libjedec_spd_ddr4.c",
+      "sha": "e23cc59daeb86e8617f1b60deb45018c94a4ff07",
+      "repo": "illumos/illumos-gate",
+      "ref": "c029af224ebf0e25e82df1c2347a9c20c97102cd",
+      "url": "https://github.com/illumos/illumos-gate/blob/c029af224ebf0e25e82df1c2347a9c20c97102cd/usr/src/lib/libjedec/common/libjedec_spd_ddr4.c",
+      "bytes": 43914,
+      "sha256": "a17fbbad1538f7301da054f0fa9e36ae22691fd20c87ec1ae237030fb1ee6780"
+    },
+    {
+      "git_blob": "e7dd9fbcd75be2b42c84c115466c68475c62edc5",
+      "url": "https://github.com/edlf/DDR5SPDEditor/blob/6c9d015098f3f25e636ff7402cf955d4cc7fa2cd/ddr5spd_structs.h",
+      "sha256": "97ae4c827c746d394ce7aaf0525bcd04f33a729f0f1c1b63166cf19826b1d20b",
+      "bytes": 14914
+    },
+    {
+      "git_blob": "7cd16298c602209342dc4ade42fcfd453cfb8d19",
+      "url": "https://github.com/edlf/DDR5SPDEditor/blob/6c9d015098f3f25e636ff7402cf955d4cc7fa2cd/xmp3.cpp",
+      "sha256": "7b945cf22afd4b224ca5aa9ac00be77c04030e841a3f773a7a2458cbbe089495",
+      "bytes": 20081
+    },
+    {
+      "git_blob": "750e17847737b3163fa67cc447f7df8e200973fb",
+      "url": "https://github.com/edlf/DDR5SPDEditor/blob/6c9d015098f3f25e636ff7402cf955d4cc7fa2cd/utilities.cpp",
+      "sha256": "edec4422cf4859889f3c0cc92116f356cded675abd160743db0edc4b6df886c5",
+      "bytes": 6309
+    }
+  ],
+  "scope": "Format facts from pinned primary source implementations; no upstream implementation copied or linked. Synthetic tests and public profile inspection, no target hardware or original OCTool function execution.",
+  "ddr4_base": {
+    "offset": 20,
+    "size": 4,
+    "cl_bits": [
+      0,
+      29
+    ],
+    "range_bit": 31,
+    "low_origin": 7,
+    "high_origin": 23,
+    "step": 1,
+    "reserved_bit": 30,
+    "reserved_policy": "Report set bit separately; list only defined CL bits.",
+    "supported_spd_major": 1
+  },
+  "ddr5_base": {
+    "offset": 24,
+    "size": 5,
+    "cl_bits": [
+      0,
+      39
+    ],
+    "origin": 20,
+    "step": 2,
+    "supported_spd_major": 1
+  },
+  "xmp3": {
+    "cas_relative_offset": 7,
+    "cas_size": 5,
+    "origin": 20,
+    "step": 2,
+    "command_rate_relative_offset": 60,
+    "command_rate_mask": 15,
+    "recognized_codes": {
+      "0": "unspecified",
+      "1": "1N",
+      "2": "2N",
+      "3": "3N"
+    },
+    "unknown_policy": "Preserve raw/code, recognized=false and cycles=null; valid timings remain available.",
+    "gate": "Only complete enabled revision-0x30 manufacturer profiles with valid header/profile CRC, nonzero tCK and no EXPO overlap."
+  },
+  "public_profile": {
+    "url": "https://github.com/edlf/DDR5SPDEditor/blob/6c9d015098f3f25e636ff7402cf955d4cc7fa2cd/SPD%20examples/Sample%20XMP3%20Profile.bin",
+    "git_blob": "41375f9f0ef0621105583ef2b177d0385c9f0233",
+    "sha256": "833cc5ead10b3b691132a040db1843a2b5b5023cdbac3415aa1cf657d6365611",
+    "cas_raw_hex": "7aed070000",
+    "cas_nck": [
+      22,
+      26,
+      28,
+      30,
+      32,
+      36,
+      40,
+      42,
+      46,
+      48,
+      50,
+      52,
+      54,
+      56
+    ],
+    "command_rate_raw": 2,
+    "command_rate_code": 2,
+    "crc": 15546,
+    "scope": "Standalone public sample inspected locally; not a target module or fixture data source for CAS tests."
+  },
+  "exclusions": [
+    "DDR4 XMP CAS: old Intel EDK2 defines CL7..24; DDR4XMPEditor exposes three bytes up to CL30 and treats the fourth as unknown. Do not assume the current JEDEC high-range layout applies to XMP 2.0.",
+    "DIMMs-per-channel counts, XMP user profiles, EXPO enhanced timing, current trained settings and writes remain outside this implementation."
+  ],
+  "excluded_reference": "docs/validation/ddr4-xmp-sources.json"
+}

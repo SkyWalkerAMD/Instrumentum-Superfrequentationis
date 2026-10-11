@@ -9,6 +9,21 @@ namespace {
 unsigned word(const std::vector<std::uint8_t> &b, unsigned offset) {
     return unsigned(b[offset]) | (unsigned(b[offset + 1]) << 8);
 }
+SpdCas casBitmap(const std::vector<std::uint8_t> &b, unsigned offset, bool ddr5, bool revisionKnown) {
+    SpdCas out;
+    const unsigned size = ddr5 ? 5 : 4;
+    if (offset > b.size() || b.size() - offset < size) return out;
+    out.captured = true; out.offset = offset;
+    out.raw.assign(b.begin() + offset, b.begin() + offset + size);
+    if (!revisionKnown) return out;
+    out.decoded = true;
+    out.reservedBitsSet = !ddr5 && (b[offset + 3] & 0x40) != 0;
+    const unsigned first = ddr5 ? 20 : (b[offset + 3] & 0x80) ? 23 : 7;
+    const unsigned bits = ddr5 ? 40 : 30, step = ddr5 ? 2 : 1;
+    for (unsigned bit = 0; bit < bits; ++bit)
+        if (b[offset + bit / 8] & (1u << (bit % 8))) out.latencies.push_back(first + step * bit);
+    return out;
+}
 SpdCrc blockCrc(const std::vector<std::uint8_t> &b, unsigned offset, unsigned count = 62) {
     SpdCrc crc;
     crc.checked = true;
@@ -139,6 +154,11 @@ SpdXmp decodeXmp3(const std::vector<std::uint8_t> &b) {
                         p.values.push_back({std::string(secondary[t]) + " minimum", "ps", word(b, off)});
                         p.values.push_back({std::string(secondary[t]) + " cycle lower limit", "nCK", b[off + 2]});
                     }
+                    p.cas = casBitmap(b, p.offset + 7, true, true);
+                    p.commandRate.captured = true;
+                    p.commandRate.raw = b[p.offset + 60];
+                    p.commandRate.code = p.commandRate.raw & 15;
+                    p.commandRate.recognized = p.commandRate.code <= 3;
                 }
             }
         }
@@ -212,6 +232,7 @@ SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &b) {
         if (!out.crcValid) { out.error = -EILSEQ; return out; }
     }
     number("SPD revision (encoded)", b[1]);
+    out.cas = casBitmap(b, ddr5 ? 24 : 20, ddr5, (b[1] >> 4) == 1);
     const unsigned type = b[3] & 15;
     add("Module type", type == 1 ? "RDIMM" : type == 2 ? "UDIMM" : type == 3 ? "SO-DIMM" : type == 4 ? "LRDIMM" : "Encoding " + std::to_string(type));
     const unsigned ranks = 1 + ((b[ddr5 ? 234 : 12] >> 3) & 7);

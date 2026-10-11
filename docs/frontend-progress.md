@@ -22,6 +22,9 @@ GUI 使用图形授权，CLI 使用终端权限。UMC 的 GUI/CLI 快照和 CLI 
 两端支持同 bank/slot 的离线比较，区分字段变化、原始字变化与数据缺失。
 [UMC 离线说明](umc-offline.md)记录格式、文件边界和比较语义。
 
+SPD 两端还同步支持[基础 CAS 位图及 XMP 3.0 CAS / 命令率](spd-cas-recovery.md)，
+区分零位图、未知修订版和未知代码，保留原始字节；不代表当前训练配置。
+
 双方共同未完成：AMD PStates 写入、曲线设置与物理目标映射、完整 PBO 高层限制、
 Intel 其它型号的 VF 及 W790/W890 电压/逐核/fabric、Intel 内存训练时序、板级 PMIC/VRM/EC/时钟写入。
 四台目标真机验收与 Secure Boot 实机签名部署也未完成。详见[还原状态](recovery-status.md)。

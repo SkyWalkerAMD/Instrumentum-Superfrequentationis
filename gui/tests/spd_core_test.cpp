@@ -178,6 +178,93 @@ void xmpSecondaryIndependentRequirements() {
     assert(!r.xmp.error && r.xmp.profiles[0].values.size() == 30 && r.xmp.profiles[2].values.empty());
     assert(r.expo.profiles[0].values.size() == 13); // No EXPO enhanced-timing inference.
 }
+void baseCasBitmaps() {
+    const auto ddr4 = decodeSpd(spdDdr4XmpFixture()), ddr5 = decodeSpd(spdFixture());
+    assert(ddr4.cas.captured && ddr4.cas.decoded && ddr4.cas.offset == 20 && ddr4.cas.raw.size() == 4);
+    assert(ddr4.cas.latencies == std::vector<unsigned>({7,16,30,36}) && !ddr4.cas.reservedBitsSet);
+    assert(ddr5.cas.captured && ddr5.cas.decoded && ddr5.cas.offset == 24 && ddr5.cas.raw.size() == 5);
+    assert(ddr5.cas.latencies == std::vector<unsigned>({20,34,36,98}));
+    for (unsigned high = 0; high < 2; ++high) for (unsigned bit = 0; bit < 32; ++bit) {
+        auto b = spdDdr4XmpFixture(); std::fill(b.begin()+20,b.begin()+24,0);
+        b[23] = std::uint8_t(high ? 0x80 : 0); b[20+bit/8] |= std::uint8_t(1u << (bit%8)); spdSeal(b,0,126);
+        const auto r = decodeSpd(b); assert(!r.error && !r.xmp.error && r.cas.decoded);
+        assert(r.cas.reservedBitsSet == (bit == 30));
+        if (bit < 30) assert(r.cas.latencies == std::vector<unsigned>({(high ? 23u : 7u)+bit}));
+        else assert(r.cas.latencies.empty()); // Range/reserved bits are never CL bits.
+    }
+    for (unsigned bit = 0; bit < 40; ++bit) {
+        auto b = spdFixture(); std::fill(b.begin()+24,b.begin()+29,0);
+        b[24+bit/8] = std::uint8_t(1u << (bit%8)); spdSeal(b,0,510);
+        const auto r = decodeSpd(b); assert(!r.error && r.cas.latencies == std::vector<unsigned>({20+2*bit}));
+    }
+}
+void xmpCasBitmaps() {
+    const auto original = spdFixture(); const auto reference = decodeSpd(original);
+    for (unsigned slot = 0; slot < 3; ++slot) {
+        const auto &p = reference.xmp.profiles[slot];
+        assert(p.cas.decoded && p.cas.offset == 711+64*slot && p.cas.raw.size() == 5);
+        assert(p.cas.latencies == std::vector<unsigned>({22+2*slot,40+2*slot,98-2*slot}));
+        for (unsigned bit = 0; bit < 40; ++bit) {
+            auto b = original; const unsigned off = 704+64*slot;
+            std::fill(b.begin()+off+7,b.begin()+off+12,0); b[off+7+bit/8] = std::uint8_t(1u << (bit%8)); spdSeal(b,off,62);
+            const auto r = decodeSpd(b); assert(!r.xmp.error && r.xmp.profiles[slot].cas.latencies == std::vector<unsigned>({20+2*bit}));
+            assert(r.cas.latencies == reference.cas.latencies);
+            for (unsigned other = 0; other < 3; ++other) if (other != slot)
+                assert(r.xmp.profiles[other].cas.latencies == reference.xmp.profiles[other].cas.latencies);
+        }
+    }
+}
+void casCombinedBitsAndTimingIndependence() {
+    for (unsigned byte = 0; byte < 5; ++byte) for (unsigned code = 0; code < 256; ++code) {
+        auto b = spdFixture(); std::fill(b.begin()+711,b.begin()+716,0); b[711+byte] = std::uint8_t(code); spdSeal(b,704,62);
+        const auto p = decodeSpd(b).xmp.profiles[0]; std::vector<unsigned> expected;
+        for (unsigned bit = 0; bit < 8; ++bit) if (code & (1u << bit)) expected.push_back(20+16*byte+2*bit);
+        assert(!p.error && p.cas.latencies == expected && p.values.size() == 30);
+    }
+    auto b = spdFixture(); std::fill(b.begin()+711,b.begin()+716,255);
+    spdWord(b,709,1); spdWord(b,717,65535); spdSeal(b,704,62);
+    auto r = decodeSpd(b); assert(r.xmp.profiles[0].cas.latencies.size() == 40);
+    assert(r.xmp.profiles[0].cas.latencies.front() == 20 && r.xmp.profiles[0].cas.latencies.back() == 98);
+    spdWord(b,709,65535); spdWord(b,717,1); spdSeal(b,704,62);
+    assert(decodeSpd(b).xmp.profiles[0].cas.latencies == r.xmp.profiles[0].cas.latencies);
+    b = spdDdr4XmpFixture(); std::fill(b.begin()+20,b.begin()+24,255); spdSeal(b,0,126); r = decodeSpd(b);
+    assert(r.cas.reservedBitsSet && r.cas.latencies.size() == 30 && r.cas.latencies.front() == 23 && r.cas.latencies.back() == 52);
+}
+void xmpCommandRateCodes() {
+    for (unsigned code = 0; code < 256; ++code) {
+        auto b = spdFixture(); b[764] = std::uint8_t(code); spdSeal(b,704,62);
+        const auto r = decodeSpd(b); const auto &p = r.xmp.profiles[0]; const auto &rate = p.commandRate;
+        assert(!r.xmp.error && rate.captured && rate.raw == code && rate.code == (code & 15));
+        assert(rate.recognized == ((code & 15) <= 3));
+        assert(p.values.size() == 30 && p.cas.latencies == std::vector<unsigned>({22,40,98}));
+        assert(r.xmp.profiles[1].commandRate.raw == 0x12 && r.xmp.profiles[2].commandRate.raw == 0x13);
+    }
+}
+void casAndCommandCaptureGates() {
+    auto b = spdFixture(); b.resize(236); auto r = decodeSpd(b);
+    assert(!r.error && !r.crcChecked && r.cas.decoded && !r.xmp.inspected);
+    b.resize(235); r = decodeSpd(b); assert(r.error && !r.cas.captured);
+    b = spdFixture(); b[24] ^= 1; r = decodeSpd(b); assert(r.error == -EILSEQ && !r.cas.captured);
+    b = spdFixture(); b[1] = 0x20; spdSeal(b,0,510); r = decodeSpd(b);
+    assert(!r.error && r.cas.captured && !r.cas.decoded && r.cas.latencies.empty() && r.cas.raw.size() == 5);
+    assert(r.xmp.profiles[0].cas.decoded); // XMP has its own revision.
+    b = spdDdr4XmpFixture(); b[17] = 15; spdSeal(b,0,126); r = decodeSpd(b);
+    assert(r.cas.decoded && !r.xmp.profiles[0].cas.captured && !r.xmp.profiles[0].commandRate.captured);
+    for (unsigned scenario = 0; scenario < 5; ++scenario) {
+        b = spdFixture();
+        if (scenario == 0) b[711] ^= 1;
+        if (scenario == 1) { b[643] = 6; spdSeal(b,640,62); }
+        if (scenario == 2) { spdWord(b,709,0); spdSeal(b,704,62); }
+        if (scenario == 3) b.resize(767);
+        if (scenario == 4) { b = spdExpoFixture(); b[643] = 7; spdSeal(b,640,62); }
+        r = decodeSpd(b); const unsigned bad = scenario == 4 ? 2 : 0;
+        assert(!r.xmp.profiles[bad].cas.captured && !r.xmp.profiles[bad].commandRate.captured);
+        if (scenario != 3) assert(r.xmp.profiles[bad == 2 ? 0 : 1].cas.decoded);
+        assert(r.cas.decoded);
+    }
+    b = spdFixture(); b[642] = 0x31; spdSeal(b,640,62); r = decodeSpd(b);
+    assert(r.xmp.profiles.empty() && r.cas.decoded);
+}
 void expoProfiles() {
     const auto b = spdExpoFixture(); const auto r = decodeSpd(b);
     assert(!r.error && !r.xmp.error && !r.expo.error && r.expo.present && r.expo.crc.valid);
@@ -372,5 +459,6 @@ int main() {
     expoProfiles(); expoTruncation(); expoCorruptionAndIsolation(); expoFlagsAndRevision(); expoNumericBoundaries();
     ddr4Profiles(); ddr4Truncation(); ddr4FlagsAndRevision(); ddr4Timebases(); ddr4SignedTimingsAndBounds(); ddr4IntegrityAndTypeIsolation();
     xmpSecondaryValues(); xmpSecondaryByteBoundaries(); xmpSecondaryZerosAndMaximums(); xmpSecondaryIndependentRequirements();
-    std::cout << "21 SPD XMP/EXPO scenario groups passed (capture lengths, CRC, timebases, signed and secondary timing boundaries)\n";
+    baseCasBitmaps(); xmpCasBitmaps(); casCombinedBitsAndTimingIndependence(); xmpCommandRateCodes(); casAndCommandCaptureGates();
+    std::cout << "26 SPD XMP/EXPO scenario groups passed (capture lengths, CRC, timings, CAS bitmaps and command-rate codes)\n";
 }

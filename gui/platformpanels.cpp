@@ -325,6 +325,7 @@ MemoryBoardPanel::MemoryBoardPanel(QWidget *parent) : QWidget(parent) {
         "SPD describes the module, not the currently trained timings. Sensors depend on the installed kernel driver. "
         "DDR4 XMP 2.0, DDR5 XMP 3.0 and EXPO 1.0 basic profiles show stored voltages and timings. "
         "XMP 3.0 secondary timings include separate ps and nCK lower limits. "
+        "CAS support lists and XMP command rates describe stored requirements. "
         "XMP 2.0 has no profile checksum; DDR5 profiles include CRC checks. "
         "EXPO enhanced timings are not decoded. "
         "Timing writes, PMIC / VRM controls and board-specific clocks are not yet recovered.",layout,this);
@@ -356,6 +357,24 @@ void MemoryBoardPanel::showSpd(const QString &path,const QByteArray &bytes,const
     append(table_,{"SPD","Captured bytes",QString::number(bytes.size()),"bytes",state,path});
     for(const auto &field:decoded.fields) append(table_,{"SPD",QString::fromStdString(field.name),QString::fromStdString(field.value),"",state,path});
     if (decoded.error) return;
+    const auto showCas = [&](const octool::core::SpdCas &cas, const QString &group, const QString &integrity) {
+        if (!cas.captured) return;
+        QString raw; for (auto byte : cas.raw) raw += QString("%1").arg(byte,2,16,QChar('0'));
+        append(table_,{group,"CAS bitmap",raw,"hex",integrity,path});
+        if (!cas.decoded) {
+            append(table_,{group,"Supported CAS latencies","Not decoded","nCK","Unsupported SPD revision",path}); return;
+        }
+        const QString status = cas.reservedBitsSet ? "Reserved bit set; defined bits listed" : integrity;
+        if (cas.latencies.empty()) append(table_,{group,"Supported CAS latencies","None encoded","nCK",status,path});
+        // Keep the list readable without widening the entire table for forty CLs.
+        for (unsigned i = 0; i < cas.latencies.size(); i += 6) {
+            QStringList chunk;
+            for (unsigned j = i; j < cas.latencies.size() && j < i+6; ++j) chunk << QString::number(cas.latencies[j]);
+            const QString name = i ? QString("Supported CAS latencies (%1)").arg(i/6+1) : "Supported CAS latencies";
+            append(table_,{group,name,chunk.join(", "),"nCK",status,path});
+        }
+    };
+    showCas(decoded.cas,"SPD",state);
     const auto &xmp = decoded.xmp;
     const QString headerState = !xmp.inspected ? "Header not captured" : !xmp.present ? "Not present" :
         !xmp.headerCaptured ? "Header truncated" : xmp.crc.checked && !xmp.crc.valid ? "Header CRC mismatch" :
@@ -372,6 +391,14 @@ void MemoryBoardPanel::showSpd(const QString &path,const QByteArray &bytes,const
         if (p.timebaseRaw >= 0) append(table_,{group,"Timebase byte",QString("0x%1").arg(p.timebaseRaw,2,16,QChar('0')),"hex",
             (p.timebaseRaw & 15) ? "Unsupported timebase" : "125 ps MTB / 1 ps FTB",path});
         if (p.crc.checked) append(table_,{group,"CRC stored / computed",QString("%1 / %2").arg(p.crc.stored,4,16,QChar('0')).arg(p.crc.computed,4,16,QChar('0')), "", status, path});
+        showCas(p.cas,group,status);
+        if (p.commandRate.captured) {
+            const auto &rate = p.commandRate;
+            const QString value = !rate.recognized ? QString("Unknown code %1").arg(rate.code) :
+                rate.code ? QString("%1N").arg(rate.code) : "Not specified";
+            append(table_,{group,"Command rate",value,"",status,path});
+            append(table_,{group,"Command rate byte",QString("0x%1").arg(rate.raw,2,16,QChar('0')),"hex",status,path});
+        }
         for (const auto &v : p.values) append(table_,{group,QString::fromStdString(v.name),QString::number(v.value),QString::fromStdString(v.unit),status,path});
     }
     if (decoded.memoryType != 0x12) return;

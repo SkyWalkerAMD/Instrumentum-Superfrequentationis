@@ -34,13 +34,14 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 293, len(reports)
+assert len(reports) == 301, len(reports)
 spd_reports = [r for r in reports if r["command"] == "spd-decode" and "spd" in r["data"]]
-assert len(spd_reports) == 34
+assert len(spd_reports) == 42
 assert [r["ok"] for r in spd_reports] == [True, False, False, False, True, False, True, True, False,
                                         True, False, False, False, True, False, True, False, False, False,
                                         True, True, False, False, False, False, True, True, False, False,
-                                        True, True, False, True, True]
+                                        True, True, False, True, True,
+                                        True, True, True, False, True, True, True, False]
 for i, r in enumerate(spd_reports):
     xmp = r["data"]["spd"]["xmp"]
     assert not xmp["active_configuration_measured"]
@@ -146,6 +147,35 @@ for i in (0, 29, 30, 31, 32, 33):
             assert values[name+" minimum"] == {"name": name+" minimum", "unit": "ps", "value": ps}
             assert values[name+" cycle lower limit"] == {"name": name+" cycle lower limit", "unit": "nCK", "value": ck}
         assert values["tRFC1 minimum"]["unit"] == "ns" and values["tRFC1 minimum"]["value"] == 295
+for i, report in enumerate(spd_reports):
+    data = report["data"]["spd"]
+    cas = data["cas"]
+    if i in (8, 41):
+        assert cas is None
+    elif i == 38:
+        assert cas == {"decoded": False, "offset": 24, "raw_hex": "8101000080", "reserved_bits_set": None, "latencies_nck": None}
+    elif data["memory_type"] == 12:
+        assert cas["decoded"] and cas["offset"] == 20
+        assert cas["reserved_bits_set"] is (i == 40)
+        assert cas["latencies_nck"] == ([23, 32, 46, 52] if i == 39 else [7, 16, 30, 36])
+    else:
+        assert cas["decoded"] and cas["offset"] == 24 and not cas["reserved_bits_set"]
+        assert cas["latencies_nck"] == ([] if i == 34 else [20, 34, 36, 98])
+    for slot, profile in enumerate(data["xmp"]["profiles"]):
+        if data["memory_type"] == 12 or profile["error"] or not profile["enabled"]:
+            assert profile["cas"] is None and profile["command_rate"] is None
+            continue
+        cas, rate = profile["cas"], profile["command_rate"]
+        expected = [22+2*slot, 40+2*slot, 98-2*slot]
+        raw = 0x11+slot
+        if slot == 0:
+            if i == 34: expected, raw = [], 0
+            if i == 35: expected, raw = list(range(20, 100, 2)), 0xf3
+            if i == 36: raw = 0xa4
+        assert cas["decoded"] and cas["offset"] == 711+64*slot and len(cas["raw_hex"]) == 10
+        assert cas["latencies_nck"] == expected and not cas["reserved_bits_set"]
+        code = raw & 15
+        assert rate == {"raw": raw, "code": code, "recognized": code <= 3, "cycles": code if 1 <= code <= 3 else None}
 assert len([r for r in reports if r["error"] == -22]) >= 132
 uncore = [r for r in reports if r["command"] in ("intel-uncore-read", "intel-uncore-set") and "before" in r["data"]]
 assert len(uncore) == 16

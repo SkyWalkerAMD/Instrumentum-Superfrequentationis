@@ -532,6 +532,19 @@ std::string spd(const std::string &path, const std::vector<std::uint8_t> &bytes,
             {"stored", crc.checked ? number(crc.stored) : "null"}, {"computed", crc.checked ? number(crc.computed) : "null"}});
     };
     const auto &xmp = decoded.xmp;
+    const auto rawHex = [](const std::vector<std::uint8_t> &bytes) {
+        std::string raw; const char digits[] = "0123456789abcdef";
+        for (auto b : bytes) { raw += digits[b >> 4]; raw += digits[b & 15]; }
+        return raw.empty() ? std::string("null") : quote(raw);
+    };
+    const auto casJson = [&rawHex](const SpdCas &cas) {
+        if (!cas.captured) return std::string("null");
+        std::vector<std::string> latencies;
+        for (auto cl : cas.latencies) latencies.push_back(number(cl));
+        return object({{"decoded", boolean(cas.decoded)}, {"offset", number(cas.offset)}, {"raw_hex", rawHex(cas.raw)},
+            {"reserved_bits_set", cas.decoded ? boolean(cas.reservedBitsSet) : "null"},
+            {"latencies_nck", cas.decoded ? array(latencies) : "null"}});
+    };
     std::vector<std::string> profiles;
     for (const auto &p : xmp.profiles) {
         std::vector<std::string> values;
@@ -543,15 +556,14 @@ std::string spd(const std::string &path, const std::vector<std::uint8_t> &bytes,
             {"blocked_by_expo", boolean(p.blockedByExpo)}, {"error", number(p.error)},
             {"name_supported", boolean(p.nameSupported)}, {"name_valid", p.nameSupported ? boolean(p.nameValid) : "null"},
             {"name", p.nameValid ? quote(p.name) : "null"}, {"timebase_raw", p.timebaseRaw >= 0 ? number(p.timebaseRaw) : "null"},
-            {"crc", crcJson(p.crc)}, {"raw_hex", raw.empty() ? "null" : quote(raw)}, {"values", array(values)}}));
+            {"crc", crcJson(p.crc)}, {"raw_hex", raw.empty() ? "null" : quote(raw)}, {"values", array(values)},
+            {"cas", casJson(p.cas)}, {"command_rate", !p.commandRate.captured ? "null" : object({
+                {"raw", number(p.commandRate.raw)}, {"code", number(p.commandRate.code)},
+                {"recognized", boolean(p.commandRate.recognized)},
+                {"cycles", p.commandRate.recognized && p.commandRate.code ? number(p.commandRate.code) : "null"}})}}));
     }
     const auto &expo = decoded.expo;
     std::vector<std::string> expoProfiles;
-    const auto rawHex = [](const std::vector<std::uint8_t> &bytes) {
-        std::string raw; const char digits[] = "0123456789abcdef";
-        for (auto b : bytes) { raw += digits[b >> 4]; raw += digits[b & 15]; }
-        return raw.empty() ? std::string("null") : quote(raw);
-    };
     for (const auto &p : expo.profiles) {
         std::vector<std::string> values;
         for (const auto &v : p.values) values.push_back(object({{"name", quote(v.name)}, {"value", number(v.value)}, {"unit", quote(v.unit)}}));
@@ -560,7 +572,7 @@ std::string spd(const std::string &path, const std::vector<std::uint8_t> &bytes,
     }
     return object({{"path", quote(path)}, {"error", number(error)}, {"captured_bytes", number(double(bytes.size()))},
         {"memory_type", number(decoded.memoryType)}, {"crc_checked", boolean(decoded.crcChecked)},
-        {"crc_valid", decoded.crcChecked ? boolean(decoded.crcValid) : "null"}, {"fields", array(fields)},
+        {"crc_valid", decoded.crcChecked ? boolean(decoded.crcValid) : "null"}, {"fields", array(fields)}, {"cas", casJson(decoded.cas)},
         {"xmp", object({{"inspected", boolean(xmp.inspected)}, {"present", xmp.inspected ? boolean(xmp.present) : "null"},
             {"header_captured", boolean(xmp.headerCaptured)}, {"revision", xmp.headerCaptured ? number(xmp.revision) : "null"},
             {"configuration_raw", xmp.headerCaptured ? number(xmp.configurationRaw) : "null"}, {"raw_hex", rawHex(xmp.raw)},
