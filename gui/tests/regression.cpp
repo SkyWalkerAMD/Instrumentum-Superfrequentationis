@@ -1388,6 +1388,65 @@ private slots:
             QCOMPARE(capacity,mode == 0);
         }
     }
+    void spdDdr4AsymmetricGeometry() {
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("ddr4-mixed.spd");
+        auto bytes = octool::test::spdDdr4AsymmetricFixture();
+        const auto save = [&] { QFile file(path); if (!file.open(QIODevice::WriteOnly)) return false;
+            return file.write(reinterpret_cast<const char *>(bytes.data()),qint64(bytes.size())) == qint64(bytes.size()); };
+        MemoryBoardPanel panel; panel.resize(1350,1050); panel.show();
+        auto *table = panel.findChild<QTableWidget *>("inventoryTable"); QVERIFY(table);
+        const auto row = [&](const QString &name) {
+            for (int i = 0; i < table->rowCount(); ++i)
+                if (table->item(i,0)->text() == "SPD" && table->item(i,1)->text() == name) return i;
+            return -1;
+        };
+        const auto value = [&](const QString &name) { const int r = row(name); return r < 0 ? QString() : table->item(r,2)->text(); };
+        QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(value("Second SDRAM density per die (Mbit)"),QString("12288"));
+        QCOMPARE(value("First geometry package ranks"),QString("1")); QCOMPARE(value("Second geometry package ranks"),QString("2"));
+        QCOMPARE(value("First geometry capacity (MiB)"),QString("16384"));
+        QCOMPARE(value("Second geometry capacity (MiB)"),QString("24576")); QCOMPARE(value("Module capacity (MiB)"),QString("40960"));
+        QCOMPARE(value("Second SDRAM package"),QString("Multi-load stack"));
+        QTest::qWait(50); const int start = row("SDRAM package"), total = row("Module capacity (MiB)"); QVERIFY(start >= 0 && total >= 0);
+        table->scrollToItem(table->item(start,0),QAbstractItemView::PositionAtTop); QTest::qWait(50);
+        QVERIFY(table->viewport()->rect().contains(table->visualItemRect(table->item(total,0))));
+        const auto shot = qEnvironmentVariable("OCTOOL_DDR4_ASYMMETRIC_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        bytes[6] = 0x91; bytes[10] = 4; octool::test::spdSeal(bytes,0,126); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(value("First geometry package ranks"),QString("2")); QCOMPARE(value("Second geometry package ranks"),QString("1"));
+        QCOMPARE(value("Module capacity (MiB)"),QString("45056"));
+        bytes[6] = 0xf2; bytes[10] = 0xe6; bytes[12] = 0x49; octool::test::spdSeal(bytes,0,126); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(value("First geometry capacity rank factor"),QString("8")); QCOMPARE(value("Second geometry capacity rank factor"),QString("7"));
+        QCOMPARE(value("Module capacity (MiB)"),QString("217088"));
+        bytes = octool::test::spdAsymmetricFixture(); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(value("Module capacity (MiB)"),QString("204800")); QVERIFY(value("SDRAM density ratio (encoded)").isEmpty());
+        QVERIFY(value("First geometry package ranks").isEmpty());
+    }
+    void spdDdr4AsymmetricFailureClearsCapacity() {
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("ddr4-mixed.spd");
+        MemoryBoardPanel panel; auto *table = panel.findChild<QTableWidget *>("inventoryTable"); QVERIFY(table);
+        const auto value = [&](const QString &name) {
+            for (int i = 0; i < table->rowCount(); ++i)
+                if (table->item(i,0)->text() == "SPD" && table->item(i,1)->text() == name) return table->item(i,2)->text();
+            return QString();
+        };
+        const auto save = [&](const std::vector<std::uint8_t> &bytes) { QFile file(path); if (!file.open(QIODevice::WriteOnly)) return false;
+            return file.write(reinterpret_cast<const char *>(bytes.data()),qint64(bytes.size())) == qint64(bytes.size()); };
+        for (unsigned mode = 0; mode < 7; ++mode) {
+            auto bytes = octool::test::spdDdr4AsymmetricFixture(); QVERIFY(save(bytes)); QVERIFY(panel.loadSpdFile(path));
+            QCOMPARE(value("Module capacity (MiB)"),QString("40960"));
+            if (mode == 0) bytes[10] = 0x9d;
+            if (mode == 1) bytes[12] = 0x41;
+            if (mode == 2) bytes[1] = 0x20;
+            if (mode == 3) { bytes[10] = 0xe6; bytes[12] = 0x49; }
+            octool::test::spdSeal(bytes,0,126);
+            if (mode == 4) bytes[10] ^= 1;
+            if (mode == 5 || mode == 6) bytes.resize(mode == 5 ? 127 : 128);
+            QVERIFY(save(bytes)); QVERIFY(panel.loadSpdFile(path));
+            QCOMPARE(value("Module capacity (MiB)"),mode == 6 ? QString("40960") : QString());
+            if (mode < 2 || mode == 3) QVERIFY(value("Module capacity status").contains("Not decoded"));
+            if (mode < 6) QVERIFY(value("Second geometry capacity (MiB)").isEmpty());
+        }
+    }
     void spdBaseTimingValuesAndRevisionChanges() {
         QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("base-timings.spd");
         auto bytes = octool::test::spdBaseTimingsFixture(true);

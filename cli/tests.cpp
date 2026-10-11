@@ -561,7 +561,7 @@ void offlineSpdDoesNotCreateBackend() {
     struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
     unsigned opens = 0;
     const auto factory = [&]() { ++opens; return std::unique_ptr<HardwareBackend>(); };
-    for (unsigned scenario = 0; scenario < 91; ++scenario) {
+    for (unsigned scenario = 0; scenario < 101; ++scenario) {
         auto bytes = octool::test::spdFixture();
         int expected = 0;
         if (scenario == 1) { bytes[720] ^= 1; expected = 3; }
@@ -685,6 +685,19 @@ void offlineSpdDoesNotCreateBackend() {
             octool::test::spdSeal(bytes,0,510);
             if (scenario == 87) { bytes[10] ^= 1; expected = 3; }
             if (scenario == 88) bytes.resize(236);
+        }
+        if (scenario >= 91) {
+            bytes = octool::test::spdDdr4AsymmetricFixture();
+            if (scenario == 92) { bytes[6] = 0x91; bytes[10] = 4; }
+            if (scenario == 93) { bytes[6] = 0xf2; bytes[10] = 0xe6; bytes[12] = 0x49; }
+            if (scenario == 94) bytes[10] = 0x9d;
+            if (scenario == 95) { bytes[10] = 0xe6; bytes[12] = 0x49; }
+            if (scenario == 99) bytes[1] = 0x20;
+            if (scenario == 100) { bytes[12] &= ~0x40; bytes[10] = 255; }
+            octool::test::spdSeal(bytes,0,126);
+            if (scenario == 96) { bytes[10] ^= 1; expected = 3; }
+            if (scenario == 97) bytes.resize(128);
+            if (scenario == 98) { bytes.resize(127); expected = 3; }
         }
         std::ofstream file(path,std::ios::binary);
         file.write(reinterpret_cast<const char *>(bytes.data()), std::streamsize(bytes.size())); file.close(); assert(file);

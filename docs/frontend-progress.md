@@ -2,6 +2,8 @@
 
 新增 [Intel 中间组阈值编辑](turbo-thresholds.md)和 [DDR5 混合 rank 容量](spd-asymmetric.md)，两端共用实现与约束。
 
+继续补齐 [DDR4 非对称容量](ddr4-asymmetric.md)：SDP/DDP 的 Rank 分配与 3DS 层数单独处理，GUI/CLI 同步显示分项。
+
 2026-10-11：新增 [AMD PM 遥测与快照互通](amd-pm-recovery.md)。GUI / CLI 同步解码八个精确版本的
 24 项公共字段，并可读取系统已有兼容驱动的 sysfs 表；未新增原生传输、目标映射或调参写入。
 

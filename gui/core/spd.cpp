@@ -297,12 +297,60 @@ SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &b) {
         if (moduleLayout) add("Rank organization", (b[12] & 0x40) ? "Asymmetric" : "Symmetric");
         const bool monolithic = !(b[6] & 0x80), stacked = !monolithic && dies >= 2 && (loading == 1 || loading == 2);
         if (baseLayout) add("SDRAM package", monolithic ? "Monolithic" : loading == 1 ? "Multi-load stack" : loading == 2 ? "3DS" : "Unknown signal loading");
+        const bool firstValid = !(b[6] & 12) && ((monolithic && dies == 1 && loading == 0) || stacked);
+        const bool asymmetric = moduleLayout && (b[12] & 0x40);
         // Multi-load stacks already express their additional ranks in byte 12.
         // Single-load 3DS packages instead multiply by the number of dies.
-        if (moduleLayout && !(b[12] & 0x40) && !(b[6] & 12) &&
-            ((monolithic && dies == 1 && loading == 0) || stacked) &&
+        if (moduleLayout && !asymmetric && firstValid &&
             density < 10 && widthCode <= 3 && busCode <= 3 && busCode+1 >= widthCode) {
             number("Module capacity (MiB)", densities[density]/8 * ((8u << busCode)/(4u << widthCode)) * ranks * (stacked && loading == 2 ? dies : 1));
+        }
+        if (asymmetric) {
+            const unsigned secondDies = 1 + ((b[10] >> 4) & 7), secondLoading = b[10] & 3;
+            const unsigned ratio = (b[10] >> 2) & 3;
+            const bool secondMono = !(b[10] & 0x80);
+            const bool secondValid = (secondMono && secondDies == 1 && secondLoading == 0) ||
+                (!secondMono && secondDies >= 2 && (secondLoading == 1 || secondLoading == 2));
+            number("Second SDRAM package type (encoded)", b[10] >> 7);
+            number("Second package die count (encoded)", (b[10] >> 4) & 7);
+            number("Second signal loading (encoded)", secondLoading);
+            number("SDRAM density ratio (encoded)", ratio);
+            if (secondValid) {
+                number("Second package die count", secondDies);
+                add("Second SDRAM package", secondMono ? "Monolithic" : secondLoading == 1 ? "Multi-load stack" : "3DS");
+            }
+            // JEDEC 21-C Annex L DDR4 release 27A, table 26. Density steps
+            // are NOT shifts or decrements of the byte-4 encoding: 16->12->8,
+            // 32->24->16, 12->8->4 and 24->16->12 Gbit are explicit entries.
+            static const unsigned smaller[][2] = {{0,0},{256,0},{512,256},{1024,512},{2048,1024},
+                {4096,2048},{12288,8192},{24576,16384},{8192,4096},{16384,12288}};
+            const unsigned secondDensity = density < 10 && ratio < 3 ?
+                (ratio ? smaller[density][ratio-1] : densities[density]) : 0;
+            if (secondDensity) number("Second SDRAM density per die (Mbit)", secondDensity);
+            unsigned firstRanks = 0, secondRanks = 0;
+            if (firstValid && secondValid) {
+                // Tables 25/30/31: paired SDP density groups, paired 3DS
+                // stacks, and three-rank SDP+DDP in either order. A DDP has
+                // two chip-select loads; SDP+DDP is 1+2, NOT ceil(3/2)+1.
+                const bool firstDdp = stacked && loading == 1 && dies == 2;
+                const bool secondDdp = !secondMono && secondLoading == 1 && secondDies == 2;
+                if ((monolithic && secondMono && (ranks == 2 || ranks == 4)) ||
+                    (loading == 2 && secondLoading == 2 && ranks == 2) ||
+                    (firstDdp && secondDdp && ranks == 4)) firstRanks = secondRanks = ranks/2;
+                else if (ranks == 3 && monolithic && secondDdp) { firstRanks = 1; secondRanks = 2; }
+                else if (ranks == 3 && firstDdp && secondMono) { firstRanks = 2; secondRanks = 1; }
+            }
+            if (firstRanks && secondDensity && widthCode <= 3 && busCode <= 3 && busCode+1 >= widthCode) {
+                const unsigned firstLogical = firstRanks * (loading == 2 ? dies : 1);
+                const unsigned secondLogical = secondRanks * (secondLoading == 2 ? secondDies : 1);
+                const std::uint64_t scale = (8u << busCode)/(4u << widthCode);
+                const std::uint64_t first = std::uint64_t(densities[density])/8 * scale * firstLogical;
+                const std::uint64_t second = std::uint64_t(secondDensity)/8 * scale * secondLogical;
+                number("First geometry package ranks", firstRanks); number("Second geometry package ranks", secondRanks);
+                number("First geometry capacity rank factor", firstLogical); number("Second geometry capacity rank factor", secondLogical);
+                number("First geometry capacity (MiB)", first); number("Second geometry capacity (MiB)", second);
+                number("Module capacity (MiB)", first+second);
+            } else add("Module capacity status", "Not decoded: invalid or unsupported DDR4 rank geometry");
         }
         if ((b[1] >> 4) == 1 && !(b[17] & 15)) {
             // DDR4's defined time bases are 125 ps and a signed 1 ps

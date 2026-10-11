@@ -130,6 +130,14 @@ inline std::vector<std::uint8_t> spdAsymmetricFixture() {
     b[234] = 0x50; b[235] = 0x2a;
     spdSeal(b,0,510); return b;
 }
+// Synthetic DDR4 primary SDP + secondary DDP, x8 / 64-bit data bus.
+// Three package ranks: primary 16 Gbit x 1, secondary 12 Gbit x 2.
+// Density ratio 1 is 16->12 Gbit, not a halving. ECC is excluded.
+inline std::vector<std::uint8_t> spdDdr4AsymmetricFixture() {
+    auto b = spdDdr4XmpFixture();
+    b[4] = 6; b[6] = 0; b[10] = 0x95; b[12] = 0x51; b[13] = 0x0b;
+    spdSeal(b,0,126); return b;
+}
 inline std::vector<std::uint8_t> spdBaseTimingsFixture(bool ddr5) {
     auto b = ddr5 ? spdFixture() : spdDdr4XmpFixture();
     if (ddr5) {

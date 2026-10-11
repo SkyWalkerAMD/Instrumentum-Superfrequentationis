@@ -1,0 +1,141 @@
+{
+  "schema": 1,
+  "date": "2026-10-11",
+  "primary_document": "JEDEC 21-C Annex L DDR4 SPD, release 27A",
+  "access": "Public third-party mirror of the standards document; official JEDEC URL could not be retrieved in this session",
+  "sources": [
+    {
+      "url": "https://studylib.net/doc/28564671/4-01-02-annexl-4r27a",
+      "retrieval": "Web tool extracted document text; local complete-file download returned HTTP 403, so no full-file hash is claimed",
+      "sections": [
+        "8.1.7",
+        "8.1.11",
+        "8.1.13",
+        "8.1.14.1"
+      ],
+      "tables": [
+        20,
+        25,
+        26,
+        28,
+        30,
+        31,
+        32
+      ]
+    }
+  ],
+  "secondary_density_mbit_by_primary_encoding_and_ratio_0_1_2": [
+    [
+      256,
+      0,
+      0
+    ],
+    [
+      512,
+      256,
+      0
+    ],
+    [
+      1024,
+      512,
+      256
+    ],
+    [
+      2048,
+      1024,
+      512
+    ],
+    [
+      4096,
+      2048,
+      1024
+    ],
+    [
+      8192,
+      4096,
+      2048
+    ],
+    [
+      16384,
+      12288,
+      8192
+    ],
+    [
+      32768,
+      24576,
+      16384
+    ],
+    [
+      12288,
+      8192,
+      4096
+    ],
+    [
+      24576,
+      16384,
+      12288
+    ]
+  ],
+  "zero_means_undefined_not_zero_capacity": true,
+  "supported_rank_layouts": [
+    {
+      "primary": "SDP",
+      "secondary": "SDP",
+      "package_ranks": [
+        2,
+        4
+      ],
+      "split": "equal; density groups 0/2 versus 1/3"
+    },
+    {
+      "primary": "SDP",
+      "secondary": "DDP",
+      "package_ranks": [
+        3
+      ],
+      "split": [
+        1,
+        2
+      ]
+    },
+    {
+      "primary": "DDP",
+      "secondary": "SDP",
+      "package_ranks": [
+        3
+      ],
+      "split": [
+        2,
+        1
+      ]
+    },
+    {
+      "primary": "DDP",
+      "secondary": "DDP",
+      "package_ranks": [
+        4
+      ],
+      "split": [
+        2,
+        2
+      ]
+    },
+    {
+      "primary": "2..8H 3DS",
+      "secondary": "2..8H 3DS",
+      "package_ranks": [
+        2
+      ],
+      "split": [
+        1,
+        1
+      ]
+    }
+  ],
+  "limits": [
+    "Other rank layouts remain undecoded; no generic ceil/floor DDR5 rule",
+    "No SPD writes, memory-training measurement or installed-capacity certification",
+    "Synthetic examples and original byte positions are not hardware captures"
+  ],
+  "hardware_execution": false
+}

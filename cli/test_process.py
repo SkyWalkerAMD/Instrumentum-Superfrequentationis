@@ -35,7 +35,7 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 392, len(reports)
+assert len(reports) == 402, len(reports)
 pm_reports = [r for r in reports if r["command"] == "amd-pm-decode" and "pm" in r["data"]]
 assert len(pm_reports) == 20
 assert [r["ok"] for r in pm_reports] == [True] * 9 + [False, True, True, False, False, False, False, True, True, False, False]
@@ -80,7 +80,7 @@ with tempfile.TemporaryDirectory(prefix="octool-pm-") as directory:
         assert absent["error"] == -2 and not absent["data"]["table_read_attempted"]
         assert absent["data"]["pm"]["fields"] == []
 spd_reports = [r for r in reports if r["command"] == "spd-decode" and "spd" in r["data"]]
-assert len(spd_reports) == 91
+assert len(spd_reports) == 101
 assert [r["ok"] for r in spd_reports[:68]] == [True, False, False, False, True, False, True, True, False,
                                         True, False, False, False, True, False, True, False, False, False,
                                         True, True, False, False, False, False, True, True, False, False,
@@ -283,7 +283,7 @@ for i in range(54, 68):
         else:
             assert data["crc_checked"] and not data["crc_valid"] and data["cas"] is None
 assert [r["ok"] for r in spd_reports[68:83]] == [True, True, False, True, True, True, False, True, False, False, False, True, True, True, False]
-assert [r["ok"] for r in spd_reports[83:]] == [True, True, True, True, False, True, True, True]
+assert [r["ok"] for r in spd_reports[83:91]] == [True, True, True, True, False, True, True, True]
 for i in range(83, 91):
     spd = spd_reports[i]["data"]["spd"]
     fields = {f["name"]: f["value"] for f in spd["fields"]}
@@ -298,6 +298,28 @@ for i in range(83, 91):
     assert spd["crc_checked"] == (i != 88)
     if i == 87:
         assert spd["error"] == -84 and not spd["crc_valid"]
+assert [r["ok"] for r in spd_reports[91:]] == [True, True, True, True, True, False, True, False, True, True]
+for i in range(91, 101):
+    spd = spd_reports[i]["data"]["spd"]
+    fields = {f["name"]: f["value"] for f in spd["fields"]}
+    assert fields.get("Module capacity (MiB)") == {91: "40960", 92: "45056", 93: "217088", 97: "40960", 100: "49152"}.get(i)
+    if i in (91, 92, 93, 97):
+        assert fields["First geometry capacity (MiB)"] == {91: "16384", 92: "32768", 93: "131072", 97: "16384"}[i]
+        assert fields["Second geometry capacity (MiB)"] == {91: "24576", 92: "12288", 93: "86016", 97: "24576"}[i]
+        assert fields["Second SDRAM density per die (Mbit)"] == "12288"
+        assert int(fields["First geometry package ranks"]) == (2 if i == 92 else 1)
+        assert int(fields["Second geometry package ranks"]) == (2 if i in (91, 97) else 1)
+    if i in (94, 95):
+        assert "Not decoded" in fields["Module capacity status"]
+        assert "First geometry capacity (MiB)" not in fields
+    if i >= 98 or i == 96:
+        assert "SDRAM density ratio (encoded)" not in fields
+    if i == 94:
+        assert fields["SDRAM density ratio (encoded)"] == "3" and "Second SDRAM density per die (Mbit)" not in fields
+    if i == 96:
+        assert spd["error"] == -84 and spd["crc_checked"] and not spd["crc_valid"]
+    if i == 97:
+        assert spd["crc_valid"] and not spd["xmp"]["inspected"]
 for i in range(68, 83):
     xmp = spd_reports[i]["data"]["spd"]["xmp"]
     slots = xmp["user_profiles"]

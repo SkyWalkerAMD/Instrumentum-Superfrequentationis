@@ -2,6 +2,7 @@
 
 新增 `intel-turbo-set --field active-cores`，只编辑中间活动组阈值，详见[输入与读回规则](turbo-thresholds.md)。
 `spd-decode` / `inventory` 同时支持 [DDR5 混合 rank 容量分项](spd-asymmetric.md)。
+另支持 [DDR4 已确认的非对称 Rank 布局](ddr4-asymmetric.md)，包括独立的密度等级和 SDP/DDP/3DS 规则。
 
 2026-10-11：新增 [AMD PM 遥测与快照互通](amd-pm-recovery.md)。GUI / CLI 同步支持八个精确表版本的
 24 项公共字段；系统已有兼容驱动时可读取 sysfs 表，也可无驱动离线解码原始文件与 JSON。

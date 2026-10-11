@@ -82,7 +82,8 @@ std::uint16_t spdCrc16(const std::uint8_t *bytes, std::size_t length);
 // DDR4/DDR5 base CRC, identity/geometry and revision-1 timing requirements.
 // DDR5 asymmetric modules use the first geometry for even package ranks and
 // the second for odd ranks, each with its own device width and 3DS layer count.
-// DDR4 asymmetric capacity still requires a separately established contract.
+// DDR4 uses its separate density-step table and confirmed package/rank mixes;
+// other DDR4 layouts retain raw fields without a guessed capacity.
 // DDR4 tWR/tWTR_S/tWTR_L use 12-bit MTB counts with no fine correction.
 // DDR5 base has eight independent ps/nCK pairs; revision 1.2 adds three more.
 // Added timing quantities retain zero codes; none imply Auto or trained values.
