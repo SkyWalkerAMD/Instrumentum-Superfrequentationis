@@ -1,5 +1,18 @@
 # 功能还原状态
 
+<!-- spd-base-timings-88530a9 -->
+2026-10-11：最新验证生产提交 `88530a9`，GUI 与 CLI 同步补充 **DDR4 写延迟和 DDR5 基础次级时序**。
+DDR4 新增 3 项；DDR5 新增 8 对 ps / nCK 要求，SPD 1.2 起再增加 3 对，按基础修订版判断。
+这些是存储要求，不表示当前训练参数，尚未应用或写入配置。
+
+- [实现说明](spd-base-timings.md)、[功能对照](frontend-progress.md)、[验证交付](spd-base-timings-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38123233835) 4/4，各 12 CTest / 137 场景组，SPD 与 UMC 的 ASan/UBSan 通过。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38123233886) 12/12，十目标各 14 CTest、313 份 JSON 报告。
+- [Linux GUI/驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38123233832) 23/23，十目标各 64 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-spd-base-timings-88530a9/`：10 GUI + 10 CLI + 10 可选 DKMS 包、源码与 SHA256SUMS。
+
+原版全部功能仍未还原；目标真机调参和稳定性未验收。以下保留历史记录。
+
 <!-- spd-cas-6aca371 -->
 2026-10-11：最新验证生产提交 `6aca371`，GUI 与 CLI 同步新增 **SPD CAS 支持列表与 XMP 3.0 命令率**。
 读取 DDR4/DDR5 基础 CAS 和三组 XMP 3.0 CAS/命令率；保留原始字节、未知代码及校验状态。
@@ -169,7 +182,7 @@ PStates 写入、曲线写入、Intel server VF/fabric、板级专用控制等�
 
 `06b477c` 是此前 [Shimada 原始曲线查询](amd-curve-query-recovery.md)的历史版本，
 [当时验证](validation/amd-curve-recovery-ci-06b477c.json)为核心 4/4、Linux 23/23。
-最新生产版本以本页顶部为准，下表已更新到 `6aca371`。
+最新生产版本以本页顶部为准，下表已更新到 `88530a9`。
 原版全部功能仍未完成。安装兼容、自动化回归、原指令研究和真实硬件验收分别记录，
 没有能代表四大模块全部功能的可靠百分比；212 个 UMC 字段也不是整个软件的功能分母。
 
@@ -178,7 +191,7 @@ PStates 写入、曲线写入、Intel server VF/fabric、板级专用控制等�
 | AMD PStates | 按逻辑 CPU 采样 P0–P7、上限/能力检查、频率、64 位原值、完整 9 位 VID / Idd 编码 | 型号专用 mV/A 换算；满足跨核/跨 coherent fabric 一致性的设置 |
 | Intel Controls | RAPL、HWP 含活动窗口，13 项设置完整读回；温度；Raptor Lake-S core/cache offset、最大 OC ratio、目标电压与 Adaptive/Override；VF 点查询及受条件限制的单点 offset；P/E 睿频分组读取及单组倍率设置；B7/8F Ring/LLC 最小、最大倍率范围 | W790/W890 电压域；其它型号 VF、逐物理核心 override、活动核心阈值编辑、TVB、VID rank/SP、fabric/BCLK |
 | AMD 调参 | 三套独立 BIOS SMUIO；Shimada 已提取命令和逐核频率参数准备；CPUID 稀疏拓扑；限定身份的原始曲线查询 | CPUID 与固件目标 ID 对应；MP1/PBO 高层单位、曲线设置/电流/温度限制、PM 表、profiles/hotkeys |
-| 内存与主板 | DMI/BIOS、内核传感器、绑定驱动的 SPD、DDR4/5 基础 CRC/组织/基础时序/CAS 支持列表；DDR4 XMP 2.0 两组电压/时序、独立时间基准及无扩展 CRC 状态；DDR5 XMP 3.0 厂家档案名称、电压、基础与 8 项次级时序/独立周期下限、CAS/命令率及逐区 CRC；EXPO 1.0 两组基础档案及整块 CRC；AMD UMC 212 字段、GUI/CLI 快照双向离线导入及同 bank/slot 比较 | EXPO 增强时序 / 1.1 / 用户档案；XMP 用户档案；DDR4 XMP CAS 位图/每通道 DIMM 配置；UMC 各型号物理单位/通道标签；Intel 训练时序；PMIC/VRM/EC/时钟芯片和训练写入 |
+| 内存与主板 | DMI/BIOS、内核传感器、绑定驱动的 SPD、DDR4/5 基础 CRC/组织/时序/CAS 支持列表，含 DDR4 写延迟、DDR5 次级时序及 1.2 新增字段；DDR4 XMP 2.0 两组电压/时序、独立时间基准及无扩展 CRC 状态；DDR5 XMP 3.0 厂家档案名称、电压、基础与 8 项次级时序/独立周期下限、CAS/命令率及逐区 CRC；EXPO 1.0 两组基础档案及整块 CRC；AMD UMC 212 字段、GUI/CLI 快照双向离线导入及同 bank/slot 比较 | EXPO 增强时序 / 1.1 / 用户档案；XMP 用户档案；DDR4 XMP CAS 位图/每通道 DIMM 配置；UMC 各型号物理单位/通道标签；Intel 训练时序；PMIC/VRM/EC/时钟芯片和训练写入 |
 
 入口与代码：[平台控制](platform-controls.md)、[Intel offset](intel-oc-recovery.md)、
 [UMC](amd-umc-recovery.md)、[AMD 拓扑与 PStates](amd-topology-recovery.md)。
