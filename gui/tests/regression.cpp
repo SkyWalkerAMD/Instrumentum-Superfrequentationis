@@ -451,6 +451,9 @@ private slots:
         auto *table = panel.findChild<QTableWidget *>("turboTable"); QCOMPARE(table->item(3,1)->text(),QString("9"));
         QCOMPARE(table->item(7,1)->text(),QString("16")); QVERIFY(table->item(7,3)->text().contains("fixed"));
         group->setCurrentIndex(3); value->setText("9");
+        QTest::qWait(50);
+        QVERIFY(status->height() >= status->heightForWidth(status->width()));
+        QVERIFY(status->geometry().bottom() < panel.height());
         const auto shot = qEnvironmentVariable("OCTOOL_TURBO_THRESHOLD_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
         QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
         apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->writes,1u); QVERIFY(status->text().contains("no write performed"));
@@ -1352,6 +1355,14 @@ private slots:
         QCOMPARE(value("Module capacity (MiB)"),QString("204800"));
         QTest::qWait(50); table->scrollToTop();
         const auto shot = qEnvironmentVariable("OCTOOL_ASYMMETRIC_TEST_SCREENSHOT"); if (!shot.isEmpty()) { QTest::qWait(50); QVERIFY(panel.grab().save(shot)); }
+        QTableWidgetItem *start = nullptr, *total = nullptr;
+        for (int i = 0; i < table->rowCount(); ++i) {
+            if (table->item(i,1)->text() == "Package die count") start = table->item(i,0);
+            if (table->item(i,1)->text() == "Module capacity (MiB)") total = table->item(i,0);
+        }
+        QVERIFY(start); QVERIFY(total); table->scrollToItem(start,QAbstractItemView::PositionAtTop); QTest::qWait(50);
+        QVERIFY(table->viewport()->rect().contains(table->visualItemRect(total)));
+        const auto sumShot = qEnvironmentVariable("OCTOOL_ASYMMETRIC_CAPACITY_TEST_SCREENSHOT"); if (!sumShot.isEmpty()) QVERIFY(panel.grab().save(sumShot));
         bytes[8] = 0; octool::test::spdSeal(bytes,0,510); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
         QVERIFY(value("Module capacity (MiB)").isEmpty()); QVERIFY(value("Second SDRAM density per die (Gbit)").isEmpty());
         QVERIFY(value("Module capacity status").contains("Not decoded")); QCOMPARE(value("Second SDRAM density (encoded)"),QString("0"));

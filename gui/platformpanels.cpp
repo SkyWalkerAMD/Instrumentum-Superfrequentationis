@@ -327,7 +327,7 @@ MemoryBoardPanel::MemoryBoardPanel(QWidget *parent) : QWidget(parent) {
         "XMP 3.0 secondary timings include separate ps and nCK lower limits. "
         "CAS support lists and XMP command rates describe stored requirements. "
         "Base SPD also includes write delays and revision-specific secondary timings. "
-        "Supported symmetric geometry includes stacked packages; XMP 2.0 reports recommended DIMMs per channel. "
+        "Supported geometry includes stacked packages and DDR5 mixed ranks; XMP 2.0 reports recommended DIMMs per channel. "
         "XMP 2.0 has no profile checksum; DDR5 profiles include CRC checks. "
         "XMP user slots and stored EXPO enhanced timings are readable; their enablement is unknown. "
         "Timing writes, PMIC / VRM controls and board-specific clocks are not yet recovered.",layout,this);

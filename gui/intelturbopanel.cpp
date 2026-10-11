@@ -147,9 +147,10 @@ void IntelTurboPanel::apply() {
         const auto out = watcher->result(); setEnabled(true);
         if (!out.error && out.verified) {
             present(out.after);
-            status_->setText(status_->text() + (out.unchanged ? " Requested setting already present; no write performed."
-                : threshold ? " Full table readback verified; all ratios and other thresholds preserved."
-                            : " Full table readback verified; core counts and other ratios preserved."));
+            status_->setText(QString("CPU %1 · %2 · %3").arg(out.after.cpu).arg(kindName(out.after.kind))
+                .arg(out.unchanged ? "Requested setting already present; no write performed."
+                    : threshold ? "Full table readback verified; all ratios and other thresholds preserved."
+                                : "Full table readback verified; core counts and other ratios preserved."));
         } else {
             invalidate(); status_->setText(failure(out.error ? out.error : -EIO) + (out.writeAttempted
                 ? " A write was attempted; the final setting is not verified. No retry or rollback was performed." : " No settings write was attempted."));
