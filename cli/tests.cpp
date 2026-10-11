@@ -717,9 +717,9 @@ void intelMemoryCommands() {
         if (scenario == 4) d.model = 0xba;
         if (scenario == 5) d.pciId = 0xa7068086;
         if (scenario == 6) d.bar &= ~UINT64_C(1);
-        if (scenario == 7) d.memory[0xe454] = 0;
+        if (scenario == 7) d.memory[0xd80c] = 0x10001800;
         if (scenario == 8) d.failRead = 10;
-        if (scenario == 9) d.afterRequest = [&](const Request &) { if (d.reads == 16) d.memory[0xe000] ^= 1; };
+        if (scenario == 9) d.afterRequest = [&](const Request &) { if (d.reads == 17) d.memory[0xe000] ^= 1; };
         const auto report = command(d,{"intel-memory-read","--cpu","130","--controller",std::to_string(d.controller),"--channel",std::to_string(d.channel)},scenario < 4 ? 0 : 3);
         assert(!d.writes && !d.wrongCpu);
         if (scenario >= 4) assert(report.find("\"memory\":null") != std::string::npos);
@@ -744,7 +744,7 @@ void intelMemoryOffline() {
         auto text = capture;
         if (scenario == 1) text = "{\"schema_version\":1,\"command\":\"intel-memory-read\",\"ok\":true,\"error\":0,\"data\":{\"memory\":" + capture + "}}";
         if (scenario == 2) text.replace(text.find("\"encoded\":36"),12,"\"encoded\":99");
-        if (scenario == 3) { auto v = intel_memory_fixture::registers(); v[2].raw |= UINT64_C(1)<<30; text = intelMemoryJson(decodeIntelMemory({},v)); }
+        if (scenario == 3) { auto v = intel_memory_fixture::registers(); v[3].raw |= UINT64_C(1)<<30; text = intelMemoryJson(decodeIntelMemory({},v)); }
         if (scenario == 4) text = "{}";
         if (scenario == 5) text.replace(text.find("0x814160500042402a"),18,"0x814160500042402");
         if (scenario == 6) text.replace(text.find("0x0000e454"),10,"0x0000d800");

@@ -39,10 +39,10 @@ std::uint64_t word64(const capture_json::Json &v) {
 }
 }
 const std::vector<IntelMemoryRegisterSpec> &intelMemoryRegisters() {
-    // Intel 743846-001, sections 3.2.46, 3.2.70-75, 3.2.80, 3.2.82,
+    // Intel 743846-001, sections 3.2.46, 3.2.49-50, 3.2.70-75, 3.2.80, 3.2.82,
     // 3.2.90 and 3.2.94. Context comes before any timing register.
     static const std::vector<IntelMemoryRegisterSpec> specs = {
-        {0xd800,4}, {0xe454,4}, {0xe088,8}, {0xe000,8}, {0xe008,4},
+        {0xd800,4}, {0xd80c,4}, {0xe454,4}, {0xe088,8}, {0xe000,8}, {0xe008,4},
         {0xe00c,4}, {0xe010,4}, {0xe014,4}, {0xe018,4}, {0xe070,8}, {0xe43c,4}
     };
     return specs;
@@ -66,7 +66,7 @@ const std::vector<IntelMemoryField> &intelMemoryFields() {
     return fields;
 }
 std::uint32_t intelMemoryOffset(const IntelMemoryTarget &t, std::uint32_t offset) {
-    return offset + t.controller * 0x10000 + (offset == 0xd800 ? 0 : t.channel * 0x800);
+    return offset + t.controller * 0x10000 + (offset == 0xd800 ? 0 : t.channel * (offset == 0xd80c ? 4 : 0x800));
 }
 IntelMemorySnapshot decodeIntelMemory(const IntelMemoryTarget &t, const std::vector<IntelMemoryRegister> &registers) {
     IntelMemorySnapshot out; out.target = t;
@@ -85,6 +85,9 @@ IntelMemorySnapshot decodeIntelMemory(const IntelMemoryTarget &t, const std::vec
     out.dramType = unsigned(raw[0xd800] & 7);
     if (out.dramType > 1) { out.error = -ENOTSUP; return out; }
     if (!out.dramType && t.channel) { out.error = -ENODEV; return out; }
+    // Rank occupancy resets to 0x0f even for an unpopulated channel. A real
+    // channel also requires a nonzero DIMM L or S size (section 3.2.49).
+    if (!(raw[0xd80c] & 0x007f007f)) { out.error = -ENODATA; return out; }
     const auto occupancy = raw[0xe454];
     if (!occupancy || (occupancy & ~UINT64_C(15))) { out.error = -ENODATA; return out; }
     out.rankMask = unsigned(occupancy);
@@ -127,6 +130,7 @@ IntelMemorySnapshot readIntelMemory(HardwareSession &s, const IntelMemoryTarget 
                 if (!(r.value & 7) && t.channel) { out.error = -ENODEV; return out; }
             }
             if (spec.offset == 0xe454 && (!r.value || (r.value & ~UINT64_C(15)))) { out.error = -ENODATA; return out; }
+            if (spec.offset == 0xd80c && (r.value == UINT32_MAX || !(r.value & 0x007f007f))) { out.error = -ENODATA; return out; }
             if (!pass) { IntelMemoryRegister v; v.offset = spec.offset; v.raw = r.value; registers.push_back(v); }
             else {
                 for (const auto &v : registers) if (v.offset == spec.offset && v.raw != r.value) { out.error = -EAGAIN; return out; }

@@ -24,9 +24,12 @@
       "3.2.80",
       "3.2.82",
       "3.2.90",
-      "3.2.94"
+      "3.2.94",
+      "3.2.49",
+      "3.2.50"
     ],
     "visually_inspected_printed_pages": [
+      129,
       143,
       144,
       145,
@@ -46,7 +49,10 @@
       "ddr5_channels_per_controller": 2,
       "ddr_type_offset": "0xd800",
       "rank_occupancy_offset": "0xe454",
-      "scheduler_offset": "0xe088"
+      "scheduler_offset": "0xe088",
+      "dimm_size_offset": "0xd80c",
+      "dimm_size_channel_stride": 4,
+      "dimm_size_nonzero_mask": "0x007f007f"
     }
   },
   "linux_pci_reference": {
@@ -63,7 +69,7 @@
     "pci_vendor": "0x8086",
     "pci_device": "0xa700",
     "physical_hardware_validated": false,
-    "register_count": 11,
+    "register_count": 12,
     "field_count": 30,
     "write_operations": 0
   },

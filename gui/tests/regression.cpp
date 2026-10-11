@@ -164,7 +164,7 @@ private slots:
         QTRY_VERIFY(status->height() >= status->heightForWidth(status->width()));
         QTRY_VERIFY(table->viewport()->rect().contains(table->visualItemRect(table->item(29,1))));
         const auto shot = qEnvironmentVariable("OCTOOL_INTEL_MEMORY_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
-        auto v = intel_memory_fixture::registers(0); v[2].raw |= UINT64_C(1)<<30;
+        auto v = intel_memory_fixture::registers(0); v[3].raw |= UINT64_C(1)<<30;
         QVERIFY(panel.loadCapture(QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},v)))));
         QCOMPARE(table->item(7,1)->text(),QString("4")); QCOMPARE(table->item(11,1)->text(),QString("Not used"));
         QCOMPARE(table->item(0,2)->text(),QString("Encoded")); QVERIFY(status->text().contains("overrides"));
@@ -191,7 +191,7 @@ private slots:
         auto device = std::make_shared<intel_memory_fixture::Device>();
         IntelMemoryPanel panel(intelMemoryAccess(device),nullptr,130); panel.show();
         auto *read = panel.findChild<QPushButton *>("imcRead"); auto *table = panel.findChild<QTableWidget *>("imcTable");
-        for (int failure : {0,5,6,7,10,16,21,36}) {
+        for (int failure : {0,5,6,7,8,11,17,22,38}) {
             *device = intel_memory_fixture::Device(); read->click(); QTRY_VERIFY(read->isEnabled());
             QCOMPARE(table->rowCount(),30); QVERIFY(panel.findChild<QPushButton *>("imcCopy")->isEnabled());
             QVERIFY(!octool::core::parseIntelMemoryCapture(panel.captureBytes().toStdString()).error);
@@ -210,6 +210,9 @@ private slots:
         *device = intel_memory_fixture::Device(); device->channel = 1; device->memory[0xd800] = 0;
         panel.findChild<QComboBox *>("imcChannel")->setCurrentIndex(1); read->click(); QTRY_VERIFY(read->isEnabled());
         QCOMPARE(device->reads,6u); QCOMPARE(panel.findChild<QTableWidget *>("imcTable")->rowCount(),0);
+        *device = intel_memory_fixture::Device(); device->memory[0xd80c] = 0x10001800; device->memory[0xe454] = 15;
+        panel.findChild<QComboBox *>("imcChannel")->setCurrentIndex(0); read->click(); QTRY_VERIFY(read->isEnabled());
+        QCOMPARE(device->reads,7u); QCOMPARE(panel.findChild<QTableWidget *>("imcTable")->rowCount(),0);
     }
     void intelMemoryReadLifetimeAndTargetChange() {
         struct Gate { std::atomic<bool> entered{false}, release{false}; };

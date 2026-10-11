@@ -44,12 +44,12 @@ for i,r in enumerate(imc_reports):
     if not r["ok"]:
         assert memory is None
         continue
-    assert len(memory["registers"]) == 11 and len(memory["fields"]) == 30
+    assert len(memory["registers"]) == 12 and len(memory["fields"]) == 30
     fields = {v["name"]:v for v in memory["fields"]}
     assert fields["tCL"]["encoded"] == 36 and fields["tWRPRE"]["encoded"] == 80
     assert fields["tWRRD_SG"]["encoded"] == 70 and fields["tWRRD_DD"]["encoded"] == 10
     assert fields["tREFI"]["encoded"] == 24000
-    assert memory["registers"][3]["raw"] == "0x814160500042402a"
+    assert memory["registers"][4]["raw"] == "0x814160500042402a"
     assert fields["tCL"]["unit"] == ("encoded" if i in (3,13) else "tCK")
     assert memory["offline"] == (i >= 10) and not memory["origin_verified"] and not memory["atomic_snapshot_guaranteed"]
     if i >= 10: assert not r["data"]["hardware_accessed"]

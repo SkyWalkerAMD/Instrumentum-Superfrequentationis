@@ -37,7 +37,8 @@ struct IntelMemorySnapshot {
 };
 const std::vector<IntelMemoryRegisterSpec> &intelMemoryRegisters();
 const std::vector<IntelMemoryField> &intelMemoryFields();
-// MC0/channel0-relative offsets. The shared D800 word receives no channel offset.
+// MC0/channel0-relative offsets. Shared D800 has no channel offset; D80C uses
+// +4 for channel 1, while channel timing/configuration registers use +0x800.
 std::uint32_t intelMemoryOffset(const IntelMemoryTarget &target, std::uint32_t offset);
 IntelMemorySnapshot decodeIntelMemory(const IntelMemoryTarget &target, const std::vector<IntelMemoryRegister> &registers);
 // Explicit one-channel read, never a write. CPUID 06_B7 and PCI 8086:A700 at

@@ -5,12 +5,12 @@
 
 namespace intel_memory_fixture {
 inline std::vector<octool::core::IntelMemoryRegister> registers(unsigned type = 1) {
-    const std::uint32_t offsets[] = {0xd800,0xe454,0xe088,0xe000,0xe008,0xe00c,0xe010,0xe014,0xe018,0xe070,0xe43c};
+    const std::uint32_t offsets[] = {0xd800,0xd80c,0xe454,0xe088,0xe000,0xe008,0xe00c,0xe010,0xe014,0xe018,0xe070,0xe43c};
     // Independent synthetic words, including reserved bits and values >2^53.
-    const std::uint64_t words[] = {type,3,UINT64_C(0x180000068),UINT64_C(0x814160500042402a),
+    const std::uint64_t words[] = {type,0x10001820,3,UINT64_C(0x180000068),UINT64_C(0x814160500042402a),
         0x18041820,0x0f0e0d8c,0x13121110,0x14248e46,0x17969594,UINT64_C(0x9000000022240000),0x08c05dc0};
     std::vector<octool::core::IntelMemoryRegister> result;
-    for (unsigned i = 0; i < 11; ++i) { octool::core::IntelMemoryRegister r; r.offset = offsets[i]; r.raw = words[i]; result.push_back(r); }
+    for (unsigned i = 0; i < 12; ++i) { octool::core::IntelMemoryRegister r; r.offset = offsets[i]; r.raw = words[i]; result.push_back(r); }
     return result;
 }
 inline unsigned expected(unsigned field) {
@@ -43,7 +43,7 @@ struct Device : IntelControlsFixture {
         } else if (r.space == Space::Memory) {
             bool found = false;
             for (const auto &spec : intelMemoryRegisters()) {
-                const auto address = (bar & ~UINT64_C(0x1ffff)) + controller * 0x10000 + spec.offset + (spec.offset == 0xd800 ? 0 : channel * 0x800);
+                const auto address = (bar & ~UINT64_C(0x1ffff)) + controller * 0x10000 + spec.offset + (spec.offset == 0xd800 ? 0 : channel * (spec.offset == 0xd80c ? 4 : 0x800));
                 if (r.address == address && r.width == spec.width) { out.value = memory[spec.offset]; found = true; break; }
             }
             if (!found) out.error = -EFAULT;
