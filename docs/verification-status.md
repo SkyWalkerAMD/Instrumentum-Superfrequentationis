@@ -1,9 +1,16 @@
 # 验证状态与输入证据
 
-<!-- intel-memory-pending -->
-2026-10-11：GUI / CLI 同步新增 [Raptor Lake-S 内存时序读取与快照](intel-memory.md)。
-限定 CPUID B7 / PCI A700、DDR4/DDR5 通道规则；读取 30 个时序字段，特殊 Gear 模式保留编码。
-云端完整编译、回归与安装包验证进行中；目标真机与全部原版功能仍未完成。
+<!-- intel-memory-001c804 -->
+2026-10-12：最新验证生产提交 `001c804`，GUI / CLI 同步新增 **Intel Raptor Lake-S 内存时序读取与快照**。
+限定 B7/A700，读取 30 字段；核对空通道、两次采样和 Gear 状态，支持两端离线快照互通。
+
+- [实现范围](intel-memory.md)、[验证交付](intel-memory-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38148549524) 4/4，各 205 场景组；SPD / PM / UMC / Intel 内存检查通过。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38148554697) 12/12，十目标各 16 CTest、422 份 JSON。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38148404619) 23/23，十目标各 84 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-intel-memory-001c804/`：30 个安装包、源码及 SHA256。
+
+其它原版功能及目标真机验收仍未全部完成。以下保留历史记录。
 
 <!-- ddr4-asymmetric-57924bb -->
 2026-10-11：最新验证生产提交 `57924bb`，GUI / CLI 同步完成已确认的 **DDR4 非对称容量**：
