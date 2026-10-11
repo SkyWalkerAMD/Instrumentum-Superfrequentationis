@@ -60,6 +60,8 @@ std::uint16_t spdCrc16(const std::uint8_t *bytes, std::size_t length);
 // Bounded offline decoder, also used for sysfs EEPROM reads. Never writes SPD.
 // DDR4/DDR5 base CRC, identity/geometry and revision-1 timing requirements.
 // DDR5 XMP 3.0 manufacturer profiles 1..3 have independent CRC checks.
+// Eight secondary timings retain separate ps and nCK lower requirements;
+// no clock conversion or effective/trained timing is inferred from them.
 // DDR4 XMP 2.0 profiles 1..2 have no extension CRC or descriptive names.
 // Their per-profile time bases must encode 125 ps MTB / signed 1 ps FTB.
 // Timings are stored requirements, never measured or currently trained values.

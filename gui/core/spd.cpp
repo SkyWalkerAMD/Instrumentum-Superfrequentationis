@@ -129,6 +129,16 @@ SpdXmp decodeXmp3(const std::vector<std::uint8_t> &b) {
                     const unsigned offsets[] = {5, 13, 15, 17, 19, 21, 23, 25, 27, 29};
                     for (unsigned t = 0; t < 10; ++t)
                         p.values.push_back({names[t], t >= 7 ? "ns" : "ps", word(b, p.offset + offsets[t])});
+                    // Each secondary timing stores two independent requirements:
+                    // a little-endian time in ps and a one-byte lower limit in
+                    // clock cycles. Neither is a measured or derived cycle count.
+                    const char *secondary[] = {"tRRD_L", "tCCD_L_WR", "tCCD_L_WR2", "tCCD_L_WTR",
+                        "tCCD_S_WTR", "tCCD_L", "tRTP", "tFAW"};
+                    for (unsigned t = 0; t < 8; ++t) {
+                        const unsigned off = p.offset + 31 + 3 * t;
+                        p.values.push_back({std::string(secondary[t]) + " minimum", "ps", word(b, off)});
+                        p.values.push_back({std::string(secondary[t]) + " cycle lower limit", "nCK", b[off + 2]});
+                    }
                 }
             }
         }

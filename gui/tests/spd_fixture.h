@@ -27,6 +27,14 @@ inline std::vector<std::uint8_t> spdFixture() {
         spdWord(b, off + 13, 12654); spdWord(b, off + 15, 12654); spdWord(b, off + 17, 12654);
         spdWord(b, off + 19, 25974); spdWord(b, off + 21, 38628); spdWord(b, off + 23, 30000);
         spdWord(b, off + 25, 295); spdWord(b, off + 27, 160); spdWord(b, off + 29, 130);
+        // First slot uses the pinned public XMP profile's secondary quantities.
+        // Other slots have distinct markers, not suggested hardware settings.
+        const unsigned times[] = {5000,20000,10000,10000,2500,5000,7500,10000};
+        const unsigned limits[] = {8,32,16,16,4,8,12,32};
+        for (unsigned t = 0; t < 8; ++t) {
+            spdWord(b,off+31+3*t,times[t]+17*i);
+            b[off+33+3*t] = std::uint8_t(limits[t]+i);
+        }
         spdSeal(b, off, 62);
     }
     spdSeal(b, 640, 62);

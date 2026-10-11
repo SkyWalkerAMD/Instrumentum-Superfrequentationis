@@ -4,6 +4,7 @@ GUI 的 Memory / Motherboard 页面与 CLI `spd-decode --file module.spd`、`inv
 复用 `decodeSpd`。现新增三个厂家 XMP 档案的启用状态、16 字节有界名称、完整原始档案、
 VPP/VDD/VDDQ/内存控制器电压，以及 tCK、tAA、tRCD、tRP、tRAS、tRC、tWR、tRFC1/2/sb。
 电压单位 mV；时序保留 SPD 存储的 ps 或 ns。零电压编码只表示存储值，不推断 Auto 含义。
+现也解码 8 项次级时序，各保留 ps 时间值和 nCK 周期下限，详见下表。
 这些值是档案要求值，不表示当前 BIOS 已启用、实际训练结果或稳定性测试结果。
 不把 tAA/tCK 的简单除法当作实际 CAS，也不将量化后的 tCK 反推为额定速度档位。
 
@@ -40,6 +41,43 @@ CLI 保留已有 `data.spd.fields`，新增 `data.spd.xmp`：`inspected`、可�
 每个档案有 `index/offset/enabled/blocked_by_expo/error/name_valid/name/crc/raw_hex/values`；
 数值包含明确的 `name/value/unit`。扩展错误使 `spd-decode` 以状态 3 退出，仍返回基础字段和
 其它有效档案。`inventory` 保留逐设备错误。`active_configuration_measured` 恒为 false。
+
+## 次级时序与周期下限
+
+每个有效厂家档案现返回 30 个数值：原有 4 项电压和 10 项基础时序，加上以下 8 对要求值。
+表内偏移相对于档案起点。时间为两字节小端无符号 ps；周期下限为一字节无符号 nCK。
+
+| 时序 | 时间偏移 | 周期下限偏移 |
+|---|---:|---:|
+| tRRD_L | 31 | 33 |
+| tCCD_L_WR | 34 | 36 |
+| tCCD_L_WR2 | 37 | 39 |
+| tCCD_L_WTR | 40 | 42 |
+| tCCD_S_WTR | 43 | 45 |
+| tCCD_L | 46 | 48 |
+| tRTP | 49 | 51 |
+| tFAW | 52 | 54 |
+
+GUI 和 CLI `values` 使用 `<时序> minimum`（ps）与 `<时序> cycle lower limit`（nCK）两个名称。
+这两个量独立显示，不除以 tCK，不取较大值作为实际训练周期，也不推断零值是 Auto。
+零和最大编码 65535 ps / 255 nCK 如实保留；不宣称这些编码合理或已经通过稳定性验证。
+原有的 tRFC1/2/sb 仍使用 ns。DDR4 XMP 和 EXPO 不使用这套次级时序布局。
+
+同一档案的 62 字节 CRC 覆盖新增字段。头无效、档案禁用、截断、CRC 失败、tCK 为零，
+或第三档案与 EXPO 重叠时，不输出该档案的时序；其它有效档案继续显示。
+未知版本不按 XMP 3.0 解码。`values` 追加字段，JSON 版本保持 1；调用方应按名称取值。
+
+字段、单位与公开样本依据固定在[来源记录](validation/xmp-secondary-sources.json)。
+[上游字段访问器](https://github.com/edlf/DDR5SPDEditor/blob/6c9d015098f3f25e636ff7402cf955d4cc7fa2cd/xmp3.cpp)
+与 [GUI 周期下限绑定](https://github.com/edlf/DDR5SPDEditor/blob/6c9d015098f3f25e636ff7402cf955d4cc7fa2cd/mainwindow_xmp1.cpp)
+用于格式事实核对，未复制或链接其实现。其 `gettCCD_L_WR_tick()` 错取 `gettCCD_L()`，
+本实现分别读取 WR 与读时序的原始字段，不使用这个推导路径。
+公开独立 XMP 档案含非零次级值；既有 XMP+EXPO 混合样本的这些字段为零，两种情况都记录。
+测试使用合成模块，其中第一组次级值与公开独立档案一致；不是目标机器采集或原程序执行。
+
+新增核心测试逐一覆盖 24 个字段字节的全部 256 种编码、邻接字段/档案隔离、
+零和最大值，以及改变 tCK 后存储要求保持不变。GUI 检查全部三组的名称/单位/数值和旧行清除；
+CLI 检查相同 JSON、损坏/禁用档案及不创建硬件后端。
 
 ## 依据与边界
 

@@ -13,7 +13,7 @@ void threeProfiles() {
     for (unsigned i = 0; i < 3; ++i) {
         const auto &p = out.xmp.profiles[i];
         assert(p.index == i + 1 && p.offset == 704 + 64 * i && p.enabled && !p.error && p.crc.valid && p.nameValid);
-        assert(p.raw.size() == 64 && p.values.size() == 14);
+        assert(p.raw.size() == 64 && p.values.size() == 30);
         const unsigned expected[] = {1800, 1250 + 50 * i, 1250, 1100, 333 + 24 * i,
             12654, 12654, 12654, 25974, 38628, 30000, 295, 160, 130};
         for (unsigned f = 0; f < 14; ++f) {
@@ -108,6 +108,76 @@ void numericBoundaries() {
     b.resize(4096); assert(!decodeSpd(b).xmp.error);
     b.resize(4097); assert(decodeSpd(b).error == -EINVAL);
 }
+void xmpSecondaryValues() {
+    const auto bytes = spdFixture(); const auto r = decodeSpd(bytes);
+    const char *names[] = {"tRRD_L", "tCCD_L_WR", "tCCD_L_WR2", "tCCD_L_WTR",
+        "tCCD_S_WTR", "tCCD_L", "tRTP", "tFAW"};
+    const unsigned times[] = {5000,20000,10000,10000,2500,5000,7500,10000};
+    const unsigned cycles[] = {8,32,16,16,4,8,12,32};
+    for (unsigned i = 0; i < 3; ++i) {
+        const auto &p = r.xmp.profiles[i]; assert(!p.error && p.values.size() == 30);
+        for (unsigned t = 0; t < 8; ++t) {
+            const auto &time = p.values[14+2*t], &limit = p.values[15+2*t];
+            assert(time.name == std::string(names[t])+" minimum" && time.unit == "ps" && time.value == times[t]+17*i);
+            assert(limit.name == std::string(names[t])+" cycle lower limit" && limit.unit == "nCK" && limit.value == cycles[t]+i);
+        }
+        // Guard against the upstream derived-tick getter's WR/read mix-up.
+        assert(p.values[16].value != p.values[24].value);
+    }
+    assert(bytes == spdFixture());
+}
+void xmpSecondaryByteBoundaries() {
+    const auto original = spdFixture(); const auto reference = decodeSpd(original);
+    // Exercise every byte of all 16 quantities and ensure no adjacent field
+    // changes. Both high-bit bytes and unsigned one-byte limits are covered.
+    for (unsigned t = 0; t < 8; ++t) for (unsigned byte = 0; byte < 3; ++byte)
+        for (unsigned code = 0; code < 256; ++code) {
+            auto b = original; const unsigned off = 768+31+3*t;
+            b[off+byte] = std::uint8_t(code); spdSeal(b,768,62);
+            const auto r = decodeSpd(b); const auto &p = r.xmp.profiles[1];
+            assert(!r.xmp.error && p.crc.valid && p.values.size() == 30);
+            for (unsigned f = 0; f < 30; ++f) {
+                unsigned expected = reference.xmp.profiles[1].values[f].value;
+                if (byte < 2 && f == 14+2*t)
+                    expected = byte ? (expected & 255) | (code << 8) : (expected & 65280) | code;
+                if (byte == 2 && f == 15+2*t) expected = code;
+                assert(p.values[f].value == expected);
+                assert(r.xmp.profiles[0].values[f].value == reference.xmp.profiles[0].values[f].value);
+                assert(r.xmp.profiles[2].values[f].value == reference.xmp.profiles[2].values[f].value);
+            }
+        }
+}
+void xmpSecondaryZerosAndMaximums() {
+    auto b = spdFixture();
+    for (unsigned code : {0u,255u}) {
+        std::fill(b.begin()+735,b.begin()+759,std::uint8_t(code)); spdSeal(b,704,62);
+        auto r = decodeSpd(b); const auto &p = r.xmp.profiles[0];
+        assert(!r.xmp.error && p.values.size() == 30);
+        for (unsigned f = 14; f < 30; ++f) assert(p.values[f].value == (f % 2 ? code : code*257));
+        assert(p.values[11].value == 295); // Refresh remains ns, not ps.
+    }
+    b[736] ^= 1; auto r = decodeSpd(b);
+    assert(r.xmp.error == -EILSEQ && r.xmp.profiles[0].values.empty());
+    assert(r.xmp.profiles[1].values.size() == 30 && r.xmp.profiles[2].values.size() == 30);
+    b[643] = 6; spdSeal(b,640,62); r = decodeSpd(b);
+    assert(!r.xmp.error && r.xmp.profiles[0].values.empty() && !r.xmp.profiles[0].crc.checked);
+    assert(r.xmp.profiles[1].values.size() == 30);
+}
+void xmpSecondaryIndependentRequirements() {
+    const auto original = spdFixture(); const auto reference = decodeSpd(original);
+    for (unsigned clock : {1u,333u,65535u}) {
+        auto b = original; spdWord(b,709,clock); spdSeal(b,704,62);
+        const auto p = decodeSpd(b).xmp.profiles[0]; assert(!p.error);
+        for (unsigned f = 14; f < 30; ++f)
+            assert(p.values[f].value == reference.xmp.profiles[0].values[f].value);
+    }
+    auto b = original; spdWord(b,735,1); b[737] = 255; spdSeal(b,704,62);
+    const auto p = decodeSpd(b).xmp.profiles[0]; assert(!p.error);
+    assert(p.values[14].value == 1 && p.values[15].value == 255);
+    b = spdExpoFixture(); const auto r = decodeSpd(b);
+    assert(!r.xmp.error && r.xmp.profiles[0].values.size() == 30 && r.xmp.profiles[2].values.empty());
+    assert(r.expo.profiles[0].values.size() == 13); // No EXPO enhanced-timing inference.
+}
 void expoProfiles() {
     const auto b = spdExpoFixture(); const auto r = decodeSpd(b);
     assert(!r.error && !r.xmp.error && !r.expo.error && r.expo.present && r.expo.crc.valid);
@@ -143,7 +213,7 @@ void expoCorruptionAndIsolation() {
     for (unsigned bit = 0; bit < 128 * 8; ++bit) {
         auto b = original; b[832+bit/8] ^= std::uint8_t(1u << (bit%8));
         const auto r = decodeSpd(b);
-        assert(!r.error && !r.xmp.error && r.xmp.profiles[0].values.size() == 14);
+        assert(!r.error && !r.xmp.error && r.xmp.profiles[0].values.size() == 30);
         assert(r.expo.profiles.empty());
         if (bit < 32) assert(!r.expo.present && !r.expo.error);
         else assert(r.expo.present && r.expo.error == -EILSEQ && r.expo.raw.size() == 128);
@@ -301,5 +371,6 @@ int main() {
     threeProfiles(); truncation(); corruptedSections(); gatesAndOverlap(); boundedNames(); numericBoundaries();
     expoProfiles(); expoTruncation(); expoCorruptionAndIsolation(); expoFlagsAndRevision(); expoNumericBoundaries();
     ddr4Profiles(); ddr4Truncation(); ddr4FlagsAndRevision(); ddr4Timebases(); ddr4SignedTimingsAndBounds(); ddr4IntegrityAndTypeIsolation();
-    std::cout << "17 SPD XMP/EXPO scenario groups passed (capture lengths, CRC, timebases and signed timing boundaries)\n";
+    xmpSecondaryValues(); xmpSecondaryByteBoundaries(); xmpSecondaryZerosAndMaximums(); xmpSecondaryIndependentRequirements();
+    std::cout << "21 SPD XMP/EXPO scenario groups passed (capture lengths, CRC, timebases, signed and secondary timing boundaries)\n";
 }

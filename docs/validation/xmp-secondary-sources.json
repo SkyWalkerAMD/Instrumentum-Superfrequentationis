@@ -1,0 +1,253 @@
+{
+  "schema": 1,
+  "date": "2026-10-11",
+  "sources": [
+    {
+      "git_blob": "e7dd9fbcd75be2b42c84c115466c68475c62edc5",
+      "url": "https://github.com/edlf/DDR5SPDEditor/blob/6c9d015098f3f25e636ff7402cf955d4cc7fa2cd/ddr5spd_structs.h",
+      "sha256": "97ae4c827c746d394ce7aaf0525bcd04f33a729f0f1c1b63166cf19826b1d20b",
+      "bytes": 14914
+    },
+    {
+      "git_blob": "7cd16298c602209342dc4ade42fcfd453cfb8d19",
+      "url": "https://github.com/edlf/DDR5SPDEditor/blob/6c9d015098f3f25e636ff7402cf955d4cc7fa2cd/xmp3.cpp",
+      "sha256": "7b945cf22afd4b224ca5aa9ac00be77c04030e841a3f773a7a2458cbbe089495",
+      "bytes": 20081
+    },
+    {
+      "git_blob": "750e17847737b3163fa67cc447f7df8e200973fb",
+      "url": "https://github.com/edlf/DDR5SPDEditor/blob/6c9d015098f3f25e636ff7402cf955d4cc7fa2cd/utilities.cpp",
+      "sha256": "edec4422cf4859889f3c0cc92116f356cded675abd160743db0edc4b6df886c5",
+      "bytes": 6309
+    },
+    {
+      "git_blob": "aee78320f9f1efbfadd05b204486265dacd072b0",
+      "url": "https://github.com/edlf/DDR5SPDEditor/blob/6c9d015098f3f25e636ff7402cf955d4cc7fa2cd/SPD%20examples/DDR5%20XMP%2BEXPO.spd",
+      "sha256": "cecfa75eb704272ad5b135e77a534cc416aec55a8daea54823b5dbf6d7761c98",
+      "bytes": 1024
+    },
+    {
+      "git_blob": "d5d3c3d10122ac5dcfa4f4c8a9cfdc56d17f7c78",
+      "sha256": "6a29a475b20ff73a9d8cd784280d6fe74d7204b156d697cb36369605668e81ef",
+      "bytes": 530517,
+      "url": "https://github.com/edlf/DDR5SPDEditor/blob/6c9d015098f3f25e636ff7402cf955d4cc7fa2cd/mainwindow.ui"
+    },
+    {
+      "git_blob": "21608be3225892ca1380bca43d7ae34c8b92b0b7",
+      "sha256": "1a29780818bb3e3ded01f7558e597ba3436b05c3d5b63070d7b90d5b700967ef",
+      "bytes": 24097,
+      "url": "https://github.com/edlf/DDR5SPDEditor/blob/6c9d015098f3f25e636ff7402cf955d4cc7fa2cd/mainwindow_xmp1.cpp"
+    },
+    {
+      "git_blob": "41375f9f0ef0621105583ef2b177d0385c9f0233",
+      "url": "https://github.com/edlf/DDR5SPDEditor/blob/6c9d015098f3f25e636ff7402cf955d4cc7fa2cd/SPD%20examples/Sample%20XMP3%20Profile.bin",
+      "bytes": 64,
+      "sha256": "833cc5ead10b3b691132a040db1843a2b5b5023cdbac3415aa1cf657d6365611"
+    }
+  ],
+  "ui_unit_labels": [
+    {
+      "widget": "lLowerTick_XMP1",
+      "text": [
+        "Lower Tick Limit"
+      ]
+    },
+    {
+      "widget": "lTicks1_XMP1",
+      "text": [
+        "Ticks"
+      ]
+    },
+    {
+      "widget": "lTicks2_XMP1",
+      "text": [
+        "Ticks"
+      ]
+    }
+  ],
+  "fields": [
+    {
+      "name": "tRRD_L",
+      "time_offset": 31,
+      "lower_offset": 33,
+      "time_unit": "ps",
+      "lower_unit": "nCK"
+    },
+    {
+      "name": "tCCD_L_WR",
+      "time_offset": 34,
+      "lower_offset": 36,
+      "time_unit": "ps",
+      "lower_unit": "nCK"
+    },
+    {
+      "name": "tCCD_L_WR2",
+      "time_offset": 37,
+      "lower_offset": 39,
+      "time_unit": "ps",
+      "lower_unit": "nCK"
+    },
+    {
+      "name": "tCCD_L_WTR",
+      "time_offset": 40,
+      "lower_offset": 42,
+      "time_unit": "ps",
+      "lower_unit": "nCK"
+    },
+    {
+      "name": "tCCD_S_WTR",
+      "time_offset": 43,
+      "lower_offset": 45,
+      "time_unit": "ps",
+      "lower_unit": "nCK"
+    },
+    {
+      "name": "tCCD_L",
+      "time_offset": 46,
+      "lower_offset": 48,
+      "time_unit": "ps",
+      "lower_unit": "nCK"
+    },
+    {
+      "name": "tRTP",
+      "time_offset": 49,
+      "lower_offset": 51,
+      "time_unit": "ps",
+      "lower_unit": "nCK"
+    },
+    {
+      "name": "tFAW",
+      "time_offset": 52,
+      "lower_offset": 54,
+      "time_unit": "ps",
+      "lower_unit": "nCK"
+    }
+  ],
+  "public_sample_profiles": [
+    {
+      "index": 1,
+      "secondary_raw_hex": "000000000000000000000000000000000000000000000000",
+      "timings": [
+        {
+          "name": "tRRD_L",
+          "time_ps": 0,
+          "lower_nCK": 0
+        },
+        {
+          "name": "tCCD_L_WR",
+          "time_ps": 0,
+          "lower_nCK": 0
+        },
+        {
+          "name": "tCCD_L_WR2",
+          "time_ps": 0,
+          "lower_nCK": 0
+        },
+        {
+          "name": "tCCD_L_WTR",
+          "time_ps": 0,
+          "lower_nCK": 0
+        },
+        {
+          "name": "tCCD_S_WTR",
+          "time_ps": 0,
+          "lower_nCK": 0
+        },
+        {
+          "name": "tCCD_L",
+          "time_ps": 0,
+          "lower_nCK": 0
+        },
+        {
+          "name": "tRTP",
+          "time_ps": 0,
+          "lower_nCK": 0
+        },
+        {
+          "name": "tFAW",
+          "time_ps": 0,
+          "lower_nCK": 0
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "secondary_raw_hex": "000000000000000000000000000000000000000000000000",
+      "timings": [
+        {
+          "name": "tRRD_L",
+          "time_ps": 0,
+          "lower_nCK": 0
+        },
+        {
+          "name": "tCCD_L_WR",
+          "time_ps": 0,
+          "lower_nCK": 0
+        },
+        {
+          "name": "tCCD_L_WR2",
+          "time_ps": 0,
+          "lower_nCK": 0
+        },
+        {
+          "name": "tCCD_L_WTR",
+          "time_ps": 0,
+          "lower_nCK": 0
+        },
+        {
+          "name": "tCCD_S_WTR",
+          "time_ps": 0,
+          "lower_nCK": 0
+        },
+        {
+          "name": "tCCD_L",
+          "time_ps": 0,
+          "lower_nCK": 0
+        },
+        {
+          "name": "tRTP",
+          "time_ps": 0,
+          "lower_nCK": 0
+        },
+        {
+          "name": "tFAW",
+          "time_ps": 0,
+          "lower_nCK": 0
+        }
+      ]
+    }
+  ],
+  "public_single_profile": {
+    "crc_stored": 15546,
+    "crc_computed": 15546,
+    "secondary_raw_hex": "881308204e20102710102710c409048813084c1d0c102720",
+    "time_ps": [
+      5000,
+      20000,
+      10000,
+      10000,
+      2500,
+      5000,
+      7500,
+      10000
+    ],
+    "lower_nCK": [
+      8,
+      32,
+      16,
+      16,
+      4,
+      8,
+      12,
+      32
+    ],
+    "fixture_scope": "Only these format quantities are reused in the first synthetic slot; no entire upstream sample embedded or claimed as target hardware."
+  },
+  "scope": "Pinned author-published packed layout, field accessors and GUI units; format facts only, no copied or linked upstream implementation. The public sample is not a target-machine capture. No execution of the original OCTool XMP function or hardware access.",
+  "discrepancy": "Upstream gettCCD_L_WR_tick reads gettCCD_L, while its raw getter reads tCCD_L_WR. Decode stored ps and nCK independently; do not adopt that derived-tick path.",
+  "boundaries": [
+    "Manufacturer profiles 1..3 only, subject to existing header/profile CRC, revision, enable and EXPO-overlap gates.",
+    "Stored 16-bit ps and 8-bit nCK quantities, including zero and maximum encodings; no automatic trained-value, stability, or Auto interpretation.",
+    "No effective-cycle arithmetic, CAS bitmap, command rate, user profiles, EXPO enhanced timing interpretation or SPD writes."
+  ]
+}

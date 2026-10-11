@@ -324,6 +324,7 @@ MemoryBoardPanel::MemoryBoardPanel(QWidget *parent) : QWidget(parent) {
     description("Memory and motherboard · BIOS identity, kernel sensors and DDR4 / DDR5 SPD\n"
         "SPD describes the module, not the currently trained timings. Sensors depend on the installed kernel driver. "
         "DDR4 XMP 2.0, DDR5 XMP 3.0 and EXPO 1.0 basic profiles show stored voltages and timings. "
+        "XMP 3.0 secondary timings include separate ps and nCK lower limits. "
         "XMP 2.0 has no profile checksum; DDR5 profiles include CRC checks. "
         "EXPO enhanced timings are not decoded. "
         "Timing writes, PMIC / VRM controls and board-specific clocks are not yet recovered.",layout,this);

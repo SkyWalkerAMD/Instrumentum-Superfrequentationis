@@ -34,12 +34,13 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 288, len(reports)
+assert len(reports) == 293, len(reports)
 spd_reports = [r for r in reports if r["command"] == "spd-decode" and "spd" in r["data"]]
-assert len(spd_reports) == 29
+assert len(spd_reports) == 34
 assert [r["ok"] for r in spd_reports] == [True, False, False, False, True, False, True, True, False,
                                         True, False, False, False, True, False, True, False, False, False,
-                                        True, True, False, False, False, False, True, True, False, False]
+                                        True, True, False, False, False, False, True, True, False, False,
+                                        True, True, False, True, True]
 for i, r in enumerate(spd_reports):
     xmp = r["data"]["spd"]["xmp"]
     assert not xmp["active_configuration_measured"]
@@ -50,7 +51,7 @@ for i, r in enumerate(spd_reports):
                 assert p["values"] == []
             else:
                 assert p["crc"]["valid"] and len(p["raw_hex"]) == 128
-                assert len(p["values"]) == 14
+                assert len(p["values"]) == 30
     if i == 1:
         assert r["data"]["spd"]["crc_valid"] and xmp["profiles"][0]["error"] == -84
         assert xmp["profiles"][1]["values"]
@@ -72,7 +73,7 @@ for i, r in enumerate(spd_reports):
         assert expo["inspected"] and expo["present"] is False
     if i in (10, 11, 12):
         assert expo["profiles"] == [] and expo["error"] == {10: -84, 11: -90, 12: -95}[i]
-        assert len(r["data"]["spd"]["xmp"]["profiles"][0]["values"]) == 14
+        assert len(r["data"]["spd"]["xmp"]["profiles"][0]["values"]) == 30
     if i == 11:
         assert expo["raw_hex"] is None and expo["crc"]["valid"] is None and expo["configuration_raw"] is None
     if i in (6, 9, 13, 14, 15, 16, 17, 18):
@@ -123,6 +124,28 @@ for i in range(19, 29):
             assert [v["value"] for v in p["values"]] == expected
             assert [v["unit"] for v in p["values"]] == ["mV"] + ["ps"]*12
             assert p["values"][9]["name"] == "tRFC4 minimum"
+secondary = ["tRRD_L", "tCCD_L_WR", "tCCD_L_WR2", "tCCD_L_WTR", "tCCD_S_WTR", "tCCD_L", "tRTP", "tFAW"]
+times = [5000, 20000, 10000, 10000, 2500, 5000, 7500, 10000]
+limits = [8, 32, 16, 16, 4, 8, 12, 32]
+for i in (0, 29, 30, 31, 32, 33):
+    xmp = spd_reports[i]["data"]["spd"]["xmp"]
+    for slot, profile in enumerate(xmp["profiles"]):
+        if slot == 0 and i in (31, 32):
+            assert profile["values"] == []
+            assert profile["error"] == (-84 if i == 31 else 0)
+            assert profile["enabled"] is (i == 31)
+            continue
+        assert profile["crc"]["valid"] and len(profile["values"]) == 30
+        values = {v["name"]: v for v in profile["values"]}
+        for field, name in enumerate(secondary):
+            ps, ck = times[field]+17*slot, limits[field]+slot
+            if slot == 0 and i in (29, 30):
+                ps, ck = (0, 0) if i == 29 else (65535, 255)
+            if slot == 0 and i == 33 and field == 0:
+                ps, ck = 1, 255
+            assert values[name+" minimum"] == {"name": name+" minimum", "unit": "ps", "value": ps}
+            assert values[name+" cycle lower limit"] == {"name": name+" cycle lower limit", "unit": "nCK", "value": ck}
+        assert values["tRFC1 minimum"]["unit"] == "ns" and values["tRFC1 minimum"]["value"] == 295
 assert len([r for r in reports if r["error"] == -22]) >= 132
 uncore = [r for r in reports if r["command"] in ("intel-uncore-read", "intel-uncore-set") and "before" in r["data"]]
 assert len(uncore) == 16

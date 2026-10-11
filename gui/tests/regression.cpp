@@ -983,6 +983,47 @@ private slots:
         QCOMPARE(row("XMP 1","VDD"),-1);
         QCOMPARE(table->item(row("XMP","Header"),4)->text(),QString("Header not captured"));
     }
+    void spdXmpSecondaryTimingsAndCycleLimits() {
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("xmp-secondary.spd");
+        auto bytes = octool::test::spdFixture();
+        const auto save = [&] { QFile file(path); if (!file.open(QIODevice::WriteOnly)) return false;
+            return file.write(reinterpret_cast<const char *>(bytes.data()), qint64(bytes.size())) == qint64(bytes.size()); };
+        QVERIFY(save()); MemoryBoardPanel panel; panel.resize(1200,900); panel.show();
+        auto *table = panel.findChild<QTableWidget *>("inventoryTable"); QVERIFY(table); QCOMPARE(table->rowCount(),0);
+        QVERIFY(panel.loadSpdFile(path));
+        const auto row = [&](const QString &group, const QString &name) {
+            for (int i = 0; i < table->rowCount(); ++i)
+                if (table->item(i,0)->text() == group && table->item(i,1)->text() == name) return i;
+            return -1;
+        };
+        const QStringList names = {"tRRD_L", "tCCD_L_WR", "tCCD_L_WR2", "tCCD_L_WTR", "tCCD_S_WTR", "tCCD_L", "tRTP", "tFAW"};
+        const unsigned times[] = {5000,20000,10000,10000,2500,5000,7500,10000};
+        const unsigned limits[] = {8,32,16,16,4,8,12,32};
+        for (unsigned slot = 0; slot < 3; ++slot) for (int t = 0; t < names.size(); ++t) {
+            const auto group = QString("XMP %1").arg(slot+1);
+            const int time = row(group,names[t]+" minimum"), limit = row(group,names[t]+" cycle lower limit");
+            QVERIFY(time >= 0 && limit >= 0);
+            QCOMPARE(table->item(time,2)->text(),QString::number(times[t]+17*slot));
+            QCOMPARE(table->item(time,3)->text(),QString("ps"));
+            QCOMPARE(table->item(limit,2)->text(),QString::number(limits[t]+slot));
+            QCOMPARE(table->item(limit,3)->text(),QString("nCK"));
+        }
+        QTest::qWait(50);
+        table->scrollToItem(table->item(row("XMP 1","tRRD_L minimum"),0),QAbstractItemView::PositionAtTop);
+        QTRY_VERIFY(table->visualItemRect(table->item(row("XMP 1","tRRD_L minimum"),0)).top() < 20);
+        const auto screenshot = qEnvironmentVariable("OCTOOL_XMP_SECONDARY_TEST_SCREENSHOT");
+        if (!screenshot.isEmpty()) { QTest::qWait(50); QVERIFY(panel.grab().save(screenshot)); }
+        std::fill(bytes.begin()+735,bytes.begin()+759,std::uint8_t(0)); octool::test::spdSeal(bytes,704,62);
+        QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(table->item(row("XMP 1","tRRD_L minimum"),2)->text(),QString("0"));
+        QCOMPARE(table->item(row("XMP 1","tFAW cycle lower limit"),2)->text(),QString("0"));
+        bytes[736] ^= 1; QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("XMP 1","tRRD_L minimum"),-1); QVERIFY(row("XMP 2","tRRD_L minimum") >= 0);
+        bytes[643] = 6; octool::test::spdSeal(bytes,640,62); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("XMP 1","tFAW cycle lower limit"),-1); QVERIFY(row("XMP 3","tFAW cycle lower limit") >= 0);
+        bytes.resize(512); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("XMP 2","tRRD_L minimum"),-1);
+    }
     void spdExpoProfilesAndIndependentFailures() {
         QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("expo.spd");
         auto bytes = octool::test::spdExpoFixture();
