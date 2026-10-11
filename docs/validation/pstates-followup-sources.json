@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "date": "2026-10-11",
+  "sources": [
+    {
+      "url": "https://docs.amd.com/v/u/en-US/57238",
+      "file": "57238_C1_pub_1.pdf",
+      "bytes": 3395710,
+      "sha256": "e4a55e3db7863ff0d70abb5d01d67a133fa3c6ba35899a66a9f4a7d9ce45c0a4",
+      "revision": "0.49",
+      "published": "2026-03-06",
+      "printed_page": 240
+    },
+    {
+      "sha": "c889b57129cfd8280378855981b2efc0582c651c",
+      "url": "https://github.com/cyring/CoreFreq/blob/4d032cff9ee0ef18d489fb85e38198110564b90d/x86_64/amd_reg.h",
+      "bytes": 64484,
+      "sha256": "f56d7addb99a49e49ce499374bee975d72449a700f8e7bf953fd982b9e866cdc"
+    },
+    {
+      "sha": "795562e879deead18c00bd4735fec9e03eb4df14",
+      "url": "https://github.com/torvalds/linux/blob/a5ebb76233b79db01e82e061173cb73c6d2b5c6b/tools/power/cpupower/utils/helpers/amd.c",
+      "bytes": 6603,
+      "sha256": "dfeb1b53e7776c456e0b483d2fe7fb8023e3f2305f72ec65475f016ee6185657"
+    },
+    {
+      "sha": "457423c47587fa9f1d3864e77a88f64b7c978bc8",
+      "url": "https://github.com/cyring/CoreFreq/blob/4d032cff9ee0ef18d489fb85e38198110564b90d/x86_64/coretypes.h",
+      "bytes": 86908,
+      "sha256": "917d4253ab9abf0f488831c92ba943455a8d550541cb71f238a804f7deecabc5"
+    }
+  ],
+  "hardware_execution": false,
+  "observations": {
+    "amd_ppr_049": "Model 02h C1 still defines CpuVid bit 32 plus bits 21:14, expected single-core ACPI _PSS current descriptors, and different per-processor/fabric consistency scopes. This page provides no complete VID-to-mV or IddDiv conversion table.",
+    "linux_cpupower": "Family 1Ah frequency remains 12-bit FID times 5 MHz. The tool does not establish a family-wide voltage/current write protocol.",
+    "corefreq": "Family 1Ah PSTATEDEF has ninth VID bit; distinct AMD_RMB, AMD_17h and AMD_VCO voltage formula paths exist. These observations are implementation references, not validation of all firmware/Threadripper models.",
+    "decision": "Do not replace known raw VID/Idd fields with a guessed universal conversion, or enable a one-core writer that violates the PPR scope. Existing read-only support preserved; model identity, scope enumeration and partial-write recovery remain required."
+  }
+}

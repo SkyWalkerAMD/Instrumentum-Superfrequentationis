@@ -1,5 +1,17 @@
 # 功能还原状态
 
+<!-- spd-profile-geometry-6f544e6 -->
+2026-10-11：最新验证生产提交 `6f544e6`，GUI / CLI 同步补齐 **XMP 2.0 CAS/推荐 DIMM 数、对称堆叠容量与 DDR5 3DS 刷新要求**。
+同时修正 DDR5 四/八子通道计数，并按基础/公共区修订版判断可解释的组织字段。
+
+- [实现说明](spd-profile-geometry.md)、[功能对照](frontend-progress.md)、[验证交付](spd-profile-geometry-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38125934367) 4/4，各 145 场景组；SPD / UMC 内存检查通过。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38125934384) 12/12，十目标各 14 CTest、327 份 JSON。
+- [Linux GUI/驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38125934404) 23/23，十目标各 66 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-spd-profile-geometry-6f544e6/`：30 个安装包、源码及 SHA256 校验文件。
+
+原版全部功能与真机调参验收尚未完成。以下保留历史记录。
+
 <!-- spd-base-timings-88530a9 -->
 2026-10-11：最新验证生产提交 `88530a9`，GUI 与 CLI 同步补充 **DDR4 写延迟和 DDR5 基础次级时序**。
 DDR4 新增 3 项；DDR5 新增 8 对 ps / nCK 要求，SPD 1.2 起再增加 3 对，按基础修订版判断。
@@ -182,7 +194,7 @@ PStates 写入、曲线写入、Intel server VF/fabric、板级专用控制等�
 
 `06b477c` 是此前 [Shimada 原始曲线查询](amd-curve-query-recovery.md)的历史版本，
 [当时验证](validation/amd-curve-recovery-ci-06b477c.json)为核心 4/4、Linux 23/23。
-最新生产版本以本页顶部为准，下表已更新到 `88530a9`。
+最新生产版本以本页顶部为准，下表已更新到 `6f544e6`。
 原版全部功能仍未完成。安装兼容、自动化回归、原指令研究和真实硬件验收分别记录，
 没有能代表四大模块全部功能的可靠百分比；212 个 UMC 字段也不是整个软件的功能分母。
 
