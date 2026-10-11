@@ -9,6 +9,7 @@
 #include "tests/intel_controls_fixture.h"
 #include "tests/intel_turbo_fixture.h"
 #include "tests/intel_uncore_fixture.h"
+#include "tests/intel_memory_fixture.h"
 #include "tests/spd_fixture.h"
 #include <cassert>
 #include <cerrno>
@@ -707,6 +708,56 @@ void offlineSpdDoesNotCreateBackend() {
     }
     assert(!opens);
 }
+void intelMemoryCommands() {
+    for (unsigned scenario = 0; scenario < 10; ++scenario) {
+        intel_memory_fixture::Device d;
+        if (scenario == 1) d.controller = d.channel = 1;
+        if (scenario == 2) { d.controller = 1; d.memory[0xd800] = 0; }
+        if (scenario == 3) d.memory[0xe088] |= UINT64_C(1)<<30;
+        if (scenario == 4) d.model = 0xba;
+        if (scenario == 5) d.pciId = 0xa7068086;
+        if (scenario == 6) d.bar &= ~UINT64_C(1);
+        if (scenario == 7) d.memory[0xe454] = 0;
+        if (scenario == 8) d.failRead = 10;
+        if (scenario == 9) d.afterRequest = [&](const Request &) { if (d.reads == 16) d.memory[0xe000] ^= 1; };
+        const auto report = command(d,{"intel-memory-read","--cpu","130","--controller",std::to_string(d.controller),"--channel",std::to_string(d.channel)},scenario < 4 ? 0 : 3);
+        assert(!d.writes && !d.wrongCpu);
+        if (scenario >= 4) assert(report.find("\"memory\":null") != std::string::npos);
+    }
+}
+void intelMemoryOffline() {
+    char path[] = "/tmp/octool-imc-XXXXXX"; const int fd = mkstemp(path); assert(fd >= 0); close(fd);
+    struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
+    unsigned opens = 0; const auto factory = [&] { ++opens; return std::unique_ptr<HardwareBackend>(); };
+    const auto capture = intelMemoryJson(decodeIntelMemory({},intel_memory_fixture::registers()));
+    for (const auto &args : std::vector<std::vector<std::string>>{
+        {"intel-memory-read"},{"intel-memory-read","--cpu","130"},
+        {"intel-memory-read","--cpu","130","--controller","2","--channel","0"},
+        {"intel-memory-read","--cpu","130","--controller","0","--channel","-1"},
+        {"intel-memory-read","--cpu","130","--controller","0","--channel","0","--apply"},
+        {"intel-memory-read","--cpu","130","--controller","0","--channel","0","--address","0xfedc0000"},
+        {"intel-memory-read","--cpu","130","--controller","0","--channel","0","--channel","1"},
+        {"intel-memory-decode"},{"intel-memory-decode","--file",""},{"intel-memory-decode","--file",path,"--cpu","130"}}) {
+        std::ostringstream out; assert(run(args,out,factory) == 2);
+    }
+    for (unsigned scenario = 0; scenario < 10; ++scenario) {
+        auto text = capture;
+        if (scenario == 1) text = "{\"schema_version\":1,\"command\":\"intel-memory-read\",\"ok\":true,\"error\":0,\"data\":{\"memory\":" + capture + "}}";
+        if (scenario == 2) text.replace(text.find("\"encoded\":36"),12,"\"encoded\":99");
+        if (scenario == 3) { auto v = intel_memory_fixture::registers(); v[2].raw |= UINT64_C(1)<<30; text = intelMemoryJson(decodeIntelMemory({},v)); }
+        if (scenario == 4) text = "{}";
+        if (scenario == 5) text.replace(text.find("0x814160500042402a"),18,"0x814160500042402");
+        if (scenario == 6) text.replace(text.find("0x0000e454"),10,"0x0000d800");
+        if (scenario == 7) text.replace(text.find("0x0000000000000003"),18,"0x0000000000000000");
+        if (scenario == 9) text = "{\"bad\":\"\xed\xa0\x80\"}";
+        std::ofstream file(path,std::ios::binary); file << text; file.close(); assert(file);
+        std::ostringstream out;
+        assert(run({"intel-memory-decode","--file",scenario == 8 ? std::string(path)+"-missing" : path},out,factory) == (scenario < 4 ? 0 : 3));
+        if (emit) std::cout << out.str();
+    }
+    assert(!opens);
+}
+
 void pmCommands() {
     char path[] = "/tmp/octool-pm-XXXXXX"; const int fd = mkstemp(path); assert(fd >= 0); close(fd);
     struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
@@ -786,8 +837,8 @@ int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--pm-fixture") { pmFilesystem(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
-    offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands();
+    offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "17 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "19 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

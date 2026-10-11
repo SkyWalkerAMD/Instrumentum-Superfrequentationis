@@ -11,6 +11,8 @@
 #include "intel_turbo_fixture.h"
 #include "inteluncorepanel.h"
 #include "intel_uncore_fixture.h"
+#include "intelmemorypanel.h"
+#include "intel_memory_fixture.h"
 #include "spd_fixture.h"
 #include "amd_curve_fixture.h"
 #include "amdpmpanel.h"
@@ -130,9 +132,108 @@ static octool::core::AmdPmReader pmReader(const std::shared_ptr<pm_fixture::Driv
     return [driver](const std::string &name, std::vector<std::uint8_t> &bytes, std::size_t maximum) { return driver->read(name, bytes, maximum); };
 }
 
+static std::shared_ptr<HardwareAccess> intelMemoryAccess(const std::shared_ptr<intel_memory_fixture::Device> &device) {
+    struct Adapter : octool::core::HardwareBackend {
+        std::shared_ptr<intel_memory_fixture::Device> d;
+        explicit Adapter(std::shared_ptr<intel_memory_fixture::Device> value) : d(std::move(value)) {}
+        Reply execute(const Request &r) override { return d->execute(r); }
+        CpuIdReply cpuid(unsigned cpu,std::uint32_t leaf,std::uint32_t sub) override { return d->cpuid(cpu,leaf,sub); }
+        octool::core::Backend backend(Space s) const override { return d->backend(s); }
+    };
+    return std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(new Adapter(device)));
+}
+
 class Regression : public QObject {
     Q_OBJECT
 private slots:
+    void intelMemoryOfflineSnapshot() {
+        using namespace octool::core;
+        Reference reference; IntelMemoryPanel panel(reference.access(),nullptr,130); panel.resize(1250,1100); panel.show();
+        auto snapshot = decodeIntelMemory({},intel_memory_fixture::registers());
+        const auto bytes = QByteArray::fromStdString(intelMemoryJson(snapshot)); QVERIFY(panel.loadCapture(bytes));
+        auto *table = panel.findChild<QTableWidget *>("imcTable"); QCOMPARE(table->rowCount(),30);
+        QCOMPARE(table->item(0,0)->text(),QString("tCL")); QCOMPARE(table->item(0,1)->text(),QString("36"));
+        QCOMPARE(table->item(5,0)->text(),QString("tWRPRE")); QCOMPARE(table->item(5,1)->text(),QString("80"));
+        QCOMPARE(table->item(7,1)->text(),QString("Not used")); QCOMPARE(table->item(13,1)->text(),QString("24000"));
+        QCOMPARE(table->item(22,1)->text(),QString("70")); QCOMPARE(table->item(25,1)->text(),QString("10"));
+        panel.findChild<QPushButton *>("imcCopy")->click();
+        const auto copied = QApplication::clipboard()->text().toUtf8(); QVERIFY(parseIntelMemoryCapture(copied.toStdString()).valid);
+        QVERIFY(panel.loadCapture("{\"schema_version\":1,\"command\":\"intel-memory-decode\",\"ok\":true,\"error\":0,\"data\":{\"memory\":"+copied+"}}"));
+        QCOMPARE(panel.captureBytes(),copied); QCOMPARE(reference.calls.load(),0);
+        auto *status = panel.findChild<QLabel *>("imcStatus"); QVERIFY(status->text().contains("Offline"));
+        QTRY_VERIFY(status->height() >= status->heightForWidth(status->width()));
+        QTRY_VERIFY(table->viewport()->rect().contains(table->visualItemRect(table->item(29,1))));
+        const auto shot = qEnvironmentVariable("OCTOOL_INTEL_MEMORY_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        auto v = intel_memory_fixture::registers(0); v[2].raw |= UINT64_C(1)<<30;
+        QVERIFY(panel.loadCapture(QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},v)))));
+        QCOMPARE(table->item(7,1)->text(),QString("4")); QCOMPARE(table->item(11,1)->text(),QString("Not used"));
+        QCOMPARE(table->item(0,2)->text(),QString("Encoded")); QVERIFY(status->text().contains("overrides"));
+    }
+    void intelMemoryInvalidCaptureClearsOldValues() {
+        using namespace octool::core;
+        Reference reference; IntelMemoryPanel panel(reference.access());
+        const auto good = QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},intel_memory_fixture::registers())));
+        auto *table = panel.findChild<QTableWidget *>("imcTable");
+        for (const auto &bad : QList<QByteArray>{"{}",good+"x",good.left(good.size()-1),QByteArray(65537,' '),"{\"schema_version\":1,\"ok\":false}"}) {
+            QVERIFY(panel.loadCapture(good)); QVERIFY(!panel.loadCapture(bad)); QCOMPARE(table->rowCount(),0);
+            QVERIFY(panel.captureBytes().isEmpty()); QVERIFY(!panel.findChild<QPushButton *>("imcCopy")->isEnabled());
+            QVERIFY(!panel.findChild<QPushButton *>("imcSave")->isEnabled());
+        }
+        for (unsigned target = 0; target < 3; ++target) {
+            QVERIFY(panel.loadCapture(good));
+            if (!target) panel.findChild<QLineEdit *>("imcCpu")->setText("131");
+            else panel.findChild<QComboBox *>(target == 1 ? "imcController" : "imcChannel")->setCurrentIndex(1);
+            QCOMPARE(table->rowCount(),0); QVERIFY(panel.captureBytes().isEmpty());
+        }
+        QCOMPARE(reference.calls.load(),0);
+    }
+    void intelMemoryLiveReadsAndFailures() {
+        auto device = std::make_shared<intel_memory_fixture::Device>();
+        IntelMemoryPanel panel(intelMemoryAccess(device),nullptr,130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("imcRead"); auto *table = panel.findChild<QTableWidget *>("imcTable");
+        for (int failure : {0,5,6,7,10,16,21,36}) {
+            *device = intel_memory_fixture::Device(); read->click(); QTRY_VERIFY(read->isEnabled());
+            QCOMPARE(table->rowCount(),30); QVERIFY(panel.findChild<QPushButton *>("imcCopy")->isEnabled());
+            QVERIFY(!octool::core::parseIntelMemoryCapture(panel.captureBytes().toStdString()).error);
+            *device = intel_memory_fixture::Device(); device->failRead = failure;
+            read->click(); QCOMPARE(table->rowCount(),0); QTRY_VERIFY(read->isEnabled());
+            QCOMPARE(table->rowCount(),0); QVERIFY(panel.captureBytes().isEmpty()); QCOMPARE(device->writes,0u);
+            QVERIFY(panel.findChild<QLabel *>("imcStatus")->text().contains("Read failed"));
+        }
+    }
+    void intelMemoryTargetAndCpuGates() {
+        auto device = std::make_shared<intel_memory_fixture::Device>(); IntelMemoryPanel panel(intelMemoryAccess(device),nullptr,130);
+        auto *read = panel.findChild<QPushButton *>("imcRead");
+        panel.findChild<QLineEdit *>("imcCpu")->setText("not a CPU"); read->click(); QCOMPARE(device->cpuCalls,0u);
+        panel.findChild<QLineEdit *>("imcCpu")->setText("130"); device->model = 0xba;
+        read->click(); QTRY_VERIFY(read->isEnabled()); QVERIFY(device->requests.empty());
+        *device = intel_memory_fixture::Device(); device->channel = 1; device->memory[0xd800] = 0;
+        panel.findChild<QComboBox *>("imcChannel")->setCurrentIndex(1); read->click(); QTRY_VERIFY(read->isEnabled());
+        QCOMPARE(device->reads,6u); QCOMPARE(panel.findChild<QTableWidget *>("imcTable")->rowCount(),0);
+    }
+    void intelMemoryReadLifetimeAndTargetChange() {
+        struct Gate { std::atomic<bool> entered{false}, release{false}; };
+        for (bool close : {false,true}) {
+            auto gate = std::make_shared<Gate>(); auto device = std::make_shared<intel_memory_fixture::Device>();
+            device->afterRequest = [gate](const Request &) {
+                if (gate->entered.exchange(true)) return;
+                const auto deadline = std::chrono::steady_clock::now()+std::chrono::seconds(3);
+                while (!gate->release && std::chrono::steady_clock::now()<deadline) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            };
+            std::weak_ptr<intel_memory_fixture::Device> alive = device;
+            auto *panel = new IntelMemoryPanel(intelMemoryAccess(device),nullptr,130); device.reset();
+            panel->findChild<QPushButton *>("imcRead")->click(); QTRY_VERIFY(gate->entered.load());
+            QVERIFY(!panel->loadCapture("{}"));
+            if (close) { delete panel; QVERIFY(!alive.expired()); gate->release = true; QTRY_VERIFY(alive.expired()); }
+            else {
+                panel->findChild<QComboBox *>("imcChannel")->setCurrentIndex(1); gate->release = true;
+                QTRY_VERIFY(panel->findChild<QPushButton *>("imcRead")->isEnabled());
+                QCOMPARE(panel->findChild<QTableWidget *>("imcTable")->rowCount(),0);
+                QVERIFY(panel->findChild<QLabel *>("imcStatus")->text().contains("discarded")); delete panel;
+            }
+        }
+    }
+
     void pmOfflineRoundtripAndUnits() {
         using namespace octool::core;
         QTemporaryDir directory; QVERIFY(directory.isValid());
@@ -256,6 +357,8 @@ private slots:
         IntelVfPanel vf(access,nullptr,7);
         IntelTurboPanel turbo(access,nullptr,7);
         IntelUncorePanel uncore(access,nullptr,7);
+        IntelMemoryPanel imc(access,nullptr,7);
+        QCOMPARE(imc.findChild<QTableWidget *>("imcTable")->rowCount(),0);
         QCOMPARE(reference.calls.load(),0);
         QCOMPARE(intel.findChild<QLineEdit *>("intelCpu")->text(),QString("7"));
         QCOMPARE(amd.findChild<QLineEdit *>("smuCpu")->text(),QString("7"));

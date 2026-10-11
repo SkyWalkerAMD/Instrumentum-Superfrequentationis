@@ -1,5 +1,10 @@
 # 平台功能恢复增量（2026-10-10）
 
+<!-- intel-memory-pending -->
+2026-10-11：GUI / CLI 同步新增 [Raptor Lake-S 内存时序读取与快照](intel-memory.md)。
+限定 CPUID B7 / PCI A700、DDR4/DDR5 通道规则；读取 30 个时序字段，特殊 Gear 模式保留编码。
+云端完整编译、回归与安装包验证进行中；目标真机与全部原版功能仍未完成。
+
 <!-- ddr4-asymmetric-57924bb -->
 2026-10-11：最新验证生产提交 `57924bb`，GUI / CLI 同步完成已确认的 **DDR4 非对称容量**：
 SDP/DDP rank 分配、离散密度等级与两组 3DS 层数分别计算，显示容量分项和合计。

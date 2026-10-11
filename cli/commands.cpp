@@ -12,6 +12,7 @@
 #include "core/intel_oc.h"
 #include "core/intel_turbo.h"
 #include "core/intel_uncore.h"
+#include "core/intel_memory.h"
 #include "core/spd.h"
 #include "platform/linux_inventory_native.h"
 #include "platform/linux_amd_pm.h"
@@ -82,6 +83,7 @@ struct Command {
     std::uint32_t pmVersion = 0;
     AmdPmOptions pmOptions;
     SmuTarget smu; SmuCommand message; UmcTarget umc;
+    IntelMemoryTarget memory;
     Request reg;
     IntelOcDomain domain = IntelOcDomain::Core;
     IntelOcVoltageMode mode = IntelOcVoltageMode::Adaptive;
@@ -90,10 +92,11 @@ struct Command {
 Command parse(const std::vector<std::string> &args) {
     Command c; c.name = args.at(0);
     const std::set<std::string> hardware = {"cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read", "intel-vf-set", "intel-turbo-read", "intel-turbo-set",
-        "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
+        "intel-memory-read", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
+    const bool memoryOffline = c.name == "intel-memory-decode";
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
     const bool pm = c.name == "amd-pm-read" || c.name == "amd-pm-decode";
-    require(hardware.count(c.name) || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || pm, "Unknown command: " + c.name);
+    require(hardware.count(c.name) || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || memoryOffline || pm, "Unknown command: " + c.name);
     std::set<std::string> keys = {"--json"};
     if (hardware.count(c.name)) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
@@ -124,7 +127,8 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "spd-decode") keys.insert("--file");
     if (pm) keys.insert("--bclk-mhz");
     if (c.name == "amd-pm-decode") { keys.insert("--file"); keys.insert("--version"); }
-    if (umcOffline) keys.insert("--file");
+    if (umcOffline || memoryOffline) keys.insert("--file");
+    if (c.name == "intel-memory-read") { keys.insert("--controller"); keys.insert("--channel"); }
     if (c.name == "amd-umc-diff") keys.insert("--compare");
     Options options;
     for (std::size_t i = 1; i < args.size(); ++i) {
@@ -219,7 +223,8 @@ Command parse(const std::vector<std::string> &args) {
         c.value = decimal(get(options, "--value")); std::uint32_t encoded = 0;
         require(!encodeIntelOcOffset(c.value, 0, encoded), "V/F offset is out of range");
     }
-    c.smu.cpu = c.umc.cpu = c.cpu;
+    c.smu.cpu = c.umc.cpu = c.memory.cpu = c.cpu;
+    if (c.name == "intel-memory-read") { c.memory.controller = uintOption(options,"--controller",1); c.memory.channel = uintOption(options,"--channel",1); }
     if (smu || c.name == "amd-umc-read") {
         c.smu.bus = c.umc.bus = optional(options, "--bus", 255);
         c.smu.device = c.umc.device = optional(options, "--device", 31);
@@ -256,7 +261,7 @@ Command parse(const std::vector<std::string> &args) {
             require(amdPmTableSize(c.pmVersion) != 0, "Unsupported exact PM table version");
         }
     }
-    if (umcOffline) {
+    if (umcOffline || memoryOffline) {
         c.path = get(options, "--file"); require(!c.path.empty(), "Empty snapshot path");
         if (c.name == "amd-umc-diff") { c.otherPath = get(options, "--compare"); require(!c.otherPath.empty(), "Empty comparison path"); }
     }
@@ -527,6 +532,13 @@ Result hardware(const Command &c, HardwareSession &s) {
             out.data.push_back({"ccd_in_socket", number(t.ccdInSocket)}); out.data.push_back({"core_in_ccd", number(t.coreInCcd)});
             out.data.push_back({"thread_in_core", number(t.threadInCore)});
         }
+    } else if (c.name == "intel-memory-read") {
+        const auto r = readIntelMemory(s,c.memory); out.error = r.error;
+        out.data.push_back({"identity",identity(r.identity)});
+        out.data.push_back({"controller",number(c.memory.controller)}); out.data.push_back({"channel",number(c.memory.channel)});
+        out.data.push_back({"pci",pci(0,0,0)}); out.data.push_back({"pci_identity",r.valid ? hex(r.pciIdentity) : "null"});
+        out.data.push_back({"mchbar",r.valid ? hex(r.mchbar,16) : "null"});
+        out.data.push_back({"memory",intelMemoryJson(r)});
     } else if (c.name == "amd-umc-read") {
         const auto r = readAmdUmc(s, c.umc); out.error = r.error;
         out.data.push_back({"pci", pci(c.umc.bus, c.umc.device, c.umc.function)});
@@ -718,6 +730,12 @@ Result execute(const Command &c, const BackendFactory &factory) {
     } else if (c.name == "spd-decode") {
         std::vector<std::uint8_t> bytes; out.error = platform::readBoundedFile(c.path, bytes);
         out.data.push_back({"spd", spd(c.path, bytes, out.error)});
+    } else if (c.name == "intel-memory-decode") {
+        std::vector<std::uint8_t> bytes; out.error = platform::readBoundedFile(c.path,bytes,65536);
+        IntelMemorySnapshot snapshot;
+        if (!out.error) { snapshot = parseIntelMemoryCapture(std::string(bytes.begin(),bytes.end())); out.error = snapshot.error; }
+        out.data = {{"offline","true"},{"hardware_accessed","false"},{"path",quote(c.path)},
+            {"detail",quote(snapshot.detail)},{"memory",intelMemoryJson(snapshot)}};
     } else if (c.name == "amd-umc-decode" || c.name == "amd-umc-diff") {
         out = offlineUmc(c);
     } else if (c.name == "amd-pm-read" || c.name == "amd-pm-decode") {
@@ -747,6 +765,8 @@ Usage: octool-cli COMMAND [OPTIONS]
   intel-vf-read --cpu N --domain core|cache [--point 1..15 [--for-edit]]
   intel-vf-set --cpu N --domain core|cache --point 1..15 --value MV --apply
   intel-turbo-read --cpu N --core-type p|e
+  intel-memory-read --cpu N --controller 0|1 --channel 0|1
+  intel-memory-decode --file SNAPSHOT   Decode the shared GUI/CLI snapshot offline
   intel-uncore-read --cpu N
   intel-uncore-set --cpu N --minimum-ratio MIN --maximum-ratio MAX --apply
   intel-turbo-set --cpu N --core-type p|e --group 0..7 --value RATIO --apply

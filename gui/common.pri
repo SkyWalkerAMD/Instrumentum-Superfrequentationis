@@ -50,4 +50,6 @@ linux {
 } else {
     error("The GUI requires an implemented OS backend. The portable core builds independently with CMake.")
 }
+SOURCES += $$PWD/core/intel_memory.cpp $$PWD/intelmemorypanel.cpp
+HEADERS += $$PWD/core/intel_memory.h $$PWD/intelmemorypanel.h
 INCLUDEPATH += $$PWD

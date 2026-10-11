@@ -34,6 +34,7 @@ def stage_cli(stage, binary):
     copy(ROOT / "docs/spd-profile-geometry.md", stage / "usr/share/doc/octool-cli/spd-profile-geometry.md")
     copy(ROOT / "docs/spd-asymmetric.md", stage / "usr/share/doc/octool-cli/spd-asymmetric.md")
     copy(ROOT / "docs/ddr4-asymmetric.md", stage / "usr/share/doc/octool-cli/ddr4-asymmetric.md")
+    copy(ROOT / "docs/intel-memory.md", stage / "usr/share/doc/octool-cli/intel-memory.md")
     copy(ROOT / "docs/turbo-thresholds.md", stage / "usr/share/doc/octool-cli/turbo-thresholds.md")
     copy(ROOT / "docs/spd-user-enhanced.md", stage / "usr/share/doc/octool-cli/spd-user-enhanced.md")
     copy(ROOT / "docs/amd-pm-recovery.md", stage / "usr/share/doc/octool-cli/amd-pm-recovery.md")

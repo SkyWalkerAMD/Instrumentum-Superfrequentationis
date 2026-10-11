@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "date": "2026-10-11",
+  "official_pdf": {
+    "url": "https://cdrdv2-public.intel.com/743846/743846-001.pdf",
+    "bytes": 5087799,
+    "sha256": "714e415546d36e2d1bc8832bf94db817b48085224d54bebe252b16e1e48081f7",
+    "retrieved": "2026-10-11",
+    "title": "13th Generation Intel Core Processor Datasheet Volume 2; formerly Raptor Lake-S",
+    "document": "743846-001",
+    "revision": "001",
+    "published": "2022-10",
+    "pages": 836,
+    "sections": [
+      "3.1.4",
+      "3.2",
+      "3.2.46",
+      "3.2.70",
+      "3.2.71",
+      "3.2.72",
+      "3.2.73",
+      "3.2.74",
+      "3.2.75",
+      "3.2.80",
+      "3.2.82",
+      "3.2.90",
+      "3.2.94"
+    ],
+    "visually_inspected_printed_pages": [
+      143,
+      144,
+      145,
+      147,
+      148
+    ],
+    "numeric_facts": {
+      "mchbar_pci_offset": "0x48",
+      "base_bits": [
+        17,
+        41
+      ],
+      "enable_bit": 0,
+      "controller_stride": "0x10000",
+      "channel_stride": "0x800",
+      "ddr4_channels_per_controller": 1,
+      "ddr5_channels_per_controller": 2,
+      "ddr_type_offset": "0xd800",
+      "rank_occupancy_offset": "0xe454",
+      "scheduler_offset": "0xe088"
+    }
+  },
+  "linux_pci_reference": {
+    "repository": "torvalds/linux",
+    "ref": "v6.12",
+    "path": "arch/x86/events/intel/uncore_snb.c",
+    "blob": "3934e1e4e3b166415e88892ed6819816570c9771",
+    "symbol": "PCI_DEVICE_ID_INTEL_RPL_1_IMC",
+    "value": "0xa700"
+  },
+  "implementation_scope": {
+    "cpuid_family": 6,
+    "cpuid_model": 183,
+    "pci_vendor": "0x8086",
+    "pci_device": "0xa700",
+    "physical_hardware_validated": false,
+    "register_count": 11,
+    "field_count": 30,
+    "write_operations": 0
+  },
+  "exclusions": [
+    "mobile datasheet 764981 not used to authorize desktop accesses",
+    "no tWR from tWRPRE substitution",
+    "no assumed Gear override scaling",
+    "no motherboard DIMM-label inference",
+    "no timing writes or training commands"
+  ]
+}

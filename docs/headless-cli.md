@@ -1,5 +1,8 @@
 # 无桌面版 OCTool
 
+GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-decode`
+同步新增 [Raptor Lake-S 内存控制器时序与快照](intel-memory.md)，限定 B7/A700。
+
 新增 `intel-turbo-set --field active-cores`，只编辑中间活动组阈值，详见[输入与读回规则](turbo-thresholds.md)。
 `spd-decode` / `inventory` 同时支持 [DDR5 混合 rank 容量分项](spd-asymmetric.md)。
 另支持 [DDR4 已确认的非对称 Rank 布局](ddr4-asymmetric.md)，包括独立的密度等级和 SDP/DDP/3DS 规则。
