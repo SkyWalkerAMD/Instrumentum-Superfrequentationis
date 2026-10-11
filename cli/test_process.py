@@ -34,16 +34,18 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 313, len(reports)
+assert len(reports) == 327, len(reports)
 spd_reports = [r for r in reports if r["command"] == "spd-decode" and "spd" in r["data"]]
-assert len(spd_reports) == 54
+assert len(spd_reports) == 68
 assert [r["ok"] for r in spd_reports] == [True, False, False, False, True, False, True, True, False,
                                         True, False, False, False, True, False, True, False, False, False,
                                         True, True, False, False, False, False, True, True, False, False,
                                         True, True, False, True, True,
                                         True, True, True, False, True, True, True, False,
                                         True, True, True, True, True, True, False,
-                                        True, True, True, True, False]
+                                        True, True, True, True, False,
+                                        True, True, False, False, True, True, True, True, True, False,
+                                        True, True, True, True]
 for i, r in enumerate(spd_reports):
     xmp = r["data"]["spd"]["xmp"]
     assert not xmp["active_configuration_measured"]
@@ -149,13 +151,13 @@ for i in (0, 29, 30, 31, 32, 33):
             assert values[name+" minimum"] == {"name": name+" minimum", "unit": "ps", "value": ps}
             assert values[name+" cycle lower limit"] == {"name": name+" cycle lower limit", "unit": "nCK", "value": ck}
         assert values["tRFC1 minimum"]["unit"] == "ns" and values["tRFC1 minimum"]["value"] == 295
-for i, report in enumerate(spd_reports):
+for i, report in enumerate(spd_reports[:54]):
     data = report["data"]["spd"]
     cas = data["cas"]
     if i in (8, 41, 48, 53):
         assert cas is None
     elif i in (38, 46):
-        assert cas == {"decoded": False, "offset": 24, "raw_hex": "8101000080", "reserved_bits_set": None, "latencies_nck": None}
+        assert cas == {"decoded": False, "offset": 24, "raw_hex": "8101000080", "encoding": None, "reserved_bits_set": None, "latencies_nck": None}
     elif data["memory_type"] == 12:
         assert cas["decoded"] and cas["offset"] == 20
         assert cas["reserved_bits_set"] is (i == 40)
@@ -164,8 +166,13 @@ for i, report in enumerate(spd_reports):
         assert cas["decoded"] and cas["offset"] == 24 and not cas["reserved_bits_set"]
         assert cas["latencies_nck"] == ([] if i == 34 else [20, 34, 36, 98])
     for slot, profile in enumerate(data["xmp"]["profiles"]):
-        if data["memory_type"] == 12 or profile["error"] or not profile["enabled"]:
+        assert profile["recommended_dimms_per_channel"] == (1 if data["memory_type"] == 12 and profile["enabled"] else None)
+        if profile["error"] or not profile["enabled"]:
             assert profile["cas"] is None and profile["command_rate"] is None
+            continue
+        if data["memory_type"] == 12:
+            assert profile["cas"] == {"decoded": True, "offset": 397+47*slot, "raw_hex": "00000000", "encoding": "xmp2-cl7-24", "reserved_bits_set": False, "latencies_nck": []}
+            assert profile["command_rate"] is None
             continue
         cas, rate = profile["cas"], profile["command_rate"]
         expected = [22+2*slot, 40+2*slot, 98-2*slot]
@@ -203,6 +210,29 @@ for i in range(42, 54):
             assert [fields[name] for name in ddr4_names] == list(map(str, expected))
         if i == 52:
             assert data["cas"]["decoded"] and len(data["xmp"]["profiles"][0]["values"]) == 13
+for i in range(54, 68):
+    data = spd_reports[i]["data"]["spd"]
+    fields = {f["name"]: f["value"] for f in data["fields"]}
+    assert len(fields) == len(data["fields"])
+    if i < 58 or i >= 64:
+        for slot, p in enumerate(data["xmp"]["profiles"]):
+            assert p["recommended_dimms_per_channel"] == (None if i == 55 and slot == 0 else (2, 4)[slot])
+            assert p["command_rate"] is None and not p["crc"]["checked"]
+            if (i in (55, 56) and slot == 0) or (i == 57 and slot == 1):
+                assert p["cas"] is None
+            else:
+                assert p["cas"]["encoding"] == "xmp2-cl7-24" and p["cas"]["latencies_nck"] == ([9, 11, 12, 14, 15, 17], [7, 24])[slot]
+                assert p["cas"]["reserved_bits_set"] == bool(slot)
+        if i >= 64:
+            assert fields.get("Module capacity (MiB)") == {64: "12288", 65: "98304", 66: "24576"}.get(i)
+    else:
+        assert fields.get("Module capacity (MiB)") == {58: "393216", 60: "786432"}.get(i)
+        assert fields.get("Subchannels per module") == {58: "4", 60: "8"}.get(i)
+        assert fields.get("SPD tRFC1 different logical rank minimum (ns)") == (None if i in (62, 63) else "321")
+        if i != 63:
+            assert all(p["recommended_dimms_per_channel"] is None and p["cas"]["encoding"] == "ddr5-cl20-98" for p in data["xmp"]["profiles"])
+        else:
+            assert data["crc_checked"] and not data["crc_valid"] and data["cas"] is None
 assert len([r for r in reports if r["error"] == -22]) >= 132
 uncore = [r for r in reports if r["command"] in ("intel-uncore-read", "intel-uncore-set") and "before" in r["data"]]
 assert len(uncore) == 16

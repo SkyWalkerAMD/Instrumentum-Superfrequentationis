@@ -279,7 +279,7 @@ void smuTimeouts() {
 void spdAndPstateBits() {
     const std::uint8_t crcVector[]={'1','2','3','4','5','6','7','8','9'};
     assert(spdCrc16(crcVector,9)==0x31c3); // CRC-16/XMODEM published check value.
-    std::vector<std::uint8_t> bytes(236); bytes[2]=0x12; bytes[3]=2; bytes[4]=4; bytes[6]=0x20; bytes[234]=8; bytes[235]=2;
+    std::vector<std::uint8_t> bytes(236); bytes[1]=0x10; bytes[192]=0x10; bytes[2]=0x12; bytes[3]=2; bytes[4]=4; bytes[6]=0x20; bytes[234]=8; bytes[235]=2;
     auto s=decodeSpd(bytes); assert(!s.error && s.memoryType==0x12 && !s.crcChecked);
     assert(s.fields[3].value=="2" && s.fields[4].value=="8" && s.fields[5].value=="32");
     bytes.resize(235); assert(decodeSpd(bytes).error==-EMSGSIZE);
@@ -287,13 +287,13 @@ void spdAndPstateBits() {
     bytes[2]=0xff; assert(decodeSpd(bytes).error==-ENOTSUP);
     // Published Advantech AQD-SD5V16GE48-SB base bytes 0..47 and geometry.
     // Other bytes deliberately zeroed: this is a derived fixture, not a dump.
-    // Expected CRC 0x2145 was calculated separately with Python crc_hqx.
+    // Common revision is 1.0; CRC 0x2baf was calculated with Python crc_hqx.
     const std::uint8_t base[] = {
         0x30,0x10,0x12,0x03,0x04,0x00,0x20,0x62,0,0,0,0,0x70,0,0,0,
         0,0,0,0,0xa0,1,0xf2,3,0x7a,0x0d,0,0,0,0,0x80,0x3e,
         0x80,0x3e,0x80,0x3e,0,0x7d,0x80,0xbb,0x30,0x75,0x27,1,0xa0,0,0x82,0};
     bytes.assign(512,0); std::copy(std::begin(base),std::end(base),bytes.begin());
-    bytes[235]=0x2a; bytes[510]=0x45; bytes[511]=0x21;
+    bytes[192]=0x10; bytes[235]=0x2a; bytes[510]=0xaf; bytes[511]=0x2b;
     s=decodeSpd(bytes); assert(!s.error && s.crcChecked && s.crcValid);
     auto field=[&](const char *name) { for (const auto &v:s.fields) if (v.name==name) return v.value; return std::string(); };
     assert(field("SDRAM device width (bits)")=="8" && field("Subchannels per module")=="2");

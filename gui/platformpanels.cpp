@@ -327,6 +327,7 @@ MemoryBoardPanel::MemoryBoardPanel(QWidget *parent) : QWidget(parent) {
         "XMP 3.0 secondary timings include separate ps and nCK lower limits. "
         "CAS support lists and XMP command rates describe stored requirements. "
         "Base SPD also includes write delays and revision-specific secondary timings. "
+        "Supported symmetric geometry includes stacked packages; XMP 2.0 reports recommended DIMMs per channel. "
         "XMP 2.0 has no profile checksum; DDR5 profiles include CRC checks. "
         "EXPO enhanced timings are not decoded. "
         "Timing writes, PMIC / VRM controls and board-specific clocks are not yet recovered.",layout,this);
@@ -365,6 +366,7 @@ void MemoryBoardPanel::showSpd(const QString &path,const QByteArray &bytes,const
         if (!cas.decoded) {
             append(table_,{group,"Supported CAS latencies","Not decoded","nCK","Unsupported SPD revision",path}); return;
         }
+        append(table_,{group,"CAS encoding",QString::fromStdString(cas.encoding),"",integrity,path});
         const QString status = cas.reservedBitsSet ? "Reserved bit set; defined bits listed" : integrity;
         if (cas.latencies.empty()) append(table_,{group,"Supported CAS latencies","None encoded","nCK",status,path});
         // Keep the list readable without widening the entire table for forty CLs.
@@ -391,6 +393,7 @@ void MemoryBoardPanel::showSpd(const QString &path,const QByteArray &bytes,const
         else append(table_,{group,"Stored profile",p.enabled ? "Enabled" : "Disabled","",status,path});
         if (p.timebaseRaw >= 0) append(table_,{group,"Timebase byte",QString("0x%1").arg(p.timebaseRaw,2,16,QChar('0')),"hex",
             (p.timebaseRaw & 15) ? "Unsupported timebase" : "125 ps MTB / 1 ps FTB",path});
+        if (p.recommendedDimmsPerChannel >= 0) append(table_,{group,"Recommended DIMMs per channel",QString::number(p.recommendedDimmsPerChannel),"DIMMs","Stored recommendation; installed count not measured",path});
         if (p.crc.checked) append(table_,{group,"CRC stored / computed",QString("%1 / %2").arg(p.crc.stored,4,16,QChar('0')).arg(p.crc.computed,4,16,QChar('0')), "", status, path});
         showCas(p.cas,group,status);
         if (p.commandRate.captured) {

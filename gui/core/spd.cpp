@@ -9,17 +9,21 @@ namespace {
 unsigned word(const std::vector<std::uint8_t> &b, unsigned offset) {
     return unsigned(b[offset]) | (unsigned(b[offset + 1]) << 8);
 }
-SpdCas casBitmap(const std::vector<std::uint8_t> &b, unsigned offset, bool ddr5, bool revisionKnown) {
+enum class CasEncoding { Ddr4Base, Xmp2, Ddr5 };
+SpdCas casBitmap(const std::vector<std::uint8_t> &b, unsigned offset, CasEncoding encoding, bool revisionKnown) {
     SpdCas out;
+    const bool ddr5 = encoding == CasEncoding::Ddr5, xmp2 = encoding == CasEncoding::Xmp2;
     const unsigned size = ddr5 ? 5 : 4;
     if (offset > b.size() || b.size() - offset < size) return out;
     out.captured = true; out.offset = offset;
     out.raw.assign(b.begin() + offset, b.begin() + offset + size);
     if (!revisionKnown) return out;
     out.decoded = true;
-    out.reservedBitsSet = !ddr5 && (b[offset + 3] & 0x40) != 0;
-    const unsigned first = ddr5 ? 20 : (b[offset + 3] & 0x80) ? 23 : 7;
-    const unsigned bits = ddr5 ? 40 : 30, step = ddr5 ? 2 : 1;
+    out.encoding = ddr5 ? "ddr5-cl20-98" : xmp2 ? "xmp2-cl7-24" : "ddr4-base-range";
+    out.reservedBitsSet = xmp2 ? (b[offset+2] & 0xfc) != 0 || b[offset+3] != 0 :
+        !ddr5 && (b[offset + 3] & 0x40) != 0;
+    const unsigned first = ddr5 ? 20 : !xmp2 && (b[offset + 3] & 0x80) ? 23 : 7;
+    const unsigned bits = ddr5 ? 40 : xmp2 ? 18 : 30, step = ddr5 ? 2 : 1;
     for (unsigned bit = 0; bit < bits; ++bit)
         if (b[offset + bit / 8] & (1u << (bit % 8))) out.latencies.push_back(first + step * bit);
     return out;
@@ -59,6 +63,7 @@ SpdXmp decodeXmp2(const std::vector<std::uint8_t> &b) {
         p.index = i + 1; p.offset = 393 + 47 * i;
         p.enabled = (out.enabledMask & (1u << i)) != 0;
         p.timebaseRaw = b[388 + i];
+        if (p.enabled) p.recommendedDimmsPerChannel = 1 + ((out.configurationRaw >> (2 + 2*i)) & 3);
         if (b.size() >= p.offset + 47)
             p.raw.assign(b.begin() + p.offset, b.begin() + p.offset + 47);
         if (p.enabled) {
@@ -86,6 +91,7 @@ SpdXmp decodeXmp2(const std::vector<std::uint8_t> &b) {
                     p.values.push_back({names[t], "ps", unsigned(ps)});
                 }
                 if (p.error) p.values.clear();
+                else p.cas = casBitmap(b, off + 4, CasEncoding::Xmp2, true);
             }
         }
         // Base CRC does not cover any XMP 2.0 byte. Never mark these profiles
@@ -154,7 +160,7 @@ SpdXmp decodeXmp3(const std::vector<std::uint8_t> &b) {
                         p.values.push_back({std::string(secondary[t]) + " minimum", "ps", word(b, off)});
                         p.values.push_back({std::string(secondary[t]) + " cycle lower limit", "nCK", b[off + 2]});
                     }
-                    p.cas = casBitmap(b, p.offset + 7, true, true);
+                    p.cas = casBitmap(b, p.offset + 7, CasEncoding::Ddr5, true);
                     p.commandRate.captured = true;
                     p.commandRate.raw = b[p.offset + 60];
                     p.commandRate.code = p.commandRate.raw & 15;
@@ -232,7 +238,7 @@ SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &b) {
         if (!out.crcValid) { out.error = -EILSEQ; return out; }
     }
     number("SPD revision (encoded)", b[1]);
-    out.cas = casBitmap(b, ddr5 ? 24 : 20, ddr5, (b[1] >> 4) == 1);
+    out.cas = casBitmap(b, ddr5 ? 24 : 20, ddr5 ? CasEncoding::Ddr5 : CasEncoding::Ddr4Base, (b[1] >> 4) == 1);
     const unsigned type = b[3] & 15;
     add("Module type", type == 1 ? "RDIMM" : type == 2 ? "UDIMM" : type == 3 ? "SO-DIMM" : type == 4 ? "LRDIMM" : "Encoding " + std::to_string(type));
     const unsigned ranks = 1 + ((b[ddr5 ? 234 : 12] >> 3) & 7);
@@ -240,16 +246,30 @@ SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &b) {
     // Advantech AQD-SD5V16GE48-SB: byte 6 = 0x20 describes x8 devices.
     const unsigned widthCode = ddr5 ? b[6] >> 5 : b[12] & 7;
     const unsigned busCode = b[ddr5 ? 235 : 13] & 7;
-    number(ddr5 ? "Package ranks per channel" : "Package ranks", ranks);
-    if (widthCode <= 3) number("SDRAM device width (bits)", 4u << widthCode);
-    if (busCode <= 3) number(ddr5 ? "Primary bus width per channel (bits)" : "Primary bus width (bits)", 8u << busCode);
+    const bool baseLayout = (b[1] >> 4) == 1;
+    const bool moduleLayout = baseLayout && (!ddr5 || (b[192] >> 4) == 1);
+    if (moduleLayout) number(ddr5 ? "Package ranks per channel" : "Package ranks", ranks);
+    if (baseLayout && widthCode <= 3) number("SDRAM device width (bits)", 4u << widthCode);
+    if (moduleLayout && busCode <= 3) number(ddr5 ? "Primary bus width per channel (bits)" : "Primary bus width (bits)", 8u << busCode);
     if (!ddr5) {
         number("Bus extension (encoded)", (b[13] >> 3) & 3);
-        // Only symmetric monolithic packages. 3DS/asymmetric module capacity
-        // cannot be obtained from the simple rank multiplier.
-        if (!(b[6] & 0x80) && !(b[12] & 0x40) && (b[4] & 15) <= 7 && widthCode <= 3 && busCode <= 3 && busCode+1 >= widthCode) {
-            const unsigned density = 256u << (b[4] & 15);
-            number("Module capacity (MiB)", density/8 * ((8u << busCode)/(4u << widthCode)) * ranks);
+        static const unsigned densities[] = {256,512,1024,2048,4096,8192,16384,32768,12288,24576};
+        const unsigned density = b[4] & 15;
+        if (baseLayout && density < 10) number("SDRAM density per die (Mbit)", densities[density]);
+        number("SDRAM package type (encoded)", b[6] >> 7);
+        number("Package die count (encoded)", (b[6] >> 4) & 7);
+        const unsigned dies = 1 + ((b[6] >> 4) & 7), loading = b[6] & 3;
+        if (baseLayout) number("Package die count", dies);
+        number("Signal loading (encoded)", b[6] & 3);
+        if (moduleLayout) add("Rank organization", (b[12] & 0x40) ? "Asymmetric" : "Symmetric");
+        const bool monolithic = !(b[6] & 0x80), stacked = !monolithic && dies >= 2 && (loading == 1 || loading == 2);
+        if (baseLayout) add("SDRAM package", monolithic ? "Monolithic" : loading == 1 ? "Multi-load stack" : loading == 2 ? "3DS" : "Unknown signal loading");
+        // Multi-load stacks already express their additional ranks in byte 12.
+        // Single-load 3DS packages instead multiply by the number of dies.
+        if (moduleLayout && !(b[12] & 0x40) && !(b[6] & 12) &&
+            ((monolithic && dies == 1 && loading == 0) || stacked) &&
+            density < 10 && widthCode <= 3 && busCode <= 3 && busCode+1 >= widthCode) {
+            number("Module capacity (MiB)", densities[density]/8 * ((8u << busCode)/(4u << widthCode)) * ranks * (stacked && loading == 2 ? dies : 1));
         }
         if ((b[1] >> 4) == 1 && !(b[17] & 15)) {
             // DDR4's defined time bases are 125 ps and a signed 1 ps
@@ -279,16 +299,26 @@ SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &b) {
     } else {
         static const unsigned densities[] = {0, 4, 8, 12, 16, 24, 32, 48, 64};
         const unsigned density = b[4] & 31;
-        if (density < sizeof(densities)/sizeof(densities[0]) && densities[density]) number("First SDRAM density per die (Gbit)", densities[density]);
-        number("Package die count (encoded)", b[4] >> 5);
-        const unsigned channels = 1 + (b[235] >> 5), extension = (b[235] >> 3) & 3;
-        number("Subchannels per module", channels);
-        if (extension <= 2) number("Bus extension per subchannel (bits)", extension*4);
-        // Restrict capacity to symmetric, monolithic packages. Mixed-density
-        // ranks and stacked packages need a different capacity calculation.
-        if (!(b[234] & 0x40) && !(b[4] & 0xe0) && density < 9 && densities[density] &&
+        if (baseLayout && density < sizeof(densities)/sizeof(densities[0]) && densities[density]) number("First SDRAM density per die (Gbit)", densities[density]);
+        const unsigned package = b[4] >> 5, channelCode = b[235] >> 5;
+        const unsigned dies[] = {1,2,2,4,8,16};
+        const char *packages[] = {"Monolithic", "Dual-die package", "2H 3DS", "4H 3DS", "8H 3DS", "16H 3DS"};
+        number("Package die count (encoded)", package);
+        if (baseLayout && package < 6) { number("Package die count", dies[package]); add("SDRAM package", packages[package]); }
+        number("Module geometry revision (encoded)", b[192]);
+        if (moduleLayout) add("Rank organization", (b[234] & 0x40) ? "Asymmetric" : "Symmetric");
+        else add("Module geometry", "Unsupported base or common revision");
+        // The channel field is an exponent (1,2,4,8), not an additive count.
+        // Codes 4..7 are reserved, so no capacity may be inferred from them.
+        const unsigned channels = channelCode < 4 ? 1u << channelCode : 0, extension = (b[235] >> 3) & 3;
+        number("Subchannels per module (encoded)", channelCode);
+        if (moduleLayout && channels) number("Subchannels per module", channels);
+        if (moduleLayout && extension <= 2) number("Bus extension per subchannel (bits)", extension*4);
+        // DDP ranks already count the separate loads. 3DS logical ranks also
+        // include the dies per package. Asymmetric ranks need both geometries.
+        if (moduleLayout && channels && !(b[234] & 0x40) && package < 6 && density < 9 && densities[density] &&
             widthCode <= 3 && busCode <= 3 && busCode+1 >= widthCode) {
-            number("Module capacity (MiB)", densities[density]*128 * ((8u << busCode)/(4u << widthCode)) * ranks * channels);
+            number("Module capacity (MiB)", densities[density]*128 * ((8u << busCode)/(4u << widthCode)) * ranks * channels * (package >= 2 ? dies[package] : 1));
         }
         // JEDEC base timing requirements stored in SPD, not measured timings
         // or a decoded XMP/EXPO profile. Only the defined revision-1 layout.
@@ -301,6 +331,11 @@ SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &b) {
             for (unsigned i = 0; i < sizeof(offsets)/sizeof(offsets[0]); ++i) {
                 const unsigned off = offsets[i], value = unsigned(b[off]) | (unsigned(b[off+1]) << 8);
                 if (value) number(names[i], value);
+            }
+            if (package >= 2 && package <= 5) {
+                number("SPD tRFC1 different logical rank minimum (ns)", word(b,48));
+                number("SPD tRFC2 different logical rank minimum (ns)", word(b,50));
+                number("SPD tRFCsb different logical rank minimum (ns)", word(b,52));
             }
             // Base SPD has a different order and offset from XMP. Keep the
             // stored ps and nCK requirements separate, including zero values.

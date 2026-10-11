@@ -542,6 +542,7 @@ std::string spd(const std::string &path, const std::vector<std::uint8_t> &bytes,
         std::vector<std::string> latencies;
         for (auto cl : cas.latencies) latencies.push_back(number(cl));
         return object({{"decoded", boolean(cas.decoded)}, {"offset", number(cas.offset)}, {"raw_hex", rawHex(cas.raw)},
+            {"encoding", cas.decoded ? quote(cas.encoding) : "null"},
             {"reserved_bits_set", cas.decoded ? boolean(cas.reservedBitsSet) : "null"},
             {"latencies_nck", cas.decoded ? array(latencies) : "null"}});
     };
@@ -556,6 +557,7 @@ std::string spd(const std::string &path, const std::vector<std::uint8_t> &bytes,
             {"blocked_by_expo", boolean(p.blockedByExpo)}, {"error", number(p.error)},
             {"name_supported", boolean(p.nameSupported)}, {"name_valid", p.nameSupported ? boolean(p.nameValid) : "null"},
             {"name", p.nameValid ? quote(p.name) : "null"}, {"timebase_raw", p.timebaseRaw >= 0 ? number(p.timebaseRaw) : "null"},
+            {"recommended_dimms_per_channel", p.recommendedDimmsPerChannel >= 0 ? number(p.recommendedDimmsPerChannel) : "null"},
             {"crc", crcJson(p.crc)}, {"raw_hex", raw.empty() ? "null" : quote(raw)}, {"values", array(values)},
             {"cas", casJson(p.cas)}, {"command_rate", !p.commandRate.captured ? "null" : object({
                 {"raw", number(p.commandRate.raw)}, {"code", number(p.commandRate.code)},

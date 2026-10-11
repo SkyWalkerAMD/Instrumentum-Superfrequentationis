@@ -1073,7 +1073,82 @@ private slots:
         QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
         QCOMPARE(table->item(row("SPD","Supported CAS latencies"),2)->text(),QString("23, 32, 46, 52"));
         QVERIFY(table->item(row("SPD","Supported CAS latencies"),4)->text().contains("Reserved bit set"));
-        QCOMPARE(row("XMP 1","Supported CAS latencies"),-1); QCOMPARE(row("XMP 1","Command rate"),-1);
+        QCOMPARE(table->item(row("XMP 1","Supported CAS latencies"),2)->text(),QString("None encoded")); QCOMPARE(row("XMP 1","Command rate"),-1);
+    }
+    void spdXmp2RecommendationsAndCas() {
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("xmp2-metadata.spd");
+        auto bytes = octool::test::spdProfileGeometryFixture(false);
+        const auto save = [&] { QFile file(path); if (!file.open(QIODevice::WriteOnly)) return false;
+            return file.write(reinterpret_cast<const char *>(bytes.data()),qint64(bytes.size())) == qint64(bytes.size()); };
+        MemoryBoardPanel panel; panel.resize(1280,1050); panel.show();
+        auto *table = panel.findChild<QTableWidget *>("inventoryTable"); QVERIFY(table);
+        const auto row = [&](const QString &group, const QString &name) {
+            for (int i = 0; i < table->rowCount(); ++i)
+                if (table->item(i,0)->text() == group && table->item(i,1)->text() == name) return i;
+            return -1;
+        };
+        const auto value = [&](const QString &group, const QString &name, int col = 2) {
+            const int i = row(group,name); return i < 0 ? QString() : table->item(i,col)->text();
+        };
+        QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(value("XMP 1","Recommended DIMMs per channel"),QString("2"));
+        QCOMPARE(value("XMP 2","Recommended DIMMs per channel"),QString("4"));
+        QVERIFY(value("XMP 1","Recommended DIMMs per channel",4).contains("installed count not measured"));
+        QCOMPARE(value("XMP 1","Supported CAS latencies"),QString("9, 11, 12, 14, 15, 17"));
+        QCOMPARE(value("XMP 2","Supported CAS latencies"),QString("7, 24"));
+        QCOMPARE(value("XMP 2","CAS encoding"),QString("xmp2-cl7-24"));
+        QVERIFY(value("XMP 2","Supported CAS latencies",4).contains("Reserved bit set"));
+        QCOMPARE(row("XMP 1","Command rate"),-1);
+        QTest::qWait(50); table->scrollToItem(table->item(row("XMP 1","Stored profile"),0),QAbstractItemView::PositionAtTop);
+        const auto shot = qEnvironmentVariable("OCTOOL_XMP2_METADATA_TEST_SCREENSHOT");
+        if (!shot.isEmpty()) { QTest::qWait(50); QVERIFY(panel.grab().save(shot)); }
+        bytes[388] = 1; QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("XMP 1","Supported CAS latencies"),-1); QCOMPARE(value("XMP 1","Recommended DIMMs per channel"),QString("2"));
+        QCOMPARE(value("XMP 2","Supported CAS latencies"),QString("7, 24"));
+        bytes[386] &= ~1u; QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("XMP 1","Recommended DIMMs per channel"),-1);
+        bytes = octool::test::spdFixture(); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("XMP 2","Recommended DIMMs per channel"),-1);
+        QCOMPARE(value("XMP 1","CAS encoding"),QString("ddr5-cl20-98"));
+    }
+    void spdStackedGeometryAndRevisionChanges() {
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("geometry.spd");
+        auto bytes = octool::test::spdProfileGeometryFixture(true);
+        const auto save = [&] { QFile file(path); if (!file.open(QIODevice::WriteOnly)) return false;
+            return file.write(reinterpret_cast<const char *>(bytes.data()),qint64(bytes.size())) == qint64(bytes.size()); };
+        MemoryBoardPanel panel; panel.resize(1280,1050); panel.show();
+        auto *table = panel.findChild<QTableWidget *>("inventoryTable"); QVERIFY(table);
+        const auto row = [&](const QString &name) {
+            for (int i = 0; i < table->rowCount(); ++i)
+                if (table->item(i,0)->text() == "SPD" && table->item(i,1)->text() == name) return i;
+            return -1;
+        };
+        const auto value = [&](const QString &name, int col = 2) {
+            const int i = row(name); return i < 0 ? QString() : table->item(i,col)->text();
+        };
+        QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(value("Module capacity (MiB)"),QString("393216"));
+        QCOMPARE(value("SDRAM package"),QString("4H 3DS"));
+        QCOMPARE(value("Package die count"),QString("4"));
+        QCOMPARE(value("Subchannels per module"),QString("4"));
+        QCOMPARE(value("SPD tRFC1 different logical rank minimum (ns)"),QString("321"));
+        QCOMPARE(value("SPD tRFC2 different logical rank minimum (ns)"),QString("234"));
+        QCOMPARE(value("SPD tRFCsb different logical rank minimum (ns)"),QString("123"));
+        QTest::qWait(50); table->scrollToTop();
+        const auto shot = qEnvironmentVariable("OCTOOL_GEOMETRY_TEST_SCREENSHOT");
+        if (!shot.isEmpty()) { QTest::qWait(50); QVERIFY(panel.grab().save(shot)); }
+        bytes[192] = 0x20; octool::test::spdSeal(bytes,0,510); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("Module capacity (MiB)"),-1); QCOMPARE(row("Subchannels per module"),-1);
+        QCOMPARE(value("SPD tRFC1 different logical rank minimum (ns)"),QString("321"));
+        bytes[1] = 0x20; octool::test::spdSeal(bytes,0,510); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("SPD tRFC1 different logical rank minimum (ns)"),-1);
+        bytes = octool::test::spdProfileGeometryFixture(true); bytes[235] = 0x82;
+        octool::test::spdSeal(bytes,0,510); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("Subchannels per module"),-1); QCOMPARE(row("Module capacity (MiB)"),-1);
+        bytes = octool::test::spdProfileGeometryFixture(true); bytes.resize(236); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(value("Module capacity (MiB)",4),QString("CRC not verified"));
+        bytes = octool::test::spdProfileGeometryFixture(true); bytes[48] ^= 1; QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("Module capacity (MiB)"),-1); QCOMPARE(row("SPD tRFC1 different logical rank minimum (ns)"),-1);
     }
     void spdBaseTimingValuesAndRevisionChanges() {
         QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("base-timings.spd");

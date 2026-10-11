@@ -10,6 +10,7 @@ GUI Memory / Motherboard 和 CLI `spd-decode` / `inventory` 共用解码，新�
 |---|---|---|
 | DDR4 基础 SPD | 20..23 | bits 0..29；bit 31 为 0 时 CL7..36，为 1 时 CL23..52 |
 | DDR5 基础 SPD | 24..28 | bits 0..39，对应 CL20..98，步长 2 |
+| XMP 2.0 档案 | 档案内 4..7 | bits 0..17 对应 CL7..24，其余位保留，不使用基础 SPD 的范围位 |
 | XMP 3.0 厂家档案 | 档案内 7..11 | 与 DDR5 基础区相同，对三个档案独立处理 |
 
 字节内从最低位开始排列。DDR4 bit 30 是保留位，单独报告，不解释为 CL37/53。
@@ -31,7 +32,7 @@ XMP 档案内 byte 60 的低四位是命令率代码：0 表示未指定；1/2/3
 `data.spd.cas` 和 `data.spd.xmp.profiles[].cas`：
 
 - 未解码区域、校验失败或未启用档案为 `null`。
-- 捕获后包含 `offset`、`raw_hex`、`decoded`、`reserved_bits_set`、`latencies_nck`。
+- 捕获后包含 `offset`、`raw_hex`、`decoded`、`encoding`、`reserved_bits_set`、`latencies_nck`。
 - 未知基础修订版保留原值，后两个解释字段为 `null`；合法零位图的列表是 `[]`。
 - 列表为升序数字，单位 nCK。位图只表达支持集合，不指定当前使用其中哪一项。
 
@@ -57,7 +58,8 @@ GUI 每行最多显示六个 CL，避免长列表撑宽表格；复制快照保�
 及 [命令率访问器](https://github.com/edlf/DDR5SPDEditor/blob/6c9d015098f3f25e636ff7402cf955d4cc7fa2cd/xmp3.cpp)
 提供扩展格式事实。未复制或链接这些上游实现。
 
-DDR4 XMP 的旧 Intel 字段定义只命名 CL7..24，而公开编辑器解释至 CL30 并把第四字节
-列为未知。本轮没有把新 JEDEC 基础位图布局直接套给 DDR4 XMP；其完整原始档案仍保留。
-每通道 DIMM 数、XMP 用户档案、EXPO 增强时序、当前训练值、SPD/主板写入仍未还原。
+DDR4 XMP 现按 Intel 公开字段定义限定解码 CL7..24，显式标识 `xmp2-cl7-24`；
+其余位仍保留并报告，不能把基础区范围选择位套给它。头部推荐 DIMM 数也已支持，
+见[档案元数据与组织](spd-profile-geometry.md)。XMP 3.0 推荐 DIMM 数、XMP 用户档案、
+EXPO 增强时序、当前训练值、SPD/主板写入仍未还原。
 此项功能不进行硬件写入、内存训练或稳定性测试。

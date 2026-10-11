@@ -14,7 +14,7 @@ inline void spdSeal(std::vector<std::uint8_t> &b, unsigned start, unsigned count
 // voltage and name to catch slot addressing errors in both frontends.
 inline std::vector<std::uint8_t> spdFixture() {
     std::vector<std::uint8_t> b(1024);
-    b[1] = 0x10; b[2] = 0x12; b[3] = 2; b[4] = 4; b[6] = 0x20; b[235] = 0x22;
+    b[1] = 0x10; b[2] = 0x12; b[3] = 2; b[4] = 4; b[6] = 0x20; b[192] = 0x10; b[235] = 0x22;
     b[24] = 0x81; b[25] = 1; b[28] = 0x80; // CL20,34,36,98; distinct from XMP.
     spdWord(b, 20, 416); spdWord(b, 30, 16000); spdSeal(b, 0, 510);
     b[640] = 0x0c; b[641] = 0x4a; b[642] = 0x30; b[643] = 7;
@@ -85,6 +85,20 @@ inline std::vector<std::uint8_t> spdDdr4XmpFixture() {
     return b;
 }
 // Distinct base timing markers, not a hardware dump or suggested settings.
+inline std::vector<std::uint8_t> spdProfileGeometryFixture(bool ddr5) {
+    auto b = ddr5 ? spdFixture() : spdDdr4XmpFixture();
+    if (ddr5) {
+        b[4] = 0x65; // 24 Gbit, 4H 3DS; two package ranks per subchannel.
+        b[234] = 8; b[235] = 0x4a; // Four 32-bit subchannels, four ECC bits each.
+        spdWord(b,48,321); spdWord(b,50,234); spdWord(b,52,123);
+        spdSeal(b,0,510);
+    } else {
+        b[386] = 0x37; // Enabled profiles recommend two / four DIMMs per channel.
+        b[397] = 0xb4; b[398] = 5; // Published XMP 2.0 example: CL9,11,12,14,15,17.
+        b[444] = 1; b[446] = 2; b[447] = 0x80; // CL7,24 plus a reserved bit, not a range switch.
+    }
+    return b;
+}
 inline std::vector<std::uint8_t> spdBaseTimingsFixture(bool ddr5) {
     auto b = ddr5 ? spdFixture() : spdDdr4XmpFixture();
     if (ddr5) {

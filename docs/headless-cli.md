@@ -55,6 +55,9 @@ XMP 3.0 每个有效厂家档案有 30 项数值，含 8 项次级时序及其�
 
 新增独立的[CAS 列表与命令率元数据](spd-cas-recovery.md)：基础 `cas` 以及 XMP 3.0 档案的
 `cas` / `command_rate`。未知版本/代码与空位图区分，不据此推断当前训练值。
+DDR4 XMP 另含[限定 CAS 编码、推荐 DIMM 数](spd-profile-geometry.md)，`cas.encoding` 标识位图定义，
+`recommended_dimms_per_channel` 是头部推荐值或 null。基础字段支持对称堆叠容量、DDR5 1/2/4/8
+子通道及 3DS 不同逻辑 rank 刷新下限；未知组织版本/保留编码不输出容量。
 档案启用位不表示 BIOS 已套用；XMP/EXPO 值不代表当前训练值，EXPO 增强时序和档案写入仍未实现。
 
 CPU 硬件命令必须明确指定 `--cpu`，从 `diagnose` 的 `data.allowed_cpus` 选择。

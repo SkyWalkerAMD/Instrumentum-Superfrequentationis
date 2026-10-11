@@ -525,7 +525,7 @@ void offlineSpdDoesNotCreateBackend() {
     struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
     unsigned opens = 0;
     const auto factory = [&]() { ++opens; return std::unique_ptr<HardwareBackend>(); };
-    for (unsigned scenario = 0; scenario < 54; ++scenario) {
+    for (unsigned scenario = 0; scenario < 68; ++scenario) {
         auto bytes = octool::test::spdFixture();
         int expected = 0;
         if (scenario == 1) { bytes[720] ^= 1; expected = 3; }
@@ -606,6 +606,21 @@ void offlineSpdDoesNotCreateBackend() {
         }
         if (scenario == 52) { bytes[17] = 1; octool::test::spdSeal(bytes,0,126); }
         if (scenario == 53) { bytes[41] ^= 1; expected = 3; }
+        if (scenario >= 54) bytes = octool::test::spdProfileGeometryFixture(false);
+        if (scenario == 55) bytes[386] &= ~1u;
+        if (scenario == 56) { bytes[388] = 1; expected = 3; }
+        if (scenario == 57) { bytes.resize(440); expected = 3; }
+        if (scenario >= 58) bytes = octool::test::spdProfileGeometryFixture(true);
+        if (scenario == 59) { bytes[192] = 0x20; octool::test::spdSeal(bytes,0,510); }
+        if (scenario == 60 || scenario == 61) { bytes[235] = std::uint8_t(scenario == 60 ? 0x62 : 0x82); octool::test::spdSeal(bytes,0,510); }
+        if (scenario == 62) { bytes[1] = 0x20; octool::test::spdSeal(bytes,0,510); }
+        if (scenario == 63) { bytes[48] ^= 1; expected = 3; }
+        if (scenario >= 64) {
+            bytes = octool::test::spdProfileGeometryFixture(false); bytes[4] = std::uint8_t(scenario == 64 ? 8 : 9);
+            if (scenario == 65 || scenario == 66) bytes[6] = std::uint8_t(scenario == 65 ? 0xb2 : 0xb1);
+            if (scenario == 67) bytes[1] = 0x20;
+            octool::test::spdSeal(bytes,0,126);
+        }
         std::ofstream file(path,std::ios::binary);
         file.write(reinterpret_cast<const char *>(bytes.data()), std::streamsize(bytes.size())); file.close(); assert(file);
         std::ostringstream out; assert(run({"spd-decode", "--file", path},out,factory) == expected);

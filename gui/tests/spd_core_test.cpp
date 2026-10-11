@@ -376,7 +376,7 @@ void casAndCommandCaptureGates() {
     assert(!r.error && r.cas.captured && !r.cas.decoded && r.cas.latencies.empty() && r.cas.raw.size() == 5);
     assert(r.xmp.profiles[0].cas.decoded); // XMP has its own revision.
     b = spdDdr4XmpFixture(); b[17] = 15; spdSeal(b,0,126); r = decodeSpd(b);
-    assert(r.cas.decoded && !r.xmp.profiles[0].cas.captured && !r.xmp.profiles[0].commandRate.captured);
+    assert(r.cas.decoded && r.xmp.profiles[0].cas.decoded && !r.xmp.profiles[0].commandRate.captured);
     for (unsigned scenario = 0; scenario < 5; ++scenario) {
         b = spdFixture();
         if (scenario == 0) b[711] ^= 1;
@@ -571,6 +571,145 @@ void ddr4SignedTimingsAndBounds() {
     b.resize(4096); assert(!decodeSpd(b).xmp.error);
     b.resize(4097); assert(decodeSpd(b).error == -EINVAL);
 }
+void xmp2CasEncoding() {
+    const auto original = spdProfileGeometryFixture(false), referenceBytes = original;
+    const auto reference = decodeSpd(original);
+    assert(reference.xmp.profiles[0].cas.latencies == std::vector<unsigned>({9,11,12,14,15,17}));
+    assert(reference.xmp.profiles[1].cas.latencies == std::vector<unsigned>({7,24}));
+    assert(reference.xmp.profiles[1].cas.reservedBitsSet);
+    for (unsigned slot = 0; slot < 2; ++slot) for (unsigned byte = 0; byte < 4; ++byte) for (unsigned code = 0; code < 256; ++code) {
+        auto b = original; const unsigned off = 397+47*slot;
+        std::fill(b.begin()+off,b.begin()+off+4,std::uint8_t(0)); b[off+byte] = std::uint8_t(code);
+        const auto r = decodeSpd(b); const auto &p = r.xmp.profiles[slot]; std::vector<unsigned> expected;
+        for (unsigned bit = 0; bit < 8; ++bit) if (byte*8+bit < 18 && (code & (1u << bit))) expected.push_back(7+byte*8+bit);
+        assert(!r.error && !p.error && p.cas.decoded && p.cas.encoding == "xmp2-cl7-24");
+        assert(p.cas.offset == off && p.cas.raw.size() == 4 && p.cas.latencies == expected);
+        assert(p.cas.reservedBitsSet == ((byte == 2 && (code & 252)) || (byte == 3 && code)));
+        assert(p.values.size() == 13 && !p.commandRate.captured && !p.crc.checked);
+        assert(r.cas.latencies == reference.cas.latencies && r.xmp.profiles[1-slot].cas.raw == reference.xmp.profiles[1-slot].cas.raw);
+    }
+    assert(original == referenceBytes);
+}
+void xmp2DimmsRecommendations() {
+    for (unsigned flags = 0; flags < 256; ++flags) {
+        auto b = spdProfileGeometryFixture(false); b[386] = std::uint8_t(flags); const auto r = decodeSpd(b);
+        for (unsigned slot = 0; slot < 2; ++slot) {
+            const auto &p = r.xmp.profiles[slot];
+            const unsigned divisor = slot ? 16 : 4;
+            assert(p.recommendedDimmsPerChannel == (p.enabled ? int((flags/divisor)%4)+1 : -1));
+            assert(p.cas.decoded == p.enabled);
+        }
+    }
+    for (unsigned scenario = 0; scenario < 5; ++scenario) {
+        auto b = spdProfileGeometryFixture(false);
+        if (scenario == 0) b.resize(393);
+        if (scenario == 1) b[388] = 1;
+        if (scenario == 2) b[396] = b[431] = 0;
+        if (scenario == 3) b[386] &= ~1u;
+        if (scenario == 4) b[387] = 0x21;
+        const auto r = decodeSpd(b);
+        if (scenario == 4) { assert(r.xmp.profiles.empty()); continue; }
+        const auto &p = r.xmp.profiles[0]; assert(!p.cas.captured && p.values.empty());
+        assert(p.recommendedDimmsPerChannel == (scenario == 3 ? -1 : 2));
+        if (scenario) assert(r.xmp.profiles[1].recommendedDimmsPerChannel == 4 && r.xmp.profiles[1].cas.decoded);
+    }
+    for (const auto &p : decodeSpd(spdFixture()).xmp.profiles) assert(p.recommendedDimmsPerChannel == -1);
+}
+void ddr4DensityAndStacks() {
+    // x8 devices on a 64-bit bus, one package rank: capacity MiB equals Mbit/die.
+    const unsigned capacities[] = {256,512,1024,2048,4096,8192,16384,32768,12288,24576};
+    for (unsigned code = 0; code < 16; ++code) {
+        auto b = spdDdr4XmpFixture(); b[4] = std::uint8_t(code); spdSeal(b,0,126); const auto s = decodeSpd(b);
+        if (code < 10) assert(baseValue(s,"Module capacity (MiB)") == capacities[code]);
+        else assert(!baseField(s,"Module capacity (MiB)"));
+    }
+    for (unsigned code = 0; code < 256; ++code) {
+        auto b = spdDdr4XmpFixture(); b[6] = std::uint8_t(code); spdSeal(b,0,126); const auto s = decodeSpd(b);
+        const unsigned dies = (code/16)%8+1, load = code%4;
+        const bool valid = code == 0 || (code >= 128 && dies >= 2 && !(code & 12) && (load == 1 || load == 2));
+        assert(bool(baseField(s,"Module capacity (MiB)")) == valid);
+        if (valid) assert(baseValue(s,"Module capacity (MiB)") == 8192*(load == 2 ? dies : 1));
+    }
+    auto b = spdDdr4XmpFixture(); b[4] = 8; b[12] = 8; b[6] = 0xb2; spdSeal(b,0,126);
+    // 12 Gbit x4, 64-bit bus, two package ranks, four 3DS layers = 192 GiB.
+    assert(baseValue(decodeSpd(b),"Module capacity (MiB)") == 196608);
+    b[12] |= 0x40; spdSeal(b,0,126); assert(!baseField(decodeSpd(b),"Module capacity (MiB)"));
+}
+void ddr5DensityAndStacks() {
+    const unsigned capacities[] = {16384,16384,32768,65536,131072,262144};
+    for (unsigned package = 0; package < 8; ++package) {
+        auto b = spdFixture(); b[4] = std::uint8_t(4+package*32); spdSeal(b,0,510); const auto s = decodeSpd(b);
+        if (package < 6) assert(baseValue(s,"Module capacity (MiB)") == capacities[package]);
+        else assert(!baseField(s,"Module capacity (MiB)") && !baseField(s,"Package die count"));
+    }
+    assert(baseValue(decodeSpd(spdProfileGeometryFixture(true)),"Module capacity (MiB)") == 393216);
+    for (unsigned code = 0; code < 32; ++code) {
+        auto b = spdFixture(); b[4] = std::uint8_t(code); spdSeal(b,0,510); const auto s = decodeSpd(b);
+        const unsigned sizes[] = {0,4096,8192,12288,16384,24576,32768,49152,65536};
+        if (code && code < 9) assert(baseValue(s,"Module capacity (MiB)") == sizes[code]);
+        else assert(!baseField(s,"Module capacity (MiB)"));
+    }
+    auto b = spdProfileGeometryFixture(true); b[234] |= 0x40; spdSeal(b,0,510);
+    assert(!baseField(decodeSpd(b),"Module capacity (MiB)"));
+}
+void ddr5SubchannelsAndWidths() {
+    for (unsigned code = 0; code < 256; ++code) {
+        auto b = spdFixture(); b[235] = std::uint8_t(code); spdSeal(b,0,510); const auto s = decodeSpd(b);
+        const unsigned widths[] = {8,16,32,64}, channels[] = {1,2,4,8};
+        const unsigned bus = code%8, ch = code/32;
+        assert(bool(baseField(s,"Subchannels per module")) == (ch < 4));
+        if (ch < 4) assert(baseValue(s,"Subchannels per module") == channels[ch]);
+        assert(bool(baseField(s,"Module capacity (MiB)")) == (bus < 4 && ch < 4));
+        if (bus < 4 && ch < 4) assert(baseValue(s,"Module capacity (MiB)") == 2048*(widths[bus]/8)*channels[ch]);
+        const unsigned ecc = (code/8)%4;
+        assert(bool(baseField(s,"Bus extension per subchannel (bits)")) == (ecc < 3));
+    }
+    for (unsigned device = 0; device < 8; ++device) for (unsigned bus = 0; bus < 8; ++bus) {
+        auto b = spdFixture(); b[6] = std::uint8_t(device*32); b[235] = std::uint8_t(32+bus); spdSeal(b,0,510);
+        const auto s = decodeSpd(b);
+        assert(bool(baseField(s,"Module capacity (MiB)")) == (device < 4 && bus < 4 && device <= bus+1));
+    }
+}
+void ddr5LogicalRankRefresh() {
+    const char *names[] = {"SPD tRFC1 different logical rank minimum (ns)", "SPD tRFC2 different logical rank minimum (ns)", "SPD tRFCsb different logical rank minimum (ns)"};
+    for (unsigned package = 0; package < 8; ++package) {
+        auto b = spdProfileGeometryFixture(true); b[4] = std::uint8_t(4+32*package); spdSeal(b,0,510); const auto s = decodeSpd(b);
+        for (const auto name : names) assert(bool(baseField(s,name)) == (package >= 2 && package <= 5));
+    }
+    const unsigned expected[] = {321,234,123};
+    for (unsigned byte = 0; byte < 6; ++byte) for (unsigned code = 0; code < 256; ++code) {
+        auto b = spdProfileGeometryFixture(true); b[48+byte] = std::uint8_t(code); spdSeal(b,0,510); const auto s = decodeSpd(b);
+        for (unsigned i = 0; i < 3; ++i) {
+            unsigned value = expected[i];
+            if (byte/2 == i) value = byte%2 ? code*256 + value%256 : (value/256)*256+code;
+            assert(baseValue(s,names[i]) == value);
+        }
+    }
+    auto b = spdProfileGeometryFixture(true); std::fill(b.begin()+48,b.begin()+54,std::uint8_t(0)); spdSeal(b,0,510);
+    for (const auto name : names) assert(baseValue(decodeSpd(b),name) == 0);
+}
+void geometryRevisionGates() {
+    for (unsigned pos : {1u,192u}) for (unsigned revision = 0; revision < 256; ++revision) {
+        auto b = spdProfileGeometryFixture(true); b[pos] = std::uint8_t(revision); spdSeal(b,0,510); const auto s = decodeSpd(b);
+        const bool known = revision/16 == 1;
+        for (const auto name : {"Module capacity (MiB)","Package ranks per channel","Primary bus width per channel (bits)","Subchannels per module"})
+            assert(bool(baseField(s,name)) == known);
+        assert(bool(baseField(s,"SPD tRFC1 different logical rank minimum (ns)")) == (pos == 192 || known));
+        assert(s.xmp.profiles[0].cas.decoded && !s.xmp.error);
+    }
+    auto b = spdDdr4XmpFixture(); b[1] = 0x20; spdSeal(b,0,126); const auto s = decodeSpd(b);
+    assert(!baseField(s,"Module capacity (MiB)") && !baseField(s,"Package ranks") && s.xmp.profiles[0].cas.decoded);
+}
+void geometryCaptureAndIntegrity() {
+    auto b = spdProfileGeometryFixture(true); b.resize(236); auto s = decodeSpd(b);
+    assert(!s.crcChecked && baseValue(s,"Module capacity (MiB)") == 393216);
+    assert(baseValue(s,"SPD tRFC1 different logical rank minimum (ns)") == 321);
+    b.resize(235); s = decodeSpd(b); assert(s.error && s.fields.empty());
+    b = spdProfileGeometryFixture(true); b[48] ^= 1; s = decodeSpd(b);
+    assert(s.error == -EILSEQ && !baseField(s,"Module capacity (MiB)") && !s.xmp.inspected);
+    b = spdProfileGeometryFixture(false); b.resize(440); s = decodeSpd(b);
+    assert(s.xmp.profiles[0].cas.decoded && !s.xmp.profiles[1].cas.captured && s.xmp.profiles[1].recommendedDimmsPerChannel == 4);
+}
 void ddr4IntegrityAndTypeIsolation() {
     auto b = spdDdr4XmpFixture(); b[393] ^= 1;
     auto r = decodeSpd(b);
@@ -590,5 +729,7 @@ int main() {
     ddr4BaseWriteDelays(); ddr5BaseSecondaryValues(); ddr5BaseTimingByteBoundaries();
     baseTimingRevisionAndTimebaseGates(); baseTimingCaptureAndSectionIsolation();
     basePublicTimingExamples();
-    std::cout << "32 SPD XMP/EXPO scenario groups passed (capture lengths, CRC, base timings, revision gates, CAS and profiles)\n";
+    xmp2CasEncoding(); xmp2DimmsRecommendations(); ddr4DensityAndStacks(); ddr5DensityAndStacks();
+    ddr5SubchannelsAndWidths(); ddr5LogicalRankRefresh(); geometryRevisionGates(); geometryCaptureAndIntegrity();
+    std::cout << "40 SPD XMP/EXPO scenario groups passed (capture lengths, CRC, timings, revision gates, CAS, profiles and geometry)\n";
 }

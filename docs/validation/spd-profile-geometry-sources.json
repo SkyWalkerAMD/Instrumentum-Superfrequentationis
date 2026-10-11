@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "date": "2026-10-11",
+  "sources": [
+    {
+      "repo": "tianocore/edk2-platforms",
+      "ref": "9c9a4821e0866f219f1d03ba24a6a433ea408223",
+      "path": "Silicon/Intel/CoffeelakeSiliconPkg/SystemAgent/MemoryInit/Include/Coffeelake/MrcSpdData.h",
+      "sha": "45de5084c08011fd15a61a074ae06622a352bd77",
+      "bytes": 56881,
+      "sha256": "0bc1d51ee46f6ba4241084c5b55a96fb03bb2750f27c7f9d27d97f15b5d71d5c",
+      "url": "https://github.com/tianocore/edk2-platforms/blob/9c9a4821e0866f219f1d03ba24a6a433ea408223/Silicon/Intel/CoffeelakeSiliconPkg/SystemAgent/MemoryInit/Include/Coffeelake/MrcSpdData.h"
+    },
+    {
+      "path": "usr/src/lib/libjedec/common/spd_ddr4.h",
+      "sha": "7a67953a8540c3181fba4d30022a71881746b98f",
+      "repo": "illumos/illumos-gate",
+      "ref": "c029af224ebf0e25e82df1c2347a9c20c97102cd",
+      "url": "https://github.com/illumos/illumos-gate/blob/c029af224ebf0e25e82df1c2347a9c20c97102cd/usr/src/lib/libjedec/common/spd_ddr4.h",
+      "bytes": 26842,
+      "sha256": "7d5c2c0afb3a58f1a70a34c1d032373188c62dccf4fb0595f21fd9dc1111da16"
+    },
+    {
+      "path": "usr/src/lib/libjedec/common/spd_ddr5.h",
+      "sha": "2e2e7b4a63829b2633d1432bf4bf95680f0ed14d",
+      "repo": "illumos/illumos-gate",
+      "ref": "c029af224ebf0e25e82df1c2347a9c20c97102cd",
+      "url": "https://github.com/illumos/illumos-gate/blob/c029af224ebf0e25e82df1c2347a9c20c97102cd/usr/src/lib/libjedec/common/spd_ddr5.h",
+      "bytes": 34611,
+      "sha256": "a36f2598ad2d8978fb993c74c9a9474b75eaafdd5c0882bfbdcc09f7d9e43533"
+    },
+    {
+      "path": "usr/src/lib/libjedec/common/libjedec_spd_ddr4.c",
+      "sha": "e23cc59daeb86e8617f1b60deb45018c94a4ff07",
+      "repo": "illumos/illumos-gate",
+      "ref": "c029af224ebf0e25e82df1c2347a9c20c97102cd",
+      "url": "https://github.com/illumos/illumos-gate/blob/c029af224ebf0e25e82df1c2347a9c20c97102cd/usr/src/lib/libjedec/common/libjedec_spd_ddr4.c",
+      "bytes": 43914,
+      "sha256": "a17fbbad1538f7301da054f0fa9e36ae22691fd20c87ec1ae237030fb1ee6780"
+    },
+    {
+      "repo": "illumos/illumos-gate",
+      "ref": "c029af224ebf0e25e82df1c2347a9c20c97102cd",
+      "path": "usr/src/lib/libjedec/common/libjedec_spd_ddr5.c",
+      "sha": "d8feba09a5921c87d6c60fc4375412d3eea667a8",
+      "url": "https://github.com/illumos/illumos-gate/blob/c029af224ebf0e25e82df1c2347a9c20c97102cd/usr/src/lib/libjedec/common/libjedec_spd_ddr5.c",
+      "bytes": 74415,
+      "sha256": "cb8b80ff844d1572b3c299a3704dab47e9374c1d01beead348fd9aaae3ba0a5b"
+    },
+    {
+      "repo": "illumos/illumos-gate",
+      "ref": "c029af224ebf0e25e82df1c2347a9c20c97102cd",
+      "path": "usr/src/lib/fm/topo/modules/common/dimm/topo_dimm.c",
+      "sha": "987a92c9d22dd2a2d0cbe18c498068a615f2dfcf",
+      "url": "https://github.com/illumos/illumos-gate/blob/c029af224ebf0e25e82df1c2347a9c20c97102cd/usr/src/lib/fm/topo/modules/common/dimm/topo_dimm.c",
+      "bytes": 40262,
+      "sha256": "2852e3f289a7ab1f2d1055001947a757afeb41237f22c83e775d65378a3032d6"
+    }
+  ],
+  "scope": "Pinned format facts; independently implemented. No upstream source linked or copied into production. Synthetic test vectors, no target hardware measurements.",
+  "decisions": {
+    "xmp2_cas": "Intel SPD4_CAS_LATENCIES_SUPPORTED_STRUCT defines CL7..24 in bits 0..17; higher bits reserved. Does not apply base SPD range-selector semantics. Explicit encoding label exposes this limited map.",
+    "xmp2_dimms": "SPD_XMP_ORG_CONFIG: profile 1 bits 3:2 and profile 2 bits 5:4, code plus one. Recommended, not actual installed counts.",
+    "ddr5_channels": "SPD_DDR5_COM_BUS_WIDTH_NCHAN is exponent 0..3, 1/2/4/8 subchannels. Other codes reserved.",
+    "ddr4_density": "Codes 8/9 map to 12/24 Gbit, not powers of two.",
+    "stacked_capacity": "topo_dimm.c capacity rule counts die layers only for 3DS logical ranks; non-3DS counts package ranks without another die multiplier. Only symmetric layouts implemented here.",
+    "ddr5_3ds_refresh": "Base offsets 48/50/52: 16-bit little-endian ns, conditional on known 3DS package codes 2..5.",
+    "ddr5_revisions": "Base major 1 and common module major 1 independently gated; common SPD revision at offset 192 governs rank/bus/channel geometry, not base 3DS refresh.",
+    "deferred": "Asymmetric geometry, XMP 3.0 DIMM recommendations/user profiles, EXPO enhanced timings, active trained values and writes."
+  }
+}

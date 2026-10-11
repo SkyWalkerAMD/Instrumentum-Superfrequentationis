@@ -14,6 +14,7 @@ struct SpdQuantity { std::string name, unit; unsigned value; };
 struct SpdCas {
     bool captured = false, decoded = false, reservedBitsSet = false;
     unsigned offset = 0;
+    std::string encoding;
     std::vector<std::uint8_t> raw;
     std::vector<unsigned> latencies;
 };
@@ -25,6 +26,7 @@ struct SpdXmpProfile {
     unsigned index = 0, offset = 0;
     bool enabled = false, blockedByExpo = false, nameSupported = false, nameValid = false;
     int timebaseRaw = -1; // XMP 2.0 per-profile byte; absent for XMP 3.0.
+    int recommendedDimmsPerChannel = -1; // XMP 2.0 header, not installed DIMMs.
     int error = 0;
     std::string name;
     SpdCrc crc;
@@ -81,11 +83,12 @@ std::uint16_t spdCrc16(const std::uint8_t *bytes, std::size_t length);
 // Revision-1 base SPD and XMP 3.0 CAS bitmaps list supported requirements;
 // DDR4 base bit 30 is reserved, bit 31 selects CL7 or CL23 as the origin.
 // XMP 3.0 command-rate codes 1..3 mean 1N..3N; zero means unspecified.
-// DDR4 XMP CAS and DIMMs-per-channel semantics are not decoded.
+// XMP 2.0 CAS uses its own CL7..24 bitmap, not the base SPD range selector.
+// Its per-profile recommended DIMM count is independent of installed topology.
 // DDR4 XMP 2.0 profiles 1..2 have no extension CRC or descriptive names.
 // Their per-profile time bases must encode 125 ps MTB / signed 1 ps FTB.
 // Timings are stored requirements, never measured or currently trained values.
 // EXPO 1.0 basic profiles use a shared bundle CRC. XMP user slots and EXPO
-// enhanced timings, DIMMs-per-channel and other flag meanings are not decoded.
+// enhanced timings, XMP 3.0 DIMMs-per-channel and other flag meanings are not decoded.
 SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &bytes);
 } }
