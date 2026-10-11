@@ -1,10 +1,16 @@
 # 功能还原状态
 
-<!-- mixed-turbo-pending -->
-2026-10-11：GUI / CLI 同步新增 [Intel 中间分组活动核心阈值编辑](turbo-thresholds.md)
-和 [DDR5 混合 rank 容量分项](spd-asymmetric.md)。核心、两端测试已加入，云端验证待完成。
-保持末组阈值，保留倍率与其它组；DDR5 两组使用各自位宽和堆叠层数。
-原版全部功能和目标真机验收仍未完成；以下保留此前验证记录。
+<!-- mixed-turbo-6433918 -->
+2026-10-11：最新验证生产提交 `6433918`，GUI / CLI 同步完成 **Intel 中间组活动核心阈值编辑**
+和 **DDR5 混合 rank 容量分项**。保留末组阈值和全部倍率；两组内存分别使用自身位宽和堆叠层数。
+
+- [阈值规则](turbo-thresholds.md)、[混合内存](spd-asymmetric.md)、[验证交付](mixed-turbo-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38140350467) 4/4，各 185 场景组；SPD / PM / UMC 内存检查通过。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38140353378) 12/12，十目标各 15 CTest、392 份 JSON。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38140349232) 23/23，十目标各 77 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-mixed-turbo-6433918/`：30 个安装包、源码及 SHA256 校验文件。
+
+原版全部功能及目标真机验收尚未完成。以下保留历史记录。
 
 <!-- amd-pm-62e7bd8 -->
 2026-10-11：最新验证生产提交 `62e7bd8`，GUI / CLI 同步新增 **AMD PM 遥测与快照互通**。
@@ -225,7 +231,7 @@ PStates 写入、曲线写入、Intel server VF/fabric、板级专用控制等�
 
 `06b477c` 是此前 [Shimada 原始曲线查询](amd-curve-query-recovery.md)的历史版本，
 [当时验证](validation/amd-curve-recovery-ci-06b477c.json)为核心 4/4、Linux 23/23。
-最新生产版本以本页顶部为准，下表已更新到 `62e7bd8`。
+最新生产版本以本页顶部为准，下表已更新到 `6433918`。
 原版全部功能仍未完成。安装兼容、自动化回归、原指令研究和真实硬件验收分别记录，
 没有能代表四大模块全部功能的可靠百分比；212 个 UMC 字段也不是整个软件的功能分母。
 
