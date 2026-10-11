@@ -426,6 +426,56 @@ private slots:
         QCOMPARE(device->writes, 0u); QCOMPARE(panel.findChild<QTableWidget *>("turboTable")->rowCount(), 0);
         QVERIFY(panel.findChild<QLabel *>("turboStatus")->text().contains("No settings write"));
     }
+    void intelTurboThresholdEditing() {
+        auto *device = new IntelTurboFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelTurboPanel panel(access,nullptr,130); panel.resize(1240,700); panel.show();
+        auto *kind = panel.findChild<QComboBox *>("turboKind"), *field = panel.findChild<QComboBox *>("turboField"), *group = panel.findChild<QComboBox *>("turboGroup");
+        auto *value = panel.findChild<QLineEdit *>("turboRatio"); auto *apply = panel.findChild<QPushButton *>("turboApply");
+        auto *status = panel.findChild<QLabel *>("turboStatus");
+        kind->setCurrentIndex(1); panel.findChild<QPushButton *>("turboRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        group->setCurrentIndex(3); value->setText("40"); field->setCurrentIndex(1); QVERIFY(value->text().isEmpty());
+        group->setCurrentIndex(7); QVERIFY(!apply->isEnabled()); QVERIFY(!value->isEnabled()); QVERIFY(status->text().contains("last active"));
+        field->setCurrentIndex(0); QVERIFY(apply->isEnabled()); field->setCurrentIndex(1); group->setCurrentIndex(3);
+        const auto reads = device->reads; value->setText("10"); apply->click(); QCOMPARE(reads,device->reads); QCOMPARE(device->writes,0u);
+        value->setText("9");
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Cancel)->click(); });
+        apply->click(); QCOMPARE(reads,device->reads); QCOMPARE(device->writes,0u);
+        const auto before = device->regs;
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->writes,1u);
+        QCOMPARE(device->regs[0x651],UINT64_C(0x100e0c0a09060402)); QCOMPARE(device->regs[0x650],before.at(0x650));
+        QCOMPARE(device->regs[0x1ae],before.at(0x1ae)); QVERIFY(status->text().contains("all ratios")); QVERIFY(value->text().isEmpty());
+        auto *table = panel.findChild<QTableWidget *>("turboTable"); QCOMPARE(table->item(3,1)->text(),QString("9"));
+        QCOMPARE(table->item(7,1)->text(),QString("16")); QVERIFY(table->item(7,3)->text().contains("fixed"));
+        group->setCurrentIndex(3); value->setText("9");
+        const auto shot = qEnvironmentVariable("OCTOOL_TURBO_THRESHOLD_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->writes,1u); QVERIFY(status->text().contains("no write performed"));
+        kind->setCurrentIndex(0); QVERIFY(!apply->isEnabled()); QCOMPARE(table->rowCount(),0); QVERIFY(value->text().isEmpty());
+    }
+    void intelTurboThresholdFailuresClearSnapshot() {
+        for (unsigned mode = 0; mode < 3; ++mode) {
+            auto *device = new IntelTurboFixture;
+            auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+            IntelTurboPanel panel(access,nullptr,130); panel.show();
+            panel.findChild<QComboBox *>("turboKind")->setCurrentIndex(1);
+            panel.findChild<QPushButton *>("turboRead")->click(); QTRY_VERIFY(panel.isEnabled());
+            panel.findChild<QComboBox *>("turboField")->setCurrentIndex(1);
+            panel.findChild<QComboBox *>("turboGroup")->setCurrentIndex(3);
+            panel.findChild<QLineEdit *>("turboRatio")->setText("9");
+            if (mode == 0) device->regs[0x650] ^= UINT64_C(1)<<48;
+            if (mode == 1) device->discardChange = true;
+            if (mode == 2) device->afterRequest = [&](const octool::core::Request &r) { if (r.write) device->regs[0x650] ^= UINT64_C(1)<<48; };
+            QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+            panel.findChild<QPushButton *>("turboApply")->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(device->writes,mode == 0 ? 0u : 1u);
+            QCOMPARE(panel.findChild<QTableWidget *>("turboTable")->rowCount(),0);
+            QVERIFY(!panel.findChild<QPushButton *>("turboApply")->isEnabled());
+            QVERIFY(panel.findChild<QLabel *>("turboRaw")->text().isEmpty());
+            QVERIFY(panel.findChild<QLabel *>("turboStatus")->text().contains(mode == 0 ? "No settings write" : "not verified"));
+        }
+    }
     void intelVfEditPreparationAndTargetChanges() {
         auto *device = new IntelVfEditFixture;
         auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
@@ -1277,6 +1327,53 @@ private slots:
         QCOMPARE(value("Module capacity (MiB)",4),QString("CRC not verified"));
         bytes = octool::test::spdProfileGeometryFixture(true); bytes[48] ^= 1; QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
         QCOMPARE(row("Module capacity (MiB)"),-1); QCOMPARE(row("SPD tRFC1 different logical rank minimum (ns)"),-1);
+    }
+    void spdAsymmetricGeometry() {
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("mixed-ranks.spd");
+        auto bytes = octool::test::spdAsymmetricFixture();
+        const auto save = [&] { QFile file(path); if (!file.open(QIODevice::WriteOnly)) return false;
+            return file.write(reinterpret_cast<const char *>(bytes.data()),qint64(bytes.size())) == qint64(bytes.size()); };
+        MemoryBoardPanel panel; panel.resize(1350,1050); panel.show();
+        auto *table = panel.findChild<QTableWidget *>("inventoryTable");
+        const auto value = [&](const QString &name, int col = 2) {
+            for (int i = 0; i < table->rowCount(); ++i)
+                if (table->item(i,0)->text() == "SPD" && table->item(i,1)->text() == name) return table->item(i,col)->text();
+            return QString();
+        };
+        QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(value("Rank organization"),QString("Asymmetric"));
+        QCOMPARE(value("Second SDRAM density per die (Gbit)"),QString("16"));
+        QCOMPARE(value("Second SDRAM device width (bits)"),QString("16"));
+        QCOMPARE(value("Second SDRAM package"),QString("Monolithic"));
+        QCOMPARE(value("First geometry capacity (MiB)"),QString("196608"));
+        QCOMPARE(value("Second geometry capacity (MiB)"),QString("8192"));
+        QCOMPARE(value("Module capacity (MiB)"),QString("204800"));
+        QTest::qWait(50); table->scrollToTop();
+        const auto shot = qEnvironmentVariable("OCTOOL_ASYMMETRIC_TEST_SCREENSHOT"); if (!shot.isEmpty()) { QTest::qWait(50); QVERIFY(panel.grab().save(shot)); }
+        bytes[8] = 0; octool::test::spdSeal(bytes,0,510); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QVERIFY(value("Module capacity (MiB)").isEmpty()); QVERIFY(value("Second SDRAM density per die (Gbit)").isEmpty());
+        QVERIFY(value("Module capacity status").contains("Not decoded")); QCOMPARE(value("Second SDRAM density (encoded)"),QString("0"));
+        bytes = octool::test::spdAsymmetricFixture(); bytes[234] &= ~0x40; bytes[8] = 255; bytes[10] = 255;
+        octool::test::spdSeal(bytes,0,510); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(value("Module capacity (MiB)"),QString("294912")); QVERIFY(value("Second SDRAM package").isEmpty());
+        QVERIFY(value("Second geometry capacity (MiB)").isEmpty()); QVERIFY(value("Module capacity status").isEmpty());
+    }
+    void spdAsymmetricCaptureAndIntegrity() {
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("mixed-ranks.spd");
+        MemoryBoardPanel panel; auto *table = panel.findChild<QTableWidget *>("inventoryTable");
+        for (unsigned mode = 0; mode < 5; ++mode) {
+            auto bytes = octool::test::spdAsymmetricFixture();
+            if (mode == 0) bytes.resize(236);
+            if (mode == 1 || mode == 2) { bytes[mode == 1 ? 192 : 1] = 0x20; octool::test::spdSeal(bytes,0,510); }
+            if (mode == 3) bytes[8] ^= 1;
+            if (mode == 4) bytes.resize(235);
+            QFile file(path); QVERIFY(file.open(QIODevice::WriteOnly)); QCOMPARE(file.write(reinterpret_cast<const char *>(bytes.data()),qint64(bytes.size())),qint64(bytes.size())); file.close();
+            QVERIFY(panel.loadSpdFile(path)); bool capacity = false;
+            for (int i = 0; i < table->rowCount(); ++i) if (table->item(i,0)->text() == "SPD" && table->item(i,1)->text() == "Module capacity (MiB)") {
+                capacity = true; QCOMPARE(table->item(i,2)->text(),QString("204800")); QCOMPARE(table->item(i,4)->text(),QString("CRC not verified"));
+            }
+            QCOMPARE(capacity,mode == 0);
+        }
     }
     void spdBaseTimingValuesAndRevisionChanges() {
         QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("base-timings.spd");

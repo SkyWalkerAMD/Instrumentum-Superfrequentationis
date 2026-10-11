@@ -262,7 +262,7 @@ SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &b) {
     const bool ddr5 = b[2] == 0x12;
     if (b.size() < (ddr5 ? 236u : 128u)) { out.error = -EMSGSIZE; return out; }
     auto add = [&out](const std::string &name, const std::string &value) { out.fields.push_back({name, value}); };
-    auto number = [&add](const std::string &name, unsigned value) { add(name, std::to_string(value)); };
+    auto number = [&add](const std::string &name, std::uint64_t value) { add(name, std::to_string(value)); };
     add("Memory type", ddr5 ? "DDR5" : "DDR4");
     if (!ddr5 || b.size() >= 512) {
         out.crcChecked = true;
@@ -334,6 +334,8 @@ SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &b) {
         const unsigned density = b[4] & 31;
         if (baseLayout && density < sizeof(densities)/sizeof(densities[0]) && densities[density]) number("First SDRAM density per die (Gbit)", densities[density]);
         const unsigned package = b[4] >> 5, channelCode = b[235] >> 5;
+        const bool asymmetric = moduleLayout && (b[234] & 0x40);
+        const unsigned secondDensity = b[8] & 31, secondPackage = b[8] >> 5, secondWidth = b[10] >> 5;
         const unsigned dies[] = {1,2,2,4,8,16};
         const char *packages[] = {"Monolithic", "Dual-die package", "2H 3DS", "4H 3DS", "8H 3DS", "16H 3DS"};
         number("Package die count (encoded)", package);
@@ -347,12 +349,37 @@ SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &b) {
         number("Subchannels per module (encoded)", channelCode);
         if (moduleLayout && channels) number("Subchannels per module", channels);
         if (moduleLayout && extension <= 2) number("Bus extension per subchannel (bits)", extension*4);
-        // DDP ranks already count the separate loads. 3DS logical ranks also
-        // include the dies per package. Asymmetric ranks need both geometries.
-        if (moduleLayout && channels && !(b[234] & 0x40) && package < 6 && density < 9 && densities[density] &&
-            widthCode <= 3 && busCode <= 3 && busCode+1 >= widthCode) {
-            number("Module capacity (MiB)", densities[density]*128 * ((8u << busCode)/(4u << widthCode)) * ranks * channels * (package >= 2 ? dies[package] : 1));
+        if (asymmetric) {
+            number("Second SDRAM density (encoded)", secondDensity);
+            number("Second package die count (encoded)", secondPackage);
+            number("Second SDRAM device width (encoded)", secondWidth);
+            if (secondDensity && secondDensity < 9) number("Second SDRAM density per die (Gbit)", densities[secondDensity]);
+            if (secondPackage < 6) {
+                number("Second package die count", dies[secondPackage]); add("Second SDRAM package", packages[secondPackage]);
+            }
+            if (secondWidth <= 3) number("Second SDRAM device width (bits)", 4u << secondWidth);
         }
+        // DDP ranks already count the separate loads. 3DS logical ranks also
+        // include the dies per package. On asymmetric DDR5 modules, the first
+        // geometry describes even ranks and the second describes odd ranks.
+        // Each geometry uses its OWN device width and die multiplier.
+        const bool geometryValid = moduleLayout && channels && package < 6 && density && density < 9 &&
+            widthCode <= 3 && busCode <= 3 && busCode+1 >= widthCode &&
+            (!asymmetric || (ranks >= 2 && secondPackage < 6 && secondDensity && secondDensity < 9 &&
+                             secondWidth <= 3 && busCode+1 >= secondWidth));
+        if (geometryValid) {
+            const unsigned firstRanks = asymmetric ? (ranks+1)/2 : ranks, secondRanks = asymmetric ? ranks/2 : 0;
+            const std::uint64_t first = std::uint64_t(densities[density])*128 * ((8u << busCode)/(4u << widthCode)) *
+                firstRanks * channels * (package >= 2 ? dies[package] : 1);
+            const std::uint64_t second = asymmetric ? std::uint64_t(densities[secondDensity])*128 *
+                ((8u << busCode)/(4u << secondWidth)) * secondRanks * channels * (secondPackage >= 2 ? dies[secondPackage] : 1) : 0;
+            if (asymmetric) {
+                number("First geometry package ranks per channel (even)", firstRanks);
+                number("Second geometry package ranks per channel (odd)", secondRanks);
+                number("First geometry capacity (MiB)", first); number("Second geometry capacity (MiB)", second);
+            }
+            number("Module capacity (MiB)", first+second);
+        } else if (asymmetric) add("Module capacity status", "Not decoded: invalid or unsupported rank geometry");
         // JEDEC base timing requirements stored in SPD, not measured timings
         // or a decoded XMP/EXPO profile. Only the defined revision-1 layout.
         if ((b[1] >> 4) == 1) {
@@ -365,7 +392,7 @@ SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &b) {
                 const unsigned off = offsets[i], value = unsigned(b[off]) | (unsigned(b[off+1]) << 8);
                 if (value) number(names[i], value);
             }
-            if (package >= 2 && package <= 5) {
+            if ((package >= 2 && package <= 5) || (asymmetric && secondPackage >= 2 && secondPackage <= 5)) {
                 number("SPD tRFC1 different logical rank minimum (ns)", word(b,48));
                 number("SPD tRFC2 different logical rank minimum (ns)", word(b,50));
                 number("SPD tRFCsb different logical rank minimum (ns)", word(b,52));

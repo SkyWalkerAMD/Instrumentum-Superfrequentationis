@@ -121,6 +121,15 @@ inline std::vector<std::uint8_t> spdProfileGeometryFixture(bool ddr5) {
     }
     return b;
 }
+// Two unlike geometries: even ranks use 24 Gb x8 4H 3DS, odd ranks
+// use 16 Gb x16 monolithic devices. Three ranks, two 32-bit subchannels.
+// 196608 MiB + 8192 MiB = 204800 MiB. Synthetic, not an installed SKU.
+inline std::vector<std::uint8_t> spdAsymmetricFixture() {
+    auto b = spdProfileGeometryFixture(true);
+    b[4] = 0x65; b[6] = 0x20; b[8] = 4; b[10] = 0x40;
+    b[234] = 0x50; b[235] = 0x2a;
+    spdSeal(b,0,510); return b;
+}
 inline std::vector<std::uint8_t> spdBaseTimingsFixture(bool ddr5) {
     auto b = ddr5 ? spdFixture() : spdDdr4XmpFixture();
     if (ddr5) {

@@ -17,12 +17,13 @@ private:
     void refresh();
     void apply();
     void invalidate();
+    void updateEditor();
     void present(const octool::core::IntelTurboSnapshot &snapshot);
     std::shared_ptr<HardwareAccess> access_;
     std::shared_ptr<std::atomic<bool>> cancelled_;
     octool::core::IntelTurboSnapshot snapshot_;
     QLineEdit *cpu_, *ratio_;
-    QComboBox *kind_, *group_;
+    QComboBox *kind_, *group_, *field_;
     QPushButton *apply_;
     QTableWidget *table_;
     QLabel *status_, *raw_;

@@ -101,7 +101,7 @@ Command parse(const std::vector<std::string> &args) {
     const bool vf = c.name == "intel-vf-read" || c.name == "intel-vf-set";
     const bool turbo = c.name == "intel-turbo-read" || c.name == "intel-turbo-set";
     if (turbo) keys.insert("--core-type");
-    if (c.name == "intel-turbo-set") { keys.insert("--group"); keys.insert("--value"); }
+    if (c.name == "intel-turbo-set") { keys.insert("--group"); keys.insert("--value"); keys.insert("--field"); }
     if (c.name == "intel-uncore-set") { keys.insert("--minimum-ratio"); keys.insert("--maximum-ratio"); }
     if (rawRegister) {
         for (const char *key : {"--space", "--address", "--width", "--bus", "--device", "--function"}) keys.insert(key);
@@ -171,7 +171,10 @@ Command parse(const std::vector<std::string> &args) {
         c.turboKind = kind == "p" ? IntelTurboKind::Primary : IntelTurboKind::Secondary;
         if (writing) {
             c.group = uintOption(options, "--group", 7); c.value = decimal(get(options, "--value"));
-            require(c.value >= 1 && c.value <= 85 && std::floor(c.value) == c.value, "Turbo group ratio must be an integer 1..85");
+            c.field = options.count("--field") ? get(options, "--field") : "ratio";
+            require(c.field == "ratio" || c.field == "active-cores", "Turbo field must be ratio or active-cores");
+            require(c.value >= 1 && c.value <= (c.field == "active-cores" ? 255 : 85) && std::floor(c.value) == c.value,
+                c.field == "active-cores" ? "Active-core threshold must be an integer 1..255; the terminal group is protected" : "Turbo group ratio must be an integer 1..85");
         }
     }
     if (c.name == "intel-set" || c.name == "intel-oc-set") {
@@ -290,7 +293,8 @@ std::string turboSnapshot(const IntelTurboSnapshot &s) {
         const unsigned count = intelTurboByte(s.coreCounts, i);
         groups.push_back(object({{"group", number(i)}, {"active_core_threshold", number(count)},
             {"ratio", number(intelTurboByte(s.ratios, i))}, {"active", boolean(count != 0)},
-            {"editable", boolean(count && s.layoutValid && s.programmable && !s.locked)}}));
+            {"editable", boolean(count && s.layoutValid && s.programmable && !s.locked)},
+            {"threshold_editable", boolean(s.programmable && !s.locked && intelTurboThresholdEditable(s, i))}}));
     }
     return object({{"error", number(s.error)}, {"valid", boolean(valid)}, {"identity", identity(s.identity)},
         {"hybrid", valid ? boolean(s.hybrid) : "null"}, {"programmable", valid ? boolean(s.programmable) : "null"},
@@ -442,9 +446,12 @@ Result hardware(const Command &c, HardwareSession &s) {
         out.data.push_back({"before", turboSnapshot(snapshot)});
         out.data.push_back({"hardware_effect_measured", "false"});
         if (c.name == "intel-turbo-set") {
+            const bool threshold = c.field == "active-cores";
             IntelTurboUpdate result;
-            if (!out.error) { result = applyIntelTurboRatio(s, snapshot, c.group, unsigned(c.value)); out.error = result.error; }
-            out.data.push_back({"group", number(c.group)}); out.data.push_back({"requested_ratio", number(c.value)});
+            if (!out.error) { result = threshold ? applyIntelTurboThreshold(s, snapshot, c.group, unsigned(c.value)) : applyIntelTurboRatio(s, snapshot, c.group, unsigned(c.value)); out.error = result.error; }
+            out.data.push_back({"field", quote(c.field)});
+            out.data.push_back({"group", number(c.group)});
+            out.data.push_back({threshold ? "requested_active_cores" : "requested_ratio", number(c.value)});
             out.data.push_back({"write_attempted", boolean(result.writeAttempted)});
             out.data.push_back({"completed_writes", number(result.completed)});
             out.data.push_back({"verified", boolean(result.verified && !out.error)});
@@ -743,6 +750,7 @@ Usage: octool-cli COMMAND [OPTIONS]
   intel-uncore-read --cpu N
   intel-uncore-set --cpu N --minimum-ratio MIN --maximum-ratio MAX --apply
   intel-turbo-set --cpu N --core-type p|e --group 0..7 --value RATIO --apply
+  intel-turbo-set --cpu N --core-type p|e --group 0..7 --field active-cores --value COUNT --apply
   intel-oc-set --cpu N --domain core|cache --field offset-mv|max-ratio --value V --apply
   intel-oc-set --cpu N --domain core|cache --field target-mv --value INTEGER_MV --mode adaptive|override --apply
   amd-smu-probe --cpu N --profile shimada|phoenix|gpt [PCI]
@@ -770,9 +778,11 @@ Unsigned indices and raw register values accept decimal or 0x-prefixed hex.
 Tuning --value uses decimal. Raw writes submit exactly once, without a readback;
 they have no model/lock/bit-preservation checks and are intended for known registers.
 Voltage target requires integer 1..2000 mV and an explicit mode; this is not a safe operating range.
-Turbo groups use integer ratios 1..85, preserving active-core thresholds and other
-groups. Active-group ratios must not increase as core counts increase. This B7
-profile checks programmable capability, OC lock, stale values and full readback.
+Turbo --field defaults to ratio (integer 1..85); active-cores changes a single
+intermediate threshold (1..255, strictly increasing). The final active threshold
+and unused groups are protected; one field is written, all others are preserved.
+Active-group ratios must not increase as core counts increase. This B7 profile
+checks programmable capability, OC lock, stale values and full readback.
 Results are JSON (optional --json); raw registers are exact hexadecimal strings.
 Exit: 0 success, 2 invalid command/options, 3 failed operation or partial read.
 Run diagnose first; choose a CPU from allowed_cpus. Device access may need sudo.

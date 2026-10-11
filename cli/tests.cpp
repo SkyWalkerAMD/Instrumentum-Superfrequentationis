@@ -408,6 +408,40 @@ void turboCommands() {
     const auto result = command(malformed, {"intel-turbo-read", "--cpu", "130", "--core-type", "p"}, 0);
     assert(result.find("\"layout_valid\":false") != std::string::npos && !malformed.writes);
 }
+void turboThresholdCommands() {
+    for (const char *kind : {"p","e"}) {
+        IntelTurboFixture d; const unsigned addr = std::string(kind) == "p" ? 0x1ae : 0x651;
+        d.regs[addr] = UINT64_C(0x100e0c0a08060402); const auto before = d.regs;
+        const std::vector<std::string> args = {"intel-turbo-set","--cpu","130","--core-type",kind,"--group","3","--field","active-cores","--value","9","--apply"};
+        auto result = command(d,args,0); assert(d.writes == 1 && result.find("\"verified\":true") != std::string::npos);
+        assert(d.regs[addr] == UINT64_C(0x100e0c0a09060402) && d.regs[0x1ad] == before.at(0x1ad) && d.regs[0x650] == before.at(0x650));
+        result = command(d,args,0); assert(d.writes == 1 && result.find("\"unchanged\":true") != std::string::npos);
+    }
+    for (unsigned mode = 0; mode < 9; ++mode) {
+        IntelTurboFixture d; unsigned group = mode == 0 ? 7 : 3;
+        if (mode == 1) d.regs[0x651] &= ~(UINT64_C(255)<<24);
+        if (mode == 2) d.regs[0x194] |= UINT64_C(1)<<20;
+        if (mode == 3) d.discardChange = true;
+        if (mode == 4) d.afterRequest = [&](const Request &r) { if (r.address == 0x651 && d.reads == 4) d.regs[0x650] ^= UINT64_C(1)<<48; };
+        if (mode == 5) d.afterRequest = [&](const Request &r) { if (r.write) d.regs[0x650] ^= UINT64_C(1)<<48; };
+        if (mode == 6) d.failWrite = 0;
+        const auto value = mode == 7 ? "10" : mode == 8 ? "6" : "9";
+        const auto result = command(d,{"intel-turbo-set","--cpu","130","--core-type","e","--group",std::to_string(group),"--field","active-cores","--value",value,"--apply"},3);
+        assert(result.find("\"verified\":false") != std::string::npos && d.writes == (mode == 3 || mode == 5 || mode == 6 ? 1u : 0u));
+    }
+    unsigned opens = 0; const auto factory = [&] { ++opens; return std::unique_ptr<HardwareBackend>(); };
+    for (const char *value : {"0","256","1.5","nan","inf","-1"}) {
+        std::ostringstream out;
+        assert(run({"intel-turbo-set","--cpu","130","--core-type","p","--group","0","--field","active-cores","--value",value,"--apply"},out,factory) == 2);
+        if (emit) std::cout << out.str();
+    }
+    for (const auto &args : {std::vector<std::string>{"intel-turbo-set","--cpu","130","--core-type","p","--group","0","--field","cores","--value","1","--apply"},
+        std::vector<std::string>{"intel-turbo-set","--cpu","130","--core-type","p","--group","0","--field","active-cores","--value","1"},
+        std::vector<std::string>{"intel-turbo-read","--cpu","130","--core-type","p","--field","active-cores"}}) {
+        std::ostringstream out; assert(run(args,out,factory) == 2); if (emit) std::cout << out.str();
+    }
+    assert(!opens);
+}
 void vfCommands() {
     IntelOcFixture intel;
     command(intel, {"intel-vf-read", "--cpu", "130", "--domain", "core"}, 0);
@@ -527,7 +561,7 @@ void offlineSpdDoesNotCreateBackend() {
     struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
     unsigned opens = 0;
     const auto factory = [&]() { ++opens; return std::unique_ptr<HardwareBackend>(); };
-    for (unsigned scenario = 0; scenario < 83; ++scenario) {
+    for (unsigned scenario = 0; scenario < 91; ++scenario) {
         auto bytes = octool::test::spdFixture();
         int expected = 0;
         if (scenario == 1) { bytes[720] ^= 1; expected = 3; }
@@ -641,6 +675,17 @@ void offlineSpdDoesNotCreateBackend() {
             if (scenario == 82) { bytes[836] = 0x11; expected = 3; }
             octool::test::spdSeal(bytes,832,126);
         }
+        if (scenario >= 83) {
+            bytes = octool::test::spdAsymmetricFixture();
+            if (scenario == 84) bytes[8] = 0;
+            if (scenario == 85) bytes[10] = 0xe0;
+            if (scenario == 86) bytes[192] = 0x20;
+            if (scenario == 89) { bytes[234] = 0x48; std::swap(bytes[4],bytes[8]); std::swap(bytes[6],bytes[10]); }
+            if (scenario == 90) { bytes[234] &= ~0x40; bytes[8] = 255; bytes[10] = 255; }
+            octool::test::spdSeal(bytes,0,510);
+            if (scenario == 87) { bytes[10] ^= 1; expected = 3; }
+            if (scenario == 88) bytes.resize(236);
+        }
         std::ofstream file(path,std::ios::binary);
         file.write(reinterpret_cast<const char *>(bytes.data()), std::streamsize(bytes.size())); file.close(); assert(file);
         std::ostringstream out; assert(run({"spd-decode", "--file", path},out,factory) == expected);
@@ -728,8 +773,8 @@ int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--pm-fixture") { pmFilesystem(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
-    offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands();
+    offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "16 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "17 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

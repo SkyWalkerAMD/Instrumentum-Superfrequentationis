@@ -1,5 +1,7 @@
 # GUI / CLI 同步进度
 
+新增 [Intel 中间组阈值编辑](turbo-thresholds.md)和 [DDR5 混合 rank 容量](spd-asymmetric.md)，两端共用实现与约束。
+
 2026-10-11：新增 [AMD PM 遥测与快照互通](amd-pm-recovery.md)。GUI / CLI 同步解码八个精确版本的
 24 项公共字段，并可读取系统已有兼容驱动的 sysfs 表；未新增原生传输、目标映射或调参写入。
 
@@ -12,7 +14,7 @@
 | Intel RAPL / HWP / DTS | Power / performance | `intel-read` / `intel-set` | 型号/能力门控；含 HWP 活动窗口，13 项设置完整回读 |
 | Intel core/cache offset、最大倍率、目标电压与模式 | Core / cache voltage and ratio | `intel-oc-read` / `intel-oc-set` | B7；[目标电压 + Adaptive/Override](intel-voltage-recovery.md)，锁、旧值与完整回读 |
 | Intel V/F 点 | V/F points 查询、准备与设置 | `intel-vf-read` / `intel-vf-set` | B7，两域，候选 1..15 查询及单点 offset；[完整上下文核对](intel-vf-write-recovery.md)，不改变 override 模式 |
-| Intel 睿频分组 | Turbo ratio groups | `intel-turbo-read` / `intel-turbo-set` | B7；P/E 两表，读取活动核心阈值，单组倍率设置与完整读回；不改阈值 |
+| Intel 睿频分组 | Turbo ratio groups | `intel-turbo-read` / `intel-turbo-set` | B7；P/E 两表，读取活动核心阈值，单组倍率或中间组阈值设置与完整读回；末组阈值保持 |
 | Intel Ring / LLC 范围 | Ring / LLC range | `intel-uncore-read` / `intel-uncore-set` | B7/8F；最小与最大倍率同时设置，保留其它位、旧值检查及完整读回；[实现说明](intel-uncore-recovery.md) |
 | AMD SMU | AMD tuning | `amd-smu-probe/read/send` | 现有身份/命令白名单与原始参数 |
 | AMD 曲线读取 | AMD tuning 曲线查询 | `amd-curve-read` | Shimada；显式固件 CCD/core；不推导 mV |
@@ -31,7 +33,7 @@ SPD 两端还同步支持[基础 CAS 位图及 XMP 3.0 CAS / 命令率](spd-cas-
 现也支持[DDR4 写延迟与 DDR5 基础次级时序](spd-base-timings.md)，DDR5 的时间和周期下限分别显示，
 版本 1.2 新增的三对字段按基础修订版判断。
 另已接通[DDR4 XMP CAS/推荐 DIMM 数及堆叠组织](spd-profile-geometry.md)，修正 DDR5 四/八子通道容量，
-支持对称堆叠容量与 3DS 不同逻辑 rank 刷新下限；基础区和模块公共区分别检查修订版。
+支持对称堆叠、DDR5 混合 rank 分项容量与 3DS 不同逻辑 rank 刷新下限；基础区和模块公共区分别检查修订版。
 
 双方共同未完成：AMD PStates 写入、曲线设置与物理目标映射、完整 PBO 高层限制、
 Intel 其它型号的 VF 及 W790/W890 电压/逐核/fabric、Intel 内存训练时序、板级 PMIC/VRM/EC/时钟写入。

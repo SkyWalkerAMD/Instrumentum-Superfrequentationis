@@ -715,6 +715,93 @@ void geometryCaptureAndIntegrity() {
     b = spdProfileGeometryFixture(false); b.resize(440); s = decodeSpd(b);
     assert(s.xmp.profiles[0].cas.decoded && !s.xmp.profiles[1].cas.captured && s.xmp.profiles[1].recommendedDimmsPerChannel == 4);
 }
+void asymmetricExamplesAndRanks() {
+    auto b = spdAsymmetricFixture(); const auto s = decodeSpd(b);
+    assert(baseValue(s,"Module capacity (MiB)") == 204800);
+    assert(baseValue(s,"First geometry capacity (MiB)") == 196608 && baseValue(s,"Second geometry capacity (MiB)") == 8192);
+    assert(baseValue(s,"Second SDRAM device width (bits)") == 16 && baseValue(s,"Second SDRAM density per die (Gbit)") == 16);
+    const unsigned totals[] = {0,106496,204800,212992,311296,319488,417792,425984};
+    for (unsigned code = 0; code < 8; ++code) {
+        b[234] = std::uint8_t(0x40+code*8); spdSeal(b,0,510); const auto out = decodeSpd(b);
+        if (!code) { assert(!baseField(out,"Module capacity (MiB)")); continue; }
+        assert(baseValue(out,"Module capacity (MiB)") == totals[code]);
+        assert(baseValue(out,"First geometry package ranks per channel (even)") == (code+2)/2);
+        assert(baseValue(out,"Second geometry package ranks per channel (odd)") == (code+1)/2);
+    }
+    // Swapping two geometries on a two-rank module preserves total capacity,
+    // but each contribution must follow its own width and package description.
+    b = spdAsymmetricFixture(); b[234] = 0x48; spdSeal(b,0,510);
+    const auto before = decodeSpd(b); std::swap(b[4],b[8]); std::swap(b[6],b[10]); spdSeal(b,0,510);
+    const auto after = decodeSpd(b);
+    assert(baseValue(before,"Module capacity (MiB)") == 106496 && baseValue(after,"Module capacity (MiB)") == 106496);
+    assert(baseValue(after,"First geometry capacity (MiB)") == 8192 && baseValue(after,"Second geometry capacity (MiB)") == 98304);
+}
+void asymmetricDensityAndPackages() {
+    const unsigned layers[] = {1,1,2,4,8,16};
+    const unsigned secondBase[] = {0,2048,4096,6144,8192,12288,16384,24576,32768};
+    for (unsigned byte = 0; byte < 256; ++byte) {
+        auto b = spdAsymmetricFixture(); b[8] = std::uint8_t(byte); spdSeal(b,0,510); const auto s = decodeSpd(b);
+        const unsigned density = byte%32, package = byte/32;
+        const bool valid = density > 0 && density < 9 && package < 6;
+        assert(bool(baseField(s,"Module capacity (MiB)")) == valid);
+        if (valid) assert(baseValue(s,"Module capacity (MiB)") == 196608 + secondBase[density]*layers[package]);
+        else assert(!baseField(s,"First geometry capacity (MiB)") && !baseField(s,"Second geometry capacity (MiB)"));
+        assert(baseValue(s,"Second SDRAM density (encoded)") == density && baseValue(s,"Second package die count (encoded)") == package);
+    }
+    const unsigned first[] = {49152,49152,98304,196608,393216,786432};
+    const unsigned second[] = {8192,8192,16384,32768,65536,131072};
+    for (unsigned a = 0; a < 6; ++a) for (unsigned c = 0; c < 6; ++c) {
+        auto b = spdAsymmetricFixture(); b[4] = std::uint8_t(5+32*a); b[8] = std::uint8_t(4+32*c); spdSeal(b,0,510);
+        assert(baseValue(decodeSpd(b),"Module capacity (MiB)") == first[a]+second[c]);
+    }
+}
+void asymmetricWidthsAndChannels() {
+    const unsigned deviceWidths[] = {4,8,16,32}, busWidths[] = {8,16,32,64}, channels[] = {1,2,4,8};
+    for (unsigned a = 0; a < 4; ++a) for (unsigned c = 0; c < 8; ++c)
+    for (unsigned bus = 0; bus < 8; ++bus) for (unsigned ch = 0; ch < 4; ++ch) {
+        auto b = spdAsymmetricFixture(); b[6] = std::uint8_t(a*32); b[10] = std::uint8_t(c*32); b[235] = std::uint8_t(bus+ch*32);
+        spdSeal(b,0,510); const auto s = decodeSpd(b);
+        const bool valid = c < 4 && bus < 4 && deviceWidths[a] <= busWidths[bus] && deviceWidths[c] <= busWidths[bus];
+        assert(bool(baseField(s,"Module capacity (MiB)")) == valid);
+        if (valid) assert(baseValue(s,"Module capacity (MiB)") == channels[ch]*busWidths[bus]*(24576/deviceWidths[a]+2048/deviceWidths[c]));
+    }
+    auto b = spdAsymmetricFixture(); b[235] = 0xe2; spdSeal(b,0,510); assert(!baseField(decodeSpd(b),"Module capacity (MiB)"));
+}
+void asymmetricGatesAndInactiveBytes() {
+    for (unsigned pos : {1u,192u}) for (unsigned rev = 0; rev < 256; ++rev) {
+        auto b = spdAsymmetricFixture(); b[pos] = std::uint8_t(rev); spdSeal(b,0,510); const auto s = decodeSpd(b);
+        assert(bool(baseField(s,"Module capacity (MiB)")) == (rev/16 == 1));
+        assert(bool(baseField(s,"Second SDRAM device width (bits)")) == (rev/16 == 1));
+    }
+    for (unsigned byte = 0; byte < 256; ++byte) {
+        auto b = spdAsymmetricFixture(); b[234] &= ~0x40; b[8] = std::uint8_t(byte); b[10] = std::uint8_t(255-byte); spdSeal(b,0,510);
+        const auto s = decodeSpd(b); assert(baseValue(s,"Module capacity (MiB)") == 294912);
+        assert(!baseField(s,"Second SDRAM density (encoded)") && !baseField(s,"Second geometry capacity (MiB)"));
+    }
+}
+void asymmetricCaptureAndIntegrity() {
+    const auto full = spdAsymmetricFixture();
+    for (unsigned size = 0; size <= 512; ++size) {
+        auto b = full; b.resize(size); const auto s = decodeSpd(b);
+        if (size < 236) assert(s.error && !baseField(s,"Module capacity (MiB)"));
+        else { assert(!s.error && baseValue(s,"Module capacity (MiB)") == 204800); assert(s.crcChecked == (size == 512)); }
+    }
+    for (unsigned pos : {4u,6u,8u,10u,192u,234u,235u,510u,511u}) {
+        auto b = full; b[pos] ^= 1; const auto s = decodeSpd(b);
+        assert(s.error == -EILSEQ && !baseField(s,"Module capacity (MiB)") && !baseField(s,"Second geometry capacity (MiB)"));
+    }
+    auto b = spdDdr4XmpFixture(); b[12] |= 0x40; b[10] = 4; spdSeal(b,0,126);
+    assert(!baseField(decodeSpd(b),"Module capacity (MiB)")); // DDR5 does not authorize a DDR4 interpretation.
+}
+void asymmetricSecondary3dsRefresh() {
+    for (unsigned package = 0; package < 8; ++package) {
+        auto b = spdAsymmetricFixture(); b[4] = 5; b[8] = std::uint8_t(4+32*package); spdSeal(b,0,510);
+        const auto s = decodeSpd(b);
+        assert(bool(baseField(s,"SPD tRFC1 different logical rank minimum (ns)")) == (package >= 2 && package <= 5));
+        if (package >= 2 && package <= 5) assert(baseValue(s,"SPD tRFC1 different logical rank minimum (ns)") == 321);
+        b[234] &= ~0x40; spdSeal(b,0,510); assert(!baseField(decodeSpd(b),"SPD tRFC1 different logical rank minimum (ns)"));
+    }
+}
 void ddr4IntegrityAndTypeIsolation() {
     auto b = spdDdr4XmpFixture(); b[393] ^= 1;
     auto r = decodeSpd(b);
@@ -850,5 +937,7 @@ int main() {
     ddr5SubchannelsAndWidths(); ddr5LogicalRankRefresh(); geometryRevisionGates(); geometryCaptureAndIntegrity();
     userProfileValues(); userCaptureLengths(); userCrcIsolation(); userBlankAndZeroCrc(); userEnableAndRevisionGates(); userExpoOverlap();
     expoStoredEnhancedWords(); expoEnhancedByteBoundaries(); expoEnhancedEnableAndIntegrity();
-    std::cout << "49 SPD XMP/EXPO scenario groups passed (capture lengths, CRC, timings, revision gates, CAS, user slots and geometry)\n";
+    asymmetricExamplesAndRanks(); asymmetricDensityAndPackages(); asymmetricWidthsAndChannels();
+    asymmetricGatesAndInactiveBytes(); asymmetricCaptureAndIntegrity(); asymmetricSecondary3dsRefresh();
+    std::cout << "55 SPD XMP/EXPO scenario groups passed (capture lengths, CRC, timings, revision gates, CAS, user slots and geometry)\n";
 }

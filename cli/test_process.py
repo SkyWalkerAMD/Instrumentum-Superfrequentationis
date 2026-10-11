@@ -80,7 +80,7 @@ with tempfile.TemporaryDirectory(prefix="octool-pm-") as directory:
         assert absent["error"] == -2 and not absent["data"]["table_read_attempted"]
         assert absent["data"]["pm"]["fields"] == []
 spd_reports = [r for r in reports if r["command"] == "spd-decode" and "spd" in r["data"]]
-assert len(spd_reports) == 83
+assert len(spd_reports) == 91
 assert [r["ok"] for r in spd_reports[:68]] == [True, False, False, False, True, False, True, True, False,
                                         True, False, False, False, True, False, True, False, False, False,
                                         True, True, False, False, False, False, True, True, False, False,
@@ -282,7 +282,22 @@ for i in range(54, 68):
             assert all(p["recommended_dimms_per_channel"] is None and p["cas"]["encoding"] == "ddr5-cl20-98" for p in data["xmp"]["profiles"])
         else:
             assert data["crc_checked"] and not data["crc_valid"] and data["cas"] is None
-assert [r["ok"] for r in spd_reports[68:]] == [True, True, False, True, True, True, False, True, False, False, False, True, True, True, False]
+assert [r["ok"] for r in spd_reports[68:83]] == [True, True, False, True, True, True, False, True, False, False, False, True, True, True, False]
+assert [r["ok"] for r in spd_reports[83:]] == [True, True, True, True, False, True, True, True]
+for i in range(83, 91):
+    spd = spd_reports[i]["data"]["spd"]
+    fields = {f["name"]: f["value"] for f in spd["fields"]}
+    expected_capacity = {83: "204800", 88: "204800", 89: "106496", 90: "294912"}
+    assert fields.get("Module capacity (MiB)") == expected_capacity.get(i)
+    if i in (83, 88, 89):
+        assert fields["First geometry capacity (MiB)"] == ("8192" if i == 89 else "196608")
+        assert fields["Second geometry capacity (MiB)"] == ("98304" if i == 89 else "8192")
+        assert fields["Second SDRAM device width (bits)"] == ("8" if i == 89 else "16")
+    if i in (86, 87, 90):
+        assert "Second SDRAM density (encoded)" not in fields
+    assert spd["crc_checked"] == (i != 88)
+    if i == 87:
+        assert spd["error"] == -84 and not spd["crc_valid"]
 for i in range(68, 83):
     xmp = spd_reports[i]["data"]["spd"]["xmp"]
     slots = xmp["user_profiles"]
@@ -382,7 +397,9 @@ assert vf_edit[16]["data"]["settings_firmware_status"] == 254
 assert vf_edit[21]["ok"] and vf_edit[21]["data"]["edit_context"]["locked"] and not vf_edit[21]["data"]["edit_context"]["editable"]
 assert all(r["data"]["edit_context"]["per_core_override"] and r["data"]["edit_context"]["editable"] for r in vf_edit[22:])
 assert vf_edit[23]["data"]["verified"] and vf_edit[23]["data"]["after"]["control_raw"] == "0x12345008"
-turbo = [r for r in reports if r["command"] in ("intel-turbo-read", "intel-turbo-set") and "before" in r["data"]]
+turbo_all = [r for r in reports if r["command"] in ("intel-turbo-read", "intel-turbo-set") and "before" in r["data"]]
+thresholds = [r for r in turbo_all if r["data"].get("field") == "active-cores"]
+turbo = [r for r in turbo_all if r not in thresholds]
 assert len(turbo) == 19
 for result in turbo:
     data = result["data"]
@@ -411,6 +428,23 @@ for result in turbo:
             assert data["completed_writes"] == int(not data["unchanged"])
 assert [r["error"] for r in turbo[8:17]] == [-1, -1, -5, -11, -13, -95, -5, -22, -11]
 assert turbo[-1]["ok"] and not turbo[-1]["data"]["before"]["layout_valid"]
+assert len(thresholds) == 13
+assert [r["error"] for r in thresholds] == [0, 0, 0, 0, -1, -22, -1, -5, -11, -11, -5, -34, -34]
+for result in thresholds:
+    data = result["data"]
+    assert "requested_ratio" not in data and not data["hardware_effect_measured"]
+    assert data["verified"] == result["ok"]
+    for name in ("before", "after"):
+        snapshot = data[name]
+        active = [g["group"] for g in snapshot["groups"] if g["active"]]
+        for g in snapshot["groups"]:
+            assert g["threshold_editable"] == bool(g["editable"] and g["group"] != active[-1])
+    if result["ok"]:
+        assert data["after"]["core_counts_raw"] == data["expected_raw"] == "0x100e0c0a09060402"
+        assert data["before"]["ratios_raw"] == data["after"]["ratios_raw"]
+        assert data["after"]["groups"][3]["active_core_threshold"] == data["requested_active_cores"] == 9
+        assert data["after"]["groups"][7]["active_core_threshold"] == 16
+        assert data["completed_writes"] == int(not data["unchanged"])
 registers = [r for r in reports if r["command"] in ("register-read", "register-write") and r["error"] != -22]
 assert len(registers) == 19
 assert registers[0]["data"]["value"] == "0xfedcba9876543210"

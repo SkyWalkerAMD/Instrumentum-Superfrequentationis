@@ -27,9 +27,16 @@ bool validIntelTurboLayout(std::uint64_t ratios, std::uint64_t coreCounts);
 // input policy is conservative for this client profile, not a stability claim.
 int encodeIntelTurboRatio(const IntelTurboSnapshot &snapshot, unsigned group,
                           unsigned ratio, std::uint64_t &encoded);
+// Change one existing, nonterminal active-core threshold. Keep the last active
+// threshold and the set of active groups: the table does not prove SKU topology.
+bool intelTurboThresholdEditable(const IntelTurboSnapshot &snapshot, unsigned group);
+int encodeIntelTurboThreshold(const IntelTurboSnapshot &snapshot, unsigned group,
+                              unsigned count, std::uint64_t &encoded);
 // Raptor Lake-S B7 only. E-core table also requires CPUID's hybrid feature.
 // Package tables are not per-physical-core overrides or measured frequency.
 IntelTurboSnapshot readIntelTurbo(HardwareSession &session, unsigned cpu, IntelTurboKind kind);
 IntelTurboUpdate applyIntelTurboRatio(HardwareSession &session, const IntelTurboSnapshot &snapshot,
                                      unsigned group, unsigned ratio);
+IntelTurboUpdate applyIntelTurboThreshold(HardwareSession &session, const IntelTurboSnapshot &snapshot,
+                                         unsigned group, unsigned count);
 } }
