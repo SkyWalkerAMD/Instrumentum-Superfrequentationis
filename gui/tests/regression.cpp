@@ -32,6 +32,7 @@
 #include <QPushButton>
 #include <QTimer>
 #include <QTableWidget>
+#include <QHeaderView>
 #include <QTemporaryDir>
 #include <QFile>
 #include <QDir>
@@ -162,6 +163,13 @@ private slots:
         QCOMPARE(panel.captureBytes(),copied); QCOMPARE(reference.calls.load(),0);
         auto *status = panel.findChild<QLabel *>("imcStatus"); QVERIFY(status->text().contains("Offline"));
         QTRY_VERIFY(status->height() >= status->heightForWidth(status->width()));
+        // Large system fonts can increase the minimum row height. Verify that
+        // the normal viewport can reach the last row, then size the reference
+        // image from the actual geometry instead of assuming 25 px rows.
+        table->scrollToItem(table->item(29,1));
+        QTRY_VERIFY(table->viewport()->rect().contains(table->visualItemRect(table->item(29,1))));
+        table->scrollToTop(); QCoreApplication::processEvents();
+        panel.resize(panel.width(),panel.height()+qMax(0,table->verticalHeader()->length()-table->viewport()->height())+8);
         QTRY_VERIFY(table->viewport()->rect().contains(table->visualItemRect(table->item(29,1))));
         const auto shot = qEnvironmentVariable("OCTOOL_INTEL_MEMORY_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
         auto v = intel_memory_fixture::registers(0); v[3].raw |= UINT64_C(1)<<30;
