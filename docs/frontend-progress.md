@@ -1,7 +1,7 @@
 # GUI / CLI 同步进度
 
-2026-10-11：新增 [XMP 用户槽检查与 EXPO 增强时序存储值](spd-user-enhanced.md)。
-GUI / CLI 同步读取；用户槽及增强功能的启用状态保持未知，未新增档案写入。
+2026-10-11：新增 [AMD PM 遥测与快照互通](amd-pm-recovery.md)。GUI / CLI 同步解码八个精确版本的
+24 项公共字段，并可读取系统已有兼容驱动的 sysfs 表；未新增原生传输、目标映射或调参写入。
 
 两个入口共用 `gui/core`，Linux 硬件访问共用 HAL 与驱动。新增功能同时落到 GUI 页面、CLI 命令、
 共同核心和两套入口测试；包以同一个 Git 提交标识交付。当前还原范围如下。
@@ -17,6 +17,7 @@ GUI / CLI 同步读取；用户槽及增强功能的启用状态保持未知，�
 | AMD SMU | AMD tuning | `amd-smu-probe/read/send` | 现有身份/命令白名单与原始参数 |
 | AMD 曲线读取 | AMD tuning 曲线查询 | `amd-curve-read` | Shimada；显式固件 CCD/core；不推导 mV |
 | AMD 拓扑 | AMD tuning | `amd-topology` | CPUID 拓扑，不作为固件目标映射 |
+| AMD PM 遥测 | AMD tuning → PM telemetry | `amd-pm-read/decode` | 八个精确 Shimada 版本、24 项公共字段；已有驱动读取、原始文件解码与 JSON 双向导入；BCLK 修正需外部值，未完成整表与物理目标认证 |
 | AMD UMC | AMD UMC，打开/比较快照与差异筛选 | `amd-umc-read/decode/diff` | 212 字段、56 原始寄存器；GUI/CLI 双向离线导入与共用比较；无时序写入 |
 | DMI / 传感器 / SPD | Memory / Motherboard | `inventory` / `spd-decode` | 读取现有系统节点与离线 SPD；[DDR4 XMP 2.0](ddr4-xmp-recovery.md) 两组档案、电压/时序/独立时间基准（无扩展 CRC）；[DDR5 XMP 3.0](ddr5-xmp-recovery.md) 三个厂家档案含 8 项次级时序和独立周期下限（ps / nCK）；[EXPO 1.0](ddr5-expo-recovery.md) 两组基础档案、电压/时序和逐区 CRC；[XMP 用户槽读取与 EXPO 增强时序存储字](spd-user-enhanced.md)，启用状态未知 |
 | 原始 MSR / MMIO / PCI | Register 编辑页 | `register-read` / `register-write` | 相同宽度、范围与对齐校验；明确目标，写入不自动回读 |

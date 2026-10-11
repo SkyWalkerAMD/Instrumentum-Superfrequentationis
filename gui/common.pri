@@ -24,6 +24,8 @@ SOURCES += $$PWD/core/amd_topology.cpp
 HEADERS += $$PWD/core/amd_topology.h
 SOURCES += $$PWD/core/amd_curve.cpp
 HEADERS += $$PWD/core/amd_curve.h
+SOURCES += $$PWD/core/amd_pm.cpp $$PWD/amdpmpanel.cpp
+HEADERS += $$PWD/core/amd_pm.h $$PWD/core/bounded_json.h $$PWD/amdpmpanel.h
 SOURCES += $$PWD/core/intel_oc.cpp $$PWD/intelocpanel.cpp
 HEADERS += $$PWD/core/intel_oc.h $$PWD/intelocpanel.h
 SOURCES += $$PWD/intelvfpanel.cpp
@@ -41,6 +43,8 @@ linux {
     HEADERS += $$PWD/platform/linux_inventory.h
     SOURCES += $$PWD/platform/linux_inventory_native.cpp
     HEADERS += $$PWD/platform/linux_inventory_native.h
+    SOURCES += $$PWD/platform/linux_amd_pm.cpp
+    HEADERS += $$PWD/platform/linux_amd_pm.h
     HEADERS += $$PWD/platform/system_info.h $$PWD/platform/linux_cpu.h
     HEADERS += $$PWD/platform/linux_hwio.h $$PWD/../port/hal/octool_hwio.h
 } else {

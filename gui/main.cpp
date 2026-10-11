@@ -2,6 +2,7 @@
 #include "registerpanel.h"
 #include "pstates.h"
 #include "platformpanels.h"
+#include "amdpmpanel.h"
 #include "authorizationpanel.h"
 #include "platform/system_info.h"
 #include <QApplication>
@@ -92,7 +93,10 @@ int main(int argc, char **argv)
     intel->addTab(new IntelTurboPanel(access, intel, initialCpu), "Turbo ratio groups");
     intel->addTab(new IntelUncorePanel(access, intel, initialCpu), "Ring / LLC range");
     tabs->addTab(intel, "Intel Controls");
-    tabs->addTab(new AmdTuningPanel(access, tabs, initialCpu), "AMD tuning");
+    auto *amd = new QTabWidget(tabs);
+    amd->addTab(new AmdTuningPanel(access, amd, initialCpu), "SMU / curves");
+    amd->addTab(new AmdPmPanel(amd), "PM telemetry");
+    tabs->addTab(amd, "AMD tuning");
     tabs->addTab(new MemoryBoardPanel(tabs), "Memory / Motherboard");
     tabs->addTab(new UmcPanel(access,tabs,initialCpu), "AMD UMC");
     window.setCentralWidget(tabs);
@@ -100,7 +104,7 @@ int main(int argc, char **argv)
     // CI requests snapshots of these real windows for visual inspection.
     // Normal launches have no screenshot path and create no image files.
     const QString capture = qEnvironmentVariable("OCTOOL_SMOKE_SCREENSHOT");
-    if (!capture.isEmpty()) QTimer::singleShot(1000, &window, [&window, tabs, intel, capture] {
+    if (!capture.isEmpty()) QTimer::singleShot(1000, &window, [&window, tabs, intel, amd, capture] {
         for (int page = 0; page < tabs->count(); ++page) {
             tabs->setCurrentIndex(page);
             window.grab().save(capture + QString("-%1.png").arg(page));
@@ -114,6 +118,11 @@ int main(int argc, char **argv)
                 intel->setCurrentIndex(4);
                 window.grab().save(capture + "-5-uncore.png");
                 intel->setCurrentIndex(0);
+            }
+            if (page == 6) {
+                amd->setCurrentIndex(1);
+                window.grab().save(capture + "-6-pm.png");
+                amd->setCurrentIndex(0);
             }
         }
         tabs->setCurrentIndex(0);

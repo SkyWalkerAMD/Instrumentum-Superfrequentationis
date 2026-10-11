@@ -2,6 +2,7 @@
 #include "commands.h"
 #include "json.h"
 #include "core/amd_curve.h"
+#include "core/amd_pm.h"
 #include "core/amd_pstates.h"
 #include "core/amd_smu.h"
 #include "core/amd_topology.h"
@@ -13,6 +14,7 @@
 #include "core/intel_uncore.h"
 #include "core/spd.h"
 #include "platform/linux_inventory_native.h"
+#include "platform/linux_amd_pm.h"
 #include "platform/system_info.h"
 #include <cerrno>
 #include <cmath>
@@ -58,10 +60,10 @@ unsigned uintOption(const Options &o, const std::string &key, unsigned max) { re
 unsigned optional(const Options &o, const std::string &key, unsigned max, unsigned fallback = 0) {
     return o.count(key) ? uintOption(o, key, max) : fallback;
 }
-double decimal(const std::string &text) {
+double decimal(const std::string &text, const std::string &key = "--value") {
     std::istringstream in(text); in.imbue(std::locale::classic()); double value = 0;
     require(!text.empty() && text.find_first_of(" \t\r\n") == std::string::npos &&
-        bool(in >> value) && in.eof() && std::isfinite(value), "--value must be a finite decimal number");
+        bool(in >> value) && in.eof() && std::isfinite(value), key + " must be a finite decimal number");
     return value;
 }
 const std::map<std::string, IntelField> intelFields = {
@@ -77,6 +79,8 @@ struct Command {
     unsigned minimumRatio = 0, maximumRatio = 0;
     double value = 0;
     bool forEdit = false;
+    std::uint32_t pmVersion = 0;
+    AmdPmOptions pmOptions;
     SmuTarget smu; SmuCommand message; UmcTarget umc;
     Request reg;
     IntelOcDomain domain = IntelOcDomain::Core;
@@ -88,7 +92,8 @@ Command parse(const std::vector<std::string> &args) {
     const std::set<std::string> hardware = {"cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read", "intel-vf-set", "intel-turbo-read", "intel-turbo-set",
         "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
-    require(hardware.count(c.name) || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline, "Unknown command: " + c.name);
+    const bool pm = c.name == "amd-pm-read" || c.name == "amd-pm-decode";
+    require(hardware.count(c.name) || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || pm, "Unknown command: " + c.name);
     std::set<std::string> keys = {"--json"};
     if (hardware.count(c.name)) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
@@ -117,6 +122,8 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "amd-curve-read") { keys.insert("--ccd"); keys.insert("--core"); }
     if (c.name == "amd-umc-read") { keys.insert("--bank"); keys.insert("--refresh-slot"); }
     if (c.name == "spd-decode") keys.insert("--file");
+    if (pm) keys.insert("--bclk-mhz");
+    if (c.name == "amd-pm-decode") { keys.insert("--file"); keys.insert("--version"); }
     if (umcOffline) keys.insert("--file");
     if (c.name == "amd-umc-diff") keys.insert("--compare");
     Options options;
@@ -235,6 +242,17 @@ Command parse(const std::vector<std::string> &args) {
     }
     if (c.name == "amd-umc-read") { c.umc.bank = uintOption(options, "--bank", 22); c.umc.refreshSlot = uintOption(options, "--refresh-slot", 15); }
     if (c.name == "spd-decode") { c.path = get(options, "--file"); require(!c.path.empty(), "Empty SPD path"); }
+    if (pm && options.count("--bclk-mhz")) {
+        c.pmOptions.hasBclk = true; c.pmOptions.bclkMHz = decimal(get(options, "--bclk-mhz"), "--bclk-mhz");
+        require(c.pmOptions.bclkMHz > 0, "--bclk-mhz must be positive");
+    }
+    if (c.name == "amd-pm-decode") {
+        c.path = get(options, "--file"); require(!c.path.empty(), "Empty PM capture path");
+        if (options.count("--version")) {
+            c.pmVersion = uintOption(options, "--version", UINT32_MAX);
+            require(amdPmTableSize(c.pmVersion) != 0, "Unsupported exact PM table version");
+        }
+    }
     if (umcOffline) {
         c.path = get(options, "--file"); require(!c.path.empty(), "Empty snapshot path");
         if (c.name == "amd-umc-diff") { c.otherPath = get(options, "--compare"); require(!c.otherPath.empty(), "Empty comparison path"); }
@@ -644,6 +662,31 @@ Result offlineUmc(const Command &c) {
     }
     out.data.push_back({"fields", array(fields)}); return out;
 }
+Result pmTable(const Command &c) {
+    Result out; AmdPmSnapshot snapshot;
+    const bool offline = c.name == "amd-pm-decode";
+    bool attempted = false;
+    if (offline) {
+        std::vector<std::uint8_t> bytes;
+        snapshot.error = platform::readBoundedFile(c.path, bytes, c.pmVersion ? amdPmTableSize(c.pmVersion) : 65536);
+        if (snapshot.error) snapshot.detail = "Cannot read bounded PM capture file";
+        else if (c.pmVersion) snapshot = decodeAmdPm(bytes, c.pmVersion, c.pmOptions);
+        else {
+            snapshot = parseAmdPmCapture(std::string(bytes.begin(), bytes.end()));
+            if (c.pmOptions.hasBclk && snapshot.expectedBytes && snapshot.raw.size() == snapshot.expectedBytes)
+                snapshot = decodeAmdPm(snapshot.raw, snapshot.version, c.pmOptions);
+        }
+    } else {
+        const auto result = readAmdPmDriver(platform::linuxAmdPmReader(), c.pmOptions);
+        snapshot = result.snapshot; attempted = result.tableReadAttempted;
+    }
+    out.error = snapshot.error;
+    out.data = {{"offline", boolean(offline)}, {"origin_verified", "false"},
+        {"path", quote(offline ? c.path : "/sys/kernel/ryzen_smu_drv")},
+        {"table_read_attempted", boolean(attempted)}, {"direct_register_access", "false"},
+        {"atomic_snapshot_guaranteed", "false"}, {"pm", amdPmJson(snapshot)}};
+    return out;
+}
 Result execute(const Command &c, const BackendFactory &factory) {
     Result out;
     if (c.name == "diagnose") {
@@ -670,6 +713,8 @@ Result execute(const Command &c, const BackendFactory &factory) {
         out.data.push_back({"spd", spd(c.path, bytes, out.error)});
     } else if (c.name == "amd-umc-decode" || c.name == "amd-umc-diff") {
         out = offlineUmc(c);
+    } else if (c.name == "amd-pm-read" || c.name == "amd-pm-decode") {
+        out = pmTable(c);
     } else {
         HardwareService service(factory());
         const int error = service.transaction([&](HardwareSession &s) { out = hardware(c, s); return out.error; }, int(c.timeout));
@@ -705,6 +750,9 @@ Usage: octool-cli COMMAND [OPTIONS]
   amd-smu-send --cpu N --profile P --message M --arg0 A [--arg1 A ... --arg5 A] [PCI] --apply
   amd-curve-read --cpu N --ccd N --core N
   amd-topology --cpu N
+  amd-pm-read [--bclk-mhz N]        Read an already installed ryzen_smu driver
+  amd-pm-decode --file SNAPSHOT     Decode GUI/CLI PM JSON offline
+  amd-pm-decode --file RAW --version V [--bclk-mhz N]  Decode a raw PM table
   amd-umc-read --cpu N --bank N --refresh-slot N [PCI]
   amd-umc-decode --file SNAPSHOT     Decode GUI/CLI JSON offline, no privileges
   amd-umc-diff --file BEFORE --compare AFTER   Compare the same bank/refresh slot
@@ -729,6 +777,13 @@ Results are JSON (optional --json); raw registers are exact hexadecimal strings.
 Exit: 0 success, 2 invalid command/options, 3 failed operation or partial read.
 Run diagnose first; choose a CPU from allowed_cpus. Device access may need sudo.
 Firmware queries can write mailbox/index registers; settings require --apply.
+PM reads use the existing driver's binary sysfs interface, which can request a
+firmware table transfer. OCTool does not load that driver or open a register device.
+Eight exact Shimada PM versions are supported; files do not identify physical
+cores. PM captures have no checksum. BCLK is caller supplied, not measured here;
+raw clock values remain separate from scaled values. Non-finite fields are null.
+PM JSON from either frontend can be imported by both; displayed fields are
+recomputed from raw bytes. --version selects a raw binary file, not a JSON report.
 CCD/core are firmware indices, not Linux CPU IDs; UMC values are raw encodings.
 UMC offline commands accept regular JSON files up to 64 KiB, including partial
 GUI snapshots. Missing fields stay null. Diff separates field and raw-only changes;

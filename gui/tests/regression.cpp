@@ -13,6 +13,8 @@
 #include "intel_uncore_fixture.h"
 #include "spd_fixture.h"
 #include "amd_curve_fixture.h"
+#include "amdpmpanel.h"
+#include "amd_pm_fixture.h"
 #include "platform/linux_inventory.h"
 #include "platform/linux_hwio.h"
 #include "platform/linux_cpu.h"
@@ -117,9 +119,134 @@ struct Reference {
     }
 };
 
+static bool savePmFile(const QString &path, const std::vector<std::uint8_t> &bytes) {
+    QFile file(path);
+    return file.open(QIODevice::WriteOnly) && file.write(reinterpret_cast<const char *>(bytes.data()), qint64(bytes.size())) == qint64(bytes.size());
+}
+static bool savePmJson(const QString &path, const std::string &json) {
+    return savePmFile(path, std::vector<std::uint8_t>(json.begin(), json.end()));
+}
+static octool::core::AmdPmReader pmReader(const std::shared_ptr<pm_fixture::Driver> &driver) {
+    return [driver](const std::string &name, std::vector<std::uint8_t> &bytes, std::size_t maximum) { return driver->read(name, bytes, maximum); };
+}
+
 class Regression : public QObject {
     Q_OBJECT
 private slots:
+    void pmOfflineRoundtripAndUnits() {
+        using namespace octool::core;
+        QTemporaryDir directory; QVERIFY(directory.isValid());
+        const auto raw = directory.filePath("synthetic-pm.bin"), json = directory.filePath(QString::fromUtf8("synthetic-PM-快照.json"));
+        auto driver = std::make_shared<pm_fixture::Driver>(); AmdPmPanel panel(nullptr, pmReader(driver));
+        panel.resize(1300, 1040); panel.show();
+        auto *table = panel.findChild<QTableWidget *>("pmTable");
+        auto *copy = panel.findChild<QPushButton *>("pmCopy");
+        panel.findChild<QCheckBox *>("pmScale")->setChecked(true);
+        panel.findChild<QLineEdit *>("pmBclk")->setText("102.5");
+        for (const auto &layout : amdPmLayouts()) {
+            QVERIFY(savePmFile(raw, pm_fixture::bytes(layout.bytes))); QVERIFY(panel.loadRawFile(raw, layout.version));
+            QCOMPARE(table->rowCount(), 24); QCOMPARE(table->item(0, 1)->text(), QString("2000"));
+            QCOMPARE(table->item(0, 3)->text(), QString("2050")); QCOMPARE(table->item(0, 4)->text(), QString("0x44fa0000"));
+            QCOMPARE(table->item(3, 1)->text(), QString("1.0625")); QCOMPARE(table->item(3, 2)->text(), QString("V"));
+            QCOMPARE(table->item(10, 1)->text(), QString("100")); QCOMPARE(table->item(10, 2)->text(), QString("A"));
+            QCOMPARE(table->item(11, 1)->text(), QString("70")); QCOMPARE(table->item(11, 2)->text(), QString("C"));
+            QVERIFY(copy->isEnabled()); copy->click();
+            const auto captured = QApplication::clipboard()->text().toStdString();
+            const auto decoded = parseAmdPmCapture(captured); QVERIFY(!decoded.error);
+            QCOMPARE(qulonglong(decoded.raw.size()), qulonglong(layout.bytes));
+            QVERIFY(savePmJson(json, captured)); QVERIFY(panel.loadSnapshotFile(json));
+            QVERIFY(savePmJson(json, "{\"schema_version\":1,\"command\":\"amd-pm-decode\",\"data\":{\"pm\":" + captured + "}}"));
+            QVERIFY(panel.loadSnapshotFile(json)); QCOMPARE(table->item(0, 3)->text(), QString("2050"));
+        }
+        auto captured = QApplication::clipboard()->text().toUtf8();
+        captured.replace("\"stored_value\":2000", "\"stored_value\":99999");
+        QVERIFY(savePmJson(json, captured.toStdString())); QVERIFY(panel.loadSnapshotFile(json));
+        QCOMPARE(table->item(0, 1)->text(), QString("2000")); QVERIFY(driver->calls.empty());
+        auto *status = panel.findChild<QLabel *>("pmStatus");
+        QTRY_VERIFY(status->height() >= status->heightForWidth(status->width()));
+        QVERIFY(status->geometry().bottom() < panel.height());
+        const auto shot = qEnvironmentVariable("OCTOOL_PM_TEST_SCREENSHOT");
+        if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+    }
+    void pmPartialErrorsAndFailedImportClearOldData() {
+        QTemporaryDir directory; QVERIFY(directory.isValid()); const auto raw = directory.filePath("synthetic-nonfinite.bin");
+        auto driver = std::make_shared<pm_fixture::Driver>(); AmdPmPanel panel(nullptr, pmReader(driver));
+        panel.resize(1300, 1040); panel.show();
+        auto *table = panel.findChild<QTableWidget *>("pmTable"); auto *copy = panel.findChild<QPushButton *>("pmCopy");
+        auto bytes = pm_fixture::bytes(); pm_fixture::put(bytes, 0x20c, 0x7f800001);
+        QVERIFY(savePmFile(raw, bytes)); QVERIFY(!panel.loadRawFile(raw, 0x730204));
+        QCOMPARE(table->rowCount(), 24); QCOMPARE(table->item(0, 1)->text(), QString("Unavailable"));
+        QCOMPARE(table->item(0, 4)->text(), QString("0x7f800001")); QCOMPARE(table->item(1, 1)->text(), QString("1800"));
+        QVERIFY(copy->isEnabled()); copy->click();
+        const auto json = directory.filePath("synthetic-partial.json");
+        QVERIFY(savePmJson(json, QApplication::clipboard()->text().toStdString())); QVERIFY(!panel.loadSnapshotFile(json));
+        QCOMPARE(table->rowCount(), 24); QVERIFY(copy->isEnabled());
+        auto *status = panel.findChild<QLabel *>("pmStatus");
+        QTRY_VERIFY(status->height() >= status->heightForWidth(status->width()));
+        QVERIFY(status->geometry().bottom() < panel.height());
+        const auto shot = qEnvironmentVariable("OCTOOL_PM_ERROR_TEST_SCREENSHOT");
+        if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        for (unsigned kind = 0; kind < 5; ++kind) {
+            QVERIFY(savePmFile(raw, pm_fixture::bytes())); QVERIFY(panel.loadRawFile(raw, 0x730204));
+            if (kind == 0) QVERIFY(!panel.loadSnapshotFile(directory.filePath("missing")));
+            if (kind == 1) { QVERIFY(savePmJson(json, "{}")); QVERIFY(!panel.loadSnapshotFile(json)); }
+            if (kind == 2) { QVERIFY(savePmFile(raw, std::vector<std::uint8_t>(2843))); QVERIFY(!panel.loadRawFile(raw, 0x730204)); }
+            if (kind == 3) { QVERIFY(savePmFile(raw, std::vector<std::uint8_t>(2845))); QVERIFY(!panel.loadRawFile(raw, 0x730204)); }
+            if (kind == 4) QVERIFY(!panel.loadRawFile(raw, 0x730205));
+            QCOMPARE(table->rowCount(), 0); QVERIFY(!copy->isEnabled());
+        }
+        QVERIFY(driver->calls.empty());
+    }
+    void pmValidationAndInputChangesDoNotReadDriver() {
+        auto driver = std::make_shared<pm_fixture::Driver>(); AmdPmPanel panel(nullptr, pmReader(driver));
+        auto *table = panel.findChild<QTableWidget *>("pmTable"); auto *copy = panel.findChild<QPushButton *>("pmCopy");
+        auto *bclk = panel.findChild<QLineEdit *>("pmBclk"); auto *scale = panel.findChild<QCheckBox *>("pmScale");
+        QCOMPARE(table->rowCount(), 0); QVERIFY(!copy->isEnabled()); QVERIFY(driver->calls.empty());
+        scale->setChecked(true);
+        for (const auto &text : QStringList{"", "0", "-1", "nan", "inf", "1e999", "100 ", "100MHz", "1,00"}) {
+            bclk->setText(text); panel.findChild<QPushButton *>("pmRead")->click();
+            QVERIFY(driver->calls.empty()); QCOMPARE(table->rowCount(), 0); QVERIFY(!copy->isEnabled());
+        }
+        QTemporaryDir directory; QVERIFY(directory.isValid()); const auto raw = directory.filePath("synthetic.bin");
+        QVERIFY(savePmFile(raw, pm_fixture::bytes())); bclk->setText("100");
+        QVERIFY(panel.loadRawFile(raw, 0x730204)); bclk->setText("101"); QCOMPARE(table->rowCount(), 0);
+        QVERIFY(panel.loadRawFile(raw, 0x730204)); scale->setChecked(false); QCOMPARE(table->rowCount(), 0);
+        QVERIFY(panel.loadRawFile(raw, 0x730204)); panel.findChild<QComboBox *>("pmVersion")->setCurrentIndex(2);
+        QCOMPARE(table->rowCount(), 0); QVERIFY(!copy->isEnabled()); QVERIFY(driver->calls.empty());
+    }
+    void pmDriverReadAndFailurePresentation() {
+        auto driver = std::make_shared<pm_fixture::Driver>(); AmdPmPanel panel(nullptr, pmReader(driver)); panel.show();
+        auto *read = panel.findChild<QPushButton *>("pmRead"); auto *table = panel.findChild<QTableWidget *>("pmTable");
+        auto *copy = panel.findChild<QPushButton *>("pmCopy");
+        for (unsigned stage = 0; stage < 7; ++stage) {
+            *driver = pm_fixture::Driver(); read->click(); QTRY_VERIFY(read->isEnabled());
+            QCOMPARE(table->rowCount(), 24); QVERIFY(copy->isEnabled());
+            *driver = pm_fixture::Driver();
+            if (stage < 5) driver->failCall = stage + 1;
+            else if (stage == 5) driver->mutateAfter = 4;
+            else driver->files["pm_table_version"] = pm_fixture::le(0x730205, 4);
+            read->click(); QCOMPARE(table->rowCount(), 0); QVERIFY(!copy->isEnabled());
+            QTRY_VERIFY(read->isEnabled()); QCOMPARE(table->rowCount(), 0); QVERIFY(!copy->isEnabled());
+            QCOMPARE(driver->calls.size(), std::size_t(stage < 5 ? stage + 1 : stage == 5 ? 5 : 2));
+            const auto status = panel.findChild<QLabel *>("pmStatus")->text();
+            QVERIFY(status.contains(stage < 5 ? "Permission denied" : stage == 5 ? "discarded" : "Unsupported"));
+        }
+    }
+    void pmClosingPanelWhileReaderRuns() {
+        struct State { std::atomic<bool> entered{false}, release{false}; };
+        auto state = std::make_shared<State>(); auto driver = std::make_shared<pm_fixture::Driver>();
+        std::weak_ptr<pm_fixture::Driver> alive = driver;
+        auto *panel = new AmdPmPanel(nullptr, [driver, state](const std::string &name, std::vector<std::uint8_t> &bytes, std::size_t maximum) {
+            state->entered = true;
+            const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+            while (!state->release && std::chrono::steady_clock::now() < deadline) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            return driver->read(name, bytes, maximum);
+        });
+        driver.reset(); panel->findChild<QPushButton *>("pmRead")->click();
+        QTRY_VERIFY(state->entered.load()); QVERIFY(!panel->loadSnapshotFile("unused-while-busy"));
+        delete panel; QVERIFY(!alive.expired()); state->release = true;
+        QTRY_VERIFY(alive.expired());
+    }
     void platformPanelsDoNotAccessHardwareAtConstruction() {
         Reference reference; auto access=reference.access();
         IntelControlsPanel intel(access,nullptr,7); AmdTuningPanel amd(access,nullptr,7); MemoryBoardPanel inventory;

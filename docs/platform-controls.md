@@ -1,5 +1,11 @@
 # 平台功能恢复增量（2026-10-10）
 
+<!-- amd-pm-pending -->
+2026-10-11：新增 [AMD PM 遥测与快照互通](amd-pm-recovery.md)。GUI / CLI 共用八个精确版本的
+24 项公共字段解码，接通已有兼容驱动的 sysfs 读取；文件导入不需要驱动。
+本轮 GUI / CLI 完整云端矩阵尚待记录；下方成功结果属于此前版本。
+完整 PM 表、原生传输、物理目标映射及其余调参/真机验收仍未完成。
+
 <!-- amd-curve-recovery-06b477c -->
 最新生产代码 `06b477c` 已验证：[核心 4/4](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841095)、[Linux 23/23](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38013841147)。
 新增 [Shimada 曲线原值查询](amd-curve-query-recovery.md)，输入为显式固件编号，失败结果不会显示为有效值。

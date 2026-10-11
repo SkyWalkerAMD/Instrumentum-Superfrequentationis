@@ -4,6 +4,7 @@ import binascii
 import json
 import os
 import subprocess
+import struct
 import sys
 import tempfile
 from pathlib import Path
@@ -34,7 +35,50 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 342, len(reports)
+assert len(reports) == 362, len(reports)
+pm_reports = [r for r in reports if r["command"] == "amd-pm-decode" and "pm" in r["data"]]
+assert len(pm_reports) == 20
+assert [r["ok"] for r in pm_reports] == [True] * 9 + [False, True, True, False, False, False, False, True, True, False, False]
+for i, r in enumerate(pm_reports):
+    assert r["data"]["offline"] and not r["data"]["table_read_attempted"] and not r["data"]["direct_register_access"]
+    pm = r["data"]["pm"]
+    if r["ok"]:
+        assert len(pm["fields"]) == 24 and len(pm["raw_hex"]) == pm["expected_bytes"] * 2
+        fields = {v["name"]: v for v in pm["fields"]}
+        assert fields["FCLK"]["stored_value"] == 2000 and fields["FCLK"]["raw"] == "0x44fa0000"
+        assert fields["VDD current"]["stored_value"] == 100 and fields["VDD current"]["unit"] == "A"
+        assert fields["Misc VRM temperature"]["stored_value"] == 50
+        assert fields["FCLK"]["scaled_clock_mhz"] == (2050 if i in (8,16) else None)
+    elif i == 9:
+        assert pm["fields"][0]["stored_value"] is None and pm["fields"][0]["raw"] == "0x7f800001"
+        assert pm["fields"][1]["stored_value"] == 1800
+    else:
+        assert pm["fields"] == []
+with tempfile.TemporaryDirectory(prefix="octool-pm-") as directory:
+    root = Path(directory)
+    capture = pm_reports[8]["data"]["pm"]
+    path = root / '快照-".json'
+    path.write_text(json.dumps(capture), encoding="utf-8")
+    decoded = run("amd-pm-decode", "--file", str(path))
+    assert decoded["data"]["pm"] == capture
+    path.write_text(json.dumps(decoded), encoding="utf-8")
+    assert run("amd-pm-decode", "--file", str(path))["data"]["pm"] == capture
+    raw = root / "raw.bin"; raw.write_bytes(bytes.fromhex(capture["raw_hex"]))
+    decoded = run("amd-pm-decode", "--file", str(raw), "--version", capture["version"])
+    assert decoded["data"]["pm"]["fields"][0]["scaled_clock_mhz"] is None
+    for dest in (root, root / "bad", root / "huge"):
+        dest.mkdir(exist_ok=True)
+        (dest / "pm_table_version").write_bytes(struct.pack("<I", 0x730204))
+        (dest / "pm_table_size").write_bytes(struct.pack("<Q", 2844))
+    (root / "pm_table").write_bytes(raw.read_bytes())
+    os.mkfifo(root / "bad/pm_table")
+    (root / "huge/pm_table").write_bytes(raw.read_bytes() + b"\0")
+    subprocess.run([fixture,"--pm-fixture",str(root)],check=True,timeout=15,env=env)
+    run("amd-pm-decode", "--file", str(root / "bad/pm_table"), "--version", "0x730204", code=3)
+    if not Path("/sys/kernel/ryzen_smu_drv").exists():
+        absent = run("amd-pm-read", code=3)
+        assert absent["error"] == -2 and not absent["data"]["table_read_attempted"]
+        assert absent["data"]["pm"]["fields"] == []
 spd_reports = [r for r in reports if r["command"] == "spd-decode" and "spd" in r["data"]]
 assert len(spd_reports) == 83
 assert [r["ok"] for r in spd_reports[:68]] == [True, False, False, False, True, False, True, True, False,

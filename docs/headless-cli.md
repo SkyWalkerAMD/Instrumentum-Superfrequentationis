@@ -1,7 +1,7 @@
 # 无桌面版 OCTool
 
-2026-10-11：新增 [XMP 用户槽检查与 EXPO 增强时序存储值](spd-user-enhanced.md)。
-GUI / CLI 同步读取；用户槽及增强功能的启用状态保持未知，未新增档案写入。
+2026-10-11：新增 [AMD PM 遥测与快照互通](amd-pm-recovery.md)。GUI / CLI 同步支持八个精确表版本的
+24 项公共字段；系统已有兼容驱动时可读取 sysfs 表，也可无驱动离线解码原始文件与 JSON。
 
 `octool-cli` 是独立的 Linux x86_64 命令行程序，直接复用现有核心、HAL 和 `.ko` 驱动。
 构建和运行均不依赖 Qt、X11、Wayland、桌面会话、polkit 或常驻服务，可从 SSH 或本地终端运行。
@@ -61,7 +61,22 @@ XMP 3.0 每个有效厂家档案有 30 项数值，含 8 项次级时序及其�
 DDR4 XMP 另含[限定 CAS 编码、推荐 DIMM 数](spd-profile-geometry.md)，`cas.encoding` 标识位图定义，
 `recommended_dimms_per_channel` 是头部推荐值或 null。基础字段支持对称堆叠容量、DDR5 1/2/4/8
 子通道及 3DS 不同逻辑 rank 刷新下限；未知组织版本/保留编码不输出容量。
-档案启用位不表示 BIOS 已套用；XMP/EXPO 值不代表当前训练值，EXPO 增强时序和档案写入仍未实现。
+档案启用位不表示 BIOS 已套用；XMP/EXPO 值不代表当前训练值。现已支持 EXPO 增强时序存储字，
+其启用语义与档案写入仍未实现。
+
+AMD PM 遥测使用以下独立命令，不接受 `--cpu` 或 `--apply`：
+
+```sh
+octool-cli amd-pm-read > pm.json
+octool-cli amd-pm-decode --file pm.json
+octool-cli amd-pm-decode --file pm.bin --version 0x730204 --bclk-mhz 102.5
+```
+
+`amd-pm-read` 读取已存在的 `/sys/kernel/ryzen_smu_drv`，不安装或加载驱动；
+读取可能触发该驱动向固件请求传输。未知版本/不符长度不会读表，读前读后元数据变化会丢弃样本。
+此接口不保证原子样本、实际新鲜度或物理目标。`amd-pm-decode` 支持 GUI / CLI JSON 双向导入，
+从原始字节重新解码；原始二进制必须指定版本。默认显示存储时钟，可选外部 BCLK 单独修正，
+未测量 BCLK。详细单位、错误和 JSON 约定见[PM 实现说明](amd-pm-recovery.md)。
 
 CPU 硬件命令必须明确指定 `--cpu`，从 `diagnose` 的 `data.allowed_cpus` 选择。
 原始 MMIO/PCI 命令分别指定物理地址或 BDF，不使用 `--cpu`。

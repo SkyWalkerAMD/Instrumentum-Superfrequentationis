@@ -2,6 +2,8 @@
 #include "commands.h"
 #include "json.h"
 #include "platform/linux_inventory_native.h"
+#include "platform/linux_amd_pm.h"
+#include "tests/amd_pm_fixture.h"
 #include "tests/amd_curve_fixture.h"
 #include "tests/intel_oc_fixture.h"
 #include "tests/intel_controls_fixture.h"
@@ -647,6 +649,63 @@ void offlineSpdDoesNotCreateBackend() {
     }
     assert(!opens);
 }
+void pmCommands() {
+    char path[] = "/tmp/octool-pm-XXXXXX"; const int fd = mkstemp(path); assert(fd >= 0); close(fd);
+    struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
+    unsigned opens = 0; const auto factory = [&] { ++opens; return std::unique_ptr<HardwareBackend>(); };
+    const auto text = [&](const std::string &s) { std::ofstream f(path, std::ios::binary); f << s; f.close(); assert(f); };
+    const auto binary = [&](const std::vector<std::uint8_t> &b) { text(std::string(b.begin(), b.end())); };
+    const auto invoke = [&](const std::vector<std::string> &args, int code) {
+        std::ostringstream out; assert(run(args, out, factory) == code);
+        if (emit) std::cout << out.str();
+        return out.str();
+    };
+    for (const auto &args : std::vector<std::vector<std::string>>{
+        {"amd-pm-decode"}, {"amd-pm-decode","--file",""}, {"amd-pm-decode","--file",path,"--version","0"},
+        {"amd-pm-decode","--file",path,"--version","0x730205"}, {"amd-pm-decode","--file",path,"--version","4294967296"},
+        {"amd-pm-decode","--file",path,"--version","0x730204","--version","0x730404"},
+        {"amd-pm-decode","--file",path,"--cpu","0"}, {"amd-pm-decode","--file",path,"--apply"},
+        {"amd-pm-decode","--file",path,"--bclk-mhz","0"}, {"amd-pm-decode","--file",path,"--bclk-mhz","-1"},
+        {"amd-pm-decode","--file",path,"--bclk-mhz","nan"}, {"amd-pm-decode","--file",path,"--bclk-mhz","1e999"},
+        {"amd-pm-read","--file",path}, {"amd-pm-read","--version","0x730204"}, {"amd-pm-read","--cpu","0"},
+        {"amd-pm-read","--apply"}, {"amd-pm-read","--timeout-ms","100"}, {"amd-pm-read","--bclk-mhz"," 100"}}) {
+        std::ostringstream out; assert(run(args, out, factory) == 2);
+    }
+    for (const auto &layout : amdPmLayouts()) {
+        binary(pm_fixture::bytes(layout.bytes));
+        invoke({"amd-pm-decode","--file",path,"--version",std::to_string(layout.version)}, 0);
+    }
+    auto bytes = pm_fixture::bytes(); binary(bytes);
+    invoke({"amd-pm-decode","--file",path,"--version","0x730204","--bclk-mhz","102.5"}, 0);
+    pm_fixture::put(bytes, 0x20c, 0x7f800001); binary(bytes);
+    invoke({"amd-pm-decode","--file",path,"--version","0x730204"}, 3);
+    const auto capture = amdPmJson(decodeAmdPm(pm_fixture::bytes(), 0x730204)); text(capture);
+    const auto report = invoke({"amd-pm-decode","--file",path}, 0);
+    text(report); invoke({"amd-pm-decode","--file",path}, 0);
+    binary(std::vector<std::uint8_t>(2843)); invoke({"amd-pm-decode","--file",path,"--version","0x730204"}, 3);
+    binary(std::vector<std::uint8_t>(2845)); invoke({"amd-pm-decode","--file",path,"--version","0x730204"}, 3);
+    text("{}"); invoke({"amd-pm-decode","--file",path}, 3);
+    invoke({"amd-pm-decode","--file",std::string(path) + "-missing"}, 3);
+    text(capture); invoke({"amd-pm-decode","--file",path,"--bclk-mhz","102.5"}, 0);
+    auto tampered = capture; const auto pos = tampered.find("\"stored_value\":2000"); assert(pos != std::string::npos);
+    tampered.replace(pos, std::string("\"stored_value\":2000").size(), "\"stored_value\":99999"); text(tampered);
+    invoke({"amd-pm-decode","--file",path}, 0);
+    tampered = capture; tampered.replace(tampered.find("\"schema\":1"), 10, "\"schema\":2"); text(tampered);
+    invoke({"amd-pm-decode","--file",path}, 3);
+    text("{\"bad\":\"\xed\xa0\x80\"}"); invoke({"amd-pm-decode","--file",path}, 3);
+    assert(!opens);
+}
+void pmFilesystem(const std::string &root) {
+    const auto reader = octool::platform::linuxAmdPmReader(root);
+    const auto good = readAmdPmDriver(reader); assert(!good.snapshot.error && good.snapshot.fields[0].value == 2000);
+    std::vector<std::uint8_t> bytes{1};
+    assert(reader("../pm_table", bytes, 2844) == -EINVAL && bytes.empty());
+    assert(octool::platform::linuxAmdPmReader(std::string(root) + '\0')("pm_table", bytes, 2844) == -EINVAL);
+    const auto broken = readAmdPmDriver(octool::platform::linuxAmdPmReader(root + "/bad"));
+    assert(broken.snapshot.error == -EINVAL && broken.snapshot.fields.empty());
+    const auto huge = readAmdPmDriver(octool::platform::linuxAmdPmReader(root + "/huge"));
+    assert(huge.snapshot.error == -EFBIG && huge.snapshot.fields.empty());
+}
 void inventory(const std::string &root) {
     const auto result = octool::platform::linuxInventoryNative(root);
     bool temperature = false, board = false, invalid = false, power = false, oversized = false;
@@ -666,10 +725,11 @@ void inventory(const std::string &root) {
 }
 int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--inventory-fixture") { inventory(argv[2]); return 0; }
+    if (argc == 3 && std::string(argv[1]) == "--pm-fixture") { pmFilesystem(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
-    offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend();
+    offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "15 CLI scenario groups passed (132 rejected commands, real core with simulated devices)\n";
+    if (!emit) std::cout << "16 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }
