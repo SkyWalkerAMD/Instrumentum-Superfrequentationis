@@ -427,10 +427,15 @@ void expoCorruptionAndIsolation() {
     for (unsigned bit = 0; bit < 128 * 8; ++bit) {
         auto b = original; b[832+bit/8] ^= std::uint8_t(1u << (bit%8));
         const auto r = decodeSpd(b);
-        assert(!r.error && !r.xmp.error && r.xmp.profiles[0].values.size() == 30);
+        assert(!r.error && r.xmp.profiles[0].values.size() == 30);
         assert(r.expo.profiles.empty());
-        if (bit < 32) assert(!r.expo.present && !r.expo.error);
-        else assert(r.expo.present && r.expo.error == -EILSEQ && r.expo.raw.size() == 128);
+        if (bit < 32) {
+            // Once the EXPO signature is damaged, its occupancy is unknown.
+            // The captured user-slot bytes still fail their independent CRC;
+            // valid manufacturer data must remain available alongside that error.
+            assert(!r.expo.present && !r.expo.error && r.xmp.error == -EILSEQ);
+            assert(r.xmp.userProfiles[0].error == -EILSEQ && r.xmp.userProfiles[0].values.empty());
+        } else assert(!r.xmp.error && r.expo.present && r.expo.error == -EILSEQ && r.expo.raw.size() == 128);
     }
     auto b = original; b[660] ^= 1;
     auto r = decodeSpd(b); assert(r.xmp.error == -EILSEQ && !r.expo.error && r.expo.profiles.size() == 2);
