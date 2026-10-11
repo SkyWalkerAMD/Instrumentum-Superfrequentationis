@@ -525,7 +525,7 @@ void offlineSpdDoesNotCreateBackend() {
     struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
     unsigned opens = 0;
     const auto factory = [&]() { ++opens; return std::unique_ptr<HardwareBackend>(); };
-    for (unsigned scenario = 0; scenario < 19; ++scenario) {
+    for (unsigned scenario = 0; scenario < 29; ++scenario) {
         auto bytes = octool::test::spdFixture();
         int expected = 0;
         if (scenario == 1) { bytes[720] ^= 1; expected = 3; }
@@ -549,6 +549,19 @@ void offlineSpdDoesNotCreateBackend() {
         if (scenario == 16) { bytes[643] = 7; octool::test::spdSeal(bytes,640,62); expected = 3; }
         if (scenario == 17) { bytes[660] ^= 1; expected = 3; }
         if (scenario == 18) { octool::test::spdWord(bytes,886,0); octool::test::spdSeal(bytes,832,126); expected = 3; }
+        if (scenario >= 19) bytes = octool::test::spdDdr4XmpFixture();
+        if (scenario == 20) {
+            bytes[386] = 2; bytes[388] = 15;
+            std::fill(bytes.begin()+393,bytes.begin()+440,std::uint8_t(0xff));
+        }
+        if (scenario == 21) { bytes[388] = 1; expected = 3; }
+        if (scenario == 22) { bytes.resize(486); expected = 3; }
+        if (scenario == 23) { bytes[387] = 0x21; expected = 3; }
+        if (scenario == 24) { bytes[396] = 1; bytes[431] = 0x80; expected = 3; }
+        if (scenario == 25) bytes[384] = 0;
+        if (scenario == 26) bytes.resize(385);
+        if (scenario == 27) { bytes[389] = 4; expected = 3; }
+        if (scenario == 28) { bytes.resize(392); expected = 3; }
         std::ofstream file(path,std::ios::binary);
         file.write(reinterpret_cast<const char *>(bytes.data()), std::streamsize(bytes.size())); file.close(); assert(file);
         std::ostringstream out; assert(run({"spd-decode", "--file", path},out,factory) == expected);

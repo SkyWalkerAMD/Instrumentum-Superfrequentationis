@@ -28,6 +28,7 @@ def stage_cli(stage, binary):
     copy(ROOT / "docs/intel-uncore-recovery.md", stage / "usr/share/doc/octool-cli/intel-uncore-recovery.md")
     copy(ROOT / "docs/ddr5-xmp-recovery.md", stage / "usr/share/doc/octool-cli/ddr5-xmp-recovery.md")
     copy(ROOT / "docs/ddr5-expo-recovery.md", stage / "usr/share/doc/octool-cli/ddr5-expo-recovery.md")
+    copy(ROOT / "docs/ddr4-xmp-recovery.md", stage / "usr/share/doc/octool-cli/ddr4-xmp-recovery.md")
     return info
 
 

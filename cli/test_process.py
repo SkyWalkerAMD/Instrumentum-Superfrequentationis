@@ -34,11 +34,12 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 278, len(reports)
+assert len(reports) == 288, len(reports)
 spd_reports = [r for r in reports if r["command"] == "spd-decode" and "spd" in r["data"]]
-assert len(spd_reports) == 19
+assert len(spd_reports) == 29
 assert [r["ok"] for r in spd_reports] == [True, False, False, False, True, False, True, True, False,
-                                        True, False, False, False, True, False, True, False, False, False]
+                                        True, False, False, False, True, False, True, False, False, False,
+                                        True, True, False, False, False, False, True, True, False, False]
 for i, r in enumerate(spd_reports):
     xmp = r["data"]["spd"]["xmp"]
     assert not xmp["active_configuration_measured"]
@@ -92,6 +93,36 @@ for i, r in enumerate(spd_reports):
         assert expo["error"] == -22 and expo["profiles"][int(i == 18)]["error"] == -22
     if i in (16, 17):
         assert expo["error"] == 0 and r["data"]["spd"]["xmp"]["error"] != 0
+for i in range(19, 29):
+    data = spd_reports[i]["data"]["spd"]
+    xmp = data["xmp"]
+    assert data["memory_type"] == 12 and data["crc_valid"]
+    assert not data["expo"]["inspected"] and data["expo"]["present"] is None
+    assert xmp["crc_supported"] is (None if i == 26 else False)
+    assert xmp["crc"] == {"checked": False, "valid": None, "stored": None, "computed": None}
+    assert xmp["header_captured"] == (i not in (25, 26, 28))
+    assert xmp["revision"] == (None if i in (25, 26, 28) else 33 if i == 23 else 32)
+    assert xmp["present"] is (False if i == 25 else None if i == 26 else True)
+    assert xmp["error"] == {21: -95, 22: -90, 23: -95, 24: -22, 27: -95, 28: -90}.get(i, 0)
+    if i in (23, 25, 26, 28):
+        assert xmp["profiles"] == []
+        continue
+    assert len(xmp["profiles"]) == 2 and len(xmp["raw_hex"]) == 18
+    for slot, p in enumerate(xmp["profiles"]):
+        assert p["index"] == slot+1 and p["offset"] == 393+47*slot
+        assert not p["name_supported"] and p["name_valid"] is None and p["name"] is None
+        assert not p["crc"]["checked"] and p["crc"]["valid"] is None
+        assert p["enabled"] == (i != 20 or slot == 1)
+        assert p["raw_hex"] is None if i == 22 and slot == 1 else len(p["raw_hex"]) == 94
+        assert p["timebase_raw"] == ({20: 15, 21: 1}.get(i, 0) if slot == 0 else 4 if i == 27 else 0)
+        if p["error"] or not p["enabled"]:
+            assert p["values"] == []
+        else:
+            expected = ([1350, 625, 9999, 11001, 11998, 36000, 51975, 350000, 260000, 160000, 30000, 3997, 6004],
+                        [1200, 667, 10124, 11126, 12123, 36125, 52100, 350125, 260125, 160125, 30125, 4122, 6129])[slot]
+            assert [v["value"] for v in p["values"]] == expected
+            assert [v["unit"] for v in p["values"]] == ["mV"] + ["ps"]*12
+            assert p["values"][9]["name"] == "tRFC4 minimum"
 assert len([r for r in reports if r["error"] == -22]) >= 132
 uncore = [r for r in reports if r["command"] in ("intel-uncore-read", "intel-uncore-set") and "before" in r["data"]]
 assert len(uncore) == 16

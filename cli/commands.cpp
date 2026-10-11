@@ -541,7 +541,8 @@ std::string spd(const std::string &path, const std::vector<std::uint8_t> &bytes,
         for (auto b : p.raw) { raw += digits[b >> 4]; raw += digits[b & 15]; }
         profiles.push_back(object({{"index", number(p.index)}, {"offset", number(p.offset)}, {"enabled", boolean(p.enabled)},
             {"blocked_by_expo", boolean(p.blockedByExpo)}, {"error", number(p.error)},
-            {"name_valid", boolean(p.nameValid)}, {"name", p.nameValid ? quote(p.name) : "null"},
+            {"name_supported", boolean(p.nameSupported)}, {"name_valid", p.nameSupported ? boolean(p.nameValid) : "null"},
+            {"name", p.nameValid ? quote(p.name) : "null"}, {"timebase_raw", p.timebaseRaw >= 0 ? number(p.timebaseRaw) : "null"},
             {"crc", crcJson(p.crc)}, {"raw_hex", raw.empty() ? "null" : quote(raw)}, {"values", array(values)}}));
     }
     const auto &expo = decoded.expo;
@@ -561,7 +562,9 @@ std::string spd(const std::string &path, const std::vector<std::uint8_t> &bytes,
         {"memory_type", number(decoded.memoryType)}, {"crc_checked", boolean(decoded.crcChecked)},
         {"crc_valid", decoded.crcChecked ? boolean(decoded.crcValid) : "null"}, {"fields", array(fields)},
         {"xmp", object({{"inspected", boolean(xmp.inspected)}, {"present", xmp.inspected ? boolean(xmp.present) : "null"},
-            {"revision", xmp.crc.checked ? number(xmp.revision) : "null"}, {"error", number(xmp.error)}, {"crc", crcJson(xmp.crc)},
+            {"header_captured", boolean(xmp.headerCaptured)}, {"revision", xmp.headerCaptured ? number(xmp.revision) : "null"},
+            {"configuration_raw", xmp.headerCaptured ? number(xmp.configurationRaw) : "null"}, {"raw_hex", rawHex(xmp.raw)},
+            {"crc_supported", xmp.inspected ? boolean(xmp.crcSupported) : "null"}, {"error", number(xmp.error)}, {"crc", crcJson(xmp.crc)},
             {"expo_present", xmp.expoInspected ? boolean(xmp.expoPresent) : "null"},
             {"active_configuration_measured", "false"}, {"profiles", array(profiles)}})},
         {"expo", object({{"inspected", boolean(expo.inspected)}, {"present", expo.inspected ? boolean(expo.present) : "null"},

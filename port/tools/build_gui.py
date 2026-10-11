@@ -69,6 +69,7 @@ def main():
         env = dict(os.environ, QT_QPA_PLATFORM="offscreen",
                    OCTOOL_SPD_TEST_SCREENSHOT=str((tests / "spd-fixture.png").resolve()),
                    OCTOOL_EXPO_TEST_SCREENSHOT=str((tests / "expo-fixture.png").resolve()),
+                   OCTOOL_DDR4_XMP_TEST_SCREENSHOT=str((tests / "ddr4-xmp-fixture.png").resolve()),
                    OCTOOL_UNCORE_TEST_SCREENSHOT=str((tests / "uncore-fixture.png").resolve()),
                    OCTOOL_TURBO_TEST_SCREENSHOT=str((tests / "turbo-fixture.png").resolve()),
                    OCTOOL_CONTROL_TEST_SCREENSHOT=str((tests / "controls-fixture.png").resolve()),

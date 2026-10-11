@@ -46,9 +46,9 @@ octool-cli inventory > inventory.json
 octool-cli spd-decode --file memory.spd > spd.json
 ```
 
-SPD 报告同时解码 [DDR5 XMP 3.0 厂家档案](ddr5-xmp-recovery.md)和 [EXPO 1.0 基础档案](ddr5-expo-recovery.md)：电压、原始时序和独立区域 CRC；XMP 另含厂家档案名称。
+SPD 报告解码 [DDR4 XMP 2.0 两组档案](ddr4-xmp-recovery.md)、[DDR5 XMP 3.0 厂家档案](ddr5-xmp-recovery.md)和 [EXPO 1.0 基础档案](ddr5-expo-recovery.md)：电压及存储时序；DDR5 档案有区域 CRC，XMP 3.0 另含名称。XMP 2.0 没有扩展 CRC，JSON 和 GUI 会明确区分。
 档案校验失败仍保留基础字段及其它完整档案；`spd-decode` 返回退出码 3。
-XMP 值不代表已启用或当前训练值；EXPO 区域只识别，不解码或应用。
+档案启用位不表示 BIOS 已套用；XMP/EXPO 值不代表当前训练值，EXPO 增强时序和档案写入仍未实现。
 
 CPU 硬件命令必须明确指定 `--cpu`，从 `diagnose` 的 `data.allowed_cpus` 选择。
 原始 MMIO/PCI 命令分别指定物理地址或 BDF，不使用 `--cpu`。

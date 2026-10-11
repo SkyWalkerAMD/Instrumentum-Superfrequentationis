@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "date": "2026-10-11",
+  "sources": [
+    {
+      "repo": "tianocore/edk2-platforms",
+      "ref": "9c9a4821e0866f219f1d03ba24a6a433ea408223",
+      "path": "Silicon/Intel/CoffeelakeSiliconPkg/SystemAgent/MemoryInit/Include/Coffeelake/MrcSpdData.h",
+      "sha": "45de5084c08011fd15a61a074ae06622a352bd77",
+      "bytes": 56881,
+      "sha256": "0bc1d51ee46f6ba4241084c5b55a96fb03bb2750f27c7f9d27d97f15b5d71d5c",
+      "url": "https://github.com/tianocore/edk2-platforms/blob/9c9a4821e0866f219f1d03ba24a6a433ea408223/Silicon/Intel/CoffeelakeSiliconPkg/SystemAgent/MemoryInit/Include/Coffeelake/MrcSpdData.h"
+    },
+    {
+      "repo": "integralfx/DDR4XMPEditor",
+      "ref": "521be188e0aaf1a25ba13a7de25033dd9fbb2d42",
+      "path": "DDR4SPD/XMP.cs",
+      "sha": "be54930c80b7c2e74d6256f94cf2923be226f090",
+      "bytes": 6956,
+      "sha256": "d3a82b2b265c20dfd1a685e8ff1613320e5ed4a8bb1510ab853f8f5efe12f4b1",
+      "url": "https://github.com/integralfx/DDR4XMPEditor/blob/521be188e0aaf1a25ba13a7de25033dd9fbb2d42/DDR4SPD/XMP.cs"
+    },
+    {
+      "repo": "integralfx/DDR4XMPEditor",
+      "ref": "521be188e0aaf1a25ba13a7de25033dd9fbb2d42",
+      "path": "DDR4SPD/SPD.cs",
+      "sha": "6369ca733d1f067a58eb31daf4664d2d1fcaa8c3",
+      "bytes": 24183,
+      "sha256": "44c14196b7ed1d7831fc2568f5f4daa12f771518c743c89cada305611001a8f2",
+      "url": "https://github.com/integralfx/DDR4XMPEditor/blob/521be188e0aaf1a25ba13a7de25033dd9fbb2d42/DDR4SPD/SPD.cs"
+    },
+    {
+      "repo": "memtest86plus/memtest86plus",
+      "ref": "70e4ec1881660970757e8be058c8169700a9d94d",
+      "path": "system/spd.c",
+      "sha": "7a1fe156160a688471392f0f4247497a3e666db9",
+      "bytes": 33007,
+      "sha256": "fa61fbf7bc12471e6dd208eac64ea06e6f4da034b3f1ebf74f128527d3f25c9f",
+      "url": "https://github.com/memtest86plus/memtest86plus/blob/70e4ec1881660970757e8be058c8169700a9d94d/system/spd.c"
+    }
+  ],
+  "scope": "Pinned format facts only; independent bounded implementation. No upstream source linked/copied. Synthetic fixtures, no target hardware or original DDR4 function emulation.",
+  "layout": {
+    "header_offset": 384,
+    "header_size": 9,
+    "revision": 32,
+    "configuration_offset": 386,
+    "enable_bits": [
+      0,
+      1
+    ],
+    "timebase_offsets": [
+      388,
+      389
+    ],
+    "profile_offsets": [
+      393,
+      440
+    ],
+    "profile_size": 47,
+    "crc_provided": false,
+    "profile_names_provided": false
+  },
+  "timing_contract": {
+    "mtb_ps": 125,
+    "ftb_ps": 1,
+    "ftb_signed": true,
+    "supported_timebase_low_nibble": 0,
+    "voltage_mV": "bit7 * 1000 + bits6:0 * 10",
+    "all_decoded_timing_units": "ps"
+  },
+  "discrepancies": [
+    {
+      "source": "memtest86plus/system/spd.c",
+      "detail": "parse_spd_ddr4 applies byte 427 fine correction to tRAS and omits it for tRC; Intel field definition and DDR4XMPEditor identify tRC. Regression varies all 256 fine codes while tRAS remains fixed."
+    },
+    {
+      "source": "Intel MrcSpdData.h",
+      "detail": "Bank group wording on tRRD fine comments is swapped; follow field names and byte layout, report only tRRD_S/tRRD_L names."
+    }
+  ]
+}

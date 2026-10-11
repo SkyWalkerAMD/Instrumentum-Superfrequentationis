@@ -1021,6 +1021,50 @@ private slots:
         bytes.resize(959); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
         QCOMPARE(row("EXPO 2","VDD"),-1); QCOMPARE(table->item(row("EXPO","Header"),4)->text(),QString("Block truncated"));
     }
+    void spdDdr4XmpProfilesAndUnverifiedIntegrity() {
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("ddr4-xmp.spd");
+        auto bytes = octool::test::spdDdr4XmpFixture();
+        const auto save = [&] { QFile file(path); if (!file.open(QIODevice::WriteOnly)) return false;
+            return file.write(reinterpret_cast<const char *>(bytes.data()),qint64(bytes.size())) == qint64(bytes.size()); };
+        MemoryBoardPanel panel; panel.resize(1100,900); panel.show();
+        auto *table = panel.findChild<QTableWidget *>("inventoryTable"); QVERIFY(table);
+        const auto row = [&](const QString &group, const QString &name) {
+            for (int i = 0; i < table->rowCount(); ++i)
+                if (table->item(i,0)->text() == group && table->item(i,1)->text() == name) return i;
+            return -1;
+        };
+        QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        const auto decoded = octool::core::decodeSpd(bytes);
+        for (const auto &p : decoded.xmp.profiles) {
+            const auto group = QString("XMP %1").arg(p.index);
+            for (const auto &v : p.values) {
+                const int r = row(group,QString::fromStdString(v.name)); QVERIFY(r >= 0);
+                QCOMPARE(table->item(r,2)->text(),QString::number(v.value));
+                QCOMPARE(table->item(r,3)->text(),QString::fromStdString(v.unit));
+                QCOMPARE(table->item(r,4)->text(),QString("No XMP checksum provided"));
+            }
+            QCOMPARE(row(group,"Profile name"),-1); QCOMPARE(row(group,"CRC stored / computed"),-1);
+        }
+        QCOMPARE(table->item(row("XMP 1","tRC minimum"),2)->text(),QString("51975"));
+        QCOMPARE(table->item(row("XMP 2","tCK minimum"),2)->text(),QString("667"));
+        QCOMPARE(row("EXPO","Header"),-1);
+        const int header = row("XMP","Header"); QVERIFY(header >= 0);
+        QCOMPARE(table->item(header,2)->text(),QString("Revision 0x20"));
+        QCOMPARE(table->item(header,4)->text(),QString("No XMP checksum provided"));
+        QTest::qWait(50); table->scrollToItem(table->item(header,0),QAbstractItemView::PositionAtTop);
+        QTRY_VERIFY(table->visualItemRect(table->item(header,0)).top() >= 0 && table->visualItemRect(table->item(header,0)).top() < 20);
+        const auto screenshot = qEnvironmentVariable("OCTOOL_DDR4_XMP_TEST_SCREENSHOT");
+        if (!screenshot.isEmpty()) { QTest::qWait(50); QVERIFY(panel.grab().save(screenshot)); }
+        bytes[388] = 1; QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("XMP 1","VDD"),-1); QVERIFY(row("XMP 2","VDD") >= 0);
+        QCOMPARE(table->item(row("XMP 1","Timebase byte"),4)->text(),QString("Unsupported timebase"));
+        bytes[386] = 2; QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(table->item(row("XMP 1","Stored profile"),4)->text(),QString("Disabled"));
+        bytes = octool::test::spdDdr4XmpFixture(); bytes.resize(486); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QVERIFY(row("XMP 1","VDD") >= 0); QCOMPARE(row("XMP 2","VDD"),-1);
+        bytes.resize(392); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("XMP 1","VDD"),-1); QCOMPARE(table->item(row("XMP","Header"),4)->text(),QString("Header truncated"));
+    }
     void spdFileFailuresClearPriorRows() {
         QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("profiles.spd");
         auto bytes = octool::test::spdFixture(); QFile file(path); QVERIFY(file.open(QIODevice::WriteOnly));

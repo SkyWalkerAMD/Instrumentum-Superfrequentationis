@@ -55,8 +55,8 @@ CLI 在 `data.spd` 新增 `expo`，保留原有 `xmp.expo_present` 兼容字段�
 [固定来源和本地样本检查](validation/ddr5-expo-sources.json)记录内容哈希、原始标志与 CRC；
 增强块公开样本与之前的混合 SPD 来自同一上游，不算独立真机验收。
 
-增强时序的启用语义、每通道 DIMM 数、EXPO 用户档案、EXPO 1.1、XMP 用户档案、DDR4 XMP
-及写入流程仍待还原。原版 ELF 上一轮已定位 XMP 读取函数；本轮 EXPO 是对内存功能的扩展，
+增强时序的启用语义、每通道 DIMM 数、EXPO 用户档案、EXPO 1.1、XMP 用户档案
+及写入流程仍待还原；[DDR4 XMP 2.0 读取](ddr4-xmp-recovery.md)已另行实现。原版 ELF 上一轮已定位 XMP 读取函数；本轮 EXPO 是对内存功能的扩展，
 不宣称已模拟或恢复原版 EXPO 函数。校验通过仅说明字节一致，不认证超频设置适用性。
 
 新增回归覆盖两组数值及单位、全部捕获长度、EXPO 区域逐位损坏、全部配置字节、禁用残留、

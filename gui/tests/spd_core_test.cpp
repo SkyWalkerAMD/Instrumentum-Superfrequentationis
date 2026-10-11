@@ -83,7 +83,7 @@ void gatesAndOverlap() {
     b[643] = 3; spdSeal(b,640,62);
     r = decodeSpd(b); assert(!r.xmp.error && r.xmp.profiles[2].blockedByExpo && !r.xmp.profiles[2].enabled);
     b[2] = 0x0c; spdSeal(b,0,126);
-    r = decodeSpd(b); assert(!r.error && !r.xmp.inspected);
+    r = decodeSpd(b); assert(!r.error && r.xmp.inspected && !r.xmp.present);
 }
 void boundedNames() {
     auto b = spdFixture(); std::fill(b.begin()+654,b.begin()+670,'A'); spdSeal(b,640,62);
@@ -190,9 +190,116 @@ void expoNumericBoundaries() {
     b.resize(4096); assert(!decodeSpd(b).expo.error);
     b.resize(4097); assert(decodeSpd(b).error == -EINVAL);
 }
+void ddr4Profiles() {
+    const auto b = spdDdr4XmpFixture(); const auto r = decodeSpd(b);
+    assert(!r.error && r.crcValid && r.xmp.present && r.xmp.headerCaptured && !r.xmp.error);
+    assert(r.xmp.revision == 0x20 && r.xmp.raw.size() == 9 && r.xmp.enabledMask == 3);
+    assert(!r.xmp.crcSupported && !r.xmp.crc.checked && !r.expo.inspected && !r.xmp.expoInspected);
+    const unsigned expected[][13] = {
+        {1350,625,9999,11001,11998,36000,51975,350000,260000,160000,30000,3997,6004},
+        {1200,667,10124,11126,12123,36125,52100,350125,260125,160125,30125,4122,6129}
+    };
+    assert(r.xmp.profiles.size() == 2);
+    for (unsigned i = 0; i < 2; ++i) {
+        const auto &p = r.xmp.profiles[i];
+        assert(p.index == i+1 && p.offset == 393+47*i && p.enabled && !p.error && !p.crc.checked);
+        assert(!p.nameSupported && !p.nameValid && p.name.empty() && p.timebaseRaw == 0 && p.raw.size() == 47 && p.values.size() == 13);
+        for (unsigned v = 0; v < 13; ++v) {
+            assert(p.values[v].value == expected[i][v]);
+            assert(p.values[v].unit == (v ? "ps" : "mV"));
+        }
+    }
+    assert(r.xmp.profiles[0].values[9].name == "tRFC4 minimum" && b == spdDdr4XmpFixture());
+}
+void ddr4Truncation() {
+    const auto b = spdDdr4XmpFixture();
+    for (unsigned n = 0; n <= b.size(); ++n) {
+        const auto r = decodeSpd(std::vector<std::uint8_t>(b.begin(),b.begin()+n));
+        if (n < 128) { assert(r.error && !r.xmp.inspected); continue; }
+        assert(!r.error && r.crcValid && !r.xmp.crc.checked);
+        if (n < 386) { assert(!r.xmp.inspected && !r.xmp.error); continue; }
+        assert(r.xmp.present);
+        if (n < 393) { assert(r.xmp.error == -EMSGSIZE && !r.xmp.headerCaptured && r.xmp.profiles.empty()); continue; }
+        assert(r.xmp.headerCaptured && r.xmp.profiles.size() == 2);
+        for (const auto &p : r.xmp.profiles) {
+            assert(p.error == (n < p.offset+47 ? -EMSGSIZE : 0));
+            assert(p.values.empty() == (n < p.offset+47));
+        }
+    }
+}
+void ddr4FlagsAndRevision() {
+    for (unsigned flags = 0; flags < 256; ++flags) {
+        auto b = spdDdr4XmpFixture(); b[386] = std::uint8_t(flags);
+        const auto r = decodeSpd(b); assert(!r.xmp.error && r.xmp.configurationRaw == flags);
+        for (unsigned i = 0; i < 2; ++i) {
+            const auto &p = r.xmp.profiles[i];
+            assert(p.enabled == bool(flags & (1u<<i)) && p.values.empty() == !p.enabled);
+        }
+    }
+    auto b = spdDdr4XmpFixture(); b[386] = 0;
+    std::fill(b.begin()+393,b.end(),std::uint8_t(0xff)); b[388] = b[389] = 0xff;
+    auto r = decodeSpd(b); assert(!r.xmp.error && r.xmp.profiles[0].raw.size() == 47);
+    b.resize(393); r = decodeSpd(b); assert(!r.xmp.error && r.xmp.profiles[0].raw.empty());
+    for (unsigned revision : {0u,0x10u,0x21u,0x30u,0xffu}) {
+        b[387] = std::uint8_t(revision); r = decodeSpd(b);
+        assert(r.xmp.error == -ENOTSUP && r.xmp.headerCaptured && r.xmp.profiles.empty());
+    }
+    b[384] = 0; r = decodeSpd(b); assert(r.xmp.inspected && !r.xmp.present && !r.xmp.error);
+}
+void ddr4Timebases() {
+    for (unsigned code = 0; code < 256; ++code) {
+        auto b = spdDdr4XmpFixture(); b[388] = std::uint8_t(code);
+        // The base timebase is intentionally unsupported: XMP has its own.
+        b[17] = 0x0f; spdSeal(b,0,126);
+        const auto r = decodeSpd(b); assert(!r.error && !r.xmp.profiles[1].error);
+        const auto &p = r.xmp.profiles[0];
+        assert(p.timebaseRaw == int(code) && p.error == ((code&15) ? -ENOTSUP : 0));
+        assert(p.values.empty() == bool(code&15));
+    }
+    auto b = spdDdr4XmpFixture(); b[389] = 4;
+    auto r = decodeSpd(b); assert(!r.xmp.profiles[0].error && r.xmp.profiles[1].error == -ENOTSUP);
+    b[386] = 1; r = decodeSpd(b); assert(!r.xmp.error && !r.xmp.profiles[1].enabled);
+}
+void ddr4SignedTimingsAndBounds() {
+    const unsigned fine[] = {38,37,36,35,34,33,32}, positions[] = {1,2,3,4,6,11,12};
+    const unsigned coarse[] = {5,80,88,96,416,32,48};
+    for (unsigned f = 0; f < 7; ++f) for (unsigned code = 0; code < 256; ++code) {
+        auto b = spdDdr4XmpFixture(); b[393+fine[f]] = std::uint8_t(code);
+        const auto p = decodeSpd(b).xmp.profiles[0];
+        const int adjustment = code < 128 ? int(code) : int(code)-256;
+        assert(!p.error && p.values[positions[f]].value == unsigned(int(coarse[f])*125+adjustment));
+        assert(p.values[5].value == 36000); // tRAS never receives tRC's fine offset.
+    }
+    for (unsigned code = 0; code < 256; ++code) {
+        auto b = spdDdr4XmpFixture(); b[393] = std::uint8_t(code);
+        assert(decodeSpd(b).xmp.profiles[0].values[0].value == (code>>7)*1000+(code&127)*10);
+    }
+    auto b = spdDdr4XmpFixture(); b[396] = b[431] = 0;
+    auto r = decodeSpd(b); assert(r.xmp.error == -EINVAL && r.xmp.profiles[0].values.empty() && !r.xmp.profiles[1].error);
+    b[396] = 1; b[431] = 0x80; r = decodeSpd(b); assert(r.xmp.profiles[0].error == -EINVAL);
+    b = spdDdr4XmpFixture(); b[401] = 0; b[430] = 0xff;
+    r = decodeSpd(b); assert(r.xmp.profiles[0].error == -EINVAL && r.xmp.profiles[0].values.empty());
+    b = spdDdr4XmpFixture(); b[404] = b[405] = b[406] = b[413] = b[414] = 0xff; b[427] = 0x7f;
+    spdWord(b,407,65535); r = decodeSpd(b);
+    assert(!r.xmp.error && r.xmp.profiles[0].values[5].value == 511875);
+    assert(r.xmp.profiles[0].values[6].value == 512002 && r.xmp.profiles[0].values[7].value == 8191875);
+    assert(r.xmp.profiles[0].values[10].value == 511875);
+    b.resize(4096); assert(!decodeSpd(b).xmp.error);
+    b.resize(4097); assert(decodeSpd(b).error == -EINVAL);
+}
+void ddr4IntegrityAndTypeIsolation() {
+    auto b = spdDdr4XmpFixture(); b[393] ^= 1;
+    auto r = decodeSpd(b);
+    assert(!r.error && r.crcValid && !r.xmp.error && !r.xmp.crc.checked && !r.xmp.profiles[0].crc.checked);
+    assert(r.xmp.profiles[0].values[0].value == 1340); // No invented extension checksum.
+    b[18] ^= 1; r = decodeSpd(b); assert(r.error == -EILSEQ && !r.xmp.inspected);
+    b = spdDdr4XmpFixture(); b.resize(1024); b[2] = 0x12; spdSeal(b,0,510);
+    r = decodeSpd(b); assert(!r.error && r.xmp.inspected && !r.xmp.present && r.xmp.profiles.empty());
+}
 }
 int main() {
     threeProfiles(); truncation(); corruptedSections(); gatesAndOverlap(); boundedNames(); numericBoundaries();
     expoProfiles(); expoTruncation(); expoCorruptionAndIsolation(); expoFlagsAndRevision(); expoNumericBoundaries();
-    std::cout << "11 SPD XMP/EXPO scenario groups passed (all capture lengths and section corruption bits)\n";
+    ddr4Profiles(); ddr4Truncation(); ddr4FlagsAndRevision(); ddr4Timebases(); ddr4SignedTimingsAndBounds(); ddr4IntegrityAndTypeIsolation();
+    std::cout << "17 SPD XMP/EXPO scenario groups passed (capture lengths, CRC, timebases and signed timing boundaries)\n";
 }

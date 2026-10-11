@@ -323,7 +323,8 @@ MemoryBoardPanel::MemoryBoardPanel(QWidget *parent) : QWidget(parent) {
     setObjectName("memoryBoard"); auto *layout=new QVBoxLayout(this);
     description("Memory and motherboard · BIOS identity, kernel sensors and DDR4 / DDR5 SPD\n"
         "SPD describes the module, not the currently trained timings. Sensors depend on the installed kernel driver. "
-        "DDR5 XMP 3.0 manufacturer profiles and EXPO 1.0 basic profiles include stored voltages, timings and CRC checks. "
+        "DDR4 XMP 2.0, DDR5 XMP 3.0 and EXPO 1.0 basic profiles show stored voltages and timings. "
+        "XMP 2.0 has no profile checksum; DDR5 profiles include CRC checks. "
         "EXPO enhanced timings are not decoded. "
         "Timing writes, PMIC / VRM controls and board-specific clocks are not yet recovered.",layout,this);
     auto *buttons=new QHBoxLayout; auto *read=new QPushButton("Read once",this); read->setObjectName("inventoryRead"); buttons->addWidget(read);
@@ -353,21 +354,26 @@ void MemoryBoardPanel::showSpd(const QString &path,const QByteArray &bytes,const
     const QString state=decoded.error ? failure(decoded.error) : decoded.crcChecked ? "Base CRC valid" : "CRC not verified";
     append(table_,{"SPD","Captured bytes",QString::number(bytes.size()),"bytes",state,path});
     for(const auto &field:decoded.fields) append(table_,{"SPD",QString::fromStdString(field.name),QString::fromStdString(field.value),"",state,path});
-    if (decoded.memoryType != 0x12 || decoded.error) return;
+    if (decoded.error) return;
     const auto &xmp = decoded.xmp;
     const QString headerState = !xmp.inspected ? "Header not captured" : !xmp.present ? "Not present" :
-        !xmp.crc.checked ? "Header truncated" : !xmp.crc.valid ? "Header CRC mismatch" :
-        xmp.revision != 0x30 ? "Unsupported revision" : "Header CRC valid";
-    append(table_,{"XMP", "Header", xmp.crc.checked ? QString("Revision 0x%1").arg(xmp.revision,2,16,QChar('0')) : QString(), "", headerState, path});
+        !xmp.headerCaptured ? "Header truncated" : xmp.crc.checked && !xmp.crc.valid ? "Header CRC mismatch" :
+        xmp.revision != (decoded.memoryType == 0x0c ? 0x20u : 0x30u) ? "Unsupported revision" :
+        xmp.crcSupported ? "Header CRC valid" : "No XMP checksum provided";
+    append(table_,{"XMP", "Header", xmp.headerCaptured ? QString("Revision 0x%1").arg(xmp.revision,2,16,QChar('0')) : QString(), "", headerState, path});
     for (const auto &p : xmp.profiles) {
         const QString group = QString("XMP %1").arg(p.index);
         const QString status = p.blockedByExpo ? (p.enabled ? "Conflicting XMP enable bit / EXPO region" : "EXPO region") :
             !p.enabled ? "Disabled" : p.crc.checked && !p.crc.valid ? "Profile CRC mismatch" :
-            p.error ? failure(p.error) : "Profile CRC valid";
-        append(table_,{group, "Profile name", p.nameValid ? QString::fromStdString(p.name) : "Invalid name bytes", "", status, path});
+            p.error ? failure(p.error) : xmp.crcSupported ? "Profile CRC valid" : "No XMP checksum provided";
+        if (p.nameSupported) append(table_,{group, "Profile name", p.nameValid ? QString::fromStdString(p.name) : "Invalid name bytes", "", status, path});
+        else append(table_,{group,"Stored profile",p.enabled ? "Enabled" : "Disabled","",status,path});
+        if (p.timebaseRaw >= 0) append(table_,{group,"Timebase byte",QString("0x%1").arg(p.timebaseRaw,2,16,QChar('0')),"hex",
+            (p.timebaseRaw & 15) ? "Unsupported timebase" : "125 ps MTB / 1 ps FTB",path});
         if (p.crc.checked) append(table_,{group,"CRC stored / computed",QString("%1 / %2").arg(p.crc.stored,4,16,QChar('0')).arg(p.crc.computed,4,16,QChar('0')), "", status, path});
         for (const auto &v : p.values) append(table_,{group,QString::fromStdString(v.name),QString::number(v.value),QString::fromStdString(v.unit),status,path});
     }
+    if (decoded.memoryType != 0x12) return;
     const auto &expo = decoded.expo;
     const QString expoState = !expo.inspected ? "Block not captured" : !expo.present ? "Not present" :
         !expo.crc.checked ? "Block truncated" : !expo.crc.valid ? "Block CRC mismatch" :

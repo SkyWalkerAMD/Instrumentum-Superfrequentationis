@@ -13,7 +13,8 @@ struct SpdCrc {
 struct SpdQuantity { std::string name, unit; unsigned value; };
 struct SpdXmpProfile {
     unsigned index = 0, offset = 0;
-    bool enabled = false, blockedByExpo = false, nameValid = false;
+    bool enabled = false, blockedByExpo = false, nameSupported = false, nameValid = false;
+    int timebaseRaw = -1; // XMP 2.0 per-profile byte; absent for XMP 3.0.
     int error = 0;
     std::string name;
     SpdCrc crc;
@@ -22,9 +23,11 @@ struct SpdXmpProfile {
 };
 struct SpdXmp {
     bool inspected = false, present = false, expoInspected = false, expoPresent = false;
-    unsigned revision = 0, enabledMask = 0;
+    bool headerCaptured = false, crcSupported = false;
+    unsigned revision = 0, enabledMask = 0, configurationRaw = 0;
     int error = 0;
     SpdCrc crc;
+    std::vector<std::uint8_t> raw;
     std::vector<SpdXmpProfile> profiles;
 };
 struct SpdExpoProfile {
@@ -57,6 +60,8 @@ std::uint16_t spdCrc16(const std::uint8_t *bytes, std::size_t length);
 // Bounded offline decoder, also used for sysfs EEPROM reads. Never writes SPD.
 // DDR4/DDR5 base CRC, identity/geometry and revision-1 timing requirements.
 // DDR5 XMP 3.0 manufacturer profiles 1..3 have independent CRC checks.
+// DDR4 XMP 2.0 profiles 1..2 have no extension CRC or descriptive names.
+// Their per-profile time bases must encode 125 ps MTB / signed 1 ps FTB.
 // Timings are stored requirements, never measured or currently trained values.
 // EXPO 1.0 basic profiles use a shared bundle CRC. XMP user slots and EXPO
 // enhanced timings, DIMMs-per-channel and other flag meanings are not decoded.

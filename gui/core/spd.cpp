@@ -18,6 +18,7 @@ SpdCrc blockCrc(const std::vector<std::uint8_t> &b, unsigned offset, unsigned co
     return crc;
 }
 void profileName(const std::vector<std::uint8_t> &b, unsigned offset, SpdXmpProfile &p) {
+    p.nameSupported = true;
     p.nameValid = true;
     for (unsigned i = 0; i < 16 && b[offset + i]; ++i) {
         const auto c = b[offset + i];
@@ -26,8 +27,62 @@ void profileName(const std::vector<std::uint8_t> &b, unsigned offset, SpdXmpProf
     }
     while (!p.name.empty() && p.name.back() == ' ') p.name.pop_back();
 }
-SpdXmp decodeXmp(const std::vector<std::uint8_t> &b) {
+SpdXmp decodeXmp2(const std::vector<std::uint8_t> &b) {
     SpdXmp out;
+    if (b.size() < 386) return out;
+    out.inspected = true;
+    out.present = b[384] == 0x0c && b[385] == 0x4a;
+    if (!out.present) return out;
+    if (b.size() < 393) { out.error = -EMSGSIZE; return out; }
+    out.headerCaptured = true;
+    out.raw.assign(b.begin() + 384, b.begin() + 393);
+    out.revision = b[387]; out.configurationRaw = b[386];
+    if (out.revision != 0x20) { out.error = -ENOTSUP; return out; }
+    out.enabledMask = out.configurationRaw & 3;
+    for (unsigned i = 0; i < 2; ++i) {
+        SpdXmpProfile p;
+        p.index = i + 1; p.offset = 393 + 47 * i;
+        p.enabled = (out.enabledMask & (1u << i)) != 0;
+        p.timebaseRaw = b[388 + i];
+        if (b.size() >= p.offset + 47)
+            p.raw.assign(b.begin() + p.offset, b.begin() + p.offset + 47);
+        if (p.enabled) {
+            if (p.raw.empty()) p.error = -EMSGSIZE;
+            else if (p.timebaseRaw & 15) p.error = -ENOTSUP;
+            else {
+                const unsigned off = p.offset, voltage = b[off];
+                p.values.push_back({"VDD", "mV", (voltage >> 7) * 1000 + (voltage & 127) * 10});
+                // XMP 2.0 uses its own timebase bytes, not base SPD byte 17.
+                // Fine offsets are signed two's complement. Byte 427 belongs
+                // to tRC, while tRAS has no fine adjustment.
+                const char *names[] = {"tCK minimum", "tAA minimum", "tRCD minimum", "tRP minimum",
+                    "tRAS minimum", "tRC minimum", "tRFC1 minimum", "tRFC2 minimum", "tRFC4 minimum",
+                    "tFAW minimum", "tRRD_S minimum", "tRRD_L minimum"};
+                const unsigned coarse[] = {b[off+3], b[off+8], b[off+9], b[off+10],
+                    (unsigned(b[off+11]&15)<<8)|b[off+12], (unsigned(b[off+11]>>4)<<8)|b[off+13],
+                    word(b,off+14), word(b,off+16), word(b,off+18),
+                    (unsigned(b[off+20]&15)<<8)|b[off+21], b[off+22], b[off+23]};
+                const unsigned fine[] = {38,37,36,35,0,34,0,0,0,0,33,32};
+                for (unsigned t = 0; t < 12; ++t) {
+                    const unsigned code = fine[t] ? b[off+fine[t]] : 0;
+                    const int adjustment = code < 128 ? int(code) : int(code)-256;
+                    const int ps = int(coarse[t])*125 + adjustment;
+                    if (ps < 0 || (t == 0 && ps == 0)) { p.error = -EINVAL; break; }
+                    p.values.push_back({names[t], "ps", unsigned(ps)});
+                }
+                if (p.error) p.values.clear();
+            }
+        }
+        // Base CRC does not cover any XMP 2.0 byte. Never mark these profiles
+        // CRC-verified or infer enablement from nonzero payload data.
+        if (!out.error && p.error) out.error = p.error;
+        out.profiles.push_back(p);
+    }
+    return out;
+}
+SpdXmp decodeXmp3(const std::vector<std::uint8_t> &b) {
+    SpdXmp out;
+    out.crcSupported = true;
     // A short base-only capture cannot establish absence of an extension.
     if (b.size() < 642) return out;
     out.inspected = true;
@@ -38,7 +93,10 @@ SpdXmp decodeXmp(const std::vector<std::uint8_t> &b) {
     }
     if (!out.present) return out;
     if (b.size() < 704) { out.error = -EMSGSIZE; return out; }
+    out.headerCaptured = true;
+    out.raw.assign(b.begin() + 640, b.begin() + 704);
     out.revision = b[642];
+    out.configurationRaw = b[643];
     out.crc = blockCrc(b, 640);
     if (!out.crc.valid) { out.error = -EILSEQ; return out; }
     if (out.revision != 0x30) { out.error = -ENOTSUP; return out; }
@@ -222,7 +280,8 @@ SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &b) {
         for (unsigned i = serial; i < serial+4; ++i) hex << std::setw(2) << unsigned(b[i]);
         add("Serial number (hex)", hex.str());
     }
-    if (ddr5) { out.xmp = decodeXmp(b); out.expo = decodeExpo(b); }
+    if (ddr5) { out.xmp = decodeXmp3(b); out.expo = decodeExpo(b); }
+    else out.xmp = decodeXmp2(b);
     return out;
 }
 } }

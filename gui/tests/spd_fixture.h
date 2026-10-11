@@ -52,4 +52,24 @@ inline std::vector<std::uint8_t> spdExpoFixture() {
     spdSeal(b,832,126);
     return b;
 }
+// Independent synthetic DDR4 XMP 2.0 slots. Deliberately distinct coarse/fine
+// fields catch byte addressing, signed arithmetic and tRAS/tRC mix-ups.
+inline std::vector<std::uint8_t> spdDdr4XmpFixture() {
+    std::vector<std::uint8_t> b(512);
+    b[1] = 0x10; b[2] = 0x0c; b[3] = 2; b[4] = 5; b[12] = 1; b[13] = 3;
+    b[18] = 10; b[24] = 110; spdSeal(b,0,126);
+    b[384] = 0x0c; b[385] = 0x4a; b[386] = 3; b[387] = 0x20;
+    for (unsigned i = 0; i < 2; ++i) {
+        const unsigned off = 393 + 47*i;
+        b[off] = std::uint8_t(i ? 0x94 : 0xa3); b[off+3] = std::uint8_t(5+i);
+        b[off+8] = std::uint8_t(80+i); b[off+9] = std::uint8_t(88+i); b[off+10] = std::uint8_t(96+i);
+        b[off+11] = 0x11; b[off+12] = std::uint8_t(0x20+i); b[off+13] = std::uint8_t(0xa0+i);
+        spdWord(b,off+14,2800+i); spdWord(b,off+16,2080+i); spdWord(b,off+18,1280+i);
+        b[off+20] = 0xf0; b[off+21] = std::uint8_t(240+i); // Reserved high nibble ignored.
+        b[off+22] = std::uint8_t(32+i); b[off+23] = std::uint8_t(48+i);
+        b[off+32] = 4; b[off+33] = 0xfd; b[off+34] = 0xe7;
+        b[off+35] = 0xfe; b[off+36] = 1; b[off+37] = 0xff; b[off+38] = std::uint8_t(i ? 0xad : 0);
+    }
+    return b;
+}
 } }
