@@ -32,7 +32,8 @@ CRC 一致只证明字节一致，不认证配置合理或适用于当前平台�
 捕获不足 642 字节时，XMP 状态为“未捕获”，不是“没有 XMP”。在 832 处检测到 `EXPO`
 时，该共享区域不作为档案 3 解码；若 XMP 头同时启用档案 3，则报告布局冲突。
 [EXPO 1.0 基础参数](ddr5-expo-recovery.md)另行校验并解码，不依赖 XMP 头有效。
-XMP 两个用户档案和 EXPO 增强时序尚未还原；[DDR4 XMP 2.0 读取](ddr4-xmp-recovery.md)已另行实现。
+[XMP 两个用户槽读取和 EXPO 增强时序存储字](spd-user-enhanced.md)现已实现，启用语义与写入仍未还原；
+[DDR4 XMP 2.0 读取](ddr4-xmp-recovery.md)已另行实现。
 
 ## GUI 与 CLI
 

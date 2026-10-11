@@ -58,15 +58,17 @@ UMC 当前显示原始编码，没有把型号未确认的字段换算为周期�
 后续源码增加 [AMD UMC 212 字段、明确地址选择及离线快照](amd-umc-recovery.md)，
 以及 [CPUID 拓扑与 PStates 写入入口研究](amd-topology-recovery.md)。这些新增项的编译证据另行记录。
 
-## 本轮已接入
+## 当前已接入
+
+GUI / CLI 入口及型号限制见[同步功能对照](frontend-progress.md)，当前验证见[交付记录](spd-user-enhanced-validation.md)。
 
 | 页面/公共层 | 实现 | 当前边界 |
 |---|---|---|
 | AMD PStates | 一次事务采样；完整 9 位 VID 编码（bit32 合入）、IddValue/IddDiv 原始位 | 仍只读；只显示编码，不宣称 mV/A；不把 PStateEn 当硬件开关 |
-| Intel Controls | 指定逻辑 CPU 的 RAPL PL1/PL2、使能、clamp、时间窗读取和保留位更新；HWP min/max/desired/EPP；DTS 温度 | RAPL 限明确型号，HWP 限 CPUID 能力并检查是否已启用、是否由 package 控制；不写锁位；没有 VF/OC mailbox、全平台 turbo/fabric/电压域 |
-| AMD tuning / SMUIO | 三套互不混用的原 BIOS mailbox 地址、无写入 probe、选择命令/六参数、完整握手和固件返回；Shimada CCD/core/MHz 频率命令准备 | 仅 Shimada 开放已提取的控制命令；Phoenix/GPT 仅测试和版本查询；其它调参为原始编码，没有伪造物理单位/默认优化值 |
+| Intel Controls | RAPL / HWP 含活动窗口，13 项设置完整回读；DTS 温度；B7 core/cache offset、最大倍率、目标电压及 Adaptive/Override，V/F 点查询与受条件限制的单点 offset，P/E 睿频分组倍率；B7/8F Ring/LLC 范围 | 按型号、能力、锁、旧值与完整回读限制写入；其它型号 V/F、逐物理核心 override、活动核心阈值编辑、W790/W890 电压域、TVB、VID rank/SP、fabric/BCLK 未完成 |
+| AMD tuning / SMUIO | 三套互不混用的原 BIOS mailbox 地址、无写入 probe、选择命令/六参数、完整握手和固件返回；Shimada CCD/core/MHz 频率命令准备、限定身份的原始曲线查询；CPUID 稀疏拓扑 | 仅 Shimada 开放已提取的控制命令；Phoenix/GPT 仅测试和版本查询；CPUID 与固件目标 ID 未建立完整对应，曲线设置、PBO 高层单位及 PM 表实时读取未完成 |
 | Memory / Motherboard | DMI 主板和 BIOS、hwmon 温度/电压/电流/功耗/风扇/频率、驱动已绑定的 SPD；离线 SPD 文件 | 读取已有内核接口；不枚举探测裸 SMBus/EC、不装载驱动、不写 SPD；权限错误逐项显示 |
-| SPD 解码 | DDR4/DDR5 基本类型、组织、料号/序列号、完整基础区 CRC、对称单片/有效堆叠容量、DDR5 1/2/4/8 子通道及 3DS 不同逻辑 rank 刷新要求；修订版 1 的基础时序要求与 CAS 支持列表（含 DDR4 写延迟、DDR5 次级时序及 1.2 新字段）；DDR4 XMP 2.0 两组电压/时序、独立时间基准、限定 CAS 与推荐 DIMM 数（无扩展 CRC）；DDR5 XMP 3.0（含 8 项次级时序与独立 nCK 下限、CAS/命令率） 三个厂家档案的名称、电压、时序和逐区 CRC；EXPO 1.0 两组基础档案、独立启用及整块 CRC ；XMP 3.0 用户槽读取/校验；EXPO 增强时序存储字| DDR5 不足 512 字节时标注基础 CRC 未验证；未知公共区组织版本或保留编码不输出容量；不解码混合 rank 容量；档案值不等于实际运行值；EXPO 增强时序/1.1 与用户档案尚未解码；[档案元数据/组织](spd-profile-geometry.md) / [基础时序](spd-base-timings.md) / [CAS/命令率](spd-cas-recovery.md) / [DDR4 XMP](ddr4-xmp-recovery.md) / [DDR5 XMP](ddr5-xmp-recovery.md) / [EXPO](ddr5-expo-recovery.md) ；用户槽与增强功能启用语义未知，见[说明](spd-user-enhanced.md)|
+| SPD 解码 | DDR4/DDR5 基本类型、组织、料号/序列号、完整基础区 CRC、对称单片/有效堆叠容量、DDR5 1/2/4/8 子通道及 3DS 不同逻辑 rank 刷新要求；修订版 1 的基础时序要求与 CAS 支持列表（含 DDR4 写延迟、DDR5 次级时序及 1.2 新字段）；DDR4 XMP 2.0 两组电压/时序、独立时间基准、限定 CAS 与推荐 DIMM 数（无扩展 CRC）；DDR5 XMP 3.0（含 8 项次级时序与独立 nCK 下限、CAS/命令率） 三个厂家档案的名称、电压、时序和逐区 CRC；EXPO 1.0 两组基础档案、独立启用及整块 CRC ；XMP 3.0 用户槽读取/校验；EXPO 增强时序存储字| DDR5 不足 512 字节时标注基础 CRC 未验证；未知公共区组织版本或保留编码不输出容量；不解码混合 rank 容量；档案值不等于实际运行值；EXPO 增强启用语义、1.1 与用户档案尚未还原；[档案元数据/组织](spd-profile-geometry.md) / [基础时序](spd-base-timings.md) / [CAS/命令率](spd-cas-recovery.md) / [DDR4 XMP](ddr4-xmp-recovery.md) / [DDR5 XMP](ddr5-xmp-recovery.md) / [EXPO](ddr5-expo-recovery.md) ；用户槽与增强功能启用语义未知，见[说明](spd-user-enhanced.md)|
 | 事务 | 同一 HardwareService 的整段独占、等待锁时计入截止时间、取消检查；多寄存器完整预检、旧值比较、保留位/锁位、失败立即停止 | 不是跨进程/内核驱动的硬件锁；不能中断已进入后端的系统调用；多写不具备原子回滚 |
 
 这些对象构造、切换页签都不读取寄存器。只有明确点击读取/探测/发送才产生操作；关闭 Intel/AMD 页面会取消尚未提交的后续工作。
@@ -106,9 +108,9 @@ DDR5 EEPROM 由 [spd5118](https://www.kernel.org/doc/html/latest/hwmon/spd5118.h
 ## 尚未完成的原功能
 
 - PStates 电压/电流的型号专用换算和全核一致写入规则；已知旧版电压/电流算法不能直接作为真值。
-- Intel VF/OC voltage、逐核 ratio / VID rank / SP、W790/W890 各电压域、fabric/BCLK。
-- AMD 自动 CCX/core 拓扑、物理单位调参、VF/boost curve、profiles/hotkeys、PM 表解码及目标固件验证。
-- Intel/AMD 运行时内存时序、训练设置、DDR5 PMIC、主板 EC/VRM/时钟芯片及相关写入。
+- Intel 其它型号的 VF/OC voltage、逐物理核心 override、VID rank / SP、W790/W890 各电压域、fabric/BCLK；B7 已有限定实现，见[功能对照](frontend-progress.md)。
+- AMD CPUID 与固件目标 ID 映射、物理单位调参、曲线设置、profiles/hotkeys、PM 表解码及目标固件验证；CPUID 拓扑和原始曲线查询已实现。
+- Intel 训练时序、AMD UMC 型号专用单位/通道映射、训练设置、DDR5 PMIC、主板 EC/VRM/时钟芯片及相关写入；AMD UMC 原编码读取与快照比较已实现。
 
 以上继续需要从原函数消费者和平台资料建立字段绑定，不能用通用 raw 页或新增页签来宣称这些功能完成。
 

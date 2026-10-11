@@ -1,5 +1,18 @@
 # Instrumentum Superfrequentationis
 
+<!-- spd-user-enhanced-75c5c8b -->
+2026-10-11：最新验证生产提交 `75c5c8b`，GUI / CLI 同步增加 **XMP 3.0 用户槽读取与 EXPO 1.0 增强时序存储值**。
+独立检查捕获状态和 CRC，支持有效数据的零 CRC；用户槽与增强功能的启用状态仍为未知。
+
+- [实现说明](docs/spd-user-enhanced.md)、[功能对照](docs/frontend-progress.md)、[验证交付](docs/spd-user-enhanced-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38130003195) 4/4，各 154 场景组；SPD/UMC 内存检查通过。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38130005949) 12/12，十目标各 14 CTest、342 份 JSON。
+- [GUI/驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38130002165) 23/23，十目标各 68 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-spd-user-enhanced-75c5c8b/`：30 个安装包、源码及 SHA256 校验文件。
+- [AMD PM 表后续研究](docs/amd-pm-table-followup.md)固定八个版本和部分字段，尚未接入实时读取。
+
+原版全部功能与真机调参验收尚未完成。以下保留历史记录。
+
 <!-- spd-profile-geometry-6f544e6 -->
 2026-10-11：最新验证生产提交 `6f544e6`，GUI / CLI 同步补齐 **XMP 2.0 CAS/推荐 DIMM 数、对称堆叠容量与 DDR5 3DS 刷新要求**。
 同时修正 DDR5 四/八子通道计数，并按基础/公共区修订版判断可解释的组织字段。

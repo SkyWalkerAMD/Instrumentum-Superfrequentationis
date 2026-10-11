@@ -55,5 +55,6 @@ illumos DDR4/DDR5 格式定义、封装解析和 DIMM 容量规则。实现独�
 测试使用独立期望值与合成 SPD，覆盖 CAS/推荐数/子通道完整字节编码、封装/密度、
 版本、截断、校验失败及 GUI/CLI 输出；合成的 384 GiB 3DS 算例不代表实机配置。
 
-尚未完成非对称/混合 rank 容量、XMP 3.0 推荐 DIMM 数/用户档案、EXPO 增强时序、
+[XMP 用户槽读取与 EXPO 增强时序存储字](spd-user-enhanced.md)现已实现，启用语义仍未知。
+尚未完成非对称/混合 rank 容量、XMP 3.0 推荐 DIMM 数、EXPO 1.1/用户档案、
 训练值、SPD/PMIC/VRM/EC/时钟写入。这一批实现不进行硬件写入。
