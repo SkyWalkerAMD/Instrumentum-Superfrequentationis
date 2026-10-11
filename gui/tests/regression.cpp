@@ -202,6 +202,7 @@ private slots:
         auto *table = panel.findChild<QTableWidget *>("pmTable"); auto *copy = panel.findChild<QPushButton *>("pmCopy");
         auto *bclk = panel.findChild<QLineEdit *>("pmBclk"); auto *scale = panel.findChild<QCheckBox *>("pmScale");
         QCOMPARE(table->rowCount(), 0); QVERIFY(!copy->isEnabled()); QVERIFY(driver->calls.empty());
+        QVERIFY(table->columnWidth(3) >= table->fontMetrics().boundingRect(table->horizontalHeaderItem(3)->text()).width());
         scale->setChecked(true);
         for (const auto &text : QStringList{"", "0", "-1", "nan", "inf", "1e999", "100 ", "100MHz", "1,00"}) {
             bclk->setText(text); panel.findChild<QPushButton *>("pmRead")->click();

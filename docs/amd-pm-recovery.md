@@ -101,7 +101,7 @@ CLI 包装为 `schema_version: 1`、`command: amd-pm-read/amd-pm-decode`、`data
   提交 `c12c1e60ba8eb25a2cf19d76a3d5b57ca82057fd`，Git blob `7f26dca749f18a7bcce4875ea604fc36271e1e38`。
   核对 sysfs 二进制接口、缓存/刷新和按块读行为；驱动由系统提供，未将候选补丁当成本项目已部署驱动。
 
-核心覆盖 20 组布局、浮点、JSON、驱动读序及故障场景；GUI 和 CLI 另外验证文件互通、
+核心覆盖 19 组布局、浮点、JSON、驱动读序及故障场景；GUI 和 CLI 另外验证文件互通、
 错误呈现和有界文件读取。夹具均是人工合成的固定原始字，不是真机采样。
 当前完整矩阵结果在交付时另记，不用前一版本的结果认证本轮代码。
 完整 PM 表、原生 PM 传输、物理核心/固件目标绑定和目标真机验收仍见[还原状态](recovery-status.md)。

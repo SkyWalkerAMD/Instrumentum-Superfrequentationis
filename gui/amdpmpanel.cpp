@@ -74,6 +74,7 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader) : QWidget(parent), r
 }
 void AmdPmPanel::clear() {
     snapshot_ = AmdPmSnapshot(); table_->setRowCount(0); metadata_->clear(); copy_->setEnabled(false);
+    table_->resizeColumnsToContents();
     status_->setText("Ready. No PM data has been read.");
 }
 bool AmdPmPanel::options(AmdPmOptions &out) {
