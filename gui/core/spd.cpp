@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "spd.h"
+#include <algorithm>
 #include <cerrno>
 #include <iomanip>
 #include <sstream>
@@ -101,6 +102,39 @@ SpdXmp decodeXmp2(const std::vector<std::uint8_t> &b) {
     }
     return out;
 }
+void decodeXmp3Values(const std::vector<std::uint8_t> &b, SpdXmpProfile &p) {
+    p.crc = blockCrc(b, p.offset);
+    if (!p.crc.valid) { p.error = -EILSEQ; return; }
+    if (!word(b, p.offset + 5)) { p.error = -EINVAL; return; }
+    const char *rails[] = {"VPP", "VDD", "VDDQ", "Memory controller voltage"};
+    const unsigned voltageOffsets[] = {0, 1, 2, 4};
+    for (unsigned v = 0; v < 4; ++v) {
+        const unsigned code = b[p.offset + voltageOffsets[v]];
+        p.values.push_back({rails[v], "mV", (code >> 5) * 1000 + (code & 31) * 50});
+    }
+    // Explicit little-endian loads: no packed-struct casts or
+    // host-endianness assumptions. Refresh timings use ns.
+    const char *names[] = {"tCK minimum", "tAA minimum", "tRCD minimum", "tRP minimum",
+        "tRAS minimum", "tRC minimum", "tWR minimum", "tRFC1 minimum", "tRFC2 minimum", "tRFCsb minimum"};
+    const unsigned offsets[] = {5, 13, 15, 17, 19, 21, 23, 25, 27, 29};
+    for (unsigned t = 0; t < 10; ++t)
+        p.values.push_back({names[t], t >= 7 ? "ns" : "ps", word(b, p.offset + offsets[t])});
+    // Each secondary timing stores two independent requirements:
+    // a little-endian time in ps and a one-byte lower limit in
+    // clock cycles. Neither is a measured or derived cycle count.
+    const char *secondary[] = {"tRRD_L", "tCCD_L_WR", "tCCD_L_WR2", "tCCD_L_WTR",
+        "tCCD_S_WTR", "tCCD_L", "tRTP", "tFAW"};
+    for (unsigned t = 0; t < 8; ++t) {
+        const unsigned off = p.offset + 31 + 3 * t;
+        p.values.push_back({std::string(secondary[t]) + " minimum", "ps", word(b, off)});
+        p.values.push_back({std::string(secondary[t]) + " cycle lower limit", "nCK", b[off + 2]});
+    }
+    p.cas = casBitmap(b, p.offset + 7, CasEncoding::Ddr5, true);
+    p.commandRate.captured = true;
+    p.commandRate.raw = b[p.offset + 60];
+    p.commandRate.code = p.commandRate.raw & 15;
+    p.commandRate.recognized = p.commandRate.code <= 3;
+}
 SpdXmp decodeXmp3(const std::vector<std::uint8_t> &b) {
     SpdXmp out;
     out.crcSupported = true;
@@ -133,43 +167,36 @@ SpdXmp decodeXmp3(const std::vector<std::uint8_t> &b) {
             else if (b.size() < p.offset + 64) p.error = -EMSGSIZE;
             else {
                 p.raw.assign(b.begin() + p.offset, b.begin() + p.offset + 64);
-                p.crc = blockCrc(b, p.offset);
-                if (!p.crc.valid) p.error = -EILSEQ;
-                else if (!word(b, p.offset + 5)) p.error = -EINVAL;
-                else {
-                    const char *rails[] = {"VPP", "VDD", "VDDQ", "Memory controller voltage"};
-                    const unsigned voltageOffsets[] = {0, 1, 2, 4};
-                    for (unsigned v = 0; v < 4; ++v) {
-                        const unsigned code = b[p.offset + voltageOffsets[v]];
-                        p.values.push_back({rails[v], "mV", (code >> 5) * 1000 + (code & 31) * 50});
-                    }
-                    // Explicit little-endian loads: no packed-struct casts or
-                    // host-endianness assumptions. Refresh timings use ns.
-                    const char *names[] = {"tCK minimum", "tAA minimum", "tRCD minimum", "tRP minimum",
-                        "tRAS minimum", "tRC minimum", "tWR minimum", "tRFC1 minimum", "tRFC2 minimum", "tRFCsb minimum"};
-                    const unsigned offsets[] = {5, 13, 15, 17, 19, 21, 23, 25, 27, 29};
-                    for (unsigned t = 0; t < 10; ++t)
-                        p.values.push_back({names[t], t >= 7 ? "ns" : "ps", word(b, p.offset + offsets[t])});
-                    // Each secondary timing stores two independent requirements:
-                    // a little-endian time in ps and a one-byte lower limit in
-                    // clock cycles. Neither is a measured or derived cycle count.
-                    const char *secondary[] = {"tRRD_L", "tCCD_L_WR", "tCCD_L_WR2", "tCCD_L_WTR",
-                        "tCCD_S_WTR", "tCCD_L", "tRTP", "tFAW"};
-                    for (unsigned t = 0; t < 8; ++t) {
-                        const unsigned off = p.offset + 31 + 3 * t;
-                        p.values.push_back({std::string(secondary[t]) + " minimum", "ps", word(b, off)});
-                        p.values.push_back({std::string(secondary[t]) + " cycle lower limit", "nCK", b[off + 2]});
-                    }
-                    p.cas = casBitmap(b, p.offset + 7, CasEncoding::Ddr5, true);
-                    p.commandRate.captured = true;
-                    p.commandRate.raw = b[p.offset + 60];
-                    p.commandRate.code = p.commandRate.raw & 15;
-                    p.commandRate.recognized = p.commandRate.code <= 3;
-                }
+                decodeXmp3Values(b, p);
             }
         }
         if (!out.error && p.error) out.error = p.error;
         out.profiles.push_back(p);
+    }
+    // Optional user storage is independent of the three manufacturer enable
+    // bits. Missing bytes cannot establish absence; blank patterns are only
+    // reported as observations. CRC zero can also belong to nonzero data.
+    for (unsigned i = 0; i < 2; ++i) {
+        SpdXmpProfile p;
+        p.index = i + 1; p.offset = 896 + 64 * i; p.enableKnown = false;
+        p.blockedByExpo = i == 0 && out.expoPresent;
+        if (b.size() > p.offset)
+            p.raw.assign(b.begin() + p.offset, b.begin() + std::min(b.size(), std::size_t(p.offset + 64)));
+        if (p.blockedByExpo) p.storageState = "overlap_expo";
+        else if (p.raw.empty()) p.storageState = "not_captured";
+        else if (p.raw.size() != 64) p.storageState = "incomplete";
+        else if (std::all_of(p.raw.begin(), p.raw.end(), [](std::uint8_t v) { return v == 0; }))
+            p.storageState = "all_zero";
+        else if (std::all_of(p.raw.begin(), p.raw.end(), [](std::uint8_t v) { return v == 255; }))
+            p.storageState = "all_ff";
+        else {
+            p.storageState = "stored";
+            decodeXmp3Values(b, p);
+        }
+        // An uncaptured optional slot is informational, not a failed enabled
+        // profile. Complete nonblank data must pass the same CRC/value checks.
+        if (!out.error && p.error) out.error = p.error;
+        out.userProfiles.push_back(p);
     }
     return out;
 }
@@ -204,6 +231,12 @@ SpdExpo decodeExpo(const std::vector<std::uint8_t> &b) {
                     "tRAS minimum", "tRC minimum", "tWR minimum", "tRFC1 minimum", "tRFC2 minimum", "tRFCsb minimum"};
                 for (unsigned t = 0; t < 10; ++t)
                     p.values.push_back({names[t], t >= 7 ? "ns" : "ps", word(b, p.offset + 4 + 2 * t)});
+                // These words have an established layout, but the feature-byte
+                // enable bits do not. Keep them separate from basic timings.
+                const char *enhanced[] = {"tRRD_L", "tCCD_L", "tCCD_L_WR", "tCCD_L_WR2",
+                    "tFAW", "tCCD_L_WTR", "tCCD_S_WTR", "tRTP"};
+                for (unsigned t = 0; t < 8; ++t)
+                    p.storedEnhancedTimings.push_back({std::string(enhanced[t]) + " minimum", "ps", word(b, p.offset + 24 + 2*t)});
             }
         }
         if (!out.error && p.error) out.error = p.error;

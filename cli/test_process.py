@@ -34,10 +34,10 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 327, len(reports)
+assert len(reports) == 342, len(reports)
 spd_reports = [r for r in reports if r["command"] == "spd-decode" and "spd" in r["data"]]
-assert len(spd_reports) == 68
-assert [r["ok"] for r in spd_reports] == [True, False, False, False, True, False, True, True, False,
+assert len(spd_reports) == 83
+assert [r["ok"] for r in spd_reports[:68]] == [True, False, False, False, True, False, True, True, False,
                                         True, False, False, False, True, False, True, False, False, False,
                                         True, True, False, False, False, False, True, True, False, False,
                                         True, True, False, True, True,
@@ -71,7 +71,12 @@ assert values["VDD"] == {"name": "VDD", "value": 1250, "unit": "mV"}
 assert values["tRFC1 minimum"] == {"name": "tRFC1 minimum", "value": 295, "unit": "ns"}
 for i, r in enumerate(spd_reports):
     expo = r["data"]["spd"]["expo"]
-    assert not expo["active_configuration_measured"] and not expo["enhanced_timings_decoded"]
+    assert not expo["active_configuration_measured"]
+    assert expo["enhanced_timings_decoded"] == any(p["stored_enhanced_timings"] for p in expo["profiles"])
+    for p in expo["profiles"]:
+        assert p["enhanced_timings_enabled"] is None
+        assert len(p["stored_enhanced_timings"]) == (8 if p["enabled"] and not p["error"] else 0)
+        assert all(v["unit"] == "ps" for v in p["stored_enhanced_timings"])
     if i == 4:
         assert not expo["inspected"] and expo["present"] is None and expo["revision"] is None
     if i == 0:
@@ -233,6 +238,41 @@ for i in range(54, 68):
             assert all(p["recommended_dimms_per_channel"] is None and p["cas"]["encoding"] == "ddr5-cl20-98" for p in data["xmp"]["profiles"])
         else:
             assert data["crc_checked"] and not data["crc_valid"] and data["cas"] is None
+assert [r["ok"] for r in spd_reports[68:]] == [True, True, False, True, True, True, False, True, False, False, False, True, True, True, False]
+for i in range(68, 83):
+    xmp = spd_reports[i]["data"]["spd"]["xmp"]
+    slots = xmp["user_profiles"]
+    if i in (77, 78):
+        assert slots == []
+        continue
+    assert len(slots) == 2
+    for slot, p in enumerate(slots):
+        assert p["enabled"] is None and p["name"] is None and not p["name_supported"]
+        assert p["index"] == slot+1 and p["offset"] == 896+64*slot
+        if (i in (75, 76, 80, 81, 82) and slot == 0):
+            assert p["storage_state"] == "overlap_expo" and p["blocked_by_expo"] and not p["crc"]["checked"]
+            assert p["values"] == [] and p["captured_bytes"] == 64
+        elif i == 71:
+            assert p["storage_state"] == ("incomplete", "not_captured")[slot]
+            assert p["captured_bytes"] == (54, 0)[slot] and not p["crc"]["checked"] and p["values"] == []
+        elif i in (72, 73):
+            assert p["storage_state"] == ("all_zero" if i == 72 else "all_ff")
+            assert not p["crc"]["checked"] and p["values"] == []
+        elif i in (70, 74) and slot == 0:
+            assert p["storage_state"] == "stored" and p["error"] == (-84 if i == 70 else -22) and p["values"] == []
+        else:
+            assert p["storage_state"] == "stored" and p["crc"]["valid"] and len(p["values"]) == 30
+            values = {v["name"]: v for v in p["values"]}
+            assert values["tCK minimum"]["value"] == (333 if i == 69 and slot == 0 else 400+25*slot)
+            assert values["tRFC1 minimum"]["unit"] == "ns" and p["cas"]["decoded"]
+            if i == 69 and slot == 0:
+                assert p["crc"]["computed"] == p["crc"]["stored"] == 0
+    if i == 79:
+        assert all(not p["enabled"] and p["values"] == [] for p in xmp["profiles"])
+    if i in (80, 81):
+        for slot, p in enumerate(spd_reports[i]["data"]["spd"]["expo"]["profiles"]):
+            expected = [] if i == 81 and slot == 0 else [1000+17*(8*slot+t) for t in range(8)]
+            assert [v["value"] for v in p["stored_enhanced_timings"]] == expected
 assert len([r for r in reports if r["error"] == -22]) >= 132
 uncore = [r for r in reports if r["command"] in ("intel-uncore-read", "intel-uncore-set") and "before" in r["data"]]
 assert len(uncore) == 16

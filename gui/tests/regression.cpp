@@ -1199,6 +1199,73 @@ private slots:
         bytes.resize(127); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
         QCOMPARE(row("SPD tWTR_L minimum (ps)"),-1);
     }
+    void spdUserSlotsAndUnknownEnablement() {
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("user-slots.spd");
+        auto bytes = octool::test::spdUserFixture();
+        const auto save = [&] { QFile file(path); if (!file.open(QIODevice::WriteOnly)) return false;
+            return file.write(reinterpret_cast<const char *>(bytes.data()),qint64(bytes.size())) == qint64(bytes.size()); };
+        MemoryBoardPanel panel; panel.resize(1100,900); panel.show();
+        auto *table = panel.findChild<QTableWidget *>("inventoryTable"); QVERIFY(table);
+        const auto row = [&](const QString &group, const QString &name) {
+            for (int i = 0; i < table->rowCount(); ++i)
+                if (table->item(i,0)->text() == group && table->item(i,1)->text() == name) return i;
+            return -1;
+        };
+        QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        for (unsigned i = 0; i < 2; ++i) {
+            const auto group = QString("XMP User %1").arg(i+1);
+            const int time = row(group,"tCK minimum"), enabled = row(group,"Stored profile"); QVERIFY(time >= 0 && enabled >= 0);
+            QCOMPARE(table->item(time,2)->text(),QString::number(400+25*i));
+            QCOMPARE(table->item(time,4)->text(),QString("CRC valid; enablement unknown"));
+            QCOMPARE(table->item(enabled,2)->text(),QString("Enablement unknown"));
+        }
+        const int start = row("XMP User 1","Storage"); QVERIFY(start >= 0);
+        QTest::qWait(50); table->scrollToItem(table->item(start,0),QAbstractItemView::PositionAtTop);
+        const auto shot = qEnvironmentVariable("OCTOOL_USER_SPD_TEST_SCREENSHOT");
+        if (!shot.isEmpty()) { QTest::qWait(50); QVERIFY(panel.grab().save(shot)); }
+        octool::test::spdZeroCrcUserSlot(bytes); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QVERIFY(row("XMP User 1","tCK minimum") >= 0);
+        QCOMPARE(table->item(row("XMP User 1","CRC stored / computed"),2)->text(),QString("0000 / 0000"));
+        bytes[958] = 1; QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("XMP User 1","tCK minimum"),-1); QVERIFY(row("XMP User 2","tCK minimum") >= 0);
+        bytes = octool::test::spdUserFixture(); bytes.resize(950); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("XMP User 1","tCK minimum"),-1); QCOMPARE(row("XMP User 2","tCK minimum"),-1);
+        QCOMPARE(table->item(row("XMP User 1","Storage"),2)->text(),QString("Incomplete capture"));
+        bytes = octool::test::spdUserFixture(true); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("XMP User 1","tCK minimum"),-1); QVERIFY(row("XMP User 2","tCK minimum") >= 0);
+        QCOMPARE(table->item(row("XMP User 1","Storage"),2)->text(),QString("Occupied by EXPO"));
+        bytes[660] ^= 1; QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("XMP User 2","tCK minimum"),-1);
+    }
+    void spdStoredExpoEnhancedTimings() {
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("enhanced.spd");
+        auto bytes = octool::test::spdExpoFixture();
+        for (unsigned i = 0; i < 16; ++i) octool::test::spdWord(bytes,866+40*(i/8)+2*(i%8),1000+17*i);
+        octool::test::spdSeal(bytes,832,126);
+        const auto save = [&] { QFile file(path); if (!file.open(QIODevice::WriteOnly)) return false;
+            return file.write(reinterpret_cast<const char *>(bytes.data()),qint64(bytes.size())) == qint64(bytes.size()); };
+        MemoryBoardPanel panel; panel.resize(1100,900); panel.show();
+        auto *table = panel.findChild<QTableWidget *>("inventoryTable"); QVERIFY(table);
+        const auto row = [&](const QString &group, const QString &name) {
+            for (int i = 0; i < table->rowCount(); ++i)
+                if (table->item(i,0)->text() == group && table->item(i,1)->text() == name) return i;
+            return -1;
+        };
+        QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        for (unsigned i = 0; i < 2; ++i) {
+            const int time = row(QString("EXPO %1").arg(i+1),"Stored enhanced tRRD_L minimum"); QVERIFY(time >= 0);
+            QCOMPARE(table->item(time,2)->text(),QString::number(1000+136*i)); QCOMPARE(table->item(time,3)->text(),QString("ps"));
+            QCOMPARE(table->item(time,4)->text(),QString("CRC valid; enhanced enablement unknown"));
+        }
+        const int start = row("EXPO 1","Stored enhanced tRRD_L minimum");
+        QTest::qWait(50); table->scrollToItem(table->item(start,0),QAbstractItemView::PositionAtTop);
+        const auto shot = qEnvironmentVariable("OCTOOL_ENHANCED_SPD_TEST_SCREENSHOT");
+        if (!shot.isEmpty()) { QTest::qWait(50); QVERIFY(panel.grab().save(shot)); }
+        bytes[837] = 0x10; octool::test::spdSeal(bytes,832,126); QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("EXPO 1","Stored enhanced tRRD_L minimum"),-1); QVERIFY(row("EXPO 2","Stored enhanced tRRD_L minimum") >= 0);
+        bytes[866] ^= 1; QVERIFY(save()); QVERIFY(panel.loadSpdFile(path));
+        QCOMPARE(row("EXPO 2","Stored enhanced tRRD_L minimum"),-1);
+    }
     void spdExpoProfilesAndIndependentFailures() {
         QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("expo.spd");
         auto bytes = octool::test::spdExpoFixture();

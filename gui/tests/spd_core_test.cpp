@@ -720,6 +720,118 @@ void ddr4IntegrityAndTypeIsolation() {
     r = decodeSpd(b); assert(!r.error && r.xmp.inspected && !r.xmp.present && r.xmp.profiles.empty());
 }
 }
+namespace {
+void userProfileValues() {
+    const auto b = spdUserFixture(); const auto r = decodeSpd(b);
+    assert(!r.error && !r.xmp.error && r.xmp.userProfiles.size() == 2);
+    for (unsigned i = 0; i < 2; ++i) {
+        const auto &p = r.xmp.userProfiles[i];
+        assert(p.index == i+1 && p.offset == 896+64*i && !p.enableKnown && !p.enabled);
+        assert(p.storageState == "stored" && !p.nameSupported && p.name.empty());
+        assert(p.crc.checked && p.crc.valid && p.values.size() == 30 && p.raw.size() == 64);
+        assert(p.values[1].value == 1300+50*i && p.values[1].unit == "mV");
+        assert(p.values[4].value == 400+25*i && p.values[4].unit == "ps");
+        assert(p.values[11].value == 295 && p.values[11].unit == "ns");
+        assert(p.cas.decoded && p.cas.offset == p.offset+7 && p.commandRate.code == i+1);
+        assert(r.xmp.profiles[i].values[4].value == 333+24*i);
+    }
+    assert(b == spdUserFixture());
+}
+void userCaptureLengths() {
+    const auto b = spdUserFixture();
+    for (unsigned size = 704; size <= 1024; ++size) {
+        const auto r = decodeSpd(std::vector<std::uint8_t>(b.begin(),b.begin()+size));
+        assert(r.xmp.userProfiles.size() == 2);
+        for (const auto &p : r.xmp.userProfiles) {
+            const unsigned captured = size <= p.offset ? 0 : std::min(64u,size-p.offset);
+            assert(p.raw.size() == captured && !p.error && !p.enableKnown);
+            assert(p.storageState == (!captured ? "not_captured" : captured < 64 ? "incomplete" : "stored"));
+            assert(p.crc.checked == (captured == 64) && p.values.empty() == (captured != 64));
+        }
+    }
+}
+void userCrcIsolation() {
+    const auto original = spdUserFixture();
+    for (unsigned slot = 0; slot < 2; ++slot) for (unsigned bit = 0; bit < 512; ++bit) {
+        auto b = original; b[896+64*slot+bit/8] ^= std::uint8_t(1u << (bit%8));
+        const auto r = decodeSpd(b);
+        assert(!r.error && r.crcValid && r.xmp.error == -EILSEQ && r.xmp.crc.valid);
+        assert(r.xmp.userProfiles[slot].error == -EILSEQ && r.xmp.userProfiles[slot].values.empty());
+        assert(r.xmp.userProfiles[1-slot].values.size() == 30 && r.xmp.profiles[0].values.size() == 30);
+    }
+}
+void userBlankAndZeroCrc() {
+    auto b = spdFixture(); auto r = decodeSpd(b);
+    assert(r.xmp.userProfiles[0].storageState == "all_zero" && !r.xmp.userProfiles[0].crc.checked);
+    std::fill(b.begin()+896,b.end(),std::uint8_t(255)); r = decodeSpd(b);
+    assert(!r.xmp.error && r.xmp.userProfiles[1].storageState == "all_ff" && r.xmp.userProfiles[1].values.empty());
+    spdZeroCrcUserSlot(b); r = decodeSpd(b);
+    const auto &p = r.xmp.userProfiles[0];
+    assert(!r.xmp.error && p.storageState == "stored" && p.crc.valid && !p.crc.computed && !p.crc.stored);
+    assert(p.values.size() == 30 && p.values[4].value == 333 && !p.enableKnown);
+    b[958] = 1; r = decodeSpd(b); assert(r.xmp.userProfiles[0].error == -EILSEQ);
+    b = spdUserFixture(); spdWord(b,901,0); spdSeal(b,896,62); r = decodeSpd(b);
+    assert(r.xmp.userProfiles[0].error == -EINVAL && r.xmp.userProfiles[0].values.empty());
+}
+void userEnableAndRevisionGates() {
+    for (unsigned flags = 0; flags < 256; ++flags) {
+        auto b = spdUserFixture(); b[643] = std::uint8_t(flags); spdSeal(b,640,62);
+        const auto r = decodeSpd(b);
+        for (const auto &p : r.xmp.userProfiles) assert(!p.enableKnown && !p.enabled && p.values.size() == 30);
+    }
+    for (unsigned revision = 0; revision < 256; ++revision) {
+        auto b = spdUserFixture(); b[642] = std::uint8_t(revision); spdSeal(b,640,62);
+        assert(decodeSpd(b).xmp.userProfiles.empty() == (revision != 0x30));
+    }
+    auto b = spdUserFixture(); b[660] ^= 1; assert(decodeSpd(b).xmp.userProfiles.empty());
+    b = spdUserFixture(); b[20] ^= 1; assert(decodeSpd(b).xmp.userProfiles.empty());
+    assert(decodeSpd(spdDdr4XmpFixture()).xmp.userProfiles.empty());
+}
+void userExpoOverlap() {
+    for (unsigned mode = 0; mode < 4; ++mode) {
+        auto b = spdUserFixture(true);
+        if (mode == 1) b[958] ^= 1;
+        if (mode == 2) { b[836] = 0x11; spdSeal(b,832,126); }
+        if (mode == 3) b.resize(920);
+        const auto r = decodeSpd(b); const auto &p = r.xmp.userProfiles[0];
+        assert(!r.xmp.error && p.blockedByExpo && p.storageState == "overlap_expo" && !p.crc.checked && p.values.empty());
+        assert(r.xmp.userProfiles[1].values.size() == (mode == 3 ? 0u : 30u));
+    }
+}
+void expoStoredEnhancedWords() {
+    const char *names[] = {"tRRD_L", "tCCD_L", "tCCD_L_WR", "tCCD_L_WR2", "tFAW", "tCCD_L_WTR", "tCCD_S_WTR", "tRTP"};
+    const unsigned times[] = {5000,5000,20000,10000,10000,10000,2500,7500};
+    auto b = spdExpoFixture();
+    for (unsigned i = 0; i < 2; ++i) for (unsigned t = 0; t < 8; ++t) spdWord(b,866+40*i+2*t,times[t]+i);
+    spdSeal(b,832,126); const auto r = decodeSpd(b);
+    for (unsigned i = 0; i < 2; ++i) {
+        const auto &p = r.expo.profiles[i]; assert(p.values.size() == 13 && p.storedEnhancedTimings.size() == 8);
+        for (unsigned t = 0; t < 8; ++t) {
+            const auto &v = p.storedEnhancedTimings[t];
+            assert(v.name == std::string(names[t])+" minimum" && v.unit == "ps" && v.value == times[t]+i);
+        }
+    }
+}
+void expoEnhancedByteBoundaries() {
+    for (unsigned slot = 0; slot < 2; ++slot) for (unsigned byte = 0; byte < 16; ++byte) for (unsigned code = 0; code < 256; ++code) {
+        auto b = spdExpoFixture(); b[866+40*slot+byte] = std::uint8_t(code); spdSeal(b,832,126);
+        const auto r = decodeSpd(b); const auto &v = r.expo.profiles[slot].storedEnhancedTimings[byte/2];
+        assert(v.value == (byte%2 ? code*256+165 : 165*256+code) && v.unit == "ps");
+        assert(r.expo.profiles[1-slot].storedEnhancedTimings[byte/2].value == 42405);
+    }
+}
+void expoEnhancedEnableAndIntegrity() {
+    for (unsigned flags = 0; flags < 256; ++flags) {
+        auto b = spdExpoFixture(); b[837] = std::uint8_t(flags); b[838] = std::uint8_t(255-flags); spdSeal(b,832,126);
+        const auto r = decodeSpd(b);
+        for (unsigned i = 0; i < 2; ++i) assert(r.expo.profiles[i].storedEnhancedTimings.empty() == !(flags & (1u << (4*i))));
+    }
+    auto b = spdExpoFixture(); b[866] ^= 1; assert(decodeSpd(b).expo.profiles.empty());
+    b = spdExpoFixture(); spdWord(b,846,0); spdSeal(b,832,126); auto r = decodeSpd(b);
+    assert(r.expo.profiles[0].storedEnhancedTimings.empty() && r.expo.profiles[1].storedEnhancedTimings.size() == 8);
+    b = spdExpoFixture(); b[836] = 0x11; spdSeal(b,832,126); assert(decodeSpd(b).expo.profiles.empty());
+}
+}
 int main() {
     threeProfiles(); truncation(); corruptedSections(); gatesAndOverlap(); boundedNames(); numericBoundaries();
     expoProfiles(); expoTruncation(); expoCorruptionAndIsolation(); expoFlagsAndRevision(); expoNumericBoundaries();
@@ -731,5 +843,7 @@ int main() {
     basePublicTimingExamples();
     xmp2CasEncoding(); xmp2DimmsRecommendations(); ddr4DensityAndStacks(); ddr5DensityAndStacks();
     ddr5SubchannelsAndWidths(); ddr5LogicalRankRefresh(); geometryRevisionGates(); geometryCaptureAndIntegrity();
-    std::cout << "40 SPD XMP/EXPO scenario groups passed (capture lengths, CRC, timings, revision gates, CAS, profiles and geometry)\n";
+    userProfileValues(); userCaptureLengths(); userCrcIsolation(); userBlankAndZeroCrc(); userEnableAndRevisionGates(); userExpoOverlap();
+    expoStoredEnhancedWords(); expoEnhancedByteBoundaries(); expoEnhancedEnableAndIntegrity();
+    std::cout << "49 SPD XMP/EXPO scenario groups passed (capture lengths, CRC, timings, revision gates, CAS, user slots and geometry)\n";
 }

@@ -24,7 +24,10 @@ struct SpdCommandRate {
 };
 struct SpdXmpProfile {
     unsigned index = 0, offset = 0;
-    bool enabled = false, blockedByExpo = false, nameSupported = false, nameValid = false;
+    bool enabled = false, enableKnown = true, blockedByExpo = false, nameSupported = false, nameValid = false;
+    // User slots have no established enable bit. This describes captured bytes,
+    // not firmware presence, selection or applicability of the stored values.
+    std::string storageState;
     int timebaseRaw = -1; // XMP 2.0 per-profile byte; absent for XMP 3.0.
     int recommendedDimmsPerChannel = -1; // XMP 2.0 header, not installed DIMMs.
     int error = 0;
@@ -43,6 +46,7 @@ struct SpdXmp {
     SpdCrc crc;
     std::vector<std::uint8_t> raw;
     std::vector<SpdXmpProfile> profiles;
+    std::vector<SpdXmpProfile> userProfiles;
 };
 struct SpdExpoProfile {
     unsigned index = 0, offset = 0;
@@ -50,6 +54,8 @@ struct SpdExpoProfile {
     int error = 0;
     std::vector<std::uint8_t> raw;
     std::vector<SpdQuantity> values;
+    // Stored ps words; enhanced-feature enable semantics remain unknown.
+    std::vector<SpdQuantity> storedEnhancedTimings;
 };
 struct SpdExpo {
     bool inspected = false, present = false;
@@ -88,7 +94,8 @@ std::uint16_t spdCrc16(const std::uint8_t *bytes, std::size_t length);
 // DDR4 XMP 2.0 profiles 1..2 have no extension CRC or descriptive names.
 // Their per-profile time bases must encode 125 ps MTB / signed 1 ps FTB.
 // Timings are stored requirements, never measured or currently trained values.
-// EXPO 1.0 basic profiles use a shared bundle CRC. XMP user slots and EXPO
-// enhanced timings, XMP 3.0 DIMMs-per-channel and other flag meanings are not decoded.
+// XMP 3.0 user slots are inspected separately from manufacturer enable bits.
+// EXPO 1.0 includes stored enhanced timing words under the shared bundle CRC;
+// their enable semantics, XMP 3.0 DIMMs-per-channel and other flags are unknown.
 SpdSnapshot decodeSpd(const std::vector<std::uint8_t> &bytes);
 } }

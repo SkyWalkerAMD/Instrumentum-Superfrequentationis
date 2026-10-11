@@ -546,14 +546,16 @@ std::string spd(const std::string &path, const std::vector<std::uint8_t> &bytes,
             {"reserved_bits_set", cas.decoded ? boolean(cas.reservedBitsSet) : "null"},
             {"latencies_nck", cas.decoded ? array(latencies) : "null"}});
     };
-    std::vector<std::string> profiles;
-    for (const auto &p : xmp.profiles) {
+    const auto profileJson = [&](const SpdXmpProfile &p) {
         std::vector<std::string> values;
         for (const auto &v : p.values) values.push_back(object({{"name", quote(v.name)}, {"value", number(v.value)}, {"unit", quote(v.unit)}}));
         std::string raw;
         const char digits[] = "0123456789abcdef";
         for (auto b : p.raw) { raw += digits[b >> 4]; raw += digits[b & 15]; }
-        profiles.push_back(object({{"index", number(p.index)}, {"offset", number(p.offset)}, {"enabled", boolean(p.enabled)},
+        return object({{"index", number(p.index)}, {"offset", number(p.offset)},
+            {"enabled", p.enableKnown ? boolean(p.enabled) : "null"},
+            {"storage_state", p.storageState.empty() ? "null" : quote(p.storageState)},
+            {"captured_bytes", number(double(p.raw.size()))},
             {"blocked_by_expo", boolean(p.blockedByExpo)}, {"error", number(p.error)},
             {"name_supported", boolean(p.nameSupported)}, {"name_valid", p.nameSupported ? boolean(p.nameValid) : "null"},
             {"name", p.nameValid ? quote(p.name) : "null"}, {"timebase_raw", p.timebaseRaw >= 0 ? number(p.timebaseRaw) : "null"},
@@ -562,15 +564,23 @@ std::string spd(const std::string &path, const std::vector<std::uint8_t> &bytes,
             {"cas", casJson(p.cas)}, {"command_rate", !p.commandRate.captured ? "null" : object({
                 {"raw", number(p.commandRate.raw)}, {"code", number(p.commandRate.code)},
                 {"recognized", boolean(p.commandRate.recognized)},
-                {"cycles", p.commandRate.recognized && p.commandRate.code ? number(p.commandRate.code) : "null"}})}}));
-    }
+                {"cycles", p.commandRate.recognized && p.commandRate.code ? number(p.commandRate.code) : "null"}})}});
+    };
+    std::vector<std::string> profiles, userProfiles;
+    for (const auto &p : xmp.profiles) profiles.push_back(profileJson(p));
+    for (const auto &p : xmp.userProfiles) userProfiles.push_back(profileJson(p));
     const auto &expo = decoded.expo;
     std::vector<std::string> expoProfiles;
+    bool enhancedDecoded = false;
     for (const auto &p : expo.profiles) {
         std::vector<std::string> values;
         for (const auto &v : p.values) values.push_back(object({{"name", quote(v.name)}, {"value", number(v.value)}, {"unit", quote(v.unit)}}));
+        std::vector<std::string> enhanced;
+        for (const auto &v : p.storedEnhancedTimings) enhanced.push_back(object({{"name", quote(v.name)}, {"value", number(v.value)}, {"unit", quote(v.unit)}}));
+        enhancedDecoded = enhancedDecoded || !enhanced.empty();
         expoProfiles.push_back(object({{"index", number(p.index)}, {"offset", number(p.offset)}, {"enabled", boolean(p.enabled)},
-            {"error", number(p.error)}, {"raw_hex", rawHex(p.raw)}, {"values", array(values)}}));
+            {"error", number(p.error)}, {"raw_hex", rawHex(p.raw)}, {"values", array(values)},
+            {"enhanced_timings_enabled", "null"}, {"stored_enhanced_timings", array(enhanced)}}));
     }
     return object({{"path", quote(path)}, {"error", number(error)}, {"captured_bytes", number(double(bytes.size()))},
         {"memory_type", number(decoded.memoryType)}, {"crc_checked", boolean(decoded.crcChecked)},
@@ -580,12 +590,12 @@ std::string spd(const std::string &path, const std::vector<std::uint8_t> &bytes,
             {"configuration_raw", xmp.headerCaptured ? number(xmp.configurationRaw) : "null"}, {"raw_hex", rawHex(xmp.raw)},
             {"crc_supported", xmp.inspected ? boolean(xmp.crcSupported) : "null"}, {"error", number(xmp.error)}, {"crc", crcJson(xmp.crc)},
             {"expo_present", xmp.expoInspected ? boolean(xmp.expoPresent) : "null"},
-            {"active_configuration_measured", "false"}, {"profiles", array(profiles)}})},
+            {"active_configuration_measured", "false"}, {"profiles", array(profiles)}, {"user_profiles", array(userProfiles)}})},
         {"expo", object({{"inspected", boolean(expo.inspected)}, {"present", expo.inspected ? boolean(expo.present) : "null"},
             {"revision", expo.crc.checked ? number(expo.revision) : "null"}, {"error", number(expo.error)}, {"crc", crcJson(expo.crc)},
             {"configuration_raw", expo.crc.checked ? number(expo.configurationRaw) : "null"},
             {"features_raw", expo.crc.checked ? number(expo.featuresRaw) : "null"}, {"raw_hex", rawHex(expo.raw)},
-            {"enhanced_timings_decoded", "false"}, {"active_configuration_measured", "false"}, {"profiles", array(expoProfiles)}})}});
+            {"enhanced_timings_decoded", boolean(enhancedDecoded)}, {"active_configuration_measured", "false"}, {"profiles", array(expoProfiles)}})}});
 }
 Result offlineUmc(const Command &c) {
     Result out;

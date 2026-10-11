@@ -525,7 +525,7 @@ void offlineSpdDoesNotCreateBackend() {
     struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
     unsigned opens = 0;
     const auto factory = [&]() { ++opens; return std::unique_ptr<HardwareBackend>(); };
-    for (unsigned scenario = 0; scenario < 68; ++scenario) {
+    for (unsigned scenario = 0; scenario < 83; ++scenario) {
         auto bytes = octool::test::spdFixture();
         int expected = 0;
         if (scenario == 1) { bytes[720] ^= 1; expected = 3; }
@@ -620,6 +620,24 @@ void offlineSpdDoesNotCreateBackend() {
             if (scenario == 65 || scenario == 66) bytes[6] = std::uint8_t(scenario == 65 ? 0xb2 : 0xb1);
             if (scenario == 67) bytes[1] = 0x20;
             octool::test::spdSeal(bytes,0,126);
+        }
+        if (scenario >= 68) { bytes = octool::test::spdUserFixture(); expected = 0; }
+        if (scenario == 69) octool::test::spdZeroCrcUserSlot(bytes);
+        if (scenario == 70) { bytes[917] ^= 1; expected = 3; }
+        if (scenario == 71) bytes.resize(950);
+        if (scenario == 72 || scenario == 73) std::fill(bytes.begin()+896,bytes.end(),std::uint8_t(scenario == 72 ? 0 : 255));
+        if (scenario == 74) { octool::test::spdWord(bytes,901,0); octool::test::spdSeal(bytes,896,62); expected = 3; }
+        if (scenario == 75 || scenario == 76) bytes = octool::test::spdUserFixture(true);
+        if (scenario == 76) { bytes[958] ^= 1; expected = 3; }
+        if (scenario == 77) { bytes[660] ^= 1; expected = 3; }
+        if (scenario == 78) { bytes[642] = 0x31; octool::test::spdSeal(bytes,640,62); expected = 3; }
+        if (scenario == 79) { bytes[643] = 0xf8; octool::test::spdSeal(bytes,640,62); }
+        if (scenario >= 80) {
+            bytes = octool::test::spdUserFixture(true);
+            for (unsigned i = 0; i < 16; ++i) octool::test::spdWord(bytes,866+40*(i/8)+2*(i%8),1000+17*i);
+            if (scenario == 81) bytes[837] = 0x10;
+            if (scenario == 82) { bytes[836] = 0x11; expected = 3; }
+            octool::test::spdSeal(bytes,832,126);
         }
         std::ofstream file(path,std::ios::binary);
         file.write(reinterpret_cast<const char *>(bytes.data()), std::streamsize(bytes.size())); file.close(); assert(file);

@@ -1,5 +1,8 @@
 # DDR5 XMP 3.0 档案读取
 
+2026-10-11：新增 [XMP 用户槽检查与 EXPO 增强时序存储值](spd-user-enhanced.md)。
+GUI / CLI 同步读取；用户槽及增强功能的启用状态保持未知，未新增档案写入。
+
 GUI 的 Memory / Motherboard 页面与 CLI `spd-decode --file module.spd`、`inventory`
 复用 `decodeSpd`。现新增三个厂家 XMP 档案的启用状态、16 字节有界名称、完整原始档案、
 VPP/VDD/VDDQ/内存控制器电压，以及 tCK、tAA、tRCD、tRP、tRAS、tRC、tWR、tRFC1/2/sb。

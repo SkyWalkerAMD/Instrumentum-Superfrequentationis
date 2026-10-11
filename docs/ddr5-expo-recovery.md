@@ -1,5 +1,9 @@
 # DDR5 EXPO 1.0 基础档案读取
 
+2026-10-11：新增 [XMP 用户槽检查与 EXPO 增强时序存储值](spd-user-enhanced.md)。
+GUI / CLI 同步读取；用户槽及增强功能的启用状态保持未知，未新增档案写入。
+下文为原基础档案实现记录；新增存储字段与 JSON 变化以上述说明为准。
+
 GUI 的 Memory / Motherboard、CLI `spd-decode --file module.spd` 和 `inventory`
 共用 `decodeSpd`，读取两组 EXPO 1.0 基础档案。每组包含 VDD/VDDQ/VPP（mV），
 tCK/tAA/tRCD/tRP/tRAS/tRC/tWR（ps），tRFC1/tRFC2/tRFCsb（ns）。

@@ -1,5 +1,8 @@
 # 无桌面版 OCTool
 
+2026-10-11：新增 [XMP 用户槽检查与 EXPO 增强时序存储值](spd-user-enhanced.md)。
+GUI / CLI 同步读取；用户槽及增强功能的启用状态保持未知，未新增档案写入。
+
 `octool-cli` 是独立的 Linux x86_64 命令行程序，直接复用现有核心、HAL 和 `.ko` 驱动。
 构建和运行均不依赖 Qt、X11、Wayland、桌面会话、polkit 或常驻服务，可从 SSH 或本地终端运行。
 与 GUI 可以共存，分别安装 `octool-cli` 和 `octool`。不要同时运行多个硬件调参程序；

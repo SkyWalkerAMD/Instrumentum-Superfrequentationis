@@ -329,7 +329,7 @@ MemoryBoardPanel::MemoryBoardPanel(QWidget *parent) : QWidget(parent) {
         "Base SPD also includes write delays and revision-specific secondary timings. "
         "Supported symmetric geometry includes stacked packages; XMP 2.0 reports recommended DIMMs per channel. "
         "XMP 2.0 has no profile checksum; DDR5 profiles include CRC checks. "
-        "EXPO enhanced timings are not decoded. "
+        "XMP user slots and stored EXPO enhanced timings are readable; their enablement is unknown. "
         "Timing writes, PMIC / VRM controls and board-specific clocks are not yet recovered.",layout,this);
     auto *buttons=new QHBoxLayout; auto *read=new QPushButton("Read once",this); read->setObjectName("inventoryRead"); buttons->addWidget(read);
     auto *open=new QPushButton("Open SPD dump…",this); open->setObjectName("spdOpen"); buttons->addWidget(open); layout->addLayout(buttons);
@@ -384,13 +384,22 @@ void MemoryBoardPanel::showSpd(const QString &path,const QByteArray &bytes,const
         xmp.revision != (decoded.memoryType == 0x0c ? 0x20u : 0x30u) ? "Unsupported revision" :
         xmp.crcSupported ? "Header CRC valid" : "No XMP checksum provided";
     append(table_,{"XMP", "Header", xmp.headerCaptured ? QString("Revision 0x%1").arg(xmp.revision,2,16,QChar('0')) : QString(), "", headerState, path});
-    for (const auto &p : xmp.profiles) {
-        const QString group = QString("XMP %1").arg(p.index);
-        const QString status = p.blockedByExpo ? (p.enabled ? "Conflicting XMP enable bit / EXPO region" : "EXPO region") :
+    const auto showProfile = [&](const octool::core::SpdXmpProfile &p) {
+        const QString group = QString(p.enableKnown ? "XMP %1" : "XMP User %1").arg(p.index);
+        QString status = p.blockedByExpo ? (p.enabled ? "Conflicting XMP enable bit / EXPO region" : "EXPO region") :
             !p.enabled ? "Disabled" : p.crc.checked && !p.crc.valid ? "Profile CRC mismatch" :
             p.error ? failure(p.error) : xmp.crcSupported ? "Profile CRC valid" : "No XMP checksum provided";
+        if (!p.enableKnown) {
+            const QString storage = p.storageState == "overlap_expo" ? "Occupied by EXPO" :
+                p.storageState == "not_captured" ? "Not captured" : p.storageState == "incomplete" ? "Incomplete capture" :
+                p.storageState == "all_zero" ? "All bytes zero" : p.storageState == "all_ff" ? "All bytes FF" : "Stored data";
+            status = p.error ? (p.crc.checked && !p.crc.valid ? "Profile CRC mismatch" : failure(p.error)) :
+                p.values.empty() ? storage : "CRC valid; enablement unknown";
+            append(table_,{group,"Storage",storage,"",status,path});
+            append(table_,{group,"Captured bytes",QString::number(qulonglong(p.raw.size())),"bytes",status,path});
+        }
         if (p.nameSupported) append(table_,{group, "Profile name", p.nameValid ? QString::fromStdString(p.name) : "Invalid name bytes", "", status, path});
-        else append(table_,{group,"Stored profile",p.enabled ? "Enabled" : "Disabled","",status,path});
+        else append(table_,{group,"Stored profile",!p.enableKnown ? "Enablement unknown" : p.enabled ? "Enabled" : "Disabled","",status,path});
         if (p.timebaseRaw >= 0) append(table_,{group,"Timebase byte",QString("0x%1").arg(p.timebaseRaw,2,16,QChar('0')),"hex",
             (p.timebaseRaw & 15) ? "Unsupported timebase" : "125 ps MTB / 1 ps FTB",path});
         if (p.recommendedDimmsPerChannel >= 0) append(table_,{group,"Recommended DIMMs per channel",QString::number(p.recommendedDimmsPerChannel),"DIMMs","Stored recommendation; installed count not measured",path});
@@ -404,7 +413,9 @@ void MemoryBoardPanel::showSpd(const QString &path,const QByteArray &bytes,const
             append(table_,{group,"Command rate byte",QString("0x%1").arg(rate.raw,2,16,QChar('0')),"hex",status,path});
         }
         for (const auto &v : p.values) append(table_,{group,QString::fromStdString(v.name),QString::number(v.value),QString::fromStdString(v.unit),status,path});
-    }
+    };
+    for (const auto &p : xmp.profiles) showProfile(p);
+    for (const auto &p : xmp.userProfiles) showProfile(p);
     if (decoded.memoryType != 0x12) return;
     const auto &expo = decoded.expo;
     const QString expoState = !expo.inspected ? "Block not captured" : !expo.present ? "Not present" :
@@ -420,6 +431,8 @@ void MemoryBoardPanel::showSpd(const QString &path,const QByteArray &bytes,const
         const QString status = !p.enabled ? "Disabled" : p.error ? failure(p.error) : "Block CRC valid";
         append(table_,{group,"Stored profile",p.enabled ? "Enabled" : "Disabled","",status,path});
         for (const auto &v : p.values) append(table_,{group,QString::fromStdString(v.name),QString::number(v.value),QString::fromStdString(v.unit),status,path});
+        for (const auto &v : p.storedEnhancedTimings)
+            append(table_,{group,"Stored enhanced " + QString::fromStdString(v.name),QString::number(v.value),QString::fromStdString(v.unit),"CRC valid; enhanced enablement unknown",path});
     }
 }
 void MemoryBoardPanel::refresh() {

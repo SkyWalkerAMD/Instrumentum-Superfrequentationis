@@ -32,6 +32,7 @@ def stage_cli(stage, binary):
     copy(ROOT / "docs/spd-cas-recovery.md", stage / "usr/share/doc/octool-cli/spd-cas-recovery.md")
     copy(ROOT / "docs/spd-base-timings.md", stage / "usr/share/doc/octool-cli/spd-base-timings.md")
     copy(ROOT / "docs/spd-profile-geometry.md", stage / "usr/share/doc/octool-cli/spd-profile-geometry.md")
+    copy(ROOT / "docs/spd-user-enhanced.md", stage / "usr/share/doc/octool-cli/spd-user-enhanced.md")
     return info
 
 

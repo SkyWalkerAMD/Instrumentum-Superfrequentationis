@@ -63,6 +63,28 @@ inline std::vector<std::uint8_t> spdExpoFixture() {
     spdSeal(b,832,126);
     return b;
 }
+// User-slot contents do not establish firmware enablement. Manufacturer data
+// and user data intentionally differ so both frontend groups can be checked.
+inline std::vector<std::uint8_t> spdUserFixture(bool expo = false) {
+    auto b = expo ? spdExpoFixture() : spdFixture();
+    for (unsigned i = 0; i < 2; ++i) {
+        if (expo && i == 0) continue;
+        const unsigned off = 896 + 64*i;
+        std::copy_n(b.begin()+704+64*i,64,b.begin()+off);
+        spdWord(b,off+5,400+25*i); b[off+1] = std::uint8_t(0x26+i);
+        spdSeal(b,off,62);
+    }
+    return b;
+}
+// Nonzero payload with a zero computed AND stored CRC, pinned by the existing
+// xmp-user-presence-research.json counterexample. Not suggested hardware data.
+inline void spdZeroCrcUserSlot(std::vector<std::uint8_t> &b, unsigned off = 896) {
+    const std::string data = "30252500224d010000000000006e316e316e317665e49630752701a000c533000000000000000000000000000000000000000000000000000000000000000000";
+    for (unsigned i = 0; i < 64; ++i) {
+        const auto digit = [](char c) { return unsigned(c <= '9' ? c-'0' : c-'a'+10); };
+        b[off+i] = std::uint8_t(digit(data[2*i])*16+digit(data[2*i+1]));
+    }
+}
 // Independent synthetic DDR4 XMP 2.0 slots. Deliberately distinct coarse/fine
 // fields catch byte addressing, signed arithmetic and tRAS/tRC mix-ups.
 inline std::vector<std::uint8_t> spdDdr4XmpFixture() {
