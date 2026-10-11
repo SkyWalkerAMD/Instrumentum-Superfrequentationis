@@ -1,10 +1,16 @@
 # Instrumentum Superfrequentationis
 
-<!-- amd-pm-pending -->
-2026-10-11：新增 [AMD PM 遥测与快照互通](docs/amd-pm-recovery.md)。GUI / CLI 共用八个精确版本的
-24 项公共字段解码，接通已有兼容驱动的 sysfs 读取；文件导入不需要驱动。
-本轮 GUI / CLI 完整云端矩阵尚待记录；下方成功结果属于此前版本。
-完整 PM 表、原生传输、物理目标映射及其余调参/真机验收仍未完成。
+<!-- amd-pm-62e7bd8 -->
+2026-10-11：最新验证生产提交 `62e7bd8`，GUI / CLI 同步新增 **AMD PM 遥测与快照互通**。
+八个精确版本、24 项公共字段；支持原始表和 JSON 离线导入，并可读取已有兼容驱动。
+
+- [实现说明](docs/amd-pm-recovery.md)、[功能对照](docs/frontend-progress.md)、[验证交付](docs/amd-pm-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135506440) 4/4，各 173 场景组；PM / SPD / UMC 内存检查通过。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135503372) 12/12，十目标各 15 CTest、362 份 JSON。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975) 23/23，十目标各 73 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-amd-pm-62e7bd8/`：30 个安装包、源码及 SHA256 校验文件。
+
+完整 PM 表、原生传输、其余调参功能及真机验收尚未完成。以下保留历史记录。
 
 <!-- spd-user-enhanced-75c5c8b -->
 2026-10-11：最新验证生产提交 `75c5c8b`，GUI / CLI 同步增加 **XMP 3.0 用户槽读取与 EXPO 1.0 增强时序存储值**。

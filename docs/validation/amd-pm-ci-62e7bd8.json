@@ -1,0 +1,4537 @@
+{
+  "schema": 1,
+  "date": "2026-10-11",
+  "source_commit": "62e7bd8272205ec15fe7ad23f223e122a3e039b2",
+  "branch": "refactor/platform-recovery",
+  "scope": "Eight exact Shimada PM layouts, 24 public fields, bounded installed-driver reads and GUI/CLI offline snapshot interchange; no native PM transport or physical target mapping",
+  "portable_core": {
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135506440",
+    "source_commit": "62e7bd8272205ec15fe7ad23f223e122a3e039b2",
+    "jobs": [
+      {
+        "name": "core (windows-2022)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135506440/job/114458426610",
+        "startedAt": "2026-10-11T11:25:35Z",
+        "completedAt": "2026-10-11T11:28:18Z"
+      },
+      {
+        "name": "core (ubuntu-24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135506440/job/114458426731",
+        "startedAt": "2026-10-11T11:25:35Z",
+        "completedAt": "2026-10-11T11:26:41Z"
+      },
+      {
+        "name": "core (macos-14)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135506440/job/114458426805",
+        "startedAt": "2026-10-11T11:25:41Z",
+        "completedAt": "2026-10-11T11:28:17Z"
+      },
+      {
+        "name": "core (ubuntu-22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135506440/job/114458426811",
+        "startedAt": "2026-10-11T11:25:36Z",
+        "completedAt": "2026-10-11T11:26:18Z"
+      }
+    ],
+    "log": {
+      "path": "build/amd-pm-62e7bd8/core-run.log",
+      "bytes": 171085,
+      "sha256": "2722ed781789fbb6e1dc7443e53d75a0f0f19e88110157be974fd9ddc23a4aa9"
+    },
+    "artifact_metadata": {
+      "path": "build/amd-pm-62e7bd8/core-artifacts.json",
+      "bytes": 3845,
+      "sha256": "63b7c6cffa5049538d1be06a7f792c4e2dcada989de2c7a754b6bbe1ce6de314"
+    },
+    "targets": [
+      {
+        "target": "portable-core-macos-14",
+        "ctests": 13,
+        "scenario_groups": 173,
+        "evidence": [
+          {
+            "path": "build/amd-pm-62e7bd8/core-artifacts/portable-core-macos-14/portable-core/results.xml",
+            "bytes": 2768,
+            "sha256": "e3364258ef03e8c3e05f8a6cf027844adeda17b4e8f7b6b5cbdbfd5435214558"
+          },
+          {
+            "path": "build/amd-pm-62e7bd8/core-artifacts/portable-core-macos-14/portable-core/Testing/Temporary/LastTest.log",
+            "bytes": 9531,
+            "sha256": "aa84a3b667dca3959115f34f67ef364e1215202e7364fcfc6d4067a89ce9822b"
+          }
+        ]
+      },
+      {
+        "target": "portable-core-ubuntu-22.04",
+        "ctests": 13,
+        "scenario_groups": 173,
+        "evidence": [
+          {
+            "path": "build/amd-pm-62e7bd8/core-artifacts/portable-core-ubuntu-22.04/portable-core/results.xml",
+            "bytes": 2718,
+            "sha256": "032ecc4793bad8dc0e6e0d368a5fda9caf8aa2d48ec00417c1afcdf628da2442"
+          },
+          {
+            "path": "build/amd-pm-62e7bd8/core-artifacts/portable-core-ubuntu-22.04/portable-core/Testing/Temporary/LastTest.log",
+            "bytes": 9505,
+            "sha256": "c06e7eb686c090b45f0e585acfdc9060b7951cc48b0d0bd1996ea70d3ba0dd29"
+          }
+        ]
+      },
+      {
+        "target": "portable-core-ubuntu-24.04",
+        "ctests": 13,
+        "scenario_groups": 173,
+        "evidence": [
+          {
+            "path": "build/amd-pm-62e7bd8/core-artifacts/portable-core-ubuntu-24.04/portable-core/results.xml",
+            "bytes": 2716,
+            "sha256": "162d5fc58a781a0711ebc0fe07aa349dca1e811478443988d04b5b45cb803432"
+          },
+          {
+            "path": "build/amd-pm-62e7bd8/core-artifacts/portable-core-ubuntu-24.04/portable-core/Testing/Temporary/LastTest.log",
+            "bytes": 9505,
+            "sha256": "d993d433962c39c7823c6d41a39493db388aff4ff52d4f9c67a8e77fc4675387"
+          }
+        ]
+      },
+      {
+        "target": "portable-core-windows-2022",
+        "ctests": 13,
+        "scenario_groups": 173,
+        "evidence": [
+          {
+            "path": "build/amd-pm-62e7bd8/core-artifacts/portable-core-windows-2022/portable-core/results.xml",
+            "bytes": 2790,
+            "sha256": "3e42087395e084012525f400bde2f4af6a4c0c3ddb1a3353d7a08caeb8fc7ac2"
+          },
+          {
+            "path": "build/amd-pm-62e7bd8/core-artifacts/portable-core-windows-2022/portable-core/Testing/Temporary/LastTest.log",
+            "bytes": 10178,
+            "sha256": "8821560e6fd076cb4ebafdff1e8e6e4f9056884154a79192ebb85e2c98138634"
+          }
+        ]
+      }
+    ],
+    "asan_ubsan": {
+      "path": "build/amd-pm-62e7bd8/core-artifacts/portable-core-ubuntu-24.04/sanitized-core/Testing/Temporary/LastTest.log",
+      "bytes": 2324,
+      "sha256": "c5c5d95f87dd618d460769e0ae952fd96c99a9a2f6a7dc35385c4b5041932511"
+    }
+  },
+  "headless_cli": {
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135503372",
+    "source_commit": "62e7bd8272205ec15fe7ad23f223e122a3e039b2",
+    "jobs": [
+      {
+        "name": "matrix",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135503372/job/114458417431",
+        "startedAt": "2026-10-11T11:25:32Z",
+        "completedAt": "2026-10-11T11:25:36Z"
+      },
+      {
+        "name": "cli (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135503372/job/114458438943",
+        "startedAt": "2026-10-11T11:25:39Z",
+        "completedAt": "2026-10-11T11:27:12Z"
+      },
+      {
+        "name": "cli (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135503372/job/114458438952",
+        "startedAt": "2026-10-11T11:25:39Z",
+        "completedAt": "2026-10-11T11:27:49Z"
+      },
+      {
+        "name": "cli (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135503372/job/114458438958",
+        "startedAt": "2026-10-11T11:25:39Z",
+        "completedAt": "2026-10-11T11:27:03Z"
+      },
+      {
+        "name": "cli (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135503372/job/114458438980",
+        "startedAt": "2026-10-11T11:25:39Z",
+        "completedAt": "2026-10-11T11:28:55Z"
+      },
+      {
+        "name": "cli (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135503372/job/114458439025",
+        "startedAt": "2026-10-11T11:25:40Z",
+        "completedAt": "2026-10-11T11:27:25Z"
+      },
+      {
+        "name": "cli (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135503372/job/114458439027",
+        "startedAt": "2026-10-11T11:25:39Z",
+        "completedAt": "2026-10-11T11:37:01Z"
+      },
+      {
+        "name": "cli (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135503372/job/114458439030",
+        "startedAt": "2026-10-11T11:25:39Z",
+        "completedAt": "2026-10-11T11:26:58Z"
+      },
+      {
+        "name": "cli (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135503372/job/114458439032",
+        "startedAt": "2026-10-11T11:25:39Z",
+        "completedAt": "2026-10-11T11:27:04Z"
+      },
+      {
+        "name": "cli (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135503372/job/114458439036",
+        "startedAt": "2026-10-11T11:25:39Z",
+        "completedAt": "2026-10-11T11:27:11Z"
+      },
+      {
+        "name": "cli (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135503372/job/114458439037",
+        "startedAt": "2026-10-11T11:25:40Z",
+        "completedAt": "2026-10-11T11:27:08Z"
+      },
+      {
+        "name": "gate",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135503372/job/114460500288",
+        "startedAt": "2026-10-11T11:37:03Z",
+        "completedAt": "2026-10-11T11:37:06Z"
+      }
+    ],
+    "log": {
+      "path": "build/amd-pm-62e7bd8/cli-run.log",
+      "bytes": 1734973,
+      "sha256": "5a1397091b00c335cbac610aaa26e74336b51cff2d4a9997223b0aab1af362d0"
+    },
+    "artifact_metadata": {
+      "path": "build/amd-pm-62e7bd8/cli-artifacts.json",
+      "bytes": 9428,
+      "sha256": "37e068a82b75ead4e96f48ed3dacc6601361e24e16f81c63f9d09e52850fdaf8"
+    }
+  },
+  "linux": {
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975",
+    "source_commit": "62e7bd8272205ec15fe7ad23f223e122a3e039b2",
+    "jobs": [
+      {
+        "name": "matrix",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114458481270",
+        "startedAt": "2026-10-11T11:25:53Z",
+        "completedAt": "2026-10-11T11:30:11Z"
+      },
+      {
+        "name": "baseline",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114458481418",
+        "startedAt": "2026-10-11T11:25:53Z",
+        "completedAt": "2026-10-11T11:33:06Z"
+      },
+      {
+        "name": "kernel (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459256628",
+        "startedAt": "2026-10-11T11:30:13Z",
+        "completedAt": "2026-10-11T11:33:01Z"
+      },
+      {
+        "name": "kernel (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459256633",
+        "startedAt": "2026-10-11T11:30:13Z",
+        "completedAt": "2026-10-11T11:32:44Z"
+      },
+      {
+        "name": "kernel (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459256638",
+        "startedAt": "2026-10-11T11:30:14Z",
+        "completedAt": "2026-10-11T11:33:49Z"
+      },
+      {
+        "name": "kernel (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459256706",
+        "startedAt": "2026-10-11T11:30:14Z",
+        "completedAt": "2026-10-11T11:32:29Z"
+      },
+      {
+        "name": "kernel (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459256707",
+        "startedAt": "2026-10-11T11:30:14Z",
+        "completedAt": "2026-10-11T11:33:47Z"
+      },
+      {
+        "name": "kernel (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459256710",
+        "startedAt": "2026-10-11T11:30:14Z",
+        "completedAt": "2026-10-11T11:32:49Z"
+      },
+      {
+        "name": "kernel (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459256719",
+        "startedAt": "2026-10-11T11:30:13Z",
+        "completedAt": "2026-10-11T11:33:08Z"
+      },
+      {
+        "name": "kernel (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459256725",
+        "startedAt": "2026-10-11T11:30:13Z",
+        "completedAt": "2026-10-11T11:33:54Z"
+      },
+      {
+        "name": "kernel (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459256790",
+        "startedAt": "2026-10-11T11:30:14Z",
+        "completedAt": "2026-10-11T11:32:47Z"
+      },
+      {
+        "name": "kernel (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459257071",
+        "startedAt": "2026-10-11T11:30:14Z",
+        "completedAt": "2026-10-11T11:36:33Z"
+      },
+      {
+        "name": "desktop (el10)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459804601",
+        "startedAt": "2026-10-11T11:33:10Z",
+        "completedAt": "2026-10-11T11:47:16Z"
+      },
+      {
+        "name": "desktop (el9)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459804604",
+        "startedAt": "2026-10-11T11:33:09Z",
+        "completedAt": "2026-10-11T11:38:38Z"
+      },
+      {
+        "name": "desktop (debian13)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459804605",
+        "startedAt": "2026-10-11T11:33:10Z",
+        "completedAt": "2026-10-11T11:37:22Z"
+      },
+      {
+        "name": "desktop (ubuntu20.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459804607",
+        "startedAt": "2026-10-11T11:33:09Z",
+        "completedAt": "2026-10-11T11:36:52Z"
+      },
+      {
+        "name": "desktop (debian12)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459804613",
+        "startedAt": "2026-10-11T11:33:09Z",
+        "completedAt": "2026-10-11T11:36:10Z"
+      },
+      {
+        "name": "desktop (el8)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459804643",
+        "startedAt": "2026-10-11T11:33:09Z",
+        "completedAt": "2026-10-11T12:06:17Z"
+      },
+      {
+        "name": "desktop (ubuntu22.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459804665",
+        "startedAt": "2026-10-11T11:33:10Z",
+        "completedAt": "2026-10-11T11:37:00Z"
+      },
+      {
+        "name": "desktop (ubuntu24.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459804666",
+        "startedAt": "2026-10-11T11:33:10Z",
+        "completedAt": "2026-10-11T11:36:52Z"
+      },
+      {
+        "name": "desktop (debian11)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459804668",
+        "startedAt": "2026-10-11T11:33:10Z",
+        "completedAt": "2026-10-11T11:36:22Z"
+      },
+      {
+        "name": "desktop (ubuntu26.04)",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114459804690",
+        "startedAt": "2026-10-11T11:33:10Z",
+        "completedAt": "2026-10-11T11:36:54Z"
+      },
+      {
+        "name": "gate",
+        "conclusion": "success",
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38135499975/job/114465774560",
+        "startedAt": "2026-10-11T12:06:20Z",
+        "completedAt": "2026-10-11T12:06:26Z"
+      }
+    ],
+    "log": {
+      "path": "build/amd-pm-62e7bd8/linux-run.log",
+      "bytes": 10514157,
+      "sha256": "986103f00f81f54cb6b6de39608617c0bab36d8d8ddb94d3dfef98e601439752"
+    },
+    "artifact_metadata": {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts.json",
+      "bytes": 21726,
+      "sha256": "b33614dff2c9d55bcfea0533be09daedab6f6352120d4bd448d72fd46c69281b"
+    },
+    "kernel_vm_boots": 11,
+    "baseline_qt_tests": 73,
+    "baseline_gui_test_log": {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/el8-baseline/gui-tests.txt",
+      "bytes": 24089,
+      "sha256": "007996ec24f60789c0815482412d48c1f8bb90419ba9b7762acaf257cde4ec56"
+    },
+    "analysis_tests": 74
+  },
+  "targets": [
+    {
+      "target": "el8",
+      "ctests": 15,
+      "core_scenario_groups": 173,
+      "cli_scenario_groups": 16,
+      "json_reports_in_process_test": 362,
+      "spd_reports": 83,
+      "pm_reports": 20,
+      "gui_regression_tests": 73,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007fdf6713f000)\n\tlibpthread.so.0 => /lib64/libpthread.so.0 (0x00007fdf66be0000)\n\tlibstdc++.so.6 => /lib64/libstdc++.so.6 (0x00007fdf6684b000)\n\tlibm.so.6 => /lib64/libm.so.6 (0x00007fdf664c9000)\n\tlibgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00007fdf662b1000)\n\tlibc.so.6 => /lib64/libc.so.6 (0x00007fdf65eec000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fdf66e00000)\n",
+        "guide_installed": true,
+        "binary_bytes": 586400
+      },
+      "kernel_boots": [
+        {
+          "kernel": "4.18.0-553.el8_10.x86_64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "4df48703b86574bb20576b14f9c209e6149aabe6ad06ccb709131fee48b46fed",
+          "module_sha256": "280061455aa3944d9b74ccb627b43f4399447fa73236e96eb7b68782cee52882"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/el8/octool-cli-2.0.1-1.el8.x86_64.rpm",
+          "bytes": 252664,
+          "sha256": "1430f363c58b6c920ea18a3f3df083b7fe3d5c615fb41ffd2209a2273de60018"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/el8/octool-2.0.1-1.el8.x86_64.rpm",
+          "bytes": 10981048,
+          "sha256": "a348a8689ac6745d3d4f17a6585b272bd189e24f92662ba3bfe83ea6106a4ec3"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/el8/octool-hwio-dkms-2.0.1-1.el8.noarch.rpm",
+          "bytes": 19072,
+          "sha256": "1cebddbea45ad0be1e67367a2589034922eb4dbd7b246d3b3989f81cd4847657"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-el8/ctest.txt",
+          "bytes": 1645,
+          "sha256": "a401ec3b1e8381df85c5f4ccafca4254576a037cda89f80bcd1f8eb6716dd277"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-el8/LastTest.log",
+          "bytes": 8756,
+          "sha256": "2079241b84416310a13dbfa184da3b73b3f321bc014d2173e0d55ad77e6f9028"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-el8/runtime.json",
+          "bytes": 1467,
+          "sha256": "82ba49d383c4fe3e104ed15ee5a9b0c0945d20a12859d3e510b2f0b22651f3f5"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-el8/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-el8/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/gui-tests.txt",
+          "bytes": 22252,
+          "sha256": "351bdd17ef87d7fbfd8ae845d2b63d4a2a8784d28f1f14f1fcc57b0965ecd596"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/kernel-el8/guest-boot/results.json",
+          "bytes": 504,
+          "sha256": "80bff81cb7427bb9118879ee73b5223757d0ffbbc77a6630d1eb4fd540c149d0"
+        }
+      ]
+    },
+    {
+      "target": "el9",
+      "ctests": 15,
+      "core_scenario_groups": 173,
+      "cli_scenario_groups": 16,
+      "json_reports_in_process_test": 362,
+      "spd_reports": 83,
+      "pm_reports": 20,
+      "gui_regression_tests": 73,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f35bf94b000)\n\tlibstdc++.so.6 => /lib64/libstdc++.so.6 (0x00007f35bf71a000)\n\tlibm.so.6 => /lib64/libm.so.6 (0x00007f35bf63f000)\n\tlibgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00007f35bf624000)\n\tlibc.so.6 => /lib64/libc.so.6 (0x00007f35bf41b000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f35bf94d000)\n",
+        "guide_installed": true,
+        "binary_bytes": 553704
+      },
+      "kernel_boots": [
+        {
+          "kernel": "5.14.0-687.56.1.el9_8.x86_64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "ffd08603dbd630a7d5f4501f8f5dc6b6488a5165b362281120ab21a9a18e4fdf",
+          "module_sha256": "2eb72f664a74d0477e9a1649033f8e1c3d0f2fb7731ec36add48cae6f408cadc"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/el9/octool-cli-2.0.1-1.el9.x86_64.rpm",
+          "bytes": 251829,
+          "sha256": "2b4f74d86b98045898130af24a5b5d95fdcfe7da7dc64566c6acdc01562fcd67"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/el9/octool-2.0.1-1.el9.x86_64.rpm",
+          "bytes": 10635013,
+          "sha256": "cb9db7d44a27b1400c8c833988e798b49bd6a522d1bd002e343b0c7fa6d65b1a"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/el9/octool-hwio-dkms-2.0.1-1.el9.noarch.rpm",
+          "bytes": 19059,
+          "sha256": "680ca1f91ada75755871eb64ca275512da8f21360e7f1923946e65ff72b58108"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-el9/ctest.txt",
+          "bytes": 1645,
+          "sha256": "d38a9f2d29abb070a3fa405699bd531fdb86e3f99fb9b817b9996863b57ce1cf"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-el9/LastTest.log",
+          "bytes": 8754,
+          "sha256": "7b93679c2599e42b901efdf85dd34120d5b0e976442dfcfdc089ba65d339e402"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-el9/runtime.json",
+          "bytes": 1401,
+          "sha256": "72f642b29378a5310dab95177391ff8bf44984ec4a6b874427e4dabeaa7a825f"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-el9/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-el9/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/gui-tests.txt",
+          "bytes": 23973,
+          "sha256": "84b88aea46ec848907fb6ddbe41c326bfe2e582e903f01a7e0ecdf029a218e80"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/kernel-el9/guest-boot/results.json",
+          "bytes": 508,
+          "sha256": "1f7451192c95a25a02f2957c3d58500a47b018f528d797881057a0b2213c68d3"
+        }
+      ]
+    },
+    {
+      "target": "el10",
+      "ctests": 15,
+      "core_scenario_groups": 173,
+      "cli_scenario_groups": 16,
+      "json_reports_in_process_test": 362,
+      "spd_reports": 83,
+      "pm_reports": 20,
+      "gui_regression_tests": 73,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 17,
+              "stepping": 1,
+              "signature": "0x00a10f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f22f5af5000)\n\tlibstdc++.so.6 => /lib64/libstdc++.so.6 (0x00007f22f5875000)\n\tlibm.so.6 => /lib64/libm.so.6 (0x00007f22f57c7000)\n\tlibgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00007f22f579a000)\n\tlibc.so.6 => /lib64/libc.so.6 (0x00007f22f55c1000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f22f5af7000)\n",
+        "guide_installed": false,
+        "binary_bytes": 611000
+      },
+      "kernel_boots": [
+        {
+          "kernel": "6.12.0-211.64.1.el10_2.x86_64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "a399dcb2241af997473ba3992590df526ebedb81e27f8ee053602de895722b22",
+          "module_sha256": "1dcaa565942f926c83e460bbd3d1a3cbb3a375deaa40ab1bd6054c94f5908b0a"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/el10/octool-cli-2.0.1-1.el10.x86_64.rpm",
+          "bytes": 269894,
+          "sha256": "43f8b953dd85ad527519f3cc2203e8515dd1f91ba0c3a3ce6702d1d5e4381635"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/el10/octool-2.0.1-1.el10.x86_64.rpm",
+          "bytes": 10635672,
+          "sha256": "ed7112965a3788cce891291e0dfcdd4b78b9d0bfee141ac87440278d3cb05550"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/el10/octool-hwio-dkms-2.0.1-1.el10.noarch.rpm",
+          "bytes": 19163,
+          "sha256": "3ceda2962a904e81a4427d73c697dfb11705caf7afb8e297e948feea242cb388"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-el10/ctest.txt",
+          "bytes": 1645,
+          "sha256": "6a383bc552620a83a0df6d6ca836b4cabd3530c1c43a463bf134eafb4e2f04f9"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-el10/LastTest.log",
+          "bytes": 8754,
+          "sha256": "09d87455780958e76fd6c99d1ef1b8048bd90d3748010a320d8c631a462bd4ff"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-el10/runtime.json",
+          "bytes": 1403,
+          "sha256": "5da52bd432b3ddfe5a912e2e1dd281cae753256f4aa67cd7fdefabc6c91f1b79"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-el10/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "e661623b4840f9e9fec6afeb366b53b9c8b07098d338360c99e2bff982892316"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-el10/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "507715fc9c450d2fe9cb25a35b592e84748652284ba185066a356962b1bb12cf"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/gui-tests.txt",
+          "bytes": 21831,
+          "sha256": "c8f18918c991f2a4c5ea5711363dc6d0be1282f3e7c30a12c0ee40ec8dec0f39"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/kernel-el10/guest-boot/results.json",
+          "bytes": 509,
+          "sha256": "bc3c64eb10a9127fea532717703bd37afb9189b2679fb98cdd448250840d75e1"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu20.04",
+      "ctests": 15,
+      "core_scenario_groups": 173,
+      "cli_scenario_groups": 16,
+      "json_reports_in_process_test": 362,
+      "spd_reports": 83,
+      "pm_reports": 20,
+      "gui_regression_tests": 73,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007fe3580f3000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fe35802c000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fe357e4a000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fe357cfb000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fe357ce0000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fe357aee000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fe3580f5000)\n",
+        "guide_installed": false,
+        "binary_bytes": 624600
+      },
+      "kernel_boots": [
+        {
+          "kernel": "5.4.0-216-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "c5bb7de4df4416f77e8eb33547a30673d84542c7b0ae789954ce82e8f8b26f09",
+          "module_sha256": "b28ffc18c890f3c39dbfd2894dd00da00bb850f10c15d49528d08a06b95c261b"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/ubuntu20.04/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 296650,
+          "sha256": "e961a900b188e540b6f0b1da7225f1303287a401ca6095dc36e22d45c7e776e2"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/ubuntu20.04/octool-2.0.1-1.amd64.deb",
+          "bytes": 14509494,
+          "sha256": "a3e8641ccd0a3c6521a7a79b140e1cc9f0051353be6df2f06927e942ed5bd29b"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/ubuntu20.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10668,
+          "sha256": "f4ca5bfc9f82ab170e4e8e0c5a8d4554db974678796f2e07fe7cfaaf7005f0a4"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu20.04/ctest.txt",
+          "bytes": 1645,
+          "sha256": "1ee671c4837329edc75e6883fee0524b5411e4cfffc1a1c0354efb93e7c61424"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu20.04/LastTest.log",
+          "bytes": 8754,
+          "sha256": "b5bfc2f576b8b7b74e9d322ff89f55fb382d4e96ee4a210c47156898d7089434"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu20.04/runtime.json",
+          "bytes": 1543,
+          "sha256": "f04e6f291157fdbc942189e4d588508c1f26839135748af7c55383148965389d"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu20.04/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu20.04/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/gui-tests.txt",
+          "bytes": 22147,
+          "sha256": "c5a19f7639a198953e53e2136ea2ba6281f0160eca1c903b45f59321afe253cd"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/kernel-ubuntu20.04/guest-boot/results.json",
+          "bytes": 497,
+          "sha256": "5069d6d94c8c6834bee1a40fd6d8ae4a3cc1fa82034d59045e002d8bffe87a08"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu22.04",
+      "ctests": 15,
+      "core_scenario_groups": 173,
+      "cli_scenario_groups": 16,
+      "json_reports_in_process_test": 362,
+      "spd_reports": 83,
+      "pm_reports": 20,
+      "gui_regression_tests": 73,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "Intel(R) Xeon(R) 6973P-C",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "GenuineIntel",
+              "family": 6,
+              "model": 173,
+              "stepping": 1,
+              "signature": "0x000a06d1"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f048f684000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f048f3bc000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f048f2d5000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f048f2b5000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f048f08c000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f048f686000)\n",
+        "guide_installed": false,
+        "binary_bytes": 591832
+      },
+      "kernel_boots": [
+        {
+          "kernel": "5.15.0-198-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "e674dce98d3b3f3bca3ffaca1d2a22ed50c36fa2ff530a74c0908867363cd001",
+          "module_sha256": "11ba48722faca8e5e051d40b1d6459daa920fe58628d72b77f77401bc59953bc"
+        },
+        {
+          "kernel": "6.8.0-138-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "81ea8d2ef9c2d6a46e95c961c8c7c282941c80d4fd4106a3fcf9c87911243d3d",
+          "module_sha256": "ee8cd2475fd1e7c24dccb22130257053a444adc9db808684bad44a00297494bb"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/ubuntu22.04/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 290992,
+          "sha256": "83673f57b4825e3b09db8608cdc5e3e316eabbaa49439d1a4e4726c7fa819297"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/ubuntu22.04/octool-2.0.1-1.amd64.deb",
+          "bytes": 14509846,
+          "sha256": "e586f48af5d4387a44b2c4873df56c7b1735cc6ad8753e08fdee7c8ed5abccab"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/ubuntu22.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10670,
+          "sha256": "b41741efe2697953e03beedcf6247108909de941c6aa7d806aa554d32a4372f4"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu22.04/ctest.txt",
+          "bytes": 1645,
+          "sha256": "39368ba2c1b93f4e26e1f2a9f255ed88d738f28e554cf69e2263fb0237ef0d5d"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu22.04/LastTest.log",
+          "bytes": 8754,
+          "sha256": "de602b93c4ea9498ed137fa4bb2eeb94feab5e4a5153ed4fe1ce419dab9c34b6"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu22.04/runtime.json",
+          "bytes": 1456,
+          "sha256": "f3f93563c4ca394425fced35f253c8186a0eefe5be35db0b8391604314db9d57"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu22.04/unprivileged-diagnose.json",
+          "bytes": 360,
+          "sha256": "0b905f2d3c0eb76a2fadc8a6f7f618af04ac46ee699f86d43db854af4de60323"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu22.04/reinstalled-diagnose.json",
+          "bytes": 356,
+          "sha256": "b4f47a23f826cb3156ea94b31ba1f35a2cf1d9c5b77ff97d7a25700c984e9512"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/gui-tests.txt",
+          "bytes": 21695,
+          "sha256": "8d0f42dd485a78b1495cb5b10ac1398b7161e77b92ccf80965deefbbcb423141"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/kernel-ubuntu22.04/guest-boot/results.json",
+          "bytes": 992,
+          "sha256": "8c38c0bcb70f2f13662a3edf841ff5eef5847b35b7376d4b3ed9d8e1e3a3b2d8"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu24.04",
+      "ctests": 15,
+      "core_scenario_groups": 173,
+      "cli_scenario_groups": 16,
+      "json_reports_in_process_test": 362,
+      "spd_reports": 83,
+      "pm_reports": 20,
+      "gui_regression_tests": 73,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 26,
+              "model": 2,
+              "stepping": 1,
+              "signature": "0x00b00f21"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f20f2aa6000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f20f277e000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f20f2695000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f20f2667000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f20f2454000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f20f2aa8000)\n",
+        "guide_installed": false,
+        "binary_bytes": 649176
+      },
+      "kernel_boots": [
+        {
+          "kernel": "6.8.0-146-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "bae162f72d687f8f87909f1dfedea1dfe16adefe40da51f649d9a9b6d498342b",
+          "module_sha256": "9214c5560954f3d1cadee11b8d77f923048b9b41e336e986531a0c36c0e3a97d"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/ubuntu24.04/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 310278,
+          "sha256": "60b0b85a9c91507f92868d55babefbaa15df353cd36d436928cfc757ac6be254"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/ubuntu24.04/octool-2.0.1-1.amd64.deb",
+          "bytes": 14509498,
+          "sha256": "a3bdbf3aebf0b3991ace17030d7ef1e482b88d97b9c2903f36dd8a2ccb16a834"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/ubuntu24.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10670,
+          "sha256": "13a1bf489dbbd1e8fb524514667942102ff616e6dcf52fb49f5f47ca848c395f"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu24.04/ctest.txt",
+          "bytes": 1645,
+          "sha256": "0ba1077a63eb5a177b3e1fa9e618669a19c0539901d5f5886283a6fa99ee79b0"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu24.04/LastTest.log",
+          "bytes": 8754,
+          "sha256": "85708720495b8a308a63f2244921679711979fc1f89e68daa50af199e556f3d7"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu24.04/runtime.json",
+          "bytes": 1462,
+          "sha256": "3f31bf2326e3b3d7c0d908cc5eb9ec135db6affc552b1a2623aa74d810c686ac"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu24.04/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "35a7c19fb77152b9c2604c7ede5dcd4ccbc699bf79dc9817ecef9f2eb0edb0cf"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu24.04/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "b333f31e5cdc38ecd68af68e5921dd7eb86fe21eb7d9a58cfca45e6e33aed48b"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/gui-tests.txt",
+          "bytes": 21695,
+          "sha256": "3deb9212004c823d6192c78fdbd46989f414fbafb713f209fa7d74f430e2ccca"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/kernel-ubuntu24.04/guest-boot/results.json",
+          "bytes": 497,
+          "sha256": "a2f81c8e62f2150734dcc205d0d69f2e41a39990cd40721ffc3dfbe6237192c3"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu26.04",
+      "ctests": 15,
+      "core_scenario_groups": 173,
+      "cli_scenario_groups": 16,
+      "json_reports_in_process_test": 362,
+      "spd_reports": 83,
+      "pm_reports": 20,
+      "gui_regression_tests": 73,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007fb971cf1000)\n\tlibstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fb9719a2000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x00007fb97187c000)\n\tlibgcc_s.so.1 => /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fb97184e000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x00007fb97162d000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fb971cf3000)\n",
+        "guide_installed": false,
+        "binary_bytes": 675152
+      },
+      "kernel_boots": [
+        {
+          "kernel": "7.0.0-38-generic",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "9f55ef7253055a9cf68f8a04323c93dead2fca617386d842fbde9ca7b178b27e",
+          "module_sha256": "60e4a9e6f9c9362dabc05e1df8e89e5c69e5ecbb21d7e490e762f4df9636b71a"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/ubuntu26.04/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 318168,
+          "sha256": "27dcc6bb71b9435bdcbcf04142a967f9aba45c76863e076edb8af8f67b211e82"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/ubuntu26.04/octool-2.0.1-1.amd64.deb",
+          "bytes": 14509854,
+          "sha256": "43508474b1d7d0c637073de6532546490dd1e22302aaa3a10827cb290648388f"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/ubuntu26.04/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10668,
+          "sha256": "d5e01ad5177a3c78e33a0b8e47e365681ca012aff2a19a39472fad26543a891f"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu26.04/ctest.txt",
+          "bytes": 1645,
+          "sha256": "18727d63881412b9855db7b31d37bef3a5aff6451eeb86c6260560e333a8f1ed"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu26.04/LastTest.log",
+          "bytes": 8754,
+          "sha256": "69901eed2d1a918a8a1087530066773ba40f3047a4fee1b98f22977df1496542"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu26.04/runtime.json",
+          "bytes": 1478,
+          "sha256": "a6d115aebd58aff38da44e7caf9a250809b9c2ac48afe6c2212becc8d5b2cc65"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu26.04/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-ubuntu26.04/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/gui-tests.txt",
+          "bytes": 22477,
+          "sha256": "8ee6c05e1852aa658975e503bc9146e09a83004b900e7c4f2bc722ab9e00b8dd"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/kernel-ubuntu26.04/guest-boot/results.json",
+          "bytes": 496,
+          "sha256": "9d7f93c2f9429f1b81fbc993a68c192f2051c9a61b29e18de831f3ec0499699f"
+        }
+      ]
+    },
+    {
+      "target": "debian11",
+      "ctests": 15,
+      "core_scenario_groups": 173,
+      "cli_scenario_groups": 16,
+      "json_reports_in_process_test": 362,
+      "spd_reports": 83,
+      "pm_reports": 20,
+      "gui_regression_tests": 73,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 17,
+              "stepping": 1,
+              "signature": "0x00a10f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007fedfdfbf000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fedfdf04000)\n\tlibstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fedfdd37000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fedfdbf3000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fedfdbd9000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fedfda05000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fedfdfc1000)\n",
+        "guide_installed": true,
+        "binary_bytes": 580544
+      },
+      "kernel_boots": [
+        {
+          "kernel": "5.10.0-46-amd64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "8568fbc5dcc1a357e02c5ea67c1462174425aef5e8c9c74970253999c9613eb6",
+          "module_sha256": "afb0de05ae56d3823f32259a1d46ee1d1dc9feb99266a37e5b6cd20cb57a3333"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/debian11/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 288088,
+          "sha256": "b2ea81ec820906739dd53cdce277112742c43b821ddce371a2537ec6e6c1d57b"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/debian11/octool-2.0.1-1.amd64.deb",
+          "bytes": 14509490,
+          "sha256": "13943e7ddcf2d63a5570e70268eca3fe3538211a26cc03ad643f98c16e7fcc54"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/debian11/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10668,
+          "sha256": "ab084a37264a431b2af39fa8bc608c484a3210340bcc5c47fe2a4971f6a62640"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-debian11/ctest.txt",
+          "bytes": 1645,
+          "sha256": "333d2d9fbba70d2cf9d2c0a47840c14f729f25266c8fc46b4f99f5473fa59f73"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-debian11/LastTest.log",
+          "bytes": 8754,
+          "sha256": "959b2129ab94b69a1c78a40ea81520c2ae54c10f9a977150ebdbd7c1de42482d"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-debian11/runtime.json",
+          "bytes": 1547,
+          "sha256": "b876eb05eb57d0c40c2d31a87d6abdea88a6bd6f71079dd4a0f15aecf055f508"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-debian11/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "e661623b4840f9e9fec6afeb366b53b9c8b07098d338360c99e2bff982892316"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-debian11/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "507715fc9c450d2fe9cb25a35b592e84748652284ba185066a356962b1bb12cf"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/gui-tests.txt",
+          "bytes": 22144,
+          "sha256": "8a741fa4ed00b28654758e6ae29094808fac04dc71d1d653f589bed8ca2ab120"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/kernel-debian11/guest-boot/results.json",
+          "bytes": 495,
+          "sha256": "4b9794ffff202191af850d0abf23b259a3ef0faa983a570ad0cb909c45824239"
+        }
+      ]
+    },
+    {
+      "target": "debian12",
+      "ctests": 15,
+      "core_scenario_groups": 173,
+      "cli_scenario_groups": 16,
+      "json_reports_in_process_test": 362,
+      "spd_reports": 83,
+      "pm_reports": 20,
+      "gui_regression_tests": 73,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f1bd9970000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f1bd96b9000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f1bd95d9000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f1bd95b9000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f1bd93d7000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f1bd9972000)\n",
+        "guide_installed": true,
+        "binary_bytes": 601104
+      },
+      "kernel_boots": [
+        {
+          "kernel": "6.1.0-53-amd64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "d66b8bc4b8330f4e98257602449feeeed696b860bf147a40477e7f4cfc48e704",
+          "module_sha256": "7fc256dc67c263a8f82a65c0550ddcc9b03852f481a65b110eddc32496696258"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/debian12/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 294456,
+          "sha256": "c6410bf00c9767c59775f4163694357043141a99b29bac495e2b8b2e2c06375d"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/debian12/octool-2.0.1-1.amd64.deb",
+          "bytes": 14509484,
+          "sha256": "2d950bc4ff460719a558acbde5c64c538f0056a2362a98ad12b7cae020f11d94"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/debian12/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10666,
+          "sha256": "735d770ebbb1a984a1c9518fba0b0c22054b1d84a127eb66a207276287452733"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-debian12/ctest.txt",
+          "bytes": 1645,
+          "sha256": "ab1f4e5ad31d995caa66915b8fcdbd262dac76087b9128b8c402448468c2055e"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-debian12/LastTest.log",
+          "bytes": 8754,
+          "sha256": "c3fd31f74ec56a0da13403f1f49476bdccf98f8301f0939169788615840e2dad"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-debian12/runtime.json",
+          "bytes": 1461,
+          "sha256": "91e8eb2230c6a619466b678e9d37c6d1acbeb2cadad4021c30803e9a5cd04c16"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-debian12/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-debian12/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/gui-tests.txt",
+          "bytes": 22144,
+          "sha256": "dfd11caca9bfb895b0fbb3a496794aea56dab2834db8ad1797a3235a731233db"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/kernel-debian12/guest-boot/results.json",
+          "bytes": 494,
+          "sha256": "389f49888874587416a70e96dcf5cb878fb74bb1633c227c9c98d378d9dc0cd8"
+        }
+      ]
+    },
+    {
+      "target": "debian13",
+      "ctests": 15,
+      "core_scenario_groups": 173,
+      "cli_scenario_groups": 16,
+      "json_reports_in_process_test": 362,
+      "spd_reports": 83,
+      "pm_reports": 20,
+      "gui_regression_tests": 73,
+      "runtime": {
+        "passed": true,
+        "no_display": true,
+        "no_build_tools": true,
+        "no_hardware_device": true,
+        "register_access_tested": false,
+        "diagnose": {
+          "schema_version": 1,
+          "command": "diagnose",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "version": "2.0.1",
+            "kernel": "6.17.0-1022-azure",
+            "architecture": "x86_64",
+            "cpu_model": "AMD EPYC 7763 64-Core Processor",
+            "online_cpus": 4,
+            "allowed_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "affinity_error": 0,
+            "module_loaded": false,
+            "effective_uid": 0,
+            "register_access_tested": false,
+            "display_required": false
+          }
+        },
+        "identity": {
+          "schema_version": 1,
+          "command": "cpu",
+          "ok": true,
+          "error": 0,
+          "error_message": "",
+          "data": {
+            "cpu": 3,
+            "identity": {
+              "vendor": "AuthenticAMD",
+              "family": 25,
+              "model": 1,
+              "stepping": 1,
+              "signature": "0x00a00f11"
+            }
+          }
+        },
+        "ldd": "\tlinux-vdso.so.1 (0x00007f7876ec4000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f7876bba000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f7876aca000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f7876a9d000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f78768a9000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f7876ec6000)\n",
+        "guide_installed": true,
+        "binary_bytes": 627048
+      },
+      "kernel_boots": [
+        {
+          "kernel": "6.12.111+deb13-amd64",
+          "cpus": 2,
+          "module_hal_cpuid": true,
+          "caps_ioctl": true,
+          "invalid_cpu": true,
+          "capability_denial": true,
+          "node_mode": "0600",
+          "register_access_tested": false,
+          "load_unload": true,
+          "emulator": "QEMU TCG",
+          "secure_boot_tested": false,
+          "kernel_sha256": "6d8a7f745280cc06a6d2877c932f4dfa9079b694eb4227b61b27232642340794",
+          "module_sha256": "5a22c7337d1cb3e52c5c8b0f96ef3665550f26f8e223036fc98ac688d3b84d23"
+        }
+      ],
+      "packages": [
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/debian13/octool-cli-2.0.1-1.amd64.deb",
+          "bytes": 302682,
+          "sha256": "208487f0a7a26edaa506a3184d533068c598ab14102a93290d609b68834a3a3d"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/debian13/octool-2.0.1-1.amd64.deb",
+          "bytes": 14509856,
+          "sha256": "79cb2854f8332cf87df29afbdb51d62cff44605469a59275826d5e3c17eeff33"
+        },
+        {
+          "path": "dist/gui-cli-amd-pm-62e7bd8/debian13/octool-hwio-dkms-2.0.1-1.amd64.deb",
+          "bytes": 10668,
+          "sha256": "8281e703d564b1532e58ed5915d73d7911b68b3dc62904fa7df80a61672e09e9"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-debian13/ctest.txt",
+          "bytes": 1645,
+          "sha256": "8af511c22ae798fe67cf5427094fd4ae77ff85c192bc4318f2e87b8bf58f2f3b"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-debian13/LastTest.log",
+          "bytes": 8754,
+          "sha256": "2d9a2a3927d807d548169a00235f8c2321bbdee0b54b205367219e5fb02edf1c"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-debian13/runtime.json",
+          "bytes": 1461,
+          "sha256": "b04185c533e0c9d5fd09c8ba5e3a01a05d6141407a766713119b1838ff9195a6"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-debian13/unprivileged-diagnose.json",
+          "bytes": 367,
+          "sha256": "6de85b61c2ba01d358280bc764ba6a33fc67c65ae2d51e1dcd99ae42bf2381e8"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/cli-artifacts/cli-debian13/reinstalled-diagnose.json",
+          "bytes": 363,
+          "sha256": "11e61b3289dfcf0c3ab5bf3dc3e36a60fc6409b4e546c912733082f1810a67da"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/gui-tests.txt",
+          "bytes": 22144,
+          "sha256": "82bd4bf6350865a3fb208fa9efee16d15bf2f333fac00b9583f4f490bdbddce6"
+        },
+        {
+          "path": "build/amd-pm-62e7bd8/linux-artifacts/kernel-debian13/guest-boot/results.json",
+          "bytes": 500,
+          "sha256": "5412f0c812831eabd1dd733139b383f4b836141363fadcc1687df2797c8e567f"
+        }
+      ]
+    }
+  ],
+  "physical_hardware_acceptance": "not_run",
+  "screenshots": [
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/base-timings-fixture.png",
+      "bytes": 370991,
+      "sha256": "d804413ca2d8d94ee1a73e623128aa2704e618967c74d3fe435387d77561ec98"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/cas-fixture.png",
+      "bytes": 280902,
+      "sha256": "f096788cde434d4233957f64ddcb209f05cc5529d661a6391df9297b2c1ee629"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/ddr4-base-fixture.png",
+      "bytes": 325394,
+      "sha256": "c9f9eac88c657898ad67656a9c6d9fc671a573fb081c0ceddffd3b22cd0e5c72"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/ddr4-xmp-fixture.png",
+      "bytes": 252642,
+      "sha256": "279e58adc3e04c5c7f9bb7e0ccf9a53004abd732f88d131655e97ed46bfc4209"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/enhanced-spd-fixture.png",
+      "bytes": 266553,
+      "sha256": "4f3e1eb3899d2174cd14537765990046d4f9cc8baa8df4df41f518e87cd55b79"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/expo-fixture.png",
+      "bytes": 252024,
+      "sha256": "2e16efd90d37c8c57847182a18c690c3b505c87fb0af6d33d603c884958f03f6"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/geometry-fixture.png",
+      "bytes": 336805,
+      "sha256": "3cf20d76a17f62517e0561a4db5142de0f62ec1033c4d67aca0d6aca757a1c8c"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/pm-error-fixture.png",
+      "bytes": 265547,
+      "sha256": "2be36372a9ca19c637eebfe99eeb11ef3356e1f25564c24c662ef0bbcd6ef395"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/pm-fixture.png",
+      "bytes": 259968,
+      "sha256": "903fe32744815982ffbab7f014f7d2f4e11614b40de4d79a621a442ecfa96472"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/native-0.png",
+      "bytes": 61263,
+      "sha256": "add474937a52c07c5024d3ab6f4b21fdde0943e4383137b7dd62e910bfbb6b47"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/native-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/native-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/native-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/native-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/native-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/native-6-pm.png",
+      "bytes": 56249,
+      "sha256": "ecd9536fbe83ac916b6b3d6a2a9a3f982256fb0b9b5d0e6bb9c01215cf5e54b0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/native-6.png",
+      "bytes": 76623,
+      "sha256": "769cfaf4abfa99d0ab05f39939cccc906501fac18468350beb82f2b35f46e409"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/native-7.png",
+      "bytes": 70817,
+      "sha256": "7e545d0a4f5ed93e7051a2f330c897789f3f0779a224c238ff7e462db1652eeb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/native-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/release-0.png",
+      "bytes": 61263,
+      "sha256": "add474937a52c07c5024d3ab6f4b21fdde0943e4383137b7dd62e910bfbb6b47"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/release-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/release-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/release-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/release-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/release-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/release-6-pm.png",
+      "bytes": 56249,
+      "sha256": "ecd9536fbe83ac916b6b3d6a2a9a3f982256fb0b9b5d0e6bb9c01215cf5e54b0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/release-6.png",
+      "bytes": 76623,
+      "sha256": "769cfaf4abfa99d0ab05f39939cccc906501fac18468350beb82f2b35f46e409"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/release-7.png",
+      "bytes": 70817,
+      "sha256": "7e545d0a4f5ed93e7051a2f330c897789f3f0779a224c238ff7e462db1652eeb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/smoke/release-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/spd-fixture.png",
+      "bytes": 216803,
+      "sha256": "ad2b2b5cdea7bfa6cd13612fd44550f2398fc06b052d44c8b588fa8aa63e1e9c"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/turbo-fixture.png",
+      "bytes": 79809,
+      "sha256": "83e49b5e6036413a8b8ec9f8e741cd1c1e472efa9e4d25a3e24653b087b7f846"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/umc-diff-fixture.png",
+      "bytes": 122098,
+      "sha256": "5cf111adec43d5f5ccf6f6e8ccc773721fc1f9919e3fb7319bfbdd073fb4888d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/uncore-fixture.png",
+      "bytes": 75998,
+      "sha256": "19d81f7d580b51c442d4d31d10663336503163ffeab2ba228cccb3a9434b813d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/user-spd-fixture.png",
+      "bytes": 273230,
+      "sha256": "d2f371f9716a6595e92273e27c571003e4fc937764354a0c94dc9c0c98934369"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/vf-edit-fixture.png",
+      "bytes": 123125,
+      "sha256": "16d2c57ae435e2a0f8da1747d516dad04e7e14eaf89aa6d303e2fcd6e6d939ea"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/vf-fixture.png",
+      "bytes": 152495,
+      "sha256": "08eb62f265abf82dccf7e146716872b2f2c11d9f9d7803ab3d4f92c55a37301f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/xmp-secondary-fixture.png",
+      "bytes": 286257,
+      "sha256": "697dea45263b577183d05750ef08437ff214b5ed3f1ae49af375a206b21c7600"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/xmp2-metadata-fixture.png",
+      "bytes": 334057,
+      "sha256": "f0507b6cb029c7b8dc29e6b33c71e1116a0811413dae53037b43ca3a0091ca41"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/base-timings-fixture.png",
+      "bytes": 371300,
+      "sha256": "b7211931da3d3c15e2847c88c1760fa1701b6c750c26017407a4378350e7efcd"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/cas-fixture.png",
+      "bytes": 281176,
+      "sha256": "9e4217317a5e86c61ca7f01f3f100d826d59e4b4e3c7e510fca92b275cfe806e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/ddr4-base-fixture.png",
+      "bytes": 324947,
+      "sha256": "0b118c11f96571d0f49eac989c06889abdd82a4f353d143e432234185aa0e713"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/ddr4-xmp-fixture.png",
+      "bytes": 253007,
+      "sha256": "fc29da7a8b4a7d5f1e46e090026a1bc74270472a957fd3e2a968de2fefd24229"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/enhanced-spd-fixture.png",
+      "bytes": 266510,
+      "sha256": "9c8ea5406a943d7adb07e47b4dbd377f06ce60bed1741ac4c1b463f17af000fa"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/expo-fixture.png",
+      "bytes": 251728,
+      "sha256": "5a660f1bb3e1ebfff4f4e056e1e0c2cd4d520ebbde1a9898dfe5662b285ddd61"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/geometry-fixture.png",
+      "bytes": 336489,
+      "sha256": "44b1843a2ef167e6a1189c108a8b56248d19a1edee32cdde883286f4ccd329d4"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/pm-error-fixture.png",
+      "bytes": 266124,
+      "sha256": "dab34972d9d37935abe9cc75b3cfb7797cbb5da30e860f187a7ecdda7a347700"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/pm-fixture.png",
+      "bytes": 260307,
+      "sha256": "06560e4b439692fd7d4b96bbf3b93a3b03ebe96a4dd680b528fdcae1534c1b37"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/native-0.png",
+      "bytes": 60469,
+      "sha256": "f83c2bcfee4927ac6f4fcf0e7a81ffb4f68f36ca02df2a535d2a10962d518e55"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/native-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/native-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/native-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/native-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/native-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/native-6-pm.png",
+      "bytes": 56249,
+      "sha256": "ecd9536fbe83ac916b6b3d6a2a9a3f982256fb0b9b5d0e6bb9c01215cf5e54b0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/native-6.png",
+      "bytes": 76623,
+      "sha256": "769cfaf4abfa99d0ab05f39939cccc906501fac18468350beb82f2b35f46e409"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/native-7.png",
+      "bytes": 70817,
+      "sha256": "7e545d0a4f5ed93e7051a2f330c897789f3f0779a224c238ff7e462db1652eeb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/native-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/release-0.png",
+      "bytes": 60469,
+      "sha256": "f83c2bcfee4927ac6f4fcf0e7a81ffb4f68f36ca02df2a535d2a10962d518e55"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/release-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/release-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/release-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/release-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/release-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/release-6-pm.png",
+      "bytes": 56249,
+      "sha256": "ecd9536fbe83ac916b6b3d6a2a9a3f982256fb0b9b5d0e6bb9c01215cf5e54b0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/release-6.png",
+      "bytes": 76623,
+      "sha256": "769cfaf4abfa99d0ab05f39939cccc906501fac18468350beb82f2b35f46e409"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/release-7.png",
+      "bytes": 70817,
+      "sha256": "7e545d0a4f5ed93e7051a2f330c897789f3f0779a224c238ff7e462db1652eeb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/smoke/release-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/spd-fixture.png",
+      "bytes": 216452,
+      "sha256": "5542916e6dc504d7f5c347576c4ead91337df151044768716296feb8e21c048c"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/turbo-fixture.png",
+      "bytes": 79809,
+      "sha256": "83e49b5e6036413a8b8ec9f8e741cd1c1e472efa9e4d25a3e24653b087b7f846"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/umc-diff-fixture.png",
+      "bytes": 122098,
+      "sha256": "5cf111adec43d5f5ccf6f6e8ccc773721fc1f9919e3fb7319bfbdd073fb4888d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/uncore-fixture.png",
+      "bytes": 75998,
+      "sha256": "19d81f7d580b51c442d4d31d10663336503163ffeab2ba228cccb3a9434b813d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/user-spd-fixture.png",
+      "bytes": 273019,
+      "sha256": "544c99fd1c04cb417d10c0a731eea06e3b927d0a61998af7846a838c69031726"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/vf-edit-fixture.png",
+      "bytes": 104246,
+      "sha256": "e9a9040794383cc7996d807822b1b36670965379a6bf1c9dc7c707f393235014"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/vf-fixture.png",
+      "bytes": 152639,
+      "sha256": "70b2fb845decd37029bbbda76101bdaa9c66ab8c3a0706be9df6c6f55711045e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/xmp-secondary-fixture.png",
+      "bytes": 285438,
+      "sha256": "a27d8ca988bd9aa251cff68242c5f456d9dcdddb98ca9ebc54c48cdcdbbe4e0b"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el9/xmp2-metadata-fixture.png",
+      "bytes": 334529,
+      "sha256": "8b91d827acfc3a5278584f2431ee408cbe6fa6a14fbc23784e8e438c784c965e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/base-timings-fixture.png",
+      "bytes": 356724,
+      "sha256": "723e8ad761697916310b31cf5cb3645948cb30e25e704c712ef53f5bd9fa107c"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/cas-fixture.png",
+      "bytes": 283375,
+      "sha256": "f9c9824bd3e8c284ca2c2e0154ad0ffe2fd67cc4dc7a3225ee72360e87a226cb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/controls-fixture.png",
+      "bytes": 163204,
+      "sha256": "3ea98939845341f696954bacc03c70519230698150d5259897642348384c82d9"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/ddr4-base-fixture.png",
+      "bytes": 311161,
+      "sha256": "f46dc53fe7f90796c7bff9d985b3ce8134a5dfdd234595d1c6301a2ae5e1a0dc"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/ddr4-xmp-fixture.png",
+      "bytes": 238374,
+      "sha256": "ffa4ed90d71e60197bbf6c5df4b3d5fdfa61f998587ab4f3c731db2a182a28db"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/enhanced-spd-fixture.png",
+      "bytes": 250057,
+      "sha256": "3e64ea3b7a063baedc0328753dd05d85c9cc0a48ed1694272e334e39b08bcdb1"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/expo-fixture.png",
+      "bytes": 241254,
+      "sha256": "aa33acb0f095e7ba3f5e21d92ec4723870aca8fe2cf92d079671953e4a6654f8"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/geometry-fixture.png",
+      "bytes": 319808,
+      "sha256": "488491d0c513fb8074734d87adfe7782eddd2c2e995611abd85056fb4155162b"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/pm-error-fixture.png",
+      "bytes": 238435,
+      "sha256": "066605cebee3b955f400c2432e605ec1ab4dd0594e2fe8a3afb3e37d6198b593"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/pm-fixture.png",
+      "bytes": 235062,
+      "sha256": "fe489bb70b6d441d54ebf17a8c0a0b2c71cb764a8df634ff6fdbd577f67cadb2"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/native-0.png",
+      "bytes": 57401,
+      "sha256": "96158c4e6dd3ba9e3d113d33ca53642b266df4f4977eab46d773f558e3d6946f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/native-1.png",
+      "bytes": 30301,
+      "sha256": "becfca1cc65f886a79a86f2ec435f604f0d85f41f4d3d664377da9961d07e763"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/native-2.png",
+      "bytes": 28500,
+      "sha256": "559eb0466a1fe08a56a8f5693cf2a6e2ea44f60897b7d0786fae99278f184c75"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/native-3.png",
+      "bytes": 31674,
+      "sha256": "b1ecaca9da6c14426cc34b218213df1231eb6d3af24df2f5a3d9d06e68c735a2"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/native-4.png",
+      "bytes": 66427,
+      "sha256": "bc873c8a3b79f60a4f54c0c2e8cba6a4a246339b8e9ae7d2c1960bb3508d84cc"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/native-5-turbo.png",
+      "bytes": 52322,
+      "sha256": "24a8e9947b0b6a303dbf2025886c6a49f338c4acfe6422a4ee5d20166bf4bbbc"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/native-5-uncore.png",
+      "bytes": 49140,
+      "sha256": "c73fa6efc59ab1acdbaa00072094b1962b497329956cc65da1d8c0fe08d8c837"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/native-5-vf.png",
+      "bytes": 71329,
+      "sha256": "58da28ecfd5fe610c280a095bd864dcaf088a0393ec6ca27571eec51d854abb2"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/native-5-voltage.png",
+      "bytes": 82428,
+      "sha256": "5dca25e5c77d693b0d9e39dda27de95c4e0e1f0edb144d57cc4344e42a18172a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/native-5.png",
+      "bytes": 50379,
+      "sha256": "4f9df60a839fb162e80c54147d148102b212be0dcb6ed75f8b3ae256b71e3c09"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/native-6-pm.png",
+      "bytes": 50683,
+      "sha256": "f9f65cdc3cc0bda682e8ac73ea87e4150a3343e556fdd8b5b95238fcc8daf46c"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/native-6.png",
+      "bytes": 70761,
+      "sha256": "79c3d374a20acbe7ac4d5372e808d014c0b74e9fc66c560fd1718583454c5913"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/native-7.png",
+      "bytes": 66124,
+      "sha256": "7984b31b6a64104c1cf21ab5cc085935231083fea855c8cdc5e7548fc334b8e5"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/native-8.png",
+      "bytes": 53768,
+      "sha256": "9597a6f8712c0f3a117cdbac9cddc862068cfe0883047418fc1eba40b4231af9"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/release-0.png",
+      "bytes": 57401,
+      "sha256": "96158c4e6dd3ba9e3d113d33ca53642b266df4f4977eab46d773f558e3d6946f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/release-1.png",
+      "bytes": 30301,
+      "sha256": "becfca1cc65f886a79a86f2ec435f604f0d85f41f4d3d664377da9961d07e763"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/release-2.png",
+      "bytes": 28500,
+      "sha256": "559eb0466a1fe08a56a8f5693cf2a6e2ea44f60897b7d0786fae99278f184c75"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/release-3.png",
+      "bytes": 31674,
+      "sha256": "b1ecaca9da6c14426cc34b218213df1231eb6d3af24df2f5a3d9d06e68c735a2"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/release-4.png",
+      "bytes": 66427,
+      "sha256": "bc873c8a3b79f60a4f54c0c2e8cba6a4a246339b8e9ae7d2c1960bb3508d84cc"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/release-5-turbo.png",
+      "bytes": 52322,
+      "sha256": "24a8e9947b0b6a303dbf2025886c6a49f338c4acfe6422a4ee5d20166bf4bbbc"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/release-5-uncore.png",
+      "bytes": 49140,
+      "sha256": "c73fa6efc59ab1acdbaa00072094b1962b497329956cc65da1d8c0fe08d8c837"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/release-5-vf.png",
+      "bytes": 71329,
+      "sha256": "58da28ecfd5fe610c280a095bd864dcaf088a0393ec6ca27571eec51d854abb2"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/release-5-voltage.png",
+      "bytes": 82428,
+      "sha256": "5dca25e5c77d693b0d9e39dda27de95c4e0e1f0edb144d57cc4344e42a18172a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/release-5.png",
+      "bytes": 50379,
+      "sha256": "4f9df60a839fb162e80c54147d148102b212be0dcb6ed75f8b3ae256b71e3c09"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/release-6-pm.png",
+      "bytes": 50683,
+      "sha256": "f9f65cdc3cc0bda682e8ac73ea87e4150a3343e556fdd8b5b95238fcc8daf46c"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/release-6.png",
+      "bytes": 70761,
+      "sha256": "79c3d374a20acbe7ac4d5372e808d014c0b74e9fc66c560fd1718583454c5913"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/release-7.png",
+      "bytes": 66124,
+      "sha256": "7984b31b6a64104c1cf21ab5cc085935231083fea855c8cdc5e7548fc334b8e5"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/smoke/release-8.png",
+      "bytes": 53768,
+      "sha256": "9597a6f8712c0f3a117cdbac9cddc862068cfe0883047418fc1eba40b4231af9"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/spd-fixture.png",
+      "bytes": 209973,
+      "sha256": "56590d4256b5e838a2531917b58ba28fa951a03493a177fe71830617562a32a9"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/turbo-fixture.png",
+      "bytes": 88005,
+      "sha256": "c75b51c2563bea049b8dc939b5f05951c529d41342cd5a2dab66a2e940ba1895"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/umc-diff-fixture.png",
+      "bytes": 112629,
+      "sha256": "64958e104f2968e7b7472686c528d66ccec30a95beda0c5331c5c97163bb9a0c"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/uncore-fixture.png",
+      "bytes": 71094,
+      "sha256": "0ef0f496a03b9e0a3c1503f8142146fbedffc9739e6d1a669a9069814177b085"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/user-spd-fixture.png",
+      "bytes": 258204,
+      "sha256": "9dbf8ddf6bc6650b409350997211611fedabd8e3975927a9bfd01cbc3c63bf12"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/vf-edit-fixture.png",
+      "bytes": 113998,
+      "sha256": "ef0afe0510ea656a085f0d8e0cf9f67f24fe981b35c1e657ea87e129886a4d43"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/vf-fixture.png",
+      "bytes": 135646,
+      "sha256": "479ed8b8adeaf6f311b133c4f0e80a7987201243aacf4705264a1d9a4f4d45f0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/xmp-secondary-fixture.png",
+      "bytes": 291749,
+      "sha256": "bfe854c15f1dcc5127cf3a26584132e51fbad453ac6bc2167505cf8b6c717a9c"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el10/xmp2-metadata-fixture.png",
+      "bytes": 320360,
+      "sha256": "03323c88cbb196fb116c1358906d6288abe19f8ad22a6729c23e1fba5424d80d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/base-timings-fixture.png",
+      "bytes": 377016,
+      "sha256": "4d5de119058288e79f98a1d9f44f634acfd1ed7d18647f183499e91fc95755c0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/cas-fixture.png",
+      "bytes": 281328,
+      "sha256": "56711d81a0b1339bb9b30b3aa9caf22a875654bd9a04318001ad494c23e7b0a4"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/ddr4-base-fixture.png",
+      "bytes": 326149,
+      "sha256": "bb17dd04d74a7a063f24c1bc975a4b3eb83d1a73d44d53f5217351135fe10be5"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/ddr4-xmp-fixture.png",
+      "bytes": 252854,
+      "sha256": "3e6d83675ea24e3e223aa8166ea85f9c471518df86b2518ca75078810d6195a1"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/enhanced-spd-fixture.png",
+      "bytes": 266831,
+      "sha256": "649bd52884546cef166dd3d5b29009d9dbe3a504278508b560999596314eb7f5"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/expo-fixture.png",
+      "bytes": 251261,
+      "sha256": "4dc57065469ddc32c26960a52fc29588d3536d7183699e06bd7fb1e0f1fafe4b"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/geometry-fixture.png",
+      "bytes": 336679,
+      "sha256": "b749032f5b6a467a6b3c2dca40e7883474a6397fc963a3735a3de9f844103686"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/pm-error-fixture.png",
+      "bytes": 265825,
+      "sha256": "c6407ffc77fbe0e9a3fc20e6081ed5e88efcda0238f42b235ad051c87a6311f7"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/pm-fixture.png",
+      "bytes": 260345,
+      "sha256": "594b0843e21274440a71935511cee14005008246f717142574c97719d38f5786"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/native-0.png",
+      "bytes": 60083,
+      "sha256": "1ec759e59654058160b9c0da507b63cd8b5c4b7cdbcf7774737b4b453dd96620"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/native-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/native-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/native-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/native-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/native-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/native-6-pm.png",
+      "bytes": 56249,
+      "sha256": "ecd9536fbe83ac916b6b3d6a2a9a3f982256fb0b9b5d0e6bb9c01215cf5e54b0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/native-6.png",
+      "bytes": 76623,
+      "sha256": "769cfaf4abfa99d0ab05f39939cccc906501fac18468350beb82f2b35f46e409"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/native-7.png",
+      "bytes": 70817,
+      "sha256": "7e545d0a4f5ed93e7051a2f330c897789f3f0779a224c238ff7e462db1652eeb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/native-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/release-0.png",
+      "bytes": 60083,
+      "sha256": "1ec759e59654058160b9c0da507b63cd8b5c4b7cdbcf7774737b4b453dd96620"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/release-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/release-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/release-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/release-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/release-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/release-6-pm.png",
+      "bytes": 56249,
+      "sha256": "ecd9536fbe83ac916b6b3d6a2a9a3f982256fb0b9b5d0e6bb9c01215cf5e54b0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/release-6.png",
+      "bytes": 76623,
+      "sha256": "769cfaf4abfa99d0ab05f39939cccc906501fac18468350beb82f2b35f46e409"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/release-7.png",
+      "bytes": 70817,
+      "sha256": "7e545d0a4f5ed93e7051a2f330c897789f3f0779a224c238ff7e462db1652eeb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/smoke/release-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/spd-fixture.png",
+      "bytes": 217124,
+      "sha256": "fd8e4e65934da626b21a4772ff9351c8172e305cd3508f6cebb69ae13a533de2"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/turbo-fixture.png",
+      "bytes": 79809,
+      "sha256": "83e49b5e6036413a8b8ec9f8e741cd1c1e472efa9e4d25a3e24653b087b7f846"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/umc-diff-fixture.png",
+      "bytes": 122098,
+      "sha256": "5cf111adec43d5f5ccf6f6e8ccc773721fc1f9919e3fb7319bfbdd073fb4888d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/uncore-fixture.png",
+      "bytes": 75998,
+      "sha256": "19d81f7d580b51c442d4d31d10663336503163ffeab2ba228cccb3a9434b813d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/user-spd-fixture.png",
+      "bytes": 273617,
+      "sha256": "7d943562a304802976182db0ae8d9782554685fa684e60880e765ce642d61efc"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/vf-edit-fixture.png",
+      "bytes": 122925,
+      "sha256": "dc75c3d972dbdd1ad8ac70e7e6135a21fccb2e168766b55cb4ac8ed3c49d10ae"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/vf-fixture.png",
+      "bytes": 152468,
+      "sha256": "7e6fafdf2a3ca64b46696ac02e17f4642ae531920b2690e00d5e68d3b34c4752"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/xmp-secondary-fixture.png",
+      "bytes": 285407,
+      "sha256": "bb530b207b90ce9ce04f7cb2a3c4acd2a0c1798ca5bcc33a1683cebc525d1b62"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu20.04/xmp2-metadata-fixture.png",
+      "bytes": 334260,
+      "sha256": "8e4d520763da4e4c71b1beb4064bb5e3459cc360249a2f0594a03b05507cca14"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/base-timings-fixture.png",
+      "bytes": 365469,
+      "sha256": "7c346c36da00d8bb7d31a760fa235a377af991e30b0066b4f26ace059a9d7aa3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/cas-fixture.png",
+      "bytes": 280985,
+      "sha256": "1c6cbf784c06b1f1c4eef8e16b095f43085a35cbc5997704daa361eb44021453"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/ddr4-base-fixture.png",
+      "bytes": 325073,
+      "sha256": "abc3915a569d2947cc54583078f9122c9a9f9fb27840597f13a636c198a8bee8"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/ddr4-xmp-fixture.png",
+      "bytes": 253313,
+      "sha256": "4997e28a141ff76e9511caeb3221c7868c204ef76f44124b3e650533c5a58db0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/enhanced-spd-fixture.png",
+      "bytes": 265916,
+      "sha256": "d233272eaa9a22c5473fd40f87bc3bfe2e58d7006b94909c6c136431ee672478"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/expo-fixture.png",
+      "bytes": 251469,
+      "sha256": "8c1d26cc3024774cf61dcddcd4eafcebd661087da03620e9a35785bcfa9e4839"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/geometry-fixture.png",
+      "bytes": 336376,
+      "sha256": "62252903213ffc7d42ad5e7392f4c22058596052a9e4401e49a4fbd0c66a4858"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/pm-error-fixture.png",
+      "bytes": 266147,
+      "sha256": "544543a5effe57fa7b5a33e1c12536e2f630bb959d1266e88f9e939984ea87f3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/pm-fixture.png",
+      "bytes": 259984,
+      "sha256": "aefb269d1609df37443b09aa54bdca3ca0cbd9e246bb234818fe509ac601a870"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/native-0.png",
+      "bytes": 60032,
+      "sha256": "b12c3b6912cce2cbd39b34226a275c2d5dbe994fae51f0707bc16a99c7eb7578"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/native-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/native-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/native-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/native-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/native-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/native-6-pm.png",
+      "bytes": 56249,
+      "sha256": "ecd9536fbe83ac916b6b3d6a2a9a3f982256fb0b9b5d0e6bb9c01215cf5e54b0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/native-6.png",
+      "bytes": 76623,
+      "sha256": "769cfaf4abfa99d0ab05f39939cccc906501fac18468350beb82f2b35f46e409"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/native-7.png",
+      "bytes": 70817,
+      "sha256": "7e545d0a4f5ed93e7051a2f330c897789f3f0779a224c238ff7e462db1652eeb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/native-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/release-0.png",
+      "bytes": 60032,
+      "sha256": "b12c3b6912cce2cbd39b34226a275c2d5dbe994fae51f0707bc16a99c7eb7578"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/release-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/release-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/release-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/release-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/release-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/release-6-pm.png",
+      "bytes": 56249,
+      "sha256": "ecd9536fbe83ac916b6b3d6a2a9a3f982256fb0b9b5d0e6bb9c01215cf5e54b0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/release-6.png",
+      "bytes": 76623,
+      "sha256": "769cfaf4abfa99d0ab05f39939cccc906501fac18468350beb82f2b35f46e409"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/release-7.png",
+      "bytes": 70817,
+      "sha256": "7e545d0a4f5ed93e7051a2f330c897789f3f0779a224c238ff7e462db1652eeb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/smoke/release-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/spd-fixture.png",
+      "bytes": 216714,
+      "sha256": "8cc7c576d2afee014df06070762fd691235d5a60c3ea184f50fb7632a773eed9"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/turbo-fixture.png",
+      "bytes": 79809,
+      "sha256": "83e49b5e6036413a8b8ec9f8e741cd1c1e472efa9e4d25a3e24653b087b7f846"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/umc-diff-fixture.png",
+      "bytes": 122098,
+      "sha256": "5cf111adec43d5f5ccf6f6e8ccc773721fc1f9919e3fb7319bfbdd073fb4888d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/uncore-fixture.png",
+      "bytes": 75998,
+      "sha256": "19d81f7d580b51c442d4d31d10663336503163ffeab2ba228cccb3a9434b813d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/user-spd-fixture.png",
+      "bytes": 273077,
+      "sha256": "525b0f3bb7343537b83dc10022fa00a1ddfd90535101523119c670131a735c67"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/vf-edit-fixture.png",
+      "bytes": 123205,
+      "sha256": "7aacaf1045a7581f5662a0e456cdd25517d27c9ac8d82495a7d6b957be73466b"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/vf-fixture.png",
+      "bytes": 152576,
+      "sha256": "a989306545c81560dd1fe555ec8a322e254b3d07c4766abd8ec7890747e159e4"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/xmp-secondary-fixture.png",
+      "bytes": 286406,
+      "sha256": "e530f7272aa6714c9d4c8fe472c207305e7b6662112de0ba52bf2d279bc4e71a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu22.04/xmp2-metadata-fixture.png",
+      "bytes": 333914,
+      "sha256": "10b152239ff3e93ee50ee23b51872344de81b4201b20892f63c06a39a03a0af7"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/base-timings-fixture.png",
+      "bytes": 442235,
+      "sha256": "bd7b6b0b95d4ebe001ea67349450b860f2078464240e203520458531355d0046"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/cas-fixture.png",
+      "bytes": 332265,
+      "sha256": "b7e94acc240ea6b5d612f21e0607fc8adfe9d51c9536041376d5e4f429e1201f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/controls-fixture.png",
+      "bytes": 208944,
+      "sha256": "b6a3c75969f5daa8751279df94a3c2e20ed0a9c2d0dd5928fac15797ab0594d9"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/ddr4-base-fixture.png",
+      "bytes": 383428,
+      "sha256": "bbc6e5613da5d6e3b50dd714bf92f8349d00c4fcc502075292c9d31509d235f1"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/ddr4-xmp-fixture.png",
+      "bytes": 297700,
+      "sha256": "a6cfe9602c54255d0e90307583cfaf994c455663f3aeafd522c4ed1162226fbc"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/enhanced-spd-fixture.png",
+      "bytes": 313454,
+      "sha256": "8e3bb09813f168229d43f3c356db3eb1ad1df0ae8e567c1fdebce3b7f2dca0cb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/expo-fixture.png",
+      "bytes": 295256,
+      "sha256": "28f3591834bed1ecda36cfbd36db0cab215dc7b5f23e1c4eeae2f1d1cd24a041"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/geometry-fixture.png",
+      "bytes": 397705,
+      "sha256": "af3f8aa941f1b179ebceb284c45f2f474c4cc69af93af6a224ef1270a5ecc7bb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/pm-error-fixture.png",
+      "bytes": 313014,
+      "sha256": "86e3c1eb915a79c877af41d6171411cafd2412b77751242036e192e06aee8a61"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/pm-fixture.png",
+      "bytes": 306161,
+      "sha256": "4f2ef805c313da715fbe17ea96a92b6e72ae866e68c887f7fbb633be10f8a09b"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/native-0.png",
+      "bytes": 69164,
+      "sha256": "709694a9de91340e677136e99169aad542f3b5d4e7bae90fd2724ceb2a162b1b"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/native-1.png",
+      "bytes": 35483,
+      "sha256": "bc7aac42669d26cb301cfc2165a272b47c506682e79af25b8706f629ebef62f2"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/native-2.png",
+      "bytes": 33708,
+      "sha256": "229b48333f366e215ad7b246085f798370d149f595db486b1f06d5f96348e667"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/native-3.png",
+      "bytes": 36960,
+      "sha256": "a604fe89dbb3ccfb7dcf3d30a0fe83643b809a858a931e17c7b358752d8b5d0c"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/native-4.png",
+      "bytes": 80357,
+      "sha256": "11fe99e920968309e8386f2f94e0ed9a9aca648b1ba38202433ea63b70751841"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/native-5-turbo.png",
+      "bytes": 62386,
+      "sha256": "c6441d9e840e07d3b71b74cf63f71f3359722c3797617cdeb5d39a3f18434ef3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/native-5-uncore.png",
+      "bytes": 57213,
+      "sha256": "4c211b04aeb67a74672ba59420b3fa235fc8a8028e0a20edb1b302c17c67a3a5"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/native-5-vf.png",
+      "bytes": 86865,
+      "sha256": "53319067c0bdefe41b1647f7790ff922341df48bd0c8339994db48d06245c2e9"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/native-5-voltage.png",
+      "bytes": 97342,
+      "sha256": "92412f109e6b8f0f1115bbc528367e7d1de2c4f2be6c613a30699cc51b4e00e2"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/native-5.png",
+      "bytes": 61063,
+      "sha256": "50c19b42be9f684b2a1c00b69042687ebcd8bff6f6f75ce084b697b4ca4c23be"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/native-6-pm.png",
+      "bytes": 62838,
+      "sha256": "fa1e9c59e82e82bac4efa085cb7f47ddc090fae7402d70e1ddcb8b3674f34c51"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/native-6.png",
+      "bytes": 85939,
+      "sha256": "cb8bd877f2290e32175a6d11ce4909295d4fe1f5dc0e651a0945428a457c72c1"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/native-7.png",
+      "bytes": 81538,
+      "sha256": "b3da5e9e0851aaac7021f6752a41ad92d0b8758305154bd5faf735cfea0e6b74"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/native-8.png",
+      "bytes": 66976,
+      "sha256": "fb8e00731421fa5e5d133acbff6234da7749c4c9e04483b6d4162ddb0764b303"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/release-0.png",
+      "bytes": 69164,
+      "sha256": "709694a9de91340e677136e99169aad542f3b5d4e7bae90fd2724ceb2a162b1b"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/release-1.png",
+      "bytes": 35483,
+      "sha256": "bc7aac42669d26cb301cfc2165a272b47c506682e79af25b8706f629ebef62f2"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/release-2.png",
+      "bytes": 33708,
+      "sha256": "229b48333f366e215ad7b246085f798370d149f595db486b1f06d5f96348e667"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/release-3.png",
+      "bytes": 36960,
+      "sha256": "a604fe89dbb3ccfb7dcf3d30a0fe83643b809a858a931e17c7b358752d8b5d0c"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/release-4.png",
+      "bytes": 80357,
+      "sha256": "11fe99e920968309e8386f2f94e0ed9a9aca648b1ba38202433ea63b70751841"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/release-5-turbo.png",
+      "bytes": 62386,
+      "sha256": "c6441d9e840e07d3b71b74cf63f71f3359722c3797617cdeb5d39a3f18434ef3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/release-5-uncore.png",
+      "bytes": 57213,
+      "sha256": "4c211b04aeb67a74672ba59420b3fa235fc8a8028e0a20edb1b302c17c67a3a5"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/release-5-vf.png",
+      "bytes": 86865,
+      "sha256": "53319067c0bdefe41b1647f7790ff922341df48bd0c8339994db48d06245c2e9"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/release-5-voltage.png",
+      "bytes": 97342,
+      "sha256": "92412f109e6b8f0f1115bbc528367e7d1de2c4f2be6c613a30699cc51b4e00e2"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/release-5.png",
+      "bytes": 61063,
+      "sha256": "50c19b42be9f684b2a1c00b69042687ebcd8bff6f6f75ce084b697b4ca4c23be"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/release-6-pm.png",
+      "bytes": 62838,
+      "sha256": "fa1e9c59e82e82bac4efa085cb7f47ddc090fae7402d70e1ddcb8b3674f34c51"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/release-6.png",
+      "bytes": 85939,
+      "sha256": "cb8bd877f2290e32175a6d11ce4909295d4fe1f5dc0e651a0945428a457c72c1"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/release-7.png",
+      "bytes": 81538,
+      "sha256": "b3da5e9e0851aaac7021f6752a41ad92d0b8758305154bd5faf735cfea0e6b74"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/release-8.png",
+      "bytes": 66976,
+      "sha256": "fb8e00731421fa5e5d133acbff6234da7749c4c9e04483b6d4162ddb0764b303"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/spd-fixture.png",
+      "bytes": 255172,
+      "sha256": "9fdda176cc510ef5bae9a56bc741adcd9095ccd507fa77ffa9a42afbf6fc056b"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/turbo-fixture.png",
+      "bytes": 91777,
+      "sha256": "3904cef3d52a8c9b7f2e63bce2d295f462c38b32f9827239fd8dd118ee43d9e9"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/umc-diff-fixture.png",
+      "bytes": 143053,
+      "sha256": "27e82fabf7e9d0e83625d853511622be2523f646c060e9ec1a590744002d246e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/uncore-fixture.png",
+      "bytes": 88041,
+      "sha256": "8f6cff83ca5d6b4895e3f8c5a518c36de264384ccdee55b5db3a46dab3d60153"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/user-spd-fixture.png",
+      "bytes": 321989,
+      "sha256": "5948bf8cc3bf6c5fdbb624e07c7639bb00c2c8a8161f239c275534e8ea4cc5da"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/vf-edit-fixture.png",
+      "bytes": 144168,
+      "sha256": "6717f829620f07e5f2e38f15a62ddd76dfb5e002366cc8515aef2eb4cef60d20"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/vf-fixture.png",
+      "bytes": 177993,
+      "sha256": "5490501951aab8a1ab96085e22b7a212ebf3a24450c66c7c116e098f3087ba27"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/xmp-secondary-fixture.png",
+      "bytes": 337243,
+      "sha256": "195c7764dae59e31fd86e23136f6a0e00697a782e980b85cfb3282e0dceec4cc"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/xmp2-metadata-fixture.png",
+      "bytes": 393201,
+      "sha256": "d21b3baed51d0f61c899c86d842970e2e9ecfb8523b01a9618bd3c10372e4854"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/base-timings-fixture.png",
+      "bytes": 455561,
+      "sha256": "bb3267ca579025da0ff58696aae7d1bd0875930f6983ac2a09b84b1ff189211b"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/cas-fixture.png",
+      "bytes": 332907,
+      "sha256": "51acc132c8f3f504a4a0cab020fce6888c0fc85530ab2d49e06a42b7b0e993ed"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/controls-fixture.png",
+      "bytes": 209039,
+      "sha256": "eef4961237db5871414af920efc56338ad30857eaea29f309113608a9c444a50"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/ddr4-base-fixture.png",
+      "bytes": 383948,
+      "sha256": "1ff255cb8bed532a80b947aaed2604241a40fd7bac6eae4d08689476488645cc"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/ddr4-xmp-fixture.png",
+      "bytes": 297784,
+      "sha256": "fa77ebd13933bbd4e3588e60bab74d52adab4ce27da4b658db75defb8dcece40"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/enhanced-spd-fixture.png",
+      "bytes": 314468,
+      "sha256": "e28a4bf88e88247c1cb8c6f5126e0afb6afd931d1899633fe66c2bccb4c4aca5"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/expo-fixture.png",
+      "bytes": 295991,
+      "sha256": "fc110406e7304037a378d9bee49bb2856ab0bd83dcdc84ab4656b67d2a6dc964"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/geometry-fixture.png",
+      "bytes": 397494,
+      "sha256": "f73c207895692f8451f8988181052d5789bc0a63027e81bb8ba2bf9415e818f5"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/pm-error-fixture.png",
+      "bytes": 313494,
+      "sha256": "69603d57ddad95a6ae399f32901c2ab099834a9a079ad051d4a5c150f9cbf328"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/pm-fixture.png",
+      "bytes": 305795,
+      "sha256": "3f61b8c1dad687a9cad7d40271b8f95ff4f9e91b9e9285b57ecbab6d86432cbc"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/native-0.png",
+      "bytes": 66634,
+      "sha256": "5aa641dfa8b5297c20b2801ef3b95bcfa9a93db134aa64d5a06de74c69cc95ca"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/native-1.png",
+      "bytes": 33907,
+      "sha256": "c96e203432d92377a6db81369199c270c8c93a6351e0a31a1c0659045345b52a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/native-2.png",
+      "bytes": 31570,
+      "sha256": "761888d87daa3735be75e6ab4236ec19cc9df062486085495945c72e9cdd64a6"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/native-3.png",
+      "bytes": 35274,
+      "sha256": "71233adda2b16dcea7d3e9e8172c7aaf7a7e6c4d5ddd3423fb720062761a0ea4"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/native-4.png",
+      "bytes": 76514,
+      "sha256": "4ac658788aa2398c24477499a8ebd6bd92807a481af7ea782016be2f09e8530d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/native-5-turbo.png",
+      "bytes": 60861,
+      "sha256": "6a63652674f99de21c58d01b353853bdd7e7c016d2dd3945a0737deadb0e5bfd"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/native-5-uncore.png",
+      "bytes": 55951,
+      "sha256": "03d12eb9e7b66eeb204f20176b649effce2b9fa1feb5cfcec799c9854eb0c815"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/native-5-vf.png",
+      "bytes": 83935,
+      "sha256": "3dc17557d06af0c1d916a2aa0c92fb2facd50f3a6c89d29649b5c58e2709b01b"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/native-5-voltage.png",
+      "bytes": 94703,
+      "sha256": "def6a0c7fbb3f0051760bbc7943a3e93269604efe97f40717ccc5dc0abdd6b01"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/native-5.png",
+      "bytes": 58737,
+      "sha256": "c01a088730788cb064e37b352d5218993cf094859bb8b7a293a47e7ce9103913"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/native-6-pm.png",
+      "bytes": 60558,
+      "sha256": "60ad3a5e7825d08946dc606562e28e7db28a3f8ff64bbe4a85b20bddcf9fd72d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/native-6.png",
+      "bytes": 82517,
+      "sha256": "e142675f3e3ca3ad5e60989053705ae5a719cb8cfec586653f05fc5e0bfa5fd5"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/native-7.png",
+      "bytes": 79141,
+      "sha256": "d222fd526b9310c70ccd4fde5cc561c9f8584b2e40f5752f3610fafbd80b4314"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/native-8.png",
+      "bytes": 62433,
+      "sha256": "f7359de7a8ba237a91336ec3484f1efa709d6b5cc5ca9af2dcfbeaf3f67b56f3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/release-0.png",
+      "bytes": 66634,
+      "sha256": "5aa641dfa8b5297c20b2801ef3b95bcfa9a93db134aa64d5a06de74c69cc95ca"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/release-1.png",
+      "bytes": 33907,
+      "sha256": "c96e203432d92377a6db81369199c270c8c93a6351e0a31a1c0659045345b52a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/release-2.png",
+      "bytes": 31570,
+      "sha256": "761888d87daa3735be75e6ab4236ec19cc9df062486085495945c72e9cdd64a6"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/release-3.png",
+      "bytes": 35274,
+      "sha256": "71233adda2b16dcea7d3e9e8172c7aaf7a7e6c4d5ddd3423fb720062761a0ea4"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/release-4.png",
+      "bytes": 76514,
+      "sha256": "4ac658788aa2398c24477499a8ebd6bd92807a481af7ea782016be2f09e8530d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/release-5-turbo.png",
+      "bytes": 60861,
+      "sha256": "6a63652674f99de21c58d01b353853bdd7e7c016d2dd3945a0737deadb0e5bfd"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/release-5-uncore.png",
+      "bytes": 55951,
+      "sha256": "03d12eb9e7b66eeb204f20176b649effce2b9fa1feb5cfcec799c9854eb0c815"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/release-5-vf.png",
+      "bytes": 83935,
+      "sha256": "3dc17557d06af0c1d916a2aa0c92fb2facd50f3a6c89d29649b5c58e2709b01b"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/release-5-voltage.png",
+      "bytes": 94703,
+      "sha256": "def6a0c7fbb3f0051760bbc7943a3e93269604efe97f40717ccc5dc0abdd6b01"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/release-5.png",
+      "bytes": 58737,
+      "sha256": "c01a088730788cb064e37b352d5218993cf094859bb8b7a293a47e7ce9103913"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/release-6-pm.png",
+      "bytes": 60558,
+      "sha256": "60ad3a5e7825d08946dc606562e28e7db28a3f8ff64bbe4a85b20bddcf9fd72d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/release-6.png",
+      "bytes": 82517,
+      "sha256": "e142675f3e3ca3ad5e60989053705ae5a719cb8cfec586653f05fc5e0bfa5fd5"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/release-7.png",
+      "bytes": 79141,
+      "sha256": "d222fd526b9310c70ccd4fde5cc561c9f8584b2e40f5752f3610fafbd80b4314"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/smoke/release-8.png",
+      "bytes": 62433,
+      "sha256": "f7359de7a8ba237a91336ec3484f1efa709d6b5cc5ca9af2dcfbeaf3f67b56f3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/spd-fixture.png",
+      "bytes": 254871,
+      "sha256": "2ee0464d1087f315849b97e11cf70654a3a472659e74d129c2d7b1b38187a94b"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/turbo-fixture.png",
+      "bytes": 112760,
+      "sha256": "fcc3935727ee367cf8ee8fa4db0b3fc2ef774203d6acd38a554f068b1f188f21"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/umc-diff-fixture.png",
+      "bytes": 143135,
+      "sha256": "a6b7c902a3f48e4f9ef4c52c07922303d16ff815a741f572d3e2123ab453b432"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/uncore-fixture.png",
+      "bytes": 88185,
+      "sha256": "75fa946db78c49713ef05c347fe3610d3337b97aff0ee9e133f27f8ce476ae9f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/user-spd-fixture.png",
+      "bytes": 322381,
+      "sha256": "7332a6ff8e3393271805f87297d2483f1449b1ddc3df728d65dbdb8b50a260fc"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/vf-edit-fixture.png",
+      "bytes": 144233,
+      "sha256": "7d713dd5ad7780b089391dcc6d6a39161905f26c351975d92ead7aa94df32f8d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/vf-fixture.png",
+      "bytes": 178349,
+      "sha256": "1ded0bb88ae05e05c255efdf841d62ae80c22d938a8b1c0e47dd11da28e59d0f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/xmp-secondary-fixture.png",
+      "bytes": 337966,
+      "sha256": "cb667c397a3e1d75a5468a8af32ffb0bdfeaf40476d425cae864b21dd10ce9bb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu26.04/xmp2-metadata-fixture.png",
+      "bytes": 394097,
+      "sha256": "10cd4d623b1088d9ff506146578b0adec0273b342bce1f8f4ec35c3b85864827"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/base-timings-fixture.png",
+      "bytes": 375345,
+      "sha256": "47eba8e4d40faaa52b63dd7eb6fc12e03859274236589d87d6f8ff73ebc6bdc0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/cas-fixture.png",
+      "bytes": 280782,
+      "sha256": "37dd86f5374c7cef7299ca225fc2367a64e4db127ad2e81c5dbfe8e50ee7b96d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/ddr4-base-fixture.png",
+      "bytes": 325703,
+      "sha256": "9b43d354d238536f0cb53ef8d94216ad488d67649ab5009b869c1dd0d9418a20"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/ddr4-xmp-fixture.png",
+      "bytes": 252506,
+      "sha256": "026b436dd9fdae65dd807d043d2ab761305e8c40695cd48ec9100d790c6c65a3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/enhanced-spd-fixture.png",
+      "bytes": 266483,
+      "sha256": "390b6d9e2a4a32266128d9d70d1e02f8d22dc44101c537601cede53104828e34"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/expo-fixture.png",
+      "bytes": 250996,
+      "sha256": "3cd1b004a1392a951eedd850c25d486ab61dad86bc11a67983a027e7a4d0332a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/geometry-fixture.png",
+      "bytes": 336680,
+      "sha256": "a9f59ea7b1c9475102c2a5f8948078345b71f575e972a54851ab243f3e5fd2d4"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/pm-error-fixture.png",
+      "bytes": 265234,
+      "sha256": "f9ef66b2ab90f4fcaa6943393af2c451da1a8fa5042541a0e314e246c296f4a9"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/pm-fixture.png",
+      "bytes": 259809,
+      "sha256": "76b309ccd7dc9f8e52cd3793bf1163ec3e4853058df1c9fe1c24e8f604c245b2"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/native-0.png",
+      "bytes": 60788,
+      "sha256": "9966d4217b0b24c30f1acf36585440920e448753a89ec16064f6a88a93185e3a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/native-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/native-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/native-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/native-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/native-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/native-6-pm.png",
+      "bytes": 56249,
+      "sha256": "ecd9536fbe83ac916b6b3d6a2a9a3f982256fb0b9b5d0e6bb9c01215cf5e54b0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/native-6.png",
+      "bytes": 76623,
+      "sha256": "769cfaf4abfa99d0ab05f39939cccc906501fac18468350beb82f2b35f46e409"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/native-7.png",
+      "bytes": 70817,
+      "sha256": "7e545d0a4f5ed93e7051a2f330c897789f3f0779a224c238ff7e462db1652eeb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/native-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/release-0.png",
+      "bytes": 60788,
+      "sha256": "9966d4217b0b24c30f1acf36585440920e448753a89ec16064f6a88a93185e3a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/release-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/release-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/release-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/release-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/release-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/release-6-pm.png",
+      "bytes": 56249,
+      "sha256": "ecd9536fbe83ac916b6b3d6a2a9a3f982256fb0b9b5d0e6bb9c01215cf5e54b0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/release-6.png",
+      "bytes": 76623,
+      "sha256": "769cfaf4abfa99d0ab05f39939cccc906501fac18468350beb82f2b35f46e409"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/release-7.png",
+      "bytes": 70817,
+      "sha256": "7e545d0a4f5ed93e7051a2f330c897789f3f0779a224c238ff7e462db1652eeb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/smoke/release-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/spd-fixture.png",
+      "bytes": 216952,
+      "sha256": "3ecf7b7092a69f304a353de6f697e8952bef024f0609ea72617bf597b40e57af"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/turbo-fixture.png",
+      "bytes": 79809,
+      "sha256": "83e49b5e6036413a8b8ec9f8e741cd1c1e472efa9e4d25a3e24653b087b7f846"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/umc-diff-fixture.png",
+      "bytes": 122098,
+      "sha256": "5cf111adec43d5f5ccf6f6e8ccc773721fc1f9919e3fb7319bfbdd073fb4888d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/uncore-fixture.png",
+      "bytes": 75998,
+      "sha256": "19d81f7d580b51c442d4d31d10663336503163ffeab2ba228cccb3a9434b813d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/user-spd-fixture.png",
+      "bytes": 272845,
+      "sha256": "89233658d57041a2dfa3887c6ed59587cb56ccf8108837fa966f4298b23f64b0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/vf-edit-fixture.png",
+      "bytes": 123068,
+      "sha256": "7381166d584456f2d47c24a0505a8918217b011ef3a31e5465271652170e5800"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/vf-fixture.png",
+      "bytes": 152455,
+      "sha256": "46473ffd25e7397cd56c114bbbf2359676be5673eaf8832a56231fefde5c4302"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/xmp-secondary-fixture.png",
+      "bytes": 286508,
+      "sha256": "213c1840d3111a35ec99c8c690dc5f2a8e0b29d5e088639d0ae5d2d4a52e5601"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian11/xmp2-metadata-fixture.png",
+      "bytes": 334087,
+      "sha256": "37fa0b76ec84c8dc0dc0bddbb2d750f5cf672bbb39308dddd46f1c3eae35cc35"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/base-timings-fixture.png",
+      "bytes": 360773,
+      "sha256": "7a5f4b2975bf71d5e2db2d61a808d4c7f466f59a0711e12cd86728545e841467"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/cas-fixture.png",
+      "bytes": 281110,
+      "sha256": "c805c6485c8ea25f7e1310ce9acfcebf5b206c39a33c05302967c1219f7a94e5"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/ddr4-base-fixture.png",
+      "bytes": 325264,
+      "sha256": "904a1affb8a18e29da74643aea68e1a2acc2010854f05bb33244a0f1cc1e2aa4"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/ddr4-xmp-fixture.png",
+      "bytes": 253452,
+      "sha256": "1b185f546c9a69481c85010eee9b4df7d4d2d543f0b7438a8cf370ffe5e90009"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/enhanced-spd-fixture.png",
+      "bytes": 266062,
+      "sha256": "74f5ca7be2d11cc7c7efa0369ec61fec71f2fa66d0c45f3575b11a0f9aceac03"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/expo-fixture.png",
+      "bytes": 251274,
+      "sha256": "6c031bfc00d5003f80a9c8e2251209e3838c3b067bd4bc1097d0412620cea2a9"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/geometry-fixture.png",
+      "bytes": 336548,
+      "sha256": "b6cbf9fb61d61d17fcd3e3b23cfbe66af4e0731c72c38e78c6b587405a41d317"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/pm-error-fixture.png",
+      "bytes": 266022,
+      "sha256": "fc448f2cc2b7061c09128eebf0a5b31461018431e93365e3d3cd73a5c9db8076"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/pm-fixture.png",
+      "bytes": 260366,
+      "sha256": "ba2c47e1ceed214856a8408cb101db6b359ba335d225606f80152eceb62b6b68"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/native-0.png",
+      "bytes": 61021,
+      "sha256": "89507c4b1ccf1dbd01ebd382598f775adc26e1e45d166efd017594cf1fe7dd4b"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/native-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/native-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/native-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/native-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/native-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/native-6-pm.png",
+      "bytes": 56249,
+      "sha256": "ecd9536fbe83ac916b6b3d6a2a9a3f982256fb0b9b5d0e6bb9c01215cf5e54b0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/native-6.png",
+      "bytes": 76623,
+      "sha256": "769cfaf4abfa99d0ab05f39939cccc906501fac18468350beb82f2b35f46e409"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/native-7.png",
+      "bytes": 70817,
+      "sha256": "7e545d0a4f5ed93e7051a2f330c897789f3f0779a224c238ff7e462db1652eeb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/native-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/release-0.png",
+      "bytes": 61021,
+      "sha256": "89507c4b1ccf1dbd01ebd382598f775adc26e1e45d166efd017594cf1fe7dd4b"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/release-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/release-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/release-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/release-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/release-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/release-6-pm.png",
+      "bytes": 56249,
+      "sha256": "ecd9536fbe83ac916b6b3d6a2a9a3f982256fb0b9b5d0e6bb9c01215cf5e54b0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/release-6.png",
+      "bytes": 76623,
+      "sha256": "769cfaf4abfa99d0ab05f39939cccc906501fac18468350beb82f2b35f46e409"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/release-7.png",
+      "bytes": 70817,
+      "sha256": "7e545d0a4f5ed93e7051a2f330c897789f3f0779a224c238ff7e462db1652eeb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/smoke/release-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/spd-fixture.png",
+      "bytes": 216999,
+      "sha256": "32675764c119c6ba23b676a430de468325817f941a2d2c4ea52ba95e1f21b3a5"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/turbo-fixture.png",
+      "bytes": 79809,
+      "sha256": "83e49b5e6036413a8b8ec9f8e741cd1c1e472efa9e4d25a3e24653b087b7f846"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/umc-diff-fixture.png",
+      "bytes": 122098,
+      "sha256": "5cf111adec43d5f5ccf6f6e8ccc773721fc1f9919e3fb7319bfbdd073fb4888d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/uncore-fixture.png",
+      "bytes": 75998,
+      "sha256": "19d81f7d580b51c442d4d31d10663336503163ffeab2ba228cccb3a9434b813d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/user-spd-fixture.png",
+      "bytes": 273585,
+      "sha256": "6859f95334de1c5332cc64032cd6aa03051a1021419b9925be7b3ea1eb327b26"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/vf-edit-fixture.png",
+      "bytes": 123276,
+      "sha256": "67d51b8d42203c98ca3a75a972f994b8b564ffa6ae4060860288bbc8945e04b7"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/vf-fixture.png",
+      "bytes": 152638,
+      "sha256": "97d43eeed027bc6b9b282922e7d59311b3beddf146287ba57a6b4001aaec3899"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/xmp-secondary-fixture.png",
+      "bytes": 285384,
+      "sha256": "a9640ebe7c2d93d1b05d1a4abd5f8fc0d71e6becfd914384ace9544987ea5c7e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian12/xmp2-metadata-fixture.png",
+      "bytes": 334638,
+      "sha256": "3f6462fab18ced142cb30337b3c33ca9abcbbf7f95428749e1434b1b1e9c4dd3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/base-timings-fixture.png",
+      "bytes": 370030,
+      "sha256": "31d0a8f7664fbf1a2f111265c8925151cb25e08f00d756c33cc1ddbc3b784fb9"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/cas-fixture.png",
+      "bytes": 281247,
+      "sha256": "19e59a68f8a74d49591aed9d982522848c81c8ee9dde036bffde190fcd10956c"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/controls-fixture.png",
+      "bytes": 177091,
+      "sha256": "40dff34717c35bae1696ae466b93afc4324365dd6205e5c6ce74fdbfbf8b6126"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/ddr4-base-fixture.png",
+      "bytes": 325012,
+      "sha256": "11ec0b7ce18c59e389def50c26cfda7b1fdf93858bdb2ac65ca27f151185058a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/ddr4-xmp-fixture.png",
+      "bytes": 252845,
+      "sha256": "72b6ceaddd2a81e234da65f0d2d0e614cae0412bd56cef6ea573326bdd9e92c8"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/enhanced-spd-fixture.png",
+      "bytes": 266135,
+      "sha256": "61faade6c135148411df31504c59f4e3c426022a2dc30e0e73bf06b245038904"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/expo-fixture.png",
+      "bytes": 251852,
+      "sha256": "e589c4f8a04422a43447b32f322b5a977e60d6242da28f8c61f0d8c938876e31"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/geometry-fixture.png",
+      "bytes": 336229,
+      "sha256": "de01f2f7361cfcd363c833e89437fd02d5932a2e6e2323e3733f311a7c198f69"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/pm-error-fixture.png",
+      "bytes": 266486,
+      "sha256": "7cc5928cf344823ae7bebe5b3585b78643743e0c31cbaa27acc2c0ca0b07d2dc"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/pm-fixture.png",
+      "bytes": 260394,
+      "sha256": "0c63af7e47a9e15935604d9a7f078e96881eff4510fed55f6e30488dcc5f2a33"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/native-0.png",
+      "bytes": 60580,
+      "sha256": "39c2b6801e6a40f4456a7df021a66c012be9e1964d007bfd97e6bb287b548824"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/native-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/native-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/native-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/native-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/native-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/native-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/native-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/native-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/native-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/native-6-pm.png",
+      "bytes": 56249,
+      "sha256": "ecd9536fbe83ac916b6b3d6a2a9a3f982256fb0b9b5d0e6bb9c01215cf5e54b0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/native-6.png",
+      "bytes": 76623,
+      "sha256": "769cfaf4abfa99d0ab05f39939cccc906501fac18468350beb82f2b35f46e409"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/native-7.png",
+      "bytes": 70817,
+      "sha256": "7e545d0a4f5ed93e7051a2f330c897789f3f0779a224c238ff7e462db1652eeb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/native-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/release-0.png",
+      "bytes": 60580,
+      "sha256": "39c2b6801e6a40f4456a7df021a66c012be9e1964d007bfd97e6bb287b548824"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/release-1.png",
+      "bytes": 32671,
+      "sha256": "d6ee6b696cbe6e76cf6390cb8f2f9b4aeb1117401e061368056e822a43eacf23"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/release-2.png",
+      "bytes": 30574,
+      "sha256": "ea95d82ee85880eb2bbf6fdee8e4f8ba9805f91ff6224f1b5b5645d9f0892347"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/release-3.png",
+      "bytes": 34321,
+      "sha256": "124e7bd9a7a60b288bb27d2b1fa1d50b62cbf8ca16ed072058fef02a401a72a3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/release-4.png",
+      "bytes": 71702,
+      "sha256": "7900fc0d653450dc61d44d13726ffc59707e7452e30e3952e32c5c939b996ac7"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/release-5-turbo.png",
+      "bytes": 55262,
+      "sha256": "5792fd0cb608382a686a1eae89a9e0c3b90800625622382aafc4d70894cc4069"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/release-5-uncore.png",
+      "bytes": 51117,
+      "sha256": "1d2694ad2b40d2011835adf89322907e75b0270cf4d13d4eeed9c4df68312d69"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/release-5-vf.png",
+      "bytes": 75401,
+      "sha256": "91ceef8f5da1fff674456928cafd33d80f5be69e19ca37b77c572aef60e4e29f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/release-5-voltage.png",
+      "bytes": 86304,
+      "sha256": "aa784f138173338143843324c1431772c0b76a25e9c3e0491ed1c2630d33ba89"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/release-5.png",
+      "bytes": 54643,
+      "sha256": "311916748c07bdc83a1d5ccf2a8610a242dd0e1dbb93cb8b598d259bea12c46a"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/release-6-pm.png",
+      "bytes": 56249,
+      "sha256": "ecd9536fbe83ac916b6b3d6a2a9a3f982256fb0b9b5d0e6bb9c01215cf5e54b0"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/release-6.png",
+      "bytes": 76623,
+      "sha256": "769cfaf4abfa99d0ab05f39939cccc906501fac18468350beb82f2b35f46e409"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/release-7.png",
+      "bytes": 70817,
+      "sha256": "7e545d0a4f5ed93e7051a2f330c897789f3f0779a224c238ff7e462db1652eeb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/smoke/release-8.png",
+      "bytes": 59312,
+      "sha256": "c1d11ce0173de31b1c656bbd2ca01c778d956042ae24a163d17436d43b03992e"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/spd-fixture.png",
+      "bytes": 216811,
+      "sha256": "96aba67612e94245f1260bb63daf15f66b5bac966e110acfa7e46f13970c33fb"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/turbo-fixture.png",
+      "bytes": 97513,
+      "sha256": "a8fc2a3bd04c6a94c5a2b4c1e7180a742b688374bbe377d7bb38fd0f06c20c7b"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/umc-diff-fixture.png",
+      "bytes": 122098,
+      "sha256": "5cf111adec43d5f5ccf6f6e8ccc773721fc1f9919e3fb7319bfbdd073fb4888d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/uncore-fixture.png",
+      "bytes": 75998,
+      "sha256": "19d81f7d580b51c442d4d31d10663336503163ffeab2ba228cccb3a9434b813d"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/user-spd-fixture.png",
+      "bytes": 272884,
+      "sha256": "ee6919191a222d5024d20d745f30f9abb32e246a2f9a1d4098305e9dae6a96e3"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/vf-edit-fixture.png",
+      "bytes": 123172,
+      "sha256": "b7e75ceb8d398b3d69b3bb064404c4bedc58b9a980168ccc28b5c655f154115f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/vf-fixture.png",
+      "bytes": 152506,
+      "sha256": "45a7b8f9133e98fa9fd75b0d94cf493bcb2105533db924742807ed15529c7b55"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/xmp-secondary-fixture.png",
+      "bytes": 286344,
+      "sha256": "1fbd216476bfce59fba33bd10e8323090a2ebbf7205f56b9f6252315b1f0be8f"
+    },
+    {
+      "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-debian13/xmp2-metadata-fixture.png",
+      "bytes": 334431,
+      "sha256": "7216874e1df8405a093494001d9aa6918bba33db628a0cefbf447a27419327d5"
+    }
+  ],
+  "source_archive": {
+    "path": "dist/gui-cli-amd-pm-62e7bd8/octool-2.0.1-src.tar.gz",
+    "bytes": 4234567,
+    "sha256": "6d632ca46ab99043838dc1e01f3068168ae1e93064ec5bb1c5dfa9bb6a0309be"
+  },
+  "local_sources_matching_cloud": {
+    ".github/workflows/portable-core.yml": "a5a7a9c2f66a1c272aceab8654b5e122b2cd068b1a0c66e4e458e93e92ec4c79",
+    "cli/CMakeLists.txt": "4100766fa0cf0220f04f45586f72ab9fdc86e5157a08ad8a49c6e9ad3e893f30",
+    "cli/commands.cpp": "b533e3a12cf29a1e27a268f9fad78b2d6f79508aafad6ee5d51444b7424104aa",
+    "cli/test_process.py": "294add66e676aba41f82d68d9d979618354a7b4023bdfebe421099a85a20d0ba",
+    "cli/tests.cpp": "a3cd80ffeaf11479032172731862034f7c332ece1c19cda1a5923219770f3ae8",
+    "docs/amd-pm-recovery.md": "d5743dcfb253dc755e557193c47b0fb4c170e359cd7b13b51adeec41fb6c20f4",
+    "docs/amd-pm-table-followup.md": "65e23ee146a2ea4e9a9e7e2533c5250d7feaecced36763a84b3fbcf44ea28030",
+    "docs/frontend-progress.md": "fb2f8ad6783af50e1e2465dd2f3837797800ca8b9023d458ba7460bf65af1f0e",
+    "docs/headless-cli.md": "f05d355805e73405cab8dfb08cb8072ec5318d810a0e81eddd07cc9674638fcf",
+    "gui/amdpmpanel.cpp": "2b76442087584fff7a1cfc6f0c4ded0443dcec7ba7da465070b80f203b76caf9",
+    "gui/amdpmpanel.h": "997d640cdd9afefa96ffbbc9a0750f8f4c923cd6ef18311fbf524a6e37162688",
+    "gui/common.pri": "49e258343bec87df3fbd99129223f6d9b21275eb9fab6c130a9cbd02b7e178e7",
+    "gui/core/CMakeLists.txt": "a12bd472d735d8b49fb0e19db70e900ce8cd2761ca99e285ce80049899e06772",
+    "gui/core/amd_pm.cpp": "16ab7974daaab1e9ac7a14da58bb563349ff1ff6ea04446f443a58b1f172d697",
+    "gui/core/amd_pm.h": "1124125cbf956ba617e786a2cf419550678f09c23880245209fe0f4997aa2746",
+    "gui/core/bounded_json.h": "772d7eb7267b9ceb1debdffb094ab71d49ecf7f6b579d744f8ba498efe630000",
+    "gui/core/umc_capture.cpp": "0d7fbb9d8b28225e50d5865a53586dc95d611e2477727ac8fc6941136c2e7215",
+    "gui/main.cpp": "1b882ebc6a22f9049462be9f5d2b106ee902f66dcfd8b5814c55c29991b772f5",
+    "gui/platform/linux_amd_pm.cpp": "96d04e10ce4c404c351100e0bd09a226507bafe4a773c8b4f0baf1c80ec115a2",
+    "gui/platform/linux_amd_pm.h": "c509d0b5c56438d9bb2073c376aec009cc23351fe3685804a76aea80fc178568",
+    "gui/tests/amd_pm_core_test.cpp": "5c9f7772fab1e09a920632be0a92fcbddbf26fe15500ad30cd099c8e389b8ff3",
+    "gui/tests/amd_pm_fixture.h": "63ada4503cdc1f09197fa9bc73d88007636fae467e3b16ce0a93ad9bd4cc3aa9",
+    "gui/tests/regression.cpp": "4b06755eada8b02de3d725a44cb48be075a39a084d637c1fe79b585e39a41f09",
+    "port/ci/in-container.sh": "8f818e24e2f79e4052a7d3fb405bdb74be2424ec6b98adfcd7601760dc83fb86",
+    "port/tools/build_cli.py": "450236e0eae967013d06248c22cd156b726aa5e90c545c62f63415db05be8574",
+    "port/tools/build_gui.py": "8c6a29d4586f440ea7d3f9be380116917e6c77f0be9dc13290801433641f304c"
+  },
+  "source_sync": {
+    "files": 32,
+    "evidence": {
+      "source_commit": "62e7bd8272205ec15fe7ad23f223e122a3e039b2",
+      "previous": "cf93480cbb7025cbca3739cfc10d61f6c8cc2ddf",
+      "files": [
+        {
+          "path": ".github/workflows/portable-core.yml",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "a5a7a9c2f66a1c272aceab8654b5e122b2cd068b1a0c66e4e458e93e92ec4c79",
+          "after_sha256": "a5a7a9c2f66a1c272aceab8654b5e122b2cd068b1a0c66e4e458e93e92ec4c79",
+          "cloud_sha256": "a5a7a9c2f66a1c272aceab8654b5e122b2cd068b1a0c66e4e458e93e92ec4c79",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "README.md",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "317464fa6284f627c1d3995a194aeb32037f6cd115837fada9c01f828b8a47cc",
+          "after_sha256": "317464fa6284f627c1d3995a194aeb32037f6cd115837fada9c01f828b8a47cc",
+          "cloud_sha256": "967d00ee74e74c790a98576fc7eef3241f9e06b23955525eae1152756ed22ad5",
+          "equal_after_lf_normalization": false
+        },
+        {
+          "path": "cli/CMakeLists.txt",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "4100766fa0cf0220f04f45586f72ab9fdc86e5157a08ad8a49c6e9ad3e893f30",
+          "after_sha256": "4100766fa0cf0220f04f45586f72ab9fdc86e5157a08ad8a49c6e9ad3e893f30",
+          "cloud_sha256": "4100766fa0cf0220f04f45586f72ab9fdc86e5157a08ad8a49c6e9ad3e893f30",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "cli/commands.cpp",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "b533e3a12cf29a1e27a268f9fad78b2d6f79508aafad6ee5d51444b7424104aa",
+          "after_sha256": "b533e3a12cf29a1e27a268f9fad78b2d6f79508aafad6ee5d51444b7424104aa",
+          "cloud_sha256": "b533e3a12cf29a1e27a268f9fad78b2d6f79508aafad6ee5d51444b7424104aa",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "cli/test_process.py",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "294add66e676aba41f82d68d9d979618354a7b4023bdfebe421099a85a20d0ba",
+          "after_sha256": "294add66e676aba41f82d68d9d979618354a7b4023bdfebe421099a85a20d0ba",
+          "cloud_sha256": "294add66e676aba41f82d68d9d979618354a7b4023bdfebe421099a85a20d0ba",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "cli/tests.cpp",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "a3cd80ffeaf11479032172731862034f7c332ece1c19cda1a5923219770f3ae8",
+          "after_sha256": "a3cd80ffeaf11479032172731862034f7c332ece1c19cda1a5923219770f3ae8",
+          "cloud_sha256": "a3cd80ffeaf11479032172731862034f7c332ece1c19cda1a5923219770f3ae8",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "docs/README.md",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "29ce874448d6628d82df6f0ca26fe271bdccbfb7b140b3e22cefd0bbed50c0e5",
+          "after_sha256": "29ce874448d6628d82df6f0ca26fe271bdccbfb7b140b3e22cefd0bbed50c0e5",
+          "cloud_sha256": "6c724c9f9635bc695cc443d14f0607af901fd29f35e8a77cdf5635830907d3f3",
+          "equal_after_lf_normalization": false
+        },
+        {
+          "path": "docs/amd-pm-recovery.md",
+          "method": "update previously synchronized feature",
+          "before_sha256": "175faf9e585424c8cb15729f621467581e998872aae0a9837adeff8c15a867c6",
+          "after_sha256": "d5743dcfb253dc755e557193c47b0fb4c170e359cd7b13b51adeec41fb6c20f4",
+          "cloud_sha256": "d5743dcfb253dc755e557193c47b0fb4c170e359cd7b13b51adeec41fb6c20f4",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "docs/amd-pm-table-followup.md",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "65e23ee146a2ea4e9a9e7e2533c5250d7feaecced36763a84b3fbcf44ea28030",
+          "after_sha256": "65e23ee146a2ea4e9a9e7e2533c5250d7feaecced36763a84b3fbcf44ea28030",
+          "cloud_sha256": "65e23ee146a2ea4e9a9e7e2533c5250d7feaecced36763a84b3fbcf44ea28030",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "docs/artifacts.md",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "91ccc2a4209c120682147765d7962b40bbe708ec5d2cf9b70617ec3ba8873918",
+          "after_sha256": "91ccc2a4209c120682147765d7962b40bbe708ec5d2cf9b70617ec3ba8873918",
+          "cloud_sha256": "81d759ee27d9b74b59531739682e3d667240654cf3ec09068622fbee361f99a2",
+          "equal_after_lf_normalization": false
+        },
+        {
+          "path": "docs/frontend-progress.md",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "fb2f8ad6783af50e1e2465dd2f3837797800ca8b9023d458ba7460bf65af1f0e",
+          "after_sha256": "fb2f8ad6783af50e1e2465dd2f3837797800ca8b9023d458ba7460bf65af1f0e",
+          "cloud_sha256": "fb2f8ad6783af50e1e2465dd2f3837797800ca8b9023d458ba7460bf65af1f0e",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "docs/headless-cli.md",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "f05d355805e73405cab8dfb08cb8072ec5318d810a0e81eddd07cc9674638fcf",
+          "after_sha256": "f05d355805e73405cab8dfb08cb8072ec5318d810a0e81eddd07cc9674638fcf",
+          "cloud_sha256": "f05d355805e73405cab8dfb08cb8072ec5318d810a0e81eddd07cc9674638fcf",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "docs/platform-controls.md",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "ab173581bdf0c72f7f877988f35c5679f6a0ada91bf2dffe9670c73abdcba71a",
+          "after_sha256": "ab173581bdf0c72f7f877988f35c5679f6a0ada91bf2dffe9670c73abdcba71a",
+          "cloud_sha256": "9ef7cdddae717c5b083b19892b4c2f49bcf00fac9c682d07ea6f799a39e00a1a",
+          "equal_after_lf_normalization": false
+        },
+        {
+          "path": "docs/recovery-status.md",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "e03a69e7809873fdbcc2a83721cf1705344fdaa620768b3c2a005a65846ec743",
+          "after_sha256": "e03a69e7809873fdbcc2a83721cf1705344fdaa620768b3c2a005a65846ec743",
+          "cloud_sha256": "76ee272bc3c676bd53c03f17581c9bf53b6aa1acc1d48aef755cfa2f837d58af",
+          "equal_after_lf_normalization": false
+        },
+        {
+          "path": "docs/verification-status.md",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "024d50d5383df24c4fb10df7a3030e3c47cbad80a8b9aba60212782b2be3948e",
+          "after_sha256": "024d50d5383df24c4fb10df7a3030e3c47cbad80a8b9aba60212782b2be3948e",
+          "cloud_sha256": "50eb8a5404a50f2d45cbf89d68133868df9b2025c5854ab62a205847c66be5ee",
+          "equal_after_lf_normalization": false
+        },
+        {
+          "path": "gui/amdpmpanel.cpp",
+          "method": "update previously synchronized feature",
+          "before_sha256": "7c6f053fdf9d9c955faceb95892453d24d273b31ec5f9b08a9d528d87e3ce25f",
+          "after_sha256": "2b76442087584fff7a1cfc6f0c4ded0443dcec7ba7da465070b80f203b76caf9",
+          "cloud_sha256": "2b76442087584fff7a1cfc6f0c4ded0443dcec7ba7da465070b80f203b76caf9",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "gui/amdpmpanel.h",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "997d640cdd9afefa96ffbbc9a0750f8f4c923cd6ef18311fbf524a6e37162688",
+          "after_sha256": "997d640cdd9afefa96ffbbc9a0750f8f4c923cd6ef18311fbf524a6e37162688",
+          "cloud_sha256": "997d640cdd9afefa96ffbbc9a0750f8f4c923cd6ef18311fbf524a6e37162688",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "gui/common.pri",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "49e258343bec87df3fbd99129223f6d9b21275eb9fab6c130a9cbd02b7e178e7",
+          "after_sha256": "49e258343bec87df3fbd99129223f6d9b21275eb9fab6c130a9cbd02b7e178e7",
+          "cloud_sha256": "49e258343bec87df3fbd99129223f6d9b21275eb9fab6c130a9cbd02b7e178e7",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "gui/core/CMakeLists.txt",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "a12bd472d735d8b49fb0e19db70e900ce8cd2761ca99e285ce80049899e06772",
+          "after_sha256": "a12bd472d735d8b49fb0e19db70e900ce8cd2761ca99e285ce80049899e06772",
+          "cloud_sha256": "a12bd472d735d8b49fb0e19db70e900ce8cd2761ca99e285ce80049899e06772",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "gui/core/amd_pm.cpp",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "16ab7974daaab1e9ac7a14da58bb563349ff1ff6ea04446f443a58b1f172d697",
+          "after_sha256": "16ab7974daaab1e9ac7a14da58bb563349ff1ff6ea04446f443a58b1f172d697",
+          "cloud_sha256": "16ab7974daaab1e9ac7a14da58bb563349ff1ff6ea04446f443a58b1f172d697",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "gui/core/amd_pm.h",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "1124125cbf956ba617e786a2cf419550678f09c23880245209fe0f4997aa2746",
+          "after_sha256": "1124125cbf956ba617e786a2cf419550678f09c23880245209fe0f4997aa2746",
+          "cloud_sha256": "1124125cbf956ba617e786a2cf419550678f09c23880245209fe0f4997aa2746",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "gui/core/bounded_json.h",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "772d7eb7267b9ceb1debdffb094ab71d49ecf7f6b579d744f8ba498efe630000",
+          "after_sha256": "772d7eb7267b9ceb1debdffb094ab71d49ecf7f6b579d744f8ba498efe630000",
+          "cloud_sha256": "772d7eb7267b9ceb1debdffb094ab71d49ecf7f6b579d744f8ba498efe630000",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "gui/core/umc_capture.cpp",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "0d7fbb9d8b28225e50d5865a53586dc95d611e2477727ac8fc6941136c2e7215",
+          "after_sha256": "0d7fbb9d8b28225e50d5865a53586dc95d611e2477727ac8fc6941136c2e7215",
+          "cloud_sha256": "0d7fbb9d8b28225e50d5865a53586dc95d611e2477727ac8fc6941136c2e7215",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "gui/main.cpp",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "1b882ebc6a22f9049462be9f5d2b106ee902f66dcfd8b5814c55c29991b772f5",
+          "after_sha256": "1b882ebc6a22f9049462be9f5d2b106ee902f66dcfd8b5814c55c29991b772f5",
+          "cloud_sha256": "1b882ebc6a22f9049462be9f5d2b106ee902f66dcfd8b5814c55c29991b772f5",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "gui/platform/linux_amd_pm.cpp",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "96d04e10ce4c404c351100e0bd09a226507bafe4a773c8b4f0baf1c80ec115a2",
+          "after_sha256": "96d04e10ce4c404c351100e0bd09a226507bafe4a773c8b4f0baf1c80ec115a2",
+          "cloud_sha256": "96d04e10ce4c404c351100e0bd09a226507bafe4a773c8b4f0baf1c80ec115a2",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "gui/platform/linux_amd_pm.h",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "c509d0b5c56438d9bb2073c376aec009cc23351fe3685804a76aea80fc178568",
+          "after_sha256": "c509d0b5c56438d9bb2073c376aec009cc23351fe3685804a76aea80fc178568",
+          "cloud_sha256": "c509d0b5c56438d9bb2073c376aec009cc23351fe3685804a76aea80fc178568",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "gui/tests/amd_pm_core_test.cpp",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "5c9f7772fab1e09a920632be0a92fcbddbf26fe15500ad30cd099c8e389b8ff3",
+          "after_sha256": "5c9f7772fab1e09a920632be0a92fcbddbf26fe15500ad30cd099c8e389b8ff3",
+          "cloud_sha256": "5c9f7772fab1e09a920632be0a92fcbddbf26fe15500ad30cd099c8e389b8ff3",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "gui/tests/amd_pm_fixture.h",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "63ada4503cdc1f09197fa9bc73d88007636fae467e3b16ce0a93ad9bd4cc3aa9",
+          "after_sha256": "63ada4503cdc1f09197fa9bc73d88007636fae467e3b16ce0a93ad9bd4cc3aa9",
+          "cloud_sha256": "63ada4503cdc1f09197fa9bc73d88007636fae467e3b16ce0a93ad9bd4cc3aa9",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "gui/tests/regression.cpp",
+          "method": "update previously synchronized feature",
+          "before_sha256": "c4058137636ff512c85f1c1b374d00f5be4be378aeab3988a86f861423756432",
+          "after_sha256": "4b06755eada8b02de3d725a44cb48be075a39a084d637c1fe79b585e39a41f09",
+          "cloud_sha256": "4b06755eada8b02de3d725a44cb48be075a39a084d637c1fe79b585e39a41f09",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "port/ci/in-container.sh",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "8f818e24e2f79e4052a7d3fb405bdb74be2424ec6b98adfcd7601760dc83fb86",
+          "after_sha256": "8f818e24e2f79e4052a7d3fb405bdb74be2424ec6b98adfcd7601760dc83fb86",
+          "cloud_sha256": "8f818e24e2f79e4052a7d3fb405bdb74be2424ec6b98adfcd7601760dc83fb86",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "port/tools/build_cli.py",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "450236e0eae967013d06248c22cd156b726aa5e90c545c62f63415db05be8574",
+          "after_sha256": "450236e0eae967013d06248c22cd156b726aa5e90c545c62f63415db05be8574",
+          "cloud_sha256": "450236e0eae967013d06248c22cd156b726aa5e90c545c62f63415db05be8574",
+          "equal_after_lf_normalization": true
+        },
+        {
+          "path": "port/tools/build_gui.py",
+          "method": "already synchronized feature; preserve independent history",
+          "before_sha256": "8c6a29d4586f440ea7d3f9be380116917e6c77f0be9dc13290801433641f304c",
+          "after_sha256": "8c6a29d4586f440ea7d3f9be380116917e6c77f0be9dc13290801433641f304c",
+          "cloud_sha256": "8c6a29d4586f440ea7d3f9be380116917e6c77f0be9dc13290801433641f304c",
+          "equal_after_lf_normalization": true
+        }
+      ]
+    },
+    "preserved_differences": "Six existing documents retain their independent history and UMC references; only feature hunks applied",
+    "checked_before_followup_documentation_commit": true
+  },
+  "runtime_test_build_sources_matching_production": {
+    ".github/workflows/portable-core.yml": "a5a7a9c2f66a1c272aceab8654b5e122b2cd068b1a0c66e4e458e93e92ec4c79",
+    "cli/CMakeLists.txt": "4100766fa0cf0220f04f45586f72ab9fdc86e5157a08ad8a49c6e9ad3e893f30",
+    "cli/commands.cpp": "b533e3a12cf29a1e27a268f9fad78b2d6f79508aafad6ee5d51444b7424104aa",
+    "cli/test_process.py": "294add66e676aba41f82d68d9d979618354a7b4023bdfebe421099a85a20d0ba",
+    "cli/tests.cpp": "a3cd80ffeaf11479032172731862034f7c332ece1c19cda1a5923219770f3ae8",
+    "gui/amdpmpanel.cpp": "2b76442087584fff7a1cfc6f0c4ded0443dcec7ba7da465070b80f203b76caf9",
+    "gui/amdpmpanel.h": "997d640cdd9afefa96ffbbc9a0750f8f4c923cd6ef18311fbf524a6e37162688",
+    "gui/common.pri": "49e258343bec87df3fbd99129223f6d9b21275eb9fab6c130a9cbd02b7e178e7",
+    "gui/core/CMakeLists.txt": "a12bd472d735d8b49fb0e19db70e900ce8cd2761ca99e285ce80049899e06772",
+    "gui/core/amd_pm.cpp": "16ab7974daaab1e9ac7a14da58bb563349ff1ff6ea04446f443a58b1f172d697",
+    "gui/core/amd_pm.h": "1124125cbf956ba617e786a2cf419550678f09c23880245209fe0f4997aa2746",
+    "gui/core/bounded_json.h": "772d7eb7267b9ceb1debdffb094ab71d49ecf7f6b579d744f8ba498efe630000",
+    "gui/core/umc_capture.cpp": "0d7fbb9d8b28225e50d5865a53586dc95d611e2477727ac8fc6941136c2e7215",
+    "gui/main.cpp": "1b882ebc6a22f9049462be9f5d2b106ee902f66dcfd8b5814c55c29991b772f5",
+    "gui/platform/linux_amd_pm.cpp": "96d04e10ce4c404c351100e0bd09a226507bafe4a773c8b4f0baf1c80ec115a2",
+    "gui/platform/linux_amd_pm.h": "c509d0b5c56438d9bb2073c376aec009cc23351fe3685804a76aea80fc178568",
+    "gui/tests/amd_pm_core_test.cpp": "5c9f7772fab1e09a920632be0a92fcbddbf26fe15500ad30cd099c8e389b8ff3",
+    "gui/tests/amd_pm_fixture.h": "63ada4503cdc1f09197fa9bc73d88007636fae467e3b16ce0a93ad9bd4cc3aa9",
+    "gui/tests/regression.cpp": "4b06755eada8b02de3d725a44cb48be075a39a084d637c1fe79b585e39a41f09",
+    "port/ci/in-container.sh": "8f818e24e2f79e4052a7d3fb405bdb74be2424ec6b98adfcd7601760dc83fb86",
+    "port/tools/build_cli.py": "450236e0eae967013d06248c22cd156b726aa5e90c545c62f63415db05be8574",
+    "port/tools/build_gui.py": "8c6a29d4586f440ea7d3f9be380116917e6c77f0be9dc13290801433641f304c"
+  },
+  "local_tests": {
+    "total": 48,
+    "passed": 36,
+    "skipped": 12,
+    "failed": 0,
+    "report": {
+      "path": "build/amd-pm-local-tests.txt",
+      "bytes": 7623,
+      "sha256": "8b64c9e0c926e601e036954a9dd66a4c2d56b04b0bd364de023e19e2e526c108"
+    },
+    "scope": "Final synchronized source and delivery documents; missing native toolchain tests are covered by the pinned final cloud runs."
+  },
+  "visual_review": {
+    "scope": "Five final-commit screenshots manually inspected: Ubuntu 24.04 valid PM fixture, non-finite PM fixture and installed release startup; EL8 valid and non-finite PM fixtures. Other archived screenshots were not manually inspected.",
+    "screenshots": [
+      {
+        "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/pm-fixture.png",
+        "bytes": 306161,
+        "sha256": "4f2ef805c313da715fbe17ea96a92b6e72ae866e68c887f7fbb633be10f8a09b"
+      },
+      {
+        "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/pm-error-fixture.png",
+        "bytes": 313014,
+        "sha256": "86e3c1eb915a79c877af41d6171411cafd2412b77751242036e192e06aee8a61"
+      },
+      {
+        "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-ubuntu24.04/smoke/release-6-pm.png",
+        "bytes": 62838,
+        "sha256": "fa1e9c59e82e82bac4efa085cb7f47ddc090fae7402d70e1ddcb8b3674f34c51"
+      },
+      {
+        "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/pm-fixture.png",
+        "bytes": 259968,
+        "sha256": "903fe32744815982ffbab7f014f7d2f4e11614b40de4d79a621a442ecfa96472"
+      },
+      {
+        "path": "build/amd-pm-62e7bd8/linux-artifacts/desktop-el8/pm-error-fixture.png",
+        "bytes": 265547,
+        "sha256": "2be36372a9ca19c637eebfe99eeb11ef3356e1f25564c24c662ef0bbcd6ef395"
+      }
+    ],
+    "observations": [
+      "Scaled clock heading is fully visible on the initial empty 1100-pixel-wide release window after the fix.",
+      "The 1300-pixel-wide fixtures show all 24 fields, units, raw words, offsets and separate clock correction without clipped status text.",
+      "The non-finite FCLK is Unavailable with raw 0x7f800001 while UCLK and other valid values remain visible.",
+      "Release startup is empty, Copy JSON is disabled, and no automatic PM read is reported.",
+      "Minimal CI fonts lack Chinese filename glyphs; the filename has missing-glyph boxes, while Unicode path import and JSON roundtrip tests pass. This is not a Chinese-font deployment test."
+    ],
+    "fixture_values_are_hardware_measurements": false
+  },
+  "visual_fix": {
+    "previous_commit": "f425522e66e237fe72f0a230de14a93ba6fc719e",
+    "reason": "First screenshot showed the scaled-clock heading clipped before loading data. Final source sizes empty-table columns and asserts sufficient heading width.",
+    "before": {
+      "path": "build/amd-pm-f425522/linux-artifacts/desktop-ubuntu24.04/smoke/release-6-pm.png",
+      "bytes": 62655,
+      "sha256": "4aec8373881eb98364e1ff1f0cae4ccef3169dadfd86cc7bbfed55f0ed5f3123"
+    }
+  },
+  "remaining_evidence_review": {
+    "checked_date": "2026-10-11",
+    "project_open_issue_search": {
+      "query": "repo:SkyWalkerAMD/Instrumentum-Superfrequentationis is:issue is:open",
+      "returned_issues": 0
+    },
+    "external": [
+      {
+        "url": "https://github.com/amkillam/ryzen_smu/issues/60",
+        "title": "Proposed behaviour changes found while enabling Shimada Peak",
+        "state": "open",
+        "updated_at": "2026-09-13T13:08:53Z"
+      },
+      {
+        "url": "https://github.com/amkillam/ryzen_smu/pull/62",
+        "title": "Add Shimada Peak (Threadripper 9000 / PRO 9000WX, family 1Ah model 08h)",
+        "state": "open",
+        "updated_at": "2026-09-13T13:13:32Z"
+      }
+    ],
+    "inference": "The candidate driver does not resolve the documented physical-target and native PM transfer gaps; a clear issue list is not feature parity."
+  },
+  "limits": [
+    "Only the eight exact table versions and 24 public fields; no complete PM map or physical-core identity",
+    "Read requires an already installed compatible ryzen_smu sysfs driver; no native OCTool PM transport, autoload or installer",
+    "PM reads may trigger firmware transfer through the external driver; atomicity and freshness not guaranteed",
+    "BCLK correction is based on an explicitly supplied value, not a BCLK measurement",
+    "No physical tuning/stability/Secure Boot acceptance; other AMD, Intel and board controls remain pending",
+    "Portable core validation on Windows/macOS is not a full hardware port"
+  ],
+  "cli_package_bytes": {
+    "min": 251829,
+    "max": 318168
+  },
+  "gui_package_bytes": {
+    "min": 10635013,
+    "max": 14509856
+  },
+  "final_local_archive_check": {
+    "path": "build/amd-pm-final-validation.txt",
+    "bytes": 421,
+    "sha256": "8b99321858266d1e6803dd407edeaf9198ee3da24975e7228729c1a9c5cd2723"
+  }
+}
