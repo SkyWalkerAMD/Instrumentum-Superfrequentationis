@@ -394,7 +394,7 @@ void MemoryBoardPanel::showSpd(const QString &path,const QByteArray &bytes,const
                 p.storageState == "not_captured" ? "Not captured" : p.storageState == "incomplete" ? "Incomplete capture" :
                 p.storageState == "all_zero" ? "All bytes zero" : p.storageState == "all_ff" ? "All bytes FF" : "Stored data";
             status = p.error ? (p.crc.checked && !p.crc.valid ? "Profile CRC mismatch" : failure(p.error)) :
-                p.values.empty() ? storage : "CRC valid; enablement unknown";
+                p.values.empty() ? storage : "CRC OK; enable unknown";
             append(table_,{group,"Storage",storage,"",status,path});
             append(table_,{group,"Captured bytes",QString::number(qulonglong(p.raw.size())),"bytes",status,path});
         }
@@ -432,7 +432,7 @@ void MemoryBoardPanel::showSpd(const QString &path,const QByteArray &bytes,const
         append(table_,{group,"Stored profile",p.enabled ? "Enabled" : "Disabled","",status,path});
         for (const auto &v : p.values) append(table_,{group,QString::fromStdString(v.name),QString::number(v.value),QString::fromStdString(v.unit),status,path});
         for (const auto &v : p.storedEnhancedTimings)
-            append(table_,{group,"Stored enhanced " + QString::fromStdString(v.name),QString::number(v.value),QString::fromStdString(v.unit),"CRC valid; enhanced enablement unknown",path});
+            append(table_,{group,"Stored enhanced " + QString::fromStdString(v.name),QString::number(v.value),QString::fromStdString(v.unit),"CRC OK; enable unknown",path});
     }
 }
 void MemoryBoardPanel::refresh() {

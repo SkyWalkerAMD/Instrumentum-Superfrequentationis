@@ -1216,7 +1216,7 @@ private slots:
             const auto group = QString("XMP User %1").arg(i+1);
             const int time = row(group,"tCK minimum"), enabled = row(group,"Stored profile"); QVERIFY(time >= 0 && enabled >= 0);
             QCOMPARE(table->item(time,2)->text(),QString::number(400+25*i));
-            QCOMPARE(table->item(time,4)->text(),QString("CRC valid; enablement unknown"));
+            QCOMPARE(table->item(time,4)->text(),QString("CRC OK; enable unknown"));
             QCOMPARE(table->item(enabled,2)->text(),QString("Enablement unknown"));
         }
         const int start = row("XMP User 1","Storage"); QVERIFY(start >= 0);
@@ -1255,7 +1255,7 @@ private slots:
         for (unsigned i = 0; i < 2; ++i) {
             const int time = row(QString("EXPO %1").arg(i+1),"Stored enhanced tRRD_L minimum"); QVERIFY(time >= 0);
             QCOMPARE(table->item(time,2)->text(),QString::number(1000+136*i)); QCOMPARE(table->item(time,3)->text(),QString("ps"));
-            QCOMPARE(table->item(time,4)->text(),QString("CRC valid; enhanced enablement unknown"));
+            QCOMPARE(table->item(time,4)->text(),QString("CRC OK; enable unknown"));
         }
         const int start = row("EXPO 1","Stored enhanced tRRD_L minimum");
         QTest::qWait(50); table->scrollToItem(table->item(start,0),QAbstractItemView::PositionAtTop);
