@@ -1,8 +1,16 @@
 # 平台功能恢复增量（2026-10-10）
 
-<!-- intel-tvb-table-edit-pending -->
-2026-10-12：GUI / CLI 同步新增 [Intel TVB 分档单字段编辑](intel-tvb-table-edit.md)，限定 B7 裸机和保守范围；云端验证进行中。以下保留上一批已验证记录。
-<!-- /intel-tvb-table-edit-pending -->
+<!-- intel-tvb-edit-494b8f0 -->
+2026-10-12：最新验证生产提交 `494b8f0`，GUI / CLI 同步恢复 **Intel TVB 分档单字段编辑**。
+B7 裸机；温度 A/B、降倍率 A/B，保守范围内单项设置，含旧值核对和完整读回。
+
+- [实现范围](intel-tvb-table-edit.md)、[验证交付](intel-tvb-edit-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38238262625) 4/4，各 18 CTest、255 场景组。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38238267459) 12/12，十目标各 20 CTest、564 份 JSON。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38238260581) 23/23，十目标各 108 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-intel-tvb-edit-494b8f0/`：30 个安装包、源码及 SHA256。
+
+逐物理核心表、其它原版缺口及真机验收仍未全部完成。以下保留历史记录。
 
 <!-- intel-tvb-table-aca1652 -->
 2026-10-12：最新验证生产提交 `aca1652`，GUI / CLI 同步恢复 **TVB 温度与降倍率分档查询**。
@@ -177,7 +185,7 @@ GUI / CLI 入口及型号限制见[同步功能对照](frontend-progress.md)，�
 | 页面/公共层 | 实现 | 当前边界 |
 |---|---|---|
 | AMD PStates | 一次事务采样；完整 9 位 VID 编码（bit32 合入）、IddValue/IddDiv 原始位 | 仍只读；只显示编码，不宣称 mV/A；不把 PStateEn 当硬件开关 |
-| Intel Controls | RAPL / HWP 含活动窗口，13 项设置完整回读；DTS 温度；B7 core/cache offset、最大倍率、目标电压及 Adaptive/Override，V/F 点查询与受条件限制的单点 offset，P/E 睿频分组倍率及中间组活动核心阈值；B7/8F Ring/LLC 范围；B7/A700 报告 BCLK 与历史 MRC 请求；B7 TVB 高温倍频裁剪与电压优化开关、活动 P 核候选表的两组温度 / 降倍率查询 | 按型号、能力、锁、旧值与完整回读限制写入；其它型号 V/F、逐物理核心 override、末组阈值/组数量重建、W790/W890 电压域、TVB 分档写入 / 逐物理核心表与其它型号控制、VID rank/SP、fabric/BCLK 写入和其它型号时钟信息未完成 |
+| Intel Controls | RAPL / HWP 含活动窗口，13 项设置完整回读；DTS 温度；B7 core/cache offset、最大倍率、目标电压及 Adaptive/Override，V/F 点查询与受条件限制的单点 offset，P/E 睿频分组倍率及中间组活动核心阈值；B7/8F Ring/LLC 范围；B7/A700 报告 BCLK 与历史 MRC 请求；B7 TVB 高温倍频裁剪与电压优化开关、活动 P 核候选表的两组温度 / 降倍率查询及保守范围单字段设置 | 按型号、能力、锁、旧值与完整回读限制写入；其它型号 V/F、逐物理核心 override、末组阈值/组数量重建、W790/W890 电压域、TVB 完整写入范围 / 逐物理核心表与其它型号控制、VID rank/SP、fabric/BCLK 写入和其它型号时钟信息未完成 |
 | AMD tuning / SMUIO | 三套互不混用的原 BIOS mailbox 地址、无写入 probe、选择命令/六参数、完整握手和固件返回；Shimada CCD/core/MHz 频率命令准备、限定身份的原始曲线查询；CPUID 稀疏拓扑 | 仅 Shimada 开放已提取的控制命令；Phoenix/GPT 仅测试和版本查询；CPUID 与固件目标 ID 未建立完整对应，曲线设置、PBO 高层单位及 PM 表实时读取未完成 |
 | Memory / Motherboard | DMI 主板和 BIOS、hwmon 温度/电压/电流/功耗/风扇/频率、驱动已绑定的 SPD；离线 SPD 文件 | 读取已有内核接口；不枚举探测裸 SMBus/EC、不装载驱动、不写 SPD；权限错误逐项显示 |
 | SPD 解码 | DDR4/DDR5 基本类型、组织、料号/序列号、完整基础区 CRC、对称单片/有效堆叠容量、DDR5 1/2/4/8 子通道及 3DS 不同逻辑 rank 刷新要求；修订版 1 的基础时序要求与 CAS 支持列表（含 DDR4 写延迟、DDR5 次级时序及 1.2 新字段）；DDR4 XMP 2.0 两组电压/时序、独立时间基准、限定 CAS 与推荐 DIMM 数（无扩展 CRC）；DDR5 XMP 3.0（含 8 项次级时序与独立 nCK 下限、CAS/命令率） 三个厂家档案的名称、电压、时序和逐区 CRC；EXPO 1.0 两组基础档案、独立启用及整块 CRC ；XMP 3.0 用户槽读取/校验；EXPO 增强时序存储字| DDR5 不足 512 字节时标注基础 CRC 未验证；未知公共区组织版本或保留编码不输出容量；不解码混合 rank 容量；档案值不等于实际运行值；EXPO 增强启用语义、1.1 与用户档案尚未还原；[档案元数据/组织](spd-profile-geometry.md) / [基础时序](spd-base-timings.md) / [CAS/命令率](spd-cas-recovery.md) / [DDR4 XMP](ddr4-xmp-recovery.md) / [DDR5 XMP](ddr5-xmp-recovery.md) / [EXPO](ddr5-expo-recovery.md) ；用户槽与增强功能启用语义未知，见[说明](spd-user-enhanced.md)|

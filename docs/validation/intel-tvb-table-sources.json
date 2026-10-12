@@ -1368,5 +1368,12 @@
     "No table writes or per-core addressing exposed",
     "No hardware acceptance"
   ],
-  "followup_after_production": "FSP editor ranges found during cloud validation; no runtime-source changes"
+  "followup_after_production": "FSP editor ranges found during cloud validation; no runtime-source changes",
+  "production_scope_commit": "aca1652b776e573950e33f88c10dcd5052934887",
+  "subsequent_editing": {
+    "source_commit": "494b8f01eb93f1aec90182b78e1d728ff04124c9",
+    "document": "docs/intel-tvb-table-edit.md",
+    "scope": "B7 single-entry single-field SET 0x25, active-count parameter 1..8, parameter2 zero; temperatures 0..100 C, down bins 0..10",
+    "limits": "Conservative FSP editor range only; no per-core addressing, complete runtime range, SKU capability guarantee or hardware acceptance"
+  }
 }

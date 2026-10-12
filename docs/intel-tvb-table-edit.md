@@ -63,4 +63,4 @@ JSON 区分 `write_attempted`、`verified`、`unchanged`、阶段、固件状态
 
 ## 验证状态
 
-本轮核心、GUI、CLI 和跨发行版验证结果将在云端任务结束后补充。
+生产提交 `494b8f0` 的 39 项云端任务全部通过；见 [验证交付](intel-tvb-edit-validation.md)和[完整证据](validation/intel-tvb-edit-ci-494b8f0.json)。

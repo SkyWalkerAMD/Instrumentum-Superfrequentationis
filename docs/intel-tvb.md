@@ -61,8 +61,10 @@ MSR `0x150`，查询命令 `0x18`，设置命令 `0x19`；本功能的参数域�
 不推导 SKU 的 TVB 支持位，不将原版 `octvb_support()` 对单个错误位的判断当作能力枚举。
 多个程序同时操作硬件仍可能产生竞争；用户态串行事务不等于系统范围原子操作。
 
-TVB 分档写入、逐物理核心裁剪表、Vmax stress、Ring DownBin、增强 TVB、其它客户端/服务器型号
+TVB 完整写入范围、逐物理核心裁剪表、Vmax stress、Ring DownBin、增强 TVB、其它客户端/服务器型号
 尚未由此功能恢复。W790/W890、AMD P-state 写入、完整 AMD MP1/PBO/目标映射、板级调节等原有缺口也仍存在。
 合成测试、跨发行版安装和虚拟机驱动验证均不替代目标真机调节验收。
 
 活动 P 核候选表的两组温度 / 降倍率查询已由后续 [TVB thresholds](intel-tvb-table.md) 页面和 CLI 同步恢复。
+
+保守输入范围内的 TVB 分档单字段设置已由后续 [编辑功能](intel-tvb-table-edit.md)同步恢复到 GUI / CLI。

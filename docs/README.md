@@ -1,8 +1,16 @@
 # 项目知识入口
 
-<!-- intel-tvb-table-edit-pending -->
-2026-10-12：GUI / CLI 同步新增 [Intel TVB 分档单字段编辑](intel-tvb-table-edit.md)，限定 B7 裸机和保守范围；云端验证进行中。以下保留上一批已验证记录。
-<!-- /intel-tvb-table-edit-pending -->
+<!-- intel-tvb-edit-494b8f0 -->
+2026-10-12：最新验证生产提交 `494b8f0`，GUI / CLI 同步恢复 **Intel TVB 分档单字段编辑**。
+B7 裸机；温度 A/B、降倍率 A/B，保守范围内单项设置，含旧值核对和完整读回。
+
+- [实现范围](intel-tvb-table-edit.md)、[验证交付](intel-tvb-edit-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38238262625) 4/4，各 18 CTest、255 场景组。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38238267459) 12/12，十目标各 20 CTest、564 份 JSON。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38238260581) 23/23，十目标各 108 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-intel-tvb-edit-494b8f0/`：30 个安装包、源码及 SHA256。
+
+逐物理核心表、其它原版缺口及真机验收仍未全部完成。以下保留历史记录。
 
 <!-- intel-tvb-table-aca1652 -->
 2026-10-12：最新验证生产提交 `aca1652`，GUI / CLI 同步恢复 **TVB 温度与降倍率分档查询**。
