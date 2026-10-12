@@ -588,6 +588,10 @@ private slots:
         }
         panel.findChild<QPushButton *>("tvbCopy")->click();
         QVERIFY(QApplication::clipboard()->text().contains("CPU 130")); QVERIFY(QApplication::clipboard()->text().contains("Voltage optimization"));
+        auto *raw = panel.findChild<QLabel *>("tvbRaw");
+        QVERIFY(raw->text().contains(hexValue(device->data, 4)));
+        // The initially empty label needs Qt's queued layout pass before capture.
+        QTRY_VERIFY(raw->height() >= raw->fontMetrics().height());
         const auto shot = qEnvironmentVariable("OCTOOL_INTEL_TVB_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
         panel.findChild<QLineEdit *>("tvbCpu")->setText("-1");
         QCOMPARE(table->rowCount(), 0); QVERIFY(!panel.findChild<QPushButton *>("tvbApply")->isEnabled());
