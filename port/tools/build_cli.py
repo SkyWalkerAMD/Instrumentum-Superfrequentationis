@@ -38,6 +38,7 @@ def stage_cli(stage, binary):
     copy(ROOT / "docs/intel-memory-extended.md", stage / "usr/share/doc/octool-cli/intel-memory-extended.md")
     copy(ROOT / "docs/intel-memory-refresh.md", stage / "usr/share/doc/octool-cli/intel-memory-refresh.md")
     copy(ROOT / "docs/intel-clock.md", stage / "usr/share/doc/octool-cli/intel-clock.md")
+    copy(ROOT / "docs/intel-tvb.md", stage / "usr/share/doc/octool-cli/intel-tvb.md")
     copy(ROOT / "docs/turbo-thresholds.md", stage / "usr/share/doc/octool-cli/turbo-thresholds.md")
     copy(ROOT / "docs/spd-user-enhanced.md", stage / "usr/share/doc/octool-cli/spd-user-enhanced.md")
     copy(ROOT / "docs/amd-pm-recovery.md", stage / "usr/share/doc/octool-cli/amd-pm-recovery.md")

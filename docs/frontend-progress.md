@@ -1,5 +1,7 @@
 # GUI / CLI 同步进度
 
+2026-10-12 本轮新增 [TVB 两项配置开关](intel-tvb.md)：GUI `TVB configuration`、CLI `intel-tvb-read/set` 共用核心。限定 06_B7 裸机；温度分档表仍未恢复。云端验证待本轮结果。
+
 GUI `Intel Controls → Clock information` 与 CLI `intel-clock-read` / `intel-clock-decode`
 同步提供 [Intel BCLK 与最后一次 MRC 请求](intel-clock.md)，限定 B7/A700。历史训练请求不代表实时内存频率。
 

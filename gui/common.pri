@@ -34,6 +34,8 @@ SOURCES += $$PWD/core/intel_turbo.cpp $$PWD/intelturbopanel.cpp
 HEADERS += $$PWD/core/intel_turbo.h $$PWD/intelturbopanel.h
 SOURCES += $$PWD/core/intel_uncore.cpp $$PWD/inteluncorepanel.cpp
 HEADERS += $$PWD/core/intel_uncore.h $$PWD/inteluncorepanel.h
+SOURCES += $$PWD/inteltvbpanel.cpp
+HEADERS += $$PWD/core/intel_tvb.h $$PWD/inteltvbpanel.h
 HEADERS += $$PWD/access.h $$PWD/registerpanel.h $$PWD/platform/hardware_factory.h
 linux {
     SOURCES += $$PWD/platform/linux_hwio.cpp $$PWD/platform/linux_helper.cpp $$PWD/../port/hal/octool_hwio.c

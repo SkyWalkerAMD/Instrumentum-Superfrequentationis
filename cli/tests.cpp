@@ -11,6 +11,7 @@
 #include "tests/intel_uncore_fixture.h"
 #include "tests/intel_memory_fixture.h"
 #include "tests/intel_clock_fixture.h"
+#include "tests/intel_tvb_fixture.h"
 #include "tests/spd_fixture.h"
 #include <cassert>
 #include <cerrno>
@@ -41,6 +42,17 @@ std::string command(HardwareBackend &device, const std::vector<std::string> &arg
 }
 void invalidBeforeOpen() {
     const std::vector<std::vector<std::string>> invalid = {
+        {"intel-tvb-read"},
+        {"intel-tvb-read", "--cpu", "0", "--apply"},
+        {"intel-tvb-read", "--cpu", "0", "--field", "ratio-clipping"},
+        {"intel-tvb-set", "--cpu", "0", "--field", "ratio-clipping", "--value", "0"},
+        {"intel-tvb-set", "--cpu", "0", "--value", "0", "--apply"},
+        {"intel-tvb-set", "--cpu", "0", "--field", "ratio-clipping", "--apply"},
+        {"intel-tvb-set", "--cpu", "0", "--field", "vmax", "--value", "0", "--apply"},
+        {"intel-tvb-set", "--cpu", "0", "--field", "ratio-clipping", "--value", "2", "--apply"},
+        {"intel-tvb-set", "--cpu", "0", "--field", "ratio-clipping", "--value", "-1", "--apply"},
+        {"intel-tvb-set", "--cpu", "0", "--field", "ratio-clipping", "--value", "1.0", "--apply"},
+        {"intel-tvb-set", "--cpu", "0", "--field", "ratio-clipping", "--value", "1", "--value", "0", "--apply"},
         {"intel-uncore-read"},
         {"intel-uncore-read", "--cpu", "0", "--apply"},
         {"intel-uncore-read", "--cpu", "0", "--minimum-ratio", "8"},
@@ -893,6 +905,48 @@ void pmCommands() {
     text("{\"bad\":\"\xed\xa0\x80\"}"); invoke({"amd-pm-decode","--file",path}, 3);
     assert(!opens);
 }
+void tvbCommands() {
+    for (unsigned bits : {0u, 4u, 8u, 12u}) {
+        IntelTvbFixture d; d.data |= bits;
+        const auto json = command(d, {"intel-tvb-read", "--cpu", "130"}, 0);
+        assert(json.find("\"raw\":\"0xa5c3211") != std::string::npos && !d.settingsAttempts() && !d.wrongCpu);
+    }
+    for (const char *field : {"ratio-clipping", "voltage-optimization"}) for (unsigned value : {0u, 1u}) {
+        IntelTvbFixture d; const unsigned bit = std::string(field) == "ratio-clipping" ? 4 : 8;
+        d.data = (d.data & ~bit) | (value ? bit : 0);
+        const auto raw = d.data;
+        const auto json = command(d, {"intel-tvb-set", "--cpu", "130", "--field", field, "--value", std::to_string(value), "--apply"}, 0);
+        assert(json.find("\"verified\":true") != std::string::npos && d.settingsAttempts() == 1 && !d.wrongCpu);
+        assert((d.data & ~bit) == (raw & ~bit) && bool(d.data & bit) == !value);
+    }
+    IntelTvbFixture noop;
+    const auto json = command(noop, {"intel-tvb-set", "--cpu", "130", "--field", "ratio-clipping", "--value", "1", "--apply"}, 0);
+    assert(json.find("\"unchanged\":true") != std::string::npos && !noop.settingsAttempts());
+    IntelTvbFixture locked; locked.locked = true;
+    command(locked, {"intel-tvb-read", "--cpu", "130"}, 0);
+    for (unsigned mode = 0; mode < 7; ++mode) {
+        IntelTvbFixture d;
+        if (mode == 0) d.locked = true;
+        if (mode == 1) d.model = 0x8f;
+        if (mode == 2) d.hypervisor = true;
+        if (mode == 3) d.discardChange = true;
+        if (mode == 4 || mode == 5) { d.failCommand = mode == 4 ? 0x18 : 0x19; d.status = 5; }
+        if (mode == 6) d.afterRequest = [&] {
+            const auto &r = d.requests.back();
+            if (r.write && d.commands.size() == 1) d.data ^= UINT32_C(1) << 31;
+        };
+        const auto result = command(d, {"intel-tvb-set", "--cpu", "130", "--field", "ratio-clipping", "--value", "0", "--apply"}, 3);
+        assert(result.find("\"verified\":false") != std::string::npos && d.settingsAttempts() == (mode == 3 || mode == 5 ? 1u : 0u));
+    }
+    for (unsigned mode = 0; mode < 3; ++mode) {
+        IntelTvbFixture d;
+        if (mode == 0) d.hypervisor = true;
+        if (mode == 1) { d.failCommand = 0x18; d.status = 0xfe; }
+        if (mode == 2) d.failAt = 6;
+        const auto result = command(d, {"intel-tvb-read", "--cpu", "130"}, 3);
+        assert(result.find("\"raw\":null") != std::string::npos && !d.settingsAttempts());
+    }
+}
 void pmFilesystem(const std::string &root) {
     const auto reader = octool::platform::linuxAmdPmReader(root);
     const auto good = readAmdPmDriver(reader); assert(!good.snapshot.error && good.snapshot.fields[0].value == 2000);
@@ -927,8 +981,8 @@ int main(int argc, char **argv) {
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures();
-    intelClockCommands(); intelClockOffline();
+    intelClockCommands(); intelClockOffline(); tvbCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "23 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "24 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

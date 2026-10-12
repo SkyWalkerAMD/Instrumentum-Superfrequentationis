@@ -15,6 +15,8 @@
 #include "intel_memory_fixture.h"
 #include "intelclockpanel.h"
 #include "intel_clock_fixture.h"
+#include "inteltvbpanel.h"
+#include "intel_tvb_fixture.h"
 #include "spd_fixture.h"
 #include "amd_curve_fixture.h"
 #include "amdpmpanel.h"
@@ -569,6 +571,111 @@ private slots:
         intel.findChild<QLineEdit *>("intelValue")->setText("125");
         intel.findChild<QPushButton *>("intelApply")->click();
         QCOMPARE(reference.calls.load(),0);
+    }
+    void intelTvbReadCopyAndTargetChange() {
+        auto *device = new IntelTvbFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelTvbPanel panel(access, nullptr, 130); panel.resize(1100, 640); panel.show();
+        auto *read = panel.findChild<QPushButton *>("tvbRead"); auto *table = panel.findChild<QTableWidget *>("tvbTable");
+        auto *field = panel.findChild<QComboBox *>("tvbField"); auto *value = panel.findChild<QComboBox *>("tvbValue");
+        QVERIFY(!panel.findChild<QPushButton *>("tvbApply")->isEnabled()); QCOMPARE(value->currentIndex(), -1);
+        for (unsigned bits : {0u, 4u, 8u, 12u}) {
+            device->data = 0xa5c32110 | bits; read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(), 2);
+            QCOMPARE(table->item(0,1)->text(), bits & 4 ? QString("Disabled") : QString("Enabled"));
+            QCOMPARE(table->item(1,1)->text(), bits & 8 ? QString("Disabled") : QString("Enabled"));
+            field->setCurrentIndex(1); QCOMPARE(value->currentIndex(), bits & 8 ? 0 : 1);
+            field->setCurrentIndex(0); QCOMPARE(value->currentIndex(), bits & 4 ? 0 : 1);
+        }
+        panel.findChild<QPushButton *>("tvbCopy")->click();
+        QVERIFY(QApplication::clipboard()->text().contains("CPU 130")); QVERIFY(QApplication::clipboard()->text().contains("Voltage optimization"));
+        const auto shot = qEnvironmentVariable("OCTOOL_INTEL_TVB_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        panel.findChild<QLineEdit *>("tvbCpu")->setText("-1");
+        QCOMPARE(table->rowCount(), 0); QVERIFY(!panel.findChild<QPushButton *>("tvbApply")->isEnabled());
+        const auto calls = device->calls; read->click(); QCOMPARE(device->calls, calls);
+        QVERIFY(panel.findChild<QLabel *>("tvbRaw")->text().isEmpty());
+        QCOMPARE(device->settingsAttempts(), 0u); QCOMPARE(device->wrongCpu, 0u);
+    }
+    void intelTvbCancelApplyAndNoop() {
+        auto *device = new IntelTvbFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelTvbPanel panel(access, nullptr, 130); panel.show();
+        panel.findChild<QPushButton *>("tvbRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *value = panel.findChild<QComboBox *>("tvbValue"); auto *field = panel.findChild<QComboBox *>("tvbField");
+        auto *apply = panel.findChild<QPushButton *>("tvbApply"); value->setCurrentIndex(0);
+        const auto calls = device->calls;
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Cancel)->click(); });
+        apply->click(); QCOMPARE(device->calls, calls); QCOMPARE(device->settingsAttempts(), 0u);
+        for (int index = 0; index < 2; ++index) {
+            field->setCurrentIndex(index); value->setCurrentIndex(0);
+            QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+            apply->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(device->settingsAttempts(), unsigned(index+1));
+            QCOMPARE(device->data, index == 0 ? UINT32_C(0xa5c32114) : UINT32_C(0xa5c3211c));
+            QVERIFY(panel.findChild<QLabel *>("tvbStatus")->text().contains("readback verified"));
+        }
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settingsAttempts(), 2u);
+        QVERIFY(panel.findChild<QLabel *>("tvbStatus")->text().contains("no settings write performed"));
+        QCOMPARE(device->wrongCpu, 0u);
+    }
+    void intelTvbLockAndFailedReads() {
+        auto *device = new IntelTvbFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelTvbPanel panel(access, nullptr, 130); panel.show(); auto *read = panel.findChild<QPushButton *>("tvbRead");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); device->locked = true;
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(panel.findChild<QTableWidget *>("tvbTable")->rowCount(), 2);
+        QVERIFY(!panel.findChild<QPushButton *>("tvbApply")->isEnabled());
+        device->failCommand = 0x18; device->status = 5;
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(panel.findChild<QTableWidget *>("tvbTable")->rowCount(), 0);
+        QVERIFY(panel.findChild<QLabel *>("tvbStatus")->text().contains("Firmware status: 5"));
+        QVERIFY(panel.findChild<QLabel *>("tvbRaw")->text().isEmpty()); QCOMPARE(panel.findChild<QComboBox *>("tvbValue")->currentIndex(), -1);
+        device->hypervisor = true; device->clearTrace(); read->click(); QTRY_VERIFY(panel.isEnabled());
+        QVERIFY(device->requests.empty());
+    }
+    void intelTvbStaleAndFailedWrites() {
+        for (unsigned mode = 0; mode < 4; ++mode) {
+            auto *device = new IntelTvbFixture;
+            auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+            IntelTvbPanel panel(access, nullptr, 130); panel.show();
+            panel.findChild<QPushButton *>("tvbRead")->click(); QTRY_VERIFY(panel.isEnabled());
+            panel.findChild<QComboBox *>("tvbValue")->setCurrentIndex(0);
+            if (mode == 0) device->data ^= UINT32_C(1) << 31;
+            if (mode == 1) device->discardChange = true;
+            if (mode == 2) { device->failCommand = 0x19; device->status = 5; }
+            if (mode == 3) device->locked = true;
+            QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+            panel.findChild<QPushButton *>("tvbApply")->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(device->settingsAttempts(), mode == 1 || mode == 2 ? 1u : 0u);
+            QCOMPARE(panel.findChild<QTableWidget *>("tvbTable")->rowCount(), 0);
+            QVERIFY(!panel.findChild<QPushButton *>("tvbApply")->isEnabled());
+            QVERIFY(panel.findChild<QLabel *>("tvbRaw")->text().isEmpty());
+            QCOMPARE(panel.findChild<QComboBox *>("tvbValue")->currentIndex(), -1);
+            QVERIFY(panel.findChild<QLabel *>("tvbStatus")->text().contains(mode == 0 || mode == 3 ? "No settings write" : "not verified"));
+        }
+    }
+    void intelTvbReadLifetimeAndTargetChange() {
+        struct Gate { std::atomic<bool> entered{false}, release{false}, destroyed{false}; };
+        struct Device : IntelTvbFixture {
+            std::shared_ptr<Gate> gate;
+            explicit Device(std::shared_ptr<Gate> g) : gate(g) {}
+            ~Device() override { gate->destroyed = true; }
+        };
+        for (bool close : {false,true}) {
+            auto gate = std::make_shared<Gate>(); auto *device = new Device(gate);
+            device->afterRequest = [gate] {
+                if (gate->entered.exchange(true)) return;
+                const auto deadline = std::chrono::steady_clock::now()+std::chrono::seconds(3);
+                while (!gate->release && std::chrono::steady_clock::now()<deadline) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            };
+            auto *panel = new IntelTvbPanel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+            panel->findChild<QPushButton *>("tvbRead")->click(); QTRY_VERIFY(gate->entered.load());
+            if (close) { delete panel; QVERIFY(!gate->destroyed.load()); gate->release = true; QTRY_VERIFY(gate->destroyed.load()); }
+            else {
+                panel->findChild<QLineEdit *>("tvbCpu")->setText("131"); gate->release = true;
+                QTRY_VERIFY(panel->isEnabled()); QCOMPARE(panel->findChild<QTableWidget *>("tvbTable")->rowCount(),0);
+                QVERIFY(panel->findChild<QLabel *>("tvbStatus")->text().contains("discarded")); delete panel;
+            }
+        }
     }
     void intelUncoreReadAndTargetChange() {
         auto *device = new IntelUncoreFixture;

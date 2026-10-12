@@ -15,6 +15,7 @@
 #include "inteluncorepanel.h"
 #include "intelmemorypanel.h"
 #include "intelclockpanel.h"
+#include "inteltvbpanel.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFormLayout>
@@ -96,6 +97,7 @@ int main(int argc, char **argv)
     intel->addTab(new IntelUncorePanel(access, intel, initialCpu), "Ring / LLC range");
     intel->addTab(new IntelMemoryPanel(access, intel, initialCpu), "Memory timings");
     intel->addTab(new IntelClockPanel(access, intel, initialCpu), "Clock information");
+    intel->addTab(new IntelTvbPanel(access, intel, initialCpu), "TVB configuration");
     tabs->addTab(intel, "Intel Controls");
     auto *amd = new QTabWidget(tabs);
     amd->addTab(new AmdTuningPanel(access, amd, initialCpu), "SMU / curves");
@@ -125,6 +127,8 @@ int main(int argc, char **argv)
                 window.grab().save(capture + "-5-memory.png");
                 intel->setCurrentIndex(6);
                 window.grab().save(capture + "-5-clock.png");
+                intel->setCurrentIndex(7);
+                window.grab().save(capture + "-5-tvb.png");
                 intel->setCurrentIndex(0);
             }
             if (page == 6) {

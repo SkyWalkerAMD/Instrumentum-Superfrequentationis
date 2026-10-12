@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "date": "2026-10-12",
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "fixture_sha256": "ece8bff3f59a5b284e15fd63af6e93729093418b75169a357265b8dfeffa998a",
+  "primary_sources": [
+    {
+      "repository": "intel/FSP",
+      "commit": "d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8",
+      "path": "RaptorLakeFspBinPkg/Client/RaptorLakeS/Include/FspmUpd.h",
+      "url": "https://github.com/intel/FSP/blob/d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8/RaptorLakeFspBinPkg/Client/RaptorLakeS/Include/FspmUpd.h",
+      "sha256": "3ce5c6b4bb17b4c8d816552835f9b58279a37b699a951dab8d8e7fbc603ef57c",
+      "scope": "Two independent TVB configuration items and meanings, not mailbox opcodes or data bit positions"
+    },
+    {
+      "repository": "tianocore/edk2-platforms",
+      "commit": "7f53d84a042e1f30bbaee462cf636326a4f76054",
+      "path": "Silicon/Intel/CoffeelakeSiliconPkg/Cpu/Include/Library/CpuMailboxLib.h",
+      "url": "https://github.com/tianocore/edk2-platforms/blob/7f53d84a042e1f30bbaee462cf636326a4f76054/Silicon/Intel/CoffeelakeSiliconPkg/Cpu/Include/Library/CpuMailboxLib.h",
+      "git_blob_sha1": "79dff36783c93bdcbc39f0db2f05235bdc23c8e1",
+      "scope": "General OC mailbox completion, timeout and firmware status semantics; older platform, not proof of TVB bits or support on B7"
+    }
+  ],
+  "original_functions": [
+    {"symbol":"_Z12set_tvb_clipb","address":"0x3737f0","size":234,"field":"disable bit 2, inverse of function argument"},
+    {"symbol":"_Z16disable_volt_optb","address":"0x37fe50","size":189,"field":"disable bit 3, same as function argument"},
+    {"symbol":"_Z13Rd_Misc_Ratiov","address":"0x395240","size":340,"field":"returns disable bits 1,2,3,4"}
+  ],
+  "profile_policy": "Intel family 6 model B7, MSR capability, no hypervisor, successful 0x18; OC lock clear required for 0x19",
+  "limits": [
+    "No automatic use of original octvb_support's incomplete firmware status interpretation",
+    "Mailbox response establishes configuration access, not actual TVB activity or SKU feature support",
+    "Only bits 2 and 3 are exposed; temperature/bin tables and other model protocols remain pending",
+    "No physical hardware acceptance performed"
+  ]
+}

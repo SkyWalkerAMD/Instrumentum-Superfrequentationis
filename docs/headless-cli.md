@@ -1,5 +1,9 @@
 # 无桌面版 OCTool
 
+GUI `Intel Controls → TVB configuration` 与 CLI `intel-tvb-read` / `intel-tvb-set`
+同步提供 [TVB 高温倍频裁剪与电压优化开关](intel-tvb.md)，限定 Intel 06_B7 裸机配置访问。
+统一使用 1 = 启用、0 = 禁用；检查锁、旧值和完整回读。温度/倍频分档表不在本轮范围。
+
 GUI `Intel Controls → Clock information` 与 CLI `intel-clock-read` / `intel-clock-decode`
 同步提供 [Intel BCLK 与最后一次 MRC 请求](intel-clock.md)，限定 B7/A700。历史训练请求不代表实时内存频率。
 

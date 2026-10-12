@@ -35,7 +35,29 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 462, len(reports)
+assert len(reports) == 493, len(reports)
+tvb_reports = [r for r in reports if r["command"] in ("intel-tvb-read", "intel-tvb-set") and "before" in r["data"]]
+assert len(tvb_reports) == 20 and [r["ok"] for r in tvb_reports] == [True]*10+[False]*10
+for i, r in enumerate(tvb_reports):
+    data = r["data"]; before = data["before"]
+    assert not data["hardware_effect_measured"]
+    if before["valid"]:
+        raw = int(before["raw"],16)
+        assert before["ratio_clipping_enabled"] == (not (raw & 4))
+        assert before["voltage_optimization_enabled"] == (not (raw & 8))
+        assert before["editable"] == (not before["locked"])
+    else:
+        assert before["raw"] is None and before["ratio_clipping_enabled"] is None and before["voltage_optimization_enabled"] is None
+    if r["command"] == "intel-tvb-set":
+        assert data["verified"] == r["ok"]
+        if r["ok"]:
+            after = data["after"]; bit = 4 if data["field"] == "ratio-clipping" else 8
+            assert (int(before["raw"],16) ^ int(after["raw"],16)) == (0 if data["unchanged"] else bit)
+            assert (not (int(after["raw"],16) & bit)) == data["requested_enabled"]
+        else:
+            assert data["write_attempted"] == (i in (13,15))
+assert tvb_reports[9]["data"]["before"]["locked"] and not tvb_reports[9]["data"]["before"]["editable"]
+assert tvb_reports[18]["data"]["before"]["firmware_status"] == 0xfe
 clock_reports = [r for r in reports if r["command"] in ("intel-clock-read","intel-clock-decode")]
 assert len(clock_reports) == 20 and [r["ok"] for r in clock_reports] == ([True]*4+[False]*6)*2
 for i,r in enumerate(clock_reports):

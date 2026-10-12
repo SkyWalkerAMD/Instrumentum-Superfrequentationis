@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "intel_oc.h"
+#include "intel_tvb.h"
 #include <cerrno>
 #include <chrono>
 #include <cmath>
@@ -254,5 +255,75 @@ IntelOcUpdate applyIntelOcVoltage(HardwareSession &s, const IntelOcSnapshot &old
     std::uint32_t encoded = 0;
     const int error = encodeIntelOcVoltage(millivolts, mode, old.response.data, encoded);
     return applyEncoded(s, old, error, encoded);
+}
+namespace {
+bool tvbSnapshotValid(const IntelTvbSnapshot &s) {
+    return !s.error && s.valid && hasIntelOcProfile(s.identity) &&
+        responseValid(s.response) && s.response.commandAttempted;
+}
+bool sameTvbContext(const IntelTvbSnapshot &a, const IntelTvbSnapshot &b) {
+    return a.identity.signature == b.identity.signature && a.flexRatio == b.flexRatio;
+}
+}
+bool intelTvbEditable(const IntelTvbSnapshot &s) {
+    return tvbSnapshotValid(s) && !(s.flexRatio & ocLock);
+}
+bool intelTvbRatioClipping(std::uint32_t data) { return !(data & 4u); }
+bool intelTvbVoltageOptimization(std::uint32_t data) { return !(data & 8u); }
+int encodeIntelTvb(IntelTvbField field, unsigned enabled, std::uint32_t previous, std::uint32_t &encoded) {
+    if (field != IntelTvbField::RatioClipping && field != IntelTvbField::VoltageOptimization) return -EINVAL;
+    if (enabled > 1) return -ERANGE;
+    const std::uint32_t mask = field == IntelTvbField::RatioClipping ? 4u : 8u;
+    encoded = (previous & ~mask) | (enabled ? 0u : mask);
+    return 0;
+}
+IntelTvbSnapshot readIntelTvb(HardwareSession &s, unsigned cpu) {
+    IntelTvbSnapshot out; out.cpu = cpu;
+    out.identity = identifyCpu(s, cpu);
+    if ((out.error = out.identity.error)) return out;
+    if (!hasIntelOcProfile(out.identity)) { out.error = -ENOTSUP; return out; }
+    const auto features = s.cpuid(cpu, 1);
+    if ((out.error = features.error)) return out;
+    if (!(features.words[3] & (1u << 5)) || (features.words[2] & (1u << 31))) {
+        out.error = -ENOTSUP; return out;
+    }
+    const auto flex = s.execute(msrRequest(cpu, 0x194));
+    if ((out.error = flex.error)) return out;
+    out.flexRatio = flex.value;
+    out.response = exchangeCommand(s, cpu, IntelOcDomain::Core, 0x18, 0);
+    if ((out.error = out.response.error)) return out;
+    if ((out.error = s.checkpoint())) return out;
+    out.valid = true;
+    return out;
+}
+IntelTvbUpdate applyIntelTvb(HardwareSession &s, const IntelTvbSnapshot &old, IntelTvbField field, unsigned enabled) {
+    IntelTvbUpdate out;
+    if (!tvbSnapshotValid(old)) { out.error = -EINVAL; return out; }
+    if ((out.error = encodeIntelTvb(field, enabled, old.response.data, out.expected))) return out;
+    if (!intelTvbEditable(old)) { out.error = -EPERM; return out; }
+    out.stage = IntelOcStage::Preflight;
+    const auto fresh = readIntelTvb(s, old.cpu);
+    out.response = fresh.response;
+    if ((out.error = fresh.error)) return out;
+    if (fresh.identity.signature != old.identity.signature) { out.error = -ENODEV; return out; }
+    if (!intelTvbEditable(fresh)) { out.error = -EPERM; return out; }
+    out.stage = IntelOcStage::Compare;
+    if (!sameTvbContext(old, fresh) || old.response.data != fresh.response.data) { out.error = -EAGAIN; return out; }
+    if (out.expected == fresh.response.data) out.readback = fresh;
+    else {
+        out.stage = IntelOcStage::Write;
+        out.response = exchangeCommand(s, old.cpu, IntelOcDomain::Core, 0x19, out.expected);
+        out.writeAttempted = out.response.commandAttempted;
+        if ((out.error = out.response.error)) return out;
+        out.stage = IntelOcStage::Verify;
+        out.readback = readIntelTvb(s, old.cpu);
+    }
+    if ((out.error = out.readback.error)) return out;
+    if (out.readback.identity.signature != old.identity.signature) { out.error = -ENODEV; return out; }
+    if (!sameTvbContext(old, out.readback) || !intelTvbEditable(out.readback)) { out.error = -EAGAIN; return out; }
+    if (out.readback.response.data != out.expected) { out.error = -EIO; return out; }
+    if ((out.error = s.checkpoint())) return out;
+    out.verified = true; out.unchanged = !out.writeAttempted; out.stage = IntelOcStage::Complete;
+    return out;
 }
 } }
