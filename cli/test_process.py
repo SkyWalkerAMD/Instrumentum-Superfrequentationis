@@ -35,7 +35,37 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 585, len(reports)
+assert len(reports) == 657, len(reports)
+
+energy = [r for r in reports if r['command'] in ('intel-energy-read', 'intel-energy-set') and 'before' in r['data']]
+assert len(energy) == 56 and [r['ok'] for r in energy] == [True]*28+[False]*28
+for i, report in enumerate(energy):
+    data = report['data']; before = data['before']
+    assert data['msr'] == '0x000001fc' and not data['hardware_effect_measured']
+    for snapshot in (before, data.get('after', before)):
+        if snapshot['valid']:
+            word = int(snapshot['raw'], 16)
+            assert len(snapshot['raw']) == 18 and snapshot['editable']
+            assert snapshot['efficient_turbo_enabled'] == (not bool(word & (1 << 19)))
+            assert snapshot['race_to_halt_enabled'] == (not bool(word & (1 << 20)))
+        else:
+            assert not snapshot['editable']
+            assert all(snapshot[k] is None for k in ('raw', 'efficient_turbo_enabled', 'race_to_halt_enabled'))
+    if report['command'] == 'intel-energy-set':
+        assert data['verified'] == report['ok']
+        if report['ok']:
+            mask = 1 << (19 if data['field'] == 'efficient-turbo' else 20)
+            old = int(before['raw'],16); new = int(data['after']['raw'],16)
+            assert new == (old & ~mask if data['requested_enabled'] else old | mask)
+            assert int(data['expected_raw'],16) == new
+            assert data['unchanged'] == (old == new) and data['write_attempted'] == (old != new)
+            assert data['completed_writes'] == int(old != new)
+        else:
+            mode = (i-28) % 12
+            assert data['write_attempted'] == (mode >= 8)
+            assert data['completed_writes'] == int(mode in (8,10,11))
+            assert (data['expected_raw'] is None) == (mode <= 4)
+assert any(r['data'].get('expected_raw') == '0x0000000000000000' for r in energy)
 
 tvb_edits = [r for r in reports if r['command'] in ('intel-tvb-table','intel-tvb-table-set') and 'before' in r['data']]
 assert len(tvb_edits) == 28 and [r['ok'] for r in tvb_edits] == [True]*18+[False]*10

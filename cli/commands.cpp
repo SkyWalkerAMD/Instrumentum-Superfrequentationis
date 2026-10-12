@@ -12,6 +12,7 @@
 #include "core/intel_oc.h"
 #include "core/intel_turbo.h"
 #include "core/intel_uncore.h"
+#include "core/intel_energy.h"
 #include "core/intel_memory.h"
 #include "core/intel_clock.h"
 #include "core/intel_tvb.h"
@@ -76,6 +77,9 @@ const std::map<std::string, IntelField> intelFields = {
     {"hwp-min", IntelField::HwpMin}, {"hwp-max", IntelField::HwpMax}, {"hwp-desired", IntelField::HwpDesired}, {"hwp-epp", IntelField::HwpEpp},
     {"hwp-window-us", IntelField::HwpActivityWindow}
 };
+const std::map<std::string, IntelEnergyField> energyFields = {
+    {"efficient-turbo", IntelEnergyField::EfficientTurbo}, {"race-to-halt", IntelEnergyField::RaceToHalt}
+};
 const std::map<std::string, IntelTvbField> tvbFields = {
     {"ratio-clipping", IntelTvbField::RatioClipping}, {"voltage-optimization", IntelTvbField::VoltageOptimization},
     {"ring-down-bin", IntelTvbField::RingDownBin}
@@ -102,7 +106,7 @@ struct Command {
 Command parse(const std::vector<std::string> &args) {
     Command c; c.name = args.at(0);
     const std::set<std::string> hardware = {"cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read", "intel-vf-set", "intel-turbo-read", "intel-turbo-set",
-        "intel-memory-read", "intel-clock-read", "intel-tvb-read", "intel-tvb-set", "intel-tvb-table", "intel-tvb-table-set", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
+        "intel-memory-read", "intel-clock-read", "intel-tvb-read", "intel-tvb-set", "intel-tvb-table", "intel-tvb-table-set", "intel-energy-read", "intel-energy-set", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
     const bool memoryOffline = c.name == "intel-memory-decode";
     const bool clockOffline = c.name == "intel-clock-decode";
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
@@ -111,13 +115,13 @@ Command parse(const std::vector<std::string> &args) {
     std::set<std::string> keys = {"--json"};
     if (hardware.count(c.name)) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
-    const bool writing = c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set" || c.name == "intel-uncore-set" || c.name == "amd-smu-send" || c.name == "register-write";
+    const bool writing = c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set" || c.name == "intel-energy-set" || c.name == "intel-uncore-set" || c.name == "amd-smu-send" || c.name == "register-write";
     const bool vf = c.name == "intel-vf-read" || c.name == "intel-vf-set";
     const bool turbo = c.name == "intel-turbo-read" || c.name == "intel-turbo-set";
     if (turbo) keys.insert("--core-type");
     if (c.name == "intel-turbo-set") { keys.insert("--group"); keys.insert("--value"); keys.insert("--field"); }
     if (c.name == "intel-uncore-set") { keys.insert("--minimum-ratio"); keys.insert("--maximum-ratio"); }
-    if (c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set") { keys.insert("--field"); keys.insert("--value"); }
+    if (c.name == "intel-energy-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set") { keys.insert("--field"); keys.insert("--value"); }
     if (c.name == "intel-tvb-table" || c.name == "intel-tvb-table-set") keys.insert("--active-cores");
     if (c.name == "intel-tvb-table") keys.insert("--for-edit");
     if (rawRegister) {
@@ -189,6 +193,11 @@ Command parse(const std::vector<std::string> &args) {
             require(tvbTableFields.count(c.field), "TVB table field must be temperature-a, down-bins-a, temperature-b or down-bins-b");
             c.value = uintOption(options, "--value", c.field.compare(0,11,"temperature") == 0 ? 100 : 10);
         }
+    }
+    if (c.name == "intel-energy-set") {
+        c.field = get(options, "--field");
+        require(energyFields.count(c.field), "Field must be efficient-turbo or race-to-halt");
+        c.value = uintOption(options, "--value", 1);
     }
     if (c.name == "intel-tvb-set") {
         c.field = get(options, "--field");
@@ -340,6 +349,13 @@ std::string tvbTableEditSnapshot(const IntelTvbTableEditSnapshot &s) {
         {"down_bins_a", valid ? number(fields.downBinsA) : "null"},
         {"temperature_b_c", valid ? number(fields.temperatureB) : "null"},
         {"down_bins_b", valid ? number(fields.downBinsB) : "null"}});
+}
+std::string energySnapshot(const IntelEnergySnapshot &s) {
+    const bool valid = s.valid && !s.error;
+    return object({{"error", number(s.error)}, {"valid", boolean(valid)}, {"identity", identity(s.identity)},
+        {"editable", boolean(intelEnergyEditable(s))}, {"raw", valid ? hex(s.raw, 16) : "null"},
+        {"efficient_turbo_enabled", valid ? boolean(intelEfficientTurbo(s.raw)) : "null"},
+        {"race_to_halt_enabled", valid ? boolean(intelRaceToHalt(s.raw)) : "null"}});
 }
 std::string uncoreSnapshot(const IntelUncoreSnapshot &s) {
     const bool valid = s.valid && !s.error;
@@ -542,6 +558,23 @@ Result hardware(const Command &c, HardwareSession &s) {
             out.data.push_back({"stage", number(unsigned(result.stage))});
             out.data.push_back({"firmware_status", result.response.completed ? number(result.response.firmwareStatus) : "null"});
             out.data.push_back({"after", tvbSnapshot(result.readback)});
+        }
+    } else if (c.name == "intel-energy-read" || c.name == "intel-energy-set") {
+        const auto snapshot = readIntelEnergy(s, c.cpu); out.error = snapshot.error;
+        out.data.push_back({"msr", hex(0x1fc)});
+        out.data.push_back({"scope", quote("energy configuration via selected logical CPU; other CPUs not verified")});
+        out.data.push_back({"hardware_effect_measured", "false"});
+        out.data.push_back({"before", energySnapshot(snapshot)});
+        if (c.name == "intel-energy-set") {
+            IntelEnergyUpdate result;
+            if (!out.error) { result = applyIntelEnergy(s, snapshot, energyFields.at(c.field), unsigned(c.value)); out.error = result.error; }
+            out.data.push_back({"field", quote(c.field)}); out.data.push_back({"requested_enabled", boolean(c.value != 0)});
+            out.data.push_back({"write_attempted", boolean(result.writeAttempted)});
+            out.data.push_back({"completed_writes", number(result.completed)});
+            out.data.push_back({"verified", boolean(result.verified && !out.error)});
+            out.data.push_back({"unchanged", boolean(result.unchanged)});
+            out.data.push_back({"expected_raw", result.expectedValid ? hex(result.expected, 16) : "null"});
+            out.data.push_back({"after", energySnapshot(result.after)});
         }
     } else if (c.name == "intel-uncore-read" || c.name == "intel-uncore-set") {
         const auto snapshot = readIntelUncore(s, c.cpu); out.error = snapshot.error;
@@ -906,6 +939,8 @@ Usage: octool-cli COMMAND [OPTIONS]
       Temperatures: 0..100 C; down bins: 0..10. Preserve other fields and verify the complete entry.
   intel-tvb-set --cpu N --field ratio-clipping|voltage-optimization|ring-down-bin --value 0|1 --apply
     Ring DownBin: 1 enables automatic ring ratio reduction; 0 disables it. Shared B7 processor configuration.
+  intel-energy-read --cpu N
+  intel-energy-set --cpu N --field efficient-turbo|race-to-halt --value 0|1 --apply
   intel-uncore-read --cpu N
   intel-uncore-set --cpu N --minimum-ratio MIN --maximum-ratio MAX --apply
   intel-turbo-set --cpu N --core-type p|e --group 0..7 --value RATIO --apply

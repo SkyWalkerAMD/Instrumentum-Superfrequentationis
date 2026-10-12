@@ -1,5 +1,9 @@
 # 无桌面版 OCTool
 
+2026-10-13 新增 [Intel 节能配置](intel-energy.md)：
+`intel-energy-read --cpu N`、`intel-energy-set --cpu N --field efficient-turbo|race-to-halt --value 0|1 --apply`。
+裸机 B7，逐项设置，保留其余 63 位并完整读回；不广播到其它 CPU，不测量实际能耗。
+
 GUI `Intel Controls → TVB configuration` 与 CLI `intel-tvb-read` / `intel-tvb-set`
 同步提供 [TVB 高温倍频裁剪与电压优化开关](intel-tvb.md)，限定 Intel 06_B7 裸机配置访问。
 统一使用 1 = 启用、0 = 禁用；检查锁、旧值和完整回读。温度/倍频分档表不在本轮范围。

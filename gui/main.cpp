@@ -17,6 +17,7 @@
 #include "intelclockpanel.h"
 #include "inteltvbpanel.h"
 #include "inteltvbtablepanel.h"
+#include "intelenergypanel.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFormLayout>
@@ -100,6 +101,7 @@ int main(int argc, char **argv)
     intel->addTab(new IntelClockPanel(access, intel, initialCpu), "Clock information");
     intel->addTab(new IntelTvbPanel(access, intel, initialCpu), "TVB && Ring DownBin");
     intel->addTab(new IntelTvbTablePanel(access, intel, initialCpu), "TVB thresholds");
+    intel->addTab(new IntelEnergyPanel(access, intel, initialCpu), "Energy optimization");
     tabs->addTab(intel, "Intel Controls");
     auto *amd = new QTabWidget(tabs);
     amd->addTab(new AmdTuningPanel(access, amd, initialCpu), "SMU / curves");
@@ -133,6 +135,8 @@ int main(int argc, char **argv)
                 window.grab().save(capture + "-5-tvb.png");
                 intel->setCurrentIndex(8);
                 window.grab().save(capture + "-5-tvb-table.png");
+                intel->setCurrentIndex(9);
+                window.grab().save(capture + "-5-energy.png");
                 intel->setCurrentIndex(0);
             }
             if (page == 6) {

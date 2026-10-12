@@ -9,6 +9,7 @@
 #include "tests/intel_controls_fixture.h"
 #include "tests/intel_turbo_fixture.h"
 #include "tests/intel_uncore_fixture.h"
+#include "tests/intel_energy_fixture.h"
 #include "tests/intel_memory_fixture.h"
 #include "tests/intel_clock_fixture.h"
 #include "tests/intel_tvb_fixture.h"
@@ -43,6 +44,22 @@ std::string command(HardwareBackend &device, const std::vector<std::string> &arg
 }
 void invalidBeforeOpen() {
     const std::vector<std::vector<std::string>> invalid = {
+        {"intel-energy-read"},
+        {"intel-energy-read", "--cpu", "0", "--apply"},
+        {"intel-energy-read", "--cpu", "0", "--field", "efficient-turbo"},
+        {"intel-energy-read", "--cpu", "-1"},
+        {"intel-energy-set"},
+        {"intel-energy-set", "--cpu", "0", "--field", "efficient-turbo", "--value", "0"},
+        {"intel-energy-set", "--cpu", "0", "--value", "0", "--apply"},
+        {"intel-energy-set", "--cpu", "0", "--field", "race-to-halt", "--apply"},
+        {"intel-energy-set", "--cpu", "0", "--field", "unknown", "--value", "0", "--apply"},
+        {"intel-energy-set", "--cpu", "0", "--field", "prochot", "--value", "0", "--apply"},
+        {"intel-energy-set", "--cpu", "0", "--field", "efficient-turbo", "--value", "2", "--apply"},
+        {"intel-energy-set", "--cpu", "0", "--field", "race-to-halt", "--value", "-1", "--apply"},
+        {"intel-energy-set", "--cpu", "0", "--field", "race-to-halt", "--value", "0.5", "--apply"},
+        {"intel-energy-set", "--cpu", "0", "--field", "race-to-halt", "--value", "4294967296", "--apply"},
+        {"intel-energy-set", "--cpu", "0", "--field", "race-to-halt", "--field", "efficient-turbo", "--value", "0", "--apply"},
+        {"intel-energy-set", "--cpu", "0", "--field", "race-to-halt", "--value", "0", "--mode", "override", "--apply"},
         {"intel-tvb-table", "--cpu", "0", "--for-edit"},
         {"intel-tvb-table", "--cpu", "0", "--for-edit", "--active-cores", "0"},
         {"intel-tvb-table-set"},
@@ -380,6 +397,53 @@ void voltageCommands() {
         const auto result = command(intel, args, 3);
         assert(result.find("\"verified\":false") != std::string::npos);
         assert(intel.mutationCount == (failure == 2 ? 1u : 0u));
+    }
+}
+void energyCommands() {
+    for (unsigned bits = 0; bits < 4; ++bits) {
+        IntelEnergyFixture d; d.regs[0x1fc] |= std::uint64_t(bits) << 19;
+        command(d, {"intel-energy-read", "--cpu", "130"}, 0);
+        assert(!d.writes && d.reads == 1 && !d.wrongCpu);
+    }
+    for (const char *field : {"efficient-turbo", "race-to-halt"})
+        for (auto raw : {UINT64_C(0), UINT64_MAX, UINT64_C(0xa5c3211098600243)}) for (unsigned enabled : {0,1}) {
+            IntelEnergyFixture d; d.regs[0x1fc] = raw;
+            const auto mask = UINT64_C(1) << (std::string(field) == "efficient-turbo" ? 19 : 20);
+            const auto expected = enabled ? raw & ~mask : raw | mask;
+            const std::vector<std::string> args = {"intel-energy-set", "--cpu", "130", "--field", field, "--value", std::to_string(enabled), "--apply"};
+            const auto result = command(d, args, 0);
+            assert(result.find("\"verified\":true") != std::string::npos && d.regs[0x1fc] == expected);
+            assert(d.writes == unsigned(expected != raw));
+            const auto unchanged = command(d, args, 0);
+            assert(unchanged.find("\"unchanged\":true") != std::string::npos && d.writes == unsigned(expected != raw) && !d.wrongCpu);
+            for (const auto &r : d.requests) assert(r.address == 0x1fc);
+        }
+    for (const char *field : {"efficient-turbo", "race-to-halt"}) for (unsigned mode = 0; mode < 12; ++mode) {
+        IntelEnergyFixture d;
+        if (mode == 0) d.hypervisor = true;
+        if (mode == 1) d.model = 0x8f;
+        if (mode == 2) d.amd = true;
+        if (mode == 3) d.hasMsr = false;
+        if (mode == 4) d.failRead = 0;
+        if (mode == 5) d.afterRequest = [&](const Request &r) { if (!r.write && d.reads == 1) d.regs[0x1fc] ^= UINT64_C(1) << 63; };
+        if (mode == 6) d.failRead = 1;
+        if (mode == 7) d.failRead = 2;
+        if (mode == 8) d.discardChange = true;
+        if (mode == 9) d.failWrite = 0;
+        if (mode == 10) d.failRead = 3;
+        if (mode == 11) d.afterRequest = [&](const Request &r) { if (r.write) d.stepping = 1; };
+        const auto result = command(d, {"intel-energy-set", "--cpu", "130", "--field", field, "--value", "0", "--apply"}, 3);
+        assert(result.find("\"verified\":false") != std::string::npos);
+        assert(d.writes == (mode >= 8 ? 1u : 0u) && !d.wrongCpu);
+        if (mode <= 3) assert(d.requests.empty());
+    }
+    for (unsigned mode = 0; mode < 4; ++mode) {
+        IntelEnergyFixture d;
+        if (mode == 0) d.hypervisor = true;
+        if (mode == 1) d.model = 0xad;
+        if (mode == 2) d.hasMsr = false;
+        if (mode == 3) d.failRead = 0;
+        command(d, {"intel-energy-read", "--cpu", "130"}, 3); assert(!d.writes);
     }
 }
 void uncoreCommands() {
@@ -1080,8 +1144,8 @@ int main(int argc, char **argv) {
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures();
-    intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands();
+    intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "26 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "27 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

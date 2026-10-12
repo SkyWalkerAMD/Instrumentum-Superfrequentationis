@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "date": "2026-10-13",
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "fixture_sha256": "72eda316b8b03f3fb435ff60da6eacaef27d6f5b2595c7cd49b3595b8049293c",
+  "original_functions": [
+    {
+      "symbol": "_Z12EE_TURBO_DISb",
+      "address": "0x380c60",
+      "bytes": 123,
+      "disable_bit": 19
+    },
+    {
+      "symbol": "_Z7RTH_DISb",
+      "address": "0x380ce0",
+      "bytes": 123,
+      "disable_bit": 20
+    },
+    {
+      "symbol": "_Z18Rd_POWER_CTL_Tunerv",
+      "address": "0x384370",
+      "bytes": 82,
+      "reads": "full 64-bit MSR 1FC"
+    }
+  ],
+  "primary_sources": [
+    {
+      "url": "https://cdrdv2-public.intel.com/835765/335592-sdm-vol-4.pdf",
+      "document": "335592-085US, October 2024",
+      "sha256": "de47347b8d3827abf4ac1e8c9e72379e6c74f47403ad8976cdb27f38d2e172b9",
+      "pages": [
+        "2-354",
+        "2-356",
+        "2-357"
+      ],
+      "table": "2-39",
+      "visually_reviewed": true,
+      "scope": "B7 model coverage, MSR 1FC bits 19 and 20 are R/W disable controls; HWP/legacy effect differs. No field-specific lock specified."
+    },
+    {
+      "repository": "intel/FSP",
+      "commit": "d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8",
+      "path": "RaptorLakeFspBinPkg/Client/RaptorLakeS/Include/FspsUpd.h",
+      "git_blob_sha1": "71d1543d97b3ebe60927a3d3b54e8c048300718f",
+      "sha256": "1baea9d767b24b332bac759b0330e9649ae61279d0f88e4feb8f92800aa40826",
+      "url": "https://github.com/intel/FSP/blob/d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8/RaptorLakeFspBinPkg/Client/RaptorLakeS/Include/FspsUpd.h",
+      "lines": [
+        3467,
+        3478,
+        3772,
+        3778
+      ],
+      "scope": "Separate EnergyEfficientTurbo and EnergyEfficientPState properties; RaceToHalt explicitly MSR 1FC bit 20. Structure offsets are not MSR addresses."
+    }
+  ],
+  "profile": "Intel Family 6 / Model B7; bare metal, MSR support. Explicit CPU, no all-core/package broadcast.",
+  "original_experiment": {
+    "scenarios": 434,
+    "synthetic_msr": true,
+    "hardware_access": false,
+    "report": "legacy-intel-energy-emulation.json",
+    "finding": "Original ignores read/write wrapper status; failed read with untouched output can overwrite other fields."
+  },
+  "exclusions": [
+    "No adjacent PROCHOT, thermal, C-state, platform override or Ring EE bit changes",
+    "No reuse of FLEX_RATIO OC lock or PROCHOT lock for unrelated energy fields",
+    "Etvb FSP definition is not a runtime bit definition; enhanced TVB remains pending",
+    "Readback does not measure energy savings or frequency; no physical hardware acceptance"
+  ]
+}

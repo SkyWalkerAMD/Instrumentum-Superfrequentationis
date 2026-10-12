@@ -11,6 +11,8 @@
 #include "intel_turbo_fixture.h"
 #include "inteluncorepanel.h"
 #include "intel_uncore_fixture.h"
+#include "intelenergypanel.h"
+#include "intel_energy_fixture.h"
 #include "intelmemorypanel.h"
 #include "intel_memory_fixture.h"
 #include "intelclockpanel.h"
@@ -932,6 +934,135 @@ private slots:
                 panel->findChild<QLineEdit *>("tvbCpu")->setText("131"); gate->release = true;
                 QTRY_VERIFY(panel->isEnabled()); QCOMPARE(panel->findChild<QTableWidget *>("tvbTable")->rowCount(),0);
                 QVERIFY(panel->findChild<QLabel *>("tvbStatus")->text().contains("discarded")); delete panel;
+            }
+        }
+    }
+    void intelEnergyReadCopyAndTargetChange() {
+        auto *device = new IntelEnergyFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelEnergyPanel panel(access, nullptr, 130); panel.resize(1100, 640); panel.show();
+        auto *read = panel.findChild<QPushButton *>("energyRead"); auto *table = panel.findChild<QTableWidget *>("energyTable");
+        auto *field = panel.findChild<QComboBox *>("energyField"); auto *value = panel.findChild<QComboBox *>("energyValue");
+        QVERIFY(!panel.findChild<QPushButton *>("energyApply")->isEnabled()); QCOMPARE(value->currentIndex(), -1);
+        QCOMPARE(device->cpuCalls, 0u); QCOMPARE(device->reads, 0u);
+        for (unsigned bits = 0; bits < 4; ++bits) {
+            device->regs[0x1fc] = UINT64_C(0xa5c3211098600243) | std::uint64_t(bits) << 19;
+            read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(), 2);
+            for (int index = 0; index < 2; ++index) {
+                const bool enabled = !(bits & (1u << index));
+                QCOMPARE(table->item(index,1)->text(), enabled ? QString("Enabled") : QString("Disabled"));
+                field->setCurrentIndex(index); QCOMPARE(value->currentIndex(), enabled ? 1 : 0);
+            }
+        }
+        panel.findChild<QPushButton *>("energyCopy")->click();
+        const auto copy = QApplication::clipboard()->text();
+        QVERIFY(copy.contains("CPU 130") && copy.contains("Energy Efficient Turbo") && copy.contains("Race to Halt"));
+        QVERIFY(copy.contains(hexValue(device->regs[0x1fc], 8)));
+        auto *raw = panel.findChild<QLabel *>("energyRaw"); auto *status = panel.findChild<QLabel *>("energyStatus");
+        QTRY_VERIFY(raw->height() >= raw->heightForWidth(raw->width()));
+        QTRY_VERIFY(status->height() >= status->heightForWidth(status->width()));
+        const auto shot = qEnvironmentVariable("OCTOOL_INTEL_ENERGY_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        const auto calls = device->cpuCalls;
+        panel.findChild<QLineEdit *>("energyCpu")->setText("-1"); read->click();
+        QCOMPARE(device->cpuCalls, calls); QCOMPARE(table->rowCount(), 0); QVERIFY(raw->text().isEmpty());
+        QVERIFY(!value->isEnabled()); QCOMPARE(value->currentIndex(), -1); QCOMPARE(device->writes, 0u); QCOMPARE(device->wrongCpu, 0u);
+    }
+    void intelEnergyCancelApplyAndNoop() {
+        auto *device = new IntelEnergyFixture;
+        IntelEnergyPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+        panel.findChild<QPushButton *>("energyRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *field = panel.findChild<QComboBox *>("energyField"); auto *value = panel.findChild<QComboBox *>("energyValue");
+        auto *apply = panel.findChild<QPushButton *>("energyApply"); value->setCurrentIndex(0);
+        const auto calls = device->cpuCalls;
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Cancel)->click(); });
+        apply->click(); QCOMPARE(device->cpuCalls, calls); QCOMPARE(device->writes, 0u);
+        unsigned writes = 0;
+        for (int index = 0; index < 2; ++index) for (int enabled : {0, 1}) {
+            field->setCurrentIndex(index); value->setCurrentIndex(enabled);
+            const auto before = device->regs[0x1fc]; const auto mask = UINT64_C(1) << (19+index);
+            bool described = false;
+            QTimer::singleShot(0, [&] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) {
+                described = box->text().contains(field->currentText()) && box->text().contains("CPU 130"); box->button(QMessageBox::Yes)->click();
+            } });
+            apply->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(described);
+            QCOMPARE(device->writes, ++writes); QCOMPARE(device->regs[0x1fc], enabled ? before & ~mask : before | mask);
+            QVERIFY(panel.findChild<QLabel *>("energyStatus")->text().contains("readback verified"));
+            QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+            apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->writes, writes);
+            QVERIFY(panel.findChild<QLabel *>("energyStatus")->text().contains("no settings write performed"));
+        }
+        QCOMPARE(device->wrongCpu, 0u);
+    }
+    void intelEnergyConfirmationTargetChange() {
+        auto *device = new IntelEnergyFixture;
+        IntelEnergyPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+        panel.findChild<QPushButton *>("energyRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        panel.findChild<QComboBox *>("energyValue")->setCurrentIndex(0);
+        const auto calls = device->cpuCalls;
+        QTimer::singleShot(0, [&] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) {
+            panel.findChild<QLineEdit *>("energyCpu")->setText("131"); box->button(QMessageBox::Yes)->click();
+        } });
+        panel.findChild<QPushButton *>("energyApply")->click(); QCOMPARE(device->cpuCalls, calls); QCOMPARE(device->writes, 0u);
+        QVERIFY(!panel.findChild<QPushButton *>("energyApply")->isEnabled()); QCOMPARE(panel.findChild<QTableWidget *>("energyTable")->rowCount(), 0);
+    }
+    void intelEnergyFailedReadClearsSnapshot() {
+        auto *device = new IntelEnergyFixture;
+        IntelEnergyPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("energyRead"); read->click(); QTRY_VERIFY(panel.isEnabled());
+        device->failRead = int(device->reads); read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(panel.findChild<QTableWidget *>("energyTable")->rowCount(), 0);
+        QVERIFY(!panel.findChild<QPushButton *>("energyApply")->isEnabled());
+        QVERIFY(panel.findChild<QLabel *>("energyRaw")->text().isEmpty());
+        QCOMPARE(panel.findChild<QComboBox *>("energyValue")->currentIndex(), -1);
+        device->hypervisor = true; const auto reads = device->reads; read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->reads, reads); QCOMPARE(device->writes, 0u);
+    }
+    void intelEnergyStaleAndFailedWrites() {
+        for (int field = 0; field < 2; ++field) for (unsigned mode = 0; mode < 4; ++mode) {
+            auto *device = new IntelEnergyFixture;
+            IntelEnergyPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+            panel.findChild<QPushButton *>("energyRead")->click(); QTRY_VERIFY(panel.isEnabled());
+            panel.findChild<QComboBox *>("energyField")->setCurrentIndex(field); panel.findChild<QComboBox *>("energyValue")->setCurrentIndex(0);
+            if (mode == 0) device->regs[0x1fc] ^= UINT64_C(1) << 63;
+            if (mode == 1) device->discardChange = true;
+            if (mode == 2) device->failWrite = 0;
+            if (mode == 3) device->afterRequest = [device](const octool::core::Request &r) { if (r.write) device->regs[0x1fc] ^= 1; };
+            QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+            panel.findChild<QPushButton *>("energyApply")->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(device->writes, mode == 0 ? 0u : 1u); QCOMPARE(panel.findChild<QTableWidget *>("energyTable")->rowCount(), 0);
+            QVERIFY(!panel.findChild<QPushButton *>("energyApply")->isEnabled()); QVERIFY(panel.findChild<QLabel *>("energyRaw")->text().isEmpty());
+            QCOMPARE(panel.findChild<QComboBox *>("energyValue")->currentIndex(), -1);
+            QVERIFY(panel.findChild<QLabel *>("energyStatus")->text().contains(mode == 0 ? "No settings write" : "not verified"));
+        }
+    }
+    void intelEnergyLifetimeAndStaleResults() {
+        struct Gate { std::atomic<bool> entered{false}, release{false}, destroyed{false}; };
+        struct Device : IntelEnergyFixture {
+            std::shared_ptr<Gate> gate;
+            explicit Device(std::shared_ptr<Gate> g) : gate(g) {}
+            ~Device() override { gate->destroyed = true; }
+        };
+        for (bool writing : {false,true}) for (bool close : {false,true}) {
+            auto gate = std::make_shared<Gate>(); auto *device = new Device(gate);
+            auto *panel = new IntelEnergyPanel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+            if (writing) { panel->findChild<QPushButton *>("energyRead")->click(); QTRY_VERIFY(panel->isEnabled()); }
+            device->afterRequest = [gate,writing](const octool::core::Request &r) {
+                if ((writing && !r.write) || gate->entered.exchange(true)) return;
+                const auto deadline = std::chrono::steady_clock::now()+std::chrono::seconds(3);
+                while (!gate->release && std::chrono::steady_clock::now()<deadline) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            };
+            if (writing) {
+                panel->findChild<QComboBox *>("energyValue")->setCurrentIndex(0);
+                QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+                panel->findChild<QPushButton *>("energyApply")->click();
+            } else panel->findChild<QPushButton *>("energyRead")->click();
+            QTRY_VERIFY(gate->entered.load());
+            if (close) { delete panel; QVERIFY(!gate->destroyed.load()); gate->release = true; QTRY_VERIFY(gate->destroyed.load()); }
+            else {
+                panel->findChild<QLineEdit *>("energyCpu")->setText("131"); gate->release = true;
+                QTRY_VERIFY(panel->isEnabled()); QCOMPARE(panel->findChild<QTableWidget *>("energyTable")->rowCount(),0);
+                QVERIFY(panel->findChild<QLabel *>("energyStatus")->text().contains("discarded"));
+                QCOMPARE(device->writes, writing ? 1u : 0u); QCOMPARE(device->wrongCpu,0u); delete panel;
             }
         }
     }

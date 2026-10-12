@@ -1,5 +1,7 @@
 # GUI / CLI 同步进度
 
+2026-10-13 新增 [Energy Efficient Turbo / Race to Halt](intel-energy.md)：GUI 节能控制页、CLI intel-energy-read/set 同步接入。限定 B7；本批云端验证进行中。
+
 2026-10-12 新增 [Ring DownBin](intel-ring-downbin.md)：GUI 配置页增加第三个开关，CLI 同步增加 ring-down-bin 字段。限定 B7；生产提交 `c6e9599` 的 39 项云端任务全部通过，见 [验证交付](intel-ring-validation.md)。
 
 2026-10-12 新增 [TVB 单字段编辑](intel-tvb-table-edit.md)：两端支持温度 A/B、降倍率 A/B，含准备、旧值核对及完整读回；生产提交 `494b8f0` 的 39 项云端任务全部通过，见 [验证交付](intel-tvb-edit-validation.md)。
