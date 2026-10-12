@@ -65,3 +65,8 @@ Intel 官方 [Raptor Lake-S FSP 头文件](https://github.com/intel/FSP/blob/d90
 
 既有 [TVB 两项配置开关](intel-tvb.md)继续独立提供；本轮没有修改它们的设置语义。
 真实 B7 硬件和其它目标机器的调节效果、稳定性及 Secure Boot 验收仍未完成。
+
+后续交叉核对还找到 Intel 官方 [Fsp.bsf 数值编辑范围](https://github.com/intel/FSP/blob/d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8/RaptorLakeFspBinPkg/Client/RaptorLakeS/Fsp.bsf#L3005)：
+两组温度均为 0..100°C，两组降倍率均为 0..10。这可用于后续写入 profile 的保守输入范围，
+但属于启动阶段 FSP 编辑器约束，不等于全部运行时 mailbox 合法值或 SKU 可用性契约。
+本轮读接口不按该范围过滤原始结果；该补充研究未改变已验证生产源码或安装包。

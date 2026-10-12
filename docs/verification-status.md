@@ -1,11 +1,16 @@
 # 验证状态与输入证据
 
-<!-- intel-tvb-table-pending -->
-2026-10-12：本轮 GUI / CLI 同步恢复 **Intel B7 TVB 温度与降倍率分档查询**。
-[实现与边界](intel-tvb-table.md)：单项或八项候选扫描，分别显示两组温度、降倍率、原始值和固件错误。
-原版四函数 88 场景隔离仿真已通过；云端编译、跨系统回归及安装包验证尚待本轮结果。
-分档写入、逐物理核心表、其它原版功能与真机验收仍未全部完成。以下保留历史记录。
-<!-- /intel-tvb-table-pending -->
+<!-- intel-tvb-table-aca1652 -->
+2026-10-12：最新验证生产提交 `aca1652`，GUI / CLI 同步恢复 **TVB 温度与降倍率分档查询**。
+限定 Intel 06_B7 裸机；支持单项或八项候选扫描，显示两组温度、降倍率及逐项错误。
+
+- [实现范围](intel-tvb-table.md)、[验证交付](intel-tvb-table-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38225310065) 4/4，各 244 场景组；含 8 组新表查询。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38225315230) 12/12，十目标各 19 CTest、520 份 JSON。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38225308264) 23/23，十目标各 102 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-intel-tvb-table-aca1652/`：30 个安装包、源码及 SHA256。
+
+分档写入、逐物理核心表、其它原版功能及目标真机验收仍未全部完成。以下保留历史记录。
 
 <!-- intel-tvb-743c40f -->
 2026-10-12：最新验证生产提交 `743c40f`，GUI / CLI 同步恢复 **TVB 高温倍频裁剪与电压优化开关**。

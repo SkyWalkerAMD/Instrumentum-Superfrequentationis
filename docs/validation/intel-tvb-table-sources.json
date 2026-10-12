@@ -22,6 +22,17 @@
       "url": "https://github.com/tianocore/edk2-platforms/blob/7f53d84a042e1f30bbaee462cf636326a4f76054/Silicon/Intel/CoffeelakeSiliconPkg/Cpu/Include/Library/CpuMailboxLib.h",
       "git_blob_sha1": "79dff36783c93bdcbc39f0db2f05235bdc23c8e1",
       "scope": "General OC mailbox completion, timeout and firmware status semantics; older platform, not proof of TVB bits or support on B7"
+    },
+    {
+      "repository": "intel/FSP",
+      "commit": "d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8",
+      "path": "RaptorLakeFspBinPkg/Client/RaptorLakeS/Fsp.bsf",
+      "url": "https://github.com/intel/FSP/blob/d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8/RaptorLakeFspBinPkg/Client/RaptorLakeS/Fsp.bsf#L3005",
+      "git_blob_sha1": "5bc22d7f23ace3a9c5579b47ad252c6b93ea9338",
+      "line_start": 3005,
+      "line_end": 3016,
+      "cached_lf_sha256": "abbb29f51a0bd5513d068f8fbb6e8b70996a11a85c2654b5ce3f6d40a656683a",
+      "scope": "FSP configuration-editor limits: both temperatures 0..100 C, both down-bin deltas 0..10; not a runtime mailbox specification"
     }
   ],
   "original_functions": [
@@ -1356,5 +1367,6 @@
     "Sequential sampling is not an atomic snapshot",
     "No table writes or per-core addressing exposed",
     "No hardware acceptance"
-  ]
+  ],
+  "followup_after_production": "FSP editor ranges found during cloud validation; no runtime-source changes"
 }

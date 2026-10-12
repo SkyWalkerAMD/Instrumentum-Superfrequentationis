@@ -1,11 +1,16 @@
 # 功能还原状态
 
-<!-- intel-tvb-table-pending -->
-2026-10-12：本轮 GUI / CLI 同步恢复 **Intel B7 TVB 温度与降倍率分档查询**。
-[实现与边界](intel-tvb-table.md)：单项或八项候选扫描，分别显示两组温度、降倍率、原始值和固件错误。
-原版四函数 88 场景隔离仿真已通过；云端编译、跨系统回归及安装包验证尚待本轮结果。
-分档写入、逐物理核心表、其它原版功能与真机验收仍未全部完成。以下保留历史记录。
-<!-- /intel-tvb-table-pending -->
+<!-- intel-tvb-table-aca1652 -->
+2026-10-12：最新验证生产提交 `aca1652`，GUI / CLI 同步恢复 **TVB 温度与降倍率分档查询**。
+限定 Intel 06_B7 裸机；支持单项或八项候选扫描，显示两组温度、降倍率及逐项错误。
+
+- [实现范围](intel-tvb-table.md)、[验证交付](intel-tvb-table-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38225310065) 4/4，各 244 场景组；含 8 组新表查询。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38225315230) 12/12，十目标各 19 CTest、520 份 JSON。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38225308264) 23/23，十目标各 102 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-intel-tvb-table-aca1652/`：30 个安装包、源码及 SHA256。
+
+分档写入、逐物理核心表、其它原版功能及目标真机验收仍未全部完成。以下保留历史记录。
 
 <!-- intel-tvb-743c40f -->
 2026-10-12：最新验证生产提交 `743c40f`，GUI / CLI 同步恢复 **TVB 高温倍频裁剪与电压优化开关**。
@@ -310,14 +315,14 @@ PStates 写入、曲线写入、Intel server VF/fabric、板级专用控制等�
 
 `06b477c` 是此前 [Shimada 原始曲线查询](amd-curve-query-recovery.md)的历史版本，
 [当时验证](validation/amd-curve-recovery-ci-06b477c.json)为核心 4/4、Linux 23/23。
-最新生产版本以本页顶部为准，下表已更新到 `97c1b22`。
+最新生产版本以本页顶部为准，下表按最新功能范围汇总。
 原版全部功能仍未完成。安装兼容、自动化回归、原指令研究和真实硬件验收分别记录，
 没有能代表四大模块全部功能的可靠百分比；212 个 UMC 字段也不是整个软件的功能分母。
 
 | 用户要求的模块 | 已接入可编译程序 | 尚未还原的部分 |
 |---|---|---|
 | AMD PStates | 按逻辑 CPU 采样 P0–P7、上限/能力检查、频率、64 位原值、完整 9 位 VID / Idd 编码 | 型号专用 mV/A 换算；满足跨核/跨 coherent fabric 一致性的设置 |
-| Intel Controls | RAPL、HWP 含活动窗口，13 项设置完整读回；温度；Raptor Lake-S core/cache offset、最大 OC ratio、目标电压与 Adaptive/Override；VF 点查询及受条件限制的单点 offset；P/E 睿频分组读取、单组倍率及中间组活动核心阈值设置；B7/8F Ring/LLC 最小、最大倍率范围；B7/A700 报告 BCLK 与历史 MRC 请求；B7 TVB 高温倍频裁剪与电压优化开关 | W790/W890 电压域；其它型号 VF、逐物理核心 override、末组阈值/组数量重建、TVB 温度分档与其它型号控制、VID rank/SP、fabric/BCLK 写入和其它型号时钟信息 |
+| Intel Controls | RAPL、HWP 含活动窗口，13 项设置完整读回；温度；Raptor Lake-S core/cache offset、最大 OC ratio、目标电压与 Adaptive/Override；VF 点查询及受条件限制的单点 offset；P/E 睿频分组读取、单组倍率及中间组活动核心阈值设置；B7/8F Ring/LLC 最小、最大倍率范围；B7/A700 报告 BCLK 与历史 MRC 请求；B7 TVB 高温倍频裁剪与电压优化开关、活动 P 核候选表的两组温度 / 降倍率查询 | W790/W890 电压域；其它型号 VF、逐物理核心 override、末组阈值/组数量重建、TVB 分档写入 / 逐物理核心表与其它型号控制、VID rank/SP、fabric/BCLK 写入和其它型号时钟信息 |
 | AMD 调参 | 三套独立 BIOS SMUIO；Shimada 已提取命令和逐核频率参数准备；CPUID 稀疏拓扑；限定身份的原始曲线查询；PM 表八个版本的 24 项公共字段、已有驱动读取及 GUI/CLI 快照互通 | CPUID 与固件目标 ID 对应；MP1/PBO 高层单位、曲线设置/电流/温度限制、完整 PM 表与原生传输、profiles/hotkeys |
 | 内存与主板 | DMI/BIOS、内核传感器、绑定驱动的 SPD、DDR4/5 基础 CRC/组织/时序/CAS 支持列表，含 DDR4 写延迟、DDR5 次级时序及 1.2 新增字段；DDR4 XMP 2.0 两组电压/时序、独立时间基准、限定 CAS/推荐 DIMM 数及无扩展 CRC 状态；对称堆叠容量、DDR4 已确认布局及 DDR5 混合 rank 分项、DDR5 子通道/3DS 刷新要求；DDR5 XMP 3.0 厂家档案名称、电压、基础与 8 项次级时序/独立周期下限、CAS/命令率及逐区 CRC；EXPO 1.0 两组基础档案、增强时序存储字及整块 CRC；XMP 3.0 两个用户槽独立检查/校验与解码；AMD UMC 212 字段、GUI/CLI 快照双向离线导入及同 bank/slot 比较；限定 B7/A700 的 Intel 内存控制器 57 字段（含有效 rank RTL、掉电、刷新、自刷新和 ZQ 参数）、双次一致读与 GUI/CLI v1/v2/v3 快照 | EXPO 增强启用语义 / 1.1 / 用户档案；XMP 用户槽启用与写入；XMP 3.0 推荐 DIMM 数；其余 DDR4 非对称 Rank 布局；UMC 各型号物理单位/通道标签；其它 Intel 型号 RTL、剩余时序/IOL、实时内存频率及特殊 Gear 换算；PMIC/VRM/EC/时钟芯片和训练写入 |
 
