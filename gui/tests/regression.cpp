@@ -17,6 +17,8 @@
 #include "intel_clock_fixture.h"
 #include "inteltvbpanel.h"
 #include "intel_tvb_fixture.h"
+#include "inteltvbtablepanel.h"
+#include "intel_tvb_table_fixture.h"
 #include "spd_fixture.h"
 #include "amd_curve_fixture.h"
 #include "amdpmpanel.h"
@@ -571,6 +573,79 @@ private slots:
         intel.findChild<QLineEdit *>("intelValue")->setText("125");
         intel.findChild<QPushButton *>("intelApply")->click();
         QCOMPARE(reference.calls.load(),0);
+    }
+    void intelTvbTableReadAndCopy() {
+        auto *device = new IntelTvbTableFixture;
+        IntelTvbTablePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device)),nullptr,130);
+        panel.resize(1180,600); panel.show(); QCOMPARE(device->calls,0u);
+        panel.findChild<QPushButton *>("tvbTableRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *table = panel.findChild<QTableWidget *>("tvbThresholdTable"); QCOMPARE(table->rowCount(),8);
+        QCOMPARE(table->item(0,1)->text(),QString("70")); QCOMPARE(table->item(0,2)->text(),QString("1"));
+        QCOMPARE(table->item(0,3)->text(),QString("100")); QCOMPARE(table->item(0,4)->text(),QString("2"));
+        QCOMPARE(table->item(0,5)->text(),QString("0x02644601"));
+        auto *status = panel.findChild<QLabel *>("tvbTableStatus"); QVERIFY(status->text().contains("8 of 8"));
+        panel.findChild<QPushButton *>("tvbTableCopy")->click();
+        QVERIFY(QApplication::clipboard()->text().contains("CPU 130"));
+        QVERIFY(QApplication::clipboard()->text().contains("1\t70\t1\t100\t2\t0x02644601\tRead"));
+        QTRY_VERIFY(status->height() >= status->fontMetrics().height());
+        QTRY_VERIFY(table->columnWidth(5) >= table->fontMetrics().horizontalAdvance("0x02644601"));
+        const auto shot = qEnvironmentVariable("OCTOOL_INTEL_TVB_TABLE_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        QCOMPARE(device->mutations,0u); QCOMPARE(device->wrongCpu,0u);
+    }
+    void intelTvbTableSelectionAndPartialFailure() {
+        auto *device = new IntelTvbTableFixture;
+        IntelTvbTablePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device)),nullptr,130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("tvbTableRead"); auto *table = panel.findChild<QTableWidget *>("tvbThresholdTable");
+        auto *entry = panel.findChild<QComboBox *>("tvbTableEntry");
+        entry->setCurrentIndex(8); read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(),1); QCOMPARE(table->item(0,0)->text(),QString("8"));
+        entry->setCurrentIndex(0); QCOMPARE(table->rowCount(),0);
+        device->statuses[1] = 128; read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),8);
+        QCOMPARE(table->item(1,1)->text(),QString("—")); QCOMPARE(table->item(1,5)->text(),QString("—"));
+        QCOMPARE(table->item(1,6)->text(),QString("Firmware status 128")); QCOMPARE(table->item(7,6)->text(),QString("Read"));
+        QVERIFY(panel.findChild<QLabel *>("tvbTableStatus")->text().contains("7 of 8"));
+        device->clearTrace(); device->busyEntry = 4; read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(),4); QCOMPARE(table->item(3,5)->text(),QString("—"));
+        QVERIFY(panel.findChild<QLabel *>("tvbTableStatus")->text().contains("Scan stopped"));
+        QCOMPARE(device->mutations,0u);
+    }
+    void intelTvbTableInvalidTargetsAndGates() {
+        auto *device = new IntelTvbTableFixture;
+        IntelTvbTablePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device)),nullptr,130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("tvbTableRead"); auto *cpu = panel.findChild<QLineEdit *>("tvbTableCpu");
+        auto *table = panel.findChild<QTableWidget *>("tvbThresholdTable");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),8);
+        cpu->setText("-1"); QCOMPARE(table->rowCount(),0); const auto calls = device->calls;
+        read->click(); QCOMPARE(device->calls,calls);
+        cpu->setText("130"); device->hypervisor = true; device->clearTrace();
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),0); QVERIFY(device->requests.empty());
+        panel.findChild<QPushButton *>("tvbTableCopy")->click(); QVERIFY(!QApplication::clipboard()->text().contains("0x02644601"));
+    }
+    void intelTvbTableLifetimeAndStaleResults() {
+        struct Gate { std::atomic<bool> entered{false}, release{false}, destroyed{false}; };
+        struct Device : IntelTvbTableFixture {
+            std::shared_ptr<Gate> gate;
+            explicit Device(std::shared_ptr<Gate> g) : gate(g) {}
+            ~Device() override { gate->destroyed = true; }
+        };
+        for (unsigned mode = 0; mode < 3; ++mode) {
+            auto gate = std::make_shared<Gate>(); auto *device = new Device(gate);
+            device->afterRequest = [gate] {
+                if (gate->entered.exchange(true)) return;
+                const auto deadline = std::chrono::steady_clock::now()+std::chrono::seconds(3);
+                while (!gate->release && std::chrono::steady_clock::now()<deadline) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            };
+            auto *panel = new IntelTvbTablePanel(std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device)),nullptr,130);
+            panel->findChild<QPushButton *>("tvbTableRead")->click(); QTRY_VERIFY(gate->entered.load());
+            if (mode == 0) { delete panel; QVERIFY(!gate->destroyed.load()); gate->release = true; QTRY_VERIFY(gate->destroyed.load()); }
+            else {
+                if (mode == 1) panel->findChild<QLineEdit *>("tvbTableCpu")->setText("131");
+                else panel->findChild<QComboBox *>("tvbTableEntry")->setCurrentIndex(1);
+                gate->release = true; QTRY_VERIFY(panel->isEnabled());
+                QCOMPARE(panel->findChild<QTableWidget *>("tvbThresholdTable")->rowCount(),0);
+                QVERIFY(panel->findChild<QLabel *>("tvbTableStatus")->text().contains("discarded")); delete panel;
+            }
+        }
     }
     void intelTvbReadCopyAndTargetChange() {
         auto *device = new IntelTvbFixture;

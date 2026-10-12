@@ -24,15 +24,15 @@ int waitReady(HardwareSession &s, unsigned cpu, std::uint64_t &value) {
     }
     return -ETIMEDOUT;
 }
-IntelOcResponse exchangeCommand(HardwareSession &s, unsigned cpu, IntelOcDomain domain,
-                                unsigned command, std::uint32_t data, unsigned point = 0) {
+IntelOcResponse mailboxCommand(HardwareSession &s, unsigned cpu, unsigned command,
+                               std::uint32_t data, unsigned parameter1, unsigned parameter2) {
     IntelOcResponse out;
     std::uint64_t value = 0;
     if ((out.error = waitReady(s, cpu, value))) return out;
     Request request = msrRequest(cpu, 0x150);
     request.write = true;
-    request.value = busy | (std::uint64_t(unsigned(domain)) << 40) |
-                    (std::uint64_t(point) << 48) |
+    request.value = busy | (std::uint64_t(parameter1) << 40) |
+                    (std::uint64_t(parameter2) << 48) |
                     (std::uint64_t(command) << 32) | data;
     if ((out.error = s.checkpoint())) return out;
     out.commandAttempted = true;
@@ -46,6 +46,10 @@ IntelOcResponse exchangeCommand(HardwareSession &s, unsigned cpu, IntelOcDomain 
     if (out.firmwareStatus) { out.error = -EIO; return out; }
     out.data = std::uint32_t(value);
     return out;
+}
+IntelOcResponse exchangeCommand(HardwareSession &s, unsigned cpu, IntelOcDomain domain,
+                                unsigned command, std::uint32_t data, unsigned point = 0) {
+    return mailboxCommand(s, cpu, command, data, unsigned(domain), point);
 }
 IntelOcResponse exchange(HardwareSession &s, unsigned cpu, IntelOcDomain domain,
                          bool write, std::uint32_t data, unsigned point = 0) {
@@ -324,6 +328,42 @@ IntelTvbUpdate applyIntelTvb(HardwareSession &s, const IntelTvbSnapshot &old, In
     if (out.readback.response.data != out.expected) { out.error = -EIO; return out; }
     if ((out.error = s.checkpoint())) return out;
     out.verified = true; out.unchanged = !out.writeAttempted; out.stage = IntelOcStage::Complete;
+    return out;
+}
+IntelTvbThresholds decodeIntelTvbThresholds(std::uint32_t data) {
+    IntelTvbThresholds out;
+    out.temperatureA = (data >> 8) & 255; out.downBinsA = data & 255;
+    out.temperatureB = (data >> 16) & 255; out.downBinsB = data >> 24;
+    return out;
+}
+bool intelTvbTableRowValid(const IntelTvbTableRow &row) {
+    return row.activeCores >= 1 && row.activeCores <= 8 && row.response.commandAttempted && responseValid(row.response);
+}
+IntelTvbTableSnapshot readIntelTvbTable(HardwareSession &s, unsigned cpu, unsigned activeCores) {
+    IntelTvbTableSnapshot out; out.cpu = cpu; out.selectedActiveCores = activeCores;
+    if (activeCores > 8) { out.error = -EINVAL; return out; }
+    out.identity = identifyCpu(s, cpu);
+    if ((out.error = out.identity.error)) return out;
+    if (!hasIntelOcProfile(out.identity)) { out.error = -ENOTSUP; return out; }
+    const auto features = s.cpuid(cpu, 1);
+    if ((out.error = features.error)) return out;
+    if (!(features.words[3] & (1u << 5)) || (features.words[2] & (1u << 31))) {
+        out.error = -ENOTSUP; return out;
+    }
+    const unsigned first = activeCores ? activeCores : 1, last = activeCores ? activeCores : 8;
+    for (unsigned candidate = first; candidate <= last; ++candidate) {
+        IntelTvbTableRow row; row.activeCores = candidate;
+        row.response = mailboxCommand(s, cpu, 0x24, 0, candidate, 0);
+        out.rows.push_back(row);
+        if (row.response.error) {
+            if (!out.error) out.error = row.response.error;
+            // Firmware rejections are local to a candidate, not a reliable
+            // end-of-table marker. Transport/cancellation faults stop the scan.
+            if (!row.response.completed) { out.error = row.response.error; return out; }
+        }
+    }
+    if (const int error = s.checkpoint()) { out.error = error; return out; }
+    out.scanCompleted = true;
     return out;
 }
 } }

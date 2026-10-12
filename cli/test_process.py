@@ -35,7 +35,34 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 493, len(reports)
+assert len(reports) == 520, len(reports)
+tvb_tables = [r for r in reports if r['command'] == 'intel-tvb-table' and 'rows' in r['data']]
+assert len(tvb_tables) == 18 and [r['ok'] for r in tvb_tables] == [True]*10+[False]*8
+for i, report in enumerate(tvb_tables):
+    data = report['data']
+    assert not data['settings_write_attempted'] and not data['hardware_effect_measured'] and not data['atomic_snapshot']
+    assert data['selected_active_cores'] == (i if 1 <= i <= 8 else None)
+    assert data['scan_completed'] == (i <= 11)
+    if i <= 11:
+        assert [r['active_cores'] for r in data['rows']] == ([i] if 1 <= i <= 8 else list(range(1,9)))
+    if 12 <= i <= 15: assert not data['rows']
+    if i == 16: assert len(data['rows']) == 4
+    if i == 17: assert len(data['rows']) == 3
+    for row in data['rows']:
+        if row['valid']:
+            raw = int(row['raw'],16)
+            assert row['temperature_a_c'] == (raw >> 8) & 255
+            assert row['down_bins_a'] == raw & 255
+            assert row['temperature_b_c'] == (raw >> 16) & 255
+            assert row['down_bins_b'] == raw >> 24
+            assert row['query_attempted'] and row['query_completed'] and row['firmware_status'] == 0
+        else:
+            assert row['error'] and all(row[k] is None for k in ('raw','temperature_a_c','down_bins_a','temperature_b_c','down_bins_b'))
+    if i == 10:
+        assert not data['rows'][1]['valid'] and data['rows'][1]['firmware_status'] == 128
+        assert data['rows'][-1]['valid']
+    if i == 9:
+        assert data['rows'][0]['raw'] == '0x00000000' and data['rows'][7]['raw'] == '0xffffffff'
 tvb_reports = [r for r in reports if r["command"] in ("intel-tvb-read", "intel-tvb-set") and "before" in r["data"]]
 assert len(tvb_reports) == 20 and [r["ok"] for r in tvb_reports] == [True]*10+[False]*10
 for i, r in enumerate(tvb_reports):

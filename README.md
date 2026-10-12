@@ -1,5 +1,12 @@
 # Instrumentum Superfrequentationis
 
+<!-- intel-tvb-table-pending -->
+2026-10-12：本轮 GUI / CLI 同步恢复 **Intel B7 TVB 温度与降倍率分档查询**。
+[实现与边界](docs/intel-tvb-table.md)：单项或八项候选扫描，分别显示两组温度、降倍率、原始值和固件错误。
+原版四函数 88 场景隔离仿真已通过；云端编译、跨系统回归及安装包验证尚待本轮结果。
+分档写入、逐物理核心表、其它原版功能与真机验收仍未全部完成。以下保留历史记录。
+<!-- /intel-tvb-table-pending -->
+
 <!-- intel-tvb-743c40f -->
 2026-10-12：最新验证生产提交 `743c40f`，GUI / CLI 同步恢复 **TVB 高温倍频裁剪与电压优化开关**。
 限定 Intel 06_B7 裸机；检查锁、旧配置、错误码和完整回读，保留其它位。

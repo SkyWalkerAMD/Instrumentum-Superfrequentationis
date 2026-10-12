@@ -12,6 +12,7 @@
 #include "tests/intel_memory_fixture.h"
 #include "tests/intel_clock_fixture.h"
 #include "tests/intel_tvb_fixture.h"
+#include "tests/intel_tvb_table_fixture.h"
 #include "tests/spd_fixture.h"
 #include <cassert>
 #include <cerrno>
@@ -42,6 +43,15 @@ std::string command(HardwareBackend &device, const std::vector<std::string> &arg
 }
 void invalidBeforeOpen() {
     const std::vector<std::vector<std::string>> invalid = {
+        {"intel-tvb-table"},
+        {"intel-tvb-table", "--cpu", "0", "--apply"},
+        {"intel-tvb-table", "--cpu", "0", "--active-cores", "0"},
+        {"intel-tvb-table", "--cpu", "0", "--active-cores", "9"},
+        {"intel-tvb-table", "--cpu", "0", "--active-cores", "-1"},
+        {"intel-tvb-table", "--cpu", "0", "--active-cores", "1.5"},
+        {"intel-tvb-table", "--cpu", "0", "--active-cores", "4294967296"},
+        {"intel-tvb-table", "--cpu", "0", "--active-cores", "1", "--active-cores", "2"},
+        {"intel-tvb-table", "--cpu", "0", "--domain", "core"},
         {"intel-tvb-read"},
         {"intel-tvb-read", "--cpu", "0", "--apply"},
         {"intel-tvb-read", "--cpu", "0", "--field", "ratio-clipping"},
@@ -534,6 +544,32 @@ struct PciDevice : Registers {
         return out;
     }
 };
+void tvbTableCommands() {
+    for (unsigned scenario = 0; scenario < 18; ++scenario) {
+        IntelTvbTableFixture device;
+        std::vector<std::string> args{"intel-tvb-table", "--cpu", "130"};
+        if (scenario >= 1 && scenario <= 8) {
+            args.push_back("--active-cores"); args.push_back(std::to_string(scenario));
+        }
+        if (scenario == 9) { device.entries[0] = 0; device.entries[7] = UINT32_MAX; device.locked = true; }
+        if (scenario == 10) device.statuses[1] = 128;
+        if (scenario == 11) device.statuses.fill(5);
+        if (scenario == 12) device.model = 0x8f;
+        if (scenario == 13) device.hypervisor = true;
+        if (scenario == 14) device.msr = false;
+        if (scenario == 15) device.failAt = 0;
+        if (scenario == 16) device.busyEntry = 4;
+        if (scenario == 17) device.afterRequest = [&] {
+            if (device.selectors.size() == 3) device.failAt = int(device.calls);
+        };
+        const auto out = command(device,args,scenario <= 9 ? 0 : 3);
+        assert(out.find("\"settings_write_attempted\":false") != std::string::npos);
+        assert(device.mutations == 0 && !device.wrongCpu);
+        for (const auto &r : device.requests) if (r.write) assert(((r.value >> 32) & 255) == 0x24);
+        if (scenario == 10) assert(device.selectors.back() == 8);
+        if (scenario >= 12 && scenario <= 15) assert(device.requests.empty());
+    }
+}
 void pciCommands() {
     PciDevice d;
     command(d, {"amd-smu-probe", "--cpu", "130", "--profile", "shimada"}, 0); assert(!d.writes);
@@ -981,8 +1017,8 @@ int main(int argc, char **argv) {
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures();
-    intelClockCommands(); intelClockOffline(); tvbCommands();
+    intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "24 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "25 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

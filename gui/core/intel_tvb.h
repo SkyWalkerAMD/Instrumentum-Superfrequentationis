@@ -34,4 +34,27 @@ int encodeIntelTvb(IntelTvbField field, unsigned enabled,
 IntelTvbSnapshot readIntelTvb(HardwareSession &session, unsigned cpu);
 IntelTvbUpdate applyIntelTvb(HardwareSession &session, const IntelTvbSnapshot &snapshot,
                             IntelTvbField field, unsigned enabled);
+
+struct IntelTvbTableRow {
+    unsigned activeCores = 0;
+    IntelOcResponse response;
+};
+struct IntelTvbTableSnapshot {
+    int error = 0;
+    unsigned cpu = 0, selectedActiveCores = 0;
+    CpuIdentity identity;
+    bool scanCompleted = false;
+    std::vector<IntelTvbTableRow> rows;
+};
+struct IntelTvbThresholds {
+    unsigned temperatureA = 0, downBinsA = 0, temperatureB = 0, downBinsB = 0;
+};
+IntelTvbThresholds decodeIntelTvbThresholds(std::uint32_t data);
+bool intelTvbTableRowValid(const IntelTvbTableRow &row);
+// GET 0x24, parameter 1 = active-core selector, parameter 2 = zero.
+// activeCores = 0 scans the eight candidates; 1..8 queries just that entry.
+// Successful candidates do not enumerate physical cores or prove SKU support.
+// Per-core addressing and SET 0x25 are deliberately absent from this API.
+// Execute inside one HardwareService transaction; no settings are changed.
+IntelTvbTableSnapshot readIntelTvbTable(HardwareSession &session, unsigned cpu, unsigned activeCores = 0);
 } }

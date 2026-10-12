@@ -1,0 +1,1360 @@
+{
+  "schema": 1,
+  "date": "2026-10-12",
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "fixture_sha256": "e02a3564a45d672333be561a79ff1e5cffbf508b7ebeeddd6e537e8942f7a7b7",
+  "primary_sources": [
+    {
+      "repository": "intel/FSP",
+      "commit": "d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8",
+      "path": "RaptorLakeFspBinPkg/Client/RaptorLakeS/Include/FspmUpd.h",
+      "url": "https://github.com/intel/FSP/blob/d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8/RaptorLakeFspBinPkg/Client/RaptorLakeS/Include/FspmUpd.h",
+      "sha256": "3ce5c6b4bb17b4c8d816552835f9b58279a37b699a951dab8d8e7fbc603ef57c",
+      "scope": "Two temperature thresholds in Celsius and their down-bin deltas; FSP offsets are not mailbox offsets or runtime write bounds",
+      "git_blob_sha1": "ddae8625052fedf7363dc6b63906ded7f571f573",
+      "line_start": 1937,
+      "line_end": 1964
+    },
+    {
+      "repository": "tianocore/edk2-platforms",
+      "commit": "7f53d84a042e1f30bbaee462cf636326a4f76054",
+      "path": "Silicon/Intel/CoffeelakeSiliconPkg/Cpu/Include/Library/CpuMailboxLib.h",
+      "url": "https://github.com/tianocore/edk2-platforms/blob/7f53d84a042e1f30bbaee462cf636326a4f76054/Silicon/Intel/CoffeelakeSiliconPkg/Cpu/Include/Library/CpuMailboxLib.h",
+      "git_blob_sha1": "79dff36783c93bdcbc39f0db2f05235bdc23c8e1",
+      "scope": "General OC mailbox completion, timeout and firmware status semantics; older platform, not proof of TVB bits or support on B7"
+    }
+  ],
+  "original_functions": [
+    {
+      "symbol": "_Z13Wr_octvb_vec3St6vectorIiSaIiEEi",
+      "address": 3619040,
+      "size": 189,
+      "code_sha256": "3f38cf1018e43045e3b37c56c1cb760d65b29fda12b28ee200ef7a7438d48bbc"
+    },
+    {
+      "symbol": "_Z13Wr_octvb_vec2St6vectorIS_IiSaIiEESaIS1_EEi",
+      "address": 3723680,
+      "size": 563,
+      "code_sha256": "f63d37c86b816c0d10e27b8b60e63bf65ed468a9c1091127f371a861fa553b25"
+    },
+    {
+      "symbol": "_Z9Rd_octvb2i",
+      "address": 3748320,
+      "size": 839,
+      "code_sha256": "28bdebd3fea98bbc08586418bc21aa9f79965f8fa3c6f327fe2ecf716ba3ece4"
+    },
+    {
+      "symbol": "_Z9Rd_octvb3i",
+      "address": 3801472,
+      "size": 563,
+      "code_sha256": "c311c5bbad7fe6c3f8bf45d7f43649bee549520134a727ef7dd407235758bd74"
+    }
+  ],
+  "ui_bindings": [
+    {
+      "field": "temperature_a",
+      "vector_index": 2,
+      "data_bits": "15:8",
+      "label_offset": "0xe8",
+      "input_offset": "0xf0",
+      "x": 240
+    },
+    {
+      "field": "down_bins_a",
+      "vector_index": 3,
+      "data_bits": "7:0",
+      "label_offset": "0x198",
+      "input_offset": "0x148",
+      "x": 320
+    },
+    {
+      "field": "temperature_b",
+      "vector_index": 4,
+      "data_bits": "23:16",
+      "label_offset": "0x60",
+      "input_offset": "0xd8",
+      "x": 390
+    },
+    {
+      "field": "down_bins_b",
+      "vector_index": 1,
+      "data_bits": "31:24",
+      "label_offset": "0x208",
+      "input_offset": "0x1f0",
+      "x": 470
+    }
+  ],
+  "ui_evidence": [
+    {
+      "symbol": "_ZN9Ui_octvb313retranslateUiEP7QWidget",
+      "address": "0x932560",
+      "bytes": 3284,
+      "sha256": "c22efdacaac247303d3b0e417baa106ca4b2898bd26b383240bde71ed8d91702",
+      "excerpts": [
+        {
+          "start": "0x93278d",
+          "end_exclusive": "0x9327b6",
+          "instructions": [
+            {
+              "address": "0x93278d",
+              "assembly": "mov r14, qword ptr [rbx + 0x60]"
+            },
+            {
+              "address": "0x932791",
+              "assembly": "mov rsi, r12"
+            },
+            {
+              "address": "0x932794",
+              "assembly": "mov rdi, rbp"
+            },
+            {
+              "address": "0x932797",
+              "assembly": "mov r8d, 0xffffffff"
+            },
+            {
+              "address": "0x93279d",
+              "assembly": "xor ecx, ecx"
+            },
+            {
+              "address": "0x93279f",
+              "assembly": "lea rdx, [rip + 0xd0af3c]"
+            },
+            {
+              "address": "0x9327a6",
+              "assembly": "call 0x150f900"
+            },
+            {
+              "address": "0x9327ab",
+              "assembly": "mov rsi, rbp"
+            },
+            {
+              "address": "0x9327ae",
+              "assembly": "mov rdi, r14"
+            },
+            {
+              "address": "0x9327b1",
+              "assembly": "call 0xdd6610"
+            }
+          ]
+        },
+        {
+          "start": "0x932997",
+          "end_exclusive": "0x9329c3",
+          "instructions": [
+            {
+              "address": "0x932997",
+              "assembly": "mov r14, qword ptr [rbx + 0xe8]"
+            },
+            {
+              "address": "0x93299e",
+              "assembly": "mov rsi, r12"
+            },
+            {
+              "address": "0x9329a1",
+              "assembly": "mov rdi, rbp"
+            },
+            {
+              "address": "0x9329a4",
+              "assembly": "xor ecx, ecx"
+            },
+            {
+              "address": "0x9329a6",
+              "assembly": "mov r8d, 0xffffffff"
+            },
+            {
+              "address": "0x9329ac",
+              "assembly": "lea rdx, [rip + 0xd0ad22]"
+            },
+            {
+              "address": "0x9329b3",
+              "assembly": "call 0x150f900"
+            },
+            {
+              "address": "0x9329b8",
+              "assembly": "mov rsi, rbp"
+            },
+            {
+              "address": "0x9329bb",
+              "assembly": "mov rdi, r14"
+            },
+            {
+              "address": "0x9329be",
+              "assembly": "call 0xdd6610"
+            }
+          ]
+        },
+        {
+          "start": "0x932beb",
+          "end_exclusive": "0x932c22",
+          "instructions": [
+            {
+              "address": "0x932beb",
+              "assembly": "mov r13, qword ptr [rbx + 0x198]"
+            },
+            {
+              "address": "0x932bf2",
+              "assembly": "mov rsi, r12"
+            },
+            {
+              "address": "0x932bf5",
+              "assembly": "mov rdi, rbp"
+            },
+            {
+              "address": "0x932bf8",
+              "assembly": "xor ecx, ecx"
+            },
+            {
+              "address": "0x932bfa",
+              "assembly": "mov r8d, 0xffffffff"
+            },
+            {
+              "address": "0x932c00",
+              "assembly": "lea rdx, [rip + 0xd0a94a]"
+            },
+            {
+              "address": "0x932c07",
+              "assembly": "call 0x150f900"
+            },
+            {
+              "address": "0x932c0c",
+              "assembly": "mov rsi, rbp"
+            },
+            {
+              "address": "0x932c0f",
+              "assembly": "mov rdi, r13"
+            },
+            {
+              "address": "0x932c12",
+              "assembly": "call 0xdd6610"
+            },
+            {
+              "address": "0x932c17",
+              "assembly": "mov rdi, qword ptr [rsp]"
+            },
+            {
+              "address": "0x932c1b",
+              "assembly": "mov eax, dword ptr [rdi]"
+            },
+            {
+              "address": "0x932c1d",
+              "assembly": "test eax, eax"
+            },
+            {
+              "address": "0x932c1f",
+              "assembly": "je 0x932ef0"
+            }
+          ]
+        },
+        {
+          "start": "0x932d1f",
+          "end_exclusive": "0x932d56",
+          "instructions": [
+            {
+              "address": "0x932d1f",
+              "assembly": "mov r13, qword ptr [rbx + 0x208]"
+            },
+            {
+              "address": "0x932d26",
+              "assembly": "mov rsi, r12"
+            },
+            {
+              "address": "0x932d29",
+              "assembly": "mov rdi, rbp"
+            },
+            {
+              "address": "0x932d2c",
+              "assembly": "xor ecx, ecx"
+            },
+            {
+              "address": "0x932d2e",
+              "assembly": "mov r8d, 0xffffffff"
+            },
+            {
+              "address": "0x932d34",
+              "assembly": "lea rdx, [rip + 0xd0a7e5]"
+            },
+            {
+              "address": "0x932d3b",
+              "assembly": "call 0x150f900"
+            },
+            {
+              "address": "0x932d40",
+              "assembly": "mov rsi, rbp"
+            },
+            {
+              "address": "0x932d43",
+              "assembly": "mov rdi, r13"
+            },
+            {
+              "address": "0x932d46",
+              "assembly": "call 0xdd6610"
+            },
+            {
+              "address": "0x932d4b",
+              "assembly": "mov rdi, qword ptr [rsp]"
+            },
+            {
+              "address": "0x932d4f",
+              "assembly": "mov eax, dword ptr [rdi]"
+            },
+            {
+              "address": "0x932d51",
+              "assembly": "test eax, eax"
+            },
+            {
+              "address": "0x932d53",
+              "assembly": "je 0x932fe0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN9Ui_octvb37setupUiEP7QWidget",
+      "address": "0x933240",
+      "bytes": 14352,
+      "sha256": "e92c69f5d7c4d9fede5c0736356485e460a8c4c437ad46fdd4bd600ee41eae25",
+      "excerpts": [
+        {
+          "start": "0x934247",
+          "end_exclusive": "0x934280",
+          "instructions": [
+            {
+              "address": "0x934247",
+              "assembly": "mov rdi, qword ptr [r12 + 0xf0]"
+            },
+            {
+              "address": "0x93424f",
+              "assembly": "mov rsi, rbp"
+            },
+            {
+              "address": "0x934252",
+              "assembly": "movabs rax, 0x19a000000f0"
+            },
+            {
+              "address": "0x93425c",
+              "assembly": "mov qword ptr [rsp + 0x10], rax"
+            },
+            {
+              "address": "0x934261",
+              "assembly": "movabs rax, 0x1ae00000122"
+            },
+            {
+              "address": "0x93426b",
+              "assembly": "mov qword ptr [rsp + 0x18], rax"
+            },
+            {
+              "address": "0x934270",
+              "assembly": "call 0xd396b0"
+            },
+            {
+              "address": "0x934275",
+              "assembly": "mov rdi, qword ptr [r12 + 0xf0]"
+            },
+            {
+              "address": "0x93427d",
+              "assembly": "mov rsi, r14"
+            }
+          ]
+        },
+        {
+          "start": "0x934808",
+          "end_exclusive": "0x934841",
+          "instructions": [
+            {
+              "address": "0x934808",
+              "assembly": "mov rdi, qword ptr [r12 + 0x148]"
+            },
+            {
+              "address": "0x934810",
+              "assembly": "mov rsi, rbp"
+            },
+            {
+              "address": "0x934813",
+              "assembly": "movabs rax, 0x19a00000140"
+            },
+            {
+              "address": "0x93481d",
+              "assembly": "mov qword ptr [rsp + 0x10], rax"
+            },
+            {
+              "address": "0x934822",
+              "assembly": "movabs rax, 0x1ae00000168"
+            },
+            {
+              "address": "0x93482c",
+              "assembly": "mov qword ptr [rsp + 0x18], rax"
+            },
+            {
+              "address": "0x934831",
+              "assembly": "call 0xd396b0"
+            },
+            {
+              "address": "0x934836",
+              "assembly": "mov rdi, qword ptr [r12 + 0x148]"
+            },
+            {
+              "address": "0x93483e",
+              "assembly": "mov rsi, r14"
+            }
+          ]
+        },
+        {
+          "start": "0x9340b6",
+          "end_exclusive": "0x9340ef",
+          "instructions": [
+            {
+              "address": "0x9340b6",
+              "assembly": "mov rdi, qword ptr [r12 + 0xd8]"
+            },
+            {
+              "address": "0x9340be",
+              "assembly": "mov rsi, rbp"
+            },
+            {
+              "address": "0x9340c1",
+              "assembly": "movabs rax, 0x19a00000186"
+            },
+            {
+              "address": "0x9340cb",
+              "assembly": "mov qword ptr [rsp + 0x10], rax"
+            },
+            {
+              "address": "0x9340d0",
+              "assembly": "movabs rax, 0x1ae000001b8"
+            },
+            {
+              "address": "0x9340da",
+              "assembly": "mov qword ptr [rsp + 0x18], rax"
+            },
+            {
+              "address": "0x9340df",
+              "assembly": "call 0xd396b0"
+            },
+            {
+              "address": "0x9340e4",
+              "assembly": "mov rdi, qword ptr [r12 + 0xd8]"
+            },
+            {
+              "address": "0x9340ec",
+              "assembly": "mov rsi, r14"
+            }
+          ]
+        },
+        {
+          "start": "0x9352fd",
+          "end_exclusive": "0x935336",
+          "instructions": [
+            {
+              "address": "0x9352fd",
+              "assembly": "mov rdi, qword ptr [r12 + 0x1f0]"
+            },
+            {
+              "address": "0x935305",
+              "assembly": "mov rsi, rbp"
+            },
+            {
+              "address": "0x935308",
+              "assembly": "movabs rax, 0x19a000001d6"
+            },
+            {
+              "address": "0x935312",
+              "assembly": "mov qword ptr [rsp + 0x10], rax"
+            },
+            {
+              "address": "0x935317",
+              "assembly": "movabs rax, 0x1ae000001fe"
+            },
+            {
+              "address": "0x935321",
+              "assembly": "mov qword ptr [rsp + 0x18], rax"
+            },
+            {
+              "address": "0x935326",
+              "assembly": "call 0xd396b0"
+            },
+            {
+              "address": "0x93532b",
+              "assembly": "mov rdi, qword ptr [r12 + 0x1f0]"
+            },
+            {
+              "address": "0x935333",
+              "assembly": "mov rsi, r14"
+            }
+          ]
+        },
+        {
+          "start": "0x9341c2",
+          "end_exclusive": "0x9341fb",
+          "instructions": [
+            {
+              "address": "0x9341c2",
+              "assembly": "mov rdi, qword ptr [r12 + 0xe8]"
+            },
+            {
+              "address": "0x9341ca",
+              "assembly": "mov rsi, rbp"
+            },
+            {
+              "address": "0x9341cd",
+              "assembly": "movabs rax, 0x17c000000f0"
+            },
+            {
+              "address": "0x9341d7",
+              "assembly": "mov qword ptr [rsp + 0x10], rax"
+            },
+            {
+              "address": "0x9341dc",
+              "assembly": "movabs rax, 0x19000000118"
+            },
+            {
+              "address": "0x9341e6",
+              "assembly": "mov qword ptr [rsp + 0x18], rax"
+            },
+            {
+              "address": "0x9341eb",
+              "assembly": "call 0xd396b0"
+            },
+            {
+              "address": "0x9341f0",
+              "assembly": "mov rdi, qword ptr [r12 + 0xe8]"
+            },
+            {
+              "address": "0x9341f8",
+              "assembly": "mov rsi, r14"
+            }
+          ]
+        },
+        {
+          "start": "0x934d38",
+          "end_exclusive": "0x934d79",
+          "instructions": [
+            {
+              "address": "0x934d38",
+              "assembly": "mov rdi, rbp"
+            },
+            {
+              "address": "0x934d3b",
+              "assembly": "call 0x4e6070"
+            },
+            {
+              "address": "0x934d40",
+              "assembly": "mov rdi, qword ptr [r12 + 0x198]"
+            },
+            {
+              "address": "0x934d48",
+              "assembly": "mov rsi, rbp"
+            },
+            {
+              "address": "0x934d4b",
+              "assembly": "movabs rax, 0x17c00000140"
+            },
+            {
+              "address": "0x934d55",
+              "assembly": "mov qword ptr [rsp + 0x10], rax"
+            },
+            {
+              "address": "0x934d5a",
+              "assembly": "movabs rax, 0x19000000168"
+            },
+            {
+              "address": "0x934d64",
+              "assembly": "mov qword ptr [rsp + 0x18], rax"
+            },
+            {
+              "address": "0x934d69",
+              "assembly": "call 0xd396b0"
+            },
+            {
+              "address": "0x934d6e",
+              "assembly": "mov rdi, qword ptr [r12 + 0x198]"
+            },
+            {
+              "address": "0x934d76",
+              "assembly": "mov rsi, r14"
+            }
+          ]
+        },
+        {
+          "start": "0x933902",
+          "end_exclusive": "0x933935",
+          "instructions": [
+            {
+              "address": "0x933902",
+              "assembly": "mov rdi, qword ptr [r12 + 0x60]"
+            },
+            {
+              "address": "0x933907",
+              "assembly": "mov rsi, rbp"
+            },
+            {
+              "address": "0x93390a",
+              "assembly": "movabs rax, 0x17c00000186"
+            },
+            {
+              "address": "0x933914",
+              "assembly": "mov qword ptr [rsp + 0x10], rax"
+            },
+            {
+              "address": "0x933919",
+              "assembly": "movabs rax, 0x190000001ae"
+            },
+            {
+              "address": "0x933923",
+              "assembly": "mov qword ptr [rsp + 0x18], rax"
+            },
+            {
+              "address": "0x933928",
+              "assembly": "call 0xd396b0"
+            },
+            {
+              "address": "0x93392d",
+              "assembly": "mov rdi, qword ptr [r12 + 0x60]"
+            },
+            {
+              "address": "0x933932",
+              "assembly": "mov rsi, r14"
+            }
+          ]
+        },
+        {
+          "start": "0x93548c",
+          "end_exclusive": "0x9354d5",
+          "instructions": [
+            {
+              "address": "0x93548e",
+              "assembly": "mov rdi, qword ptr [r12 + 0x208]"
+            },
+            {
+              "address": "0x935496",
+              "assembly": "mov rsi, rbp"
+            },
+            {
+              "address": "0x935499",
+              "assembly": "movabs rax, 0x17c000001d6"
+            },
+            {
+              "address": "0x9354a3",
+              "assembly": "mov qword ptr [rsp + 0x10], rax"
+            },
+            {
+              "address": "0x9354a8",
+              "assembly": "movabs rax, 0x190000001fe"
+            },
+            {
+              "address": "0x9354b2",
+              "assembly": "mov qword ptr [rsp + 0x18], rax"
+            },
+            {
+              "address": "0x9354b7",
+              "assembly": "call 0xd396b0"
+            },
+            {
+              "address": "0x9354bc",
+              "assembly": "mov rdi, qword ptr [r12 + 0x208]"
+            },
+            {
+              "address": "0x9354c4",
+              "assembly": "mov rsi, r14"
+            },
+            {
+              "address": "0x9354c7",
+              "assembly": "call 0xd33330"
+            },
+            {
+              "address": "0x9354cc",
+              "assembly": "mov edi, 0x30"
+            },
+            {
+              "address": "0x9354d1",
+              "assembly": "call 0x14c6b0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN6octvb39refreshitEv",
+      "address": "0x936e60",
+      "bytes": 26006,
+      "sha256": "8bb36aeb6db990b5a5e94310c97e5848dfaa2fe5adbf2d9f2224f8ca944576d6",
+      "excerpts": [
+        {
+          "start": "0x936e95",
+          "end_exclusive": "0x936eee",
+          "instructions": [
+            {
+              "address": "0x936e95",
+              "assembly": "mov rax, qword ptr [r15 + 0x1d0]"
+            },
+            {
+              "address": "0x936e9c",
+              "assembly": "mov rdi, qword ptr [rax + 0xb8]"
+            },
+            {
+              "address": "0x936ea3",
+              "assembly": "call 0xdc75c0"
+            },
+            {
+              "address": "0x936ea8",
+              "assembly": "mov byte ptr [rsp + 0x6f], 0"
+            },
+            {
+              "address": "0x936ead",
+              "assembly": "mov dword ptr [rsp + 0x68], eax"
+            },
+            {
+              "address": "0x936eb1",
+              "assembly": "test eax, eax"
+            },
+            {
+              "address": "0x936eb3",
+              "assembly": "jle 0x936ecb"
+            },
+            {
+              "address": "0x936eb5",
+              "assembly": "cmp eax, 1"
+            },
+            {
+              "address": "0x936eb8",
+              "assembly": "jne 0x939191"
+            },
+            {
+              "address": "0x936ebe",
+              "assembly": "mov byte ptr [rsp + 0x6f], 1"
+            },
+            {
+              "address": "0x936ec3",
+              "assembly": "mov dword ptr [rsp + 0x68], 0"
+            },
+            {
+              "address": "0x936ecb",
+              "assembly": "mov edi, 0x3e8"
+            },
+            {
+              "address": "0x936ed0",
+              "assembly": "call 0x14c0a0"
+            },
+            {
+              "address": "0x936ed5",
+              "assembly": "lea rax, [rsp + 0x1d0]"
+            },
+            {
+              "address": "0x936edd",
+              "assembly": "mov esi, dword ptr [rsp + 0x68]"
+            },
+            {
+              "address": "0x936ee1",
+              "assembly": "mov rdi, rax"
+            },
+            {
+              "address": "0x936ee4",
+              "assembly": "mov qword ptr [rsp + 0x10], rax"
+            },
+            {
+              "address": "0x936ee9",
+              "assembly": "call 0x3931e0"
+            }
+          ]
+        },
+        {
+          "start": "0x93719b",
+          "end_exclusive": "0x9371a8",
+          "instructions": [
+            {
+              "address": "0x93719b",
+              "assembly": "mov rdi, qword ptr [rsp + 0x10]"
+            },
+            {
+              "address": "0x9371a0",
+              "assembly": "mov esi, r12d"
+            },
+            {
+              "address": "0x9371a3",
+              "assembly": "call 0x3a0180"
+            }
+          ]
+        },
+        {
+          "start": "0x93b147",
+          "end_exclusive": "0x93b2af",
+          "instructions": [
+            {
+              "address": "0x93b147",
+              "assembly": "mov rax, qword ptr [r15 + 0x1d0]"
+            },
+            {
+              "address": "0x93b14e",
+              "assembly": "mov rbp, qword ptr [rax + 0xf0]"
+            },
+            {
+              "address": "0x93b155",
+              "assembly": "mov rax, qword ptr [r15 + 0x30]"
+            },
+            {
+              "address": "0x93b159",
+              "assembly": "cmp rax, qword ptr [r15 + 0x38]"
+            },
+            {
+              "address": "0x93b15d",
+              "assembly": "je 0x93c1c9"
+            },
+            {
+              "address": "0x93b163",
+              "assembly": "mov rdx, qword ptr [rax]"
+            },
+            {
+              "address": "0x93b166",
+              "assembly": "mov rax, qword ptr [rax + 8]"
+            },
+            {
+              "address": "0x93b16a",
+              "assembly": "sub rax, rdx"
+            },
+            {
+              "address": "0x93b16d",
+              "assembly": "cmp rax, 8"
+            },
+            {
+              "address": "0x93b171",
+              "assembly": "jbe 0x93c1af"
+            },
+            {
+              "address": "0x93b177",
+              "assembly": "mov rbx, qword ptr [rsp + 0x10]"
+            },
+            {
+              "address": "0x93b17c",
+              "assembly": "mov esi, dword ptr [rdx + 8]"
+            },
+            {
+              "address": "0x93b17f",
+              "assembly": "mov edx, 0xa"
+            },
+            {
+              "address": "0x93b184",
+              "assembly": "mov rdi, rbx"
+            },
+            {
+              "address": "0x93b187",
+              "assembly": "call 0x1431cd0"
+            },
+            {
+              "address": "0x93b18c",
+              "assembly": "mov rsi, rbx"
+            },
+            {
+              "address": "0x93b18f",
+              "assembly": "mov rdi, rbp"
+            },
+            {
+              "address": "0x93b192",
+              "assembly": "call 0xddc840"
+            },
+            {
+              "address": "0x93b197",
+              "assembly": "mov rdi, rbx"
+            },
+            {
+              "address": "0x93b19a",
+              "assembly": "call 0x4e6070"
+            },
+            {
+              "address": "0x93b19f",
+              "assembly": "mov rax, qword ptr [r15 + 0x1d0]"
+            },
+            {
+              "address": "0x93b1a6",
+              "assembly": "mov rbp, qword ptr [rax + 0x148]"
+            },
+            {
+              "address": "0x93b1ad",
+              "assembly": "mov rax, qword ptr [r15 + 0x30]"
+            },
+            {
+              "address": "0x93b1b1",
+              "assembly": "cmp rax, qword ptr [r15 + 0x38]"
+            },
+            {
+              "address": "0x93b1b5",
+              "assembly": "je 0x93c19d"
+            },
+            {
+              "address": "0x93b1bb",
+              "assembly": "mov rdx, qword ptr [rax]"
+            },
+            {
+              "address": "0x93b1be",
+              "assembly": "mov rax, qword ptr [rax + 8]"
+            },
+            {
+              "address": "0x93b1c2",
+              "assembly": "sub rax, rdx"
+            },
+            {
+              "address": "0x93b1c5",
+              "assembly": "cmp rax, 0xc"
+            },
+            {
+              "address": "0x93b1c9",
+              "assembly": "jbe 0x93c183"
+            },
+            {
+              "address": "0x93b1cf",
+              "assembly": "mov rbx, qword ptr [rsp + 0x10]"
+            },
+            {
+              "address": "0x93b1d4",
+              "assembly": "mov esi, dword ptr [rdx + 0xc]"
+            },
+            {
+              "address": "0x93b1d7",
+              "assembly": "mov edx, 0xa"
+            },
+            {
+              "address": "0x93b1dc",
+              "assembly": "mov rdi, rbx"
+            },
+            {
+              "address": "0x93b1df",
+              "assembly": "call 0x1431cd0"
+            },
+            {
+              "address": "0x93b1e4",
+              "assembly": "mov rsi, rbx"
+            },
+            {
+              "address": "0x93b1e7",
+              "assembly": "mov rdi, rbp"
+            },
+            {
+              "address": "0x93b1ea",
+              "assembly": "call 0xddc840"
+            },
+            {
+              "address": "0x93b1ef",
+              "assembly": "mov rdi, rbx"
+            },
+            {
+              "address": "0x93b1f2",
+              "assembly": "call 0x4e6070"
+            },
+            {
+              "address": "0x93b1f7",
+              "assembly": "mov rax, qword ptr [r15 + 0x1d0]"
+            },
+            {
+              "address": "0x93b1fe",
+              "assembly": "mov rbp, qword ptr [rax + 0xd8]"
+            },
+            {
+              "address": "0x93b205",
+              "assembly": "mov rax, qword ptr [r15 + 0x30]"
+            },
+            {
+              "address": "0x93b209",
+              "assembly": "cmp rax, qword ptr [r15 + 0x38]"
+            },
+            {
+              "address": "0x93b20d",
+              "assembly": "je 0x93c171"
+            },
+            {
+              "address": "0x93b213",
+              "assembly": "mov rdx, qword ptr [rax]"
+            },
+            {
+              "address": "0x93b216",
+              "assembly": "mov rax, qword ptr [rax + 8]"
+            },
+            {
+              "address": "0x93b21a",
+              "assembly": "sub rax, rdx"
+            },
+            {
+              "address": "0x93b21d",
+              "assembly": "cmp rax, 0x10"
+            },
+            {
+              "address": "0x93b221",
+              "assembly": "jbe 0x93c157"
+            },
+            {
+              "address": "0x93b227",
+              "assembly": "mov rbx, qword ptr [rsp + 0x10]"
+            },
+            {
+              "address": "0x93b22c",
+              "assembly": "mov esi, dword ptr [rdx + 0x10]"
+            },
+            {
+              "address": "0x93b22f",
+              "assembly": "mov edx, 0xa"
+            },
+            {
+              "address": "0x93b234",
+              "assembly": "mov rdi, rbx"
+            },
+            {
+              "address": "0x93b237",
+              "assembly": "call 0x1431cd0"
+            },
+            {
+              "address": "0x93b23c",
+              "assembly": "mov rsi, rbx"
+            },
+            {
+              "address": "0x93b23f",
+              "assembly": "mov rdi, rbp"
+            },
+            {
+              "address": "0x93b242",
+              "assembly": "call 0xddc840"
+            },
+            {
+              "address": "0x93b247",
+              "assembly": "mov rdi, rbx"
+            },
+            {
+              "address": "0x93b24a",
+              "assembly": "call 0x4e6070"
+            },
+            {
+              "address": "0x93b24f",
+              "assembly": "mov rax, qword ptr [r15 + 0x1d0]"
+            },
+            {
+              "address": "0x93b256",
+              "assembly": "mov rbp, qword ptr [rax + 0x1f0]"
+            },
+            {
+              "address": "0x93b25d",
+              "assembly": "mov rax, qword ptr [r15 + 0x30]"
+            },
+            {
+              "address": "0x93b261",
+              "assembly": "cmp rax, qword ptr [r15 + 0x38]"
+            },
+            {
+              "address": "0x93b265",
+              "assembly": "je 0x93c145"
+            },
+            {
+              "address": "0x93b26b",
+              "assembly": "mov rdx, qword ptr [rax]"
+            },
+            {
+              "address": "0x93b26e",
+              "assembly": "mov rax, qword ptr [rax + 8]"
+            },
+            {
+              "address": "0x93b272",
+              "assembly": "sub rax, rdx"
+            },
+            {
+              "address": "0x93b275",
+              "assembly": "cmp rax, 4"
+            },
+            {
+              "address": "0x93b279",
+              "assembly": "jbe 0x93c12b"
+            },
+            {
+              "address": "0x93b27f",
+              "assembly": "mov rbx, qword ptr [rsp + 0x10]"
+            },
+            {
+              "address": "0x93b284",
+              "assembly": "mov esi, dword ptr [rdx + 4]"
+            },
+            {
+              "address": "0x93b287",
+              "assembly": "mov edx, 0xa"
+            },
+            {
+              "address": "0x93b28c",
+              "assembly": "mov rdi, rbx"
+            },
+            {
+              "address": "0x93b28f",
+              "assembly": "call 0x1431cd0"
+            },
+            {
+              "address": "0x93b294",
+              "assembly": "mov rsi, rbx"
+            },
+            {
+              "address": "0x93b297",
+              "assembly": "mov rdi, rbp"
+            },
+            {
+              "address": "0x93b29a",
+              "assembly": "call 0xddc840"
+            },
+            {
+              "address": "0x93b29f",
+              "assembly": "mov rdi, rbx"
+            },
+            {
+              "address": "0x93b2a2",
+              "assembly": "call 0x4e6070"
+            },
+            {
+              "address": "0x93b2a7",
+              "assembly": "mov r12, qword ptr [rsp + 0x130]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z8isit_adlv",
+      "address": "0x378b30",
+      "bytes": 112,
+      "sha256": "d4249c5e54aa482b71aa1fedbb4819366617b9550cfc30149af9372c5c86a78e",
+      "excerpts": [
+        {
+          "start": "0x378b30",
+          "end_exclusive": "0x378ba0",
+          "instructions": [
+            {
+              "address": "0x378b30",
+              "assembly": "endbr64 "
+            },
+            {
+              "address": "0x378b34",
+              "assembly": "sub rsp, 0x28"
+            },
+            {
+              "address": "0x378b38",
+              "assembly": "xor edx, edx"
+            },
+            {
+              "address": "0x378b3a",
+              "assembly": "xor ecx, ecx"
+            },
+            {
+              "address": "0x378b3c",
+              "assembly": "call 0x3ac820"
+            },
+            {
+              "address": "0x378b41",
+              "assembly": "add rsp, 0x20"
+            },
+            {
+              "address": "0x378b45",
+              "assembly": "mov r8d, eax"
+            },
+            {
+              "address": "0x378b48",
+              "assembly": "xor eax, eax"
+            },
+            {
+              "address": "0x378b4a",
+              "assembly": "cmp r8w, 0x8086"
+            },
+            {
+              "address": "0x378b50",
+              "assembly": "je 0x378b60"
+            },
+            {
+              "address": "0x378b52",
+              "assembly": "add rsp, 8"
+            },
+            {
+              "address": "0x378b56",
+              "assembly": "ret "
+            },
+            {
+              "address": "0x378b57",
+              "assembly": "nop word ptr [rax + rax]"
+            },
+            {
+              "address": "0x378b60",
+              "assembly": "sub rsp, 0x20"
+            },
+            {
+              "address": "0x378b64",
+              "assembly": "mov edx, 2"
+            },
+            {
+              "address": "0x378b69",
+              "assembly": "xor ecx, ecx"
+            },
+            {
+              "address": "0x378b6b",
+              "assembly": "call 0x3ac820"
+            },
+            {
+              "address": "0x378b70",
+              "assembly": "add rsp, 0x20"
+            },
+            {
+              "address": "0x378b74",
+              "assembly": "mov edx, eax"
+            },
+            {
+              "address": "0x378b76",
+              "assembly": "and edx, 0xffffffdf"
+            },
+            {
+              "address": "0x378b79",
+              "assembly": "cmp dx, 0x4648"
+            },
+            {
+              "address": "0x378b7e",
+              "assembly": "je 0x378b86"
+            },
+            {
+              "address": "0x378b80",
+              "assembly": "cmp ax, 0x4660"
+            },
+            {
+              "address": "0x378b84",
+              "assembly": "jne 0x378b90"
+            },
+            {
+              "address": "0x378b86",
+              "assembly": "mov eax, 1"
+            },
+            {
+              "address": "0x378b8b",
+              "assembly": "add rsp, 8"
+            },
+            {
+              "address": "0x378b8f",
+              "assembly": "ret "
+            },
+            {
+              "address": "0x378b90",
+              "assembly": "add ax, 0x5900"
+            },
+            {
+              "address": "0x378b94",
+              "assembly": "cmp ax, 0x80"
+            },
+            {
+              "address": "0x378b98",
+              "assembly": "setbe al"
+            },
+            {
+              "address": "0x378b9b",
+              "assembly": "add rsp, 8"
+            },
+            {
+              "address": "0x378b9f",
+              "assembly": "ret "
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_ZN10MainWindow24on_actionOCTVB_triggeredEv",
+      "address": "0x8eb690",
+      "bytes": 650,
+      "sha256": "c5fe1cc29066845c47a7b41788fd0e69a6d463fb83bddf917a1b70eb3ffefeef",
+      "excerpts": [
+        {
+          "start": "0x8eb740",
+          "end_exclusive": "0x8eb766",
+          "instructions": [
+            {
+              "address": "0x8eb740",
+              "assembly": "call 0x378bd0"
+            },
+            {
+              "address": "0x8eb745",
+              "assembly": "test al, al"
+            },
+            {
+              "address": "0x8eb747",
+              "assembly": "je 0x8eb860"
+            },
+            {
+              "address": "0x8eb74d",
+              "assembly": "mov edi, 0x1d8"
+            },
+            {
+              "address": "0x8eb752",
+              "assembly": "call 0x14c6b0"
+            },
+            {
+              "address": "0x8eb757",
+              "assembly": "xor esi, esi"
+            },
+            {
+              "address": "0x8eb759",
+              "assembly": "mov rdi, rax"
+            },
+            {
+              "address": "0x8eb75c",
+              "assembly": "mov rbp, rax"
+            },
+            {
+              "address": "0x8eb75f",
+              "assembly": "call 0x93e750"
+            },
+            {
+              "address": "0x8eb764",
+              "assembly": "jmp 0x8eb6f2"
+            }
+          ]
+        },
+        {
+          "start": "0x8eb860",
+          "end_exclusive": "0x8eb889",
+          "instructions": [
+            {
+              "address": "0x8eb860",
+              "assembly": "call 0x378b30"
+            },
+            {
+              "address": "0x8eb865",
+              "assembly": "test al, al"
+            },
+            {
+              "address": "0x8eb867",
+              "assembly": "jne 0x8eb74d"
+            },
+            {
+              "address": "0x8eb86d",
+              "assembly": "mov edi, 0x58"
+            },
+            {
+              "address": "0x8eb872",
+              "assembly": "call 0x14c6b0"
+            },
+            {
+              "address": "0x8eb877",
+              "assembly": "xor esi, esi"
+            },
+            {
+              "address": "0x8eb879",
+              "assembly": "mov rdi, rax"
+            },
+            {
+              "address": "0x8eb87c",
+              "assembly": "mov rbp, rax"
+            },
+            {
+              "address": "0x8eb87f",
+              "assembly": "call 0x930720"
+            },
+            {
+              "address": "0x8eb884",
+              "assembly": "jmp 0x8eb6f2"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "production_scope": "Intel 06_B7, MSR, no hypervisor; GET 0x24, parameter1 1..8, parameter2 0; table query only",
+  "limits": [
+    "Candidate responses do not enumerate physical cores or establish SKU support or TVB activity",
+    "Sequential sampling is not an atomic snapshot",
+    "No table writes or per-core addressing exposed",
+    "No hardware acceptance"
+  ]
+}

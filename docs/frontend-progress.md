@@ -1,5 +1,7 @@
 # GUI / CLI 同步进度
 
+2026-10-12 本轮新增 [TVB 温度与降倍率分档查询](intel-tvb-table.md)：GUI `TVB thresholds` 与 CLI `intel-tvb-table` 共用核心。限定 B7 裸机；分档写入仍待恢复。云端验证待本轮结果。
+
 2026-10-12 本轮新增 [TVB 两项配置开关](intel-tvb.md)：GUI `TVB configuration`、CLI `intel-tvb-read/set` 共用核心。限定 06_B7 裸机；温度分档表仍未恢复。生产提交 `743c40f` 的 39 项云端任务全部通过，见 [验证交付](intel-tvb-validation.md)。
 
 GUI `Intel Controls → Clock information` 与 CLI `intel-clock-read` / `intel-clock-decode`

@@ -50,7 +50,7 @@ IntelTvbPanel::IntelTvbPanel(std::shared_ptr<HardwareAccess> access, QWidget *pa
     apply_ = new QPushButton("Apply setting…", this); apply_->setObjectName("tvbApply"); edit->addWidget(apply_);
     layout->addLayout(edit);
     auto *note = new QLabel("Configuration readback does not measure TVB activity or performance. "
-        "Temperature thresholds and ratio reduction tables are not available on this page.", this);
+        "Use the TVB thresholds page to read the temperature and ratio reduction table.", this);
     note->setWordWrap(true); layout->addWidget(note);
     status_ = new QLabel("Ready. Read the configuration before making a change.", this);
     status_->setObjectName("tvbStatus"); status_->setWordWrap(true); status_->setTextFormat(Qt::PlainText); layout->addWidget(status_);
