@@ -576,7 +576,7 @@ private slots:
     }
     void intelTvbTableReadAndCopy() {
         auto *device = new IntelTvbTableFixture;
-        IntelTvbTablePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device)),nullptr,130);
+        IntelTvbTablePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
         panel.resize(1180,600); panel.show(); QCOMPARE(device->calls,0u);
         panel.findChild<QPushButton *>("tvbTableRead")->click(); QTRY_VERIFY(panel.isEnabled());
         auto *table = panel.findChild<QTableWidget *>("tvbThresholdTable"); QCOMPARE(table->rowCount(),8);
@@ -594,7 +594,7 @@ private slots:
     }
     void intelTvbTableSelectionAndPartialFailure() {
         auto *device = new IntelTvbTableFixture;
-        IntelTvbTablePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device)),nullptr,130); panel.show();
+        IntelTvbTablePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
         auto *read = panel.findChild<QPushButton *>("tvbTableRead"); auto *table = panel.findChild<QTableWidget *>("tvbThresholdTable");
         auto *entry = panel.findChild<QComboBox *>("tvbTableEntry");
         entry->setCurrentIndex(8); read->click(); QTRY_VERIFY(panel.isEnabled());
@@ -611,7 +611,7 @@ private slots:
     }
     void intelTvbTableInvalidTargetsAndGates() {
         auto *device = new IntelTvbTableFixture;
-        IntelTvbTablePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device)),nullptr,130); panel.show();
+        IntelTvbTablePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
         auto *read = panel.findChild<QPushButton *>("tvbTableRead"); auto *cpu = panel.findChild<QLineEdit *>("tvbTableCpu");
         auto *table = panel.findChild<QTableWidget *>("tvbThresholdTable");
         read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),8);
@@ -635,7 +635,7 @@ private slots:
                 const auto deadline = std::chrono::steady_clock::now()+std::chrono::seconds(3);
                 while (!gate->release && std::chrono::steady_clock::now()<deadline) std::this_thread::sleep_for(std::chrono::milliseconds(1));
             };
-            auto *panel = new IntelTvbTablePanel(std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device)),nullptr,130);
+            auto *panel = new IntelTvbTablePanel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
             panel->findChild<QPushButton *>("tvbTableRead")->click(); QTRY_VERIFY(gate->entered.load());
             if (mode == 0) { delete panel; QVERIFY(!gate->destroyed.load()); gate->release = true; QTRY_VERIFY(gate->destroyed.load()); }
             else {
