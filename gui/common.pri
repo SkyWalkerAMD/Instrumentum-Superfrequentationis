@@ -52,4 +52,6 @@ linux {
 }
 SOURCES += $$PWD/core/intel_memory.cpp $$PWD/intelmemorypanel.cpp
 HEADERS += $$PWD/core/intel_memory.h $$PWD/intelmemorypanel.h
+SOURCES += $$PWD/core/intel_mchbar.cpp $$PWD/core/intel_clock.cpp $$PWD/intelclockpanel.cpp
+HEADERS += $$PWD/core/intel_mchbar.h $$PWD/core/intel_clock.h $$PWD/intelclockpanel.h
 INCLUDEPATH += $$PWD

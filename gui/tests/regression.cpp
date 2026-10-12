@@ -13,6 +13,8 @@
 #include "intel_uncore_fixture.h"
 #include "intelmemorypanel.h"
 #include "intel_memory_fixture.h"
+#include "intelclockpanel.h"
+#include "intel_clock_fixture.h"
 #include "spd_fixture.h"
 #include "amd_curve_fixture.h"
 #include "amdpmpanel.h"
@@ -147,6 +149,90 @@ static std::shared_ptr<HardwareAccess> intelMemoryAccess(const std::shared_ptr<i
 class Regression : public QObject {
     Q_OBJECT
 private slots:
+    void intelClockOfflineSnapshot() {
+        using namespace octool::core;
+        Reference reference; IntelClockPanel panel(reference.access(),nullptr,130); panel.resize(1200,850); panel.show();
+        const auto snapshot = decodeIntelClock(intel_clock_fixture::registers());
+        const auto bytes = QByteArray::fromStdString(intelClockJson(snapshot)); QVERIFY(panel.loadCapture(bytes));
+        auto *table = panel.findChild<QTableWidget *>("clockTable"); auto *raw = panel.findChild<QTableWidget *>("clockRaw");
+        QCOMPARE(table->rowCount(),8); QCOMPARE(raw->rowCount(),3);
+        QCOMPARE(table->item(0,1)->text(),QString("101250")); QCOMPARE(table->item(0,2)->text(),QString("kHz"));
+        QCOMPARE(table->item(1,1)->text(),QString("2")); QCOMPARE(table->item(2,1)->text(),QString("100"));
+        QCOMPARE(table->item(3,1)->text(),QString("32")); QCOMPARE(table->item(4,1)->text(),QString("No"));
+        QCOMPARE(table->item(5,1)->text(),QString("1150")); QCOMPARE(table->item(6,1)->text(),QString("9"));
+        QCOMPARE(table->item(7,1)->text(),QString("Unavailable")); QCOMPARE(raw->item(2,2)->text(),QString("0x0000000000018B82"));
+        panel.findChild<QPushButton *>("clockCopy")->click(); const auto copied = QApplication::clipboard()->text().toUtf8();
+        QCOMPARE(copied,bytes); QVERIFY(parseIntelClockCapture(copied.toStdString()).valid);
+        QVERIFY(panel.loadCapture("{\"schema_version\":1,\"command\":\"intel-clock-read\",\"ok\":true,\"error\":0,\"data\":{\"clock\":"+copied+"}}"));
+        QCOMPARE(panel.captureBytes(),copied); QCOMPARE(reference.calls.load(),0);
+        auto *status = panel.findChild<QLabel *>("clockStatus"); QVERIFY(status->text().contains("Offline"));
+        QTRY_VERIFY(status->height() >= status->heightForWidth(status->width()));
+        QTRY_VERIFY(table->viewport()->rect().contains(table->visualItemRect(table->item(7,1))));
+        QTRY_VERIFY(raw->viewport()->rect().contains(raw->visualItemRect(raw->item(2,2))));
+        const auto shot = qEnvironmentVariable("OCTOOL_INTEL_CLOCK_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+    }
+    void intelClockPartialAndInvalidCapture() {
+        using namespace octool::core;
+        Reference reference; IntelClockPanel panel(reference.access()); auto *table = panel.findChild<QTableWidget *>("clockTable");
+        const auto good = QByteArray::fromStdString(intelClockJson(decodeIntelClock(intel_clock_fixture::registers())));
+        auto registers = intel_clock_fixture::registers(); registers[2].raw = UINT64_C(0x8000000000018b82); registers[1].raw |= 1u<<14;
+        QVERIFY(panel.loadCapture(QByteArray::fromStdString(intelClockJson(decodeIntelClock(registers)))));
+        for (int i = 0; i < 8; ++i) QCOMPARE(table->item(i,1)->text(),QString("Unavailable"));
+        QCOMPARE(panel.findChild<QTableWidget *>("clockRaw")->item(2,2)->text(),QString("0x8000000000018B82"));
+        registers[1].raw = 0; registers[2].raw = 100000;
+        QVERIFY(panel.loadCapture(QByteArray::fromStdString(intelClockJson(decodeIntelClock(registers)))));
+        QCOMPARE(table->item(4,1)->text(),QString("Yes")); QCOMPARE(table->item(2,1)->text(),QString("133.33"));
+        for (const auto &bad : QList<QByteArray>{"{}",good+"x",good.left(good.size()-1),QByteArray(65537,' '),"{\"schema_version\":1,\"ok\":false}"}) {
+            QVERIFY(panel.loadCapture(good)); QVERIFY(!panel.loadCapture(bad)); QCOMPARE(table->rowCount(),0);
+            QCOMPARE(panel.findChild<QTableWidget *>("clockRaw")->rowCount(),0); QVERIFY(panel.captureBytes().isEmpty());
+            QVERIFY(!panel.findChild<QPushButton *>("clockCopy")->isEnabled()); QVERIFY(!panel.findChild<QPushButton *>("clockSave")->isEnabled());
+        }
+        QCOMPARE(reference.calls.load(),0);
+    }
+    void intelClockLiveReadsAndFailures() {
+        auto device = std::make_shared<intel_clock_fixture::Device>(); IntelClockPanel panel(intelMemoryAccess(device),nullptr,130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("clockRead"); auto *table = panel.findChild<QTableWidget *>("clockTable");
+        for (int failure : {0,2,4,5,6,7,8,13,14,15,16,20}) {
+            *device = intel_clock_fixture::Device(); read->click(); QTRY_VERIFY(read->isEnabled());
+            QCOMPARE(table->rowCount(),8); QCOMPARE(device->reads,21u);
+            QVERIFY(octool::core::parseIntelClockCapture(panel.captureBytes().toStdString()).valid);
+            *device = intel_clock_fixture::Device(); device->failRead = failure;
+            read->click(); QCOMPARE(table->rowCount(),0); QTRY_VERIFY(read->isEnabled());
+            QCOMPARE(table->rowCount(),0); QCOMPARE(panel.findChild<QTableWidget *>("clockRaw")->rowCount(),0);
+            QVERIFY(panel.captureBytes().isEmpty()); QCOMPARE(device->writes,0u);
+        }
+    }
+    void intelClockCpuAndBusyGates() {
+        auto device = std::make_shared<intel_clock_fixture::Device>(); IntelClockPanel panel(intelMemoryAccess(device),nullptr,130);
+        auto *read = panel.findChild<QPushButton *>("clockRead"); auto *cpu = panel.findChild<QLineEdit *>("clockCpu");
+        cpu->setText("not a CPU"); read->click(); QCOMPARE(device->cpuCalls,0u);
+        cpu->setText("130"); device->model = 0xba; read->click(); QTRY_VERIFY(read->isEnabled()); QVERIFY(device->requests.empty());
+        *device = intel_clock_fixture::Device(); device->clock[0x5e00] |= 1u<<31;
+        read->click(); QTRY_VERIFY(read->isEnabled()); QCOMPARE(device->reads,6u); QVERIFY(panel.captureBytes().isEmpty());
+        *device = intel_clock_fixture::Device(); read->click(); QTRY_VERIFY(read->isEnabled()); QVERIFY(!panel.captureBytes().isEmpty());
+        cpu->setText("131"); QVERIFY(panel.captureBytes().isEmpty()); QCOMPARE(panel.findChild<QTableWidget *>("clockTable")->rowCount(),0);
+    }
+    void intelClockReadLifetimeAndTargetChange() {
+        struct Gate { std::atomic<bool> entered{false}, release{false}; };
+        for (bool close : {false,true}) {
+            auto gate = std::make_shared<Gate>(); auto device = std::make_shared<intel_clock_fixture::Device>();
+            device->afterRequest = [gate](const Request &) {
+                if (gate->entered.exchange(true)) return;
+                const auto deadline = std::chrono::steady_clock::now()+std::chrono::seconds(3);
+                while (!gate->release && std::chrono::steady_clock::now()<deadline) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            };
+            std::weak_ptr<intel_clock_fixture::Device> alive = device;
+            auto *panel = new IntelClockPanel(intelMemoryAccess(device),nullptr,130); device.reset();
+            panel->findChild<QPushButton *>("clockRead")->click(); QTRY_VERIFY(gate->entered.load()); QVERIFY(!panel->loadCapture("{}"));
+            if (close) { delete panel; QVERIFY(!alive.expired()); gate->release = true; QTRY_VERIFY(alive.expired()); }
+            else {
+                panel->findChild<QLineEdit *>("clockCpu")->setText("131"); gate->release = true;
+                QTRY_VERIFY(panel->findChild<QPushButton *>("clockRead")->isEnabled());
+                QCOMPARE(panel->findChild<QTableWidget *>("clockTable")->rowCount(),0); QVERIFY(panel.captureBytes().isEmpty());
+                QVERIFY(panel->findChild<QLabel *>("clockStatus")->text().contains("discarded")); delete panel;
+            }
+        }
+    }
     void intelMemoryOfflineSnapshot() {
         using namespace octool::core;
         Reference reference; IntelMemoryPanel panel(reference.access(),nullptr,130); panel.resize(1250,1100); panel.show();
@@ -407,6 +493,9 @@ private slots:
         IntelTurboPanel turbo(access,nullptr,7);
         IntelUncorePanel uncore(access,nullptr,7);
         IntelMemoryPanel imc(access,nullptr,7);
+        IntelClockPanel clock(access,nullptr,7);
+        QCOMPARE(clock.findChild<QLineEdit *>("clockCpu")->text(),QString("7"));
+        QCOMPARE(clock.findChild<QTableWidget *>("clockTable")->rowCount(),0);
         QCOMPARE(imc.findChild<QTableWidget *>("imcTable")->rowCount(),0);
         QCOMPARE(reference.calls.load(),0);
         QCOMPARE(intel.findChild<QLineEdit *>("intelCpu")->text(),QString("7"));

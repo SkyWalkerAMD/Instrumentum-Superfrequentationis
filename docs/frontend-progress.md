@@ -1,5 +1,8 @@
 # GUI / CLI 同步进度
 
+GUI `Intel Controls → Clock information` 与 CLI `intel-clock-read` / `intel-clock-decode`
+同步提供 [Intel BCLK 与最后一次 MRC 请求](intel-clock.md)，限定 B7/A700。历史训练请求不代表实时内存频率。
+
 GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-decode`
 同步提供 [Raptor Lake-S 内存控制器时序与快照](intel-memory.md)，限定 B7/A700。
 2026-10-12 扩展为 43 字段，新增 [RTL 与掉电参数](intel-memory-extended.md)，兼容旧 v1 快照。
@@ -22,6 +25,7 @@ GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-
 | Intel V/F 点 | V/F points 查询、准备与设置 | `intel-vf-read` / `intel-vf-set` | B7，两域，候选 1..15 查询及单点 offset；[完整上下文核对](intel-vf-write-recovery.md)，不改变 override 模式 |
 | Intel 睿频分组 | Turbo ratio groups | `intel-turbo-read` / `intel-turbo-set` | B7；P/E 两表，读取活动核心阈值，单组倍率或中间组阈值设置与完整读回；末组阈值保持 |
 | Intel Ring / LLC 范围 | Ring / LLC range | `intel-uncore-read` / `intel-uncore-set` | B7/8F；最小与最大倍率同时设置，保留其它位、旧值检查及完整读回；[实现说明](intel-uncore-recovery.md) |
+| Intel 时钟信息 | Clock information | `intel-clock-read/decode` | B7/A700；报告 BCLK kHz，历史 MRC Gear/倍率/VDDQ 请求；独立只读快照，不推导实时内存频率 |
 | AMD SMU | AMD tuning | `amd-smu-probe/read/send` | 现有身份/命令白名单与原始参数 |
 | AMD 曲线读取 | AMD tuning 曲线查询 | `amd-curve-read` | Shimada；显式固件 CCD/core；不推导 mV |
 | AMD 拓扑 | AMD tuning | `amd-topology` | CPUID 拓扑，不作为固件目标映射 |

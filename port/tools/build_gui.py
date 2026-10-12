@@ -79,6 +79,7 @@ def main():
                    OCTOOL_ASYMMETRIC_TEST_SCREENSHOT=str((tests / "asymmetric-fixture.png").resolve()),
                    OCTOOL_ASYMMETRIC_CAPACITY_TEST_SCREENSHOT=str((tests / "asymmetric-capacity-fixture.png").resolve()),
                    OCTOOL_INTEL_MEMORY_TEST_SCREENSHOT=str((tests / "intel-memory-fixture.png").resolve()),
+                   OCTOOL_INTEL_CLOCK_TEST_SCREENSHOT=str((tests / "intel-clock-fixture.png").resolve()),
                    OCTOOL_DDR4_ASYMMETRIC_TEST_SCREENSHOT=str((tests / "ddr4-asymmetric-fixture.png").resolve()),
                    OCTOOL_USER_SPD_TEST_SCREENSHOT=str((tests / "user-spd-fixture.png").resolve()),
                    OCTOOL_ENHANCED_SPD_TEST_SCREENSHOT=str((tests / "enhanced-spd-fixture.png").resolve()),

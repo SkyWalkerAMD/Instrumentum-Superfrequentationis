@@ -35,7 +35,42 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 430, len(reports)
+assert len(reports) == 450, len(reports)
+clock_reports = [r for r in reports if r["command"] in ("intel-clock-read","intel-clock-decode")]
+assert len(clock_reports) == 20 and [r["ok"] for r in clock_reports] == ([True]*4+[False]*6)*2
+for i,r in enumerate(clock_reports):
+    clock = r["data"]["clock"]
+    if i >= 10: assert not r["data"]["hardware_accessed"]
+    if not r["ok"]:
+        assert clock is None
+        continue
+    assert clock["format"] == "octool-intel-clock-v1" and len(clock["registers"]) == 3
+    assert clock["offline"] == (i >= 10) and not clock["current_memory_frequency_available"]
+    assert not clock["origin_verified"] and not clock["atomic_snapshot_guaranteed"]
+    assert clock["bclk"]["reported_khz"] == (None if i in (1,13) else 101250)
+    assert (clock["bclk"]["error"] != 0) == (i in (1,13))
+    mrc = clock["last_mrc_request"]
+    if i == 2:
+        assert mrc["error"] < 0 and mrc["gear_ratio"] is None and mrc["vddq_tx_mv"] is None
+    elif i == 3:
+        assert not mrc["error"] and mrc["qclk_ratio_encoded"] == 0 and mrc["pll_shutdown_encoded"]
+    else:
+        assert not mrc["error"] and mrc["qclk_ratio_encoded"] == 32 and not mrc["pll_shutdown_encoded"]
+        assert mrc["gear_ratio"] == 2 and mrc["reference_clock_code"] == 1
+        assert mrc["vddq_tx_mv"] == 1150 and mrc["vddq_tx_iccmax_encoded"] == 9
+with tempfile.TemporaryDirectory(prefix="octool-intel-clock-") as directory:
+    path = Path(directory)/"时钟快照.json"
+    for source in (clock_reports[0]["data"]["clock"],clock_reports[0],clock_reports[10],clock_reports[13]):
+        expected = source.get("data",{}).get("clock",source)
+        path.write_text(json.dumps(source),encoding="utf-8")
+        decoded = run("intel-clock-decode","--file",str(path))["data"]
+        assert not decoded["hardware_accessed"] and decoded["clock"]["offline"]
+        assert decoded["clock"]["registers"] == expected["registers"]
+        assert decoded["clock"]["bclk"] == expected["bclk"] and decoded["clock"]["last_mrc_request"] == expected["last_mrc_request"]
+    path.write_text(json.dumps(clock_reports[4]),encoding="utf-8")
+    assert run("intel-clock-decode","--file",str(path),code=3)["data"]["clock"] is None
+    os.mkfifo(Path(directory)/"fifo")
+    assert run("intel-clock-decode","--file",str(Path(directory)/"fifo"),code=3)["data"]["clock"] is None
 imc_reports = [r for r in reports if r["command"] in ("intel-memory-read","intel-memory-decode")]
 assert len(imc_reports) == 28
 assert [r["ok"] for r in imc_reports] == ([True]*4+[False]*6)*2 + [True]*4+[False]*4

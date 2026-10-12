@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "date": "2026-10-12",
+  "official_pdf": {
+    "url": "https://cdrdv2-public.intel.com/743846/743846-001.pdf",
+    "bytes": 5087799,
+    "sha256": "714e415546d36e2d1bc8832bf94db817b48085224d54bebe252b16e1e48081f7",
+    "retrieved": "2026-10-11",
+    "title": "13th Generation Intel Core Processor Datasheet Volume 2; formerly Raptor Lake-S",
+    "document": "743846-001",
+    "revision": "001",
+    "published": "2022-10",
+    "pages": 836,
+    "sections": [
+      "3.1.4",
+      "3.3.42",
+      "3.3.43",
+      "3.3.51"
+    ],
+    "visually_inspected_printed_pages": [
+      203,
+      210
+    ],
+    "numeric_facts": {
+      "shared_pcu_offsets": {
+        "mc_bios_req": "0x5e00",
+        "mc_bios_data": "0x5e04",
+        "bclk_freq": "0x5f60"
+      },
+      "register_widths_bytes": [
+        4,
+        4,
+        8
+      ],
+      "bclk_unit": "kHz",
+      "bclk_bits": [
+        0,
+        31
+      ],
+      "busy_bit": 31,
+      "mrc_gear_bits": [
+        12,
+        13
+      ],
+      "mrc_reference_bits": [
+        8,
+        11
+      ],
+      "mrc_qclk_ratio_bits": [
+        0,
+        7
+      ],
+      "mrc_vddq_tx_bits": [
+        17,
+        26
+      ],
+      "mrc_vddq_tx_step_mv": 5,
+      "mrc_iccmax_bits": [
+        27,
+        30
+      ],
+      "controller_stride_applies": false,
+      "channel_stride_applies": false
+    }
+  },
+  "linux_pci_reference": {
+    "repository": "torvalds/linux",
+    "ref": "v6.12",
+    "path": "arch/x86/events/intel/uncore_snb.c",
+    "blob": "3934e1e4e3b166415e88892ed6819816570c9771",
+    "symbol": "PCI_DEVICE_ID_INTEL_RPL_1_IMC",
+    "value": "0xa700"
+  },
+  "implementation_scope": {
+    "cpuid_family": 6,
+    "cpuid_model": 183,
+    "pci_vendor": "0x8086",
+    "pci_device": "0xa700",
+    "physical_hardware_validated": false,
+    "register_count": 3,
+    "write_operations": 0,
+    "capture_format": "octool-intel-clock-v1",
+    "successful_cpuid_calls": 3,
+    "successful_hardware_reads": 21,
+    "current_memory_frequency_available": false
+  },
+  "exclusions": [
+    "No current memory frequency from the last MRC request",
+    "No measured VDDQ TX voltage",
+    "No current Gear or PLL state inferred from historical requests",
+    "No IccMax amperes conversion",
+    "No BIOS request writes",
+    "No controller/channel stride on shared PCU offsets",
+    "No other CPU/host-bridge layouts"
+  ],
+  "ambiguities": [
+    "IccMax occupies 4 bits but the description gives a 32 * 0.25 = 8 A example; raw encoding only"
+  ]
+}

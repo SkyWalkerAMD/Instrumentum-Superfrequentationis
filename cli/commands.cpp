@@ -13,6 +13,7 @@
 #include "core/intel_turbo.h"
 #include "core/intel_uncore.h"
 #include "core/intel_memory.h"
+#include "core/intel_clock.h"
 #include "core/spd.h"
 #include "platform/linux_inventory_native.h"
 #include "platform/linux_amd_pm.h"
@@ -92,11 +93,12 @@ struct Command {
 Command parse(const std::vector<std::string> &args) {
     Command c; c.name = args.at(0);
     const std::set<std::string> hardware = {"cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read", "intel-vf-set", "intel-turbo-read", "intel-turbo-set",
-        "intel-memory-read", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
+        "intel-memory-read", "intel-clock-read", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
     const bool memoryOffline = c.name == "intel-memory-decode";
+    const bool clockOffline = c.name == "intel-clock-decode";
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
     const bool pm = c.name == "amd-pm-read" || c.name == "amd-pm-decode";
-    require(hardware.count(c.name) || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || memoryOffline || pm, "Unknown command: " + c.name);
+    require(hardware.count(c.name) || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || memoryOffline || clockOffline || pm, "Unknown command: " + c.name);
     std::set<std::string> keys = {"--json"};
     if (hardware.count(c.name)) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
@@ -127,7 +129,7 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "spd-decode") keys.insert("--file");
     if (pm) keys.insert("--bclk-mhz");
     if (c.name == "amd-pm-decode") { keys.insert("--file"); keys.insert("--version"); }
-    if (umcOffline || memoryOffline) keys.insert("--file");
+    if (umcOffline || memoryOffline || clockOffline) keys.insert("--file");
     if (c.name == "intel-memory-read") { keys.insert("--controller"); keys.insert("--channel"); }
     if (c.name == "amd-umc-diff") keys.insert("--compare");
     Options options;
@@ -261,7 +263,7 @@ Command parse(const std::vector<std::string> &args) {
             require(amdPmTableSize(c.pmVersion) != 0, "Unsupported exact PM table version");
         }
     }
-    if (umcOffline || memoryOffline) {
+    if (umcOffline || memoryOffline || clockOffline) {
         c.path = get(options, "--file"); require(!c.path.empty(), "Empty snapshot path");
         if (c.name == "amd-umc-diff") { c.otherPath = get(options, "--compare"); require(!c.otherPath.empty(), "Empty comparison path"); }
     }
@@ -532,6 +534,12 @@ Result hardware(const Command &c, HardwareSession &s) {
             out.data.push_back({"ccd_in_socket", number(t.ccdInSocket)}); out.data.push_back({"core_in_ccd", number(t.coreInCcd)});
             out.data.push_back({"thread_in_core", number(t.threadInCore)});
         }
+    } else if (c.name == "intel-clock-read") {
+        const auto r = readIntelClock(s,c.cpu); out.error = r.error;
+        out.data.push_back({"identity",identity(r.identity)});
+        out.data.push_back({"pci",pci(0,0,0)}); out.data.push_back({"pci_identity",r.valid ? hex(r.pciIdentity) : "null"});
+        out.data.push_back({"mchbar",r.valid ? hex(r.mchbar,16) : "null"});
+        out.data.push_back({"clock",intelClockJson(r)});
     } else if (c.name == "intel-memory-read") {
         const auto r = readIntelMemory(s,c.memory); out.error = r.error;
         out.data.push_back({"identity",identity(r.identity)});
@@ -730,6 +738,12 @@ Result execute(const Command &c, const BackendFactory &factory) {
     } else if (c.name == "spd-decode") {
         std::vector<std::uint8_t> bytes; out.error = platform::readBoundedFile(c.path, bytes);
         out.data.push_back({"spd", spd(c.path, bytes, out.error)});
+    } else if (c.name == "intel-clock-decode") {
+        std::vector<std::uint8_t> bytes; out.error = platform::readBoundedFile(c.path,bytes,65536);
+        IntelClockSnapshot snapshot;
+        if (!out.error) { snapshot = parseIntelClockCapture(std::string(bytes.begin(),bytes.end())); out.error = snapshot.error; }
+        out.data = {{"offline","true"},{"hardware_accessed","false"},{"path",quote(c.path)},
+            {"detail",quote(snapshot.detail)},{"clock",intelClockJson(snapshot)}};
     } else if (c.name == "intel-memory-decode") {
         std::vector<std::uint8_t> bytes; out.error = platform::readBoundedFile(c.path,bytes,65536);
         IntelMemorySnapshot snapshot;
@@ -767,6 +781,8 @@ Usage: octool-cli COMMAND [OPTIONS]
   intel-turbo-read --cpu N --core-type p|e
   intel-memory-read --cpu N --controller 0|1 --channel 0|1
   intel-memory-decode --file SNAPSHOT   Decode the shared GUI/CLI snapshot offline
+  intel-clock-read --cpu N             Reported BCLK and last MRC request; not current memory speed
+  intel-clock-decode --file SNAPSHOT   Decode the shared GUI/CLI clock snapshot offline
   intel-uncore-read --cpu N
   intel-uncore-set --cpu N --minimum-ratio MIN --maximum-ratio MAX --apply
   intel-turbo-set --cpu N --core-type p|e --group 0..7 --value RATIO --apply

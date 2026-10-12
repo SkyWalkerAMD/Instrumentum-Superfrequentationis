@@ -1,5 +1,8 @@
 # 无桌面版 OCTool
 
+GUI `Intel Controls → Clock information` 与 CLI `intel-clock-read` / `intel-clock-decode`
+同步提供 [Intel BCLK 与最后一次 MRC 请求](intel-clock.md)，限定 B7/A700。历史训练请求不代表实时内存频率。
+
 GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-decode`
 同步提供 [Raptor Lake-S 内存控制器时序与快照](intel-memory.md)，限定 B7/A700。
 2026-10-12 扩展为 43 字段，新增 [RTL 与掉电参数](intel-memory-extended.md)，兼容旧 v1 快照。

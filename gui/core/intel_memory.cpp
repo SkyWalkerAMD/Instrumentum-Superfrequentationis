@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "intel_memory.h"
+#include "intel_mchbar.h"
 #include "bounded_json.h"
 #include <cerrno>
 #include <iomanip>
@@ -9,23 +10,7 @@
 
 namespace octool { namespace core {
 namespace {
-const std::uint64_t baseMask = UINT64_C(0x3fffffe0000);
-Request pci(unsigned offset) { Request r; r.space = Space::Pci; r.width = 4; r.address = offset; return r; }
-int context(HardwareSession &s, std::uint64_t &bar) {
-    auto r = s.execute(pci(0)); if (r.error) return r.error;
-    if (r.value != 0xa7008086) return -ENODEV;
-    r = s.execute(pci(8)); if (r.error) return r.error;
-    if ((r.value >> 8) != 0x060000) return -ENODEV;
-    r = s.execute(pci(0x4c)); if (r.error) return r.error;
-    const auto high = r.value;
-    r = s.execute(pci(0x48)); if (r.error) return r.error;
-    bar = (high << 32) | r.value;
-    r = s.execute(pci(0x4c)); if (r.error) return r.error;
-    if (high != r.value) return -EAGAIN;
-    if (!(bar & 1) || !(bar & baseMask)) return -ENODEV;
-    if (bar & ~(baseMask | 1)) return -ENOTSUP;
-    return 0;
-}
+using intel_mchbar::baseMask;
 std::string hex(std::uint64_t value, unsigned width) {
     std::ostringstream s; s.imbue(std::locale::classic());
     s << "\"0x" << std::hex << std::setw(int(width)) << std::setfill('0') << value << '"'; return s.str();
@@ -127,13 +112,8 @@ IntelMemorySnapshot decodeIntelMemory(const IntelMemoryTarget &t, const std::vec
 IntelMemorySnapshot readIntelMemory(HardwareSession &s, const IntelMemoryTarget &t) {
     IntelMemorySnapshot out; out.target = t; out.offline = false;
     if (t.controller > 1 || t.channel > 1) { out.error = -EINVAL; return out; }
-    out.identity = identifyCpu(s, t.cpu); if ((out.error = out.identity.error)) return out;
-    if (!out.identity.intel || out.identity.family != 6 || out.identity.model != 0xb7) { out.error = -ENOTSUP; return out; }
-    const auto leaf = s.cpuid(t.cpu, 1);
-    if ((out.error = leaf.error)) return out;
-    if (leaf.words[0] != out.identity.signature) { out.error = -EAGAIN; return out; }
-    if (leaf.words[2] & (1u << 31)) { out.error = -ENOTSUP; return out; }
-    if ((out.error = context(s, out.mchbar))) return out;
+    if ((out.error = intel_mchbar::identify(s,t.cpu,out.identity))) return out;
+    if ((out.error = intel_mchbar::readContext(s,out.mchbar))) return out;
     out.pciIdentity = 0xa7008086;
     std::vector<IntelMemoryRegister> registers;
     for (unsigned pass = 0; pass < 2; ++pass) {
@@ -154,7 +134,7 @@ IntelMemorySnapshot readIntelMemory(HardwareSession &s, const IntelMemoryTarget 
             }
         }
         std::uint64_t bar = 0;
-        if ((out.error = context(s, bar))) return out;
+        if ((out.error = intel_mchbar::readContext(s,bar))) return out;
         if (bar != out.mchbar) { out.error = -EAGAIN; return out; }
     }
     const auto decoded = decodeIntelMemory(t, registers); out.error = decoded.error;
