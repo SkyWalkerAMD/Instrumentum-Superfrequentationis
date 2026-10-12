@@ -1,9 +1,16 @@
 # Instrumentum Superfrequentationis
 
-<!-- intel-extended-pending -->
-2026-10-12：GUI / CLI 同步补充 [Intel RTL 与掉电时序](docs/intel-memory-extended.md)。
-限定 B7/A700，扩展为 14 寄存器 / 43 字段，按字段区分单位和 rank 状态，保留 v1 快照兼容。
-云端完整编译、回归与安装包验证进行中；目标真机与全部原版功能仍未完成。
+<!-- intel-extended-ec6077e -->
+2026-10-12：最新验证生产提交 `ec6077e`，GUI / CLI 同步补充 **Intel 各 Rank RTL 与掉电时序**。
+限定 B7/A700，扩展为 14 寄存器 / 43 字段，按字段保留时钟单位，兼容 v1 快照。
+
+- [实现范围](docs/intel-memory-extended.md)、[验证交付](docs/intel-extended-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38185638950) 4/4，各 209 场景组；18 组 Intel 内存及内存安全检查通过。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38185638958) 12/12，十目标各 16 CTest、430 份 JSON。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38185638884) 23/23，十目标各 86 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-intel-extended-ec6077e/`：30 个安装包、源码及 SHA256。
+
+其它原版功能及目标真机验收仍未全部完成。以下保留历史记录。
 
 <!-- intel-memory-001c804 -->
 2026-10-12：最新验证生产提交 `001c804`，GUI / CLI 同步新增 **Intel Raptor Lake-S 内存时序读取与快照**。
