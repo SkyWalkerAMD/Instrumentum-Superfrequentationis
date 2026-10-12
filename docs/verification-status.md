@@ -1,8 +1,17 @@
 # 验证状态与输入证据
 
-<!-- intel-energy-pending -->
-2026-10-13：GUI / CLI 同步新增 [Intel 节能睿频与 Race to Halt](intel-energy.md)，限定 B7 裸机；两项独立设置、完整旧值检查与回读。云端验证进行中。以下保留上一批已验证记录。
-<!-- /intel-energy-pending -->
+<!-- intel-energy-61a0494 -->
+2026-10-13：最新验证生产提交 `61a0494`，GUI / CLI 同步恢复 **Intel 节能睿频与 Race to Halt**。
+B7 裸机；两项独立启用/禁用，完整旧值检查、保留其它位、完整读回。
+
+- [实现范围](intel-energy.md)、[验证交付](intel-energy-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38323413941) 4/4，各 19 CTest、268 场景组。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38323414012) 12/12，十目标各 21 CTest、657 份 JSON。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38323413900) 23/23，十目标各 115 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-intel-energy-61a0494/`：30 个安装包、源码及 SHA256。
+
+增强 TVB、Vmax、逐物理核心表及其它原版缺口和真机验收仍未全部完成。以下保留历史记录。
+<!-- /intel-energy-61a0494 -->
 
 <!-- intel-ring-c6e9599 -->
 2026-10-12：最新验证生产提交 `c6e9599`，GUI / CLI 同步恢复 **Intel Ring DownBin**。

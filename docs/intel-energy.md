@@ -1,7 +1,7 @@
 # Intel 节能控制：Energy Efficient Turbo 与 Race to Halt
 
 2026-10-13：GUI 的 Intel Controls → **Energy optimization** 和 CLI 的
-`intel-energy-read/set` 共用独立核心 `intel_energy`。本批云端验证进行中，尚未真机验收。
+`intel-energy-read/set` 共用独立核心 `intel_energy`。生产提交 `61a0494` 的 39 项云端任务已通过；见 [验证交付](intel-energy-validation.md)。尚未真机验收。
 
 ## 已恢复范围
 
@@ -74,5 +74,5 @@ Vmax、逐物理核心 TVB、其它 Intel 型号和其余 AMD / 主板调参仍�
 共同核心新增 12 场景组，两字段分别覆盖设置/不变、每一位旧值冲突、身份变化、各 CPUID / MSR
 故障位置、完整回读逐位损坏、写入被忽略、取消和超时。
 GUI 增加 6 项 Qt 测试，包含模态确认中的 CPU 变化、读写中的目标变化与窗口关闭。
-CLI 增加 16 组参数拒绝和 56 份功能/错误 JSON 报告。云端验证完成后记录同一提交的实际结果；
+CLI 增加 16 组参数拒绝和 56 份功能/错误 JSON 报告。同一提交的全部实际结果见[验证交付](intel-energy-validation.md)；
 这些测试不代表硬件节能效果或稳定性测量。

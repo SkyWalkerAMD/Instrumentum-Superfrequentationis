@@ -1,6 +1,6 @@
 # GUI / CLI 同步进度
 
-2026-10-13 新增 [Energy Efficient Turbo / Race to Halt](intel-energy.md)：GUI 节能控制页、CLI intel-energy-read/set 同步接入。限定 B7；本批云端验证进行中。
+2026-10-13 新增 [Energy Efficient Turbo / Race to Halt](intel-energy.md)：GUI 节能控制页、CLI intel-energy-read/set 同步接入。限定 B7；生产提交 `61a0494` 的 39 项云端任务全部通过，见 [验证交付](intel-energy-validation.md)。
 
 2026-10-12 新增 [Ring DownBin](intel-ring-downbin.md)：GUI 配置页增加第三个开关，CLI 同步增加 ring-down-bin 字段。限定 B7；生产提交 `c6e9599` 的 39 项云端任务全部通过，见 [验证交付](intel-ring-validation.md)。
 
@@ -36,6 +36,7 @@ GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-
 | Intel V/F 点 | V/F points 查询、准备与设置 | `intel-vf-read` / `intel-vf-set` | B7，两域，候选 1..15 查询及单点 offset；[完整上下文核对](intel-vf-write-recovery.md)，不改变 override 模式 |
 | Intel 睿频分组 | Turbo ratio groups | `intel-turbo-read` / `intel-turbo-set` | B7；P/E 两表，读取活动核心阈值，单组倍率或中间组阈值设置与完整读回；末组阈值保持 |
 | Intel Ring / LLC 范围 | Ring / LLC range | `intel-uncore-read` / `intel-uncore-set` | B7/8F；最小与最大倍率同时设置，保留其它位、旧值检查及完整读回；[实现说明](intel-uncore-recovery.md) |
+| Intel 节能控制 | Energy optimization | `intel-energy-read/set` | 06_B7 裸机；节能睿频 / Race to Halt 独立设置，完整旧值核对和 64 位回读；显式 CPU，不广播 |
 | Intel 内存控制器 | Memory timings | `intel-memory-read/decode` | B7/A700；57 字段含 RTL、掉电、刷新、自刷新和 ZQ，v1/v2/v3 双向快照；仅读取 |
 | Intel 时钟信息 | Clock information | `intel-clock-read/decode` | B7/A700；报告 BCLK kHz，历史 MRC Gear/倍率/VDDQ 请求；独立只读快照，不推导实时内存频率 |
 | Intel TVB / Ring DownBin | TVB & Ring DownBin | `intel-tvb-read/set` | 06_B7 裸机；高温倍频裁剪、电压优化及 Ring DownBin 三项独立开关，锁/旧值检查、保留其它位、完整回读；分档见下行 |
