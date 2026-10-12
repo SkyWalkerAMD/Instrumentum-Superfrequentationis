@@ -1,9 +1,16 @@
 # 安装包与源码归档
 
-<!-- intel-clock-pending -->
-2026-10-12：GUI / CLI 同步新增 [Intel BCLK 与最后一次 MRC 请求](intel-clock.md)。
-限定 B7/A700，独立快照保留三个共享 PCU 寄存器，不将历史请求当作实时内存频率。
-云端完整编译、回归与安装包验证进行中；目标真机与全部原版功能仍未完成。
+<!-- intel-clock-b3a40d7 -->
+2026-10-12：最新验证生产提交 `b3a40d7`，GUI / CLI 同步新增 **Intel BCLK 与最后一次 MRC 请求**。
+限定 B7/A700，三个共享 PCU 寄存器和独立快照；历史训练请求不代表实时内存频率。
+
+- [实现范围](intel-clock.md)、[验证交付](intel-clock-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38200818742) 4/4，各 221 场景组；12 组 Intel 时钟及内存安全检查通过。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38200822292) 12/12，十目标各 17 CTest、450 份 JSON。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38200800678) 23/23，十目标各 91 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-intel-clock-b3a40d7/`：30 个安装包、源码及 SHA256。
+
+其它原版功能及目标真机验收仍未全部完成。以下保留历史记录。
 
 <!-- intel-extended-ec6077e -->
 2026-10-12：最新验证生产提交 `ec6077e`，GUI / CLI 同步补充 **Intel 各 Rank RTL 与掉电时序**。

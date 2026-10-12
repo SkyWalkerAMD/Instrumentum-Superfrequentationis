@@ -1,9 +1,16 @@
 # 平台功能恢复增量（2026-10-10）
 
-<!-- intel-clock-pending -->
-2026-10-12：GUI / CLI 同步新增 [Intel BCLK 与最后一次 MRC 请求](intel-clock.md)。
-限定 B7/A700，独立快照保留三个共享 PCU 寄存器，不将历史请求当作实时内存频率。
-云端完整编译、回归与安装包验证进行中；目标真机与全部原版功能仍未完成。
+<!-- intel-clock-b3a40d7 -->
+2026-10-12：最新验证生产提交 `b3a40d7`，GUI / CLI 同步新增 **Intel BCLK 与最后一次 MRC 请求**。
+限定 B7/A700，三个共享 PCU 寄存器和独立快照；历史训练请求不代表实时内存频率。
+
+- [实现范围](intel-clock.md)、[验证交付](intel-clock-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38200818742) 4/4，各 221 场景组；12 组 Intel 时钟及内存安全检查通过。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38200822292) 12/12，十目标各 17 CTest、450 份 JSON。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38200800678) 23/23，十目标各 91 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-intel-clock-b3a40d7/`：30 个安装包、源码及 SHA256。
+
+其它原版功能及目标真机验收仍未全部完成。以下保留历史记录。
 
 <!-- intel-extended-ec6077e -->
 2026-10-12：最新验证生产提交 `ec6077e`，GUI / CLI 同步补充 **Intel 各 Rank RTL 与掉电时序**。
@@ -130,7 +137,7 @@ GUI / CLI 入口及型号限制见[同步功能对照](frontend-progress.md)，�
 | 页面/公共层 | 实现 | 当前边界 |
 |---|---|---|
 | AMD PStates | 一次事务采样；完整 9 位 VID 编码（bit32 合入）、IddValue/IddDiv 原始位 | 仍只读；只显示编码，不宣称 mV/A；不把 PStateEn 当硬件开关 |
-| Intel Controls | RAPL / HWP 含活动窗口，13 项设置完整回读；DTS 温度；B7 core/cache offset、最大倍率、目标电压及 Adaptive/Override，V/F 点查询与受条件限制的单点 offset，P/E 睿频分组倍率；B7/8F Ring/LLC 范围 | 按型号、能力、锁、旧值与完整回读限制写入；其它型号 V/F、逐物理核心 override、活动核心阈值编辑、W790/W890 电压域、TVB、VID rank/SP、fabric/BCLK 未完成 |
+| Intel Controls | RAPL / HWP 含活动窗口，13 项设置完整回读；DTS 温度；B7 core/cache offset、最大倍率、目标电压及 Adaptive/Override，V/F 点查询与受条件限制的单点 offset，P/E 睿频分组倍率；B7/8F Ring/LLC 范围；B7/A700 报告 BCLK 与历史 MRC 请求 | 按型号、能力、锁、旧值与完整回读限制写入；其它型号 V/F、逐物理核心 override、活动核心阈值编辑、W790/W890 电压域、TVB、VID rank/SP、fabric/BCLK 写入和其它型号时钟信息未完成 |
 | AMD tuning / SMUIO | 三套互不混用的原 BIOS mailbox 地址、无写入 probe、选择命令/六参数、完整握手和固件返回；Shimada CCD/core/MHz 频率命令准备、限定身份的原始曲线查询；CPUID 稀疏拓扑 | 仅 Shimada 开放已提取的控制命令；Phoenix/GPT 仅测试和版本查询；CPUID 与固件目标 ID 未建立完整对应，曲线设置、PBO 高层单位及 PM 表实时读取未完成 |
 | Memory / Motherboard | DMI 主板和 BIOS、hwmon 温度/电压/电流/功耗/风扇/频率、驱动已绑定的 SPD；离线 SPD 文件 | 读取已有内核接口；不枚举探测裸 SMBus/EC、不装载驱动、不写 SPD；权限错误逐项显示 |
 | SPD 解码 | DDR4/DDR5 基本类型、组织、料号/序列号、完整基础区 CRC、对称单片/有效堆叠容量、DDR5 1/2/4/8 子通道及 3DS 不同逻辑 rank 刷新要求；修订版 1 的基础时序要求与 CAS 支持列表（含 DDR4 写延迟、DDR5 次级时序及 1.2 新字段）；DDR4 XMP 2.0 两组电压/时序、独立时间基准、限定 CAS 与推荐 DIMM 数（无扩展 CRC）；DDR5 XMP 3.0（含 8 项次级时序与独立 nCK 下限、CAS/命令率） 三个厂家档案的名称、电压、时序和逐区 CRC；EXPO 1.0 两组基础档案、独立启用及整块 CRC ；XMP 3.0 用户槽读取/校验；EXPO 增强时序存储字| DDR5 不足 512 字节时标注基础 CRC 未验证；未知公共区组织版本或保留编码不输出容量；不解码混合 rank 容量；档案值不等于实际运行值；EXPO 增强启用语义、1.1 与用户档案尚未还原；[档案元数据/组织](spd-profile-geometry.md) / [基础时序](spd-base-timings.md) / [CAS/命令率](spd-cas-recovery.md) / [DDR4 XMP](ddr4-xmp-recovery.md) / [DDR5 XMP](ddr5-xmp-recovery.md) / [EXPO](ddr5-expo-recovery.md) ；用户槽与增强功能启用语义未知，见[说明](spd-user-enhanced.md)|
@@ -173,7 +180,7 @@ DDR5 EEPROM 由 [spd5118](https://www.kernel.org/doc/html/latest/hwmon/spd5118.h
 ## 尚未完成的原功能
 
 - PStates 电压/电流的型号专用换算和全核一致写入规则；已知旧版电压/电流算法不能直接作为真值。
-- Intel 其它型号的 VF/OC voltage、逐物理核心 override、VID rank / SP、W790/W890 各电压域、fabric/BCLK；B7 已有限定实现，见[功能对照](frontend-progress.md)。
+- Intel 其它型号的 VF/OC voltage、逐物理核心 override、VID rank / SP、W790/W890 各电压域、fabric/BCLK 写入和其它型号时钟信息；B7 已有限定实现，见[功能对照](frontend-progress.md)。
 - AMD CPUID 与固件目标 ID 映射、物理单位调参、曲线设置、profiles/hotkeys、PM 表解码及目标固件验证；CPUID 拓扑和原始曲线查询已实现。
 - Intel 训练时序、AMD UMC 型号专用单位/通道映射、训练设置、DDR5 PMIC、主板 EC/VRM/时钟芯片及相关写入；AMD UMC 原编码读取与快照比较已实现。
 
