@@ -228,7 +228,7 @@ private slots:
             else {
                 panel->findChild<QLineEdit *>("clockCpu")->setText("131"); gate->release = true;
                 QTRY_VERIFY(panel->findChild<QPushButton *>("clockRead")->isEnabled());
-                QCOMPARE(panel->findChild<QTableWidget *>("clockTable")->rowCount(),0); QVERIFY(panel.captureBytes().isEmpty());
+                QCOMPARE(panel->findChild<QTableWidget *>("clockTable")->rowCount(),0); QVERIFY(panel->captureBytes().isEmpty());
                 QVERIFY(panel->findChild<QLabel *>("clockStatus")->text().contains("discarded")); delete panel;
             }
         }
