@@ -1,8 +1,17 @@
 # 项目知识入口
 
-<!-- intel-ring-downbin-pending -->
-2026-10-12：GUI / CLI 同步新增 [Intel Ring DownBin](intel-ring-downbin.md)，限定 B7 裸机；原版 Ring / Vmax 指令已隔离仿真，Vmax 仍未开放设置。云端验证进行中。以下保留上一批已验证记录。
-<!-- /intel-ring-downbin-pending -->
+<!-- intel-ring-c6e9599 -->
+2026-10-12：最新验证生产提交 `c6e9599`，GUI / CLI 同步恢复 **Intel Ring DownBin**。
+B7 裸机；独立启用/禁用，含锁、旧值和完整回读检查，保留 TVB / Vmax 等其它位。
+
+- [实现范围](intel-ring-downbin.md)、[验证交付](intel-ring-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38258982087) 4/4，各 18 CTest、256 场景组。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38258988264) 12/12，十目标各 20 CTest、585 份 JSON。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38258946852) 23/23，十目标各 109 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-intel-ring-c6e9599/`：30 个安装包、源码及 SHA256。
+
+Vmax、逐物理核心表、其它原版缺口及真机验收仍未全部完成。以下保留历史记录。
+<!-- /intel-ring-c6e9599 -->
 
 <!-- intel-tvb-edit-494b8f0 -->
 2026-10-12：最新验证生产提交 `494b8f0`，GUI / CLI 同步恢复 **Intel TVB 分档单字段编辑**。

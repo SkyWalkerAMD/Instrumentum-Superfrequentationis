@@ -1,6 +1,6 @@
 # GUI / CLI 同步进度
 
-2026-10-12 新增 [Ring DownBin](intel-ring-downbin.md)：GUI 配置页增加第三个开关，CLI 同步增加 ring-down-bin 字段。限定 B7；本批云端验证进行中。
+2026-10-12 新增 [Ring DownBin](intel-ring-downbin.md)：GUI 配置页增加第三个开关，CLI 同步增加 ring-down-bin 字段。限定 B7；生产提交 `c6e9599` 的 39 项云端任务全部通过，见 [验证交付](intel-ring-validation.md)。
 
 2026-10-12 新增 [TVB 单字段编辑](intel-tvb-table-edit.md)：两端支持温度 A/B、降倍率 A/B，含准备、旧值核对及完整读回；生产提交 `494b8f0` 的 39 项云端任务全部通过，见 [验证交付](intel-tvb-edit-validation.md)。
 
@@ -36,7 +36,7 @@ GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-
 | Intel Ring / LLC 范围 | Ring / LLC range | `intel-uncore-read` / `intel-uncore-set` | B7/8F；最小与最大倍率同时设置，保留其它位、旧值检查及完整读回；[实现说明](intel-uncore-recovery.md) |
 | Intel 内存控制器 | Memory timings | `intel-memory-read/decode` | B7/A700；57 字段含 RTL、掉电、刷新、自刷新和 ZQ，v1/v2/v3 双向快照；仅读取 |
 | Intel 时钟信息 | Clock information | `intel-clock-read/decode` | B7/A700；报告 BCLK kHz，历史 MRC Gear/倍率/VDDQ 请求；独立只读快照，不推导实时内存频率 |
-| Intel TVB 两项配置 | TVB configuration | `intel-tvb-read/set` | 06_B7 裸机；高温倍频裁剪与电压优化开关、锁/旧值检查、保留其它位、完整回读；分档查询见下行 |
+| Intel TVB / Ring DownBin | TVB & Ring DownBin | `intel-tvb-read/set` | 06_B7 裸机；高温倍频裁剪、电压优化及 Ring DownBin 三项独立开关，锁/旧值检查、保留其它位、完整回读；分档见下行 |
 | Intel TVB 分档 | TVB thresholds 查询 / 准备 / 编辑 | `intel-tvb-table` / `intel-tvb-table-set` | 06_B7 裸机；两组温度 / 降倍率查询与保守范围的单字段设置，旧值 / 锁核对及完整读回；逐物理核心表未恢复 |
 | AMD SMU | AMD tuning | `amd-smu-probe/read/send` | 现有身份/命令白名单与原始参数 |
 | AMD 曲线读取 | AMD tuning 曲线查询 | `amd-curve-read` | Shimada；显式固件 CCD/core；不推导 mV |

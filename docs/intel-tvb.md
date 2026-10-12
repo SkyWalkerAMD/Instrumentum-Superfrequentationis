@@ -1,6 +1,6 @@
 # Intel TVB 配置恢复
 
-2026-10-12 后续扩展：同一配置页和 CLI 已增加 [Ring DownBin](intel-ring-downbin.md)，页面名为 `TVB & Ring DownBin`。下面保留原两项 TVB 开关的恢复依据；本轮验证结果另行记录。
+2026-10-12 后续扩展：同一配置页和 CLI 已增加 [Ring DownBin](intel-ring-downbin.md)，页面名为 `TVB & Ring DownBin`。下面保留原两项 TVB 开关的恢复依据；生产提交 `c6e9599` 已通过云端验证，见 [交付记录](intel-ring-validation.md)。
 
 GUI `Intel Controls → TVB configuration` 和 CLI 共用同一事务核心，恢复 Raptor Lake-S
 两个配置开关：高温倍频裁剪（Ratio clipping）和随温度变化的电压优化（Voltage optimization）。
