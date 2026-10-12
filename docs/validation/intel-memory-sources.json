@@ -28,7 +28,11 @@
       "3.2.49",
       "3.2.50",
       "3.2.76",
-      "3.2.79"
+      "3.2.79",
+      "3.2.89",
+      "3.2.91",
+      "3.2.93",
+      "3.2.103"
     ],
     "visually_inspected_printed_pages": [
       129,
@@ -40,7 +44,13 @@
       149,
       152,
       153,
-      155
+      155,
+      162,
+      163,
+      164,
+      165,
+      166,
+      173
     ],
     "numeric_facts": {
       "mchbar_pci_offset": "0x48",
@@ -63,7 +73,24 @@
       "power_down_offset": "0xe050",
       "rtl_unit": "QCLK",
       "chip_select_unit": "MC_DCLK",
-      "cpded_zero_allowed": true
+      "cpded_zero_allowed": true,
+      "refresh_policy_offset": "0xe438",
+      "self_refresh_offset": "0xe440",
+      "zq_calibration_offset": "0xe448",
+      "self_refresh_exit_offset": "0xe4c0",
+      "trefix9_unit": "1024_DCLK",
+      "raise_blk_wait_unit": "MC_DCLK",
+      "tzqcal_unit": "2*tCK",
+      "tzqcs_alias": {
+        "DDR4": "tZQCS",
+        "DDR5": "tZQLAT"
+      },
+      "tsr_alias": {
+        "DDR4": "tCKESR",
+        "DDR5": "Self_refresh_tCSL"
+      },
+      "txsdll_and_tsr_unit": "not specified; encoded only",
+      "refresh_codes_preserve_zero": true
     }
   },
   "linux_pci_reference": {
@@ -80,13 +107,16 @@
     "pci_vendor": "0x8086",
     "pci_device": "0xa700",
     "physical_hardware_validated": false,
-    "register_count": 14,
-    "field_count": 43,
+    "register_count": 18,
+    "field_count": 57,
     "write_operations": 0,
-    "capture_version": 2,
+    "capture_version": 3,
     "legacy_versions": [
-      1
-    ]
+      1,
+      2
+    ],
+    "hardware_reads": 51,
+    "cpuid_reads": 3
   },
   "exclusions": [
     "mobile datasheet 764981 not used to authorize desktop accesses",
@@ -96,6 +126,10 @@
     "no timing writes or training commands",
     "no LPDDR rank 4-7 interpretation",
     "no empty-rank RTL measurements",
-    "no QCLK/MC_DCLK to tCK or nanoseconds conversion"
+    "no QCLK/MC_DCLK to tCK or nanoseconds conversion",
+    "no TXSR LPDDR interpretation for DDR4/DDR5",
+    "no implied units for TXSDLL or TSR",
+    "no recommended-configuration or training validation",
+    "no 9*tREFI inference from TREFIX9 name"
   ]
 }

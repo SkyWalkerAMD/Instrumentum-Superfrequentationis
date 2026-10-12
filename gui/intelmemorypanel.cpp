@@ -82,6 +82,8 @@ void IntelMemoryPanel::present(const IntelMemorySnapshot &s) {
         auto unit = QString::fromLatin1(intelMemoryUnit(s,f));
         if (unit == "encoded") unit = "Encoded";
         if (unit == "MC_DCLK") unit = "MC DCLK";
+        if (unit == "1024_DCLK") unit = "1024 DCLK";
+        if (unit == "tREFI_count") unit = "tREFI count";
         const QStringList values = {QString::fromLatin1(f.name),v.error == -ENODEV ? "Rank absent" : v.error ? "Not used" : QString::number(v.encoded),
             v.error ? "—" : unit,hexValue(f.offset,4),
             QString("%1:%2").arg(f.high).arg(f.low),hexValue(raw,8)};
@@ -94,6 +96,8 @@ void IntelMemoryPanel::present(const IntelMemorySnapshot &s) {
     status_->setText((s.offline ? QString("Offline snapshot; capture origin unverified. ") : QString("Two matching register reads completed; the capture is not atomic. ")) +
         (s.noGear2Divide || s.noGear4Divide ? "Gear parameter overrides are active; tCK fields retain their register encoding. " : "Programmed timing values; units are shown per field. ") +
         (s.version == 1 ? "Legacy v1: RTL and power-down timings were not captured. " : "RTL uses QCLK; tCSL and tCSH use MC DCLK. ") +
+        (s.version < 3 ? "Refresh policy, self-refresh and ZQ fields were not captured. " :
+            "tREFIx9 uses 1024 DCLK; tZQCAL uses 2*tCK unless overridden. Self-refresh delays without documented units remain encoded. ") +
         "tWRPRE is the write-command-to-precharge interval. No settings were changed.");
 }
 bool IntelMemoryPanel::loadCapture(const QByteArray &bytes) {

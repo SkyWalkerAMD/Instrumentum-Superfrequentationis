@@ -25,14 +25,14 @@ std::uint64_t word64(const capture_json::Json &v) {
 }
 const std::vector<IntelMemoryRegisterSpec> &intelMemoryRegisters(unsigned version) {
     // Intel 743846-001, sections 3.2.46, 3.2.49-50, 3.2.70-76, 3.2.79-80, 3.2.82,
-    // 3.2.90 and 3.2.94. Context comes before any timing register.
+    // 3.2.89-91, 3.2.93-94 and 3.2.103. Context precedes timing registers.
     static const std::vector<IntelMemoryRegisterSpec> specs = {
         {0xd800,4}, {0xd80c,4}, {0xe454,4}, {0xe088,8}, {0xe000,8}, {0xe008,4},
         {0xe00c,4}, {0xe010,4}, {0xe014,4}, {0xe018,4}, {0xe070,8}, {0xe43c,4},
-        {0xe020,8}, {0xe050,8}
+        {0xe020,8}, {0xe050,8}, {0xe438,4}, {0xe440,4}, {0xe448,8}, {0xe4c0,8}
     };
-    static const std::vector<IntelMemoryRegisterSpec> legacy(specs.begin(), specs.begin()+12), empty;
-    return version == 2 ? specs : version == 1 ? legacy : empty;
+    static const std::vector<IntelMemoryRegisterSpec> v1(specs.begin(), specs.begin()+12), v2(specs.begin(), specs.begin()+14), empty;
+    return version == 3 ? specs : version == 2 ? v2 : version == 1 ? v1 : empty;
 }
 const std::vector<IntelMemoryField> &intelMemoryFields(unsigned version) {
     static const std::vector<IntelMemoryField> fields = {
@@ -55,15 +55,33 @@ const std::vector<IntelMemoryField> &intelMemoryFields(unsigned version) {
         {"tCSH",0xe050,42,47,3,"MC_DCLK"}, {"tWRPDEN",0xe050,32,41,3},
         {"tRDPDEN",0xe050,21,28,3}, {"tXPDLL",0xe050,14,20,1},
         {"tXP",0xe050,7,13,3}, {"tCKE",0xe050,0,6,3},
-        {"tCPDED",0xe088,56,60,1,"tCK",0,true}
+        {"tCPDED",0xe088,56,60,1,"tCK",0,true},
+        // These are programmed policy/delay codes, including zero. Reading
+        // them does not validate firmware configuration against recommendations.
+        {"tREFIx9",0xe438,24,31,3,"1024_DCLK",0,true},
+        {"Refresh_block_wait",0xe438,20,23,3,"MC_DCLK",0,true},
+        {"Self_refresh_exit_debits",0xe438,18,19,3,"count",0,true},
+        {"High_priority_refresh_on_MRS",0xe438,17,17,3,"flag",0,true},
+        {"Count_tREFI_when_refresh_disabled",0xe438,16,16,3,"flag",0,true},
+        {"Refresh_panic_watermark",0xe438,12,15,3,"tREFI_count",0,true},
+        {"Refresh_high_priority_watermark",0xe438,8,11,3,"tREFI_count",0,true},
+        {"Opportunistic_refresh_idle",0xe438,0,7,3,"DCLK",0,true},
+        // 3.2.91 and 3.2.103 do not specify units for TXSDLL / TSR.
+        {"tXSDLL",0xe440,0,12,3,"encoded",0,true},
+        {"tZQCAL",0xe448,32,44,2,"2*tCK",0,true},
+        {"tZQCS",0xe448,10,20,1,"tCK",0,true},
+        {"tZQLAT",0xe448,10,20,2,"tCK",0,true},
+        {"tCKESR",0xe4c0,52,57,1,"encoded",0,true},
+        {"Self_refresh_tCSL",0xe4c0,52,57,2,"encoded",0,true}
     };
-    static const std::vector<IntelMemoryField> legacy(fields.begin(), fields.begin()+30), empty;
-    return version == 2 ? fields : version == 1 ? legacy : empty;
+    static const std::vector<IntelMemoryField> v1(fields.begin(), fields.begin()+30), v2(fields.begin(), fields.begin()+43), empty;
+    return version == 3 ? fields : version == 2 ? v2 : version == 1 ? v1 : empty;
 }
 const char *intelMemoryUnit(const IntelMemorySnapshot &s, const IntelMemoryField &f) {
     // QCLK and MC DCLK are already controller-domain quantities. Do not apply
     // the DRAM timing divide override, or guess a tCK/ns conversion, to them.
-    return std::string(f.unit) == "tCK" && (s.noGear2Divide || s.noGear4Divide) ? "encoded" : f.unit;
+    const std::string unit = f.unit;
+    return (unit == "tCK" || unit == "2*tCK") && (s.noGear2Divide || s.noGear4Divide) ? "encoded" : f.unit;
 }
 std::uint32_t intelMemoryOffset(const IntelMemoryTarget &t, std::uint32_t offset) {
     return offset + t.controller * 0x10000 + (offset == 0xd800 ? 0 : t.channel * (offset == 0xd80c ? 4 : 0x800));
@@ -80,7 +98,8 @@ IntelMemorySnapshot decodeIntelMemory(const IntelMemoryTarget &t, const std::vec
         const auto it = raw.find(spec.offset);
         if (it == raw.end() || (spec.width == 4 && it->second > UINT32_MAX)) { out.error = -EINVAL; return out; }
         const auto full = spec.width == 4 ? UINT64_C(0xffffffff) : UINT64_MAX;
-        if (it->second == full || (!it->second && spec.offset != 0xd800 && spec.offset != 0xe088)) { out.error = -ENODATA; return out; }
+        const bool policy = spec.offset == 0xe438 || spec.offset == 0xe440 || spec.offset == 0xe448 || spec.offset == 0xe4c0;
+        if (it->second == full || (!it->second && spec.offset != 0xd800 && spec.offset != 0xe088 && !policy)) { out.error = -ENODATA; return out; }
     }
     out.dramType = unsigned(raw[0xd800] & 7);
     if (out.dramType > 1) { out.error = -ENOTSUP; return out; }
@@ -103,7 +122,8 @@ IntelMemorySnapshot decodeIntelMemory(const IntelMemoryTarget &t, const std::vec
         if (!(field.dramTypes & (1u << out.dramType))) v.error = -ENOTSUP;
         else if (field.rankBit && !(out.rankMask & field.rankBit)) v.error = -ENODEV;
         // Do not turn an uninitialized register into a timing measurement.
-        // tCPDED explicitly permits zero; absent ranks have no RTL measurement.
+        // tCPDED permits zero; v3 policy codes preserve zero as configured.
+        // Absent ranks have no RTL measurement.
         else if (!v.encoded && !field.zeroAllowed) { out.error = -ENODATA; out.values.clear(); return out; }
         out.values.push_back(v);
     }
@@ -183,7 +203,8 @@ IntelMemorySnapshot parseIntelMemoryCapture(const std::string &json) {
             data = &root.at("data").at("memory");
         }
         const unsigned version = equals(data->at("format"), Json::String, "octool-intel-memory-v1") ? 1 :
-            equals(data->at("format"), Json::String, "octool-intel-memory-v2") ? 2 : 0;
+            equals(data->at("format"), Json::String, "octool-intel-memory-v2") ? 2 :
+            equals(data->at("format"), Json::String, "octool-intel-memory-v3") ? 3 : 0;
         check(version &&
             equals(data->at("layout"), Json::String, "raptor-lake-s-743846-001"), "Unsupported Intel memory layout");
         IntelMemoryTarget t; t.controller = uint(data->at("controller"), 1); t.channel = uint(data->at("channel"), 1);

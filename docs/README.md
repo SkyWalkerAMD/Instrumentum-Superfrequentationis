@@ -1,5 +1,11 @@
 # 项目知识入口
 
+<!-- intel-refresh-pending -->
+2026-10-12：GUI / CLI 同步加入 Intel 刷新、自刷新与 ZQ 参数，当前 18 寄存器 / 57 字段。
+限定 B7/A700，保留字段单位、DDR4/DDR5 别名和旧 v1/v2 快照。读取器不判断配置是否满足训练要求。
+[实现范围](intel-memory-refresh.md)。本轮云端构建和验证尚未完成；历史已验证批次见下文。
+<!-- /intel-refresh-pending -->
+
 <!-- intel-clock-b3a40d7 -->
 2026-10-12：最新验证生产提交 `b3a40d7`，GUI / CLI 同步新增 **Intel BCLK 与最后一次 MRC 请求**。
 限定 B7/A700，三个共享 PCU 寄存器和独立快照；历史训练请求不代表实时内存频率。

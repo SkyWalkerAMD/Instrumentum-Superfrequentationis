@@ -1,7 +1,8 @@
 # Intel RTL 与掉电时序
 
 2026-10-12：GUI `Intel Controls → Memory timings` 与 CLI `intel-memory-read` /
-`intel-memory-decode` 同步扩展到 43 字段。平台限制仍为 Raptor Lake-S B7 / A700，
+`intel-memory-decode` 的 v2 快照扩展到 43 字段。当前 v3 再加入
+[刷新、自刷新与 ZQ 参数](intel-memory-refresh.md)，共 57 字段；本页记录 v2 扩展。平台限制仍为 Raptor Lake-S B7 / A700，
 只读已经启用的 MCHBAR，不改变硬件设置。使用方式见[内存控制器说明](intel-memory.md)。
 
 ## 新增字段

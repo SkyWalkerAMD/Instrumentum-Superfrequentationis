@@ -5,7 +5,8 @@ GUI `Intel Controls → Clock information` 与 CLI `intel-clock-read` / `intel-c
 
 GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-decode`
 同步提供 [Raptor Lake-S 内存控制器时序与快照](intel-memory.md)，限定 B7/A700。
-2026-10-12 扩展为 43 字段，新增 [RTL 与掉电参数](intel-memory-extended.md)，兼容旧 v1 快照。
+2026-10-12 当前扩展为 57 字段，含 [RTL 与掉电参数](intel-memory-extended.md)及
+[刷新、自刷新与 ZQ 参数](intel-memory-refresh.md)，兼容旧 v1/v2 快照。
 
 新增 [Intel 中间组阈值编辑](turbo-thresholds.md)和 [DDR5 混合 rank 容量](spd-asymmetric.md)，两端共用实现与约束。
 

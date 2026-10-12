@@ -4,15 +4,18 @@ GUI 的 Intel Controls → Memory timings 与 CLI 的 `intel-memory-read` 共用
 当前限定 Raptor Lake-S：CPUID family 6 / model B7、无 hypervisor 标志，并且
 `0000:00:00.0` 为 `8086:A700`、PCI class `060000`。不把本页推广为全部 Intel 型号支持。
 
-当前共 43 个字段，其中原有 30 项为 CL、CWL、RCD、RP、RAS、WRPRE、RDPRE、PPD、FAW、RRD SG/DG、
+当前共 57 个字段，其中原有 30 项为 CL、CWL、RCD、RP、RAS、WRPRE、RDPRE、PPD、FAW、RRD SG/DG、
 REFSBRD、RFC、REFI，以及 RDRD/RDWR/WRRD/WRWR 各四种目标关系。
 SG/DG 表示同/不同 bank group，DR/DD 表示同 DIMM 的不同 rank / 不同 DIMM。
 DDR5 不使用 PPD，DDR4 不使用 REFSBRD，对应值为空并明确显示不适用。
 WRPRE 是写命令到预充电的间隔，不能当作单独的 WR；不推算未确认的 WR/RTP/WTR。
 
-新增 13 项是 Rank 0–3 的 RTL，以及 PRPDEN、CSL、CSH、WRPDEN、RDPDEN、XPDLL、XP、
+v2 新增的 13 项是 Rank 0–3 的 RTL，以及 PRPDEN、CSL、CSH、WRPDEN、RDPDEN、XPDLL、XP、
 CKE、CPDED。RTL 只对 rank 占用掩码中的有效 rank 显示，空 rank 显示 `Rank absent`；
 XPDLL 和 CPDED 限 DDR4，CPDED 允许零。详细位域和单位见[扩展时序说明](intel-memory-extended.md)。
+
+v3 再增加刷新策略、自刷新延迟与 ZQ 校准的 14 个字段，按 DDR4/DDR5 区分别名。
+详细位域、零编码和单位边界见[刷新参数说明](intel-memory-refresh.md)。
 
 ## 使用
 
@@ -28,7 +31,7 @@ controller 为 0 或 1；DDR4 每个 controller 仅 channel 0，DDR5 可选 0 �
 GUI 点击 Read once 才读取；可打开 CLI 报告、复制或保存快照。
 GUI 保存的 JSON 可由 CLI 离线解码，离线操作不创建硬件后端。
 
-14 个固定寄存器包括内存类型、DIMM 容量非空检查、rank 占用、调度配置及上述时序。
+18 个固定寄存器包括内存类型、DIMM 容量非空检查、rank 占用、调度配置及上述时序。
 类型与通道不匹配、rank 空缺、未初始化值、未知布局、无访问权限或读取失败均不发布旧时序。
 硬件读取比较两组完整寄存器，并检查其间的主桥身份与 MCHBAR；变化返回错误，不自动重试。
 这能发现采样期间的变化，但不能保证硬件原子快照或证明训练稳定性。
@@ -37,17 +40,18 @@ GUI 保存的 JSON 可由 CLI 离线解码，离线操作不创建硬件后端�
 
 按字段显示手册定义的程序化值：大部分为 `tCK`，RTL 为 `QCLK`，CSL/CSH 为 `MC_DCLK`。
 任一 Gear 参数除法覆盖标志开启时，tCK 字段显示 `encoded` 原编码；QCLK 和 MC_DCLK 保持
-各自的控制器单位。保留 Gear2、Gear4、两项覆盖标志、command-stretch 与 N:1 编码。
+各自的控制器单位。新增 tZQCAL 的 2*tCK 也受覆盖标志限制；
+DCLK、1024_DCLK、计数和 flag 保持其含义。未明确单位的自刷新延迟显示 encoded。保留 Gear2、Gear4、两项覆盖标志、command-stretch 与 N:1 编码。
 不盲目乘 2/4，不从 command-stretch 单字段推断实际总线命令率，不输出猜测的 MHz 或 ns。
 
-新读取的格式为 `octool-intel-memory-v2`，布局键为 `raptor-lake-s-743846-001`。
-GUI 和 CLI 仍接受并导出旧版 `octool-intel-memory-v1`：12 寄存器、30 字段。
+新读取的格式为 `octool-intel-memory-v3`，布局键为 `raptor-lake-s-743846-001`。
+GUI 和 CLI 仍接受并导出旧版 v1：12 寄存器、30 字段，以及 v2：14 寄存器、43 字段。
 打开旧快照不会伪造新增字段，也不自动访问硬件补读；保存时保留其版本。
 所有原始寄存器使用 16 位十六进制字符串，防止经过 JSON/Qt 时丢失高于 2^53 的精度。
 offset 统一保存为 MC0/channel0 的规范偏移：共享的 D800 不加 channel 偏移，D80C 的 channel 1 是 D810（+4），时序区则为 +0800h。
 导入时根据原始字重新计算字段，不信任外部提供的解码数值、内存类型和来源声明。
 最多 64 KiB，拒绝缺项/重复寄存器、未知偏移、错误位宽、无效 UTF-8 和过深 JSON。
-一次快照必须包含所声明版本的全部寄存器（v1 为 12，v2 为 14）；版本与寄存器集合
+一次快照必须包含所声明版本的全部寄存器（v1 为 12，v2 为 14，v3 为 18）；版本与寄存器集合
 不匹配时拒绝导入，不将不完整采样补零成成功结果。
 
 ## 依据和边界

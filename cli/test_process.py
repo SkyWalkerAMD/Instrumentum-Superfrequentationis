@@ -35,7 +35,7 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 450, len(reports)
+assert len(reports) == 462, len(reports)
 clock_reports = [r for r in reports if r["command"] in ("intel-clock-read","intel-clock-decode")]
 assert len(clock_reports) == 20 and [r["ok"] for r in clock_reports] == ([True]*4+[False]*6)*2
 for i,r in enumerate(clock_reports):
@@ -72,15 +72,15 @@ with tempfile.TemporaryDirectory(prefix="octool-intel-clock-") as directory:
     os.mkfifo(Path(directory)/"fifo")
     assert run("intel-clock-decode","--file",str(Path(directory)/"fifo"),code=3)["data"]["clock"] is None
 imc_reports = [r for r in reports if r["command"] in ("intel-memory-read","intel-memory-decode")]
-assert len(imc_reports) == 28
-assert [r["ok"] for r in imc_reports] == ([True]*4+[False]*6)*2 + [True]*4+[False]*4
+assert len(imc_reports) == 40
+assert [r["ok"] for r in imc_reports] == ([True]*4+[False]*6)*2 + [True]*4+[False]*4 + [True]*6+[False]*6
 for i,r in enumerate(imc_reports[:20]):
     memory = r["data"]["memory"]
     if not r["ok"]:
         assert memory is None
         continue
-    assert memory["format"] == "octool-intel-memory-v2"
-    assert len(memory["registers"]) == 14 and len(memory["fields"]) == 43
+    assert memory["format"] == "octool-intel-memory-v3"
+    assert len(memory["registers"]) == 18 and len(memory["fields"]) == 57
     fields = {v["name"]:v for v in memory["fields"]}
     assert fields["tCL"]["encoded"] == 36 and fields["tWRPRE"]["encoded"] == 80
     assert fields["tWRRD_SG"]["encoded"] == 70 and fields["tWRRD_DD"]["encoded"] == 10
@@ -94,9 +94,18 @@ for i,r in enumerate(imc_reports[:20]):
     assert fields["tCPDED"]["encoded"] == (5 if i == 2 else None)
     assert memory["registers"][4]["raw"] == "0x814160500042402a"
     assert fields["tCL"]["unit"] == ("encoded" if i in (3,13) else "tCK")
+    assert fields["tREFIx9"]["encoded"] == 66 and fields["tREFIx9"]["unit"] == "1024_DCLK"
+    assert fields["Refresh_block_wait"]["encoded"] == 6 and fields["Refresh_block_wait"]["unit"] == "MC_DCLK"
+    assert fields["tXSDLL"]["encoded"] == 683 and fields["tXSDLL"]["unit"] == "encoded"
+    assert fields["tZQCAL"]["encoded"] == (None if i == 2 else 1110)
+    assert fields["tZQCAL"]["unit"] == (None if i == 2 else "encoded" if i in (3,13) else "2*tCK")
+    assert fields["tZQCS"]["encoded"] == (293 if i == 2 else None)
+    assert fields["tZQLAT"]["encoded"] == (None if i == 2 else 293)
+    assert fields["tCKESR"]["encoded"] == (41 if i == 2 else None)
+    assert fields["Self_refresh_tCSL"]["encoded"] == (None if i == 2 else 41)
     assert memory["offline"] == (i >= 10) and not memory["origin_verified"] and not memory["atomic_snapshot_guaranteed"]
     if i >= 10: assert not r["data"]["hardware_accessed"]
-for i,r in enumerate(imc_reports[20:]):
+for i,r in enumerate(imc_reports[20:28]):
     assert not r["data"]["hardware_accessed"]
     memory = r["data"]["memory"]
     if i >= 4:
@@ -115,6 +124,25 @@ for i,r in enumerate(imc_reports[20:]):
     if i == 3:
         assert fields["tCPDED"]["encoded"] == 0 and fields["tCPDED"]["unit"] == "encoded"
         assert fields["RTL_Rank0"]["unit"] == "QCLK" and fields["tCSL"]["unit"] == "MC_DCLK"
+for i,r in enumerate(imc_reports[28:]):
+    assert not r["data"]["hardware_accessed"]
+    memory = r["data"]["memory"]
+    if i >= 6:
+        assert memory is None
+        continue
+    assert memory["format"] == "octool-intel-memory-v3" and memory["offline"]
+    assert len(memory["registers"]) == 18 and len(memory["fields"]) == 57
+    fields = {v["name"]:v for v in memory["fields"]}
+    assert fields["tREFIx9"]["encoded"] == (0 if i == 2 else 66)
+    assert fields["tREFIx9"]["unit"] == "1024_DCLK"
+    assert fields["Refresh_block_wait"]["unit"] == "MC_DCLK"
+    assert fields["tXSDLL"]["unit"] == "encoded"
+    assert fields["tZQCAL"]["unit"] == (None if i == 1 else "encoded" if i == 3 else "2*tCK")
+    assert fields["tZQCS"]["encoded"] == (293 if i == 1 else None)
+    assert fields["tZQLAT"]["encoded"] == (None if i == 1 else 0 if i == 2 else 293)
+    assert fields["tCKESR"]["encoded"] == (41 if i == 1 else None)
+    assert fields["Self_refresh_tCSL"]["encoded"] == (None if i == 1 else 0 if i == 2 else 41)
+    assert memory["registers"][17]["raw"] == ("0x0000000000000000" if i == 2 else "0xe290000000001234")
 with tempfile.TemporaryDirectory(prefix="octool-intel-memory-") as directory:
     path = Path(directory)/"内存快照.json"
     for source in (imc_reports[0]["data"]["memory"],imc_reports[0],imc_reports[10]):
@@ -122,7 +150,7 @@ with tempfile.TemporaryDirectory(prefix="octool-intel-memory-") as directory:
         decoded = run("intel-memory-decode","--file",str(path))
         assert decoded["data"]["memory"]["registers"] == imc_reports[0]["data"]["memory"]["registers"]
         assert decoded["data"]["memory"]["fields"][0]["encoded"] == 36
-    for source in imc_reports[20:24]:
+    for source in imc_reports[20:24]+imc_reports[28:34]:
         path.write_text(json.dumps(source),encoding="utf-8")
         decoded = run("intel-memory-decode","--file",str(path))
         assert decoded["data"]["memory"] == source["data"]["memory"]
