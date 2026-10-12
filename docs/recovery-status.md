@@ -1,10 +1,16 @@
 # 功能还原状态
 
-<!-- intel-refresh-pending -->
-2026-10-12：GUI / CLI 同步加入 Intel 刷新、自刷新与 ZQ 参数，当前 18 寄存器 / 57 字段。
-限定 B7/A700，保留字段单位、DDR4/DDR5 别名和旧 v1/v2 快照。读取器不判断配置是否满足训练要求。
-[实现范围](intel-memory-refresh.md)。本轮云端构建和验证尚未完成；历史已验证批次见下文。
-<!-- /intel-refresh-pending -->
+<!-- intel-refresh-97c1b22 -->
+2026-10-12：最新验证生产提交 `97c1b22`，GUI / CLI 同步增加 **Intel 刷新、自刷新与 ZQ 参数**。
+限定 B7/A700，18 寄存器 / 57 字段；按类型显示别名及单位，兼容旧 v1/v2 快照。
+
+- [实现范围](intel-memory-refresh.md)、[验证交付](intel-refresh-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38208752141) 4/4，各 226 场景组；23 组 Intel 内存及内存安全检查通过。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38208752189) 12/12，十目标各 17 CTest、462 份 JSON。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38208752202) 23/23，十目标各 93 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-intel-refresh-97c1b22/`：30 个安装包、源码及 SHA256。
+
+其它原版功能及目标真机验收仍未全部完成。以下保留历史记录。
 
 <!-- intel-clock-b3a40d7 -->
 2026-10-12：最新验证生产提交 `b3a40d7`，GUI / CLI 同步新增 **Intel BCLK 与最后一次 MRC 请求**。
@@ -285,7 +291,7 @@ PStates 写入、曲线写入、Intel server VF/fabric、板级专用控制等�
 
 `06b477c` 是此前 [Shimada 原始曲线查询](amd-curve-query-recovery.md)的历史版本，
 [当时验证](validation/amd-curve-recovery-ci-06b477c.json)为核心 4/4、Linux 23/23。
-最新生产版本以本页顶部为准，下表已更新到 `b3a40d7`。
+最新生产版本以本页顶部为准，下表已更新到 `97c1b22`。
 原版全部功能仍未完成。安装兼容、自动化回归、原指令研究和真实硬件验收分别记录，
 没有能代表四大模块全部功能的可靠百分比；212 个 UMC 字段也不是整个软件的功能分母。
 
