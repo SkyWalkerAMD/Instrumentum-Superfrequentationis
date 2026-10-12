@@ -35,7 +35,35 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 520, len(reports)
+assert len(reports) == 564, len(reports)
+
+tvb_edits = [r for r in reports if r['command'] in ('intel-tvb-table','intel-tvb-table-set') and 'before' in r['data']]
+assert len(tvb_edits) == 28 and [r['ok'] for r in tvb_edits] == [True]*18+[False]*10
+for i, report in enumerate(tvb_edits):
+    data = report['data']; before = data['before']
+    assert not data['hardware_effect_measured'] and not data['atomic_snapshot']
+    if before['valid']:
+        raw = int(before['raw'],16)
+        values = (before['temperature_a_c'],before['down_bins_a'],before['temperature_b_c'],before['down_bins_b'])
+        assert values == ((raw >> 8) & 255,raw & 255,(raw >> 16) & 255,raw >> 24)
+        bounded = values[0] <= 100 and values[1] <= 10 and values[2] <= 100 and values[3] <= 10
+        assert before['within_editing_profile'] == bounded
+        assert before['editable'] == (bounded and before['configuration']['editable'])
+    else:
+        assert all(before[k] is None for k in ('raw','temperature_a_c','down_bins_a','temperature_b_c','down_bins_b','within_editing_profile'))
+    if report['command'] == 'intel-tvb-table-set':
+        assert data['verified'] == report['ok']
+        if report['ok']:
+            shift = {'temperature-a':8,'down-bins-a':0,'temperature-b':16,'down-bins-b':24}[data['field']]
+            after = data['after']; old = int(before['raw'],16); new = int(after['raw'],16)
+            assert new == ((old & ~(255 << shift)) | (data['requested_value'] << shift))
+            assert after['configuration'] == before['configuration'] and after['active_cores'] == before['active_cores']
+            assert data['unchanged'] == (new == old) and data['write_attempted'] == (new != old)
+        else:
+            assert data['write_attempted'] == (i in (22,25))
+    else:
+        assert not data['settings_write_attempted']
+assert tvb_edits[25]['data']['firmware_status'] == 128
 tvb_tables = [r for r in reports if r['command'] == 'intel-tvb-table' and 'rows' in r['data']]
 assert len(tvb_tables) == 18 and [r['ok'] for r in tvb_tables] == [True]*10+[False]*8
 for i, report in enumerate(tvb_tables):

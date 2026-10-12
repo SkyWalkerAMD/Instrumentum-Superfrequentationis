@@ -76,6 +76,10 @@ const std::map<std::string, IntelField> intelFields = {
     {"hwp-min", IntelField::HwpMin}, {"hwp-max", IntelField::HwpMax}, {"hwp-desired", IntelField::HwpDesired}, {"hwp-epp", IntelField::HwpEpp},
     {"hwp-window-us", IntelField::HwpActivityWindow}
 };
+const std::map<std::string, IntelTvbTableField> tvbTableFields = {
+    {"temperature-a", IntelTvbTableField::TemperatureA}, {"down-bins-a", IntelTvbTableField::DownBinsA},
+    {"temperature-b", IntelTvbTableField::TemperatureB}, {"down-bins-b", IntelTvbTableField::DownBinsB}
+};
 struct Command {
     std::string name, path, otherPath, field;
     unsigned cpu = 0, timeout = 10000, ccd = 0, core = 0, point = 0, group = 0;
@@ -94,7 +98,7 @@ struct Command {
 Command parse(const std::vector<std::string> &args) {
     Command c; c.name = args.at(0);
     const std::set<std::string> hardware = {"cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read", "intel-vf-set", "intel-turbo-read", "intel-turbo-set",
-        "intel-memory-read", "intel-clock-read", "intel-tvb-read", "intel-tvb-set", "intel-tvb-table", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
+        "intel-memory-read", "intel-clock-read", "intel-tvb-read", "intel-tvb-set", "intel-tvb-table", "intel-tvb-table-set", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
     const bool memoryOffline = c.name == "intel-memory-decode";
     const bool clockOffline = c.name == "intel-clock-decode";
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
@@ -103,14 +107,15 @@ Command parse(const std::vector<std::string> &args) {
     std::set<std::string> keys = {"--json"};
     if (hardware.count(c.name)) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
-    const bool writing = c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "intel-tvb-set" || c.name == "intel-uncore-set" || c.name == "amd-smu-send" || c.name == "register-write";
+    const bool writing = c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set" || c.name == "intel-uncore-set" || c.name == "amd-smu-send" || c.name == "register-write";
     const bool vf = c.name == "intel-vf-read" || c.name == "intel-vf-set";
     const bool turbo = c.name == "intel-turbo-read" || c.name == "intel-turbo-set";
     if (turbo) keys.insert("--core-type");
     if (c.name == "intel-turbo-set") { keys.insert("--group"); keys.insert("--value"); keys.insert("--field"); }
     if (c.name == "intel-uncore-set") { keys.insert("--minimum-ratio"); keys.insert("--maximum-ratio"); }
-    if (c.name == "intel-tvb-set") { keys.insert("--field"); keys.insert("--value"); }
-    if (c.name == "intel-tvb-table") keys.insert("--active-cores");
+    if (c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set") { keys.insert("--field"); keys.insert("--value"); }
+    if (c.name == "intel-tvb-table" || c.name == "intel-tvb-table-set") keys.insert("--active-cores");
+    if (c.name == "intel-tvb-table") keys.insert("--for-edit");
     if (rawRegister) {
         for (const char *key : {"--space", "--address", "--width", "--bus", "--device", "--function"}) keys.insert(key);
         if (writing) keys.insert("--value");
@@ -168,9 +173,18 @@ Command parse(const std::vector<std::string> &args) {
         require(c.timeout > 0, "--timeout-ms must be 1..120000");
     }
     if (writing) require(options.count("--apply") != 0, "Settings commands require --apply; nothing was opened or changed");
-    if (c.name == "intel-tvb-table" && options.count("--active-cores")) {
+    if (c.name == "intel-tvb-table" || c.name == "intel-tvb-table-set") {
+        c.forEdit = options.count("--for-edit") != 0;
+        if (c.forEdit || writing) require(options.count("--active-cores"), "Editing requires one explicit --active-cores entry");
+        if (options.count("--active-cores")) {
         c.point = uintOption(options, "--active-cores", 8);
         require(c.point >= 1, "--active-cores must be 1..8; omit to scan all candidates");
+        }
+        if (writing) {
+            c.field = get(options, "--field");
+            require(tvbTableFields.count(c.field), "TVB table field must be temperature-a, down-bins-a, temperature-b or down-bins-b");
+            c.value = uintOption(options, "--value", c.field.compare(0,11,"temperature") == 0 ? 100 : 10);
+        }
     }
     if (c.name == "intel-tvb-set") {
         c.field = get(options, "--field");
@@ -307,6 +321,20 @@ std::string tvbSnapshot(const IntelTvbSnapshot &s) {
         {"locked", valid ? boolean((s.flexRatio & (UINT64_C(1) << 20)) != 0) : "null"},
         {"ratio_clipping_enabled", valid ? boolean(intelTvbRatioClipping(s.response.data)) : "null"},
         {"voltage_optimization_enabled", valid ? boolean(intelTvbVoltageOptimization(s.response.data)) : "null"}});
+}
+std::string tvbTableEditSnapshot(const IntelTvbTableEditSnapshot &s) {
+    const bool valid = s.valid && !s.error;
+    const auto fields = decodeIntelTvbThresholds(s.value.data);
+    return object({{"error", number(s.error)}, {"valid", boolean(valid)}, {"active_cores", number(s.activeCores)},
+        {"editable", boolean(intelTvbTableEditable(s))}, {"configuration", tvbSnapshot(s.configuration)},
+        {"raw", valid ? hex(s.value.data) : "null"}, {"query_attempted", boolean(s.value.commandAttempted)},
+        {"query_completed", boolean(s.value.completed)},
+        {"firmware_status", s.value.completed ? number(s.value.firmwareStatus) : "null"},
+        {"within_editing_profile", valid ? boolean(intelTvbTableValuesEditable(s.value.data)) : "null"},
+        {"temperature_a_c", valid ? number(fields.temperatureA) : "null"},
+        {"down_bins_a", valid ? number(fields.downBinsA) : "null"},
+        {"temperature_b_c", valid ? number(fields.temperatureB) : "null"},
+        {"down_bins_b", valid ? number(fields.downBinsB) : "null"}});
 }
 std::string uncoreSnapshot(const IntelUncoreSnapshot &s) {
     const bool valid = s.valid && !s.error;
@@ -449,6 +477,25 @@ Result hardware(const Command &c, HardwareSession &s) {
             out.data.push_back({"write_attempted", boolean(result.writeAttempted)}); out.data.push_back({"verified", boolean(result.verified)});
             out.data.push_back({"stage", number(unsigned(result.stage))}); out.data.push_back({"after", ocSnapshot(result.readback)});
         }
+    } else if (c.name == "intel-tvb-table-set" || (c.name == "intel-tvb-table" && c.forEdit)) {
+        const auto snapshot = readIntelTvbTableEdit(s,c.cpu,c.point); out.error = snapshot.error;
+        out.data.push_back({"scope", quote("one TVB active P-core count entry; not a physical core ID")});
+        out.data.push_back({"hardware_effect_measured", "false"});
+        out.data.push_back({"atomic_snapshot", "false"});
+        out.data.push_back({"before", tvbTableEditSnapshot(snapshot)});
+        if (c.name == "intel-tvb-table-set") {
+            IntelTvbTableUpdate result;
+            if (!out.error) {
+                result = applyIntelTvbTable(s,snapshot,tvbTableFields.at(c.field),unsigned(c.value)); out.error = result.error;
+            }
+            out.data.push_back({"field", quote(c.field)}); out.data.push_back({"requested_value", number(c.value)});
+            out.data.push_back({"write_attempted", boolean(result.writeAttempted)});
+            out.data.push_back({"verified", boolean(result.verified && !out.error)});
+            out.data.push_back({"unchanged", boolean(result.unchanged)});
+            out.data.push_back({"stage", number(unsigned(result.stage))});
+            out.data.push_back({"firmware_status", result.response.completed ? number(result.response.firmwareStatus) : "null"});
+            out.data.push_back({"after", tvbTableEditSnapshot(result.readback)});
+        } else out.data.push_back({"settings_write_attempted", "false"});
     } else if (c.name == "intel-tvb-table") {
         const auto snapshot = readIntelTvbTable(s,c.cpu,c.point); out.error = snapshot.error;
         out.data.push_back({"identity", identity(snapshot.identity)});
@@ -850,6 +897,9 @@ Usage: octool-cli COMMAND [OPTIONS]
   intel-clock-decode --file SNAPSHOT   Decode the shared GUI/CLI clock snapshot offline
   intel-tvb-read --cpu N
   intel-tvb-table --cpu N [--active-cores 1..8]   Read thresholds; omit selection to scan all 8 candidates
+  intel-tvb-table --cpu N --active-cores 1..8 --for-edit   Read one entry and editing context
+  intel-tvb-table-set --cpu N --active-cores 1..8 --field temperature-a|down-bins-a|temperature-b|down-bins-b --value N --apply
+      Temperatures: 0..100 C; down bins: 0..10. Preserve other fields and verify the complete entry.
   intel-tvb-set --cpu N --field ratio-clipping|voltage-optimization --value 0|1 --apply
   intel-uncore-read --cpu N
   intel-uncore-set --cpu N --minimum-ratio MIN --maximum-ratio MAX --apply

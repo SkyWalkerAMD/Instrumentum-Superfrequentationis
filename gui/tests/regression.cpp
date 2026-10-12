@@ -647,6 +647,146 @@ private slots:
             }
         }
     }
+    void intelTvbTablePrepareAndBounds() {
+        auto *device = new IntelTvbTableFixture;
+        IntelTvbTablePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+        auto *entry = panel.findChild<QComboBox *>("tvbTableEntry"); auto *prepare = panel.findChild<QPushButton *>("tvbTablePrepare");
+        auto *apply = panel.findChild<QPushButton *>("tvbTableApply"); auto *value = panel.findChild<QLineEdit *>("tvbTableValue");
+        auto *status = panel.findChild<QLabel *>("tvbTableStatus");
+        QVERIFY(!prepare->isEnabled()); QVERIFY(!apply->isEnabled()); QCOMPARE(device->calls,0u);
+        entry->setCurrentIndex(1); QVERIFY(prepare->isEnabled()); prepare->click(); QTRY_VERIFY(panel.isEnabled());
+        QVERIFY(apply->isEnabled()); QCOMPARE(value->text(),QString("70"));
+        entry->setCurrentIndex(2); QVERIFY(!apply->isEnabled()); QVERIFY(value->text().isEmpty());
+        prepare->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(!apply->isEnabled());
+        QVERIFY(status->text().contains("outside the supported editing profile"));
+        QCOMPARE(panel.findChild<QTableWidget *>("tvbThresholdTable")->item(0,3)->text(),QString("105"));
+        entry->setCurrentIndex(1); device->locked = true; prepare->click(); QTRY_VERIFY(panel.isEnabled());
+        QVERIFY(!apply->isEnabled()); QVERIFY(status->text().contains("OC locked"));
+        device->failCommand = 0x18; device->status = 128; prepare->click(); QTRY_VERIFY(panel.isEnabled());
+        QVERIFY(!apply->isEnabled()); QVERIFY(value->text().isEmpty()); QVERIFY(status->text().contains("Control status: 128"));
+        QCOMPARE(panel.findChild<QTableWidget *>("tvbThresholdTable")->rowCount(),0);
+        const auto calls = device->calls; panel.findChild<QLineEdit *>("tvbTableCpu")->setText("-1"); prepare->click();
+        QCOMPARE(device->calls,calls); QCOMPARE(device->tableSettingsAttempts(),0u);
+    }
+    void intelTvbTableEditFieldsCancelAndNoop() {
+        auto *device = new IntelTvbTableFixture;
+        IntelTvbTablePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        panel.resize(1180,600); panel.show(); panel.findChild<QComboBox *>("tvbTableEntry")->setCurrentIndex(1);
+        panel.findChild<QPushButton *>("tvbTablePrepare")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *field = panel.findChild<QComboBox *>("tvbTableField"); auto *value = panel.findChild<QLineEdit *>("tvbTableValue");
+        auto *apply = panel.findChild<QPushButton *>("tvbTableApply"); auto *status = panel.findChild<QLabel *>("tvbTableStatus");
+        value->setText("80"); const auto calls = device->calls;
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Cancel)->click(); });
+        apply->click(); QCOMPARE(device->calls,calls);
+        const char *values[] = {"80","0","90","10"};
+        const std::uint32_t expected[] = {0x02645001,0x02645000,0x025a5000,0x0a5a5000};
+        for (int index = 0; index < 4; ++index) {
+            field->setCurrentIndex(index); value->setText(values[index]);
+            QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+            apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->entries[0],expected[index]);
+            QCOMPARE(device->tableSettingsAttempts(),unsigned(index+1)); QVERIFY(status->text().contains("readback verified"));
+        }
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->tableSettingsAttempts(),4u);
+        QVERIFY(status->text().contains("no settings write performed"));
+        panel.findChild<QPushButton *>("tvbTableCopy")->click();
+        QVERIFY(QApplication::clipboard()->text().contains("1\t80\t0\t90\t10\t0x0A5A5000\tRead"));
+        QTRY_VERIFY(status->height() >= status->fontMetrics().height());
+        const auto shot = qEnvironmentVariable("OCTOOL_INTEL_TVB_TABLE_EDIT_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        QCOMPARE(device->wrongCpu,0u); QCOMPARE(device->settingsAttempts(),0u);
+    }
+    void intelTvbTableEditInvalidValues() {
+        auto *device = new IntelTvbTableFixture;
+        IntelTvbTablePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+        panel.findChild<QComboBox *>("tvbTableEntry")->setCurrentIndex(1);
+        panel.findChild<QPushButton *>("tvbTablePrepare")->click(); QTRY_VERIFY(panel.isEnabled());
+        const auto calls = device->calls;
+        for (int field = 0; field < 4; ++field) {
+            panel.findChild<QComboBox *>("tvbTableField")->setCurrentIndex(field);
+            for (const char *value : {"-1","1.5","","4294967296",field % 2 == 0 ? "101" : "11"}) {
+                panel.findChild<QLineEdit *>("tvbTableValue")->setText(value);
+                panel.findChild<QPushButton *>("tvbTableApply")->click(); QCOMPARE(device->calls,calls);
+                QVERIFY(panel.findChild<QLabel *>("tvbTableStatus")->text().contains("Enter an integer"));
+            }
+        }
+    }
+    void intelTvbTableEditStaleAndFailures() {
+        for (unsigned mode = 0; mode < 6; ++mode) {
+            auto *device = new IntelTvbTableFixture;
+            IntelTvbTablePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+            panel.findChild<QComboBox *>("tvbTableEntry")->setCurrentIndex(1);
+            panel.findChild<QPushButton *>("tvbTablePrepare")->click(); QTRY_VERIFY(panel.isEnabled());
+            panel.findChild<QLineEdit *>("tvbTableValue")->setText("80");
+            if (mode == 0) device->entries[0] ^= 1;
+            if (mode == 1) device->data ^= 4;
+            if (mode == 2) device->locked = true;
+            if (mode == 3) device->discardChange = true;
+            if (mode == 4) { device->failCommand = 0x25; device->status = 128; }
+            if (mode == 5) device->statuses[0] = 254;
+            QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+            panel.findChild<QPushButton *>("tvbTableApply")->click(); QTRY_VERIFY(panel.isEnabled());
+            const bool attempted = mode == 3 || mode == 4;
+            QCOMPARE(device->tableSettingsAttempts(),attempted ? 1u : 0u);
+            QCOMPARE(panel.findChild<QTableWidget *>("tvbThresholdTable")->rowCount(),0);
+            QVERIFY(panel.findChild<QLineEdit *>("tvbTableValue")->text().isEmpty());
+            QVERIFY(!panel.findChild<QPushButton *>("tvbTableApply")->isEnabled());
+            QVERIFY(panel.findChild<QLabel *>("tvbTableStatus")->text().contains(attempted ? "not verified" : "No settings write"));
+        }
+    }
+    void intelTvbTableEditSelectionDuringConfirmation() {
+        for (bool changeCpu : {false,true}) {
+            auto *device = new IntelTvbTableFixture;
+            IntelTvbTablePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+            panel.findChild<QComboBox *>("tvbTableEntry")->setCurrentIndex(1);
+            panel.findChild<QPushButton *>("tvbTablePrepare")->click(); QTRY_VERIFY(panel.isEnabled());
+            panel.findChild<QLineEdit *>("tvbTableValue")->setText("80"); const auto calls = device->calls;
+            QTimer::singleShot(0, [&panel,changeCpu] {
+                if (changeCpu) panel.findChild<QLineEdit *>("tvbTableCpu")->setText("131");
+                else panel.findChild<QComboBox *>("tvbTableEntry")->setCurrentIndex(2);
+                auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click();
+            });
+            panel.findChild<QPushButton *>("tvbTableApply")->click(); QCOMPARE(device->calls,calls);
+            QVERIFY(!panel.findChild<QPushButton *>("tvbTableApply")->isEnabled());
+            QVERIFY(panel.findChild<QLabel *>("tvbTableStatus")->text().contains("Selection changed"));
+        }
+    }
+    void intelTvbTableEditLifetimeAndStaleResults() {
+        struct Gate { std::atomic<bool> entered{false}, release{false}, destroyed{false}; };
+        struct Device : IntelTvbTableFixture {
+            std::shared_ptr<Gate> gate;
+            explicit Device(std::shared_ptr<Gate> g) : gate(g) {}
+            ~Device() override { gate->destroyed = true; }
+        };
+        for (bool writing : {false,true}) for (unsigned mode = 0; mode < 3; ++mode) {
+            auto gate = std::make_shared<Gate>(); auto *device = new Device(gate);
+            auto *panel = new IntelTvbTablePanel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+            panel->findChild<QComboBox *>("tvbTableEntry")->setCurrentIndex(1);
+            if (writing) {
+                panel->findChild<QPushButton *>("tvbTablePrepare")->click(); QTRY_VERIFY(panel->isEnabled());
+                panel->findChild<QLineEdit *>("tvbTableValue")->setText("80");
+            }
+            device->afterRequest = [gate] {
+                if (gate->entered.exchange(true)) return;
+                const auto deadline = std::chrono::steady_clock::now()+std::chrono::seconds(3);
+                while (!gate->release && std::chrono::steady_clock::now()<deadline) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            };
+            if (writing) {
+                QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+                panel->findChild<QPushButton *>("tvbTableApply")->click();
+            } else panel->findChild<QPushButton *>("tvbTablePrepare")->click();
+            QTRY_VERIFY(gate->entered.load());
+            if (mode == 0) { delete panel; QVERIFY(!gate->destroyed.load()); gate->release = true; QTRY_VERIFY(gate->destroyed.load()); }
+            else {
+                if (mode == 1) panel->findChild<QLineEdit *>("tvbTableCpu")->setText("131");
+                else panel->findChild<QComboBox *>("tvbTableEntry")->setCurrentIndex(2);
+                gate->release = true; QTRY_VERIFY(panel->isEnabled());
+                QCOMPARE(panel->findChild<QTableWidget *>("tvbThresholdTable")->rowCount(),0);
+                QVERIFY(!panel->findChild<QPushButton *>("tvbTableApply")->isEnabled());
+                QVERIFY(panel->findChild<QLabel *>("tvbTableStatus")->text().contains("discarded"));
+                QCOMPARE(device->tableSettingsAttempts(),writing ? 1u : 0u); QCOMPARE(device->wrongCpu,0u); delete panel;
+            }
+        }
+    }
     void intelTvbReadCopyAndTargetChange() {
         auto *device = new IntelTvbFixture;
         auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));

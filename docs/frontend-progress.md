@@ -1,5 +1,7 @@
 # GUI / CLI 同步进度
 
+2026-10-12 新增 [TVB 单字段编辑](intel-tvb-table-edit.md)：两端支持温度 A/B、降倍率 A/B，含准备、旧值核对及完整读回；本批云端验证进行中。
+
 2026-10-12 本轮新增 [TVB 温度与降倍率分档查询](intel-tvb-table.md)：GUI `TVB thresholds` 与 CLI `intel-tvb-table` 共用核心。限定 B7 裸机；分档写入仍待恢复。生产提交 `aca1652` 的 39 项云端任务全部通过，见 [验证交付](intel-tvb-table-validation.md)。
 
 2026-10-12 早先恢复 [TVB 两项配置开关](intel-tvb.md)：GUI `TVB configuration`、CLI `intel-tvb-read/set` 共用核心。限定 06_B7 裸机；温度分档读取现已由本页首项补充。生产提交 `743c40f` 的 39 项云端任务全部通过，见 [验证交付](intel-tvb-validation.md)。

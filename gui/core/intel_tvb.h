@@ -54,7 +54,37 @@ bool intelTvbTableRowValid(const IntelTvbTableRow &row);
 // GET 0x24, parameter 1 = active-core selector, parameter 2 = zero.
 // activeCores = 0 scans the eight candidates; 1..8 queries just that entry.
 // Successful candidates do not enumerate physical cores or prove SKU support.
-// Per-core addressing and SET 0x25 are deliberately absent from this API.
+// This query never sends SET 0x25; per-core addressing is not supported.
 // Execute inside one HardwareService transaction; no settings are changed.
 IntelTvbTableSnapshot readIntelTvbTable(HardwareSession &session, unsigned cpu, unsigned activeCores = 0);
+
+enum class IntelTvbTableField { TemperatureA, DownBinsA, TemperatureB, DownBinsB };
+struct IntelTvbTableEditSnapshot {
+    int error = 0;
+    unsigned activeCores = 0;
+    bool valid = false;
+    IntelTvbSnapshot configuration;
+    IntelOcResponse value;
+};
+struct IntelTvbTableUpdate {
+    int error = 0;
+    IntelOcStage stage = IntelOcStage::Validate;
+    bool writeAttempted = false, verified = false, unchanged = false;
+    std::uint32_t expected = 0;
+    IntelOcResponse response;
+    IntelTvbTableEditSnapshot readback;
+};
+// Conservative B7 editing profile: temperatures 0..100 C, down bins 0..10.
+// All four existing bytes must fit this profile. Do not clamp or interpret
+// sentinels. These FSP editor bounds are not a runtime SKU capability promise.
+bool intelTvbTableValuesEditable(std::uint32_t data);
+bool intelTvbTableEditable(const IntelTvbTableEditSnapshot &snapshot);
+int encodeIntelTvbTable(IntelTvbTableField field, unsigned value,
+                       std::uint32_t previous, std::uint32_t &encoded);
+IntelTvbTableEditSnapshot readIntelTvbTableEdit(HardwareSession &session, unsigned cpu, unsigned activeCores);
+// Compare the selected entry, complete TVB control word, identity and FLEX_RATIO
+// before one SET 0x25. Preserve the other three bytes, verify all four afterward.
+// A failed or uncertain write is never retried or rolled back automatically.
+IntelTvbTableUpdate applyIntelTvbTable(HardwareSession &session, const IntelTvbTableEditSnapshot &snapshot,
+                                      IntelTvbTableField field, unsigned value);
 } }

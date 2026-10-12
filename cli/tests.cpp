@@ -43,6 +43,22 @@ std::string command(HardwareBackend &device, const std::vector<std::string> &arg
 }
 void invalidBeforeOpen() {
     const std::vector<std::vector<std::string>> invalid = {
+        {"intel-tvb-table", "--cpu", "0", "--for-edit"},
+        {"intel-tvb-table", "--cpu", "0", "--for-edit", "--active-cores", "0"},
+        {"intel-tvb-table-set"},
+        {"intel-tvb-table-set", "--cpu", "0", "--apply"},
+        {"intel-tvb-table-set", "--cpu", "0", "--active-cores", "1", "--field", "temperature-a", "--value", "80"},
+        {"intel-tvb-table-set", "--cpu", "0", "--active-cores", "1", "--value", "80", "--apply"},
+        {"intel-tvb-table-set", "--cpu", "0", "--active-cores", "1", "--field", "temperature-a", "--apply"},
+        {"intel-tvb-table-set", "--cpu", "0", "--active-cores", "1", "--field", "unknown", "--value", "80", "--apply"},
+        {"intel-tvb-table-set", "--cpu", "0", "--active-cores", "1", "--field", "temperature-a", "--value", "101", "--apply"},
+        {"intel-tvb-table-set", "--cpu", "0", "--active-cores", "1", "--field", "temperature-b", "--value", "101", "--apply"},
+        {"intel-tvb-table-set", "--cpu", "0", "--active-cores", "1", "--field", "down-bins-a", "--value", "11", "--apply"},
+        {"intel-tvb-table-set", "--cpu", "0", "--active-cores", "1", "--field", "down-bins-b", "--value", "11", "--apply"},
+        {"intel-tvb-table-set", "--cpu", "0", "--active-cores", "1", "--field", "temperature-a", "--value", "-1", "--apply"},
+        {"intel-tvb-table-set", "--cpu", "0", "--active-cores", "1", "--field", "temperature-a", "--value", "1.5", "--apply"},
+        {"intel-tvb-table-set", "--cpu", "0", "--active-cores", "1", "--field", "temperature-a", "--value", "4294967296", "--apply"},
+        {"intel-tvb-table-set", "--cpu", "0", "--active-cores", "1", "--field", "temperature-a", "--value", "80", "--apply", "--for-edit"},
         {"intel-tvb-table"},
         {"intel-tvb-table", "--cpu", "0", "--apply"},
         {"intel-tvb-table", "--cpu", "0", "--active-cores", "0"},
@@ -983,6 +999,45 @@ void tvbCommands() {
         assert(result.find("\"raw\":null") != std::string::npos && !d.settingsAttempts());
     }
 }
+void tvbTableEditingCommands() {
+    for (unsigned entry = 1; entry <= 8; ++entry) {
+        IntelTvbTableFixture d;
+        const auto result = command(d,{"intel-tvb-table","--cpu","130","--active-cores",std::to_string(entry),"--for-edit"},0);
+        assert(result.find("\"editable\":" + std::string(entry == 1 ? "true" : "false")) != std::string::npos);
+        assert(!d.tableSettingsAttempts() && !d.wrongCpu);
+    }
+    IntelTvbTableFixture locked; locked.locked = true;
+    command(locked,{"intel-tvb-table","--cpu","130","--active-cores","1","--for-edit"},0);
+    const char *fields[] = {"temperature-a","down-bins-a","temperature-b","down-bins-b"};
+    const unsigned shifts[] = {8,0,16,24};
+    for (unsigned field = 0; field < 4; ++field) for (unsigned value : {0u,field % 2 == 0 ? 100u : 10u}) {
+        IntelTvbTableFixture d; const auto previous = d.entries;
+        const auto expected = (previous[0] & ~(UINT32_C(255) << shifts[field])) | (std::uint32_t(value) << shifts[field]);
+        const auto result = command(d,{"intel-tvb-table-set","--cpu","130","--active-cores","1","--field",fields[field],"--value",std::to_string(value),"--apply"},0);
+        assert(result.find("\"verified\":true") != std::string::npos && d.entries[0] == expected);
+        assert(d.tableSettingsAttempts() == (expected == previous[0] ? 0u : 1u) && !d.wrongCpu && !d.settingsAttempts());
+        for (unsigned n = 1; n < 8; ++n) assert(d.entries[n] == previous[n]);
+    }
+    IntelTvbTableFixture noop;
+    const auto same = command(noop,{"intel-tvb-table-set","--cpu","130","--active-cores","1","--field","temperature-a","--value","70","--apply"},0);
+    assert(same.find("\"unchanged\":true") != std::string::npos && !noop.tableSettingsAttempts());
+    for (unsigned mode = 0; mode < 10; ++mode) {
+        IntelTvbTableFixture d;
+        if (mode == 0) d.locked = true;
+        if (mode == 1) d.model = 0x8f;
+        if (mode == 2) d.hypervisor = true;
+        if (mode == 3) d.entries[0] |= UINT32_C(255) << 16;
+        if (mode == 4) d.discardChange = true;
+        if (mode >= 5 && mode <= 7) { d.failCommand = mode == 5 ? 0x18 : mode == 6 ? 0x24 : 0x25; d.status = 128; }
+        if (mode >= 8) d.afterRequest = [&] {
+            if (!d.requests.back().write || d.commands.size() != 2) return;
+            if (mode == 8) d.entries[0] ^= 1; else d.data ^= 4;
+        };
+        const auto result = command(d,{"intel-tvb-table-set","--cpu","130","--active-cores","1","--field","temperature-a","--value","80","--apply"},3);
+        assert(result.find("\"verified\":false") != std::string::npos);
+        assert(d.tableSettingsAttempts() == (mode == 4 || mode == 7 ? 1u : 0u));
+    }
+}
 void pmFilesystem(const std::string &root) {
     const auto reader = octool::platform::linuxAmdPmReader(root);
     const auto good = readAmdPmDriver(reader); assert(!good.snapshot.error && good.snapshot.fields[0].value == 2000);
@@ -1017,8 +1072,8 @@ int main(int argc, char **argv) {
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures();
-    intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands();
+    intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "25 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "26 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

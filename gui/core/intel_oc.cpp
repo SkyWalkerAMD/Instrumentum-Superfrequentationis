@@ -366,4 +366,80 @@ IntelTvbTableSnapshot readIntelTvbTable(HardwareSession &s, unsigned cpu, unsign
     out.scanCompleted = true;
     return out;
 }
+bool intelTvbTableValuesEditable(std::uint32_t data) {
+    const auto fields = decodeIntelTvbThresholds(data);
+    return fields.temperatureA <= 100 && fields.temperatureB <= 100 &&
+        fields.downBinsA <= 10 && fields.downBinsB <= 10;
+}
+namespace {
+bool tvbTableEditValid(const IntelTvbTableEditSnapshot &s) {
+    return !s.error && s.valid && s.activeCores >= 1 && s.activeCores <= 8 &&
+        tvbSnapshotValid(s.configuration) && s.value.commandAttempted && responseValid(s.value);
+}
+}
+bool intelTvbTableEditable(const IntelTvbTableEditSnapshot &s) {
+    return tvbTableEditValid(s) && intelTvbEditable(s.configuration) && intelTvbTableValuesEditable(s.value.data);
+}
+int encodeIntelTvbTable(IntelTvbTableField field, unsigned value,
+                       std::uint32_t previous, std::uint32_t &encoded) {
+    unsigned shift = 0, maximum = 0;
+    switch (field) {
+    case IntelTvbTableField::TemperatureA: shift = 8; maximum = 100; break;
+    case IntelTvbTableField::DownBinsA: shift = 0; maximum = 10; break;
+    case IntelTvbTableField::TemperatureB: shift = 16; maximum = 100; break;
+    case IntelTvbTableField::DownBinsB: shift = 24; maximum = 10; break;
+    default: return -EINVAL;
+    }
+    if (value > maximum || !intelTvbTableValuesEditable(previous)) return -ERANGE;
+    encoded = (previous & ~(UINT32_C(255) << shift)) | (std::uint32_t(value) << shift);
+    return 0;
+}
+IntelTvbTableEditSnapshot readIntelTvbTableEdit(HardwareSession &s, unsigned cpu, unsigned activeCores) {
+    IntelTvbTableEditSnapshot out; out.activeCores = activeCores; out.configuration.cpu = cpu;
+    if (activeCores < 1 || activeCores > 8) { out.error = -EINVAL; return out; }
+    out.configuration = readIntelTvb(s, cpu);
+    if ((out.error = out.configuration.error)) return out;
+    out.value = mailboxCommand(s, cpu, 0x24, 0, activeCores, 0);
+    if ((out.error = out.value.error)) return out;
+    if ((out.error = s.checkpoint())) return out;
+    out.valid = true; return out;
+}
+IntelTvbTableUpdate applyIntelTvbTable(HardwareSession &s, const IntelTvbTableEditSnapshot &old,
+                                     IntelTvbTableField field, unsigned value) {
+    IntelTvbTableUpdate out;
+    if (!tvbTableEditValid(old)) { out.error = -EINVAL; return out; }
+    if ((out.error = encodeIntelTvbTable(field, value, old.value.data, out.expected))) return out;
+    if (!intelTvbTableEditable(old)) { out.error = -EPERM; return out; }
+    out.stage = IntelOcStage::Preflight;
+    const auto fresh = readIntelTvbTableEdit(s, old.configuration.cpu, old.activeCores);
+    if ((out.error = fresh.error)) {
+        out.response = fresh.configuration.error ? fresh.configuration.response : fresh.value;
+        return out;
+    }
+    if (fresh.configuration.identity.signature != old.configuration.identity.signature) { out.error = -ENODEV; return out; }
+    if (!intelTvbEditable(fresh.configuration)) { out.error = -EPERM; return out; }
+    out.stage = IntelOcStage::Compare;
+    if (!sameTvbContext(old.configuration, fresh.configuration) ||
+        old.configuration.response.data != fresh.configuration.response.data || old.value.data != fresh.value.data) {
+        out.error = -EAGAIN; return out;
+    }
+    if (out.expected == fresh.value.data) out.readback = fresh;
+    else {
+        out.stage = IntelOcStage::Write;
+        out.response = mailboxCommand(s, old.configuration.cpu, 0x25, out.expected, old.activeCores, 0);
+        out.writeAttempted = out.response.commandAttempted;
+        if ((out.error = out.response.error)) return out;
+        out.stage = IntelOcStage::Verify;
+        out.readback = readIntelTvbTableEdit(s, old.configuration.cpu, old.activeCores);
+    }
+    if ((out.error = out.readback.error)) return out;
+    if (out.readback.configuration.identity.signature != old.configuration.identity.signature) { out.error = -ENODEV; return out; }
+    if (!sameTvbContext(old.configuration, out.readback.configuration) ||
+        old.configuration.response.data != out.readback.configuration.response.data ||
+        !intelTvbEditable(out.readback.configuration)) { out.error = -EAGAIN; return out; }
+    if (out.readback.value.data != out.expected) { out.error = -EIO; return out; }
+    if ((out.error = s.checkpoint())) return out;
+    out.verified = true; out.unchanged = !out.writeAttempted; out.stage = IntelOcStage::Complete;
+    return out;
+}
 } }
