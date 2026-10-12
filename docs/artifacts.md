@@ -1,11 +1,16 @@
 # 安装包与源码归档
 
-<!-- intel-tvb-pending -->
-2026-10-12：本轮 GUI / CLI 同步恢复 Intel 06_B7 的 **TVB 高温倍频裁剪与电压优化开关**。
-[实现与边界](intel-tvb.md)：保留其他位，检查固件锁、旧配置、错误码和完整回读。
-原版 47 场景隔离仿真已通过；云端编译、跨系统回归和安装包验证尚待本轮结果。
-温度分档表、其它型号协议和真机验收仍未完成。以下保留历史记录。
-<!-- /intel-tvb-pending -->
+<!-- intel-tvb-743c40f -->
+2026-10-12：最新验证生产提交 `743c40f`，GUI / CLI 同步恢复 **TVB 高温倍频裁剪与电压优化开关**。
+限定 Intel 06_B7 裸机；检查锁、旧配置、错误码和完整回读，保留其它位。
+
+- [实现范围](intel-tvb.md)、[验证交付](intel-tvb-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38219382818) 4/4，各 236 场景组；含 10 组 TVB。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38219387307) 12/12，十目标各 18 CTest、493 份 JSON。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38219380980) 23/23，十目标各 98 Qt 测试、11 套内核 VM。
+- `dist/gui-cli-intel-tvb-743c40f/`：30 个安装包、源码及 SHA256。
+
+TVB 分档表、其它原版功能及目标真机验收仍未全部完成。以下保留历史记录。
 
 <!-- intel-refresh-97c1b22 -->
 2026-10-12：最新验证生产提交 `97c1b22`，GUI / CLI 同步增加 **Intel 刷新、自刷新与 ZQ 参数**。
