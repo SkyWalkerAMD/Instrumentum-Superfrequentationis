@@ -3,7 +3,7 @@
 #include "intel_oc.h"
 
 namespace octool { namespace core {
-enum class IntelTvbField { RatioClipping, VoltageOptimization };
+enum class IntelTvbField { RatioClipping, VoltageOptimization, RingDownBin };
 struct IntelTvbSnapshot {
     int error = 0;
     unsigned cpu = 0;
@@ -23,7 +23,8 @@ struct IntelTvbUpdate {
 bool intelTvbEditable(const IntelTvbSnapshot &snapshot);
 bool intelTvbRatioClipping(std::uint32_t data);
 bool intelTvbVoltageOptimization(std::uint32_t data);
-// Public values are 0 = disabled, 1 = enabled. The two mailbox bits are
+bool intelRingDownBin(std::uint32_t data);
+// Public values are 0 = disabled, 1 = enabled. The three mailbox bits are
 // disable bits; change only the selected bit and preserve the entire rest.
 int encodeIntelTvb(IntelTvbField field, unsigned enabled,
                    std::uint32_t previous, std::uint32_t &encoded);

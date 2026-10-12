@@ -81,6 +81,9 @@ jobs:
       - name: Verify original TVB table selectors and failure behavior
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-tvb-table.py --output build/intel-tvb-table.json
+      - name: Verify original Ring DownBin and Vmax setters
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-misc-ratio.py --output build/intel-misc-ratio.json
       - name: Verify original AMD curve constructor and failed-query results
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-amd-curve-query.py --output build/amd-curve-query.json
@@ -130,6 +133,7 @@ jobs:
             build/intel-ratio.json
             build/intel-tvb.json
             build/intel-tvb-table.json
+            build/intel-misc-ratio.json
             build/intel-voltage.json
             build/amd-curve-query.json
             build/intel-ngu.json

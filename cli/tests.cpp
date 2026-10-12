@@ -75,6 +75,12 @@ void invalidBeforeOpen() {
         {"intel-tvb-set", "--cpu", "0", "--value", "0", "--apply"},
         {"intel-tvb-set", "--cpu", "0", "--field", "ratio-clipping", "--apply"},
         {"intel-tvb-set", "--cpu", "0", "--field", "vmax", "--value", "0", "--apply"},
+        {"intel-tvb-set", "--cpu", "0", "--field", "ring-down-bin", "--value", "2", "--apply"},
+        {"intel-tvb-set", "--cpu", "0", "--field", "ring-down-bin", "--value", "-1", "--apply"},
+        {"intel-tvb-set", "--cpu", "0", "--field", "ring-down-bin", "--value", "1.0", "--apply"},
+        {"intel-tvb-set", "--cpu", "0", "--field", "ring-down-bin", "--value", "4294967296", "--apply"},
+        {"intel-tvb-set", "--cpu", "0", "--field", "ring-down-bin", "--value", "0"},
+        {"intel-tvb-set", "--cpu", "0", "--field", "vmax-stress", "--value", "0", "--apply"},
         {"intel-tvb-set", "--cpu", "0", "--field", "ratio-clipping", "--value", "2", "--apply"},
         {"intel-tvb-set", "--cpu", "0", "--field", "ratio-clipping", "--value", "-1", "--apply"},
         {"intel-tvb-set", "--cpu", "0", "--field", "ratio-clipping", "--value", "1.0", "--apply"},
@@ -958,25 +964,27 @@ void pmCommands() {
     assert(!opens);
 }
 void tvbCommands() {
-    for (unsigned bits : {0u, 4u, 8u, 12u}) {
+    for (unsigned bits : {0u, 2u, 4u, 6u, 8u, 10u, 12u, 14u}) {
         IntelTvbFixture d; d.data |= bits;
         const auto json = command(d, {"intel-tvb-read", "--cpu", "130"}, 0);
         assert(json.find("\"raw\":\"0xa5c3211") != std::string::npos && !d.settingsAttempts() && !d.wrongCpu);
     }
-    for (const char *field : {"ratio-clipping", "voltage-optimization"}) for (unsigned value : {0u, 1u}) {
-        IntelTvbFixture d; const unsigned bit = std::string(field) == "ratio-clipping" ? 4 : 8;
+    for (const char *field : {"ratio-clipping", "voltage-optimization", "ring-down-bin"}) for (unsigned value : {0u, 1u}) {
+        IntelTvbFixture d; const unsigned bit = std::string(field) == "ratio-clipping" ? 4 : std::string(field) == "voltage-optimization" ? 8 : 2;
         d.data = (d.data & ~bit) | (value ? bit : 0);
         const auto raw = d.data;
         const auto json = command(d, {"intel-tvb-set", "--cpu", "130", "--field", field, "--value", std::to_string(value), "--apply"}, 0);
         assert(json.find("\"verified\":true") != std::string::npos && d.settingsAttempts() == 1 && !d.wrongCpu);
         assert((d.data & ~bit) == (raw & ~bit) && bool(d.data & bit) == !value);
     }
-    IntelTvbFixture noop;
-    const auto json = command(noop, {"intel-tvb-set", "--cpu", "130", "--field", "ratio-clipping", "--value", "1", "--apply"}, 0);
-    assert(json.find("\"unchanged\":true") != std::string::npos && !noop.settingsAttempts());
+    for (const char *field : {"ratio-clipping", "voltage-optimization", "ring-down-bin"}) {
+        IntelTvbFixture noop;
+        const auto json = command(noop, {"intel-tvb-set", "--cpu", "130", "--field", field, "--value", "1", "--apply"}, 0);
+        assert(json.find("\"unchanged\":true") != std::string::npos && !noop.settingsAttempts());
+    }
     IntelTvbFixture locked; locked.locked = true;
     command(locked, {"intel-tvb-read", "--cpu", "130"}, 0);
-    for (unsigned mode = 0; mode < 7; ++mode) {
+    for (const char *field : {"ratio-clipping", "ring-down-bin"}) for (unsigned mode = 0; mode < 7; ++mode) {
         IntelTvbFixture d;
         if (mode == 0) d.locked = true;
         if (mode == 1) d.model = 0x8f;
@@ -987,7 +995,7 @@ void tvbCommands() {
             const auto &r = d.requests.back();
             if (r.write && d.commands.size() == 1) d.data ^= UINT32_C(1) << 31;
         };
-        const auto result = command(d, {"intel-tvb-set", "--cpu", "130", "--field", "ratio-clipping", "--value", "0", "--apply"}, 3);
+        const auto result = command(d, {"intel-tvb-set", "--cpu", "130", "--field", field, "--value", "0", "--apply"}, 3);
         assert(result.find("\"verified\":false") != std::string::npos && d.settingsAttempts() == (mode == 3 || mode == 5 ? 1u : 0u));
     }
     for (unsigned mode = 0; mode < 3; ++mode) {

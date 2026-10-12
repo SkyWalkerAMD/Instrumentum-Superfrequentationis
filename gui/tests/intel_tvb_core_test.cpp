@@ -25,17 +25,18 @@ struct Test {
 };
 void encoding() {
     for (std::uint32_t raw : {0u, UINT32_MAX, 0xa5c32110u, 0x87654321u})
-        for (auto field : {IntelTvbField::RatioClipping, IntelTvbField::VoltageOptimization})
+        for (auto field : {IntelTvbField::RatioClipping, IntelTvbField::VoltageOptimization, IntelTvbField::RingDownBin})
             for (unsigned enabled : {0u, 1u}) {
                 std::uint32_t word = 0; assert(!encodeIntelTvb(field, enabled, raw, word));
-                const unsigned bit = field == IntelTvbField::RatioClipping ? 2 : 3;
+                const unsigned bit = field == IntelTvbField::RatioClipping ? 2 : field == IntelTvbField::VoltageOptimization ? 3 : 1;
                 assert((word & ~(1u << bit)) == (raw & ~(1u << bit)));
                 assert(bool((word >> bit) & 1) == !enabled);
                 assert(intelTvbRatioClipping(word) == !(word & 4));
                 assert(intelTvbVoltageOptimization(word) == !(word & 8));
+                assert(intelRingDownBin(word) == !(word & 2));
             }
     std::uint32_t word = 123;
-    assert(encodeIntelTvb(IntelTvbField(2), 1, 0, word) == -EINVAL && word == 123);
+    assert(encodeIntelTvb(IntelTvbField(99), 1, 0, word) == -EINVAL && word == 123);
     assert(encodeIntelTvb(IntelTvbField::RatioClipping, 2, 0, word) == -ERANGE && word == 123);
 }
 void readAndGates() {
@@ -68,7 +69,7 @@ void invalidAndLocked() {
         if (mode == 6) bad.identity.model = 0x8f;
         assert(t.apply(bad).error == -EINVAL && t.device->calls == calls);
     }
-    assert(t.apply(old, IntelTvbField(2)).error == -EINVAL && t.device->calls == calls);
+    assert(t.apply(old, IntelTvbField(99)).error == -EINVAL && t.device->calls == calls);
     assert(t.apply(old, IntelTvbField::RatioClipping, UINT32_MAX).error == -ERANGE && t.device->calls == calls);
     t.device->locked = true; const auto locked = t.read(); const auto lockedCalls = t.device->calls;
     assert(!locked.error && locked.valid && !intelTvbEditable(locked));
@@ -76,11 +77,11 @@ void invalidAndLocked() {
 }
 void applyAndUnchanged() {
     for (std::uint32_t raw : {0u, UINT32_MAX, 0xa5c32110u, 0x87654321u})
-        for (auto field : {IntelTvbField::RatioClipping, IntelTvbField::VoltageOptimization})
+        for (auto field : {IntelTvbField::RatioClipping, IntelTvbField::VoltageOptimization, IntelTvbField::RingDownBin})
             for (unsigned enabled : {0u, 1u}) {
                 Test t; t.device->data = raw; const auto old = t.read();
                 const auto out = t.apply(old, field, enabled);
-                const unsigned mask = field == IntelTvbField::RatioClipping ? 4 : 8;
+                const unsigned mask = field == IntelTvbField::RatioClipping ? 4 : field == IntelTvbField::VoltageOptimization ? 8 : 2;
                 const auto expected = (raw & ~mask) | (enabled ? 0u : mask);
                 assert(!out.error && out.verified && out.stage == IntelOcStage::Complete);
                 assert(out.expected == expected && out.readback.response.data == expected && t.device->data == expected);
@@ -90,10 +91,10 @@ void applyAndUnchanged() {
                     : std::vector<unsigned>{0x18, 0x18, 0x19, 0x18})));
             }
 }
-void staleSnapshots() {
+void staleSnapshots(IntelTvbField field = IntelTvbField::RatioClipping) {
     for (unsigned bit = 0; bit < 32; ++bit) {
         Test t; const auto old = t.read(); t.device->data ^= 1u << bit;
-        assert(t.apply(old).error == -EAGAIN && !t.device->settingsAttempts());
+        assert(t.apply(old, field).error == -EAGAIN && !t.device->settingsAttempts());
     }
     for (unsigned mode = 0; mode < 4; ++mode) {
         Test t; const auto old = t.read();
@@ -101,50 +102,50 @@ void staleSnapshots() {
         if (mode == 1) t.device->locked = true;
         if (mode == 2) t.device->stepping = 2;
         if (mode == 3) t.device->hypervisor = true;
-        const auto out = t.apply(old);
+        const auto out = t.apply(old, field);
         assert(out.error == (mode == 0 ? -EAGAIN : mode == 1 ? -EPERM : mode == 2 ? -ENODEV : -ENOTSUP));
         assert(!out.verified && !out.writeAttempted && !t.device->settingsAttempts());
     }
 }
-void everyTransportFailure() {
+void everyTransportFailure(IntelTvbField field = IntelTvbField::RatioClipping) {
     Test reference; const auto old = reference.read(); const unsigned reads = reference.device->calls;
-    reference.device->clearTrace(); assert(reference.apply(old).verified); const unsigned writes = reference.device->calls;
+    reference.device->clearTrace(); assert(reference.apply(old, field).verified); const unsigned writes = reference.device->calls;
     for (unsigned i = 0; i < reads; ++i) {
         Test t; t.device->failAt = int(i); const auto out = t.read();
         assert(out.error == -EACCES && !out.valid && !intelTvbEditable(out) && !t.device->settingsAttempts());
     }
     for (unsigned i = 0; i < writes; ++i) {
         Test t; const auto before = t.read(); t.device->clearTrace(); t.device->failAt = int(i);
-        const auto out = t.apply(before);
+        const auto out = t.apply(before, field);
         assert(out.error == -EACCES && !out.verified && t.device->settingsAttempts() <= 1);
         assert(out.writeAttempted == bool(t.device->settingsAttempts()));
     }
 }
-void firmwareFailures() {
-    for (unsigned status : {1u, 2u, 3u, 5u, 0xfeu, 0xffu}) for (unsigned command : {0x18u, 0x19u}) {
+void firmwareFailures(IntelTvbField field = IntelTvbField::RatioClipping) {
+    for (unsigned status = 1; status <= 255; ++status) for (unsigned command : {0x18u, 0x19u}) {
         Test t; const auto old = t.read(); t.device->failCommand = command; t.device->status = status;
-        const auto out = t.apply(old);
+        const auto out = t.apply(old, field);
         assert(out.error == -EIO && !out.verified && out.response.firmwareStatus == status);
         assert(out.writeAttempted == (command == 0x19) && !t.device->mutations);
     }
 }
-void boundedBusy() {
+void boundedBusy(IntelTvbField field = IntelTvbField::RatioClipping) {
     for (unsigned command : {0u, 0x18u, 0x19u}) {
         Test t; const auto old = t.read(); t.device->clearTrace();
         if (!command) t.device->busyBefore = true; else t.device->busyCommand = command;
-        const auto out = t.apply(old);
+        const auto out = t.apply(old, field);
         assert(out.error == -ETIMEDOUT && !out.verified && out.writeAttempted == (command == 0x19));
         assert(t.device->calls <= 120 && t.device->settingsAttempts() == (command == 0x19 ? 1u : 0u));
     }
 }
-void fullReadbackVerification() {
+void fullReadbackVerification(IntelTvbField field = IntelTvbField::RatioClipping) {
     for (unsigned bit = 0; bit < 32; ++bit) {
         Test t; const auto old = t.read();
         t.device->afterRequest = [&] {
             const auto &r = t.device->requests.back();
             if (r.write && ((r.value >> 32) & 255) == 0x19) t.device->data ^= 1u << bit;
         };
-        const auto out = t.apply(old);
+        const auto out = t.apply(old, field);
         assert(out.error == -EIO && !out.verified && out.writeAttempted && t.device->settingsAttempts() == 1);
     }
     for (unsigned mode = 0; mode < 5; ++mode) {
@@ -158,13 +159,13 @@ void fullReadbackVerification() {
             if (mode == 3) t.device->hypervisor = true;
             if (mode == 4) { t.device->failCommand = 0x18; t.device->status = 5; }
         };
-        const auto out = t.apply(old);
+        const auto out = t.apply(old, field);
         assert(out.error && !out.verified && out.writeAttempted && t.device->settingsAttempts() == 1);
     }
     Test t; const auto old = t.read(); t.device->discardChange = true;
-    assert(t.apply(old).error == -EIO && t.device->settingsAttempts() == 1);
+    assert(t.apply(old, field).error == -EIO && t.device->settingsAttempts() == 1);
 }
-void cancellationAndDeadline() {
+void cancellationAndDeadline(IntelTvbField field = IntelTvbField::RatioClipping) {
     for (bool timeout : {false, true}) for (bool afterWrite : {false, true}) {
         Test t; const auto old = t.read(); std::atomic<bool> cancelled(false);
         t.device->afterRequest = [&] {
@@ -175,7 +176,7 @@ void cancellationAndDeadline() {
         };
         IntelTvbUpdate out;
         const auto error = t.service.transaction([&](HardwareSession &s) {
-            out = applyIntelTvb(s, old, IntelTvbField::RatioClipping, 0); return out.error;
+            out = applyIntelTvb(s, old, field, 0); return out.error;
         }, timeout ? 10 : 1000, &cancelled);
         assert(error == (timeout ? -ETIMEDOUT : -ECANCELED) && !out.verified && out.writeAttempted == afterWrite);
         assert(t.device->settingsAttempts() == (afterWrite ? 1u : 0u));
@@ -185,5 +186,11 @@ void cancellationAndDeadline() {
 int main() {
     encoding(); readAndGates(); invalidAndLocked(); applyAndUnchanged(); staleSnapshots();
     everyTransportFailure(); firmwareFailures(); boundedBusy(); fullReadbackVerification(); cancellationAndDeadline();
-    std::cout << "10 Intel TVB scenario groups passed\n";
+    // Exercise the new field through every transport/status/stale/readback boundary.
+    const auto ring = IntelTvbField::RingDownBin;
+    staleSnapshots(ring); everyTransportFailure(ring); firmwareFailures(ring); boundedBusy(ring);
+    fullReadbackVerification(ring); cancellationAndDeadline(ring);
+    Test locked; locked.device->locked = true; const auto old = locked.read();
+    assert(locked.apply(old, ring).error == -EPERM && !locked.device->settingsAttempts());
+    std::cout << "11 Intel TVB / Ring DownBin scenario groups passed\n";
 }

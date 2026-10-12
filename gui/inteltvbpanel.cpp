@@ -20,12 +20,21 @@ using namespace octool::core;
 namespace {
 QString failure(int error) { return QString("Failed (%1): %2.").arg(error).arg(QString::fromLocal8Bit(std::strerror(-error))); }
 QString state(bool enabled) { return enabled ? "Enabled" : "Disabled"; }
+bool settingEnabled(IntelTvbField field, std::uint32_t data) {
+    switch (field) {
+    case IntelTvbField::RatioClipping: return intelTvbRatioClipping(data);
+    case IntelTvbField::VoltageOptimization: return intelTvbVoltageOptimization(data);
+    case IntelTvbField::RingDownBin: return intelRingDownBin(data);
+    }
+    return false;
+}
 }
 IntelTvbPanel::IntelTvbPanel(std::shared_ptr<HardwareAccess> access, QWidget *parent, unsigned cpu)
     : QWidget(parent), access_(std::move(access)), cancelled_(std::make_shared<std::atomic<bool>>(false)) {
     setObjectName("intelTvb"); auto *layout = new QVBoxLayout(this);
-    auto *scope = new QLabel("Intel Thermal Velocity Boost - Raptor Lake-S\n"
+    auto *scope = new QLabel("Intel TVB & Ring DownBin - Raptor Lake-S\n"
         "Ratio clipping allows frequency reduction as temperature rises. Voltage optimization adjusts voltage with temperature. "
+        "Ring DownBin allows the processor to reduce the ring ratio below its requested maximum. "
         "These are shared processor settings accessed through the selected logical CPU. Availability depends on the processor and firmware.", this);
     scope->setWordWrap(true); layout->addWidget(scope);
     auto *buttons = new QHBoxLayout;
@@ -44,7 +53,8 @@ IntelTvbPanel::IntelTvbPanel(std::shared_ptr<HardwareAccess> access, QWidget *pa
     edit->addWidget(new QLabel("Setting", this));
     field_ = new QComboBox(this); field_->setObjectName("tvbField");
     field_->addItem("Ratio clipping", int(IntelTvbField::RatioClipping));
-    field_->addItem("Voltage optimization", int(IntelTvbField::VoltageOptimization)); edit->addWidget(field_, 1);
+    field_->addItem("Voltage optimization", int(IntelTvbField::VoltageOptimization));
+    field_->addItem("Ring DownBin", int(IntelTvbField::RingDownBin)); edit->addWidget(field_, 1);
     value_ = new QComboBox(this); value_->setObjectName("tvbValue");
     value_->addItem("Disabled", 0); value_->addItem("Enabled", 1); edit->addWidget(value_);
     apply_ = new QPushButton("Apply setting…", this); apply_->setObjectName("tvbApply"); edit->addWidget(apply_);
@@ -75,8 +85,7 @@ void IntelTvbPanel::invalidate() {
 }
 void IntelTvbPanel::selectCurrent() {
     if (!snapshot_.valid || snapshot_.error) { value_->setCurrentIndex(-1); return; }
-    value_->setCurrentIndex((field_->currentData().toInt() == int(IntelTvbField::RatioClipping)
-        ? intelTvbRatioClipping(snapshot_.response.data) : intelTvbVoltageOptimization(snapshot_.response.data)) ? 1 : 0);
+    value_->setCurrentIndex(settingEnabled(IntelTvbField(field_->currentData().toInt()), snapshot_.response.data) ? 1 : 0);
 }
 void IntelTvbPanel::present(const IntelTvbSnapshot &snapshot) {
     invalidate(); snapshot_ = snapshot;
@@ -85,22 +94,21 @@ void IntelTvbPanel::present(const IntelTvbSnapshot &snapshot) {
             QString(" Firmware status: %1. No settings displayed.").arg(snapshot.response.firmwareStatus)); return;
     }
     const bool editable = intelTvbEditable(snapshot);
-    const bool values[] = {intelTvbRatioClipping(snapshot.response.data), intelTvbVoltageOptimization(snapshot.response.data)};
-    for (int row = 0; row < 2; ++row) {
+    for (int row = 0; row < field_->count(); ++row) {
         table_->insertRow(row);
-        table_->setItem(row, 0, new QTableWidgetItem(row ? "Voltage optimization" : "Ratio clipping"));
-        table_->setItem(row, 1, new QTableWidgetItem(state(values[row])));
+        table_->setItem(row, 0, new QTableWidgetItem(field_->itemText(row)));
+        table_->setItem(row, 1, new QTableWidgetItem(state(settingEnabled(IntelTvbField(field_->itemData(row).toInt()), snapshot.response.data))));
         table_->setItem(row, 2, new QTableWidgetItem(editable ? "Available for editing" : "OC locked - read only"));
     }
     selectCurrent(); value_->setEnabled(editable); apply_->setEnabled(editable);
     raw_->setText(QString("Configuration: %1 · OC lock: %2").arg(hexValue(snapshot.response.data, 4)).arg(editable ? "clear" : "set"));
-    status_->setText(QString("CPU %1 · TVB configuration read. %2").arg(snapshot.cpu).arg(editable
+    status_->setText(QString("CPU %1 · TVB & Ring DownBin configuration read. %2").arg(snapshot.cpu).arg(editable
         ? "Choose one setting to change; other settings are preserved." : "Firmware overclocking lock prevents changes."));
 }
 void IntelTvbPanel::refresh() {
     quint64 cpu = 0; invalidate();
     if (!parseNumber(cpu_->text(), 10, 1048575, cpu)) { status_->setText("Invalid logical CPU."); return; }
-    setEnabled(false); status_->setText("Reading TVB configuration…");
+    setEnabled(false); status_->setText("Reading TVB & Ring DownBin configuration…");
     const auto revision = revision_;
     auto *watcher = new QFutureWatcher<IntelTvbSnapshot>(this);
     connect(watcher, &QFutureWatcher<IntelTvbSnapshot>::finished, this, [this, watcher, revision] {
@@ -122,12 +130,14 @@ void IntelTvbPanel::apply() {
     const auto preparedRevision = revision_;
     const auto field = IntelTvbField(field_->currentData().toInt());
     const auto enabled = unsigned(value_->currentData().toInt());
-    const bool before = field == IntelTvbField::RatioClipping ? intelTvbRatioClipping(old.response.data) : intelTvbVoltageOptimization(old.response.data);
-    if (QMessageBox::question(this, "Apply TVB configuration",
+    const bool before = settingEnabled(field, old.response.data);
+    const QString effect = field == IntelTvbField::RingDownBin
+        ? "This changes automatic ring ratio reduction. Disabling Ring DownBin can increase CPU voltage. "
+        : "This changes temperature-dependent frequency or voltage behavior and can affect stability. ";
+    if (QMessageBox::question(this, "Apply processor configuration",
         QString("CPU %1 · shared processor configuration\n%2: %3 → %4.\n"
-            "This changes temperature-dependent frequency or voltage behavior and can affect stability. "
-            "The selected setting will be applied and read back.")
-        .arg(old.cpu).arg(field_->currentText()).arg(state(before)).arg(state(enabled != 0)),
+            "%5The selected setting will be applied and read back.")
+        .arg(old.cpu).arg(field_->currentText()).arg(state(before)).arg(state(enabled != 0)).arg(effect),
         QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Yes) return;
     if (preparedRevision != revision_) { status_->setText("CPU changed. Read the configuration again."); return; }
     invalidate(); setEnabled(false); status_->setText("Checking current settings, applying and verifying readback…");

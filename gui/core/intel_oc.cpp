@@ -274,10 +274,16 @@ bool intelTvbEditable(const IntelTvbSnapshot &s) {
 }
 bool intelTvbRatioClipping(std::uint32_t data) { return !(data & 4u); }
 bool intelTvbVoltageOptimization(std::uint32_t data) { return !(data & 8u); }
+bool intelRingDownBin(std::uint32_t data) { return !(data & 2u); }
 int encodeIntelTvb(IntelTvbField field, unsigned enabled, std::uint32_t previous, std::uint32_t &encoded) {
-    if (field != IntelTvbField::RatioClipping && field != IntelTvbField::VoltageOptimization) return -EINVAL;
+    std::uint32_t mask = 0;
+    switch (field) {
+    case IntelTvbField::RatioClipping: mask = 4u; break;
+    case IntelTvbField::VoltageOptimization: mask = 8u; break;
+    case IntelTvbField::RingDownBin: mask = 2u; break;
+    default: return -EINVAL;
+    }
     if (enabled > 1) return -ERANGE;
-    const std::uint32_t mask = field == IntelTvbField::RatioClipping ? 4u : 8u;
     encoded = (previous & ~mask) | (enabled ? 0u : mask);
     return 0;
 }

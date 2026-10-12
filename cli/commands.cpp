@@ -76,6 +76,10 @@ const std::map<std::string, IntelField> intelFields = {
     {"hwp-min", IntelField::HwpMin}, {"hwp-max", IntelField::HwpMax}, {"hwp-desired", IntelField::HwpDesired}, {"hwp-epp", IntelField::HwpEpp},
     {"hwp-window-us", IntelField::HwpActivityWindow}
 };
+const std::map<std::string, IntelTvbField> tvbFields = {
+    {"ratio-clipping", IntelTvbField::RatioClipping}, {"voltage-optimization", IntelTvbField::VoltageOptimization},
+    {"ring-down-bin", IntelTvbField::RingDownBin}
+};
 const std::map<std::string, IntelTvbTableField> tvbTableFields = {
     {"temperature-a", IntelTvbTableField::TemperatureA}, {"down-bins-a", IntelTvbTableField::DownBinsA},
     {"temperature-b", IntelTvbTableField::TemperatureB}, {"down-bins-b", IntelTvbTableField::DownBinsB}
@@ -188,7 +192,7 @@ Command parse(const std::vector<std::string> &args) {
     }
     if (c.name == "intel-tvb-set") {
         c.field = get(options, "--field");
-        require(c.field == "ratio-clipping" || c.field == "voltage-optimization", "TVB field must be ratio-clipping or voltage-optimization");
+        require(tvbFields.count(c.field), "Field must be ratio-clipping, voltage-optimization or ring-down-bin");
         c.value = uintOption(options, "--value", 1);
     }
     if (c.name == "intel-uncore-set") {
@@ -320,7 +324,8 @@ std::string tvbSnapshot(const IntelTvbSnapshot &s) {
         {"firmware_status", s.response.completed ? number(s.response.firmwareStatus) : "null"},
         {"locked", valid ? boolean((s.flexRatio & (UINT64_C(1) << 20)) != 0) : "null"},
         {"ratio_clipping_enabled", valid ? boolean(intelTvbRatioClipping(s.response.data)) : "null"},
-        {"voltage_optimization_enabled", valid ? boolean(intelTvbVoltageOptimization(s.response.data)) : "null"}});
+        {"voltage_optimization_enabled", valid ? boolean(intelTvbVoltageOptimization(s.response.data)) : "null"},
+        {"ring_down_bin_enabled", valid ? boolean(intelRingDownBin(s.response.data)) : "null"}});
 }
 std::string tvbTableEditSnapshot(const IntelTvbTableEditSnapshot &s) {
     const bool valid = s.valid && !s.error;
@@ -522,14 +527,13 @@ Result hardware(const Command &c, HardwareSession &s) {
         out.data.push_back({"rows", array(rows)});
     } else if (c.name == "intel-tvb-read" || c.name == "intel-tvb-set") {
         const auto snapshot = readIntelTvb(s, c.cpu); out.error = snapshot.error;
-        out.data.push_back({"scope", quote("shared processor TVB configuration via selected CPU")});
+        out.data.push_back({"scope", quote("shared processor TVB and Ring DownBin configuration via selected CPU")});
         out.data.push_back({"hardware_effect_measured", "false"});
         out.data.push_back({"before", tvbSnapshot(snapshot)});
         if (c.name == "intel-tvb-set") {
             IntelTvbUpdate result;
             if (!out.error) {
-                result = applyIntelTvb(s, snapshot, c.field == "ratio-clipping" ? IntelTvbField::RatioClipping
-                    : IntelTvbField::VoltageOptimization, unsigned(c.value)); out.error = result.error;
+                result = applyIntelTvb(s, snapshot, tvbFields.at(c.field), unsigned(c.value)); out.error = result.error;
             }
             out.data.push_back({"field", quote(c.field)}); out.data.push_back({"requested_enabled", boolean(c.value != 0)});
             out.data.push_back({"write_attempted", boolean(result.writeAttempted)});
@@ -900,7 +904,8 @@ Usage: octool-cli COMMAND [OPTIONS]
   intel-tvb-table --cpu N --active-cores 1..8 --for-edit   Read one entry and editing context
   intel-tvb-table-set --cpu N --active-cores 1..8 --field temperature-a|down-bins-a|temperature-b|down-bins-b --value N --apply
       Temperatures: 0..100 C; down bins: 0..10. Preserve other fields and verify the complete entry.
-  intel-tvb-set --cpu N --field ratio-clipping|voltage-optimization --value 0|1 --apply
+  intel-tvb-set --cpu N --field ratio-clipping|voltage-optimization|ring-down-bin --value 0|1 --apply
+    Ring DownBin: 1 enables automatic ring ratio reduction; 0 disables it. Shared B7 processor configuration.
   intel-uncore-read --cpu N
   intel-uncore-set --cpu N --minimum-ratio MIN --maximum-ratio MAX --apply
   intel-turbo-set --cpu N --core-type p|e --group 0..7 --value RATIO --apply

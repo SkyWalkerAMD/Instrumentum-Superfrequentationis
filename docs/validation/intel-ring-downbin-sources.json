@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "date": "2026-10-12",
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "fixture_sha256": "dad1bb702eff3fbdbb4f8a9c3ac7e5a735c02c3ecfdf821f77af81676ac5b00e",
+  "primary_sources": [
+    {
+      "repository": "intel/FSP",
+      "commit": "d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8",
+      "path": "RaptorLakeFspBinPkg/Client/RaptorLakeS/Include/FspmUpd.h",
+      "git_blob_sha1": "ddae8625052fedf7363dc6b63906ded7f571f573",
+      "url": "https://github.com/intel/FSP/blob/d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8/RaptorLakeFspBinPkg/Client/RaptorLakeS/Include/FspmUpd.h#L1595-L1600",
+      "scope": "Ring DownBin enable semantics on Raptor Lake-S; no mailbox bit definitions."
+    },
+    {
+      "url": "https://dlcdnets.asus.com/pub/ASUS/mb/LGA1700/ROG_MAXIMUS_Z790_DARK_HERO/E22758_ROG_Z790_Series_BIOS_Manual_Intel_14th_EM_WEB.pdf",
+      "document": "E22758, first edition October 2023",
+      "page": 55,
+      "scope": "Z790 Ring DownBin behavior, OC mailbox SET 0x19, disabling may increase CPU voltage; no data bit position."
+    },
+    {
+      "repository": "intel/FSP",
+      "commit": "d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8",
+      "path": "CometLakeFspBinPkg/CometLakeS/Include/FspmUpd.h",
+      "git_blob_sha1": "b1a01aec97da6b12b0604479f90eaac3d4e5ade2",
+      "url": "https://github.com/intel/FSP/blob/d901c9458288e1a0eb0ec9901efcd2ddfaa01cb8/CometLakeFspBinPkg/CometLakeS/Include/FspmUpd.h#L1126-L1131",
+      "scope": "Older platform Vmax Stress meaning; not evidence of B7 runtime semantics."
+    }
+  ],
+  "original_functions": [
+    {
+      "symbol": "_Z19disable_ringdownbinb",
+      "address": "0x37fd80",
+      "size": 199,
+      "field": "disable bit 1, same polarity as original bool argument",
+      "production": "enabled interface reverses the disable bit"
+    },
+    {
+      "symbol": "_Z12disable_vmaxb",
+      "address": "0x37ff10",
+      "size": 189,
+      "field": "disable bit 4, same polarity as original bool argument",
+      "production": "preserved; no Vmax field offered"
+    }
+  ],
+  "query_evidence": "Existing legacy-intel-tvb fixture and tests pin Rd_Misc_Ratio bit extraction; GET 0x18/SET 0x19 use parameter fields zero.",
+  "protocol": {
+    "msr": "0x150",
+    "get": "0x18",
+    "set": "0x19",
+    "ring_down_bin_disable_bit": 1
+  },
+  "profile": "Intel Family 6 / Model B7, MSR, bare metal, successful mailbox response; FLEX_RATIO OC lock clear for settings.",
+  "limits": [
+    "Configuration response/readback does not prove actual ring frequency or SKU behavior.",
+    "No automatic capability inference for Vmax from original setter alone. Absence from the checked Raptor Lake FSP/header and Z790 manual is not proof of hardware absence.",
+    "No changes to MSR 0x620 range, TVB table, Vmax, unknown bits, other models or per-core domains.",
+    "Physical hardware acceptance and Secure Boot acceptance remain pending."
+  ]
+}

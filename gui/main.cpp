@@ -98,7 +98,7 @@ int main(int argc, char **argv)
     intel->addTab(new IntelUncorePanel(access, intel, initialCpu), "Ring / LLC range");
     intel->addTab(new IntelMemoryPanel(access, intel, initialCpu), "Memory timings");
     intel->addTab(new IntelClockPanel(access, intel, initialCpu), "Clock information");
-    intel->addTab(new IntelTvbPanel(access, intel, initialCpu), "TVB configuration");
+    intel->addTab(new IntelTvbPanel(access, intel, initialCpu), "TVB & Ring DownBin");
     intel->addTab(new IntelTvbTablePanel(access, intel, initialCpu), "TVB thresholds");
     tabs->addTab(intel, "Intel Controls");
     auto *amd = new QTabWidget(tabs);

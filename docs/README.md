@@ -1,5 +1,9 @@
 # 项目知识入口
 
+<!-- intel-ring-downbin-pending -->
+2026-10-12：GUI / CLI 同步新增 [Intel Ring DownBin](intel-ring-downbin.md)，限定 B7 裸机；原版 Ring / Vmax 指令已隔离仿真，Vmax 仍未开放设置。云端验证进行中。以下保留上一批已验证记录。
+<!-- /intel-ring-downbin-pending -->
+
 <!-- intel-tvb-edit-494b8f0 -->
 2026-10-12：最新验证生产提交 `494b8f0`，GUI / CLI 同步恢复 **Intel TVB 分档单字段编辑**。
 B7 裸机；温度 A/B、降倍率 A/B，保守范围内单项设置，含旧值核对和完整读回。

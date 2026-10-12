@@ -794,19 +794,25 @@ private slots:
         auto *read = panel.findChild<QPushButton *>("tvbRead"); auto *table = panel.findChild<QTableWidget *>("tvbTable");
         auto *field = panel.findChild<QComboBox *>("tvbField"); auto *value = panel.findChild<QComboBox *>("tvbValue");
         QVERIFY(!panel.findChild<QPushButton *>("tvbApply")->isEnabled()); QCOMPARE(value->currentIndex(), -1);
-        for (unsigned bits : {0u, 4u, 8u, 12u}) {
-            device->data = 0xa5c32110 | bits; read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(), 2);
+        for (unsigned bits : {0u, 2u, 4u, 6u, 8u, 10u, 12u, 14u}) {
+            device->data = 0xa5c32110 | bits; read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(), 3);
             QCOMPARE(table->item(0,1)->text(), bits & 4 ? QString("Disabled") : QString("Enabled"));
             QCOMPARE(table->item(1,1)->text(), bits & 8 ? QString("Disabled") : QString("Enabled"));
+            QCOMPARE(table->item(2,0)->text(), QString("Ring DownBin"));
+            QCOMPARE(table->item(2,1)->text(), bits & 2 ? QString("Disabled") : QString("Enabled"));
+            field->setCurrentIndex(2); QCOMPARE(value->currentIndex(), bits & 2 ? 0 : 1);
             field->setCurrentIndex(1); QCOMPARE(value->currentIndex(), bits & 8 ? 0 : 1);
             field->setCurrentIndex(0); QCOMPARE(value->currentIndex(), bits & 4 ? 0 : 1);
         }
         panel.findChild<QPushButton *>("tvbCopy")->click();
         QVERIFY(QApplication::clipboard()->text().contains("CPU 130")); QVERIFY(QApplication::clipboard()->text().contains("Voltage optimization"));
+        QVERIFY(QApplication::clipboard()->text().contains("Ring DownBin"));
         auto *raw = panel.findChild<QLabel *>("tvbRaw");
         QVERIFY(raw->text().contains(hexValue(device->data, 4)));
         // The initially empty label needs Qt's queued layout pass before capture.
-        QTRY_VERIFY(raw->height() >= raw->fontMetrics().height());
+        QTRY_VERIFY(raw->height() >= raw->heightForWidth(raw->width()));
+        auto *status = panel.findChild<QLabel *>("tvbStatus");
+        QTRY_VERIFY(status->height() >= status->heightForWidth(status->width()));
         const auto shot = qEnvironmentVariable("OCTOOL_INTEL_TVB_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
         panel.findChild<QLineEdit *>("tvbCpu")->setText("-1");
         QCOMPARE(table->rowCount(), 0); QVERIFY(!panel.findChild<QPushButton *>("tvbApply")->isEnabled());
@@ -824,25 +830,57 @@ private slots:
         const auto calls = device->calls;
         QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Cancel)->click(); });
         apply->click(); QCOMPARE(device->calls, calls); QCOMPARE(device->settingsAttempts(), 0u);
-        for (int index = 0; index < 2; ++index) {
+        for (int index = 0; index < 3; ++index) {
             field->setCurrentIndex(index); value->setCurrentIndex(0);
             QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
             apply->click(); QTRY_VERIFY(panel.isEnabled());
             QCOMPARE(device->settingsAttempts(), unsigned(index+1));
-            QCOMPARE(device->data, index == 0 ? UINT32_C(0xa5c32114) : UINT32_C(0xa5c3211c));
+            QCOMPARE(device->data, index == 0 ? UINT32_C(0xa5c32114) : index == 1 ? UINT32_C(0xa5c3211c) : UINT32_C(0xa5c3211e));
             QVERIFY(panel.findChild<QLabel *>("tvbStatus")->text().contains("readback verified"));
         }
         QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
-        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settingsAttempts(), 2u);
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settingsAttempts(), 3u);
         QVERIFY(panel.findChild<QLabel *>("tvbStatus")->text().contains("no settings write performed"));
         QCOMPARE(device->wrongCpu, 0u);
+    }
+    void intelRingDownBinEnableAndConfirmationTargetChange() {
+        auto *device = new IntelTvbFixture; device->data = UINT32_C(0xa5c3211e);
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        IntelTvbPanel panel(access, nullptr, 130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("tvbRead"); auto *apply = panel.findChild<QPushButton *>("tvbApply");
+        auto *value = panel.findChild<QComboBox *>("tvbValue");
+        auto *cpu = panel.findChild<QLineEdit *>("tvbCpu");
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        panel.findChild<QComboBox *>("tvbField")->setCurrentIndex(2);
+        QCOMPARE(value->currentIndex(), 0); value->setCurrentIndex(1);
+        bool described = false;
+        QTimer::singleShot(0, [&] {
+            auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget());
+            if (!box) return;
+            described = box->text().contains("Ring DownBin: Disabled → Enabled") && box->text().contains("CPU 130");
+            box->button(QMessageBox::Yes)->click();
+        });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(described);
+        QCOMPARE(device->data, UINT32_C(0xa5c3211c)); QCOMPARE(device->settingsAttempts(), 1u);
+        QCOMPARE(value->currentIndex(), 1);
+        QCOMPARE(panel.findChild<QTableWidget *>("tvbTable")->item(2,1)->text(), QString("Enabled"));
+        const auto calls = device->calls;
+        value->setCurrentIndex(0);
+        QTimer::singleShot(0, [&] {
+            auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget());
+            if (!box) return;
+            cpu->setText("131"); box->button(QMessageBox::Yes)->click();
+        });
+        apply->click(); QCOMPARE(device->calls, calls); QCOMPARE(device->settingsAttempts(), 1u);
+        QCOMPARE(panel.findChild<QTableWidget *>("tvbTable")->rowCount(), 0);
+        QVERIFY(!apply->isEnabled()); QCOMPARE(device->wrongCpu, 0u);
     }
     void intelTvbLockAndFailedReads() {
         auto *device = new IntelTvbFixture;
         auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
         IntelTvbPanel panel(access, nullptr, 130); panel.show(); auto *read = panel.findChild<QPushButton *>("tvbRead");
         read->click(); QTRY_VERIFY(panel.isEnabled()); device->locked = true;
-        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(panel.findChild<QTableWidget *>("tvbTable")->rowCount(), 2);
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(panel.findChild<QTableWidget *>("tvbTable")->rowCount(), 3);
         QVERIFY(!panel.findChild<QPushButton *>("tvbApply")->isEnabled());
         device->failCommand = 0x18; device->status = 5;
         read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(panel.findChild<QTableWidget *>("tvbTable")->rowCount(), 0);
@@ -852,11 +890,12 @@ private slots:
         QVERIFY(device->requests.empty());
     }
     void intelTvbStaleAndFailedWrites() {
-        for (unsigned mode = 0; mode < 4; ++mode) {
+        for (int field : {0, 2}) for (unsigned mode = 0; mode < 4; ++mode) {
             auto *device = new IntelTvbFixture;
             auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
             IntelTvbPanel panel(access, nullptr, 130); panel.show();
             panel.findChild<QPushButton *>("tvbRead")->click(); QTRY_VERIFY(panel.isEnabled());
+            panel.findChild<QComboBox *>("tvbField")->setCurrentIndex(field);
             panel.findChild<QComboBox *>("tvbValue")->setCurrentIndex(0);
             if (mode == 0) device->data ^= UINT32_C(1) << 31;
             if (mode == 1) device->discardChange = true;
