@@ -587,7 +587,7 @@ private slots:
         panel.findChild<QPushButton *>("tvbTableCopy")->click();
         QVERIFY(QApplication::clipboard()->text().contains("CPU 130"));
         QVERIFY(QApplication::clipboard()->text().contains("1\t70\t1\t100\t2\t0x02644601\tRead"));
-        QTRY_VERIFY(status->height() >= status->fontMetrics().height());
+        QTRY_VERIFY(status->height() >= status->heightForWidth(status->width()));
         QTRY_VERIFY(table->columnWidth(5) >= table->fontMetrics().horizontalAdvance("0x02644601"));
         const auto shot = qEnvironmentVariable("OCTOOL_INTEL_TVB_TABLE_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
         QCOMPARE(device->mutations,0u); QCOMPARE(device->wrongCpu,0u);
@@ -691,7 +691,7 @@ private slots:
         QVERIFY(status->text().contains("no settings write performed"));
         panel.findChild<QPushButton *>("tvbTableCopy")->click();
         QVERIFY(QApplication::clipboard()->text().contains("1\t80\t0\t90\t10\t0x0A5A5000\tRead"));
-        QTRY_VERIFY(status->height() >= status->fontMetrics().height());
+        QTRY_VERIFY(status->height() >= status->heightForWidth(status->width()));
         const auto shot = qEnvironmentVariable("OCTOOL_INTEL_TVB_TABLE_EDIT_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
         QCOMPARE(device->wrongCpu,0u); QCOMPARE(device->settingsAttempts(),0u);
     }
