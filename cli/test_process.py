@@ -330,15 +330,15 @@ with tempfile.TemporaryDirectory(prefix="octool-intel-clock-") as directory:
     os.mkfifo(Path(directory)/"fifo")
     assert run("intel-clock-decode","--file",str(Path(directory)/"fifo"),code=3)["data"]["clock"] is None
 imc_reports = [r for r in reports if r["command"] in ("intel-memory-read","intel-memory-decode")]
-assert len(imc_reports) == 40
-assert [r["ok"] for r in imc_reports] == ([True]*4+[False]*6)*2 + [True]*4+[False]*4 + [True]*6+[False]*6
+assert len(imc_reports) == 52
+assert [r["ok"] for r in imc_reports] == ([True]*4+[False]*6)*2 + [True]*4+[False]*4 + [True]*6+[False]*6 + [True]*6+[False]*6
 for i,r in enumerate(imc_reports[:20]):
     memory = r["data"]["memory"]
     if not r["ok"]:
         assert memory is None
         continue
-    assert memory["format"] == "octool-intel-memory-v3"
-    assert len(memory["registers"]) == 18 and len(memory["fields"]) == 57
+    assert memory["format"] == "octool-intel-memory-v4"
+    assert len(memory["registers"]) == 19 and len(memory["fields"]) == 68
     fields = {v["name"]:v for v in memory["fields"]}
     assert fields["tCL"]["encoded"] == 36 and fields["tWRPRE"]["encoded"] == 80
     assert fields["tWRRD_SG"]["encoded"] == 70 and fields["tWRRD_DD"]["encoded"] == 10
@@ -382,7 +382,7 @@ for i,r in enumerate(imc_reports[20:28]):
     if i == 3:
         assert fields["tCPDED"]["encoded"] == 0 and fields["tCPDED"]["unit"] == "encoded"
         assert fields["RTL_Rank0"]["unit"] == "QCLK" and fields["tCSL"]["unit"] == "MC_DCLK"
-for i,r in enumerate(imc_reports[28:]):
+for i,r in enumerate(imc_reports[28:40]):
     assert not r["data"]["hardware_accessed"]
     memory = r["data"]["memory"]
     if i >= 6:
@@ -401,6 +401,26 @@ for i,r in enumerate(imc_reports[28:]):
     assert fields["tCKESR"]["encoded"] == (41 if i == 1 else None)
     assert fields["Self_refresh_tCSL"]["encoded"] == (None if i == 1 else 0 if i == 2 else 41)
     assert memory["registers"][17]["raw"] == ("0x0000000000000000" if i == 2 else "0xe290000000001234")
+for i,r in enumerate(imc_reports[40:52]):
+    assert not r["data"]["hardware_accessed"]
+    memory = r["data"]["memory"]
+    if i >= 6:
+        assert memory is None
+        continue
+    assert memory["format"] == "octool-intel-memory-v4" and memory["offline"]
+    assert len(memory["registers"]) == 19 and len(memory["fields"]) == 68
+    fields = {v["name"]:v for v in memory["fields"]}
+    expected = dict(zip(("self_refresh_enable","power_down_enable","idle_enable","CKE_valid_enable",
+                         "CKE_valid_length","self_refresh_length","self_refresh_latency","power_down_length",
+                         "power_down_latency","idle_length","raise_CKE_after_exit"), (1,0,1,1,9,3,21,6,10,9,1)))
+    for name,value in expected.items():
+        assert fields["DDRIO_"+name]["encoded"] == (0 if i == 2 else value)
+    assert fields["DDRIO_CKE_valid_length"]["unit"] == "DCLK"
+    assert fields["DDRIO_self_refresh_length"]["unit"] == "MC_DCLK"
+    assert fields["DDRIO_self_refresh_latency"]["unit"] == ("encoded" if i == 3 else "8*tCK")
+    assert fields["DDRIO_power_down_latency"]["unit"] == ("encoded" if i == 3 else "tCK")
+    assert fields["DDRIO_idle_length"]["unit"] == "encoded"
+    assert memory["registers"][18]["raw"] == ("0x0000000000000000" if i == 2 else "0x00000000b9355953")
 with tempfile.TemporaryDirectory(prefix="octool-intel-memory-") as directory:
     path = Path(directory)/"内存快照.json"
     for source in (imc_reports[0]["data"]["memory"],imc_reports[0],imc_reports[10]):
@@ -408,7 +428,7 @@ with tempfile.TemporaryDirectory(prefix="octool-intel-memory-") as directory:
         decoded = run("intel-memory-decode","--file",str(path))
         assert decoded["data"]["memory"]["registers"] == imc_reports[0]["data"]["memory"]["registers"]
         assert decoded["data"]["memory"]["fields"][0]["encoded"] == 36
-    for source in imc_reports[20:24]+imc_reports[28:34]:
+    for source in imc_reports[20:24]+imc_reports[28:34]+imc_reports[40:46]:
         path.write_text(json.dumps(source),encoding="utf-8")
         decoded = run("intel-memory-decode","--file",str(path))
         assert decoded["data"]["memory"] == source["data"]["memory"]

@@ -25,14 +25,15 @@ std::uint64_t word64(const capture_json::Json &v) {
 }
 const std::vector<IntelMemoryRegisterSpec> &intelMemoryRegisters(unsigned version) {
     // Intel 743846-001, sections 3.2.46, 3.2.49-50, 3.2.70-76, 3.2.79-80, 3.2.82,
-    // 3.2.89-91, 3.2.93-94 and 3.2.103. Context precedes timing registers.
+    // 3.2.83, 3.2.89-91, 3.2.93-94 and 3.2.103. Context precedes timing registers.
     static const std::vector<IntelMemoryRegisterSpec> specs = {
         {0xd800,4}, {0xd80c,4}, {0xe454,4}, {0xe088,8}, {0xe000,8}, {0xe008,4},
         {0xe00c,4}, {0xe010,4}, {0xe014,4}, {0xe018,4}, {0xe070,8}, {0xe43c,4},
-        {0xe020,8}, {0xe050,8}, {0xe438,4}, {0xe440,4}, {0xe448,8}, {0xe4c0,8}
+        {0xe020,8}, {0xe050,8}, {0xe438,4}, {0xe440,4}, {0xe448,8}, {0xe4c0,8}, {0xe0b8,4}
     };
-    static const std::vector<IntelMemoryRegisterSpec> v1(specs.begin(), specs.begin()+12), v2(specs.begin(), specs.begin()+14), empty;
-    return version == 3 ? specs : version == 2 ? v2 : version == 1 ? v1 : empty;
+    static const std::vector<IntelMemoryRegisterSpec> v1(specs.begin(), specs.begin()+12), v2(specs.begin(), specs.begin()+14),
+        v3(specs.begin(), specs.begin()+18), empty;
+    return version == 4 ? specs : version == 3 ? v3 : version == 2 ? v2 : version == 1 ? v1 : empty;
 }
 const std::vector<IntelMemoryField> &intelMemoryFields(unsigned version) {
     static const std::vector<IntelMemoryField> fields = {
@@ -72,16 +73,30 @@ const std::vector<IntelMemoryField> &intelMemoryFields(unsigned version) {
         {"tZQCS",0xe448,10,20,1,"tCK",0,true},
         {"tZQLAT",0xe448,10,20,2,"tCK",0,true},
         {"tCKESR",0xe4c0,52,57,1,"encoded",0,true},
-        {"Self_refresh_tCSL",0xe4c0,52,57,2,"encoded",0,true}
+        {"Self_refresh_tCSL",0xe4c0,52,57,2,"encoded",0,true},
+        // 3.2.83: these are permission/configuration bits and programmed
+        // durations, not evidence that a power state is currently active.
+        {"DDRIO_self_refresh_enable",0xe0b8,31,31,3,"flag",0,true},
+        {"DDRIO_power_down_enable",0xe0b8,30,30,3,"flag",0,true},
+        {"DDRIO_idle_enable",0xe0b8,29,29,3,"flag",0,true},
+        {"DDRIO_CKE_valid_enable",0xe0b8,28,28,3,"flag",0,true},
+        {"DDRIO_CKE_valid_length",0xe0b8,24,27,3,"DCLK",0,true},
+        {"DDRIO_self_refresh_length",0xe0b8,20,23,3,"MC_DCLK",0,true},
+        {"DDRIO_self_refresh_latency",0xe0b8,14,19,3,"8*tCK",0,true},
+        {"DDRIO_power_down_length",0xe0b8,10,13,3,"MC_DCLK",0,true},
+        {"DDRIO_power_down_latency",0xe0b8,5,9,3,"tCK",0,true},
+        {"DDRIO_idle_length",0xe0b8,1,4,3,"encoded",0,true},
+        {"DDRIO_raise_CKE_after_exit",0xe0b8,0,0,3,"flag",0,true}
     };
-    static const std::vector<IntelMemoryField> v1(fields.begin(), fields.begin()+30), v2(fields.begin(), fields.begin()+43), empty;
-    return version == 3 ? fields : version == 2 ? v2 : version == 1 ? v1 : empty;
+    static const std::vector<IntelMemoryField> v1(fields.begin(), fields.begin()+30), v2(fields.begin(), fields.begin()+43),
+        v3(fields.begin(), fields.begin()+57), empty;
+    return version == 4 ? fields : version == 3 ? v3 : version == 2 ? v2 : version == 1 ? v1 : empty;
 }
 const char *intelMemoryUnit(const IntelMemorySnapshot &s, const IntelMemoryField &f) {
     // QCLK and MC DCLK are already controller-domain quantities. Do not apply
     // the DRAM timing divide override, or guess a tCK/ns conversion, to them.
     const std::string unit = f.unit;
-    return (unit == "tCK" || unit == "2*tCK") && (s.noGear2Divide || s.noGear4Divide) ? "encoded" : f.unit;
+    return (unit == "tCK" || unit == "2*tCK" || unit == "8*tCK") && (s.noGear2Divide || s.noGear4Divide) ? "encoded" : f.unit;
 }
 std::uint32_t intelMemoryOffset(const IntelMemoryTarget &t, std::uint32_t offset) {
     return offset + t.controller * 0x10000 + (offset == 0xd800 ? 0 : t.channel * (offset == 0xd80c ? 4 : 0x800));
@@ -98,7 +113,7 @@ IntelMemorySnapshot decodeIntelMemory(const IntelMemoryTarget &t, const std::vec
         const auto it = raw.find(spec.offset);
         if (it == raw.end() || (spec.width == 4 && it->second > UINT32_MAX)) { out.error = -EINVAL; return out; }
         const auto full = spec.width == 4 ? UINT64_C(0xffffffff) : UINT64_MAX;
-        const bool policy = spec.offset == 0xe438 || spec.offset == 0xe440 || spec.offset == 0xe448 || spec.offset == 0xe4c0;
+        const bool policy = spec.offset == 0xe438 || spec.offset == 0xe440 || spec.offset == 0xe448 || spec.offset == 0xe4c0 || spec.offset == 0xe0b8;
         if (it->second == full || (!it->second && spec.offset != 0xd800 && spec.offset != 0xe088 && !policy)) { out.error = -ENODATA; return out; }
     }
     out.dramType = unsigned(raw[0xd800] & 7);
@@ -122,7 +137,7 @@ IntelMemorySnapshot decodeIntelMemory(const IntelMemoryTarget &t, const std::vec
         if (!(field.dramTypes & (1u << out.dramType))) v.error = -ENOTSUP;
         else if (field.rankBit && !(out.rankMask & field.rankBit)) v.error = -ENODEV;
         // Do not turn an uninitialized register into a timing measurement.
-        // tCPDED permits zero; v3 policy codes preserve zero as configured.
+        // tCPDED and subsequent policy/delay codes preserve zero as configured.
         // Absent ranks have no RTL measurement.
         else if (!v.encoded && !field.zeroAllowed) { out.error = -ENODATA; out.values.clear(); return out; }
         out.values.push_back(v);
@@ -204,7 +219,8 @@ IntelMemorySnapshot parseIntelMemoryCapture(const std::string &json) {
         }
         const unsigned version = equals(data->at("format"), Json::String, "octool-intel-memory-v1") ? 1 :
             equals(data->at("format"), Json::String, "octool-intel-memory-v2") ? 2 :
-            equals(data->at("format"), Json::String, "octool-intel-memory-v3") ? 3 : 0;
+            equals(data->at("format"), Json::String, "octool-intel-memory-v3") ? 3 :
+            equals(data->at("format"), Json::String, "octool-intel-memory-v4") ? 4 : 0;
         check(version &&
             equals(data->at("layout"), Json::String, "raptor-lake-s-743846-001"), "Unsupported Intel memory layout");
         IntelMemoryTarget t; t.controller = uint(data->at("controller"), 1); t.channel = uint(data->at("channel"), 1);

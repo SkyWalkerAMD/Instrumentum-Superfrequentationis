@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "date": "2026-10-12",
+  "date": "2026-10-13",
   "official_pdf": {
     "url": "https://cdrdv2-public.intel.com/743846/743846-001.pdf",
     "bytes": 5087799,
@@ -32,7 +32,8 @@
       "3.2.89",
       "3.2.91",
       "3.2.93",
-      "3.2.103"
+      "3.2.103",
+      "3.2.83"
     ],
     "visually_inspected_printed_pages": [
       129,
@@ -50,7 +51,8 @@
       164,
       165,
       166,
-      173
+      173,
+      157
     ],
     "numeric_facts": {
       "mchbar_pci_offset": "0x48",
@@ -90,7 +92,77 @@
         "DDR5": "Self_refresh_tCSL"
       },
       "txsdll_and_tsr_unit": "not specified; encoded only",
-      "refresh_codes_preserve_zero": true
+      "refresh_codes_preserve_zero": true,
+      "ddrio_low_power_offset": "0xe0b8",
+      "ddrio_width_bits": 32,
+      "ddrio_fields": [
+        {
+          "name": "self_refresh_enable",
+          "low": 31,
+          "high": 31,
+          "unit": "flag"
+        },
+        {
+          "name": "power_down_enable",
+          "low": 30,
+          "high": 30,
+          "unit": "flag"
+        },
+        {
+          "name": "idle_enable",
+          "low": 29,
+          "high": 29,
+          "unit": "flag"
+        },
+        {
+          "name": "CKE_valid_enable",
+          "low": 28,
+          "high": 28,
+          "unit": "flag"
+        },
+        {
+          "name": "CKE_valid_length",
+          "low": 24,
+          "high": 27,
+          "unit": "DCLK"
+        },
+        {
+          "name": "self_refresh_length",
+          "low": 20,
+          "high": 23,
+          "unit": "MC_DCLK"
+        },
+        {
+          "name": "self_refresh_latency",
+          "low": 14,
+          "high": 19,
+          "unit": "8*tCK"
+        },
+        {
+          "name": "power_down_length",
+          "low": 10,
+          "high": 13,
+          "unit": "MC_DCLK"
+        },
+        {
+          "name": "power_down_latency",
+          "low": 5,
+          "high": 9,
+          "unit": "tCK"
+        },
+        {
+          "name": "idle_length",
+          "low": 1,
+          "high": 4,
+          "unit": "encoded"
+        },
+        {
+          "name": "raise_CKE_after_exit",
+          "low": 0,
+          "high": 0,
+          "unit": "flag"
+        }
+      ]
     }
   },
   "linux_pci_reference": {
@@ -107,15 +179,16 @@
     "pci_vendor": "0x8086",
     "pci_device": "0xa700",
     "physical_hardware_validated": false,
-    "register_count": 18,
-    "field_count": 57,
+    "register_count": 19,
+    "field_count": 68,
     "write_operations": 0,
-    "capture_version": 3,
+    "capture_version": 4,
     "legacy_versions": [
       1,
-      2
+      2,
+      3
     ],
-    "hardware_reads": 51,
+    "hardware_reads": 53,
     "cpuid_reads": 3
   },
   "exclusions": [

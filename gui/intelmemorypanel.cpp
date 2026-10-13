@@ -98,6 +98,8 @@ void IntelMemoryPanel::present(const IntelMemorySnapshot &s) {
         (s.version == 1 ? "Legacy v1: RTL and power-down timings were not captured. " : "RTL uses QCLK; tCSL and tCSH use MC DCLK. ") +
         (s.version < 3 ? "Refresh policy, self-refresh and ZQ fields were not captured. " :
             "tREFIx9 uses 1024 DCLK; tZQCAL uses 2*tCK unless overridden. Self-refresh delays without documented units remain encoded. ") +
+        (s.version < 4 ? "DDRIO low-power fields were not captured. " :
+            "DDRIO flags permit power-mode indications; they do not report the current power state. ") +
         "tWRPRE is the write-command-to-precharge interval. No settings were changed.");
 }
 bool IntelMemoryPanel::loadCapture(const QByteArray &bytes) {
