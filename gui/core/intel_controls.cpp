@@ -185,6 +185,17 @@ IntelSnapshot readIntelControls(HardwareSession &s, unsigned cpu) {
             add(name, "J", msr, energy, double(std::uint32_t(energy.value))*energyUnit, false, IntelField::Pl1);
         }
         addHwpStatus();
+        if (out.identity.model == 0xb7) {
+            // Linux v6.12 intel_rapl_msr/common: Raptor Lake PL4 is MSR 601,
+            // low 13 bits, using the RAPL power unit. Keep SDM bit-31 lock.
+            // This is independent of ICCmax / OC mailbox rail controls.
+            out.pl4 = true;
+            if (energyUnits.error) out.peakPowerLimit.error = energyUnits.error;
+            else out.peakPowerLimit = s.execute(msrRequest(cpu, 0x601));
+            add("Package PL4 (peak power)", "W", 0x601, out.peakPowerLimit,
+                std::ldexp(double(out.peakPowerLimit.value & 0x1fff), -int(out.units.value & 15)),
+                !(out.peakPowerLimit.value & (UINT64_C(1) << 31)), IntelField::Pl4);
+        }
         add("Maximum non-turbo ratio", "ratio", 0xce, platform, ratio, false, IntelField::Pl1);
     } else addHwpStatus();
     return out;
@@ -193,7 +204,7 @@ IntelControlUpdate applyIntelControl(HardwareSession &s, const IntelSnapshot &ol
     IntelControlUpdate result;
     auto fail = [&result](int e) { result.error = e; return result; };
     if (!std::isfinite(value) || old.error || old.identity.error || !old.identity.intel ||
-        field < IntelField::Pl1 || field > IntelField::HwpActivityWindow) return fail(-EINVAL);
+        field < IntelField::Pl1 || field > IntelField::Pl4) return fail(-EINVAL);
     const auto fresh = readIntelControls(s, old.cpu);
     if (fresh.error) return fail(fresh.error);
     if (fresh.identity.signature != old.identity.signature || !fresh.identity.intel) return fail(-ENODEV);
@@ -201,15 +212,20 @@ IntelControlUpdate applyIntelControl(HardwareSession &s, const IntelSnapshot &ol
     for (const auto &item : fresh.readings) if (item.field == field && item.editable) allowed = true;
     if (!allowed) return fail(-EPERM);
     RegisterUpdate u; unsigned shift = 0; std::uint64_t raw = 0;
-    if (field <= IntelField::Pl2Window) {
-        if (!old.rapl || old.units.error || old.powerLimit.error || old.units.value != fresh.units.value) return fail(-EAGAIN);
-        u.target = msrRequest(old.cpu, 0x610); u.expected = old.powerLimit.value;
-        u.lockMask = UINT64_C(1) << 63; u.compareMask = UINT64_MAX;
-        if (field == IntelField::Pl1 || field == IntelField::Pl2) {
+    const bool peak = field == IntelField::Pl4;
+    const bool rapl = peak || field <= IntelField::Pl2Window;
+    if (rapl) {
+        const auto &limit = peak ? old.peakPowerLimit : old.powerLimit;
+        if (!old.rapl || old.units.error || limit.error || old.units.value != fresh.units.value ||
+            (peak && (!old.pl4 || !fresh.pl4))) return fail(-EAGAIN);
+        u.target = msrRequest(old.cpu, peak ? 0x601 : 0x610); u.expected = limit.value;
+        u.lockMask = UINT64_C(1) << (peak ? 31 : 63); u.compareMask = UINT64_MAX;
+        if (peak || field == IntelField::Pl1 || field == IntelField::Pl2) {
             const double encoded = std::ldexp(value, int(fresh.units.value & 15));
-            if (encoded < 1 || encoded > 32767) return fail(-ERANGE);
+            if (encoded < 1 || encoded > (peak ? 8191 : 32767)) return fail(-ERANGE);
             raw = std::uint64_t(std::floor(encoded)); shift = field == IntelField::Pl1 ? 0 : 32;
-            u.mask = UINT64_C(0x7fff) << shift;
+            if (peak) shift = 0;
+            u.mask = (peak ? UINT64_C(0x1fff) : UINT64_C(0x7fff)) << shift;
         } else if (field == IntelField::Pl1Window || field == IntelField::Pl2Window) {
             unsigned code = 0;
             const int error = encodeRaplWindow(value, unsigned((fresh.units.value >> 16) & 15), code);
@@ -246,8 +262,7 @@ IntelControlUpdate applyIntelControl(HardwareSession &s, const IntelSnapshot &ol
     u.bits = raw << shift;
     result.msr = std::uint32_t(u.target.address);
     result.expected = (u.expected & ~u.mask) | u.bits;
-    const bool rapl = field <= IntelField::Pl2Window;
-    const auto &current = rapl ? fresh.powerLimit : fresh.hwpRequest;
+    const auto &current = peak ? fresh.peakPowerLimit : rapl ? fresh.powerLimit : fresh.hwpRequest;
     if (current.error) return fail(current.error);
     if (current.value != u.expected) return fail(-EAGAIN);
     if (result.expected != u.expected) {
@@ -260,14 +275,14 @@ IntelControlUpdate applyIntelControl(HardwareSession &s, const IntelSnapshot &ol
         result.after = fresh;
     }
     const auto &after = result.after;
-    const auto &observed = rapl ? after.powerLimit : after.hwpRequest;
-    result.readbackValid = !after.error && !observed.error && (rapl ? after.rapl : after.hwp);
+    const auto &observed = peak ? after.peakPowerLimit : rapl ? after.powerLimit : after.hwpRequest;
+    result.readbackValid = !after.error && !observed.error && (peak ? after.pl4 : rapl ? after.rapl : after.hwp);
     if (after.error) return fail(after.error);
     if (observed.error) return fail(observed.error);
     if (!after.identity.intel || after.identity.signature != old.identity.signature) return fail(-ENODEV);
     if (rapl) {
         if (after.units.error) return fail(after.units.error);
-        if (!after.rapl || after.units.value != old.units.value) return fail(-EAGAIN);
+        if (!after.rapl || (peak && !after.pl4) || after.units.value != old.units.value) return fail(-EAGAIN);
     } else {
         if (after.hwpCapabilities.error) return fail(after.hwpCapabilities.error);
         if (!after.hwp || !after.hwpEnabled || (field == IntelField::HwpEpp && !after.epp) ||

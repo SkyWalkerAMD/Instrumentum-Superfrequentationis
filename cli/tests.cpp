@@ -48,6 +48,12 @@ std::string command(HardwareBackend &device, const std::vector<std::string> &arg
 }
 void invalidBeforeOpen() {
     const std::vector<std::vector<std::string>> invalid = {
+        {"intel-set","--cpu","130","--field","pl4","--value","0","--apply"},
+        {"intel-set","--cpu","130","--field","pl4","--value","-1","--apply"},
+        {"intel-set","--cpu","130","--field","pl4","--value","8192","--apply"},
+        {"intel-set","--cpu","130","--field","pl4","--value","nan","--apply"},
+        {"intel-set","--cpu","130","--field","pl4","--value","inf","--apply"},
+        {"intel-set","--cpu","130","--field","pl4","--value","100"},
         {"intel-limits-read"},
         {"intel-limits-read","--cpu","0","--apply"},
         {"intel-limits-read","--cpu","0","--reason","all"},
@@ -287,6 +293,7 @@ struct Registers : HardwareBackend {
         values[0x770] = 1; values[0x771] = 0x08203040; values[0x774] = 0x80004008;
         values[0x611] = 0x10000; values[0x639] = 0x4000;
         values[0x777] = UINT64_C(0x8765432100000005);
+        values[0x601] = UINT64_C(0x8765432140006800);
         values[0xc0010061] = 1u << 4; values[0xc0010064] = UINT64_C(0xfffffffffffffc00); values[0xc0010065] = 0;
     }
     Reply execute(const Request &r) override {
@@ -1074,6 +1081,28 @@ void pmCommands() {
     text("{\"bad\":\"\xed\xa0\x80\"}"); invoke({"amd-pm-decode","--file",path}, 3);
     assert(!opens);
 }
+void pl4Commands() {
+    for (const char *watts : {"0.125","100.12","1023.875"}) {
+        IntelControlsFixture d; d.expectedCpu=130;
+        const std::vector<std::string> args={"intel-set","--cpu","130","--field","pl4","--value",watts,"--apply"};
+        command(d,args,0); command(d,args,0);
+        assert(d.writes==1 && !d.wrongCpu && (d.regs[0x601]&~UINT64_C(0x1fff))==UINT64_C(0x8765432140006000));
+    }
+    for (unsigned mode=0;mode<9;++mode) {
+        IntelControlsFixture d; d.expectedCpu=130;
+        if (mode==0) d.regs[0x601]|=UINT64_C(1)<<31;
+        if (mode==1) d.failRead=0;
+        if (mode==2) d.failRead=9;
+        if (mode==3) d.model=0x8f;
+        if (mode==4) d.virtualized=true;
+        if (mode==5) d.discardChange=true;
+        if (mode==6 || mode==7) d.afterRequest=[&](const Request &r) {
+            if (r.write) d.regs[mode==6?0x606:0x601]^=UINT64_C(1)<<(mode==6?0:13);
+        };
+        command(d,{"intel-set","--cpu","130","--field","pl4","--value",mode==8?"1024":"100","--apply"},3);
+        assert(!d.wrongCpu && d.writes==unsigned(mode>=5 && mode<=7));
+    }
+}
 void hwpHistoryCommands() {
     for (std::uint64_t raw : {UINT64_C(0),UINT64_C(1),UINT64_C(4),UINT64_C(5),UINT64_C(2),UINT64_MAX}) {
         IntelControlsFixture d; d.expectedCpu=130; d.regs[0x777]=raw;
@@ -1398,7 +1427,8 @@ int main(int argc, char **argv) {
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
     hwpHistoryCommands();
+    pl4Commands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "35 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "36 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

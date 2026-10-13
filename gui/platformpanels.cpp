@@ -66,6 +66,7 @@ IntelControlsPanel::IntelControlsPanel(std::shared_ptr<HardwareAccess> access, Q
         "HWP history records events since reset or clear; it does not show current performance. "
         "Maximum non-turbo ratio is a fixed platform value. Package events show current status and history since the last reset or clear. "
         "Energy counters wrap; joules are counter readings, not watts or lifetime totals. DRAM telemetry requires BIOS RAPL mode 0. "
+        "PL4 is a peak power limit on 06_B7; zero is shown as raw configuration and cannot be requested. "
         "Core/cache, V/F points, turbo groups and Ring/LLC have separate tabs.", layout, this);
     auto *buttons = new QHBoxLayout; buttons->addWidget(new QLabel("Logical CPU", this));
     cpu_ = edit("intelCpu", QString::number(cpu), this); buttons->addWidget(cpu_);

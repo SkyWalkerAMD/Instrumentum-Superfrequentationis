@@ -37,3 +37,4 @@ install(FILES ../docs/headless-cli.md ../docs/umc-offline.md ../docs/intel-uncor
 install(FILES ../gui/LICENSE DESTINATION share/licenses/octool-cli)
 install(FILES ../docs/intel-clock.md ../docs/intel-memory.md ../docs/intel-memory-extended.md ../docs/intel-memory-refresh.md DESTINATION share/doc/octool-cli)
 install(FILES ../docs/intel-tvb.md ../docs/intel-energy.md ../docs/intel-avx-offset.md ../docs/intel-thermal.md ../docs/intel-limits.md DESTINATION share/doc/octool-cli)
+install(FILES ../docs/intel-bclk-voltage.md ../docs/intel-energy-counters.md ../docs/intel-pl4.md DESTINATION share/doc/octool-cli)

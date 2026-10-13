@@ -1,0 +1,152 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "functions": [
+    {
+      "symbol": "_Z20Rd_VR_CURRENT_CONFIGv",
+      "address": 3623792,
+      "size": 107,
+      "code_hex": "f30f1efa4883ec18bf0106000064488b042528000000488944240831c0488d5424044889e6c7042400000000c744240400000000e827acffff8b0424660fefc025ff1f0000f20f2ac0f20f59059fbd2a01488b44240864482b04252800000075054883c418c3e8355dddff",
+      "code_sha256": "4afbd1298dc061d1c48c2587538b74c2d1e573ac504f2f37e3326cdb89c2a420",
+      "calls": [
+        {
+          "instruction": 3623844,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3623894,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z24Rd_VR_CURRENT_CONFIG_pcuj",
+      "address": 3623904,
+      "size": 46,
+      "code_hex": "f30f1efa4883ec2889f9baf8000000e87c7b0300660fefc025ff1f0000f20f2ac0f20f590557bd2a014883c428c3",
+      "code_sha256": "16243d42ab2825ce10610a715be1a8cc748073034a07f742b3ce3c3fed148da2",
+      "calls": [
+        {
+          "instruction": 3623919,
+          "kind": "call",
+          "target": 3852144,
+          "symbols": [
+            "_Z18ReadPciConfigDwordjj"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z20Wr_VR_CURRENT_CONFIGv",
+      "address": 3623952,
+      "size": 115,
+      "code_hex": "f30f1efa4883ec18bf0106000064488b042528000000488944240831c0488d5424044889e6c7042400000000c744240400000000e887abffff8b34248b542404bf0106000081e600c0ffff81ceff1f0000893424e8b7aaffff488b44240864482b04252800000075054883c418c3e88d5cddff",
+      "code_sha256": "439cc072b0b7b1f04fea85fa7c26d3abeea59ba611c12890508e1346b3dfe7b0",
+      "calls": [
+        {
+          "instruction": 3624004,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3624036,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3624062,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z20Wr_VR_CURRENT_CONFIGi",
+      "address": 3709152,
+      "size": 163,
+      "code_hex": "f30f1efa5389fbbf010600004883ec1064488b042528000000488944240831c0488d5424044889e6c7042400000000c744240400000000e8b45efeffbf0e000000e89a9912004863d34839c277428b042481e3ff3f00008b542404bf0106000089de2500c0ffff09c6893424e8cf5dfeff488b44240864482b042528000000751d4883c4105bc3660f1f840000000000bf0e000000e84699120089c3ebb0e88d0fdcff",
+      "code_sha256": "8cbf05bbf7df5f13c99cf63c63fee108fa03b025d4a7d89c9c43c389db39a840",
+      "calls": [
+        {
+          "instruction": 3709207,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3709217,
+          "kind": "call",
+          "target": 4928192,
+          "symbols": [
+            "_Z17max_valuefrombitsm"
+          ]
+        },
+        {
+          "instruction": 3709260,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3709301,
+          "kind": "call",
+          "target": 4928192,
+          "symbols": [
+            "_Z17max_valuefrombitsm"
+          ]
+        },
+        {
+          "instruction": 3709308,
+          "kind": "jmp",
+          "target": 3709230,
+          "symbols": []
+        },
+        {
+          "instruction": 3709310,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z17max_valuefrombitsm",
+      "address": 4928192,
+      "size": 19,
+      "code_hex": "f30f1efa89f9b801000000d3e083e8014898c3",
+      "code_sha256": "2578fa21f4c1dcbbd9e0293c55b1be8de96f86673af18fa094bb18ba74d5ffb3",
+      "calls": []
+    }
+  ],
+  "objects": {
+    "scale": {
+      "address": 23202144,
+      "size": 8,
+      "source_initial_hex": "0000000000002040"
+    }
+  },
+  "literals": []
+}

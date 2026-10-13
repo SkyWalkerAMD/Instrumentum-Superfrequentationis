@@ -35,7 +35,7 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 852, len(reports)
+assert len(reports) == 873, len(reports)
 platform_reports=[r for r in reports if r['command']=='intel-read' and 'readings' in r['data']]
 assert len(platform_reports)==63  # Settings, telemetry and architectural HWP history.
 for report in platform_reports:
@@ -48,6 +48,13 @@ for report in platform_reports:
         assert unit['unit']=='J/tick' and unit['value']==2.0**-exponent
         assert limit['value']==2.0**(32-exponent) and not unit['editable'] and not limit['editable']
     for r in readings.values():
+        if r['msr']=='0x00000601':
+            assert r['name']=='Package PL4 (peak power)' and r['unit']=='W'
+            if r['error']: assert r['value'] is None and r['raw'] is None and not r['editable']
+            else:
+                raw=int(r['raw'],16); exponent=int(unit['raw'],16)&15
+                assert r['value']==(raw&0x1fff)*2.0**-exponent
+                assert r['editable']==(not bool(raw&(1<<31)))
         if r['msr'] in ('0x00000611','0x00000619','0x00000639'):
             assert not r['editable'] and r['unit']=='J'
             if not r['error']:
@@ -857,7 +864,18 @@ for result in registers:
         assert data["completed_writes"] == int(result["ok"])
     elif not result["ok"]:
         assert data["value"] is None
-controls = [r for r in reports if r["command"] == "intel-set" and "verified" in r.get("data", {})]
+pl4 = [r for r in reports if r['command']=='intel-set' and r['data'].get('field')=='pl4']
+assert len(pl4)==15 and [r['ok'] for r in pl4]==[True]*6+[False]*9
+for i,r in enumerate(pl4):
+    data=r['data']; assert data['verified']==r['ok'] and not data['hardware_effect_measured']
+    if r['ok']:
+        expected=0x8765432140006000 | (1,800,8191)[i//2]
+        assert int(data['expected_raw'],16)==expected and data['readback_raw']==data['expected_raw']
+        assert data['readback_value']==(expected&0x1fff)/8
+        assert data['msr']=='0x00000601' and data['write_attempted']==(i%2==0) and data['unchanged']==(i%2==1)
+    else: assert data['readback_value'] is None
+assert [r['data']['write_attempted'] for r in pl4[6:]]==[False]*5+[True]*3+[False]
+controls = [r for r in reports if r["command"] == "intel-set" and "verified" in r.get("data", {}) and r['data'].get('field')!='pl4']
 assert len(controls) == 10
 for result in controls:
     data = result["data"]

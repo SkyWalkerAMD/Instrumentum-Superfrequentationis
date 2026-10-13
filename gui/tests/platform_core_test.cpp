@@ -168,7 +168,7 @@ void intelVerificationFaults() {
             assert(r.error && !r.verified && t.fake->writes <= 1);
         }
         // Target and unit/capability read failures must never become zero data.
-        const std::vector<unsigned> positions = hwp ? std::vector<unsigned>{2,3,4,9,12,13,14} : std::vector<unsigned>{0,1,9,10,11};
+        const std::vector<unsigned> positions = hwp ? std::vector<unsigned>{2,3,4,10,13,14,15} : std::vector<unsigned>{0,1,10,11,12};
         for (unsigned pos : positions) {
             TestService t; const auto old = snapshot(t); t.fake->failRead = int(t.fake->reads + pos);
             const auto r = apply(t, old, hwp ? IntelField::HwpEpp : IntelField::Pl1, hwp ? 192 : 100);
@@ -178,7 +178,7 @@ void intelVerificationFaults() {
 }
 void intelVerificationGuards() {
     TestService t; const auto old = snapshot(t);
-    for (auto field : {IntelField(-1), IntelField(13)}) {
+    for (auto field : {IntelField(-1), IntelField(14)}) {
         const auto calls = t.fake->cpuCalls, reads = t.fake->reads;
         assert(apply(t, old, field, 1).error == -EINVAL);
         assert(t.fake->cpuCalls == calls && t.fake->reads == reads && !t.fake->writes);

@@ -2215,7 +2215,7 @@ private slots:
                 QCOMPARE(table->item(row,1)->text(),QString::fromLatin1(expected));
                 QCOMPARE(table->item(row,5)->text(),QString("Read only / locked")); ++events;
             }
-            QCOMPARE(events,12u); QCOMPARE(panel.findChild<QComboBox *>("intelField")->count(),8);
+            QCOMPARE(events,12u); QCOMPARE(panel.findChild<QComboBox *>("intelField")->count(),model==0xb7?9:8);
             QCOMPARE(device->writes,0u); QCOMPARE(device->wrongCpu,0u);
         }
         for (auto *button:panel.findChildren<QPushButton *>()) if (button->text()==QString("Copy snapshot")) button->click();
@@ -2257,7 +2257,7 @@ private slots:
             QCOMPARE(table->item(domain,1)->text(),model==0xb7?QString("1"):QString("0.5"));
             QCOMPARE(table->item(find("HWP guaranteed capability"),1)->text(),QString("48"));
             QCOMPARE(table->item(find("HWP most efficient capability"),1)->text(),QString("32"));
-            QCOMPARE(panel.findChild<QComboBox *>("intelField")->count(),13); QCOMPARE(device->writes,0u);
+            QCOMPARE(panel.findChild<QComboBox *>("intelField")->count(),model==0xb7?14:13); QCOMPARE(device->writes,0u);
             for (auto *button:panel.findChildren<QPushButton *>()) if (button->text()=="Copy snapshot") button->click();
             QVERIFY(QApplication::clipboard()->text().contains("Package energy counter"));
         }
@@ -2292,7 +2292,7 @@ private slots:
                 QCOMPARE(table->item(row,4)->text(),hexValue(raw,8));
                 QCOMPARE(table->item(row,5)->text(),QString("Read only / locked")); ++rows;
             }
-            QCOMPARE(rows,2u); QCOMPARE(panel.findChild<QComboBox *>("intelField")->count(),13);
+            QCOMPARE(rows,2u); QCOMPARE(panel.findChild<QComboBox *>("intelField")->count(),14);
         }
         for (auto *button:panel.findChildren<QPushButton *>()) if (button->text()==QString("Copy snapshot")) button->click();
         QVERIFY(QApplication::clipboard()->text().contains("HWP guaranteed performance change history\tRecorded"));
@@ -2325,7 +2325,7 @@ private slots:
         QCOMPARE(table->item(row,0)->text(),QString("Maximum non-turbo ratio"));
         QCOMPARE(table->item(row,1)->text(),QString("42")); QCOMPARE(table->item(row,2)->text(),QString("ratio"));
         QCOMPARE(table->item(row,5)->text(),QString("Read only / locked"));
-        QCOMPARE(field->count(),13);
+        QCOMPARE(field->count(),14);
         device->failRead=int(device->reads+5); read->click(); QTRY_VERIFY(panel.isEnabled());
         QCOMPARE(table->item(row,1)->text(),QString("—")); QCOMPARE(table->item(row,4)->text(),QString("—"));
         QVERIFY(table->item(row,5)->text().contains("Failed")); QCOMPARE(device->writes,0u); QCOMPARE(device->wrongCpu,0u);
@@ -2375,6 +2375,62 @@ private slots:
                 QCOMPARE(device->writes,writing?1u:0u); QCOMPARE(device->wrongCpu,0u); delete panel;
             }
         }
+    }
+    void intelPl4ReadbackConfirmationAndNoop() {
+        auto *device=new IntelControlsFixture; device->expectedCpu=130;
+        IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        panel.resize(1360,1180); panel.show();
+        auto *field=panel.findChild<QComboBox *>("intelField"); auto *value=panel.findChild<QLineEdit *>("intelValue");
+        auto *apply=panel.findChild<QPushButton *>("intelApply"); auto *status=panel.findChild<QLabel *>("intelStatus");
+        panel.findChild<QPushButton *>("intelRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        const int pl4=int(octool::core::IntelField::Pl4); QVERIFY(field->findData(pl4)>=0);
+        field->setCurrentIndex(field->findData(pl4)); value->setText("100.12"); const auto reads=device->reads;
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Cancel)->click(); });
+        apply->click(); QCOMPARE(device->reads,reads); QCOMPARE(device->writes,0u);
+        for (bool noop : {false,true}) {
+            field->setCurrentIndex(field->findData(pl4)); value->setText("100.12");
+            QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+            apply->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(device->writes,1u); QCOMPARE(device->regs[0x601],UINT64_C(0x8765432140006320));
+            QVERIFY(status->text().contains(noop?"Already set":"configured value 100"));
+        }
+        auto *table=panel.findChild<QTableWidget *>("intelTable"); int row=-1;
+        for (int i=0;i<table->rowCount();++i) if (table->item(i,0)->text()=="Package PL4 (peak power)") row=i;
+        QVERIFY(row>=0); QCOMPARE(table->item(row,1)->text(),QString("100")); QCOMPARE(table->item(row,2)->text(),QString("W"));
+        table->scrollToItem(table->item(row,0)); field->setCurrentIndex(field->findData(pl4));
+        for (auto *button:panel.findChildren<QPushButton *>()) if (button->text()=="Copy snapshot") button->click();
+        QVERIFY(QApplication::clipboard()->text().contains("Package PL4 (peak power)\t100\tW"));
+        QTest::qWait(20); const auto capture=qEnvironmentVariable("OCTOOL_INTEL_PL4_TEST_SCREENSHOT"); if (!capture.isEmpty()) QVERIFY(panel.grab().save(capture));
+        panel.findChild<QLineEdit *>("intelCpu")->setText("131"); QCOMPARE(table->rowCount(),0); QCOMPARE(device->wrongCpu,0u);
+    }
+    void intelPl4LockFailureAndUnsupported() {
+        auto *device=new IntelControlsFixture; device->expectedCpu=130;
+        IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        auto *read=panel.findChild<QPushButton *>("intelRead"); auto *table=panel.findChild<QTableWidget *>("intelTable");
+        for (unsigned mode=0;mode<3;++mode) {
+            device->regs[0x601]=mode==0?UINT64_C(0x87654321c0006800):UINT64_C(0x8765432140006800);
+            device->failRead=mode==1?int(device->reads+9):-1; device->model=mode==2?0x8f:0xb7;
+            read->click(); QTRY_VERIFY(panel.isEnabled()); unsigned rows=0;
+            for (int row=0;row<table->rowCount();++row) if (table->item(row,0)->text()=="Package PL4 (peak power)") {
+                ++rows; QCOMPARE(table->item(row,1)->text(),mode==0?QString("256"):QString("—"));
+                if (mode==1) QCOMPARE(table->item(row,4)->text(),QString("—"));
+            }
+            QCOMPARE(rows,mode==2?0u:1u);
+            QCOMPARE(panel.findChild<QComboBox *>("intelField")->findData(int(octool::core::IntelField::Pl4)),-1);
+        }
+        QCOMPARE(device->writes,0u); QCOMPARE(device->wrongCpu,0u);
+    }
+    void intelPl4FailedWriteVerificationClearsState() {
+        auto *device=new IntelControlsFixture; device->expectedCpu=130; device->discardChange=true;
+        IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+        panel.findChild<QPushButton *>("intelRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *field=panel.findChild<QComboBox *>("intelField"); field->setCurrentIndex(field->findData(int(octool::core::IntelField::Pl4)));
+        panel.findChild<QLineEdit *>("intelValue")->setText("100");
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        panel.findChild<QPushButton *>("intelApply")->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->writes,1u); QCOMPARE(field->count(),0); QCOMPARE(panel.findChild<QTableWidget *>("intelTable")->rowCount(),0);
+        QVERIFY(panel.findChild<QLabel *>("intelStatus")->text().contains("readback was not verified"));
+        QCOMPARE(device->wrongCpu,0u);
     }
     void intelPowerReadbackShowsConfiguredValueAndSkipsUnchanged() {
         auto *device = new IntelControlsFixture; device->expectedCpu = 130;

@@ -1,0 +1,789 @@
+{
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "functions": [
+    {
+      "symbols": [
+        "_Z20Rd_VR_CURRENT_CONFIGv"
+      ],
+      "address": 3623792,
+      "size": 107,
+      "code_sha256": "4afbd1298dc061d1c48c2587538b74c2d1e573ac504f2f37e3326cdb89c2a420",
+      "calls": [
+        {
+          "instruction": 3623844,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3623894,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ],
+      "literals": [],
+      "instructions": [
+        {
+          "address": 3623792,
+          "size": 4,
+          "mnemonic": "endbr64",
+          "operands": ""
+        },
+        {
+          "address": 3623796,
+          "size": 4,
+          "mnemonic": "sub",
+          "operands": "rsp, 0x18"
+        },
+        {
+          "address": 3623800,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "edi, 0x601"
+        },
+        {
+          "address": 3623805,
+          "size": 9,
+          "mnemonic": "mov",
+          "operands": "rax, qword ptr fs:[0x28]"
+        },
+        {
+          "address": 3623814,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "qword ptr [rsp + 8], rax"
+        },
+        {
+          "address": 3623819,
+          "size": 2,
+          "mnemonic": "xor",
+          "operands": "eax, eax"
+        },
+        {
+          "address": 3623821,
+          "size": 5,
+          "mnemonic": "lea",
+          "operands": "rdx, [rsp + 4]"
+        },
+        {
+          "address": 3623826,
+          "size": 3,
+          "mnemonic": "mov",
+          "operands": "rsi, rsp"
+        },
+        {
+          "address": 3623829,
+          "size": 7,
+          "mnemonic": "mov",
+          "operands": "dword ptr [rsp], 0"
+        },
+        {
+          "address": 3623836,
+          "size": 8,
+          "mnemonic": "mov",
+          "operands": "dword ptr [rsp + 4], 0"
+        },
+        {
+          "address": 3623844,
+          "size": 5,
+          "mnemonic": "call",
+          "operands": "0x36f7d0"
+        },
+        {
+          "address": 3623849,
+          "size": 3,
+          "mnemonic": "mov",
+          "operands": "eax, dword ptr [rsp]"
+        },
+        {
+          "address": 3623852,
+          "size": 4,
+          "mnemonic": "pxor",
+          "operands": "xmm0, xmm0"
+        },
+        {
+          "address": 3623856,
+          "size": 5,
+          "mnemonic": "and",
+          "operands": "eax, 0x1fff"
+        },
+        {
+          "address": 3623861,
+          "size": 4,
+          "mnemonic": "cvtsi2sd",
+          "operands": "xmm0, eax"
+        },
+        {
+          "address": 3623865,
+          "size": 8,
+          "mnemonic": "mulsd",
+          "operands": "xmm0, qword ptr [rip + 0x12abd9f]"
+        },
+        {
+          "address": 3623873,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "rax, qword ptr [rsp + 8]"
+        },
+        {
+          "address": 3623878,
+          "size": 9,
+          "mnemonic": "sub",
+          "operands": "rax, qword ptr fs:[0x28]"
+        },
+        {
+          "address": 3623887,
+          "size": 2,
+          "mnemonic": "jne",
+          "operands": "0x374bd6"
+        },
+        {
+          "address": 3623889,
+          "size": 4,
+          "mnemonic": "add",
+          "operands": "rsp, 0x18"
+        },
+        {
+          "address": 3623893,
+          "size": 1,
+          "mnemonic": "ret",
+          "operands": ""
+        },
+        {
+          "address": 3623894,
+          "size": 5,
+          "mnemonic": "call",
+          "operands": "0x14a910"
+        }
+      ]
+    },
+    {
+      "symbols": [
+        "_Z24Rd_VR_CURRENT_CONFIG_pcuj"
+      ],
+      "address": 3623904,
+      "size": 46,
+      "code_sha256": "16243d42ab2825ce10610a715be1a8cc748073034a07f742b3ce3c3fed148da2",
+      "calls": [
+        {
+          "instruction": 3623919,
+          "kind": "call",
+          "target": 3852144,
+          "symbols": [
+            "_Z18ReadPciConfigDwordjj"
+          ]
+        }
+      ],
+      "literals": [],
+      "instructions": [
+        {
+          "address": 3623904,
+          "size": 4,
+          "mnemonic": "endbr64",
+          "operands": ""
+        },
+        {
+          "address": 3623908,
+          "size": 4,
+          "mnemonic": "sub",
+          "operands": "rsp, 0x28"
+        },
+        {
+          "address": 3623912,
+          "size": 2,
+          "mnemonic": "mov",
+          "operands": "ecx, edi"
+        },
+        {
+          "address": 3623914,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "edx, 0xf8"
+        },
+        {
+          "address": 3623919,
+          "size": 5,
+          "mnemonic": "call",
+          "operands": "0x3ac770"
+        },
+        {
+          "address": 3623924,
+          "size": 4,
+          "mnemonic": "pxor",
+          "operands": "xmm0, xmm0"
+        },
+        {
+          "address": 3623928,
+          "size": 5,
+          "mnemonic": "and",
+          "operands": "eax, 0x1fff"
+        },
+        {
+          "address": 3623933,
+          "size": 4,
+          "mnemonic": "cvtsi2sd",
+          "operands": "xmm0, eax"
+        },
+        {
+          "address": 3623937,
+          "size": 8,
+          "mnemonic": "mulsd",
+          "operands": "xmm0, qword ptr [rip + 0x12abd57]"
+        },
+        {
+          "address": 3623945,
+          "size": 4,
+          "mnemonic": "add",
+          "operands": "rsp, 0x28"
+        },
+        {
+          "address": 3623949,
+          "size": 1,
+          "mnemonic": "ret",
+          "operands": ""
+        }
+      ]
+    },
+    {
+      "symbols": [
+        "_Z20Wr_VR_CURRENT_CONFIGv"
+      ],
+      "address": 3623952,
+      "size": 115,
+      "code_sha256": "439cc072b0b7b1f04fea85fa7c26d3abeea59ba611c12890508e1346b3dfe7b0",
+      "calls": [
+        {
+          "instruction": 3624004,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3624036,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3624062,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ],
+      "literals": [],
+      "instructions": [
+        {
+          "address": 3623952,
+          "size": 4,
+          "mnemonic": "endbr64",
+          "operands": ""
+        },
+        {
+          "address": 3623956,
+          "size": 4,
+          "mnemonic": "sub",
+          "operands": "rsp, 0x18"
+        },
+        {
+          "address": 3623960,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "edi, 0x601"
+        },
+        {
+          "address": 3623965,
+          "size": 9,
+          "mnemonic": "mov",
+          "operands": "rax, qword ptr fs:[0x28]"
+        },
+        {
+          "address": 3623974,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "qword ptr [rsp + 8], rax"
+        },
+        {
+          "address": 3623979,
+          "size": 2,
+          "mnemonic": "xor",
+          "operands": "eax, eax"
+        },
+        {
+          "address": 3623981,
+          "size": 5,
+          "mnemonic": "lea",
+          "operands": "rdx, [rsp + 4]"
+        },
+        {
+          "address": 3623986,
+          "size": 3,
+          "mnemonic": "mov",
+          "operands": "rsi, rsp"
+        },
+        {
+          "address": 3623989,
+          "size": 7,
+          "mnemonic": "mov",
+          "operands": "dword ptr [rsp], 0"
+        },
+        {
+          "address": 3623996,
+          "size": 8,
+          "mnemonic": "mov",
+          "operands": "dword ptr [rsp + 4], 0"
+        },
+        {
+          "address": 3624004,
+          "size": 5,
+          "mnemonic": "call",
+          "operands": "0x36f7d0"
+        },
+        {
+          "address": 3624009,
+          "size": 3,
+          "mnemonic": "mov",
+          "operands": "esi, dword ptr [rsp]"
+        },
+        {
+          "address": 3624012,
+          "size": 4,
+          "mnemonic": "mov",
+          "operands": "edx, dword ptr [rsp + 4]"
+        },
+        {
+          "address": 3624016,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "edi, 0x601"
+        },
+        {
+          "address": 3624021,
+          "size": 6,
+          "mnemonic": "and",
+          "operands": "esi, 0xffffc000"
+        },
+        {
+          "address": 3624027,
+          "size": 6,
+          "mnemonic": "or",
+          "operands": "esi, 0x1fff"
+        },
+        {
+          "address": 3624033,
+          "size": 3,
+          "mnemonic": "mov",
+          "operands": "dword ptr [rsp], esi"
+        },
+        {
+          "address": 3624036,
+          "size": 5,
+          "mnemonic": "call",
+          "operands": "0x36f720"
+        },
+        {
+          "address": 3624041,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "rax, qword ptr [rsp + 8]"
+        },
+        {
+          "address": 3624046,
+          "size": 9,
+          "mnemonic": "sub",
+          "operands": "rax, qword ptr fs:[0x28]"
+        },
+        {
+          "address": 3624055,
+          "size": 2,
+          "mnemonic": "jne",
+          "operands": "0x374c7e"
+        },
+        {
+          "address": 3624057,
+          "size": 4,
+          "mnemonic": "add",
+          "operands": "rsp, 0x18"
+        },
+        {
+          "address": 3624061,
+          "size": 1,
+          "mnemonic": "ret",
+          "operands": ""
+        },
+        {
+          "address": 3624062,
+          "size": 5,
+          "mnemonic": "call",
+          "operands": "0x14a910"
+        }
+      ]
+    },
+    {
+      "symbols": [
+        "_Z20Wr_VR_CURRENT_CONFIGi"
+      ],
+      "address": 3709152,
+      "size": 163,
+      "code_sha256": "8cbf05bbf7df5f13c99cf63c63fee108fa03b025d4a7d89c9c43c389db39a840",
+      "calls": [
+        {
+          "instruction": 3709207,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3709217,
+          "kind": "call",
+          "target": 4928192,
+          "symbols": [
+            "_Z17max_valuefrombitsm"
+          ]
+        },
+        {
+          "instruction": 3709260,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3709301,
+          "kind": "call",
+          "target": 4928192,
+          "symbols": [
+            "_Z17max_valuefrombitsm"
+          ]
+        },
+        {
+          "instruction": 3709308,
+          "kind": "jmp",
+          "target": 3709230,
+          "symbols": []
+        },
+        {
+          "instruction": 3709310,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ],
+      "literals": [],
+      "instructions": [
+        {
+          "address": 3709152,
+          "size": 4,
+          "mnemonic": "endbr64",
+          "operands": ""
+        },
+        {
+          "address": 3709156,
+          "size": 1,
+          "mnemonic": "push",
+          "operands": "rbx"
+        },
+        {
+          "address": 3709157,
+          "size": 2,
+          "mnemonic": "mov",
+          "operands": "ebx, edi"
+        },
+        {
+          "address": 3709159,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "edi, 0x601"
+        },
+        {
+          "address": 3709164,
+          "size": 4,
+          "mnemonic": "sub",
+          "operands": "rsp, 0x10"
+        },
+        {
+          "address": 3709168,
+          "size": 9,
+          "mnemonic": "mov",
+          "operands": "rax, qword ptr fs:[0x28]"
+        },
+        {
+          "address": 3709177,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "qword ptr [rsp + 8], rax"
+        },
+        {
+          "address": 3709182,
+          "size": 2,
+          "mnemonic": "xor",
+          "operands": "eax, eax"
+        },
+        {
+          "address": 3709184,
+          "size": 5,
+          "mnemonic": "lea",
+          "operands": "rdx, [rsp + 4]"
+        },
+        {
+          "address": 3709189,
+          "size": 3,
+          "mnemonic": "mov",
+          "operands": "rsi, rsp"
+        },
+        {
+          "address": 3709192,
+          "size": 7,
+          "mnemonic": "mov",
+          "operands": "dword ptr [rsp], 0"
+        },
+        {
+          "address": 3709199,
+          "size": 8,
+          "mnemonic": "mov",
+          "operands": "dword ptr [rsp + 4], 0"
+        },
+        {
+          "address": 3709207,
+          "size": 5,
+          "mnemonic": "call",
+          "operands": "0x36f7d0"
+        },
+        {
+          "address": 3709212,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "edi, 0xe"
+        },
+        {
+          "address": 3709217,
+          "size": 5,
+          "mnemonic": "call",
+          "operands": "0x4b32c0"
+        },
+        {
+          "address": 3709222,
+          "size": 3,
+          "mnemonic": "movsxd",
+          "operands": "rdx, ebx"
+        },
+        {
+          "address": 3709225,
+          "size": 3,
+          "mnemonic": "cmp",
+          "operands": "rdx, rax"
+        },
+        {
+          "address": 3709228,
+          "size": 2,
+          "mnemonic": "ja",
+          "operands": "0x389970"
+        },
+        {
+          "address": 3709230,
+          "size": 3,
+          "mnemonic": "mov",
+          "operands": "eax, dword ptr [rsp]"
+        },
+        {
+          "address": 3709233,
+          "size": 6,
+          "mnemonic": "and",
+          "operands": "ebx, 0x3fff"
+        },
+        {
+          "address": 3709239,
+          "size": 4,
+          "mnemonic": "mov",
+          "operands": "edx, dword ptr [rsp + 4]"
+        },
+        {
+          "address": 3709243,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "edi, 0x601"
+        },
+        {
+          "address": 3709248,
+          "size": 2,
+          "mnemonic": "mov",
+          "operands": "esi, ebx"
+        },
+        {
+          "address": 3709250,
+          "size": 5,
+          "mnemonic": "and",
+          "operands": "eax, 0xffffc000"
+        },
+        {
+          "address": 3709255,
+          "size": 2,
+          "mnemonic": "or",
+          "operands": "esi, eax"
+        },
+        {
+          "address": 3709257,
+          "size": 3,
+          "mnemonic": "mov",
+          "operands": "dword ptr [rsp], esi"
+        },
+        {
+          "address": 3709260,
+          "size": 5,
+          "mnemonic": "call",
+          "operands": "0x36f720"
+        },
+        {
+          "address": 3709265,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "rax, qword ptr [rsp + 8]"
+        },
+        {
+          "address": 3709270,
+          "size": 9,
+          "mnemonic": "sub",
+          "operands": "rax, qword ptr fs:[0x28]"
+        },
+        {
+          "address": 3709279,
+          "size": 2,
+          "mnemonic": "jne",
+          "operands": "0x38997e"
+        },
+        {
+          "address": 3709281,
+          "size": 4,
+          "mnemonic": "add",
+          "operands": "rsp, 0x10"
+        },
+        {
+          "address": 3709285,
+          "size": 1,
+          "mnemonic": "pop",
+          "operands": "rbx"
+        },
+        {
+          "address": 3709286,
+          "size": 1,
+          "mnemonic": "ret",
+          "operands": ""
+        },
+        {
+          "address": 3709287,
+          "size": 9,
+          "mnemonic": "nop",
+          "operands": "word ptr [rax + rax]"
+        },
+        {
+          "address": 3709296,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "edi, 0xe"
+        },
+        {
+          "address": 3709301,
+          "size": 5,
+          "mnemonic": "call",
+          "operands": "0x4b32c0"
+        },
+        {
+          "address": 3709306,
+          "size": 2,
+          "mnemonic": "mov",
+          "operands": "ebx, eax"
+        },
+        {
+          "address": 3709308,
+          "size": 2,
+          "mnemonic": "jmp",
+          "operands": "0x38992e"
+        },
+        {
+          "address": 3709310,
+          "size": 5,
+          "mnemonic": "call",
+          "operands": "0x14a910"
+        }
+      ]
+    },
+    {
+      "symbols": [
+        "_Z17max_valuefrombitsm"
+      ],
+      "address": 4928192,
+      "size": 19,
+      "code_sha256": "2578fa21f4c1dcbbd9e0293c55b1be8de96f86673af18fa094bb18ba74d5ffb3",
+      "calls": [],
+      "literals": [],
+      "instructions": [
+        {
+          "address": 4928192,
+          "size": 4,
+          "mnemonic": "endbr64",
+          "operands": ""
+        },
+        {
+          "address": 4928196,
+          "size": 2,
+          "mnemonic": "mov",
+          "operands": "ecx, edi"
+        },
+        {
+          "address": 4928198,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "eax, 1"
+        },
+        {
+          "address": 4928203,
+          "size": 2,
+          "mnemonic": "shl",
+          "operands": "eax, cl"
+        },
+        {
+          "address": 4928205,
+          "size": 3,
+          "mnemonic": "sub",
+          "operands": "eax, 1"
+        },
+        {
+          "address": 4928208,
+          "size": 2,
+          "mnemonic": "cdqe",
+          "operands": ""
+        },
+        {
+          "address": 4928210,
+          "size": 1,
+          "mnemonic": "ret",
+          "operands": ""
+        }
+      ]
+    }
+  ],
+  "constants": {
+    "scale": {
+      "address": 23202144,
+      "size": 8,
+      "source_initial_hex": "0000000000002040"
+    }
+  },
+  "scope": "Four complete original PL4 entries and their real bit-mask helper. No hardware."
+}

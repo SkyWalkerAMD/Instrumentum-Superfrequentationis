@@ -5,7 +5,7 @@
 
 namespace octool { namespace core {
 enum class IntelField { Pl1, Pl2, Pl1Enable, Pl2Enable, Pl1Clamp, Pl2Clamp,
-    Pl1Window, Pl2Window, HwpMin, HwpMax, HwpDesired, HwpEpp, HwpActivityWindow };
+    Pl1Window, Pl2Window, HwpMin, HwpMax, HwpDesired, HwpEpp, HwpActivityWindow, Pl4 };
 struct IntelReading {
     std::string name, unit;
     std::uint32_t msr = 0;
@@ -20,7 +20,8 @@ struct IntelSnapshot {
     CpuIdentity identity;
     int error = 0;
     bool rapl = false, hwp = false, epp = false, hwpEnabled = false, hwpActivityWindow = false;
-    Reply units, powerLimit, hwpRequest, hwpCapabilities;
+    bool pl4 = false;
+    Reply units, powerLimit, hwpRequest, hwpCapabilities, peakPowerLimit;
     std::vector<IntelReading> readings;
 };
 struct IntelControlUpdate : UpdateResult {

@@ -79,7 +79,7 @@ const std::map<std::string, IntelField> intelFields = {
     {"pl2-enable", IntelField::Pl2Enable}, {"pl1-clamp", IntelField::Pl1Clamp}, {"pl2-clamp", IntelField::Pl2Clamp},
     {"pl1-window", IntelField::Pl1Window}, {"pl2-window", IntelField::Pl2Window},
     {"hwp-min", IntelField::HwpMin}, {"hwp-max", IntelField::HwpMax}, {"hwp-desired", IntelField::HwpDesired}, {"hwp-epp", IntelField::HwpEpp},
-    {"hwp-window-us", IntelField::HwpActivityWindow}
+    {"hwp-window-us", IntelField::HwpActivityWindow}, {"pl4", IntelField::Pl4}
 };
 const std::map<std::string, IntelEnergyField> energyFields = {
     {"efficient-turbo", IntelEnergyField::EfficientTurbo}, {"race-to-halt", IntelEnergyField::RaceToHalt}
@@ -244,6 +244,7 @@ Command parse(const std::vector<std::string> &args) {
             require(field != intelFields.end(), "Unknown Intel control field: " + c.field);
             const auto f = field->second;
             if (f == IntelField::Pl1 || f == IntelField::Pl2) require(c.value > 0 && c.value <= 32767, "Power must be >0 and <=32767 W; hardware units impose further limits");
+            else if (f == IntelField::Pl4) require(c.value > 0 && c.value <= 8191, "PL4 must be >0 and <=8191 W; hardware units impose further limits");
             else if (f == IntelField::Pl1Window || f == IntelField::Pl2Window) require(c.value > 0 && c.value <= raplWindowSeconds(127, 0), "Averaging window is out of range");
             else if (f <= IntelField::Pl2Clamp) require(c.value == 0 || c.value == 1, "Enable/clamp must be 0 or 1");
             else if (f == IntelField::HwpActivityWindow) require(c.value >= 0 && c.value <= 1270000000 && std::floor(c.value) == c.value, "HWP window must be an integer 0..1270000000 us (0 = automatic)");
@@ -519,11 +520,12 @@ Result hardware(const Command &c, HardwareSession &s) {
             out.data.push_back({"msr", result.msr ? hex(result.msr) : "null"});
             out.data.push_back({"readback_value", result.verified && !out.error ? number(result.readbackValue) : "null"});
             out.data.push_back({"expected_raw", result.msr ? hex(result.expected, 16) : "null"});
-            const auto &observed = result.msr == 0x610 ? result.after.powerLimit : result.after.hwpRequest;
+            const auto &observed = result.msr == 0x601 ? result.after.peakPowerLimit : result.msr == 0x610 ? result.after.powerLimit : result.after.hwpRequest;
             out.data.push_back({"readback_raw", result.readbackValid ? hex(observed.value, 16) : "null"});
             std::vector<std::string> submitted;
             for (auto v : result.submitted) submitted.push_back(hex(v, 16));
             out.data.push_back({"submitted", array(submitted)});
+            out.data.push_back({"hardware_effect_measured", "false"});
         } else {
             std::vector<std::string> values;
             for (const auto &r : snapshot.readings) {
@@ -1091,7 +1093,8 @@ Usage: octool-cli COMMAND [OPTIONS]
   amd-umc-diff --file BEFORE --compare AFTER   Compare the same bank/refresh slot
 
 PCI: --bus N --device N --function N (domain 0; defaults 0:0.0).
-Intel fields: pl1/pl2 (W), pl1-window/pl2-window (s), pl1-enable/pl2-enable,
+Intel fields: pl1/pl2 (W), pl4 (W, 06_B7 only, >0; register-unit range applies),
+  pl1-window/pl2-window (s), pl1-enable/pl2-enable,
   pl1-clamp/pl2-clamp (0 or 1), hwp-min/hwp-max/hwp-desired/hwp-epp (0..255).
   hwp-window-us (0 = automatic; integer 1..1270000000 us, rounds down) requires
   CPUID activity-window support and HWP desired = 0. RAPL/HWP changes check full

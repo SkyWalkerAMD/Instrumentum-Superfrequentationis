@@ -50,6 +50,7 @@ GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-
 | Intel Ring / LLC 范围 | Ring / LLC range | `intel-uncore-read` / `intel-uncore-set` | B7/8F；最小与最大倍率同时设置，保留其它位、旧值检查及完整读回；[实现说明](intel-uncore-recovery.md) |
 | Intel BCLK 自适应电压 | BCLK voltage | `intel-bclk-voltage-read/set` | B7；独立开关，OC 锁与旧值检查，只改 bit 2 并完整回读；[说明](intel-bclk-voltage.md) |
 | Intel 能量与 HWP 能力/历史 | Power / performance | `intel-read` | B7 封装/PP0、8F/CF 封装/DRAM 计数，单位及回绕范围；HWP 四个能力字节及两项事件历史；[说明](intel-energy-counters.md) |
+| Intel PL4 峰值功率 | Power / performance | `intel-read` / `intel-set --field pl4` | B7；13 位功率字段、RAPL 单位、锁/旧值检查和完整回读；[说明](intel-pl4.md) |
 | Intel AVX2 偏移 | AVX2 offset | `intel-avx-read/set` | B7；0..31 倍率档，锁、旧值检查，保留其它位及完整回读 |
 | Intel TCC 温控 | Thermal limit | `intel-thermal-read/set` | B7/8F/CF；偏移、默认与有效阈值，能力/锁/范围检查 |
 | Intel 限频原因 | Limit reasons | `intel-limits-read/clear` | B7；11 组当前/历史状态，单项或全部历史 W0C 清除与回读 |
