@@ -1,5 +1,5 @@
 obj-m := octool_hwio.o
-clean-files += .octool-class-1.log .octool-class-2.log
+clean-files += .octool-class-1.log .octool-class-2.log .octool-tsc-new.log .octool-tsc-old.log
 
 # Kbuild also reads this file during clean/modpost, without compiler helpers.
 # Probe only while Makefile.build prepares actual C compilation.
@@ -27,5 +27,18 @@ $(shell cat "$(obj)/.octool-class-1.log" "$(obj)/.octool-class-2.log" >&2)
 $(error octool: neither class_create signature compiles; check CC and complete configured kernel headers)
 endif
 $(info octool: class_create(owner, name) probe passed)
+endif
+# EL7's 3.10 headers expose rdtscll(value); current kernels expose rdtsc().
+# Probe the actual distribution headers, including any vendor backports.
+pk-tsc-probe = $(call try-run,$(CC) $(pk-probe-flags) $(1) -Werror -x c -c -o "$$TMP" "$(src)/tsc_probe.c" 2>"$(obj)/.octool-tsc-$(2).log",y,n)
+PK_TSC_NEW := $(call pk-tsc-probe,,new)
+ifneq ($(PK_TSC_NEW),y)
+PK_TSC_OLD := $(call pk-tsc-probe,-DPK_TSC_USE_RDTSCLL,old)
+ifneq ($(PK_TSC_OLD),y)
+$(shell cat "$(obj)/.octool-tsc-new.log" "$(obj)/.octool-tsc-old.log" >&2)
+$(error octool: neither TSC accessor compiles with these kernel headers)
+endif
+ccflags-y += -DPK_TSC_USE_RDTSCLL
+$(info octool: legacy rdtscll TSC accessor probe passed)
 endif
 endif

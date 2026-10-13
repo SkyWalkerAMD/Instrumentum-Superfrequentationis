@@ -1,5 +1,5 @@
 CC ?= cc
-CFLAGS ?= -O2 -Wall -Wextra
+CFLAGS ?= -O2 -Wall -Wextra -std=gnu11
 
 HEADERS := ../hal/octool_hwio.h ../abi/octool_hwio_abi.h ../abi/octool_hwio_caps.h octool_parity_trace.h
 

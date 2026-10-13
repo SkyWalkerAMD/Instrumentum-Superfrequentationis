@@ -19,11 +19,9 @@ else
     bash port/ci/bootstrap.sh "$target" "$mode" 2>&1 | tee "$out/bootstrap-$action.log"
 fi
 rpm_pm=dnf
-rpm_runtime_options=(--setopt=install_weak_deps=False)
 floor=el8
 if [ "$target" = el7 ]; then
     rpm_pm=yum
-    rpm_runtime_options=()
     floor=el7
     case "$action" in sdk|baseline|desktop) . port/ci/el7-toolchain.sh;; esac
 fi
@@ -88,6 +86,13 @@ case "$action" in
             python3 port/ci/select-kernel-pair.py --output "$out/kernel-selection.json"
             rpm -qa | sort > "$out/packages-kernel-selected.txt"
         fi
+        # The offline C11/C++ tests need a modern userland compiler on EL7.
+        # Keep its PATH scoped here; Kbuild and DKMS below use native GCC.
+        (
+        if [ "$target" = el7 ]; then
+            yum install -y devtoolset-11-gcc-c++
+            . port/ci/el7-toolchain.sh
+        fi
         make -C port/hal
         make -C port/tests check hwio_smoke CAPTURE_RESULTS="$out/capture-results.json" 2>&1 | tee "$out/offline.log"
         python3 -m unittest discover -s port/tests -p 'test_*.py' -v
@@ -99,6 +104,7 @@ case "$action" in
         runuser -u nobody -- python3 analysis/tools/test-legacy-guard.py \
             --build-dir "$out/legacy-guard" --target "$target" \
             --output "$out/legacy-guard/results.json"
+        )
         bash port/ci/build-kernels.sh "$out/kernels"
         bash port/ci/fetch-kernel-images.sh "$root/build/vm-inputs"
         python3 port/tools/build_packages.py --format "$family" --module-only --output "$out/packages"
@@ -148,6 +154,7 @@ case "$action" in
         cp build/gui/regression/intel-tvb-fixture.png "$out/intel-tvb-fixture.png"
         cp build/gui/regression/intel-energy-fixture.png "$out/intel-energy-fixture.png"
         cp build/gui/regression/intel-avx-fixture.png "$out/intel-avx-fixture.png"
+        cp build/gui/regression/intel-thermal-fixture.png "$out/intel-thermal-fixture.png"
         cp build/gui/regression/intel-tvb-table-fixture.png "$out/intel-tvb-table-fixture.png"
         cp build/gui/regression/intel-tvb-table-edit-fixture.png "$out/intel-tvb-table-edit-fixture.png"
         cp build/gui/regression/intel-clock-fixture.png "$out/intel-clock-fixture.png"
@@ -170,7 +177,9 @@ case "$action" in
         ;;
     desktop)
         gcc -std=c11 -O2 -Wall -Wextra -Werror port/ci/window-probe.c -lX11 -o "$out/window-probe"
-        g++ -static-libstdc++ -static-libgcc -std=c++11 -O2 -Wall -Wextra -Werror -pthread port/ci/helper-client.cpp \
+        helper_link_flags=(-std=c++11)
+        if [ "$target" = el7 ]; then helper_link_flags+=(-static-libstdc++ -static-libgcc); fi
+        g++ "${helper_link_flags[@]}" -O2 -Wall -Wextra -Werror -pthread port/ci/helper-client.cpp \
             gui/platform/linux_helper.cpp gui/platform/linux_cpu.cpp gui/core/hardware.cpp \
             gui/core/helper_protocol.cpp -o "$out/helper-client"
         (cd /inputs && sha256sum -c qt-sdk.sha256)
@@ -194,6 +203,7 @@ case "$action" in
         cp "build/gui-$target/regression/intel-tvb-fixture.png" "$out/intel-tvb-fixture.png"
         cp "build/gui-$target/regression/intel-energy-fixture.png" "$out/intel-energy-fixture.png"
         cp "build/gui-$target/regression/intel-avx-fixture.png" "$out/intel-avx-fixture.png"
+        cp "build/gui-$target/regression/intel-thermal-fixture.png" "$out/intel-thermal-fixture.png"
         cp "build/gui-$target/regression/intel-tvb-table-fixture.png" "$out/intel-tvb-table-fixture.png"
         cp "build/gui-$target/regression/intel-tvb-table-edit-fixture.png" "$out/intel-tvb-table-edit-fixture.png"
         cp "build/gui-$target/regression/intel-clock-fixture.png" "$out/intel-clock-fixture.png"
@@ -220,8 +230,10 @@ case "$action" in
         # recommendation is optional until its matching kernel toolchain exists.
         if [ "$family" = deb ]; then
             apt-get install -y --no-install-recommends "$out/packages/octool-"[0-9]*.deb
+        elif [ "$rpm_pm" = yum ]; then
+            yum install -y "$out/packages/octool-"[0-9]*.rpm
         else
-            "$rpm_pm" install -y "${rpm_runtime_options[@]}" "$out/packages/octool-"[0-9]*.rpm
+            dnf install -y --setopt=install_weak_deps=False "$out/packages/octool-"[0-9]*.rpm
         fi
         for tool in gcc g++ make dkms; do
             if command -v "$tool" >/dev/null; then echo "unexpected build dependency: $tool" >&2; exit 1; fi

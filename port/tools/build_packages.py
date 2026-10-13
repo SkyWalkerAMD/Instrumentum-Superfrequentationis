@@ -37,7 +37,7 @@ def copy(source, target, mode=0o644):
 def module_stage(stage, ver):
     src = stage / ("usr/src/octool-hwio-" + ver)
     for name in ("octool_hwio.c", "octool_hwio_abi.h", "octool_bus_access.h",
-                 "class_create_probe.c", "Kbuild", "Makefile"):
+                 "class_create_probe.c", "tsc_probe.c", "Kbuild", "Makefile"):
         copy(ROOT / "port/kmod" / name, src / "kmod" / name)
     copy(ROOT / "port/abi/octool_hwio_abi.h", src / "abi/octool_hwio_abi.h")
     copy(ROOT / "port/abi/octool_hwio_caps.h", src / "abi/octool_hwio_caps.h")

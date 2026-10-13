@@ -3,7 +3,7 @@
  * octool_hwio - low-level hardware access backend for octool.
  *
  * This is a clean-room reimplementation of the peter_kernel character driver
- * that octool talks to, written for portability across EL8-EL10 and
+ * that octool talks to, written for portability across EL7-EL10 and
  * Ubuntu 20.04-26.04 and Debian 11-13. The successful MMIO request layout,
  * opcodes and mailbox offsets match the shipped binary. This does NOT prove
  * drop-in operation: its loader handshake is separate, and its full 64-bit
@@ -23,9 +23,9 @@
  *    kthread_create_on_cpu(), which is not exported before Linux 5.17 and made
  *    the module fail to build on old kernels. CPU-pinned operations (MSR,
  *    CPUID, TSC) use the in-tree rdmsr_safe_on_cpu()/smp_call_function_single()
- *    helpers, which exist on every target (4.18+). MMIO/PCI/port ops are CPU
- *    agnostic and run inline. This removes the only other version-sensitive
- *    dependency; class_create()'s arity (probed by Kbuild) is the last one.
+ *    helpers, which exist on the target kernels. MMIO/PCI/port ops are CPU
+ *    agnostic and run inline. Kbuild probes class_create() and TSC accessors
+ *    against the configured distribution headers, including EL7 backports.
  *  - Every operation is gated on CAP_SYS_RAWIO, checked at open().
  *  - Reads/writes of the request are bounds-checked; ioremap mappings are
  *    released on every path.
@@ -136,7 +136,13 @@ static void do_cpuid(void *p)
 struct tsc_arg { u64 v; };
 static void do_rdtsc(void *p)
 {
+#ifdef PK_TSC_USE_RDTSCLL
+	u64 value;
+	rdtscll(value);
+	((struct tsc_arg *)p)->v = value;
+#else
 	((struct tsc_arg *)p)->v = rdtsc();
+#endif
 }
 
 /* ---- request dispatch --------------------------------------------------- */

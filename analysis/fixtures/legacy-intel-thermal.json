@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "functions": [
+    {
+      "symbol": "_Z30Get_TCC_Activation_Temperaturev",
+      "address": 3609328,
+      "size": 88,
+      "code_hex": "f30f1efa4883ec18bfa201000064488b042528000000488944240831c0488d5424044889e6c7042400000000c744240400000000e8a7e4ffff0fb6442402488b54240864482b14252800000075054883c418c3e8c895ddff",
+      "code_sha256": "e7e5eea5e7f5b4f3c47b91f1397acdd1b75d7b2c55500218d489dd7a3333915b",
+      "calls": [
+        {
+          "instruction": 3609380,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3609411,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    }
+  ],
+  "objects": {},
+  "literals": []
+}

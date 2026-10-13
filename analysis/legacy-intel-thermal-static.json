@@ -1,0 +1,143 @@
+{
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "functions": [
+    {
+      "symbols": [
+        "_Z30Get_TCC_Activation_Temperaturev"
+      ],
+      "address": 3609328,
+      "size": 88,
+      "code_sha256": "e7e5eea5e7f5b4f3c47b91f1397acdd1b75d7b2c55500218d489dd7a3333915b",
+      "calls": [
+        {
+          "instruction": 3609380,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3609411,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ],
+      "literals": [],
+      "instructions": [
+        {
+          "address": 3609328,
+          "size": 4,
+          "mnemonic": "endbr64",
+          "operands": ""
+        },
+        {
+          "address": 3609332,
+          "size": 4,
+          "mnemonic": "sub",
+          "operands": "rsp, 0x18"
+        },
+        {
+          "address": 3609336,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "edi, 0x1a2"
+        },
+        {
+          "address": 3609341,
+          "size": 9,
+          "mnemonic": "mov",
+          "operands": "rax, qword ptr fs:[0x28]"
+        },
+        {
+          "address": 3609350,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "qword ptr [rsp + 8], rax"
+        },
+        {
+          "address": 3609355,
+          "size": 2,
+          "mnemonic": "xor",
+          "operands": "eax, eax"
+        },
+        {
+          "address": 3609357,
+          "size": 5,
+          "mnemonic": "lea",
+          "operands": "rdx, [rsp + 4]"
+        },
+        {
+          "address": 3609362,
+          "size": 3,
+          "mnemonic": "mov",
+          "operands": "rsi, rsp"
+        },
+        {
+          "address": 3609365,
+          "size": 7,
+          "mnemonic": "mov",
+          "operands": "dword ptr [rsp], 0"
+        },
+        {
+          "address": 3609372,
+          "size": 8,
+          "mnemonic": "mov",
+          "operands": "dword ptr [rsp + 4], 0"
+        },
+        {
+          "address": 3609380,
+          "size": 5,
+          "mnemonic": "call",
+          "operands": "0x36f7d0"
+        },
+        {
+          "address": 3609385,
+          "size": 5,
+          "mnemonic": "movzx",
+          "operands": "eax, byte ptr [rsp + 2]"
+        },
+        {
+          "address": 3609390,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "rdx, qword ptr [rsp + 8]"
+        },
+        {
+          "address": 3609395,
+          "size": 9,
+          "mnemonic": "sub",
+          "operands": "rdx, qword ptr fs:[0x28]"
+        },
+        {
+          "address": 3609404,
+          "size": 2,
+          "mnemonic": "jne",
+          "operands": "0x371343"
+        },
+        {
+          "address": 3609406,
+          "size": 4,
+          "mnemonic": "add",
+          "operands": "rsp, 0x18"
+        },
+        {
+          "address": 3609410,
+          "size": 1,
+          "mnemonic": "ret",
+          "operands": ""
+        },
+        {
+          "address": 3609411,
+          "size": 5,
+          "mnemonic": "call",
+          "operands": "0x14a910"
+        }
+      ]
+    }
+  ],
+  "scope": "Complete function bytes; executed paths explicitly force NVL/GNR flags to zero."
+}

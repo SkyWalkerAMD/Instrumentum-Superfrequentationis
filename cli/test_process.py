@@ -35,7 +35,30 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 689, len(reports)
+assert len(reports) == 722, len(reports)
+thermal=[r for r in reports if r['command'] in ('intel-thermal-read','intel-thermal-set') and 'before' in r['data']]
+assert len(thermal)==23 and [r['ok'] for r in thermal]==[True]*10+[False]*13
+for report in thermal:
+    data=report['data']; before=data['before']
+    assert not data['hardware_effect_measured']
+    for snap in (before,data.get('after',before)):
+        if snap['valid']:
+            raw=int(snap['raw'],16)
+            assert snap['default_tcc_c']==((raw>>16)&255)
+            assert snap['offset_c']==((raw>>24)&63)
+            assert snap['activation_c']==snap['default_tcc_c']-snap['offset_c']
+            assert snap['locked']==bool(raw & (1<<31))
+            assert snap['offset_programmable']==bool(int(snap['platform_info_raw'],16) & (1<<30))
+            assert snap['editable']==(snap['offset_programmable'] and not snap['locked'] and snap['activation_c']>0)
+        else:
+            assert all(snap[k] is None for k in ('raw','platform_info_raw','default_tcc_c','offset_c','activation_c','locked','offset_programmable'))
+    if report['command']=='intel-thermal-set':
+        assert data['verified']==report['ok']
+        if report['ok']:
+            expected=(int(before['raw'],16)&~(63<<24))|(data['requested_offset_c']<<24)
+            assert int(data['after']['raw'],16)==expected==int(data['expected_raw'],16)
+            assert data['unchanged']==(expected==int(before['raw'],16))
+            assert data['write_attempted']==(not data['unchanged'])
 avx=[r for r in reports if r['command'] in ('intel-avx-read','intel-avx-set') and 'before' in r['data']]
 assert len(avx)==22 and [r['ok'] for r in avx]==[True]*9+[False]*13
 for report in avx:

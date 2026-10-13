@@ -1,5 +1,9 @@
 # 无桌面版 OCTool
 
+2026-10-13 本批补充 [AVX2 倍率偏移](intel-avx-offset.md)和
+[Intel 温控配置](intel-thermal.md)：GUI 与 CLI 同步，含独立读取、显式应用和完整回读。
+另新增 [EL7 独立构建目标](el7-port.md)，系统级验证进度与硬件功能验收分开记录。
+
 2026-10-13 新增 [Intel 节能配置](intel-energy.md)：
 `intel-energy-read --cpu N`、`intel-energy-set --cpu N --field efficient-turbo|race-to-halt --value 0|1 --apply`。
 裸机 B7，逐项设置，保留其余 63 位并完整读回；不广播到其它 CPU，不测量实际能耗。

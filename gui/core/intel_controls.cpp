@@ -102,13 +102,26 @@ IntelSnapshot readIntelControls(HardwareSession &s, unsigned cpu) {
             add("HWP highest capability", "performance level", 0x771, out.hwpCapabilities, double(out.hwpCapabilities.value & 255), false, IntelField::HwpMax);
             add("HWP lowest capability", "performance level", 0x771, out.hwpCapabilities, double((out.hwpCapabilities.value >> 24) & 255), false, IntelField::HwpMin);
         }
-        if ((features.words[0] & 1) && hasIntelRaplProfile(out.identity)) {
-            const auto target = s.execute(msrRequest(cpu, 0x1a2));
-            auto therm = s.execute(msrRequest(cpu, 0x19c));
-            if (target.error) therm.error = target.error;
-            if (!therm.error && !(therm.value & (UINT64_C(1) << 31))) therm.error = -ENODATA;
-            add("Core digital temperature", "C", 0x19c, therm,
-                double(int((target.value >> 16) & 255)-int((therm.value >> 16) & 127)), false, IntelField::Pl1);
+        if ((features.words[0] & ((1u << 6) | 1)) && hasIntelRaplProfile(out.identity)) {
+            auto target = s.execute(msrRequest(cpu, 0x1a2));
+            const int tjmax = int((target.value >> 16) & 255);
+            if (!target.error && !tjmax) target.error = -ENODATA;
+            add("Default TCC activation temperature (TjMax)", "C", 0x1a2, target, tjmax, false, IntelField::Pl1);
+            // Linux v6.12 intel_tcc.c: Tiger/Raptor Lake use 8-bit digital
+            // readings; SPR/EMR use 7-bit core and 8-bit package readings.
+            const auto model = out.identity.model;
+            const bool wide = model == 0x8c || model == 0x8d || model == 0x97 ||
+                model == 0x9a || model == 0xb7 || model == 0xba;
+            for (bool package : {false,true}) {
+                if (!(features.words[0] & (package ? 1u << 6 : 1u))) continue;
+                const unsigned msr = package ? 0x1b1 : 0x19c;
+                const unsigned mask = wide || (package && (model == 0x8f || model == 0xcf)) ? 255 : 127;
+                auto therm = s.execute(msrRequest(cpu, msr));
+                if (target.error) therm.error = target.error;
+                if (!therm.error && !(therm.value & (UINT64_C(1) << 31))) therm.error = -ENODATA;
+                add(package ? "Package digital temperature" : "Core digital temperature", "C", msr, therm,
+                    double(tjmax-int((therm.value >> 16) & mask)), false, IntelField::Pl1);
+            }
         }
     }
     return out;

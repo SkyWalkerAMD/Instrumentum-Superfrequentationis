@@ -14,6 +14,8 @@
 #include "intelenergypanel.h"
 #include "intelavxpanel.h"
 #include "intel_avx_fixture.h"
+#include "intelthermalpanel.h"
+#include "intel_thermal_fixture.h"
 #include "intel_energy_fixture.h"
 #include "intelmemorypanel.h"
 #include "intel_memory_fixture.h"
@@ -936,6 +938,110 @@ private slots:
                 panel->findChild<QLineEdit *>("tvbCpu")->setText("131"); gate->release = true;
                 QTRY_VERIFY(panel->isEnabled()); QCOMPARE(panel->findChild<QTableWidget *>("tvbTable")->rowCount(),0);
                 QVERIFY(panel->findChild<QLabel *>("tvbStatus")->text().contains("discarded")); delete panel;
+            }
+        }
+    }
+    void intelThermalReadCopyAndTargetChange() {
+        auto *device=new IntelThermalFixture;
+        IntelThermalPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+        auto *read=panel.findChild<QPushButton *>("thermalRead"); auto *table=panel.findChild<QTableWidget *>("thermalTable");
+        auto *value=panel.findChild<QLineEdit *>("thermalValue"); auto *apply=panel.findChild<QPushButton *>("thermalApply");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),3);
+        QCOMPARE(value->text(),QString::number((device->regs[0x1a2]>>24)&63)); QVERIFY(apply->isEnabled());
+        panel.findChild<QPushButton *>("thermalCopy")->click();
+        QVERIFY(QApplication::clipboard()->text().contains(hexValue(device->regs[0x1a2],8)));
+        QVERIFY(QApplication::clipboard()->text().contains("TCC offset below TjMax"));
+        const auto calls=device->cpuCalls;
+        panel.findChild<QLineEdit *>("thermalCpu")->setText("-1"); read->click();
+        QCOMPARE(device->cpuCalls,calls); QCOMPARE(table->rowCount(),0); QVERIFY(value->text().isEmpty()); QVERIFY(!apply->isEnabled());
+        panel.findChild<QLineEdit *>("thermalCpu")->setText("130"); device->regs[0x1a2]|=UINT64_C(1)<<31;
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),3); QVERIFY(!apply->isEnabled());
+        device->regs[0x1a2]&=~(UINT64_C(1)<<31); device->failCpuid=int(device->cpuCalls);
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),0); QVERIFY(value->text().isEmpty());
+        QVERIFY(panel.findChild<QLabel *>("thermalRaw")->text().isEmpty()); QCOMPARE(device->writes,0u); QCOMPARE(device->wrongCpu,0u);
+    }
+    void intelThermalValidateCancelApplyAndNoop() {
+        auto *device=new IntelThermalFixture;
+        IntelThermalPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        panel.resize(1100,640); panel.show(); panel.findChild<QPushButton *>("thermalRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *value=panel.findChild<QLineEdit *>("thermalValue"); auto *apply=panel.findChild<QPushButton *>("thermalApply");
+        auto *status=panel.findChild<QLabel *>("thermalStatus"); const auto calls=device->cpuCalls;
+        for (const QString &invalid : {QString(""),QString("-1"),QString("64"),QString("7.5")}) {
+            value->setText(invalid); apply->click(); QCOMPARE(device->cpuCalls,calls);
+        }
+        value->setText("7");
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Cancel)->click(); });
+        apply->click(); QCOMPARE(device->cpuCalls,calls); QCOMPARE(device->writes,0u);
+        const auto original=device->regs[0x1a2]; bool described=false;
+        QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) {
+            described=box->text().contains("CPU 130") && box->text().contains("7 C"); box->button(QMessageBox::Yes)->click();
+        } });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(described);
+        QCOMPARE(device->regs[0x1a2],(original & ~(UINT64_C(0x3f)<<24))|(UINT64_C(7)<<24)); QCOMPARE(device->writes,1u);
+        QCOMPARE(value->text(),QString("7")); QVERIFY(status->text().contains("readback verified"));
+        QTRY_VERIFY(status->height()>=status->heightForWidth(status->width())); QVERIFY(status->geometry().bottom()<panel.height());
+        const auto screenshot=qEnvironmentVariable("OCTOOL_INTEL_THERMAL_TEST_SCREENSHOT"); if (!screenshot.isEmpty()) QVERIFY(panel.grab().save(screenshot));
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->writes,1u);
+        QVERIFY(status->text().contains("no settings write performed")); QCOMPARE(device->wrongCpu,0u);
+    }
+    void intelThermalConfirmationTargetChange() {
+        auto *device=new IntelThermalFixture;
+        IntelThermalPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+        panel.findChild<QPushButton *>("thermalRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        panel.findChild<QLineEdit *>("thermalValue")->setText("7"); const auto calls=device->cpuCalls;
+        QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) {
+            panel.findChild<QLineEdit *>("thermalCpu")->setText("131"); box->button(QMessageBox::Yes)->click();
+        } });
+        panel.findChild<QPushButton *>("thermalApply")->click(); QCOMPARE(device->cpuCalls,calls); QCOMPARE(device->writes,0u);
+        QVERIFY(!panel.findChild<QPushButton *>("thermalApply")->isEnabled()); QCOMPARE(panel.findChild<QTableWidget *>("thermalTable")->rowCount(),0);
+    }
+    void intelThermalStaleAndFailedWrites() {
+        for (unsigned mode=0;mode<4;++mode) {
+            auto *device=new IntelThermalFixture;
+            IntelThermalPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+            panel.findChild<QPushButton *>("thermalRead")->click(); QTRY_VERIFY(panel.isEnabled());
+            panel.findChild<QLineEdit *>("thermalValue")->setText("7");
+            if (mode==0) device->regs[0x1a2] ^= UINT64_C(1)<<63;
+            if (mode==1) device->discardChange=true;
+            if (mode==2) { device->failWrite=0; }
+            if (mode==3) device->afterRequest=[device](const octool::core::Request &r) { if (r.write) device->regs[0x1a2] ^= 1; };
+            QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+            panel.findChild<QPushButton *>("thermalApply")->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(device->writes,mode==0?0u:1u); QCOMPARE(panel.findChild<QTableWidget *>("thermalTable")->rowCount(),0);
+            QVERIFY(!panel.findChild<QPushButton *>("thermalApply")->isEnabled()); QVERIFY(panel.findChild<QLabel *>("thermalRaw")->text().isEmpty());
+            QVERIFY(panel.findChild<QLineEdit *>("thermalValue")->text().isEmpty());
+            QVERIFY(panel.findChild<QLabel *>("thermalStatus")->text().contains(mode==0?"No settings write":"not verified"));
+        }
+    }
+    void intelThermalLifetimeAndStaleResults() {
+        struct Gate { std::atomic<bool> entered{false}, release{false}, destroyed{false}; };
+        struct Device : IntelThermalFixture {
+            std::shared_ptr<Gate> gate;
+            explicit Device(std::shared_ptr<Gate> g) : gate(g) {}
+            ~Device() override { gate->destroyed=true; }
+        };
+        for (bool writing : {false,true}) for (bool close : {false,true}) {
+            auto gate=std::make_shared<Gate>(); auto *device=new Device(gate);
+            auto *panel=new IntelThermalPanel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+            if (writing) { panel->findChild<QPushButton *>("thermalRead")->click(); QTRY_VERIFY(panel->isEnabled()); }
+            device->afterRequest=[gate,writing](const octool::core::Request &r) {
+                if ((writing && !r.write) || gate->entered.exchange(true)) return;
+                const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(3);
+                while (!gate->release && std::chrono::steady_clock::now()<deadline) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            };
+            if (writing) {
+                panel->findChild<QLineEdit *>("thermalValue")->setText("7");
+                QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+                panel->findChild<QPushButton *>("thermalApply")->click();
+            } else panel->findChild<QPushButton *>("thermalRead")->click();
+            QTRY_VERIFY(gate->entered.load());
+            if (close) { delete panel; QVERIFY(!gate->destroyed.load()); gate->release=true; QTRY_VERIFY(gate->destroyed.load()); }
+            else {
+                panel->findChild<QLineEdit *>("thermalCpu")->setText("131"); gate->release=true;
+                QTRY_VERIFY(panel->isEnabled()); QCOMPARE(panel->findChild<QTableWidget *>("thermalTable")->rowCount(),0);
+                QVERIFY(panel->findChild<QLabel *>("thermalStatus")->text().contains("discarded"));
+                QCOMPARE(device->writes,writing?1u:0u); QCOMPARE(device->wrongCpu,0u); delete panel;
             }
         }
     }

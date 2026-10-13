@@ -106,6 +106,9 @@ class ReleaseGates(unittest.TestCase):
                              (ROOT / "port/kmod/octool_bus_access.h").read_bytes())
             self.assertEqual((src / "abi/octool_hwio_caps.h").read_bytes(),
                              (ROOT / "port/abi/octool_hwio_caps.h").read_bytes())
+            for name in ('class_create_probe.c', 'tsc_probe.c'):
+                self.assertEqual((src / 'kmod' / name).read_bytes(),
+                                 (ROOT / 'port/kmod' / name).read_bytes())
             self.assertIn('PACKAGE_VERSION="' + ver + '"', (src / "dkms.conf").read_text())
             self.assertIn('/build/kmod', (src / "dkms.conf").read_text())
 
