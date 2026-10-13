@@ -11,7 +11,10 @@ import re
 import struct
 from pathlib import Path
 
-LIMITS = {"GLIBC": (2, 28), "GLIBCXX": (3, 4, 25), "CXXABI": (1, 3, 11)}
+FLOORS = {
+    "el7": {"GLIBC": (2, 17), "GLIBCXX": (3, 4, 19), "CXXABI": (1, 3, 7)},
+    "el8": {"GLIBC": (2, 28), "GLIBCXX": (3, 4, 25), "CXXABI": (1, 3, 11)},
+}
 FORBIDDEN = re.compile(r"^(libQt5|libicu|libjpeg\.so|libtiff(?:xx)?\.so|libwebp(?:demux|mux)?\.so|libopencv)")
 
 
@@ -89,7 +92,8 @@ def elf_info(path):
             "gnu_stack_flags": stack_flags}
 
 
-def violations(info):
+def violations(info, floor="el8"):
+    limits = FLOORS[floor]
     errors = []
     stacks = info.get("gnu_stack_flags", [])
     if len(stacks) != 1:
@@ -97,13 +101,13 @@ def violations(info):
     elif stacks[0] & 1:
         errors.append("executable GNU_STACK is not allowed in the portable GUI")
     for requirement in info["versions"]:
-        for namespace, limit in LIMITS.items():
+        for namespace, limit in limits.items():
             if requirement.startswith(namespace + "_"):
                 suffix = requirement[len(namespace) + 1:]
                 if not re.fullmatch(r"\d+(\.\d+)+", suffix):
                     errors.append("unsupported requirement " + requirement)
                 elif tuple(map(int, suffix.split("."))) > limit:
-                    errors.append("above EL8 floor: " + requirement)
+                    errors.append("above " + floor.upper() + " floor: " + requirement)
     for library in info["needed"]:
         if FORBIDDEN.match(library):
             errors.append("unbundled or nonstatic dependency: " + library)
@@ -119,10 +123,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("binary", type=Path)
     parser.add_argument("--inspect", action="store_true", help="report without release policy")
+    parser.add_argument("--floor", choices=sorted(FLOORS), default="el8")
     args = parser.parse_args()
     try:
         info = elf_info(args.binary)
-        errors = [] if args.inspect else violations(info)
+        errors = [] if args.inspect else violations(info, args.floor)
     except (ValueError, IndexError, struct.error, OSError) as exc:
         parser.exit(2, str(exc) + "\n")
     print(json.dumps({"file": str(args.binary), **info, "errors": errors}, indent=2))

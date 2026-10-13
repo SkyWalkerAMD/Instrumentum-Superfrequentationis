@@ -18,7 +18,8 @@ def command(args):
 
 
 def versions(package):
-    values = command(['dnf', '-q', 'repoquery', '--available', '--arch=x86_64',
+    query = ['dnf', '-q', 'repoquery'] if Path('/usr/bin/dnf').exists() else ['repoquery', '-q']
+    values = command([*query, '--available', '--arch=x86_64',
                       '--qf', '%{version}-%{release}.%{arch}', package])
     return {x.strip() for x in values if re.fullmatch(r'[0-9][A-Za-z0-9_.+\-]*\.x86_64', x.strip())}
 
@@ -28,20 +29,22 @@ def main():
     parser.add_argument('--output', required=True, type=Path)
     args = parser.parse_args()
     assert os.geteuid() == 0 and os.environ.get('OCTOOL_DISPOSABLE_CONTAINER') == '1'
-    headers, images = versions('kernel-devel'), versions('kernel-core')
+    pm = 'dnf' if Path('/usr/bin/dnf').exists() else 'yum'
+    image_package = 'kernel-core' if pm == 'dnf' else 'kernel'
+    headers, images = versions('kernel-devel'), versions(image_package)
     common = headers & images
     assert common, 'no matching kernel-devel/kernel-core versions in the enabled official repositories'
     # These are conventional numeric kernel-release names, not generic RPM EVRs.
     ordered = subprocess.check_output(['sort', '-V'], input='\n'.join(common)+'\n', text=True).splitlines()
     selected = ordered[-1]
     installed = command(['rpm', '-q', 'kernel-devel', '--qf', '%{VERSION}-%{RELEASE}.%{ARCH}\n'])
-    subprocess.run(['dnf', 'install', '-y', 'kernel-devel-'+selected], check=True)
+    subprocess.run([pm, 'install', '-y', 'kernel-devel-'+selected], check=True)
     # Install the replacement first. Remove only the other explicitly named
     # header packages in this fresh CI container; keep all build dependencies.
     current = command(['rpm', '-q', 'kernel-devel', '--qf', '%{VERSION}-%{RELEASE}.%{ARCH}\n'])
     other = ['kernel-devel-'+x for x in current if x != selected]
     if other:
-        subprocess.run(['dnf', 'remove', '-y', '--setopt=clean_requirements_on_remove=False', *other], check=True)
+        subprocess.run([pm, 'remove', '-y', '--setopt=clean_requirements_on_remove=False', *other], check=True)
     tree = Path('/usr/src/kernels')/selected
     assert (tree/'Makefile').is_file() and (tree/'Module.symvers').is_file()
     directory = Path('/lib/modules')/selected
@@ -52,7 +55,7 @@ def main():
     else:
         link.symlink_to(tree, target_is_directory=True)
     report = {'selected': selected, 'initial_headers': installed,
-              'headers_without_image': sorted(headers-images), 'selection': 'newest common kernel-devel/kernel-core',
+              'headers_without_image': sorted(headers-images), 'selection': 'newest common kernel-devel/' + image_package,
               'scope': 'disposable CI container only'}
     args.output.write_text(json.dumps(report, indent=2)+'\n')
     print(json.dumps(report, indent=2))

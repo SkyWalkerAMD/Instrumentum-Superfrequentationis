@@ -1,9 +1,9 @@
 name: headless CLI
 on:
   push:
-    paths: ['cli/**', 'gui/core/**', 'gui/tests/*_core_test.cpp', 'gui/tests/*_fixture.h', 'gui/platform/**', 'port/hal/**', 'port/tools/build_cli.py', 'port/packaging/octool-cli.spec.in', 'port/ci/cli-*', 'docs/headless-cli.md', '.github/workflows/headless-cli.yml']
+    paths: ['cli/**', 'gui/core/**', 'gui/tests/*_core_test.cpp', 'gui/tests/*_fixture.h', 'gui/platform/**', 'port/hal/**', 'port/tools/build_cli.py', 'port/packaging/octool-cli.spec.in', 'port/ci/**', 'docs/headless-cli.md', '.github/workflows/headless-cli.yml']
   pull_request:
-    paths: ['cli/**', 'gui/core/**', 'gui/tests/*_core_test.cpp', 'gui/tests/*_fixture.h', 'gui/platform/**', 'port/hal/**', 'port/tools/build_cli.py', 'port/packaging/octool-cli.spec.in', 'port/ci/cli-*', 'docs/headless-cli.md', '.github/workflows/headless-cli.yml']
+    paths: ['cli/**', 'gui/core/**', 'gui/tests/*_core_test.cpp', 'gui/tests/*_fixture.h', 'gui/platform/**', 'port/hal/**', 'port/tools/build_cli.py', 'port/packaging/octool-cli.spec.in', 'port/ci/**', 'docs/headless-cli.md', '.github/workflows/headless-cli.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -22,7 +22,7 @@ jobs:
           python3 - <<'PY'
           import json, os
           targets = json.load(open('port/ci/targets.json'))
-          assert len(targets) == 10 and len({t['id'] for t in targets}) == 10
+          assert len(targets) == 11 and len({t['id'] for t in targets}) == 11
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
               f.write('targets=' + json.dumps({'include': targets}) + '\n')
           PY

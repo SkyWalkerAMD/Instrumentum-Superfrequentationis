@@ -6,7 +6,9 @@ Summary:        OCTool command-line hardware interface without a desktop
 License:        GPL-2.0-only
 Source0:        octool-cli-%{version}.tar.gz
 ExclusiveArch:  x86_64
+%if 0%{?rhel} >= 8
 Suggests:       octool-hwio-dkms
+%endif
 
 %description
 Uses the shared OCTool core and Linux backend, without Qt, X11, Wayland,

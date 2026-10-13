@@ -40,6 +40,16 @@ class ReleaseGates(unittest.TestCase):
             minimal_elf(binary)
             self.assertEqual(violations(elf_info(binary)), [])
 
+    def test_el7_floor_rejects_el8_and_newer_cpp_symbols(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            binary = Path(tmp) / "gui"
+            for requirement in ("GLIBC_2.18", "GLIBC_2.28", "GLIBCXX_3.4.20", "CXXABI_1.3.8"):
+                minimal_elf(binary, requirement=requirement)
+                self.assertTrue(violations(elf_info(binary), "el7"), requirement)
+            for requirement in ("GLIBC_2.17", "GLIBCXX_3.4.19", "CXXABI_1.3.7"):
+                minimal_elf(binary, requirement=requirement)
+                self.assertFalse(violations(elf_info(binary), "el7"), requirement)
+
     def test_newer_glibc_binary_is_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             binary = Path(tmp) / "gui"
@@ -107,9 +117,9 @@ class ReleaseGates(unittest.TestCase):
     def test_matrix_covers_all_required_targets(self):
         targets = json.loads((ROOT / "port/ci/targets.json").read_text())
         self.assertEqual({t["id"] for t in targets}, {
-            "el8", "el9", "el10", "ubuntu20.04", "ubuntu22.04", "ubuntu24.04",
+            "el7", "el8", "el9", "el10", "ubuntu20.04", "ubuntu22.04", "ubuntu24.04",
             "ubuntu26.04", "debian11", "debian12", "debian13"})
-        self.assertEqual(len(targets), 10)
+        self.assertEqual(len(targets), 11)
         self.assertEqual(next(t["display"] for t in targets if t["id"] == "el10"), "xwayland")
 
 

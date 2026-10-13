@@ -9,7 +9,9 @@ ExclusiveArch:  x86_64 noarch
 Requires:       dkms >= 2.8, gcc, make, kernel-devel, elfutils-libelf-devel, kmod
 Requires(post): dkms, procps-ng
 Requires(preun): dkms, procps-ng
+%if 0%{?rhel} >= 8
 Recommends:     mokutil, openssl
+%endif
 
 %description
 Sources for a DKMS module preserving OCTool's 96-byte /dev/mydev MMIO protocol.

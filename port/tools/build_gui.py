@@ -39,7 +39,9 @@ def main():
     parser.add_argument("--build-dir", type=Path, default=ROOT / "build/gui")
     parser.add_argument("--stage", type=Path, default=ROOT / "build/gui-stage")
     parser.add_argument("--qmake", default="/opt/octool-qt/bin/qmake")
+    parser.add_argument("--floor", choices=("el7", "el8"), default="el8")
     args = parser.parse_args()
+    link_args = (["QMAKE_LFLAGS+=-static-libstdc++ -static-libgcc"] if args.floor == "el7" else [])
     try:
         cfg, project = config()
     except (ValueError, OSError) as exc:
@@ -57,13 +59,13 @@ def main():
         parser.error("a static Qt SDK is required")
     subprocess.run([args.qmake, str(project), "CONFIG+=release", "CONFIG-=debug",
                     "QMAKE_CFLAGS+=-march=x86-64 -mtune=generic",
-                    "QMAKE_CXXFLAGS+=-march=x86-64 -mtune=generic", *cfg["qmake_args"]],
+                    "QMAKE_CXXFLAGS+=-march=x86-64 -mtune=generic", *cfg["qmake_args"], *link_args],
                    cwd=args.build_dir, check=True)
     subprocess.run(["make", "-j" + os.environ.get("JOBS", "2")], cwd=args.build_dir, check=True)
     if cfg.get("test_project"):
         tests = args.build_dir / "regression"
         tests.mkdir(exist_ok=True)
-        subprocess.run([args.qmake, str(source_path(cfg["test_project"])), "CONFIG+=release"],
+        subprocess.run([args.qmake, str(source_path(cfg["test_project"])), "CONFIG+=release", *link_args],
                        cwd=tests, check=True)
         subprocess.run(["make", "-j" + os.environ.get("JOBS", "2")], cwd=tests, check=True)
         env = dict(os.environ, QT_QPA_PLATFORM="offscreen",
@@ -115,7 +117,7 @@ def main():
     helper_dir.mkdir(exist_ok=True)
     subprocess.run([args.qmake, str(source_path(cfg["helper_project"])), "CONFIG+=release",
                     "QMAKE_CFLAGS+=-march=x86-64 -mtune=generic",
-                    "QMAKE_CXXFLAGS+=-march=x86-64 -mtune=generic"], cwd=helper_dir, check=True)
+                    "QMAKE_CXXFLAGS+=-march=x86-64 -mtune=generic", *link_args], cwd=helper_dir, check=True)
     subprocess.run(["make", "-j" + os.environ.get("JOBS", "2")], cwd=helper_dir, check=True)
     helper = (helper_dir / cfg["helper_binary"]).resolve()
     if helper_dir.resolve() not in helper.parents or not helper.is_file():

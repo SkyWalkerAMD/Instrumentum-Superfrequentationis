@@ -8,6 +8,7 @@ test "$(uname -m)" = x86_64
 case "$action" in build|runtime) ;; *) exit 2;; esac
 . /etc/os-release
 case "$target" in
+    el7) test "$ID" = ol && test "${VERSION_ID%%.*}" = 7; family=rpm;;
     el8|el9|el10) test "$ID" = rocky && test "${VERSION_ID%%.*}" = "${target#el}"; family=rpm;;
     ubuntu20.04|ubuntu22.04|ubuntu24.04|ubuntu26.04) test "$ID" = ubuntu && test "$VERSION_ID" = "${target#ubuntu}"; family=deb;;
     debian11|debian12|debian13) test "$ID" = debian && test "${VERSION_ID%%.*}" = "${target#debian}"; family=deb;;
@@ -18,7 +19,20 @@ cat /etc/os-release > "/out/os-release-$action.txt"
 unset DISPLAY WAYLAND_DISPLAY QT_QPA_PLATFORM DBUS_SESSION_BUS_ADDRESS
 export DEBIAN_FRONTEND=noninteractive
 py=python3
-if [ "$family" = deb ]; then
+rpm_pm=dnf
+rpm_options=(-y --setopt=install_weak_deps=False)
+cmake_options=()
+package_options=()
+if [ "$target" = el7 ]; then
+    bash port/ci/bootstrap-el7.sh "cli-$action"
+    rpm_pm=yum
+    rpm_options=(-y)
+    if [ "$action" = build ]; then
+        . port/ci/el7-toolchain.sh
+        cmake_options=(-DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc")
+        package_options=(--floor el7)
+    fi
+elif [ "$family" = deb ]; then
     if [ "$target" = debian11 ]; then
         # Same signed final-LTS snapshot as the existing portability workflow.
         cat > /etc/apt/octool-bullseye-snapshot.list <<'EOF'
@@ -38,23 +52,23 @@ EOF
     fi
 else
     if [ "$target" = el8 ]; then py=python3.9; package_python=python39; else package_python=python3; fi
-    dnf install -y --setopt=install_weak_deps=False "$package_python" ca-certificates util-linux shadow-utils
+    "$rpm_pm" install "${rpm_options[@]}" "$package_python" ca-certificates util-linux shadow-utils
     if [ "$action" = build ]; then
-        dnf install -y --setopt=install_weak_deps=False cmake gcc gcc-c++ make rpm-build binutils
+        "$rpm_pm" install "${rpm_options[@]}" cmake gcc gcc-c++ make rpm-build binutils
     fi
     if [ "$target" = el8 ]; then "$py" port/ci/container-nss.py --output "/out/nss-$action.json"; fi
 fi
 if [ "$action" = build ]; then
-    cmake -S cli -B build/cli -DCMAKE_BUILD_TYPE=Release -DPython3_EXECUTABLE="$(command -v "$py")"
+    cmake -S cli -B build/cli -DCMAKE_BUILD_TYPE=Release -DPython3_EXECUTABLE="$(command -v "$py")" "${cmake_options[@]}"
     cmake --build build/cli --parallel 2
     (cd build/cli && ctest --output-on-failure) 2>&1 | tee /out/ctest.txt
     cp build/cli/Testing/Temporary/LastTest.log /out/LastTest.log
-    "$py" port/tools/build_cli.py --format "$family" --output /out/packages
+    "$py" port/tools/build_cli.py --format "$family" --output /out/packages "${package_options[@]}"
 else
     if [ "$family" = deb ]; then
         apt-get install -y --no-install-recommends /out/packages/*.deb
     else
-        dnf install -y --setopt=install_weak_deps=False /out/packages/*.rpm
+        "$rpm_pm" install "${rpm_options[@]}" /out/packages/*.rpm
     fi
     "$py" port/ci/cli-smoke.py --output /out/runtime.json
     runuser -u nobody -- /usr/bin/octool-cli diagnose > /out/unprivileged-diagnose.json
@@ -66,9 +80,9 @@ else
         apt-get install -y --no-install-recommends /out/packages/*.deb
     else
         rpm -qa | sort > /out/runtime-packages.txt
-        dnf remove -y octool-cli
+        "$rpm_pm" remove -y octool-cli
         test ! -e /usr/bin/octool-cli
-        dnf install -y --setopt=install_weak_deps=False /out/packages/*.rpm
+        "$rpm_pm" install "${rpm_options[@]}" /out/packages/*.rpm
     fi
     octool-cli diagnose > /out/reinstalled-diagnose.json
     "$py" -c 'import json; assert json.load(open("/out/reinstalled-diagnose.json"))["ok"]'

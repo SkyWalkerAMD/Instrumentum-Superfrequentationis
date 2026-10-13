@@ -8,14 +8,16 @@ import tarfile
 import tempfile
 from pathlib import Path
 from build_packages import ROOT, copy, version, write
-from check_elf import elf_info
+from check_elf import elf_info, violations
 
 ALLOWED = {"libc.so.6", "libm.so.6", "libpthread.so.0", "libdl.so.2", "librt.so.1",
            "libstdc++.so.6", "libgcc_s.so.1", "ld-linux-x86-64.so.2"}
 
 
-def stage_cli(stage, binary):
+def stage_cli(stage, binary, floor=None):
     info = elf_info(binary)
+    if floor and violations(info, floor):
+        raise ValueError("CLI ABI gate failed: " + "; ".join(violations(info, floor)))
     if set(info["needed"]) - ALLOWED or info["rpaths"]:
         raise ValueError("CLI must link only the target system C/C++ runtime: " + json.dumps(info))
     if len(info["gnu_stack_flags"]) != 1 or info["gnu_stack_flags"][0] & 1:
@@ -78,6 +80,7 @@ def main():
     parser.add_argument("--format", choices=("deb", "rpm"), required=True)
     parser.add_argument("--binary", type=Path, default=ROOT / "build/cli/octool-cli")
     parser.add_argument("--output", type=Path, default=ROOT / "dist/cli")
+    parser.add_argument("--floor", choices=("el7", "el8"))
     args = parser.parse_args()
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
@@ -85,7 +88,7 @@ def main():
         workspace = Path(temp)
         stage = workspace / "stage"
         stage.mkdir()
-        info = stage_cli(stage, args.binary.resolve())
+        info = stage_cli(stage, args.binary.resolve(), args.floor)
         if args.format == "deb":
             package_deb(stage, output, version())
         else:

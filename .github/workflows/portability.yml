@@ -21,7 +21,7 @@ jobs:
           python3 - <<'PY'
           import json, os
           targets = json.load(open('port/ci/targets.json'))
-          assert len(targets) == 10 and len({x['id'] for x in targets}) == 10
+          assert len(targets) == 11 and len({x['id'] for x in targets}) == 11
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
               f.write('targets=' + json.dumps({'include': targets}) + '\n')
           PY
@@ -223,9 +223,47 @@ jobs:
             build/baseline/*.log
           if-no-files-found: error
           retention-days: 7
+  baseline_el7:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache/restore@v4
+        id: qt-cache
+        with:
+          path: |
+            build/baseline-el7/qt-sdk.tar.gz
+            build/baseline-el7/qt-sdk.sha256
+          key: el7-qt-sdk-v1-${{ hashFiles('port/ci/build-qt-el7.sh', 'port/ci/bootstrap-el7.sh', 'port/ci/el7-toolchain.sh') }}
+      - name: Build an actual EL7 release and static Qt SDK
+        run: |
+          mkdir -p build/baseline-el7
+          docker pull oraclelinux:7
+          docker image inspect oraclelinux:7 > build/baseline-el7/container-image.json
+          docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -e JOBS=4 -v "$PWD:/src" -v "$PWD/build/baseline-el7:/out" -w /src \
+            oraclelinux:7 bash port/ci/in-container.sh baseline el7
+      - uses: actions/cache/save@v4
+        if: always() && steps.qt-cache.outputs.cache-hit != 'true' && hashFiles('build/baseline-el7/qt-sdk.sha256') != ''
+        with:
+          path: |
+            build/baseline-el7/qt-sdk.tar.gz
+            build/baseline-el7/qt-sdk.sha256
+          key: ${{ steps.qt-cache.outputs.cache-primary-key }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: el7-baseline
+          path: |
+            build/baseline-el7/*.tar.gz
+            build/baseline-el7/*.json
+            build/baseline-el7/*.txt
+            build/baseline-el7/*.sha256
+            build/baseline-el7/*.log
+          if-no-files-found: error
+          retention-days: 7
   desktop:
     name: desktop (${{ matrix.id }})
-    needs: [matrix, baseline]
+    needs: [matrix, baseline, baseline_el7]
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     strategy:
@@ -235,7 +273,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          name: el8-baseline
+          name: ${{ matrix.id == 'el7' && 'el7-baseline' || 'el8-baseline' }}
           path: build/inputs
       - name: Native GUI compile and distro packages
         run: |
@@ -258,10 +296,10 @@ jobs:
           retention-days: 7
   gate:
     if: always()
-    needs: [matrix, kernel, baseline, desktop]
+    needs: [matrix, kernel, baseline, baseline_el7, desktop]
     runs-on: ubuntu-24.04
     steps:
-      - name: All ten targets must pass
+      - name: All eleven targets and both ABI floors must pass
         env:
           RESULTS: ${{ toJSON(needs) }}
         run: |

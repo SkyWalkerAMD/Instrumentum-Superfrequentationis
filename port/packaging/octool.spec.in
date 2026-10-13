@@ -9,12 +9,15 @@ Summary:        OCTool Intel and AMD hardware monitor
 License:        GPL-2.0-only
 Source0:        octool-%{version}-runtime.tar.gz
 ExclusiveArch:  x86_64
+%if 0%{?rhel} >= 8
 Recommends:     octool-hwio-dkms = %{version}-%{release}
+Requires:       /usr/bin/Xwayland
+%endif
 Requires:       /usr/bin/pkexec
-Requires:       /usr/bin/Xwayland, at-spi2-core, /usr/bin/dbus-run-session, dejavu-sans-fonts, mesa-dri-drivers
+Requires:       at-spi2-core, /usr/bin/dbus-run-session, dejavu-sans-fonts, mesa-dri-drivers
 
 %description
-Static Qt GUI built on EL8. Uses the target system glibc and display stack.
+Static Qt GUI built for its declared EL7 or EL8 ABI floor. Uses the target system glibc and display stack.
 The reconstructed GUI license and Qt license inventory are in /opt/octool/licenses.
 
 %prep

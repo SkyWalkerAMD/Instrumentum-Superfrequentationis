@@ -18,6 +18,15 @@ if [ "$action" = runtime ]; then
 else
     bash port/ci/bootstrap.sh "$target" "$mode" 2>&1 | tee "$out/bootstrap-$action.log"
 fi
+rpm_pm=dnf
+rpm_runtime_options=(--setopt=install_weak_deps=False)
+floor=el8
+if [ "$target" = el7 ]; then
+    rpm_pm=yum
+    rpm_runtime_options=()
+    floor=el7
+    case "$action" in sdk|baseline|desktop) . port/ci/el7-toolchain.sh;; esac
+fi
 family=$(python3 - "$target" <<'PY'
 import json, sys
 print(next(t for t in json.load(open('port/ci/targets.json')) if t['id'] == sys.argv[1])['family'])
@@ -42,7 +51,7 @@ install_packages() {
     if [ "$family" = deb ]; then
         apt-get install -y --no-install-recommends "$out/packages/"*.deb
     else
-        dnf install -y "$out/packages/"*.rpm
+        "$rpm_pm" install -y "$out/packages/"*.rpm
     fi
 }
 verify_dkms() {
@@ -61,13 +70,13 @@ verify_dkms() {
     [ "$n" -gt 0 ]
 }
 build_sdk() {
-    test "$target" = el8
+    test "$target" = el8 || test "$target" = el7
     if [ -s "$out/qt-sdk.tar.gz" ] && [ -s "$out/qt-sdk.sha256" ]; then
         (cd "$out" && sha256sum -c qt-sdk.sha256)
         tar -xzf "$out/qt-sdk.tar.gz" -C /opt
-        echo 'Reusing verified EL8 Qt SDK cache' | tee "$out/qt-build.log"
+        echo "Reusing verified $target Qt SDK cache" | tee "$out/qt-build.log"
     else
-        bash port/ci/build-qt-el8.sh 2>&1 | tee "$out/qt-build.log"
+        bash "port/ci/build-qt-$target.sh" 2>&1 | tee "$out/qt-build.log"
         tar -czf "$out/qt-sdk.tar.gz" -C /opt octool-qt
         (cd "$out" && sha256sum qt-sdk.tar.gz) > "$out/qt-sdk.sha256"
     fi
@@ -101,13 +110,13 @@ case "$action" in
         if [ "$family" = deb ]; then
             apt-get install -y --reinstall "$out/packages/"*.deb
         else
-            dnf reinstall -y "$out/packages/"*.rpm
+            "$rpm_pm" reinstall -y "$out/packages/"*.rpm
         fi
         verify_dkms
         if [ "$family" = deb ]; then
             apt-get purge -y octool-hwio-dkms
         else
-            dnf remove -y octool-hwio-dkms
+            "$rpm_pm" remove -y octool-hwio-dkms
         fi
         test -z "$(dkms status -m octool-hwio -v "$(cat VERSION)")"
         install_packages
@@ -119,10 +128,10 @@ case "$action" in
         build_sdk
         ;;
     baseline)
-        test "$target" = el8
+        test "$target" = el8 || test "$target" = el7
         python3 port/tools/build_gui.py --preflight
         build_sdk
-        python3 port/tools/build_gui.py --stage "$out/gui-stage"
+        python3 port/tools/build_gui.py --floor "$floor" --stage "$out/gui-stage"
         cp build/gui/regression/gui-tests.txt "$out/gui-tests.txt"
         cp build/gui/regression/vf-fixture.png "$out/vf-fixture.png"
         cp build/gui/regression/vf-edit-fixture.png "$out/vf-edit-fixture.png"
@@ -154,20 +163,20 @@ case "$action" in
         cp build/gui/regression/user-spd-fixture.png "$out/user-spd-fixture.png"
         cp build/gui/regression/enhanced-spd-fixture.png "$out/enhanced-spd-fixture.png"
         cp build/gui/regression/controls-fixture.png "$out/controls-fixture.png"
-        python3 port/tools/check_elf.py "$out/gui-stage/opt/octool/bin/octool-real" > "$out/abi.json"
-        python3 port/tools/check_elf.py "$out/gui-stage/opt/octool/bin/octool-hwio-helper" > "$out/helper-abi.json"
+        python3 port/tools/check_elf.py --floor "$floor" "$out/gui-stage/opt/octool/bin/octool-real" > "$out/abi.json"
+        python3 port/tools/check_elf.py --floor "$floor" "$out/gui-stage/opt/octool/bin/octool-hwio-helper" > "$out/helper-abi.json"
         tar -czf "$out/gui-stage.tar.gz" -C "$out/gui-stage" .
         ;;
     desktop)
         gcc -std=c11 -O2 -Wall -Wextra -Werror port/ci/window-probe.c -lX11 -o "$out/window-probe"
-        g++ -std=c++11 -O2 -Wall -Wextra -Werror -pthread port/ci/helper-client.cpp \
+        g++ -static-libstdc++ -static-libgcc -std=c++11 -O2 -Wall -Wextra -Werror -pthread port/ci/helper-client.cpp \
             gui/platform/linux_helper.cpp gui/platform/linux_cpu.cpp gui/core/hardware.cpp \
             gui/core/helper_protocol.cpp -o "$out/helper-client"
         (cd /inputs && sha256sum -c qt-sdk.sha256)
         tar -xzf /inputs/qt-sdk.tar.gz -C /opt
         mkdir -p /tmp/octool-release-stage
         tar -xzf /inputs/gui-stage.tar.gz -C /tmp/octool-release-stage
-        python3 port/tools/build_gui.py --build-dir "$root/build/gui-$target" --stage "$out/native-stage"
+        python3 port/tools/build_gui.py --floor "$floor" --build-dir "$root/build/gui-$target" --stage "$out/native-stage"
         cp "build/gui-$target/regression/gui-tests.txt" "$out/gui-tests.txt"
         cp "build/gui-$target/regression/vf-fixture.png" "$out/vf-fixture.png"
         cp "build/gui-$target/regression/vf-edit-fixture.png" "$out/vf-edit-fixture.png"
@@ -202,7 +211,7 @@ case "$action" in
         python3 port/tools/check_elf.py --inspect "$out/native-stage/opt/octool/bin/octool-real" > "$out/native-abi.json"
         python3 port/tools/check_elf.py --inspect "$out/native-stage/opt/octool/bin/octool-hwio-helper" > "$out/native-helper-abi.json"
         make -C port/tests check 2>&1 | tee "$out/offline.log"
-        python3 port/tools/build_packages.py --format "$family" --gui-stage /tmp/octool-release-stage --output "$out/packages"
+        python3 port/tools/build_packages.py --floor "$floor" --format "$family" --gui-stage /tmp/octool-release-stage --output "$out/packages"
         ;;
     runtime)
         # Install only the GUI, using declared runtime dependencies. Driver
@@ -210,7 +219,7 @@ case "$action" in
         if [ "$family" = deb ]; then
             apt-get install -y --no-install-recommends "$out/packages/octool-"[0-9]*.deb
         else
-            dnf install -y --setopt=install_weak_deps=False "$out/packages/octool-"[0-9]*.rpm
+            "$rpm_pm" install -y "${rpm_runtime_options[@]}" "$out/packages/octool-"[0-9]*.rpm
         fi
         for tool in gcc g++ make dkms; do
             if command -v "$tool" >/dev/null; then echo "unexpected build dependency: $tool" >&2; exit 1; fi
@@ -250,7 +259,7 @@ PY
         if [ "$family" = deb ]; then
             apt-get purge -y octool octool-hwio-dkms
         else
-            dnf remove -y octool octool-hwio-dkms
+            "$rpm_pm" remove -y octool octool-hwio-dkms
         fi
         test -z "$(dkms status -m octool-hwio -v "$(cat VERSION)")"
         install_packages

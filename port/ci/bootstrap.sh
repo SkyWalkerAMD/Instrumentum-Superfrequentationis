@@ -13,6 +13,7 @@ fi
 # silently build against another distribution's headers and report success.
 . /etc/os-release
 case "$target" in
+    el7) exec bash "$(dirname "$0")/bootstrap-el7.sh" "$mode";;
     el8|el9|el10)
         case "$ID" in rocky|almalinux|rhel) ;; *) echo "wrong image ID: $ID" >&2; exit 2;; esac
         test "${VERSION_ID%%.*}" = "${target#el}"

@@ -26,10 +26,12 @@ def plan(targets, scope):
     jobs = [{"name": "kernel-" + t["id"], "action": "kernel", "target": t["id"], "needs": []}
             for t in targets]
     if scope == "all":
-        jobs.append({"name": "baseline-el8", "action": "baseline", "target": "el8", "needs": []})
+        floors = sorted({"el7" if t["id"] == "el7" else "el8" for t in targets})
+        for floor in floors:
+            jobs.append({"name": "baseline-" + floor, "action": "baseline", "target": floor, "needs": []})
         for t in targets:
             desktop = "desktop-" + t["id"]
-            jobs.append({"name": desktop, "action": "desktop", "target": t["id"], "needs": ["baseline-el8"]})
+            jobs.append({"name": desktop, "action": "desktop", "target": t["id"], "needs": ["baseline-" + ("el7" if t["id"] == "el7" else "el8")]})
             jobs.append({"name": "runtime-" + t["id"], "action": "runtime", "target": t["id"], "needs": [desktop]})
     return jobs
 
@@ -153,7 +155,7 @@ class DockerRunner:
                    "-e", "OCTOOL_DISPOSABLE_CONTAINER=1", "-v", str(source) + ":/src" + (":ro" if action == "runtime" else ""),
                    "-v", str(artifacts) + ":/out", "-w", "/src"]
         if action == "desktop":
-            inputs = self.output / "jobs/baseline-el8/artifacts"
+            inputs = self.output / "jobs" / job["needs"][0] / "artifacts"
             command += ["-v", str(inputs) + ":/inputs:ro"]
         command += [image_id, "bash", "port/ci/in-container.sh", action, target]
         code = None
@@ -182,7 +184,7 @@ def save_report(output, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--scope", choices=("all", "kernel"), default="all")
-    parser.add_argument("--targets", nargs="+", help="default: all 10; a subset is never full acceptance")
+    parser.add_argument("--targets", nargs="+", help="default: all configured targets; a subset is never full acceptance")
     parser.add_argument("--plan", action="store_true", help="show the graph without starting Docker jobs")
     parser.add_argument("--output", type=Path, help="new, non-existing run directory")
     parser.add_argument("--timeout-minutes", type=int, default=180, help="timeout per command/container")

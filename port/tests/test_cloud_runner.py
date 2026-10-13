@@ -33,19 +33,20 @@ class CloudMatrix(unittest.TestCase):
                                           lambda rows: snapshots.append(dict(rows)))
         return results, executed, snapshots, runner.verdict(results, selected, scope)
 
-    def test_all_31_required_jobs_and_gate(self):
+    def test_all_required_jobs_and_gate(self):
         results, executed, snapshots, gate = self.execute()
-        self.assertEqual(len(executed), 31)
+        self.assertEqual(len(executed), 35)
         self.assertTrue(gate["full_matrix_passed"])
         self.assertEqual(gate["hardware_acceptance"], "not_run")
-        self.assertEqual(len(snapshots), 31)
+        self.assertEqual(len(snapshots), 35)
         self.assertEqual(len(snapshots[0]), 1)
         self.assertFalse(runner.verdict(snapshots[0], self.targets, "all")["full_matrix_passed"])
 
     def test_missing_gui_never_blocks_independent_kernel_jobs(self):
         results, executed, _, gate = self.execute({"baseline-el8": "failed"})
-        self.assertEqual(len([n for n in executed if n.startswith("kernel-")]), 10)
-        self.assertEqual(len(executed), 11)
+        self.assertEqual(len([n for n in executed if n.startswith("kernel-")]), 11)
+        self.assertEqual(len(executed), 15)
+        self.assertEqual(results["runtime-el7"]["status"], "passed")
         self.assertEqual(results["runtime-debian13"]["status"], "blocked")
         self.assertFalse(gate["requested_scope_passed"])
         self.assertFalse(gate["full_matrix_passed"])

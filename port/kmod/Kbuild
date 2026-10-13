@@ -9,7 +9,7 @@ ifneq ($(filter Makefile.build %/Makefile.build,$(MAKEFILE_LIST)),)
 # Makefile.lib normally adds these per-object flags after including this file.
 # A parse-time probe must supply the same compiler header and module context.
 pk-probe-flags = $(NOSTDINC_FLAGS) $(LINUXINCLUDE) \
-    -include $(srctree)/include/linux/compiler_types.h \
+    -include $(if $(wildcard $(srctree)/include/linux/compiler_types.h),$(srctree)/include/linux/compiler_types.h,$(srctree)/include/linux/compiler.h) \
     $(KBUILD_CPPFLAGS) $(KBUILD_CFLAGS) $(KBUILD_CFLAGS_MODULE) $(CFLAGS_MODULE) \
     -DMODULE -DKBUILD_MODNAME='"octool_hwio"' -D__KBUILD_MODNAME=kmod_octool_hwio \
     -DKBUILD_BASENAME='"octool_probe"'

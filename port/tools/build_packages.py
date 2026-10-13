@@ -50,12 +50,12 @@ def module_stage(stage, ver):
     copy(PACK / "octool-msr.conf", stage / "usr/lib/modules-load.d/octool-msr.conf")
 
 
-def gui_stage(stage, gui):
+def gui_stage(stage, gui, floor="el8"):
     for name in ("octool-real", "octool-hwio-helper"):
         binary = gui / "opt/octool/bin" / name
-        errors = violations(elf_info(binary))
+        errors = violations(elf_info(binary), floor)
         if errors:
-            raise ValueError(name + " EL8 release ABI gate failed: " + "; ".join(errors))
+            raise ValueError(name + " " + floor.upper() + " release ABI gate failed: " + "; ".join(errors))
     for path in (gui / "opt/octool").rglob("*"):
         if re.match(r"^(ld-linux|lib(c|m|pthread|dl|rt|resolv)\.so\.)", path.name):
             raise ValueError("system glibc/loader must not be bundled: " + str(path))
@@ -120,6 +120,7 @@ def main():
     parser.add_argument("--module-only", action="store_true")
     parser.add_argument("--gui-stage", type=Path, default=ROOT / "build/gui-stage")
     parser.add_argument("--output", type=Path, default=ROOT / "dist")
+    parser.add_argument("--floor", choices=("el7", "el8"), default="el8")
     args = parser.parse_args()
     ver = version()
     args.output = args.output.resolve()
@@ -130,7 +131,7 @@ def main():
             stage = workspace / ("gui" if gui else "module")
             stage.mkdir()
             if gui:
-                gui_stage(stage, args.gui_stage.resolve())
+                gui_stage(stage, args.gui_stage.resolve(), args.floor)
             else:
                 module_stage(stage, ver)
             if args.format == "deb":

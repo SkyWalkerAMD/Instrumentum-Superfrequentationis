@@ -6,6 +6,7 @@ test "${OCTOOL_DISPOSABLE_CONTAINER:-}" = 1
 test "$(uname -m)" = x86_64
 . /etc/os-release
 case "$target" in
+    el7) exec bash "$(dirname "$0")/bootstrap-el7.sh" runtime;;
     el8|el9|el10)
         case "$ID" in rocky|almalinux|rhel) ;; *) exit 2;; esac
         test "${VERSION_ID%%.*}" = "${target#el}";;

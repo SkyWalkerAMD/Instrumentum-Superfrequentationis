@@ -5,7 +5,9 @@ set -euo pipefail
 test "${OCTOOL_DISPOSABLE_CONTAINER:-}" = 1
 out=${1:?VM input directory required}
 mkdir -p "$out"
-if ! command -v apt-get >/dev/null; then dnf install -y cpio; fi
+rpm_pm=dnf
+if ! command -v dnf >/dev/null; then rpm_pm=yum; fi
+if ! command -v apt-get >/dev/null; then "$rpm_pm" install -y cpio; fi
 for tree in /lib/modules/*/build; do
     [ -f "$tree/Makefile" ] || continue
     kernel=${tree%/build}; kernel=${kernel##*/}
@@ -15,7 +17,11 @@ for tree in /lib/modules/*/build; do
         (cd "$dest/download" && apt-get download "linux-image-$kernel")
         for package in "$dest/download/"*.deb; do dpkg-deb -x "$package" "$dest/extracted"; done
     else
-        dnf download --destdir "$dest/download" "kernel-core-$kernel"
+        if [ "$rpm_pm" = yum ]; then
+            yumdownloader --destdir="$dest/download" "kernel-$kernel"
+        else
+            dnf download --destdir "$dest/download" "kernel-core-$kernel"
+        fi
         for package in "$dest/download/"*.rpm; do
             (cd "$dest/extracted" && rpm2cpio "$package" | cpio -idm --quiet)
         done
