@@ -1,6 +1,6 @@
 # 在 Linux Docker 环境运行矩阵
 
-更新：2026-09-30。当前实际测试使用用户明确选择的公开 GitHub 仓库 Actions，
+更新：2026-10-13。当前实际测试使用用户明确选择的公开 GitHub 仓库 Actions，
 见 [Actions 接入](github-actions.md) 和 [实测结果](verification-status.md)。
 此前把 OpenAI 托管云端理解为用户提供服务器有误，历史纠正保存在 [云端接入状态](cloud-access.md)。
 本页是通用 Linux Docker runner 的独立复现说明，不要求用户提供 SSH。
@@ -16,7 +16,7 @@
 宿主要求：Linux x86_64、Python 3.8 或更新、可用的本机 Linux/amd64 Docker daemon，
 QEMU x86 系统模拟器、静态 BusyBox、gcc 和可静态链接的 libc；
 能够访问目标镜像仓库、各发行版软件源及 Qt 官方下载。构建目录必须能保存 Qt 源码/
-对象文件、十目标各自的源码副本和产物；实际时间、峰值内存、磁盘量尚无实测记录。
+对象文件、十一目标各自的源码副本和产物；实际时间、峰值内存、磁盘量尚无实测记录。
 runner 顺序执行任务，Qt/GUI 默认 make -j2，避免在尚未知配置的机器上同时启动多个 Qt 构建。
 EL10 容器还取决于宿主 CPU 能否运行该镜像，拉取成功不能替代实际启动检查。
 
@@ -34,7 +34,7 @@ python3 port/ci/run-matrix.py --plan --scope kernel --targets debian11 debian12 
 # 实际执行内核编译、离线测试、DKMS 安装及目标内核的 QEMU 加载/通信/卸载：
 python3 port/ci/run-matrix.py --scope kernel --targets debian11 debian12 debian13
 
-# 扩展至全部十目标的内核分项：
+# 扩展至全部十一目标的内核分项：
 python3 port/ci/run-matrix.py --scope kernel
 ```
 
@@ -56,14 +56,13 @@ python3 port/ci/run-matrix.py --plan
 python3 port/ci/run-matrix.py
 ```
 
-完整计划为 31 个阶段：10 个 kernel、1 个 EL8 baseline、10 个 desktop、10 个 runtime。
-baseline 生成 EL8 静态 Qt SDK 和发行 GUI；每个 desktop 使用 SDK 在对应目标重新编 GUI，
-并为同一个 EL8 发行 GUI 生成该目标的 rpm/deb；runtime 在新的同目标容器安装并启动
+完整计划为 35 个阶段：11 个 kernel、EL7/EL8 各一个 baseline、11 个 desktop、11 个 runtime。
+EL7 使用独立静态 Qt SDK 和发行 GUI；其余十目标使用 EL8 基线。每个 desktop 使用相应 SDK 在
+对应目标重新编 GUI，并为相应发行 GUI 生成该目标的 rpm/deb；runtime 在新的同目标容器安装并启动
 发行/本地重编的两份 GUI。先在没有编译器/头文件/DKMS 的环境检查普通用户窗口、授权辅助程序
 和无显示诊断，再安装驱动工具链检查 DKMS 卸载/重装。详细门禁见 [多发行版指南](multi-distro.md)。
 
-一个内核任务失败后继续其他目标。GUI preflight/baseline 失败时，将 desktop/runtime
-标为 blocked，完整命令退出非零。某个 desktop 失败只阻断它的 runtime。
+一个内核任务失败后继续其他目标。GUI preflight 失败时，相应 desktop/runtime 标为 blocked；某个 baseline 失败只阻断使用该基线的目标。阶段未通过时，完整命令退出非零。某个 desktop 失败只阻断它的 runtime。
 没有把失败、超时、缺输入或未执行阶段算作通过。
 
 默认每次在 `build/cloud-runs/<UTC时间>-<随机后缀>/` 建新目录，启动时打印 `Evidence:`
@@ -75,7 +74,7 @@ baseline 生成 EL8 静态 Qt SDK 和发行 GUI；每个 desktop 使用 SDK 在�
 ## 隔离和证据
 
 - 每次运行先生成一个源码快照并记录 SHA-256，各编译阶段独立解压。
-  不在十个目标之间共享 `.o`、qmake Makefile 或 Kbuild `.cmd`。
+  不在十一个目标之间共享 `.o`、qmake Makefile 或 Kbuild `.cmd`。
 - 同一次运行每个镜像 tag 拉取后保存 image inspect，并使用不可变 image ID 启动后续容器。
   系统包仓库仍可能更新，包清单是证据，不宣称已冻结全部外部依赖。
 - 容器不使用 privileged，不挂载宿主 `/dev`、`/lib/modules`、Docker socket 或 SSH 密钥。
@@ -95,7 +94,8 @@ images/<target>.json                  # 镜像内容 ID、digest、架构
 images/<target>-pull.log
 jobs/kernel-<target>/console.log
 jobs/kernel-<target>/artifacts/        # 内核、签名结果、module rpm/deb、离线测试
-jobs/baseline-el8/artifacts/           # EL8 SDK/GUI tar、ABI 信息
+jobs/baseline-el7/artifacts/           # EL7 SDK/GUI tar、ABI 信息
+jobs/baseline-el8/artifacts/           # 其余目标使用的 EL8 基线
 jobs/desktop-<target>/artifacts/      # GUI/模块包、native GUI、runtime/窗口日志
 jobs/runtime-<target>/console.log     # 使用相应 desktop 的 artifacts 目录
 ```
@@ -107,10 +107,10 @@ jobs/runtime-<target>/console.log     # 使用相应 desktop 的 artifacts 目�
 | 字段 | 含义 |
 |---|---|
 | requested_scope_passed | 这次明确请求的所有阶段通过；决定进程退出码 |
-| full_matrix_passed | 必须 scope=all、十个目标齐全且 31 阶段全部通过 |
+| full_matrix_passed | 必须 scope=all、十一个目标齐全且 35 阶段全部通过 |
 | hardware_acceptance | 固定 not_run；容器不能确认 MOK/真实 MMIO/超频 |
 
-三项 Debian 内核或十项内核分项即使通过，`full_matrix_passed` 仍为 false。
+三项 Debian 内核或十一项内核分项即使通过，`full_matrix_passed` 仍为 false。
 拿到真实日志后，把目标结果和实际内核/包版本补入 [验证状态](verification-status.md) 与 CHANGELOG。
 `port/tests/test_cloud_runner.py` 的模拟执行只验证这些状态传播规则，不产生 Linux 编译证据。
 
@@ -135,4 +135,4 @@ ELF 门禁拒绝 libtiff/libtiffxx/libwebp/libwebpdemux/libwebpmux 动态依赖�
 
 依据：[Qt 5.15.18 ImageFormats 配置源码](https://raw.githubusercontent.com/qt/qtimageformats/v5.15.18-lts-lgpl/src/imageformats/configure.json)。
 本次读到的原始文本 SHA-256：`c48673f19997b843b7a5e8dc65500161af7800284cb7a85aff943b2f45d58de8`。
-配置选项的核实不是 SDK 编译成功；最终仍以十目标 ELF/ldd/窗口实测为准。
+配置选项的核实不是 SDK 编译成功；最终仍以十一目标 ELF/ldd/窗口实测为准。

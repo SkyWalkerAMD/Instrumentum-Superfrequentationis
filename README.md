@@ -1,5 +1,17 @@
 # Instrumentum Superfrequentationis
 
+<!-- el7-recovery-bc30c4f -->
+2026-10-13：本批已验证提交 `bc30c4f`，新增 **EL7（Oracle Linux 7.9 x86_64）**，并同步恢复 GUI / CLI 的 AVX2 偏移、TCC 温控、限频原因与历史清除、最大非睿频倍率和封装热事件。
+
+- [EL7 安装与范围](docs/el7-port.md)、[整批验证交付](docs/el7-recovery-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38335611258) 4/4：各 22 CTest、291 场景组。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38335611273) 13/13：11 目标各 24 CTest、794 份 JSON、32 场景组。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38335611277) 26/26：11 目标及两个 Qt 基线各 135 项 GUI 测试，12 套匹配内核 VM。
+- `dist/gui-cli-el7-recovery-bc30c4f/`：33 个安装包、固定提交源码和 SHA256。
+
+ICCmax/VR 供电域、增强 TVB/Vmax、部分 AMD 与主板调参仍在恢复；[ICCmax 新证据](docs/intel-iccmax-research.md)没有计作已开放功能。真机调参和 Secure Boot 尚未验收。以下为历史记录。
+<!-- /el7-recovery-bc30c4f -->
+
 <!-- intel-energy-61a0494 -->
 2026-10-13：最新验证生产提交 `61a0494`，GUI / CLI 同步恢复 **Intel 节能睿频与 Race to Halt**。
 B7 裸机；两项独立启用/禁用，完整旧值检查、保留其它位、完整读回。

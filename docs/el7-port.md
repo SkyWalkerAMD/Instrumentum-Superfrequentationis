@@ -1,24 +1,31 @@
 # EL7 兼容适配
 
-当前正在验证的第 11 个发行版目标为 `el7`，CI 使用官方 `oraclelinux:7`
-镜像和 Oracle 签名的 EL7 软件仓库。它代表实际测试的 Oracle Linux 7.9
-环境；不能把 ABI 兼容设计直接表述为所有 CentOS/RHEL 7 安装均已验证。
+2026-10-13：第 11 个目标 `el7` 已通过 GUI、CLI、DKMS、全新环境安装和匹配内核 VM 验证。
+固定生产提交 `bc30c4f`，详见[本批完整记录](el7-recovery-validation.md)。测试环境是官方
+`oraclelinux:7` 镜像与 Oracle 签名软件仓库，实际为 **Oracle Linux 7.9 x86_64**。
+RHEL/CentOS 7 的 ABI 兼容设计不等于这些系统已经逐台验收。
 
-EL7 独立构建静态 Qt 5.15.18 SDK、GUI 和 helper，发布检查限制
+EL7 使用独立静态 Qt 5.15.18 基线，GUI/helper/CLI 的发布要求限制为
 `GLIBC <= 2.17`、`GLIBCXX <= 3.4.19`、`CXXABI <= 1.3.7`。
-CLI 同样在 EL7 构建并检查 ELF 版本要求。用户态构建使用 devtoolset-11，
-EL7 程序静态链接 C++ 编译器运行库，继续使用系统 glibc 和显示依赖。
-不打包或替换系统 glibc，也不要求运行程序时启用编译器工具集。
+用户态构建采用 devtoolset-11，程序静态链接 C++ 编译器运行库并使用系统 glibc。
+运行时无需编译器工具集、SDK 或 Python，也不替换系统 glibc。GUI 需要 X11 环境；CLI 无桌面依赖。
 
-RPM 4.11 不支持的弱依赖标签在 EL7 spec 中省略；GUI 和 CLI 均可独立安装，
-驱动为可选 DKMS 包。EL7 内核以 `kernel` / `kernel-devel` 配对，使用本机原生 GCC
-构建；Kbuild 根据实际头文件选择编译器头，继续探测 `class_create` 签名。
+RPM 4.11 不支持的弱依赖标签已按目标处理。GUI 与 CLI 可独立安装；驱动为可选 DKMS 包，
+由目标机器为其内核构建 `.ko`。EL7 原生 GCC 4.8 编译内核模块，按 `kernel` / `kernel-devel`
+精确配对。Kbuild 根据实际头文件探测 `class_create` 和 TSC 访问方式，兼容 EL7 回移 API，
+并处理 Linux 5.4 的头文件依赖及 Linux 7.0 的 TSC 声明位置变化。
 
-Python 3.8、SDK 和编译器是构建/验证工具，不是 GUI/CLI 产品运行依赖。
-CI 的 Python 来自 SCL，仅 Python 包装器设置它自己的库路径。
-官方说明：[Oracle Linux Python](https://yum.oracle.com/oracle-linux-python.html)、
+安装示例，在本目录对应 EL7 子目录中执行：
+
+```sh
+sudo yum install ./octool-cli-2.0.1-1.el7.x86_64.rpm
+octool-cli diagnose
+```
+
+有桌面时另安装 `octool-2.0.1-1.el7.x86_64.rpm`。需要驱动时先安装当前内核匹配的
+`kernel-devel`、GCC 和 DKMS，再安装对应 `octool-hwio-dkms` RPM。不要把 CI 容器引导脚本当作主机安装器。
+
+构建环境中的 Python 3.8 来自 SCL，仅 Python 包装器设置自己的库路径。
+参考：[Oracle Python](https://yum.oracle.com/oracle-linux-python.html)、
 [Oracle SCL](https://docs.oracle.com/en/operating-systems/oracle-linux/scl-user/scl-ReleaseNotes.html)。
-
-验证要求包括：EL7 独立 Qt/GUI 回归、无桌面 CLI 回归、全新镜像安装与普通用户启动、
-卸载重装、DKMS 编译与内核镜像匹配、QEMU 中实际加载/卸载驱动。
-云端完成前，这一目标应标注为**适配验证中**。真机调参和 Secure Boot 验收另行记录。
+QEMU 验证不执行超频寄存器写入；真机功能效果和 Secure Boot 仍需单独验收。

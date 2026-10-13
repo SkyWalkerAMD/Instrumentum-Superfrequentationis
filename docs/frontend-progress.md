@@ -1,5 +1,17 @@
 # GUI / CLI 同步进度
 
+<!-- el7-recovery-bc30c4f -->
+2026-10-13：本批已验证提交 `bc30c4f`，新增 **EL7（Oracle Linux 7.9 x86_64）**，并同步恢复 GUI / CLI 的 AVX2 偏移、TCC 温控、限频原因与历史清除、最大非睿频倍率和封装热事件。
+
+- [EL7 安装与范围](el7-port.md)、[整批验证交付](el7-recovery-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38335611258) 4/4：各 22 CTest、291 场景组。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38335611273) 13/13：11 目标各 24 CTest、794 份 JSON、32 场景组。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38335611277) 26/26：11 目标及两个 Qt 基线各 135 项 GUI 测试，12 套匹配内核 VM。
+- `dist/gui-cli-el7-recovery-bc30c4f/`：33 个安装包、固定提交源码和 SHA256。
+
+ICCmax/VR 供电域、增强 TVB/Vmax、部分 AMD 与主板调参仍在恢复；[ICCmax 新证据](intel-iccmax-research.md)没有计作已开放功能。真机调参和 Secure Boot 尚未验收。以下为历史记录。
+<!-- /el7-recovery-bc30c4f -->
+
 2026-10-13 新增 [Energy Efficient Turbo / Race to Halt](intel-energy.md)：GUI 节能控制页、CLI intel-energy-read/set 同步接入。限定 B7；生产提交 `61a0494` 的 39 项云端任务全部通过，见 [验证交付](intel-energy-validation.md)。
 
 2026-10-12 新增 [Ring DownBin](intel-ring-downbin.md)：GUI 配置页增加第三个开关，CLI 同步增加 ring-down-bin 字段。限定 B7；生产提交 `c6e9599` 的 39 项云端任务全部通过，见 [验证交付](intel-ring-validation.md)。
@@ -36,6 +48,10 @@ GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-
 | Intel V/F 点 | V/F points 查询、准备与设置 | `intel-vf-read` / `intel-vf-set` | B7，两域，候选 1..15 查询及单点 offset；[完整上下文核对](intel-vf-write-recovery.md)，不改变 override 模式 |
 | Intel 睿频分组 | Turbo ratio groups | `intel-turbo-read` / `intel-turbo-set` | B7；P/E 两表，读取活动核心阈值，单组倍率或中间组阈值设置与完整读回；末组阈值保持 |
 | Intel Ring / LLC 范围 | Ring / LLC range | `intel-uncore-read` / `intel-uncore-set` | B7/8F；最小与最大倍率同时设置，保留其它位、旧值检查及完整读回；[实现说明](intel-uncore-recovery.md) |
+| Intel AVX2 偏移 | AVX2 offset | `intel-avx-read/set` | B7；0..31 倍率档，锁、旧值检查，保留其它位及完整回读 |
+| Intel TCC 温控 | Thermal limit | `intel-thermal-read/set` | B7/8F/CF；偏移、默认与有效阈值，能力/锁/范围检查 |
+| Intel 限频原因 | Limit reasons | `intel-limits-read/clear` | B7；11 组当前/历史状态，单项或全部历史 W0C 清除与回读 |
+| Intel 平台倍率及封装热事件 | Power / performance | `intel-read` | B7/8F/CF；只读倍率及 6 对封装当前/历史位，错误不会伪装为零 |
 | Intel 节能控制 | Energy optimization | `intel-energy-read/set` | 06_B7 裸机；节能睿频 / Race to Halt 独立设置，完整旧值核对和 64 位回读；显式 CPU，不广播 |
 | Intel 内存控制器 | Memory timings | `intel-memory-read/decode` | B7/A700；57 字段含 RTL、掉电、刷新、自刷新和 ZQ，v1/v2/v3 双向快照；仅读取 |
 | Intel 时钟信息 | Clock information | `intel-clock-read/decode` | B7/A700；报告 BCLK kHz，历史 MRC Gear/倍率/VDDQ 请求；独立只读快照，不推导实时内存频率 |

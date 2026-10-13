@@ -1,0 +1,38 @@
+{
+  "schema": 2,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "fixture_sha256": {
+    "legacy-intel-iccmax.json": "1d34735adc76ba8b419cf1bb2e58f0cad50e5a8a37799e07a608f6beb6775749",
+    "legacy-intel-vr-topology.json": "bd87d1d34b4cf749b423e3d6ff0b74b02add2b8b8293730e485c882f77a178bd"
+  },
+  "scope": "Eight complete original ICCmax/topology functions; synthetic MSR/container boundaries only. The ninth pinned function, MAX_NON_TURBO_LIM_RATIO, is replayed separately by legacy-intel-platform.py. No original process, driver or hardware is executed.",
+  "emulated_symbols": [
+    "_Z9rd_iccmaxv",
+    "_Z13is_iccmax_disv",
+    "_Z6iccmaxv",
+    "_Z15get_vr_topologyRSt6vectorIhSaIhEE",
+    "_Z10set_iccmaxii",
+    "_Z14unlimit_iccmaxib",
+    "_Z13maxout_iccmaxv",
+    "_Z23get_vr_iccmax_unlimitedRSt6vectorIbSaIbEE"
+  ],
+  "findings": [
+    "Scalar read masks 10 bits; indexed read and setter use 11. CPU/firmware binding and physical units remain unresolved.",
+    "Scalar setter ORs data with 800003ff, then overwrites MSR 601 with 1fff without verification.",
+    "Topology command 80000004 returns three 4-bit addresses and flags. Indexed operations ignore these flags.",
+    "Indexed query/write words contain address<<8 and 16/17, but omit bit 31. Input indexes are range checked.",
+    "Indexed setters preserve unrelated data bits but ignore errors and only poll completion, with no readback comparison.",
+    "Topology and setters can poll indefinitely. Indexed reader has a bounded poll count but returns payload even when still busy or failed.",
+    "The reader returns three raw 11-bit values and appends three bit-31 flags to the supplied bool vector.",
+    "These behaviors characterize legacy instructions, not a validated platform protocol or enabled GUI/CLI controls."
+  ],
+  "scenarios": 2863,
+  "functions_statically_audited": 9,
+  "validation": "Local Python/Unicorn execution, not included in the bc30c4f cloud-source snapshot",
+  "replay_report": {
+    "path": "build/iccmax-topology-replay.json",
+    "bytes": 4700097,
+    "sha256": "c10df0ebc47c48d1c88670d430432906bcf7c3cebfecd3222056b413390f29e0"
+  },
+  "replay_tool_sha256": "4f9789b709b1746637f7fc47e9d7bc557cd96aaaf616a37916836b39685f1976"
+}

@@ -1,5 +1,17 @@
 # 功能还原状态
 
+<!-- el7-recovery-bc30c4f -->
+2026-10-13：本批已验证提交 `bc30c4f`，新增 **EL7（Oracle Linux 7.9 x86_64）**，并同步恢复 GUI / CLI 的 AVX2 偏移、TCC 温控、限频原因与历史清除、最大非睿频倍率和封装热事件。
+
+- [EL7 安装与范围](el7-port.md)、[整批验证交付](el7-recovery-validation.md)。
+- [共同核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38335611258) 4/4：各 22 CTest、291 场景组。
+- [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38335611273) 13/13：11 目标各 24 CTest、794 份 JSON、32 场景组。
+- [GUI / 驱动](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38335611277) 26/26：11 目标及两个 Qt 基线各 135 项 GUI 测试，12 套匹配内核 VM。
+- `dist/gui-cli-el7-recovery-bc30c4f/`：33 个安装包、固定提交源码和 SHA256。
+
+ICCmax/VR 供电域、增强 TVB/Vmax、部分 AMD 与主板调参仍在恢复；[ICCmax 新证据](intel-iccmax-research.md)没有计作已开放功能。真机调参和 Secure Boot 尚未验收。以下为历史记录。
+<!-- /el7-recovery-bc30c4f -->
+
 <!-- intel-energy-61a0494 -->
 2026-10-13：最新验证生产提交 `61a0494`，GUI / CLI 同步恢复 **Intel 节能睿频与 Race to Halt**。
 B7 裸机；两项独立启用/禁用，完整旧值检查、保留其它位、完整读回。
@@ -360,7 +372,7 @@ PStates 写入、曲线写入、Intel server VF/fabric、板级专用控制等�
 | 用户要求的模块 | 已接入可编译程序 | 尚未还原的部分 |
 |---|---|---|
 | AMD PStates | 按逻辑 CPU 采样 P0–P7、上限/能力检查、频率、64 位原值、完整 9 位 VID / Idd 编码 | 型号专用 mV/A 换算；满足跨核/跨 coherent fabric 一致性的设置 |
-| Intel Controls | RAPL、HWP 含活动窗口，13 项设置完整读回；温度；Raptor Lake-S core/cache offset、最大 OC ratio、目标电压与 Adaptive/Override；VF 点查询及受条件限制的单点 offset；P/E 睿频分组读取、单组倍率及中间组活动核心阈值设置；B7/8F Ring/LLC 最小、最大倍率范围；B7/A700 报告 BCLK 与历史 MRC 请求；B7 TVB 高温倍频裁剪、电压优化与 Ring DownBin 开关、活动 P 核候选表的两组温度 / 降倍率查询及保守范围单字段设置；B7 节能睿频 / Race to Halt 独立设置与完整回读 | W790/W890 电压域；其它型号 VF、逐物理核心 override、末组阈值/组数量重建、TVB 完整写入范围 / 逐物理核心表与其它型号控制、VID rank/SP、fabric/BCLK 写入和其它型号时钟信息 |
+| Intel Controls | RAPL、HWP 含活动窗口，13 项设置完整读回；温度；Raptor Lake-S core/cache offset、最大 OC ratio、目标电压与 Adaptive/Override；VF 点查询及受条件限制的单点 offset；P/E 睿频分组读取、单组倍率及中间组活动核心阈值设置；B7/8F Ring/LLC 最小、最大倍率范围；B7/A700 报告 BCLK 与历史 MRC 请求；B7 TVB 高温倍频裁剪、电压优化与 Ring DownBin 开关、活动 P 核候选表的两组温度 / 降倍率查询及保守范围单字段设置；B7 节能睿频 / Race to Halt 独立设置与完整回读；B7 AVX2 偏移、11 组限频原因及选择性历史清除；B7/8F/CF TCC 偏移、默认阈值/核心与封装温度、最大非睿频倍率、6 对封装热事件 | ICCmax/VR 供电域与单位、Vmax/增强 TVB；W790/W890 电压域；其它型号 VF、逐物理核心 override、末组阈值/组数量重建、TVB 完整写入范围 / 逐物理核心表与其它型号控制、VID rank/SP、fabric/BCLK 写入和其它型号时钟信息 |
 | AMD 调参 | 三套独立 BIOS SMUIO；Shimada 已提取命令和逐核频率参数准备；CPUID 稀疏拓扑；限定身份的原始曲线查询；PM 表八个版本的 24 项公共字段、已有驱动读取及 GUI/CLI 快照互通 | CPUID 与固件目标 ID 对应；MP1/PBO 高层单位、曲线设置/电流/温度限制、完整 PM 表与原生传输、profiles/hotkeys |
 | 内存与主板 | DMI/BIOS、内核传感器、绑定驱动的 SPD、DDR4/5 基础 CRC/组织/时序/CAS 支持列表，含 DDR4 写延迟、DDR5 次级时序及 1.2 新增字段；DDR4 XMP 2.0 两组电压/时序、独立时间基准、限定 CAS/推荐 DIMM 数及无扩展 CRC 状态；对称堆叠容量、DDR4 已确认布局及 DDR5 混合 rank 分项、DDR5 子通道/3DS 刷新要求；DDR5 XMP 3.0 厂家档案名称、电压、基础与 8 项次级时序/独立周期下限、CAS/命令率及逐区 CRC；EXPO 1.0 两组基础档案、增强时序存储字及整块 CRC；XMP 3.0 两个用户槽独立检查/校验与解码；AMD UMC 212 字段、GUI/CLI 快照双向离线导入及同 bank/slot 比较；限定 B7/A700 的 Intel 内存控制器 57 字段（含有效 rank RTL、掉电、刷新、自刷新和 ZQ 参数）、双次一致读与 GUI/CLI v1/v2/v3 快照 | EXPO 增强启用语义 / 1.1 / 用户档案；XMP 用户槽启用与写入；XMP 3.0 推荐 DIMM 数；其余 DDR4 非对称 Rank 布局；UMC 各型号物理单位/通道标签；其它 Intel 型号 RTL、剩余时序/IOL、实时内存频率及特殊 Gear 换算；PMIC/VRM/EC/时钟芯片和训练写入 |
 
@@ -377,6 +389,7 @@ AMD PPR 对 VID 和其它字段又规定了不同的跨核范围，Model 02h 手
 Intel client offset 与最大 OC ratio 的数据布局和接口已经形成限定实现；GNR 的 13 位目标选择器来自另一个对象表，
 NVL 也有独立按核心表。缺少的是这些表的完整目标绑定与相应固件命令契约，不能由 W790/W890 板名填出。
 原 VF 操作会连带改变 per-core override；当前单点设置保留模式并核对上下文，逐物理核心模式仍未恢复。
+[ICCmax/VR 新研究](intel-iccmax-research.md)另固定了 10/11 位协议差异、旧快捷设置的 MSR 601 副作用和供电拓扑字段；完成 1,266 次离线原指令回放，但型号/供电域契约不足，尚未开放为调参功能。
 
 AMD [六字段完整槽实验](amd-limits-recovery.md)确认大多数字段走 MP1，FIT 的一部分路径才走 BIOS。
 原乘法会回绕、部分消息重用、失败仍提示 Applied；六个入口标签和第二个对象标志已由原 UI/构造指令补齐，
@@ -393,7 +406,7 @@ PBO 命令表与型号支持差异；这些差异尚未形成可验证的新增�
 
 ## 已验证与未验证的边界
 
-Linux 已建立 Ubuntu 20.04/22.04/24.04/26.04、Debian 11/12/13、Rocky Linux 8/9/10 的构建、
+Linux 已建立 Ubuntu 20.04/22.04/24.04/26.04、Debian 11/12/13、Oracle Linux 7.9、Rocky Linux 8/9/10 的构建、
 GUI 安装、授权和目标内核 VM 验证；驱动仍为 DKMS 针对实际内核构建的 `.ko`。
 Windows/macOS 当前验证独立核心，完整 GUI/硬件后端的目标仍是 Linux。
 四台目标机器的寄存器行为、物理电压/温度效果、Secure Boot 登记和真实桌面交互认证尚未验收。

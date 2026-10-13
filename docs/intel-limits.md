@@ -62,8 +62,9 @@ The [pinned original functions](../analysis/fixtures/legacy-intel-limits.json),
 `clear_clipping_log()` writes an all-zero word without checks or readback.
 The separate `get_hedt_clipping_log()` reads 14 bits from **1B1**, not 64F.
 Both original readers suppress wrapper failures. The reconstructed profile
-exposes only documented B7 meanings and propagates errors. The server helper is
-characterized but is not presented as a restored server limit-reason profile.
+exposes only documented B7 meanings and propagates errors. The separate [package-event reader](intel-package-events.md) restores six documented
+status/history pairs from the server helper's 1B1 register on B7/8F/CF. It does
+not turn this 64F history-clear profile into a server control.
 
 Core tests cover all documented bit positions, each stale or corrupted bit,
 W0C semantics, new events, immediate reassertion, faults, cancellation and
