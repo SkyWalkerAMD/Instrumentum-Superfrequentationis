@@ -1012,7 +1012,7 @@ Usage: octool-cli COMMAND [OPTIONS]
   register-read --space pci --address A --width 1|2|4 --bus B --device D --function F
   register-write [same target options] --value V --apply
   amd-pstates --cpu N               Family 1Ah P0..P7 (read only)
-  intel-read --cpu N                RAPL, HWP, temperatures and maximum non-turbo ratio
+  intel-read --cpu N                RAPL, HWP, temperatures, package events and non-turbo ratio
   intel-set --cpu N --field F --value V --apply
   intel-oc-read --cpu N --domain core|cache
   intel-vf-read --cpu N --domain core|cache [--point 1..15 [--for-edit]]

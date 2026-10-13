@@ -35,9 +35,9 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 776, len(reports)
+assert len(reports) == 794, len(reports)
 platform_reports=[r for r in reports if r['command']=='intel-read' and 'readings' in r['data']]
-assert len(platform_reports)==17  # Existing successful/denied read plus 15 platform cases.
+assert len(platform_reports)==35  # Existing reads, platform ratios and package thermal events.
 for report in platform_reports:
     row=next(v for v in report['data']['readings'] if v['name']=='Maximum non-turbo ratio')
     assert row['msr']=='0x000000ce' and row['unit']=='ratio' and not row['editable']
@@ -45,6 +45,19 @@ for report in platform_reports:
         assert row['value']==((int(row['raw'],16)>>8)&255) and row['value']>0
     else:
         assert row['value'] is None and row['raw'] is None
+event_names=('thermal event','PROCHOT event','critical temperature','thermal threshold 1','thermal threshold 2','power limit')
+event_rows=[]
+for report in platform_reports:
+    rows=[r for r in report['data']['readings'] if r['msr']=='0x000001b1' and r['unit']=='0 / 1']
+    if not rows: continue
+    assert len(rows)==12
+    event_rows.append(rows)
+    for bit,row in enumerate(rows):
+        assert row['name']=='Package '+event_names[bit//2]+(' history' if bit%2 else ' active')
+        assert not row['editable']
+        if row['error']: assert row['value'] is None and row['raw'] is None
+        else: assert row['value']==((int(row['raw'],16)>>bit)&1)
+assert len(event_rows)==18 and sum(bool(rows[0]['error']) for rows in event_rows)==3
 limits=[r for r in reports if r['command'] in ('intel-limits-read','intel-limits-clear') and 'before' in r['data']]
 assert len(limits)==29 and [r['ok'] for r in limits]==[True]*17+[False]*12
 reason_bits=dict(zip(('prochot','thermal','residency','ratl','vr-thermal','vr-current','other','pl1','pl2','turbo','transition'),(0,1,4,5,6,7,8,10,11,12,13)))

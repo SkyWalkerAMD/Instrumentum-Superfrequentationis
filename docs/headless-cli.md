@@ -4,6 +4,7 @@
 [Intel 温控配置](intel-thermal.md)，以及 [Intel 限频原因与历史清除](intel-limits.md)：
 GUI 与 CLI 同步，含独立读取、显式应用和回读检查。
 `intel-read` 另增加[最大非睿频倍率](intel-platform.md)只读字段，限定 B7/8F/CF。
+同一命令增加[封装热事件](intel-package-events.md)：6 组当前/历史状态，GUI 同步显示。
 另新增 [EL7 独立构建目标](el7-port.md)，系统级验证进度与硬件功能验收分开记录。
 
 2026-10-13 新增 [Intel 节能配置](intel-energy.md)：

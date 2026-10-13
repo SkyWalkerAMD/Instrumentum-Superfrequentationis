@@ -1061,6 +1061,17 @@ void pmCommands() {
     text("{\"bad\":\"\xed\xa0\x80\"}"); invoke({"amd-pm-decode","--file",path}, 3);
     assert(!opens);
 }
+void thermalEventCommands() {
+    for (unsigned model : {0xb7,0x8f,0xcf}) for (unsigned bits : {0u,0xfffu,0xaaau,0x555u}) {
+        IntelPackageThermalFixture d; d.model=model; d.regs[0x1b1]|=bits;
+        command(d,{"intel-read","--cpu","130"},0); assert(!d.writes && !d.wrongCpu);
+    }
+    for (unsigned model : {0xb7,0x8f,0xcf}) for (bool targetFailed : {false,true}) {
+        IntelPackageThermalFixture d; d.model=model; d.regs[0x1b1]|=0xfff;
+        d.failRead=targetFailed?2:4;
+        command(d,{"intel-read","--cpu","130"},3); assert(!d.writes && !d.wrongCpu);
+    }
+}
 void nonTurboRatioCommands() {
     for (unsigned model : {0xb7,0x8f,0xcf}) for (unsigned ratio : {1u,42u,255u}) {
         IntelControlsFixture d; d.model=model; d.expectedCpu=130;
@@ -1300,9 +1311,9 @@ int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--pm-fixture") { pmFilesystem(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
-    offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures();
+    offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "31 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "32 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

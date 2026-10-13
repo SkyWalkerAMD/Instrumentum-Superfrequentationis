@@ -116,7 +116,26 @@ IntelSnapshot readIntelControls(HardwareSession &s, unsigned cpu) {
                 if (!(features.words[0] & (package ? 1u << 6 : 1u))) continue;
                 const unsigned msr = package ? 0x1b1 : 0x19c;
                 const unsigned mask = wide || (package && (model == 0x8f || model == 0xcf)) ? 255 : 127;
-                auto therm = s.execute(msrRequest(cpu, msr));
+                const auto status = s.execute(msrRequest(cpu, msr));
+                if (package && (model == 0xb7 || model == 0x8f || model == 0xcf)) {
+                    // IA32_PACKAGE_THERM_STATUS is the source of the original
+                    // get_hedt_clipping_log(). Decode only documented bits
+                    // 0..11; bits 12..15 are reserved, not current-limit flags.
+                    // Event flags remain meaningful even if the temperature
+                    // conversion lacks a valid TjMax or digital sensor value.
+                    static const char *const names[6][2] = {
+                        {"Package thermal event active", "Package thermal event history"},
+                        {"Package PROCHOT event active", "Package PROCHOT event history"},
+                        {"Package critical temperature active", "Package critical temperature history"},
+                        {"Package thermal threshold 1 active", "Package thermal threshold 1 history"},
+                        {"Package thermal threshold 2 active", "Package thermal threshold 2 history"},
+                        {"Package power limit active", "Package power limit history"}
+                    };
+                    for (unsigned event=0;event<6;++event) for (unsigned log=0;log<2;++log)
+                        add(names[event][log], "0 / 1", msr, status,
+                            double((status.value >> (2*event+log)) & 1), false, IntelField::Pl1);
+                }
+                auto therm = status;
                 if (target.error) therm.error = target.error;
                 if (!therm.error && !(therm.value & (UINT64_C(1) << 31))) therm.error = -ENODATA;
                 add(package ? "Package digital temperature" : "Core digital temperature", "C", msr, therm,

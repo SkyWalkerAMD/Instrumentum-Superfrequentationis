@@ -158,7 +158,7 @@ void temperatureSensors() {
         unsigned found=0;
         for (const auto &r:snapshot.readings) {
             if (r.msr==0x1a2) { assert(r.decoded && r.value==100 && !r.editable); ++found; }
-            if (r.msr==0x19c || r.msr==0x1b1) {
+            if ((r.msr==0x19c || r.msr==0x1b1) && r.unit=="C") {
                 const unsigned mask=model==0x55 || ((model==0x8f || model==0xcf) && r.msr==0x19c)?127:255;
                 assert(r.decoded && !r.editable && r.value==100-int(delta & mask)); ++found;
             }
@@ -178,13 +178,50 @@ void temperatureSensors() {
         unsigned core=0,package=0;
         for (const auto &r:snapshot.readings) {
             if (r.msr==0x19c) { ++core; assert(r.decoded==(mode!=0 && mode!=1)); }
-            if (r.msr==0x1b1) { ++package; assert(r.decoded==(mode!=0 && mode!=2)); }
+            if (r.msr==0x1b1 && r.unit=="C") { ++package; assert(r.decoded==(mode!=0 && mode!=2)); }
         }
         assert(core==unsigned(mode!=3) && package==unsigned(mode!=4));
     }
 }
+void packageEvents() {
+    for (unsigned model : {0xb7,0x8f,0xcf}) for (unsigned bit=0;bit<64;++bit) {
+        auto *device=new IntelPackageThermalFixture; Test t(device); device->model=model;
+        device->regs[0x1b1]=UINT64_C(1)<<bit;
+        IntelSnapshot result;
+        assert(!t.service.transaction([&](HardwareSession &s) { result=readIntelControls(s,130); return result.error; }));
+        unsigned decoded=0,reads=0;
+        for (const auto &row:result.readings) if (row.msr==0x1b1 && row.unit=="0 / 1") {
+            assert(!row.error && row.decoded && !row.editable && row.raw==(UINT64_C(1)<<bit));
+            assert(row.value==double(decoded==bit)); ++decoded;
+        }
+        for (const auto &r:device->requests) if (r.address==0x1b1) { assert(!r.write); ++reads; }
+        assert(decoded==12 && reads==1 && !device->writes && !device->wrongCpu);
+    }
+}
+void packageEventErrorsAndGating() {
+    for (unsigned mode=0;mode<6;++mode) {
+        auto *device=new IntelPackageThermalFixture; Test t(device);
+        device->regs[0x1b1]=UINT64_C(0xfff); // Event state does not require sensor-valid bit 31.
+        if (mode==0) device->failRead=4; // Package status itself failed.
+        if (mode==1) device->failRead=2; // TjMax failed; independent event flags remain valid.
+        if (mode==2) device->package=false;
+        if (mode==3) device->dts=false;
+        if (mode==4) device->model=0x55; // No new decoder outside the three audited profiles.
+        if (mode==5) device->regs[0x1a2]=0;
+        IntelSnapshot result;
+        assert(!t.service.transaction([&](HardwareSession &s) { result=readIntelControls(s,130); return result.error; }));
+        unsigned decoded=0;
+        for (const auto &row:result.readings) if (row.msr==0x1b1 && row.unit=="0 / 1") {
+            assert(row.decoded==(mode!=0) && !row.editable);
+            if (mode==0) assert(row.error==-EACCES); else assert(!row.error && row.value==1);
+            ++decoded;
+        }
+        assert(decoded==((mode==2 || mode==4)?0u:12u) && !device->writes);
+        if (mode==2) for (const auto &r:device->requests) assert(r.address!=0x1b1);
+    }
+}
 }
 int main() {
-    valuesAndPreservation(); gatesAndInvalidSnapshots(); oldValuesAndReadback(); contextChanges(); transportErrors(); cancellationAndDeadline(); temperatureSensors();
-    std::cout << "7 Intel thermal scenario groups passed\n";
+    valuesAndPreservation(); gatesAndInvalidSnapshots(); oldValuesAndReadback(); contextChanges(); transportErrors(); cancellationAndDeadline(); temperatureSensors(); packageEvents(); packageEventErrorsAndGating();
+    std::cout << "9 Intel thermal scenario groups passed\n";
 }

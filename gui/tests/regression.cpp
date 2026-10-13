@@ -2095,6 +2095,48 @@ private slots:
         QCOMPARE(intel.findChild<QComboBox *>("intelField")->count(),0);
         QVERIFY(intel.findChild<QLabel *>("intelStatus")->text().contains("No verified RAPL profile"));
     }
+    void intelPackageThermalEventsAndCopy() {
+        auto *device=new IntelPackageThermalFixture;
+        IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        panel.resize(1180,1100); panel.show();
+        auto *table=panel.findChild<QTableWidget *>("intelTable");
+        for (unsigned model : {0xb7,0x8f,0xcf}) {
+            device->model=model; device->regs[0x1b1]=UINT64_C(0x8765432180143009);
+            panel.findChild<QPushButton *>("intelRead")->click(); QTRY_VERIFY(panel.isEnabled());
+            unsigned events=0;
+            for (int row=0;row<table->rowCount();++row) {
+                if (table->item(row,3)->text()!=hexValue(0x1b1,4) || table->item(row,2)->text()!=QString("0 / 1")) continue;
+                const auto expected=events==0?"Active":events==3?"Recorded":events%2?"Not recorded":"Inactive";
+                QCOMPARE(table->item(row,1)->text(),QString::fromLatin1(expected));
+                QCOMPARE(table->item(row,5)->text(),QString("Read only / locked")); ++events;
+            }
+            QCOMPARE(events,12u); QCOMPARE(panel.findChild<QComboBox *>("intelField")->count(),8);
+            QCOMPARE(device->writes,0u); QCOMPARE(device->wrongCpu,0u);
+        }
+        for (auto *button:panel.findChildren<QPushButton *>()) if (button->text()==QString("Copy snapshot")) button->click();
+        QVERIFY(QApplication::clipboard()->text().contains("Package PROCHOT event history\tRecorded"));
+        QVERIFY(QApplication::clipboard()->text().contains("Package power limit active\tInactive"));
+        QTest::qWait(20);
+        const auto screenshot=qEnvironmentVariable("OCTOOL_INTEL_PACKAGE_EVENTS_SCREENSHOT");
+        if (!screenshot.isEmpty()) QVERIFY(panel.grab().save(screenshot));
+    }
+    void intelPackageThermalErrorsStayIndependentOfTemperature() {
+        auto *device=new IntelPackageThermalFixture; device->regs[0x1b1]|=0xfff;
+        IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        auto *table=panel.findChild<QTableWidget *>("intelTable");
+        for (bool statusFailed : {false,true}) {
+            device->failRead=int(device->reads+(statusFailed?4:2));
+            panel.findChild<QPushButton *>("intelRead")->click(); QTRY_VERIFY(panel.isEnabled());
+            unsigned events=0;
+            for (int row=0;row<table->rowCount();++row) {
+                if (table->item(row,3)->text()!=hexValue(0x1b1,4) || table->item(row,2)->text()!=QString("0 / 1")) continue;
+                QCOMPARE(table->item(row,1)->text(),statusFailed?QString("—"):events%2?QString("Recorded"):QString("Active"));
+                if (statusFailed) QCOMPARE(table->item(row,4)->text(),QString("—"));
+                ++events;
+            }
+            QCOMPARE(events,12u); QCOMPARE(device->writes,0u);
+        }
+    }
     void intelNonTurboRatioIsReadOnlyAndErrorsAreUnavailable() {
         auto *device=new IntelControlsFixture; device->expectedCpu=130;
         IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();

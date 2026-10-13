@@ -15,3 +15,16 @@ struct IntelThermalFixture : IntelEnergyFixture {
         return result;
     }
 };
+
+struct IntelPackageThermalFixture : IntelThermalFixture {
+    bool package = true;
+    IntelPackageThermalFixture() {
+        regs[0xce] |= UINT64_C(42) << 8;
+        regs[0x19c] = regs[0x1b1] = (UINT64_C(1) << 31) | (UINT64_C(20) << 16);
+    }
+    octool::core::CpuIdReply cpuid(unsigned cpu,std::uint32_t leaf,std::uint32_t subleaf) override {
+        auto result = IntelThermalFixture::cpuid(cpu,leaf,subleaf);
+        if (!result.error && leaf==6 && package) result.words[0] |= 1u << 6;
+        return result;
+    }
+};
