@@ -920,7 +920,7 @@ for i,r in enumerate(pl4):
     else: assert data['readback_value'] is None
 assert [r['data']['write_attempted'] for r in pl4[6:]]==[False]*5+[True]*3+[False]
 controls = [r for r in reports if r["command"] == "intel-set" and "verified" in r.get("data", {}) and r['data'].get('field')!='pl4']
-assert len(controls) == 10
+assert len(controls) == 18
 for result in controls:
     data = result["data"]
     assert data["verified"] == result["ok"]
@@ -930,6 +930,7 @@ for result in controls:
         assert data["completed_writes"] == (0 if data["unchanged"] else 1)
     else:
         assert data["readback_value"] is None
+controls = controls[:10]  # Preserve the earlier RAPL/window scenario-specific checks.
 assert controls[4]["data"]["unchanged"] and not controls[4]["data"]["write_attempted"]
 assert controls[6]["error"] == -5 and controls[6]["data"]["readback_raw"] != controls[6]["data"]["expected_raw"]
 assert [r["data"]["readback_value"] for r in controls[-3:]] == [15000, 0, None]

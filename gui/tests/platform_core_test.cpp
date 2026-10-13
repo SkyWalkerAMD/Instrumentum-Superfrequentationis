@@ -285,9 +285,9 @@ void intelHwpContextFields() {
         assert(named(s,"HWP PECI minimum").value==(bit<8?double(1u<<bit):0));
         assert(named(s,"HWP PECI maximum").value==(bit>=8 && bit<16?double(1u<<(bit-8)):0));
         assert(named(s,"HWP PECI energy preference").value==(bit>=24 && bit<32?double(1u<<(bit-24)):0));
-        assert(named(s,"HWP PECI minimum override").value==(bit==63));
-        assert(named(s,"HWP PECI maximum override").value==(bit==62));
-        assert(named(s,"HWP PECI EPP override").value==(bit==60));
+        assert(named(s,"HWP PECI minimum override").value==(bit==63?1.0:0.0));
+        assert(named(s,"HWP PECI maximum override").value==(bit==62?1.0:0.0));
+        assert(named(s,"HWP PECI EPP override").value==(bit==60?1.0:0.0));
     }
 }
 void intelHwpContextCapabilityGates() {
