@@ -124,6 +124,14 @@ IntelSnapshot readIntelControls(HardwareSession &s, unsigned cpu) {
             }
         }
     }
+    if (out.identity.family == 6 && (out.identity.model == 0xb7 || out.identity.model == 0x8f || out.identity.model == 0xcf)) {
+        // Original MAX_NON_TURBO_LIM_RATIO and Intel SDM PLATFORM_INFO.
+        // This read-only fused ratio is not a current-frequency measurement.
+        auto platform = s.execute(msrRequest(cpu, 0xce));
+        const auto ratio = unsigned((platform.value >> 8) & 255);
+        if (!platform.error && !ratio) platform.error = -ENODATA;
+        add("Maximum non-turbo ratio", "ratio", 0xce, platform, ratio, false, IntelField::Pl1);
+    }
     return out;
 }
 IntelControlUpdate applyIntelControl(HardwareSession &s, const IntelSnapshot &old, IntelField field, double value) {

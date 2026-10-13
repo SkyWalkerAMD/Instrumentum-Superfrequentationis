@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "functions": [
+    {
+      "symbol": "_Z23MAX_NON_TURBO_LIM_RATIOv",
+      "address": 3673888,
+      "size": 88,
+      "code_hex": "f30f1efa4883ec18bfce00000064488b042528000000488944240831c04889e2488d742404c7042400000000c744240400000000e877e8feff0fb6442405488b54240864482b14252800000075054883c418c3e89899dcff",
+      "code_sha256": "c8e62b17b2fa0b184a287ad95dfd0fac1653ac5b9d411a1f21de15270376b957",
+      "calls": [
+        {
+          "instruction": 3673940,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3673971,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    }
+  ],
+  "objects": {},
+  "literals": []
+}

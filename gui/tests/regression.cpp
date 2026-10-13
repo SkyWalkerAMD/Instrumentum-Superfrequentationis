@@ -2095,6 +2095,66 @@ private slots:
         QCOMPARE(intel.findChild<QComboBox *>("intelField")->count(),0);
         QVERIFY(intel.findChild<QLabel *>("intelStatus")->text().contains("No verified RAPL profile"));
     }
+    void intelNonTurboRatioIsReadOnlyAndErrorsAreUnavailable() {
+        auto *device=new IntelControlsFixture; device->expectedCpu=130;
+        IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+        auto *read=panel.findChild<QPushButton *>("intelRead"); auto *table=panel.findChild<QTableWidget *>("intelTable");
+        auto *field=panel.findChild<QComboBox *>("intelField");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); const int row=table->rowCount()-1;
+        QCOMPARE(table->item(row,0)->text(),QString("Maximum non-turbo ratio"));
+        QCOMPARE(table->item(row,1)->text(),QString("42")); QCOMPARE(table->item(row,2)->text(),QString("ratio"));
+        QCOMPARE(table->item(row,5)->text(),QString("Read only / locked"));
+        QCOMPARE(field->count(),13);
+        device->failRead=int(device->reads+5); read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->item(row,1)->text(),QString("—")); QCOMPARE(table->item(row,4)->text(),QString("—"));
+        QVERIFY(table->item(row,5)->text().contains("Failed")); QCOMPARE(device->writes,0u); QCOMPARE(device->wrongCpu,0u);
+        // An identity/feature failure must not leave partially read settings editable.
+        device->failCpuid=int(device->cpuCalls+2); read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(field->count(),0);
+    }
+    void intelControlsConfirmationTargetChange() {
+        auto *device=new IntelControlsFixture; device->expectedCpu=130;
+        IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+        panel.findChild<QPushButton *>("intelRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        panel.findChild<QLineEdit *>("intelValue")->setText("100"); const auto calls=device->cpuCalls;
+        QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) {
+            panel.findChild<QLineEdit *>("intelCpu")->setText("131"); box->button(QMessageBox::Yes)->click();
+        } });
+        panel.findChild<QPushButton *>("intelApply")->click(); QCOMPARE(device->cpuCalls,calls); QCOMPARE(device->writes,0u);
+        QCOMPARE(panel.findChild<QComboBox *>("intelField")->count(),0);
+    }
+    void intelControlsLifetimeAndStaleResults() {
+        struct Gate { std::atomic<bool> entered{false}, release{false}, destroyed{false}; };
+        struct Device : IntelControlsFixture {
+            std::shared_ptr<Gate> gate;
+            explicit Device(std::shared_ptr<Gate> g):gate(g) { expectedCpu=130; }
+            ~Device() override { gate->destroyed=true; }
+        };
+        for (bool writing : {false,true}) for (bool close : {false,true}) {
+            auto gate=std::make_shared<Gate>(); auto *device=new Device(gate);
+            auto *panel=new IntelControlsPanel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+            if (writing) { panel->findChild<QPushButton *>("intelRead")->click(); QTRY_VERIFY(panel->isEnabled()); }
+            device->afterRequest=[gate,writing](const octool::core::Request &r) {
+                if ((writing && !r.write) || gate->entered.exchange(true)) return;
+                const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(3);
+                while (!gate->release && std::chrono::steady_clock::now()<deadline) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            };
+            if (writing) {
+                panel->findChild<QLineEdit *>("intelValue")->setText("100");
+                QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+                panel->findChild<QPushButton *>("intelApply")->click();
+            } else panel->findChild<QPushButton *>("intelRead")->click();
+            QTRY_VERIFY(gate->entered.load());
+            if (close) { delete panel; QVERIFY(!gate->destroyed.load()); gate->release=true; QTRY_VERIFY(gate->destroyed.load()); }
+            else {
+                panel->findChild<QLineEdit *>("intelCpu")->setText("131"); gate->release=true;
+                QTRY_VERIFY(panel->isEnabled()); QCOMPARE(panel->findChild<QTableWidget *>("intelTable")->rowCount(),0);
+                QCOMPARE(panel->findChild<QComboBox *>("intelField")->count(),0);
+                QVERIFY(panel->findChild<QLabel *>("intelStatus")->text().contains("discarded"));
+                QCOMPARE(device->writes,writing?1u:0u); QCOMPARE(device->wrongCpu,0u); delete panel;
+            }
+        }
+    }
     void intelPowerReadbackShowsConfiguredValueAndSkipsUnchanged() {
         auto *device = new IntelControlsFixture; device->expectedCpu = 130;
         auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));

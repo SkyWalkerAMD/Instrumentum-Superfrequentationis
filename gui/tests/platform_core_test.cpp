@@ -168,7 +168,7 @@ void intelVerificationFaults() {
             assert(r.error && !r.verified && t.fake->writes <= 1);
         }
         // Target and unit/capability read failures must never become zero data.
-        const std::vector<unsigned> positions = hwp ? std::vector<unsigned>{2,3,4,5,8,9,10} : std::vector<unsigned>{0,1,5,6,7};
+        const std::vector<unsigned> positions = hwp ? std::vector<unsigned>{2,3,4,6,9,10,11} : std::vector<unsigned>{0,1,6,7,8};
         for (unsigned pos : positions) {
             TestService t; const auto old = snapshot(t); t.fake->failRead = int(t.fake->reads + pos);
             const auto r = apply(t, old, hwp ? IntelField::HwpEpp : IntelField::Pl1, hwp ? 192 : 100);
@@ -225,6 +225,26 @@ void intelActivityWindow() {
     t.fake->afterRequest = [&](const Request &r) { if (r.write) t.fake->activityWindow = false; };
     const auto r = apply(t, old, IntelField::HwpActivityWindow, 100);
     assert(r.error == -EAGAIN && !r.verified && r.completed == 1 && t.fake->writes == 1);
+}
+void intelNonTurboRatio() {
+    for (unsigned model : {0xb7,0x8f,0xcf}) for (unsigned ratio=0;ratio<256;++ratio) {
+        TestService t; t.fake->model=model; t.fake->expectedCpu=130;
+        t.fake->regs[0xce]=UINT64_C(0x876543214000005a) | (std::uint64_t(ratio)<<8);
+        const auto result=snapshot(t); const auto &row=result.readings.back();
+        assert(row.name=="Maximum non-turbo ratio" && row.msr==0xce && !row.editable && row.unit=="ratio");
+        assert(row.error==(ratio?0:-ENODATA) && row.decoded==bool(ratio));
+        if (ratio) assert(row.raw==t.fake->regs[0xce] && row.value==ratio);
+        assert(!t.fake->writes && !t.fake->wrongCpu);
+    }
+}
+void intelNonTurboRatioFailures() {
+    TestService t; t.fake->failRead=5; const auto result=snapshot(t); const auto &row=result.readings.back();
+    assert(row.msr==0xce && row.error==-EACCES && !row.decoded && !row.editable);
+    for (unsigned model : {0x55,0xa5,0xad,0xbf,0}) {
+        TestService other; other.fake->model=model; const auto r=snapshot(other);
+        for (const auto &value:r.readings) assert(value.msr!=0xce);
+        for (const auto &request:other.fake->requests) assert(request.address!=0xce);
+    }
 }
 struct SmuFake : Fake {
     std::uint32_t index=0, response=1, completion=1, id=0x153a1022, message=0;
@@ -323,6 +343,6 @@ void spdAndPstateBits() {
 int main() {
     maskedUpdates(); partialFailure(); transactionBoundaries(); intelRAPL(); intelHwpAndGating(); smuProtocol(); smuTimeouts(); spdAndPstateBits();
     intelVerifiedFields(); intelVerificationFailures(); intelVerificationFaults(); intelVerificationGuards();
-    intelActivityWindow();
-    std::cout << "13 platform scenario groups passed\n";
+    intelActivityWindow(); intelNonTurboRatio(); intelNonTurboRatioFailures();
+    std::cout << "15 platform scenario groups passed\n";
 }

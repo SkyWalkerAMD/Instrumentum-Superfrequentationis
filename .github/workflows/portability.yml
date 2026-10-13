@@ -90,6 +90,9 @@ jobs:
       - name: Verify original Intel limit history helpers
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-limits.py --output build/intel-limits.json
+      - name: Verify original maximum non-turbo ratio and failed reads
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-platform.py --output build/intel-platform.json
       - name: Verify original default TCC temperature and failed reads
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-thermal.py --output build/intel-thermal.json
@@ -150,6 +153,7 @@ jobs:
             build/intel-avx.json
             build/intel-thermal.json
             build/intel-limits.json
+            build/intel-platform.json
             build/intel-voltage.json
             build/amd-curve-query.json
             build/intel-ngu.json

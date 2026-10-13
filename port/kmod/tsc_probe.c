@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include <linux/types.h>
 #include <asm/msr.h>
+#include <asm/cpufeature.h>
 #include <asm/tsc.h>
 u64 octool_probe_tsc(void);
 u64 octool_probe_tsc(void)

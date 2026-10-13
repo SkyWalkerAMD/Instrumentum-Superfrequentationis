@@ -271,6 +271,7 @@ struct Registers : HardwareBackend {
     unsigned writes = 0, reads = 0, cpuCalls = 0, expectedCpu = 130;
     std::map<std::uint64_t, std::uint64_t> values;
     Registers() {
+        values[0xce] = UINT64_C(0x8765432140002a00);
         values[0x606] = 0xa0e03; values[0x610] = UINT64_C(0x0800800000008000) | 1000;
         values[0x770] = 1; values[0x771] = 0x08203040; values[0x774] = 0x80004008;
         values[0xc0010061] = 1u << 4; values[0xc0010064] = UINT64_C(0xfffffffffffffc00); values[0xc0010065] = 0;
@@ -1060,6 +1061,18 @@ void pmCommands() {
     text("{\"bad\":\"\xed\xa0\x80\"}"); invoke({"amd-pm-decode","--file",path}, 3);
     assert(!opens);
 }
+void nonTurboRatioCommands() {
+    for (unsigned model : {0xb7,0x8f,0xcf}) for (unsigned ratio : {1u,42u,255u}) {
+        IntelControlsFixture d; d.model=model; d.expectedCpu=130;
+        d.regs[0xce]=UINT64_C(0x876543214000005a) | (std::uint64_t(ratio)<<8);
+        command(d,{"intel-read","--cpu","130"},0); assert(!d.writes && !d.wrongCpu);
+    }
+    for (unsigned model : {0xb7,0x8f,0xcf}) for (bool denied : {false,true}) {
+        IntelControlsFixture d; d.model=model; d.expectedCpu=130;
+        if (denied) d.failRead=5; else d.regs[0xce]&=~UINT64_C(0xff00);
+        command(d,{"intel-read","--cpu","130"},3); assert(!d.writes);
+    }
+}
 void limitsCommands() {
     for (std::uint64_t raw : {UINT64_C(0),UINT64_MAX,UINT64_C(0x8765432100030000)}) {
         IntelLimitsFixture d; d.regs[0x64f]=raw; command(d,{"intel-limits-read","--cpu","130"},0); assert(!d.writes);
@@ -1288,8 +1301,8 @@ int main(int argc, char **argv) {
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures();
-    intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); thermalCommands(); limitsCommands();
+    intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "30 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "31 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

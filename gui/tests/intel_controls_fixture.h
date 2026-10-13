@@ -21,6 +21,7 @@ struct IntelControlsFixture : octool::core::HardwareBackend {
             (UINT64_C(1) << 47) | 1000 | (1 << 15);
         regs[0x770] = 1; regs[0x771] = 0x08203040;
         regs[0x774] = UINT64_C(0x8000100080004008);
+        regs[0xce] = UINT64_C(0x8765432140002a00);
     }
     void checkCpu(unsigned cpu) { if (expectedCpu != UINT32_MAX && cpu != expectedCpu) ++wrongCpu; }
     octool::core::Reply execute(const octool::core::Request &r) override {

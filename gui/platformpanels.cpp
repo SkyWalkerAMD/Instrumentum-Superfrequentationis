@@ -63,7 +63,7 @@ IntelControlsPanel::IntelControlsPanel(std::shared_ptr<HardwareAccess> access, Q
     setObjectName("intelControls"); auto *layout = new QVBoxLayout(this);
     description("Intel Controls · package power limits and hardware performance requests\n"
         "HWP levels are performance indices, not MHz. BIOS locks and OS power management may restrict or overwrite changes. "
-        "Core/cache, V/F points, turbo groups and Ring/LLC have separate tabs. Per-physical-core overrides and fabric controls remain in recovery.", layout, this);
+        "Maximum non-turbo ratio is a read-only platform value, not the measured CPU frequency. Core/cache, V/F points, turbo groups and Ring/LLC have separate tabs.", layout, this);
     auto *buttons = new QHBoxLayout; buttons->addWidget(new QLabel("Logical CPU", this));
     cpu_ = edit("intelCpu", QString::number(cpu), this); buttons->addWidget(cpu_);
     auto *read = new QPushButton("Read once", this); read->setObjectName("intelRead"); buttons->addWidget(read);
@@ -79,13 +79,13 @@ IntelControlsPanel::IntelControlsPanel(std::shared_ptr<HardwareAccess> access, Q
     connect(write, &QPushButton::clicked, this, [this] { apply(); });
 }
 IntelControlsPanel::~IntelControlsPanel() { cancelled_->store(true); }
-void IntelControlsPanel::invalidate() { snapshot_ = {}; table_->setRowCount(0); field_->clear(); value_->clear(); }
+void IntelControlsPanel::invalidate() { ++revision_; snapshot_ = {}; table_->setRowCount(0); field_->clear(); value_->clear(); }
 void IntelControlsPanel::present(const octool::core::IntelSnapshot &snapshot) {
     invalidate(); snapshot_ = snapshot;
     for (const auto &r : snapshot.readings) {
         append(table_, {QString::fromStdString(r.name), r.decoded ? QString::number(r.value, 'g', 12) : "—", QString::fromStdString(r.unit),
-            hexValue(r.msr, 4), r.error ? "—" : hexValue(r.raw, 8), r.error ? failure(r.error) : r.editable ? "Editable" : "Read only / locked"});
-        if (r.editable) field_->addItem(QString::fromStdString(r.name)+" ("+QString::fromStdString(r.unit)+")", int(r.field));
+            hexValue(r.msr, 4), r.error ? "—" : hexValue(r.raw, 8), r.error ? failure(r.error) : r.editable && !snapshot.error ? "Editable" : "Read only / locked"});
+        if (r.editable && !snapshot.error) field_->addItem(QString::fromStdString(r.name)+" ("+QString::fromStdString(r.unit)+")", int(r.field));
     }
     const auto &id = snapshot.identity;
     status_->setText(snapshot.error ? failure(snapshot.error) : QString("CPU %1 · family %2h / model %3h / stepping %4 · %5. %6")
@@ -94,11 +94,14 @@ void IntelControlsPanel::present(const octool::core::IntelSnapshot &snapshot) {
         .arg(snapshot.rapl ? "RAPL profile recognized." : "No verified RAPL profile for this CPU; no package limit access."));
 }
 void IntelControlsPanel::refresh() {
+    invalidate();
     quint64 cpu = 0; if (!parseNumber(cpu_->text(), 10, UINT32_MAX, cpu)) { status_->setText("Invalid logical CPU."); return; }
-    invalidate(); setEnabled(false); status_->setText("Reading controls…");
+    setEnabled(false); status_->setText("Reading controls…"); const auto revision=revision_;
     auto *watcher = new QFutureWatcher<octool::core::IntelSnapshot>(this);
-    connect(watcher, &QFutureWatcher<octool::core::IntelSnapshot>::finished, this, [this, watcher] {
-        present(watcher->result()); setEnabled(true); watcher->deleteLater();
+    connect(watcher, &QFutureWatcher<octool::core::IntelSnapshot>::finished, this, [this, watcher, revision] {
+        if (revision==revision_) present(watcher->result());
+        else { invalidate(); status_->setText("CPU changed during the read; result discarded. Read again."); }
+        setEnabled(true); watcher->deleteLater();
     });
     auto access = access_; auto cancelled = cancelled_;
     watcher->setFuture(QtConcurrent::run([access, cancelled, cpu] {
@@ -111,18 +114,24 @@ void IntelControlsPanel::apply() {
     bool ok = false; const double value = value_->text().toDouble(&ok);
     if (!ok || field_->currentIndex() < 0) { status_->setText("Read a snapshot and enter a valid value."); return; }
     const auto field = octool::core::IntelField(field_->currentData().toInt()); const auto snapshot = snapshot_;
+    const auto preparedRevision=revision_;
     if (QMessageBox::question(this, "Apply Intel control", QString("CPU %1: set %2 to %3?\nPower and time values round down to the register encoding. An HWP window of 0 lets hardware choose. A fresh comparison precedes the write.")
         .arg(snapshot.cpu).arg(field_->currentText()).arg(value, 0, 'g', 12), QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Yes) return;
-    setEnabled(false); status_->setText("Checking, applying and reading back…");
+    if (preparedRevision!=revision_) { status_->setText("CPU changed. Read again before applying a control."); return; }
+    invalidate(); setEnabled(false); status_->setText("Checking, applying and reading back…"); const auto revision=revision_;
     auto *watcher = new QFutureWatcher<octool::core::IntelControlUpdate>(this);
-    connect(watcher, &QFutureWatcher<octool::core::IntelControlUpdate>::finished, this, [this, watcher] {
-        const auto r = watcher->result(); invalidate(); setEnabled(true);
-        if (!r.error && r.verified) {
+    connect(watcher, &QFutureWatcher<octool::core::IntelControlUpdate>::finished, this, [this, watcher, revision, snapshot] {
+        const auto r = watcher->result(); setEnabled(true);
+        if (revision!=revision_) {
+            invalidate(); status_->setText(QString("CPU changed during the operation for CPU %1; result discarded. ").arg(snapshot.cpu)+
+                (r.writeAttempted?"A settings write was attempted. Read the original CPU again.":"No settings write was attempted."));
+        } else if (!r.error && r.verified) {
             present(r.after);
             status_->setText(QString("CPU %1: %2 Full register readback verified; configured value %3. OS power management may later change it.")
                 .arg(r.after.cpu).arg(r.unchanged ? "Already set; no write needed." : "Applied.")
                 .arg(r.readbackValue, 0, 'g', 12));
         } else {
+            invalidate();
             status_->setText(failure(r.error ? r.error : -EIO) + " Read a new snapshot." +
                 (r.writeAttempted ? " The write may have taken effect; readback was not verified. No retry or rollback was attempted." : " No write was attempted."));
         }

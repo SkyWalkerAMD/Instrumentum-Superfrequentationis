@@ -20,6 +20,7 @@ private:
     std::shared_ptr<HardwareAccess> access_;
     std::shared_ptr<std::atomic<bool>> cancelled_;
     octool::core::IntelSnapshot snapshot_;
+    unsigned revision_ = 0;
     QLineEdit *cpu_, *value_;
     QComboBox *field_;
     QTableWidget *table_;
