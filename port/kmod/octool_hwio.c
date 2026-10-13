@@ -48,6 +48,7 @@
 #include <linux/cpumask.h>
 #include <linux/atomic.h>
 #include <asm/msr.h>
+#include <asm/tsc.h>
 #include <asm/processor.h>
 #include <asm/io.h>
 #include "octool_hwio_abi.h"

@@ -1,0 +1,131 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "functions": [
+    {
+      "symbol": "_Z18clear_clipping_logv",
+      "address": 3712448,
+      "size": 18,
+      "code_hex": "f30f1efa31d231f6bf4f060000e94e51feff",
+      "code_sha256": "af491b1d207528aa671f84789775ef67cf85475883086629a774d55496892e82",
+      "calls": [
+        {
+          "instruction": 3712461,
+          "kind": "jmp",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z21get_hedt_clipping_logv",
+      "address": 3755648,
+      "size": 312,
+      "code_hex": "f30f1efa41544989fcbfb101000055bd010000005331db4883ec1064488b042528000000488944240831c04889e6488d542404c7042400000000c744240400000000e809a9fdff4531c04531c931f649c704240000000041c74424080000000049c74424100000000041c74424180000000049c744242000000000eb4c0f1f004183f83f0f8486000000418d400141894424184489c14889e848d3e0488b0e4809c148f7d048230683e201480f45c183c30148890683fb0e7436498b7424104d8b4c2420458b4424188b142489d9d3ea4939f175ab83e2014c89ce4c89e789d14489c2e868bffdff83c30183fb0e75ca488b44240864482b04252800000075274883c4104c89e05b5d415cc30f1f400041c744241800000000488d46084989442410e96cffffffe86459dbfff30f1efa4889c5e94a4eddff",
+      "code_sha256": "3767eabae5161a6ec54a98b7e31c1f38ba00b232049bbf3783b0bfaf7475dd2f",
+      "calls": [
+        {
+          "instruction": 3755714,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3755771,
+          "kind": "jmp",
+          "target": 3755849,
+          "symbols": []
+        },
+        {
+          "instruction": 3755875,
+          "kind": "call",
+          "target": 3608272,
+          "symbols": [
+            "_ZNSt6vectorIbSaIbEE13_M_insert_auxESt13_Bit_iteratorb.isra.0"
+          ]
+        },
+        {
+          "instruction": 3755938,
+          "kind": "jmp",
+          "target": 3755795,
+          "symbols": []
+        },
+        {
+          "instruction": 3755943,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 3755955,
+          "kind": "jmp",
+          "target": 1482242,
+          "symbols": [
+            "_Z21get_hedt_clipping_logv.cold"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z16get_clipping_logv",
+      "address": 3756288,
+      "size": 312,
+      "code_hex": "f30f1efa41544989fcbf4f06000055bd010000005331db4883ec1064488b042528000000488944240831c04889e6488d542404c7042400000000c744240400000000e889a6fdff4531c04531c931f649c704240000000041c74424080000000049c74424100000000041c74424180000000049c744242000000000eb4c0f1f004183f83f0f8486000000418d400141894424184489c14889e848d3e0488b0e4809c148f7d048230683e201480f45c183c30148890683fb1f7436498b7424104d8b4c2420458b4424188b142489d9d3ea4939f175ab83e2014c89ce4c89e789d14489c2e8e8bcfdff83c30183fb1f75ca488b44240864482b04252800000075274883c4104c89e05b5d415cc30f1f400041c744241800000000488d46084989442410e96cffffffe8e456dbfff30f1efa4889c5e9ea4bddff",
+      "code_sha256": "8199c0dc159397bbbe6a034ae8d4469b01366d7350330a79f4a967c57212310e",
+      "calls": [
+        {
+          "instruction": 3756354,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3756411,
+          "kind": "jmp",
+          "target": 3756489,
+          "symbols": []
+        },
+        {
+          "instruction": 3756515,
+          "kind": "call",
+          "target": 3608272,
+          "symbols": [
+            "_ZNSt6vectorIbSaIbEE13_M_insert_auxESt13_Bit_iteratorb.isra.0"
+          ]
+        },
+        {
+          "instruction": 3756578,
+          "kind": "jmp",
+          "target": 3756435,
+          "symbols": []
+        },
+        {
+          "instruction": 3756583,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 3756595,
+          "kind": "jmp",
+          "target": 1482274,
+          "symbols": [
+            "_Z16get_clipping_logv.cold"
+          ]
+        }
+      ]
+    }
+  ],
+  "objects": {},
+  "literals": []
+}

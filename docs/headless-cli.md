@@ -1,7 +1,8 @@
 # 无桌面版 OCTool
 
 2026-10-13 本批补充 [AVX2 倍率偏移](intel-avx-offset.md)和
-[Intel 温控配置](intel-thermal.md)：GUI 与 CLI 同步，含独立读取、显式应用和完整回读。
+[Intel 温控配置](intel-thermal.md)，以及 [Intel 限频原因与历史清除](intel-limits.md)：
+GUI 与 CLI 同步，含独立读取、显式应用和回读检查。
 另新增 [EL7 独立构建目标](el7-port.md)，系统级验证进度与硬件功能验收分开记录。
 
 2026-10-13 新增 [Intel 节能配置](intel-energy.md)：

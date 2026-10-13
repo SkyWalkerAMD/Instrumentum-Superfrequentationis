@@ -35,7 +35,34 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 722, len(reports)
+assert len(reports) == 761, len(reports)
+limits=[r for r in reports if r['command'] in ('intel-limits-read','intel-limits-clear') and 'before' in r['data']]
+assert len(limits)==29 and [r['ok'] for r in limits]==[True]*17+[False]*12
+reason_bits=dict(zip(('prochot','thermal','residency','ratl','vr-thermal','vr-current','other','pl1','pl2','turbo','transition'),(0,1,4,5,6,7,8,10,11,12,13)))
+for report in limits:
+    data=report['data']; before=data['before']
+    assert not data['continuous_monitoring']
+    for snap in (before,data.get('after',before)):
+        if snap['valid']:
+            raw=int(snap['raw'],16)
+            assert len(snap['reasons'])==11
+            for row in snap['reasons']:
+                bit=reason_bits[row['key']]
+                assert row['status_bit']==bit and row['log_bit']==bit+16
+                assert row['active']==bool(raw & (1<<bit)) and row['logged']==bool(raw & (1<<(bit+16)))
+        else:
+            assert snap['raw'] is None and snap['reasons']==[]
+    if report['command']=='intel-limits-clear':
+        mask=0x3df30000 if data['reason']=='all' else 1<<(reason_bits[data['reason']]+16)
+        assert int(data['selected_mask'],16)==mask and data['verified']==report['ok']
+        if data['write_attempted']:
+            assert int(data['submitted_raw'],16)==((int(before['raw'],16)|0x3df30000)&~mask)
+        else:
+            assert data['submitted_raw'] is None
+        if report['ok']:
+            assert not int(data['after']['raw'],16)&mask and not int(data['still_set_mask'],16)
+            assert data['unchanged']==(not data['write_attempted'])
+assert any(int(r['data'].get('still_set_mask','0'),16) for r in limits if not r['ok'])
 thermal=[r for r in reports if r['command'] in ('intel-thermal-read','intel-thermal-set') and 'before' in r['data']]
 assert len(thermal)==23 and [r['ok'] for r in thermal]==[True]*10+[False]*13
 for report in thermal:

@@ -20,6 +20,7 @@
 #include "intelenergypanel.h"
 #include "intelavxpanel.h"
 #include "intelthermalpanel.h"
+#include "intellimitspanel.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFormLayout>
@@ -106,6 +107,7 @@ int main(int argc, char **argv)
     intel->addTab(new IntelEnergyPanel(access, intel, initialCpu), "Energy optimization");
     intel->addTab(new IntelAvxPanel(access, intel, initialCpu), "AVX2 offset");
     intel->addTab(new IntelThermalPanel(access, intel, initialCpu), "Thermal limit");
+    intel->addTab(new IntelLimitsPanel(access, intel, initialCpu), "Limit reasons");
     tabs->addTab(intel, "Intel Controls");
     auto *amd = new QTabWidget(tabs);
     amd->addTab(new AmdTuningPanel(access, amd, initialCpu), "SMU / curves");

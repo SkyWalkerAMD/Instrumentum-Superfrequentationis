@@ -15,6 +15,7 @@
 #include "core/intel_energy.h"
 #include "core/intel_avx.h"
 #include "core/intel_thermal.h"
+#include "core/intel_limits.h"
 #include "core/intel_memory.h"
 #include "core/intel_clock.h"
 #include "core/intel_tvb.h"
@@ -108,7 +109,7 @@ struct Command {
 Command parse(const std::vector<std::string> &args) {
     Command c; c.name = args.at(0);
     const std::set<std::string> hardware = {"cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read", "intel-vf-set", "intel-turbo-read", "intel-turbo-set",
-        "intel-memory-read", "intel-clock-read", "intel-tvb-read", "intel-tvb-set", "intel-tvb-table", "intel-tvb-table-set", "intel-energy-read", "intel-energy-set", "intel-avx-read", "intel-avx-set", "intel-thermal-read", "intel-thermal-set", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
+        "intel-memory-read", "intel-clock-read", "intel-tvb-read", "intel-tvb-set", "intel-tvb-table", "intel-tvb-table-set", "intel-energy-read", "intel-energy-set", "intel-avx-read", "intel-avx-set", "intel-thermal-read", "intel-thermal-set", "intel-limits-read", "intel-limits-clear", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
     const bool memoryOffline = c.name == "intel-memory-decode";
     const bool clockOffline = c.name == "intel-clock-decode";
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
@@ -117,7 +118,7 @@ Command parse(const std::vector<std::string> &args) {
     std::set<std::string> keys = {"--json"};
     if (hardware.count(c.name)) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
-    const bool writing = c.name == "intel-thermal-set" || c.name == "intel-avx-set" || c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set" || c.name == "intel-energy-set" || c.name == "intel-uncore-set" || c.name == "amd-smu-send" || c.name == "register-write";
+    const bool writing = c.name == "intel-limits-clear" || c.name == "intel-thermal-set" || c.name == "intel-avx-set" || c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set" || c.name == "intel-energy-set" || c.name == "intel-uncore-set" || c.name == "amd-smu-send" || c.name == "register-write";
     const bool vf = c.name == "intel-vf-read" || c.name == "intel-vf-set";
     const bool turbo = c.name == "intel-turbo-read" || c.name == "intel-turbo-set";
     if (turbo) keys.insert("--core-type");
@@ -125,6 +126,7 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "intel-uncore-set") { keys.insert("--minimum-ratio"); keys.insert("--maximum-ratio"); }
     if (c.name == "intel-avx-set") keys.insert("--offset");
     if (c.name == "intel-thermal-set") keys.insert("--offset-degrees");
+    if (c.name == "intel-limits-clear") keys.insert("--reason");
     if (c.name == "intel-energy-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set") { keys.insert("--field"); keys.insert("--value"); }
     if (c.name == "intel-tvb-table" || c.name == "intel-tvb-table-set") keys.insert("--active-cores");
     if (c.name == "intel-tvb-table") keys.insert("--for-edit");
@@ -200,6 +202,10 @@ Command parse(const std::vector<std::string> &args) {
     }
     if (c.name == "intel-avx-set") c.value = uintOption(options, "--offset", 31);
     if (c.name == "intel-thermal-set") c.value = uintOption(options, "--offset-degrees", 63);
+    if (c.name == "intel-limits-clear") {
+        c.field=get(options,"--reason");
+        require(intelLimitLogMask(c.field)!=0,"Unknown limit reason; use a listed key or all");
+    }
     if (c.name == "intel-energy-set") {
         c.field = get(options, "--field");
         require(energyFields.count(c.field), "Field must be efficient-turbo or race-to-halt");
@@ -355,6 +361,15 @@ std::string tvbTableEditSnapshot(const IntelTvbTableEditSnapshot &s) {
         {"down_bins_a", valid ? number(fields.downBinsA) : "null"},
         {"temperature_b_c", valid ? number(fields.temperatureB) : "null"},
         {"down_bins_b", valid ? number(fields.downBinsB) : "null"}});
+}
+std::string limitsSnapshot(const IntelLimitsSnapshot &s) {
+    const bool valid=intelLimitsValid(s); std::vector<std::string> rows;
+    if (valid) for (const auto &r:intelLimitReasons()) rows.push_back(object({
+        {"key",quote(r.key)},{"label",quote(r.label)},{"status_bit",number(r.bit)},{"log_bit",number(r.bit+16)},
+        {"active",boolean((s.raw & (UINT64_C(1)<<r.bit))!=0)},
+        {"logged",boolean((s.raw & (UINT64_C(1)<<(r.bit+16)))!=0)}}));
+    return object({{"error",number(s.error)},{"valid",boolean(valid)},{"identity",identity(s.identity)},
+        {"raw",valid?hex(s.raw,16):"null"},{"reasons",array(rows)}});
 }
 std::string thermalSnapshot(const IntelThermalSnapshot &s) {
     const bool valid=s.valid && !s.error;
@@ -584,6 +599,23 @@ Result hardware(const Command &c, HardwareSession &s) {
             out.data.push_back({"stage", number(unsigned(result.stage))});
             out.data.push_back({"firmware_status", result.response.completed ? number(result.response.firmwareStatus) : "null"});
             out.data.push_back({"after", tvbSnapshot(result.readback)});
+        }
+    } else if (c.name == "intel-limits-read" || c.name == "intel-limits-clear") {
+        const auto snapshot=readIntelLimits(s,c.cpu); out.error=snapshot.error;
+        out.data.push_back({"scope",quote("package limit status and recorded events through selected CPU")});
+        out.data.push_back({"continuous_monitoring","false"});
+        out.data.push_back({"before",limitsSnapshot(snapshot)});
+        if (c.name == "intel-limits-clear") {
+            IntelLimitsClear result;
+            if (!out.error) { result=clearIntelLimitLogs(s,snapshot,c.field); out.error=result.error; }
+            out.data.push_back({"reason",quote(c.field)});
+            out.data.push_back({"write_attempted",boolean(result.writeAttempted)});
+            out.data.push_back({"verified",boolean(result.verified && !out.error)});
+            out.data.push_back({"unchanged",boolean(result.unchanged)});
+            out.data.push_back({"selected_mask",hex(intelLimitLogMask(c.field),16)});
+            out.data.push_back({"submitted_raw",result.writeAttempted?hex(result.submitted,16):"null"});
+            out.data.push_back({"still_set_mask",hex(result.stillSetMask,16)});
+            out.data.push_back({"after",limitsSnapshot(result.after)});
         }
     } else if (c.name == "intel-thermal-read" || c.name == "intel-thermal-set") {
         const auto snapshot=readIntelThermal(s,c.cpu); out.error=snapshot.error;
@@ -997,6 +1029,9 @@ Usage: octool-cli COMMAND [OPTIONS]
       Temperatures: 0..100 C; down bins: 0..10. Preserve other fields and verify the complete entry.
   intel-tvb-set --cpu N --field ratio-clipping|voltage-optimization|ring-down-bin --value 0|1 --apply
     Ring DownBin: 1 enables automatic ring ratio reduction; 0 disables it. Shared B7 processor configuration.
+  intel-limits-read --cpu N
+  intel-limits-clear --cpu N --reason all|prochot|thermal|residency|ratl|vr-thermal|vr-current|other|pl1|pl2|turbo|transition --apply
+      Clear recorded history only; active limits remain in effect; 06_B7 only.
   intel-thermal-read --cpu N
   intel-thermal-set --cpu N --offset-degrees 0..63 --apply   TCC offset below TjMax; 06_B7/8F/CF
   intel-avx-read --cpu N

@@ -12,6 +12,7 @@
 #include "tests/intel_energy_fixture.h"
 #include "tests/intel_avx_fixture.h"
 #include "tests/intel_thermal_fixture.h"
+#include "tests/intel_limits_fixture.h"
 #include "tests/intel_memory_fixture.h"
 #include "tests/intel_clock_fixture.h"
 #include "tests/intel_tvb_fixture.h"
@@ -46,6 +47,16 @@ std::string command(HardwareBackend &device, const std::vector<std::string> &arg
 }
 void invalidBeforeOpen() {
     const std::vector<std::vector<std::string>> invalid = {
+        {"intel-limits-read"},
+        {"intel-limits-read","--cpu","0","--apply"},
+        {"intel-limits-read","--cpu","0","--reason","all"},
+        {"intel-limits-clear","--cpu","0","--reason","all"},
+        {"intel-limits-clear","--cpu","0","--apply"},
+        {"intel-limits-clear","--cpu","0","--reason","invalid","--apply"},
+        {"intel-limits-clear","--cpu","0","--reason","","--apply"},
+        {"intel-limits-clear","--cpu","0","--reason","all","--reason","thermal","--apply"},
+        {"intel-limits-clear","--cpu","0","--reason","all","--value","0","--apply"},
+        {"intel-limits-clear","--cpu","-1","--reason","all","--apply"},
         {"intel-thermal-read"},
         {"intel-thermal-read","--cpu","0","--apply"},
         {"intel-thermal-read","--cpu","0","--offset-degrees","1"},
@@ -1049,6 +1060,41 @@ void pmCommands() {
     text("{\"bad\":\"\xed\xa0\x80\"}"); invoke({"amd-pm-decode","--file",path}, 3);
     assert(!opens);
 }
+void limitsCommands() {
+    for (std::uint64_t raw : {UINT64_C(0),UINT64_MAX,UINT64_C(0x8765432100030000)}) {
+        IntelLimitsFixture d; d.regs[0x64f]=raw; command(d,{"intel-limits-read","--cpu","130"},0); assert(!d.writes);
+    }
+    const char *reasons[]={"all","prochot","thermal","residency","ratl","vr-thermal","vr-current","other","pl1","pl2","turbo","transition"};
+    for (const char *reason:reasons) {
+        IntelLimitsFixture d; d.regs[0x64f]=UINT64_MAX;
+        command(d,{"intel-limits-clear","--cpu","130","--reason",reason,"--apply"},0); assert(d.writes==1 && !d.wrongCpu);
+    }
+    IntelLimitsFixture noop; noop.regs[0x64f]=0;
+    command(noop,{"intel-limits-clear","--cpu","130","--reason","all","--apply"},0); assert(!noop.writes);
+    IntelLimitsFixture events; events.regs[0x64f]=UINT64_C(1)<<16; events.newEvents=UINT64_C(1)<<17;
+    command(events,{"intel-limits-clear","--cpu","130","--reason","prochot","--apply"},0);
+    assert(events.regs[0x64f]==(UINT64_C(1)<<17) && events.writes==1);
+    for (unsigned mode=0;mode<4;++mode) {
+        IntelLimitsFixture d;
+        if (mode==0) d.model=0x8f;
+        if (mode==1) d.hypervisor=true;
+        if (mode==2) d.hasMsr=false;
+        if (mode==3) d.failRead=0;
+        command(d,{"intel-limits-read","--cpu","130"},3); assert(!d.writes);
+    }
+    for (unsigned mode=0;mode<8;++mode) {
+        IntelLimitsFixture d;
+        if (mode==0) d.afterRequest=[&](const Request &r) { if (!r.write && d.reads==1) d.regs[0x64f]^=UINT64_C(1)<<63; };
+        if (mode==1) d.discardChange=true;
+        if (mode==2) d.failWrite=0;
+        if (mode==3) d.afterRequest=[&](const Request &r) { if (r.write) d.regs[0x64f]^=UINT64_C(1)<<63; };
+        if (mode==4) d.afterRequest=[&](const Request &r) { if (r.write) d.stepping=1; };
+        if (mode==5) d.reassert=UINT64_C(1)<<16;
+        if (mode==6) d.failCpuid=3;
+        if (mode==7) d.failRead=1;
+        command(d,{"intel-limits-clear","--cpu","130","--reason","all","--apply"},3); assert(d.writes<=1);
+    }
+}
 void thermalCommands() {
     for (unsigned model : {0xb7,0x8f,0xcf}) {
         IntelThermalFixture d; d.model=model; command(d,{"intel-thermal-read","--cpu","130"},0); assert(!d.writes);
@@ -1242,8 +1288,8 @@ int main(int argc, char **argv) {
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures();
-    intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); thermalCommands();
+    intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); thermalCommands(); limitsCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "29 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "30 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

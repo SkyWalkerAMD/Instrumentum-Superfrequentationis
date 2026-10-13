@@ -15,6 +15,8 @@
 #include "intelavxpanel.h"
 #include "intel_avx_fixture.h"
 #include "intelthermalpanel.h"
+#include "intellimitspanel.h"
+#include "intel_limits_fixture.h"
 #include "intel_thermal_fixture.h"
 #include "intel_energy_fixture.h"
 #include "intelmemorypanel.h"
@@ -938,6 +940,108 @@ private slots:
                 panel->findChild<QLineEdit *>("tvbCpu")->setText("131"); gate->release = true;
                 QTRY_VERIFY(panel->isEnabled()); QCOMPARE(panel->findChild<QTableWidget *>("tvbTable")->rowCount(),0);
                 QVERIFY(panel->findChild<QLabel *>("tvbStatus")->text().contains("discarded")); delete panel;
+            }
+        }
+    }
+    void intelLimitsReadCopyAndTargetChange() {
+        auto *device=new IntelLimitsFixture;
+        IntelLimitsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+        auto *read=panel.findChild<QPushButton *>("limitsRead"); auto *table=panel.findChild<QTableWidget *>("limitsTable");
+        auto *clear=panel.findChild<QPushButton *>("limitsClear");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),11); QVERIFY(clear->isEnabled());
+        QCOMPARE(table->item(0,1)->text(),QString("Inactive")); QCOMPARE(table->item(0,2)->text(),QString("Recorded"));
+        panel.findChild<QPushButton *>("limitsCopy")->click();
+        QVERIFY(QApplication::clipboard()->text().contains(hexValue(device->regs[0x64f],8)));
+        QVERIFY(QApplication::clipboard()->text().contains("External PROCHOT"));
+        const auto calls=device->cpuCalls;
+        panel.findChild<QLineEdit *>("limitsCpu")->setText("-1"); read->click();
+        QCOMPARE(device->cpuCalls,calls); QCOMPARE(table->rowCount(),0); QVERIFY(!clear->isEnabled());
+        panel.findChild<QLineEdit *>("limitsCpu")->setText("130"); device->failCpuid=int(device->cpuCalls);
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),0);
+        QVERIFY(panel.findChild<QLabel *>("limitsRaw")->text().isEmpty()); QCOMPARE(device->writes,0u); QCOMPARE(device->wrongCpu,0u);
+    }
+    void intelLimitsCancelClearNoopAndNewEvents() {
+        auto *device=new IntelLimitsFixture;
+        IntelLimitsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        panel.resize(1100,760); panel.show(); panel.findChild<QPushButton *>("limitsRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *reason=panel.findChild<QComboBox *>("limitsReason"); reason->setCurrentIndex(reason->findData("prochot"));
+        auto *clear=panel.findChild<QPushButton *>("limitsClear"); auto *status=panel.findChild<QLabel *>("limitsStatus");
+        const auto calls=device->cpuCalls;
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Cancel)->click(); });
+        clear->click(); QCOMPARE(device->cpuCalls,calls); QCOMPARE(device->writes,0u);
+        const auto original=device->regs[0x64f]; device->newEvents=UINT64_C(1)<<26; bool described=false;
+        QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) {
+            described=box->text().contains("CPU 130") && box->text().contains("External PROCHOT"); box->button(QMessageBox::Yes)->click();
+        } });
+        clear->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(described);
+        QCOMPARE(device->regs[0x64f],(original & ~(UINT64_C(1)<<16)) | device->newEvents); QCOMPARE(device->writes,1u);
+        QVERIFY(status->text().contains("clear in readback"));
+        QTRY_VERIFY(status->height()>=status->heightForWidth(status->width())); QVERIFY(status->geometry().bottom()<panel.height());
+        const auto screenshot=qEnvironmentVariable("OCTOOL_INTEL_LIMITS_TEST_SCREENSHOT"); if (!screenshot.isEmpty()) QVERIFY(panel.grab().save(screenshot));
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        clear->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->writes,1u);
+        QVERIFY(status->text().contains("no write performed")); QCOMPARE(device->wrongCpu,0u);
+    }
+    void intelLimitsConfirmationSelectionChange() {
+        for (bool cpu : {false,true}) {
+            auto *device=new IntelLimitsFixture;
+            IntelLimitsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+            panel.findChild<QPushButton *>("limitsRead")->click(); QTRY_VERIFY(panel.isEnabled()); const auto calls=device->cpuCalls;
+            QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) {
+                if (cpu) panel.findChild<QLineEdit *>("limitsCpu")->setText("131");
+                else panel.findChild<QComboBox *>("limitsReason")->setCurrentIndex(1);
+                box->button(QMessageBox::Yes)->click();
+            } });
+            panel.findChild<QPushButton *>("limitsClear")->click(); QCOMPARE(device->cpuCalls,calls); QCOMPARE(device->writes,0u);
+            QVERIFY(panel.findChild<QLabel *>("limitsStatus")->text().contains("Selection changed"));
+        }
+    }
+    void intelLimitsStaleFailedAndReasserted() {
+        for (unsigned mode=0;mode<5;++mode) {
+            auto *device=new IntelLimitsFixture;
+            IntelLimitsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+            panel.findChild<QPushButton *>("limitsRead")->click(); QTRY_VERIFY(panel.isEnabled());
+            if (mode==0) device->regs[0x64f]^=UINT64_C(1)<<63;
+            if (mode==1) device->discardChange=true;
+            if (mode==2) device->failWrite=0;
+            if (mode==3) device->afterRequest=[device](const octool::core::Request &r) { if (r.write) device->regs[0x64f]^=UINT64_C(1)<<63; };
+            if (mode==4) device->reassert=UINT64_C(1)<<16;
+            QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+            panel.findChild<QPushButton *>("limitsClear")->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(device->writes,mode==0?0u:1u);
+            const bool recorded=mode==1 || mode==4;
+            QCOMPARE(panel.findChild<QTableWidget *>("limitsTable")->rowCount(),recorded?11:0);
+            QCOMPARE(panel.findChild<QPushButton *>("limitsClear")->isEnabled(),recorded);
+            QVERIFY(panel.findChild<QLabel *>("limitsStatus")->text().contains(recorded?"still set":mode==0?"No history clear":"not verified"));
+        }
+    }
+    void intelLimitsLifetimeAndStaleResults() {
+        struct Gate { std::atomic<bool> entered{false}, release{false}, destroyed{false}; };
+        struct Device : IntelLimitsFixture {
+            std::shared_ptr<Gate> gate;
+            explicit Device(std::shared_ptr<Gate> g):gate(g) {}
+            ~Device() override { gate->destroyed=true; }
+        };
+        for (bool writing : {false,true}) for (bool close : {false,true}) {
+            auto gate=std::make_shared<Gate>(); auto *device=new Device(gate);
+            auto *panel=new IntelLimitsPanel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+            if (writing) { panel->findChild<QPushButton *>("limitsRead")->click(); QTRY_VERIFY(panel->isEnabled()); }
+            device->afterRequest=[gate,writing](const octool::core::Request &r) {
+                if ((writing && !r.write) || gate->entered.exchange(true)) return;
+                const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(3);
+                while (!gate->release && std::chrono::steady_clock::now()<deadline) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            };
+            if (writing) {
+                QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+                panel->findChild<QPushButton *>("limitsClear")->click();
+            } else panel->findChild<QPushButton *>("limitsRead")->click();
+            QTRY_VERIFY(gate->entered.load());
+            if (close) { delete panel; QVERIFY(!gate->destroyed.load()); gate->release=true; QTRY_VERIFY(gate->destroyed.load()); }
+            else {
+                panel->findChild<QLineEdit *>("limitsCpu")->setText("131"); gate->release=true;
+                QTRY_VERIFY(panel->isEnabled()); QCOMPARE(panel->findChild<QTableWidget *>("limitsTable")->rowCount(),0);
+                QVERIFY(panel->findChild<QLabel *>("limitsStatus")->text().contains("discarded"));
+                QCOMPARE(device->writes,writing?1u:0u); QCOMPARE(device->wrongCpu,0u); delete panel;
             }
         }
     }
