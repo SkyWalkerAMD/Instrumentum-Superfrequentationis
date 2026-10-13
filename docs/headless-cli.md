@@ -1,7 +1,7 @@
 # 无桌面版 OCTool
 
 2026-10-13 继续补充 [BCLK 自适应电压开关](intel-bclk-voltage.md)与
-[能量计数及 HWP 完整能力显示](intel-energy-counters.md)，GUI / CLI 共用核心。
+[能量计数及 HWP 完整能力/事件历史显示](intel-energy-counters.md)，GUI / CLI 共用核心。
 
 2026-10-13 上批补充 [AVX2 倍率偏移](intel-avx-offset.md)和
 [Intel 温控配置](intel-thermal.md)，以及 [Intel 限频原因与历史清除](intel-limits.md)：

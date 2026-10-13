@@ -28,7 +28,7 @@ void allValuesAndPreservation() {
         assert(old.valid && intelBclkVoltageEditable(old));
         const auto out = t.apply(old,enabled); const auto expected = (raw & ~4u) | (enabled << 2);
         assert(!out.error && out.verified && out.expectedValid && out.expected == expected);
-        assert(out.after.response.data == expected && intelBclkVoltageEnabled(expected) == enabled);
+        assert(out.after.response.data == expected && intelBclkVoltageEnabled(expected) == (enabled != 0));
         assert(out.writeAttempted == (expected != raw) && out.unchanged == (expected == raw));
         assert(t.device->settingsAttempts() == unsigned(expected != raw) && !t.device->wrongCpu);
         assert((t.device->commands == (out.unchanged ? std::vector<unsigned>{0x14,0x14} : std::vector<unsigned>{0x14,0x14,0x15,0x14})));

@@ -168,7 +168,7 @@ void intelVerificationFaults() {
             assert(r.error && !r.verified && t.fake->writes <= 1);
         }
         // Target and unit/capability read failures must never become zero data.
-        const std::vector<unsigned> positions = hwp ? std::vector<unsigned>{2,3,4,8,11,12,13} : std::vector<unsigned>{0,1,8,9,10};
+        const std::vector<unsigned> positions = hwp ? std::vector<unsigned>{2,3,4,9,12,13,14} : std::vector<unsigned>{0,1,9,10,11};
         for (unsigned pos : positions) {
             TestService t; const auto old = snapshot(t); t.fake->failRead = int(t.fake->reads + pos);
             const auto r = apply(t, old, hwp ? IntelField::HwpEpp : IntelField::Pl1, hwp ? 192 : 100);
@@ -307,6 +307,46 @@ void intelTelemetryErrorsAndGates() {
         for (const auto &r:out.readings) assert(r.msr!=0x611 && r.msr!=0x619 && r.msr!=0x639 && r.msr!=0x771);
     }
 }
+void intelHwpHistory() {
+    // Every single register bit, both defined bits together and all reserved
+    // bits. The fixture deliberately does not advertise HWP notifications.
+    std::vector<std::uint64_t> patterns{0,5,UINT64_MAX};
+    for (unsigned bit=0;bit<64;++bit) patterns.push_back(UINT64_C(1)<<bit);
+    for (unsigned model : {0xb7,0xff}) for (auto raw : patterns) {
+        TestService t; t.fake->model=model; t.fake->expectedCpu=130; t.fake->regs[0x777]=raw;
+        const auto out=snapshot(t);
+        const auto &guaranteed=named(out,"HWP guaranteed performance change history");
+        const auto &minimum=named(out,"HWP excursion to minimum history");
+        assert(guaranteed.value==double(raw&1) && minimum.value==double((raw>>2)&1));
+        for (const auto *r : {&guaranteed,&minimum}) {
+            assert(r->decoded && !r->error && !r->editable && r->raw==raw && r->msr==0x777 && r->unit=="0 / 1");
+        }
+        unsigned reads=0;
+        for (const auto &r:t.fake->requests) if (r.address==0x777) ++reads;
+        assert(reads==1 && !t.fake->writes && !t.fake->wrongCpu);
+    }
+}
+void intelHwpHistoryGatesAndFailures() {
+    for (unsigned mode=0;mode<3;++mode) {
+        TestService t;
+        if (mode==0) t.fake->hwp=false;
+        if (mode==1) t.fake->amd=true;
+        if (mode==2) t.fake->failCpuid=2;
+        IntelSnapshot out;
+        t.service.transaction([&](HardwareSession &s) { out=readIntelControls(s,130); return out.error; });
+        for (const auto &r:out.readings) assert(r.msr!=0x777);
+        for (const auto &r:t.fake->requests) assert(r.address!=0x777);
+        assert(!t.fake->writes);
+    }
+    TestService t; t.fake->failRead=8; const auto old=snapshot(t);
+    for (const auto &r:old.readings) if (r.msr==0x777) assert(r.error==-EACCES && !r.decoded && !r.editable);
+    // A failed history read is not a zero event, and must not turn unrelated
+    // ordinary configuration fields into invalid values.
+    assert(named(old,"Package PL1").decoded && named(old,"HWP minimum").editable);
+    const auto result=apply(t,old,IntelField::HwpEpp,192);
+    assert(!result.error && result.verified && t.fake->writes==1);
+    for (const auto &r:t.fake->requests) if (r.write) assert(r.address==0x774);
+}
 struct SmuFake : Fake {
     std::uint32_t index=0, response=1, completion=1, id=0x153a1022, message=0;
     bool failArgs=false;
@@ -405,5 +445,6 @@ int main() {
     maskedUpdates(); partialFailure(); transactionBoundaries(); intelRAPL(); intelHwpAndGating(); smuProtocol(); smuTimeouts(); spdAndPstateBits();
     intelVerifiedFields(); intelVerificationFailures(); intelVerificationFaults(); intelVerificationGuards();
     intelActivityWindow(); intelNonTurboRatio(); intelNonTurboRatioFailures(); intelEnergyCountersAndCapabilities(); intelTelemetryErrorsAndGates();
-    std::cout << "17 platform scenario groups passed\n";
+    intelHwpHistory(); intelHwpHistoryGatesAndFailures();
+    std::cout << "19 platform scenario groups passed\n";
 }

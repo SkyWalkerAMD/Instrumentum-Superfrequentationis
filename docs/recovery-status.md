@@ -1,7 +1,7 @@
 # 功能还原状态
 
 2026-10-13 本批实现 [BCLK 自适应电压](intel-bclk-voltage.md)及
-[能量计数和 HWP 能力补齐](intel-energy-counters.md)，两端共用核心。云端验证结果将在本批交付记录中固定。
+[能量计数和 HWP 能力/事件历史补齐](intel-energy-counters.md)，两端共用核心。云端验证结果将在本批交付记录中固定。
 
 <!-- el7-recovery-bc30c4f -->
 2026-10-13：本批已验证提交 `bc30c4f`，新增 **EL7（Oracle Linux 7.9 x86_64）**，并同步恢复 GUI / CLI 的 AVX2 偏移、TCC 温控、限频原因与历史清除、最大非睿频倍率和封装热事件。

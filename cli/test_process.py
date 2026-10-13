@@ -35,14 +35,15 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 843, len(reports)
+assert len(reports) == 852, len(reports)
 platform_reports=[r for r in reports if r['command']=='intel-read' and 'readings' in r['data']]
-assert len(platform_reports)==54  # Existing reads, platform ratios and package thermal events.
+assert len(platform_reports)==63  # Settings, telemetry and architectural HWP history.
 for report in platform_reports:
     assert not report['data']['energy_counters_are_instantaneous_power'] and not report['data']['energy_counters_include_wrap_history']
+    assert report['data']['hwp_status_is_history']
     readings={r['name']:r for r in report['data']['readings']}
-    unit=readings['RAPL energy counter unit']; limit=readings['RAPL energy counter wrap range']
-    if not unit['error']:
+    unit=readings.get('RAPL energy counter unit'); limit=readings.get('RAPL energy counter wrap range')
+    if unit and not unit['error']:
         exponent=(int(unit['raw'],16)>>8)&31
         assert unit['unit']=='J/tick' and unit['value']==2.0**-exponent
         assert limit['value']==2.0**(32-exponent) and not unit['editable'] and not limit['editable']
@@ -59,8 +60,20 @@ for report in platform_reports:
                 shift=8 if r['name']=='HWP guaranteed capability' else 16
                 assert r['value']==((int(r['raw'],16)>>shift)&255)
             else: assert r['raw'] is None and r['value'] is None
+    history=[r for r in readings.values() if r['msr']=='0x00000777']
+    assert len(history) in (0,2)
+    for r,bit,name in zip(history,(0,2),('guaranteed performance change','excursion to minimum')):
+        assert r['name']=='HWP '+name+' history' and r['unit']=='0 / 1' and not r['editable']
+        if r['error']: assert r['raw'] is None and r['value'] is None
+        else: assert r['value']==((int(r['raw'],16)>>bit)&1)
+assert [r['ok'] for r in platform_reports[-9:]]==[True]*8+[False]
+assert not any(r['msr']=='0x00000777' for r in platform_reports[-2]['data']['readings'])
+assert sum(r['msr']=='0x00000777' for r in platform_reports[-3]['data']['readings'])==2
 for report in platform_reports:
-    row=next(v for v in report['data']['readings'] if v['name']=='Maximum non-turbo ratio')
+    row=next((v for v in report['data']['readings'] if v['name']=='Maximum non-turbo ratio'),None)
+    if row is None:
+        assert report is platform_reports[-3]  # Architectural HWP without a model-specific RAPL profile.
+        continue
     assert row['msr']=='0x000000ce' and row['unit']=='ratio' and not row['editable']
     if not row['error']:
         assert row['value']==((int(row['raw'],16)>>8)&255) and row['value']>0

@@ -22,6 +22,7 @@ struct IntelControlsFixture : octool::core::HardwareBackend {
             (UINT64_C(1) << 47) | 1000 | (1 << 15);
         regs[0x770] = 1; regs[0x771] = 0x08203040;
         regs[0x774] = UINT64_C(0x8000100080004008);
+        regs[0x777] = UINT64_C(0x8765432100000005);
         regs[0xce] = UINT64_C(0x8765432140002a00);
         regs[0x611] = UINT64_C(0x1234567800010000);
         regs[0x639] = UINT64_C(0xfedcba9800004000);

@@ -91,6 +91,7 @@ jobs:
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-bclk-voltage.py --output build/intel-bclk-voltage.json
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-energy-counters.py --output build/intel-energy-counters.json
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-hwp-status.py --output build/intel-hwp-status.json
       - name: Verify original Intel limit history helpers
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-limits.py --output build/intel-limits.json
@@ -157,6 +158,7 @@ jobs:
             build/intel-avx.json
             build/intel-bclk-voltage.json
             build/intel-energy-counters.json
+            build/intel-hwp-status.json
             build/intel-thermal.json
             build/intel-limits.json
             build/intel-platform.json

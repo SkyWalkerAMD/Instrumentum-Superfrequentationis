@@ -62,6 +62,17 @@ IntelSnapshot readIntelControls(HardwareSession &s, unsigned cpu) {
         item.decoded = !r.error; item.editable = edit && !r.error; item.field = field;
         out.readings.push_back(item);
     };
+    auto addHwpStatus = [&] {
+        if (!out.hwp) return;
+        // Architectural HWP history, not present performance or a limit cause.
+        // SDM Table 2-2: bits 0 and 2 require CPUID.06H:EAX[7], independently
+        // of the interrupt/notification capability in bit 8. Never clear here.
+        const auto status = s.execute(msrRequest(cpu, 0x777));
+        add("HWP guaranteed performance change history", "0 / 1", 0x777, status,
+            double(status.value & 1), false, IntelField::HwpMin);
+        add("HWP excursion to minimum history", "0 / 1", 0x777, status,
+            double((status.value >> 2) & 1), false, IntelField::HwpMin);
+    };
     out.rapl = hasIntelRaplProfile(out.identity);
     if (out.rapl) {
         out.units = s.execute(msrRequest(cpu, 0x606));
@@ -173,8 +184,9 @@ IntelSnapshot readIntelControls(HardwareSession &s, unsigned cpu) {
             else energy = s.execute(msrRequest(cpu, msr));
             add(name, "J", msr, energy, double(std::uint32_t(energy.value))*energyUnit, false, IntelField::Pl1);
         }
+        addHwpStatus();
         add("Maximum non-turbo ratio", "ratio", 0xce, platform, ratio, false, IntelField::Pl1);
-    }
+    } else addHwpStatus();
     return out;
 }
 IntelControlUpdate applyIntelControl(HardwareSession &s, const IntelSnapshot &old, IntelField field, double value) {

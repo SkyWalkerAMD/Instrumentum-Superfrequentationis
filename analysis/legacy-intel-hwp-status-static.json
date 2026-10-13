@@ -1,0 +1,131 @@
+{
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "functions": [
+    {
+      "symbols": [
+        "_Z19Rd_HWP_STATUS_Tunerv"
+      ],
+      "address": 3688016,
+      "size": 72,
+      "code_sha256": "dcc6555e87f9219e50bcc63631a58a00b5a4c917a47af50dcfb5cf2fcbdf0a64",
+      "calls": [
+        {
+          "instruction": 3688053,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3688083,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ],
+      "literals": [],
+      "instructions": [
+        {
+          "address": 3688016,
+          "size": 4,
+          "mnemonic": "endbr64",
+          "operands": ""
+        },
+        {
+          "address": 3688020,
+          "size": 4,
+          "mnemonic": "sub",
+          "operands": "rsp, 0x18"
+        },
+        {
+          "address": 3688024,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "edi, 0x777"
+        },
+        {
+          "address": 3688029,
+          "size": 9,
+          "mnemonic": "mov",
+          "operands": "rax, qword ptr fs:[0x28]"
+        },
+        {
+          "address": 3688038,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "qword ptr [rsp + 8], rax"
+        },
+        {
+          "address": 3688043,
+          "size": 2,
+          "mnemonic": "xor",
+          "operands": "eax, eax"
+        },
+        {
+          "address": 3688045,
+          "size": 3,
+          "mnemonic": "mov",
+          "operands": "rdx, rsp"
+        },
+        {
+          "address": 3688048,
+          "size": 5,
+          "mnemonic": "lea",
+          "operands": "rsi, [rsp + 4]"
+        },
+        {
+          "address": 3688053,
+          "size": 5,
+          "mnemonic": "call",
+          "operands": "0x36f7d0"
+        },
+        {
+          "address": 3688058,
+          "size": 4,
+          "mnemonic": "mov",
+          "operands": "eax, dword ptr [rsp + 4]"
+        },
+        {
+          "address": 3688062,
+          "size": 5,
+          "mnemonic": "mov",
+          "operands": "rdx, qword ptr [rsp + 8]"
+        },
+        {
+          "address": 3688067,
+          "size": 9,
+          "mnemonic": "sub",
+          "operands": "rdx, qword ptr fs:[0x28]"
+        },
+        {
+          "address": 3688076,
+          "size": 2,
+          "mnemonic": "jne",
+          "operands": "0x384693"
+        },
+        {
+          "address": 3688078,
+          "size": 4,
+          "mnemonic": "add",
+          "operands": "rsp, 0x18"
+        },
+        {
+          "address": 3688082,
+          "size": 1,
+          "mnemonic": "ret",
+          "operands": ""
+        },
+        {
+          "address": 3688083,
+          "size": 5,
+          "mnemonic": "call",
+          "operands": "0x14a910"
+        }
+      ]
+    }
+  ],
+  "scope": "Complete original HWP status getter."
+}

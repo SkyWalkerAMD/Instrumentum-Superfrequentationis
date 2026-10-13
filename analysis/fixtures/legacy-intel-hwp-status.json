@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "functions": [
+    {
+      "symbol": "_Z19Rd_HWP_STATUS_Tunerv",
+      "address": 3688016,
+      "size": 72,
+      "code_hex": "f30f1efa4883ec18bf7707000064488b042528000000488944240831c04889e2488d742404e856b1feff8b442404488b54240864482b14252800000075054883c418c3e87862dcff",
+      "code_sha256": "dcc6555e87f9219e50bcc63631a58a00b5a4c917a47af50dcfb5cf2fcbdf0a64",
+      "calls": [
+        {
+          "instruction": 3688053,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3688083,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    }
+  ],
+  "objects": {},
+  "literals": []
+}

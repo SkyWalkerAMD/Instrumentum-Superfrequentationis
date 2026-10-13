@@ -2278,6 +2278,44 @@ private slots:
         for (int i=0;i<table->rowCount();++i) if (table->item(i,0)->text().contains("energy counter")) QCOMPARE(table->item(i,1)->text(),QString("—"));
         QCOMPARE(device->writes,0u); QCOMPARE(device->wrongCpu,0u);
     }
+    void intelHwpHistoryReadOnlyAndCopy() {
+        auto *device=new IntelControlsFixture; device->expectedCpu=130;
+        IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        panel.resize(1180,1100); panel.show();
+        auto *table=panel.findChild<QTableWidget *>("intelTable");
+        for (std::uint64_t raw : {UINT64_C(0),UINT64_C(1),UINT64_C(4),UINT64_MAX}) {
+            device->regs[0x777]=raw;
+            panel.findChild<QPushButton *>("intelRead")->click(); QTRY_VERIFY(panel.isEnabled());
+            unsigned rows=0;
+            for (int row=0;row<table->rowCount();++row) if (table->item(row,3)->text()==hexValue(0x777,4)) {
+                QCOMPARE(table->item(row,1)->text(),QString((raw&(rows?4:1))?"Recorded":"Not recorded"));
+                QCOMPARE(table->item(row,4)->text(),hexValue(raw,8));
+                QCOMPARE(table->item(row,5)->text(),QString("Read only / locked")); ++rows;
+            }
+            QCOMPARE(rows,2u); QCOMPARE(panel.findChild<QComboBox *>("intelField")->count(),13);
+        }
+        for (auto *button:panel.findChildren<QPushButton *>()) if (button->text()==QString("Copy snapshot")) button->click();
+        QVERIFY(QApplication::clipboard()->text().contains("HWP guaranteed performance change history\tRecorded"));
+        QVERIFY(QApplication::clipboard()->text().contains("HWP excursion to minimum history\tRecorded"));
+        panel.findChild<QLineEdit *>("intelCpu")->setText("131"); QCOMPARE(table->rowCount(),0);
+        QCOMPARE(device->writes,0u); QCOMPARE(device->wrongCpu,0u);
+    }
+    void intelHwpHistoryReadFailureAndUnsupported() {
+        auto *device=new IntelControlsFixture; device->expectedCpu=130;
+        IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        auto *read=panel.findChild<QPushButton *>("intelRead"); auto *table=panel.findChild<QTableWidget *>("intelTable");
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        device->failRead=int(device->reads+8); read->click(); QTRY_VERIFY(panel.isEnabled());
+        unsigned rows=0;
+        for (int row=0;row<table->rowCount();++row) if (table->item(row,3)->text()==hexValue(0x777,4)) {
+            QCOMPARE(table->item(row,1)->text(),QString("—")); QCOMPARE(table->item(row,4)->text(),QString("—"));
+            QVERIFY(table->item(row,5)->text().startsWith("Failed")); ++rows;
+        }
+        QCOMPARE(rows,2u);
+        device->failRead=-1; device->hwp=false; read->click(); QTRY_VERIFY(panel.isEnabled());
+        for (int row=0;row<table->rowCount();++row) QVERIFY(table->item(row,3)->text()!=hexValue(0x777,4));
+        QCOMPARE(device->writes,0u); QCOMPARE(device->wrongCpu,0u);
+    }
     void intelNonTurboRatioIsReadOnlyAndErrorsAreUnavailable() {
         auto *device=new IntelControlsFixture; device->expectedCpu=130;
         IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();

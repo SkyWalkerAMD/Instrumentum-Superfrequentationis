@@ -536,6 +536,7 @@ Result hardware(const Command &c, HardwareSession &s) {
             out.data.push_back({"readings", array(values)});
             out.data.push_back({"energy_counters_are_instantaneous_power", "false"});
             out.data.push_back({"energy_counters_include_wrap_history", "false"});
+            out.data.push_back({"hwp_status_is_history", "true"});
         }
     } else if (c.name == "intel-oc-read" || c.name == "intel-oc-set") {
         const auto snapshot = readIntelOc(s, c.cpu, c.domain); out.error = snapshot.error;

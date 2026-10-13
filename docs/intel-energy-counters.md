@@ -1,4 +1,4 @@
-# Intel energy counters and HWP capabilities
+# Intel energy counters, HWP capabilities and history
 
 GUI **Intel → Power / performance** and `octool-cli intel-read --cpu N` now show
 energy counter values in joules, their unit and wrap range. These are read-only
@@ -29,6 +29,23 @@ performance levels, completing all four capability bytes in `IA32_HWP_CAPABILITI
 These are performance indices. They are neither clock ratios nor MHz, and are
 shown only with the architectural HWP capability. Read failure suppresses all
 four values. The byte definitions are in SDM Table 2-2, PDF page 63.
+
+`IA32_HWP_STATUS` (`777h`) now provides two read-only history rows: guaranteed
+performance changed (bit 0), and excursion to minimum (bit 2). These require
+`CPUID.06H:EAX[7]`, including on Intel models outside the RAPL profile list;
+notification bit 8 is not required. Reserved bits are retained in the raw value
+without interpretation. GUI values are `Recorded` / `Not recorded`; CLI values
+are 0 / 1 with `hwp_status_is_history: true`. Read failure produces unavailable
+values. Reading never clears history, enables interrupts or changes HWP.
+The fields are not current performance or a diagnosis of an active limit.
+SDM Table 2-2, PDF page 65, defines their history semantics.
+
+Original `Rd_HWP_STATUS_Tuner()` is preserved as a
+[complete fixture](../analysis/fixtures/legacy-intel-hwp-status.json), with
+[138 offline cases](../analysis/tools/legacy-intel-hwp-status.py). It returns the
+low 32 bits, ignores wrapper errors and leaves the output stack slot
+uninitialized on failed reads. The restored reader retains all raw bits and
+reports failure explicitly.
 
 Original `intel_get_energy_unit()` and `get_current_energy()` are preserved in a
 [pinned fixture](../analysis/fixtures/legacy-intel-energy-counters.json) with

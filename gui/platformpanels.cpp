@@ -63,6 +63,7 @@ IntelControlsPanel::IntelControlsPanel(std::shared_ptr<HardwareAccess> access, Q
     setObjectName("intelControls"); auto *layout = new QVBoxLayout(this);
     description("Intel Controls · package power limits and hardware performance requests\n"
         "HWP levels are performance indices, not MHz. BIOS locks and OS power management may restrict or overwrite changes. "
+        "HWP history records events since reset or clear; it does not show current performance. "
         "Maximum non-turbo ratio is a fixed platform value. Package events show current status and history since the last reset or clear. "
         "Energy counters wrap; joules are counter readings, not watts or lifetime totals. DRAM telemetry requires BIOS RAPL mode 0. "
         "Core/cache, V/F points, turbo groups and Ring/LLC have separate tabs.", layout, this);
@@ -88,6 +89,7 @@ void IntelControlsPanel::present(const octool::core::IntelSnapshot &snapshot) {
         QString value=r.decoded ? QString::number(r.value, 'g', 12) : "—";
         if (r.decoded && r.msr==0x1b1 && r.unit=="0 / 1")
             value=QString::fromStdString(r.name).endsWith(" history") ? (r.value?"Recorded":"Not recorded") : (r.value?"Active":"Inactive");
+        if (r.decoded && r.msr==0x777 && r.unit=="0 / 1") value=r.value?"Recorded":"Not recorded";
         append(table_, {QString::fromStdString(r.name), value, QString::fromStdString(r.unit),
             hexValue(r.msr, 4), r.error ? "—" : hexValue(r.raw, 8), r.error ? failure(r.error) : r.editable && !snapshot.error ? "Editable" : "Read only / locked"});
         if (r.editable && !snapshot.error) field_->addItem(QString::fromStdString(r.name)+" ("+QString::fromStdString(r.unit)+")", int(r.field));
