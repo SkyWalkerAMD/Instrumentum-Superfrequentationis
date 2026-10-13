@@ -1,5 +1,16 @@
 # GUI / CLI 同步进度
 
+<!-- intel-hwp-requests-fb09aea -->
+2026-10-13：最新验证生产提交 `fb09aea`。GUI / CLI 同步恢复 **HWP 封装请求、PECI 覆盖和通知/历史**，
+按能力最多新增 25 项只读信息，并补齐本地设置的覆盖/极性上下文核验。
+
+- [实现说明](intel-hwp-requests.md)、[整批验证](intel-hwp-requests-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；各 CLI 26 CTest / 911 JSON，GUI 151 项，共同核心 316 场景组；12 套内核 VM。
+- `dist/gui-cli-intel-hwp-requests-fb09aea/`：33 个安装包、精确源码、保留扩展源码及 SHA256。
+
+原版全部功能及真机验收仍未完成，见[还原清单](recovery-status.md)。以下保留历史记录。
+<!-- /intel-hwp-requests-fb09aea -->
+
 <!-- intel-ddrio-3e25134 -->
 2026-10-13：最新验证生产提交 `3e25134`，GUI / CLI 同步增加 **DDRIO 低功耗时序与配置**。
 Intel B7/A700 内存读取现为 19 寄存器 / 68 字段，v4 快照兼容 v1/v2/v3。
@@ -64,7 +75,7 @@ GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-
 | 功能 | GUI | CLI | 共同边界 |
 |---|---|---|---|
 | AMD PStates | AMD PStates 页 | `amd-pstates` | Family 1Ah 定义读取，未恢复设置 |
-| Intel RAPL / HWP / DTS | Power / performance | `intel-read` / `intel-set` | 型号/能力门控；含 HWP 活动窗口；B7 加入 PL4 后为 14 项设置，其它支持配置为 13 项，完整回读 |
+| Intel RAPL / HWP / DTS | Power / performance | `intel-read` / `intel-set` | 型号/能力门控；含 HWP 活动窗口、封装/PECI 请求及覆盖、通知/历史；B7 为 14 项设置，其它支持配置为 13 项，完整回读并核验 HWP 上下文 |
 | Intel core/cache offset、最大倍率、目标电压与模式 | Core / cache voltage and ratio | `intel-oc-read` / `intel-oc-set` | B7；[目标电压 + Adaptive/Override](intel-voltage-recovery.md)，锁、旧值与完整回读 |
 | Intel V/F 点 | V/F points 查询、准备与设置 | `intel-vf-read` / `intel-vf-set` | B7，两域，候选 1..15 查询及单点 offset；[完整上下文核对](intel-vf-write-recovery.md)，不改变 override 模式 |
 | Intel 睿频分组 | Turbo ratio groups | `intel-turbo-read` / `intel-turbo-set` | B7；P/E 两表，读取活动核心阈值，单组倍率或中间组阈值设置与完整读回；末组阈值保持 |
