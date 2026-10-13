@@ -18,6 +18,7 @@
 #include "inteltvbpanel.h"
 #include "inteltvbtablepanel.h"
 #include "intelenergypanel.h"
+#include "intelavxpanel.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFormLayout>
@@ -102,6 +103,7 @@ int main(int argc, char **argv)
     intel->addTab(new IntelTvbPanel(access, intel, initialCpu), "TVB && Ring DownBin");
     intel->addTab(new IntelTvbTablePanel(access, intel, initialCpu), "TVB thresholds");
     intel->addTab(new IntelEnergyPanel(access, intel, initialCpu), "Energy optimization");
+    intel->addTab(new IntelAvxPanel(access, intel, initialCpu), "AVX2 offset");
     tabs->addTab(intel, "Intel Controls");
     auto *amd = new QTabWidget(tabs);
     amd->addTab(new AmdTuningPanel(access, amd, initialCpu), "SMU / curves");

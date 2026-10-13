@@ -35,7 +35,25 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 657, len(reports)
+assert len(reports) == 689, len(reports)
+avx=[r for r in reports if r['command'] in ('intel-avx-read','intel-avx-set') and 'before' in r['data']]
+assert len(avx)==22 and [r['ok'] for r in avx]==[True]*9+[False]*13
+for report in avx:
+    data=report['data']; before=data['before']
+    assert not data['hardware_effect_measured']
+    for snap in (before,data.get('after',before)):
+        if snap['valid']:
+            assert snap['avx2_offset_bins']==((int(snap['raw'],16)>>5)&31)
+            assert snap['editable']==(not snap['locked'])
+        else:
+            assert snap['raw'] is None and snap['avx2_offset_bins'] is None and snap['locked'] is None
+    if report['command']=='intel-avx-set':
+        assert data['verified']==report['ok']
+        if report['ok']:
+            expected=(int(before['raw'],16)&~0x3e0)|(data['requested_offset_bins']<<5)
+            assert int(data['after']['raw'],16)==expected==int(data['expected_raw'],16)
+            assert data['unchanged']==(expected==int(before['raw'],16))
+            assert data['write_attempted']==(not data['unchanged'])
 
 energy = [r for r in reports if r['command'] in ('intel-energy-read', 'intel-energy-set') and 'before' in r['data']]
 assert len(energy) == 56 and [r['ok'] for r in energy] == [True]*28+[False]*28

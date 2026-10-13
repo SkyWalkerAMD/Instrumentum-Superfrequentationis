@@ -10,6 +10,7 @@
 #include "tests/intel_turbo_fixture.h"
 #include "tests/intel_uncore_fixture.h"
 #include "tests/intel_energy_fixture.h"
+#include "tests/intel_avx_fixture.h"
 #include "tests/intel_memory_fixture.h"
 #include "tests/intel_clock_fixture.h"
 #include "tests/intel_tvb_fixture.h"
@@ -44,6 +45,16 @@ std::string command(HardwareBackend &device, const std::vector<std::string> &arg
 }
 void invalidBeforeOpen() {
     const std::vector<std::vector<std::string>> invalid = {
+        {"intel-avx-read"},
+        {"intel-avx-read","--cpu","0","--apply"},
+        {"intel-avx-read","--cpu","0","--offset","1"},
+        {"intel-avx-set","--cpu","0","--offset","1"},
+        {"intel-avx-set","--cpu","0","--apply"},
+        {"intel-avx-set","--cpu","0","--offset","32","--apply"},
+        {"intel-avx-set","--cpu","0","--offset","-1","--apply"},
+        {"intel-avx-set","--cpu","0","--offset","1.5","--apply"},
+        {"intel-avx-set","--cpu","0","--offset","1","--offset","2","--apply"},
+        {"intel-avx-set","--cpu","0","--offset","1","--domain","cache","--apply"},
         {"intel-energy-read"},
         {"intel-energy-read", "--cpu", "0", "--apply"},
         {"intel-energy-read", "--cpu", "0", "--field", "efficient-turbo"},
@@ -1027,6 +1038,45 @@ void pmCommands() {
     text("{\"bad\":\"\xed\xa0\x80\"}"); invoke({"amd-pm-decode","--file",path}, 3);
     assert(!opens);
 }
+void avxCommands() {
+    for (std::uint32_t raw : {0u,UINT32_MAX,0xdeadbeefu}) {
+        IntelAvxFixture d; d.data=raw; command(d,{"intel-avx-read","--cpu","130"},0);
+        assert(!d.settingsAttempts());
+    }
+    for (unsigned bins : {0u,1u,7u,31u}) {
+        IntelAvxFixture d; const auto before=d.data;
+        command(d,{"intel-avx-set","--cpu","130","--offset",std::to_string(bins),"--apply"},0);
+        assert(d.data==((before & ~0x3e0u)|(bins<<5)) && !d.wrongCpu);
+    }
+    IntelAvxFixture noop;
+    command(noop,{"intel-avx-set","--cpu","130","--offset",std::to_string((noop.data>>5)&31),"--apply"},0);
+    assert(!noop.settingsAttempts());
+    IntelAvxFixture locked; locked.locked=true;
+    command(locked,{"intel-avx-read","--cpu","130"},0);
+    for (unsigned mode=0;mode<9;++mode) {
+        IntelAvxFixture d;
+        if (mode==0) d.locked=true;
+        if (mode==1) d.avx2=false;
+        if (mode==2) d.hypervisor=true;
+        if (mode==3) d.discardChange=true;
+        if (mode==4) { d.failCommand=0x1b; d.status=255; }
+        if (mode==5) d.model=0x8f;
+        if (mode==6) d.afterRequest=[&] { const auto &r=d.requests.back(); if (r.write && ((r.value>>32)&255)==0x1b) d.data ^= 1u<<31; };
+        if (mode==7) { d.failCommand=0x1a; d.status=7; }
+        if (mode==8) d.failAt=0;
+        command(d,{"intel-avx-set","--cpu","130","--offset","7","--apply"},3);
+        assert(d.settingsAttempts()<=1);
+    }
+    for (unsigned mode=0;mode<4;++mode) {
+        IntelAvxFixture d;
+        if (mode==0) d.avx=false;
+        if (mode==1) d.msr=false;
+        if (mode==2) { d.failCommand=0x1a; d.status=128; }
+        if (mode==3) d.failAt=0;
+        command(d,{"intel-avx-read","--cpu","130"},3);
+        assert(!d.settingsAttempts());
+    }
+}
 void tvbCommands() {
     for (unsigned bits : {0u, 2u, 4u, 6u, 8u, 10u, 12u, 14u}) {
         IntelTvbFixture d; d.data |= bits;
@@ -1144,8 +1194,8 @@ int main(int argc, char **argv) {
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures();
-    intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands();
+    intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "27 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "28 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

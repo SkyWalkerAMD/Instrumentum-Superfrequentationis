@@ -12,6 +12,8 @@
 #include "inteluncorepanel.h"
 #include "intel_uncore_fixture.h"
 #include "intelenergypanel.h"
+#include "intelavxpanel.h"
+#include "intel_avx_fixture.h"
 #include "intel_energy_fixture.h"
 #include "intelmemorypanel.h"
 #include "intel_memory_fixture.h"
@@ -934,6 +936,111 @@ private slots:
                 panel->findChild<QLineEdit *>("tvbCpu")->setText("131"); gate->release = true;
                 QTRY_VERIFY(panel->isEnabled()); QCOMPARE(panel->findChild<QTableWidget *>("tvbTable")->rowCount(),0);
                 QVERIFY(panel->findChild<QLabel *>("tvbStatus")->text().contains("discarded")); delete panel;
+            }
+        }
+    }
+    void intelAvxReadCopyAndTargetChange() {
+        auto *device=new IntelAvxFixture;
+        IntelAvxPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+        auto *read=panel.findChild<QPushButton *>("avxRead"); auto *table=panel.findChild<QTableWidget *>("avxTable");
+        auto *value=panel.findChild<QLineEdit *>("avxValue"); auto *apply=panel.findChild<QPushButton *>("avxApply");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),1);
+        QCOMPARE(value->text(),QString::number((device->data>>5)&31)); QVERIFY(apply->isEnabled());
+        panel.findChild<QPushButton *>("avxCopy")->click();
+        QVERIFY(QApplication::clipboard()->text().contains(hexValue(device->data,4)));
+        QVERIFY(QApplication::clipboard()->text().contains("AVX2 negative ratio offset"));
+        const auto calls=device->calls;
+        panel.findChild<QLineEdit *>("avxCpu")->setText("-1"); read->click();
+        QCOMPARE(device->calls,calls); QCOMPARE(table->rowCount(),0); QVERIFY(value->text().isEmpty()); QVERIFY(!apply->isEnabled());
+        panel.findChild<QLineEdit *>("avxCpu")->setText("130"); device->locked=true;
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),1); QVERIFY(!apply->isEnabled());
+        device->locked=false; device->failAt=int(device->calls);
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),0); QVERIFY(value->text().isEmpty());
+        QVERIFY(panel.findChild<QLabel *>("avxRaw")->text().isEmpty()); QCOMPARE(device->settingsAttempts(),0u); QCOMPARE(device->wrongCpu,0u);
+    }
+    void intelAvxValidateCancelApplyAndNoop() {
+        auto *device=new IntelAvxFixture;
+        IntelAvxPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        panel.resize(1100,640); panel.show(); panel.findChild<QPushButton *>("avxRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *value=panel.findChild<QLineEdit *>("avxValue"); auto *apply=panel.findChild<QPushButton *>("avxApply");
+        auto *status=panel.findChild<QLabel *>("avxStatus"); const auto calls=device->calls;
+        for (const QString &invalid : {QString(""),QString("-1"),QString("32"),QString("7.5")}) {
+            value->setText(invalid); apply->click(); QCOMPARE(device->calls,calls);
+        }
+        value->setText("7");
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Cancel)->click(); });
+        apply->click(); QCOMPARE(device->calls,calls); QCOMPARE(device->settingsAttempts(),0u);
+        const auto original=device->data; bool described=false;
+        QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) {
+            described=box->text().contains("CPU 130") && box->text().contains("7 bins"); box->button(QMessageBox::Yes)->click();
+        } });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(described);
+        QCOMPARE(device->data,(original & ~0x3e0u)|(7u<<5)); QCOMPARE(device->settingsAttempts(),1u);
+        QCOMPARE(value->text(),QString("7")); QVERIFY(status->text().contains("readback verified"));
+        QTRY_VERIFY(status->height()>=status->heightForWidth(status->width())); QVERIFY(status->geometry().bottom()<panel.height());
+        const auto screenshot=qEnvironmentVariable("OCTOOL_INTEL_AVX_TEST_SCREENSHOT"); if (!screenshot.isEmpty()) QVERIFY(panel.grab().save(screenshot));
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settingsAttempts(),1u);
+        QVERIFY(status->text().contains("no settings write performed")); QCOMPARE(device->wrongCpu,0u);
+    }
+    void intelAvxConfirmationTargetChange() {
+        auto *device=new IntelAvxFixture;
+        IntelAvxPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+        panel.findChild<QPushButton *>("avxRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        panel.findChild<QLineEdit *>("avxValue")->setText("7"); const auto calls=device->calls;
+        QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) {
+            panel.findChild<QLineEdit *>("avxCpu")->setText("131"); box->button(QMessageBox::Yes)->click();
+        } });
+        panel.findChild<QPushButton *>("avxApply")->click(); QCOMPARE(device->calls,calls); QCOMPARE(device->settingsAttempts(),0u);
+        QVERIFY(!panel.findChild<QPushButton *>("avxApply")->isEnabled()); QCOMPARE(panel.findChild<QTableWidget *>("avxTable")->rowCount(),0);
+    }
+    void intelAvxStaleAndFailedWrites() {
+        for (unsigned mode=0;mode<4;++mode) {
+            auto *device=new IntelAvxFixture;
+            IntelAvxPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+            panel.findChild<QPushButton *>("avxRead")->click(); QTRY_VERIFY(panel.isEnabled());
+            panel.findChild<QLineEdit *>("avxValue")->setText("7");
+            if (mode==0) device->data ^= 1u<<31;
+            if (mode==1) device->discardChange=true;
+            if (mode==2) { device->failCommand=0x1b; device->status=255; }
+            if (mode==3) device->afterRequest=[device] { const auto &r=device->requests.back(); if (r.write && ((r.value>>32)&255)==0x1b) device->data ^= 1; };
+            QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+            panel.findChild<QPushButton *>("avxApply")->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(device->settingsAttempts(),mode==0?0u:1u); QCOMPARE(panel.findChild<QTableWidget *>("avxTable")->rowCount(),0);
+            QVERIFY(!panel.findChild<QPushButton *>("avxApply")->isEnabled()); QVERIFY(panel.findChild<QLabel *>("avxRaw")->text().isEmpty());
+            QVERIFY(panel.findChild<QLineEdit *>("avxValue")->text().isEmpty());
+            QVERIFY(panel.findChild<QLabel *>("avxStatus")->text().contains(mode==0?"No settings write":"not verified"));
+        }
+    }
+    void intelAvxLifetimeAndStaleResults() {
+        struct Gate { std::atomic<bool> entered{false}, release{false}, destroyed{false}; };
+        struct Device : IntelAvxFixture {
+            std::shared_ptr<Gate> gate;
+            explicit Device(std::shared_ptr<Gate> g) : gate(g) {}
+            ~Device() override { gate->destroyed=true; }
+        };
+        for (bool writing : {false,true}) for (bool close : {false,true}) {
+            auto gate=std::make_shared<Gate>(); auto *device=new Device(gate);
+            auto *panel=new IntelAvxPanel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+            if (writing) { panel->findChild<QPushButton *>("avxRead")->click(); QTRY_VERIFY(panel->isEnabled()); }
+            device->afterRequest=[gate,writing,device] {
+                const auto &r=device->requests.back();
+                if ((writing && (!r.write || ((r.value>>32)&255)!=0x1b)) || gate->entered.exchange(true)) return;
+                const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(3);
+                while (!gate->release && std::chrono::steady_clock::now()<deadline) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            };
+            if (writing) {
+                panel->findChild<QLineEdit *>("avxValue")->setText("7");
+                QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+                panel->findChild<QPushButton *>("avxApply")->click();
+            } else panel->findChild<QPushButton *>("avxRead")->click();
+            QTRY_VERIFY(gate->entered.load());
+            if (close) { delete panel; QVERIFY(!gate->destroyed.load()); gate->release=true; QTRY_VERIFY(gate->destroyed.load()); }
+            else {
+                panel->findChild<QLineEdit *>("avxCpu")->setText("131"); gate->release=true;
+                QTRY_VERIFY(panel->isEnabled()); QCOMPARE(panel->findChild<QTableWidget *>("avxTable")->rowCount(),0);
+                QVERIFY(panel->findChild<QLabel *>("avxStatus")->text().contains("discarded"));
+                QCOMPARE(device->settingsAttempts(),writing?1u:0u); QCOMPARE(device->wrongCpu,0u); delete panel;
             }
         }
     }

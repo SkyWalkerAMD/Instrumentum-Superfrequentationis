@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "intel_oc.h"
 #include "intel_tvb.h"
+#include "intel_avx.h"
 #include <cerrno>
 #include <chrono>
 #include <cmath>
@@ -332,6 +333,70 @@ IntelTvbUpdate applyIntelTvb(HardwareSession &s, const IntelTvbSnapshot &old, In
     if (out.readback.identity.signature != old.identity.signature) { out.error = -ENODEV; return out; }
     if (!sameTvbContext(old, out.readback) || !intelTvbEditable(out.readback)) { out.error = -EAGAIN; return out; }
     if (out.readback.response.data != out.expected) { out.error = -EIO; return out; }
+    if ((out.error = s.checkpoint())) return out;
+    out.verified = true; out.unchanged = !out.writeAttempted; out.stage = IntelOcStage::Complete;
+    return out;
+}
+namespace {
+bool avxSnapshotValid(const IntelAvxSnapshot &s) {
+    return !s.error && s.valid && hasIntelOcProfile(s.identity) &&
+        responseValid(s.response) && s.response.commandAttempted;
+}
+}
+unsigned intelAvx2Offset(std::uint32_t word) { return (word >> 5) & 31u; }
+int encodeIntelAvx2Offset(unsigned bins, std::uint32_t previous, std::uint32_t &encoded) {
+    if (bins > 31) return -ERANGE;
+    encoded = (previous & ~UINT32_C(0x3e0)) | (bins << 5);
+    return 0;
+}
+bool intelAvxEditable(const IntelAvxSnapshot &s) {
+    return avxSnapshotValid(s) && !(s.flexRatio & ocLock);
+}
+IntelAvxSnapshot readIntelAvx(HardwareSession &s, unsigned cpu) {
+    IntelAvxSnapshot out; out.cpu = cpu; out.identity = identifyCpu(s, cpu);
+    if ((out.error = out.identity.error)) return out;
+    if (!hasIntelOcProfile(out.identity) || out.identity.maximum < 7) { out.error = -ENOTSUP; return out; }
+    const auto features = s.cpuid(cpu, 1);
+    if ((out.error = features.error)) return out;
+    if (features.words[0] != out.identity.signature) { out.error = -ENODEV; return out; }
+    if (!(features.words[3] & (1u << 5)) || !(features.words[2] & (1u << 28)) ||
+        (features.words[2] & (1u << 31))) { out.error = -ENOTSUP; return out; }
+    const auto extended = s.cpuid(cpu, 7);
+    if ((out.error = extended.error)) return out;
+    if (!(extended.words[1] & (1u << 5))) { out.error = -ENOTSUP; return out; }
+    const auto flex = s.execute(msrRequest(cpu, 0x194));
+    if ((out.error = flex.error)) return out;
+    out.flexRatio = flex.value;
+    out.response = mailboxCommand(s, cpu, 0x1a, 0, 0, 0);
+    if ((out.error = out.response.error)) return out;
+    if ((out.error = s.checkpoint())) return out;
+    out.valid = true; return out;
+}
+IntelAvxUpdate applyIntelAvx(HardwareSession &s, const IntelAvxSnapshot &old, unsigned bins) {
+    IntelAvxUpdate out;
+    if (!avxSnapshotValid(old)) { out.error = -EINVAL; return out; }
+    if ((out.error = encodeIntelAvx2Offset(bins, old.response.data, out.expected))) return out;
+    out.expectedValid = true;
+    if (!intelAvxEditable(old)) { out.error = -EPERM; return out; }
+    out.stage = IntelOcStage::Preflight;
+    const auto fresh = readIntelAvx(s, old.cpu); out.response = fresh.response;
+    if ((out.error = fresh.error)) return out;
+    if (fresh.identity.signature != old.identity.signature) { out.error = -ENODEV; return out; }
+    if (!intelAvxEditable(fresh)) { out.error = -EPERM; return out; }
+    out.stage = IntelOcStage::Compare;
+    if (fresh.flexRatio != old.flexRatio || fresh.response.data != old.response.data) { out.error = -EAGAIN; return out; }
+    if (out.expected == fresh.response.data) out.after = fresh;
+    else {
+        out.stage = IntelOcStage::Write;
+        out.response = mailboxCommand(s, old.cpu, 0x1b, out.expected, 0, 0);
+        out.writeAttempted = out.response.commandAttempted;
+        if ((out.error = out.response.error)) return out;
+        out.stage = IntelOcStage::Verify; out.after = readIntelAvx(s, old.cpu);
+    }
+    if ((out.error = out.after.error)) return out;
+    if (out.after.identity.signature != old.identity.signature) { out.error = -ENODEV; return out; }
+    if (out.after.flexRatio != old.flexRatio || !intelAvxEditable(out.after)) { out.error = -EAGAIN; return out; }
+    if (out.after.response.data != out.expected) { out.error = -EIO; return out; }
     if ((out.error = s.checkpoint())) return out;
     out.verified = true; out.unchanged = !out.writeAttempted; out.stage = IntelOcStage::Complete;
     return out;

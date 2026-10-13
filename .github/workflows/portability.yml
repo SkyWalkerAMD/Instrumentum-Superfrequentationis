@@ -84,6 +84,9 @@ jobs:
       - name: Verify original Intel energy helpers
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-energy.py --output build/intel-energy.json
+      - name: Verify original AVX offsets and polling failures
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-avx.py --output build/intel-avx.json
       - name: Verify original Ring DownBin and Vmax setters
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-misc-ratio.py --output build/intel-misc-ratio.json
@@ -138,6 +141,7 @@ jobs:
             build/intel-tvb-table.json
             build/intel-misc-ratio.json
             build/intel-energy.json
+            build/intel-avx.json
             build/intel-voltage.json
             build/amd-curve-query.json
             build/intel-ngu.json

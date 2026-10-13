@@ -18,8 +18,12 @@ def command(args):
 
 
 def versions(package):
-    query = ['dnf', '-q', 'repoquery'] if Path('/usr/bin/dnf').exists() else ['repoquery', '-q']
-    values = command([*query, '--available', '--arch=x86_64',
+    # yum-utils uses different options from dnf; include older repository
+    # versions so staggered image/header publication can still yield a pair.
+    query = (['dnf', '-q', 'repoquery', '--available', '--arch=x86_64']
+             if Path('/usr/bin/dnf').exists() else
+             ['repoquery', '-q', '--pkgnarrow=repos', '--archlist=x86_64', '--show-duplicates'])
+    values = command([*query,
                       '--qf', '%{version}-%{release}.%{arch}', package])
     return {x.strip() for x in values if re.fullmatch(r'[0-9][A-Za-z0-9_.+\-]*\.x86_64', x.strip())}
 

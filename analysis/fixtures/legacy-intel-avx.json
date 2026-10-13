@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "functions": [
+    {
+      "symbol": "_Z17set_avxoffset_390j",
+      "address": 3624560,
+      "size": 35,
+      "code_hex": "f30f1efa83e71fba1b0000804889fe48c1e70548c1e60a09febf50010000e98da8ffff",
+      "code_sha256": "f21667f95a7523d3b2cafc1d57e9fd6f7212fd338a90107765aa8396ff6cfae3",
+      "calls": [
+        {
+          "instruction": 3624590,
+          "kind": "jmp",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z13set_avxoffsetj",
+      "address": 3624608,
+      "size": 27,
+      "code_hex": "f30f1efa89feba1b000080bf5001000083e61fc1e605e965a8ffff",
+      "code_sha256": "c9d00a33e6f1eac05b83a1a416818941dd8b66118d4996f56c9553b2fc9231fa",
+      "calls": [
+        {
+          "instruction": 3624630,
+          "kind": "jmp",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z12rd_avxoffsetv",
+      "address": 3799168,
+      "size": 270,
+      "code_hex": "f30f1efa4155ba1a0000804989fd31f64154bf50010000554883ec2064488b042528000000488944241831c04c8d64240c488d6c2410c744240c1a000080c744241000000000e855fefcff0f1f4400004c89e24889eebf50010000e8f0fefcff8b44240c85c078e84c89e24889ee4c8d642414bf50010000e8d3fefcff8b442410660fefc04c89e249c745100000000031f64c89efc1e805410f11450083e01f89442414e887a5e8ff8b442410498b7508c1e80a83e01f89442414493b7510742f89064883c60449897508488b44241864482b04252800000075224883c4204c89e85d415c415dc30f1f8400000000004c89e24c89efe835a5e8ffebcee88eafdafff30f1efa4889c5e9f3aadcff",
+      "code_sha256": "6f9c3275928e987545ca09aab084cc1263848b2a3718cc14255541f815c09ffd",
+      "calls": [
+        {
+          "instruction": 3799238,
+          "kind": "call",
+          "target": 3602208,
+          "symbols": [
+            "_Z5Wrmsrjjj"
+          ]
+        },
+        {
+          "instruction": 3799259,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3799288,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3799332,
+          "kind": "call",
+          "target": 2268848,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 3799414,
+          "kind": "call",
+          "target": 2268848,
+          "symbols": [
+            "_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_"
+          ]
+        },
+        {
+          "instruction": 3799419,
+          "kind": "jmp",
+          "target": 3799371,
+          "symbols": []
+        },
+        {
+          "instruction": 3799421,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 3799433,
+          "kind": "jmp",
+          "target": 1483905,
+          "symbols": [
+            "_Z12rd_avxoffsetv.cold"
+          ]
+        }
+      ]
+    }
+  ],
+  "objects": {},
+  "literals": []
+}
