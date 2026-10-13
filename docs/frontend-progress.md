@@ -48,6 +48,8 @@ GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-
 | Intel V/F 点 | V/F points 查询、准备与设置 | `intel-vf-read` / `intel-vf-set` | B7，两域，候选 1..15 查询及单点 offset；[完整上下文核对](intel-vf-write-recovery.md)，不改变 override 模式 |
 | Intel 睿频分组 | Turbo ratio groups | `intel-turbo-read` / `intel-turbo-set` | B7；P/E 两表，读取活动核心阈值，单组倍率或中间组阈值设置与完整读回；末组阈值保持 |
 | Intel Ring / LLC 范围 | Ring / LLC range | `intel-uncore-read` / `intel-uncore-set` | B7/8F；最小与最大倍率同时设置，保留其它位、旧值检查及完整读回；[实现说明](intel-uncore-recovery.md) |
+| Intel BCLK 自适应电压 | BCLK voltage | `intel-bclk-voltage-read/set` | B7；独立开关，OC 锁与旧值检查，只改 bit 2 并完整回读；[说明](intel-bclk-voltage.md) |
+| Intel 能量与 HWP 能力 | Power / performance | `intel-read` | B7 封装/PP0、8F/CF 封装/DRAM 计数，单位及回绕范围；HWP 四个能力字节；[说明](intel-energy-counters.md) |
 | Intel AVX2 偏移 | AVX2 offset | `intel-avx-read/set` | B7；0..31 倍率档，锁、旧值检查，保留其它位及完整回读 |
 | Intel TCC 温控 | Thermal limit | `intel-thermal-read/set` | B7/8F/CF；偏移、默认与有效阈值，能力/锁/范围检查 |
 | Intel 限频原因 | Limit reasons | `intel-limits-read/clear` | B7；11 组当前/历史状态，单项或全部历史 W0C 清除与回读 |

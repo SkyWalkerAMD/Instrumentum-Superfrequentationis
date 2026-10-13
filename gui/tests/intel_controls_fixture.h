@@ -9,6 +9,7 @@
 // Synthetic ordinary MSRs. No OS devices or host CPUID are used.
 struct IntelControlsFixture : octool::core::HardwareBackend {
     bool amd = false, hwp = true, epp = true, activityWindow = true, discardChange = false;
+    bool msr = true, virtualized = false;
     unsigned model = 0xb7, expectedCpu = UINT32_MAX, wrongCpu = 0;
     int failRead = -1, failWrite = -1, failCpuid = -1;
     unsigned reads = 0, writes = 0, cpuCalls = 0;
@@ -22,6 +23,9 @@ struct IntelControlsFixture : octool::core::HardwareBackend {
         regs[0x770] = 1; regs[0x771] = 0x08203040;
         regs[0x774] = UINT64_C(0x8000100080004008);
         regs[0xce] = UINT64_C(0x8765432140002a00);
+        regs[0x611] = UINT64_C(0x1234567800010000);
+        regs[0x639] = UINT64_C(0xfedcba9800004000);
+        regs[0x619] = UINT64_C(0x8765432100002000);
     }
     void checkCpu(unsigned cpu) { if (expectedCpu != UINT32_MAX && cpu != expectedCpu) ++wrongCpu; }
     octool::core::Reply execute(const octool::core::Request &r) override {
@@ -45,7 +49,11 @@ struct IntelControlsFixture : octool::core::HardwareBackend {
             r.words[0] = 6; r.words[1] = amd ? 0x68747541 : 0x756e6547;
             r.words[3] = amd ? 0x69746e65 : 0x49656e69; r.words[2] = amd ? 0x444d4163 : 0x6c65746e;
         }
-        if (leaf == 1) r.words[0] = amd ? 0x00b00f20 : 0x600 | ((model & 15) << 4) | ((model & 240) << 12);
+        if (leaf == 1) {
+            r.words[0] = amd ? 0x00b00f20 : 0x600 | ((model & 15) << 4) | ((model & 240) << 12);
+            r.words[2] = virtualized ? 1u << 31 : 0;
+            r.words[3] = msr ? 1u << 5 : 0;
+        }
         if (leaf == 6) r.words[0] = (hwp ? 1u << 7 : 0) | (epp ? 1u << 10 : 0) | (activityWindow ? 1u << 9 : 0);
         return r;
     }

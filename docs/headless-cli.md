@@ -1,6 +1,9 @@
 # 无桌面版 OCTool
 
-2026-10-13 本批补充 [AVX2 倍率偏移](intel-avx-offset.md)和
+2026-10-13 继续补充 [BCLK 自适应电压开关](intel-bclk-voltage.md)与
+[能量计数及 HWP 完整能力显示](intel-energy-counters.md)，GUI / CLI 共用核心。
+
+2026-10-13 上批补充 [AVX2 倍率偏移](intel-avx-offset.md)和
 [Intel 温控配置](intel-thermal.md)，以及 [Intel 限频原因与历史清除](intel-limits.md)：
 GUI 与 CLI 同步，含独立读取、显式应用和回读检查。
 `intel-read` 另增加[最大非睿频倍率](intel-platform.md)只读字段，限定 B7/8F/CF。

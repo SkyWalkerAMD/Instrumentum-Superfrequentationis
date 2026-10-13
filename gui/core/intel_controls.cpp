@@ -100,6 +100,8 @@ IntelSnapshot readIntelControls(HardwareSession &s, unsigned cpu) {
                 hwpActivityWindowMicroseconds(unsigned((r.value >> 32) & 1023)),
                 editable && !((r.value >> 16) & 255), IntelField::HwpActivityWindow);
             add("HWP highest capability", "performance level", 0x771, out.hwpCapabilities, double(out.hwpCapabilities.value & 255), false, IntelField::HwpMax);
+            add("HWP guaranteed capability", "performance level", 0x771, out.hwpCapabilities, double((out.hwpCapabilities.value >> 8) & 255), false, IntelField::HwpMax);
+            add("HWP most efficient capability", "performance level", 0x771, out.hwpCapabilities, double((out.hwpCapabilities.value >> 16) & 255), false, IntelField::HwpMin);
             add("HWP lowest capability", "performance level", 0x771, out.hwpCapabilities, double((out.hwpCapabilities.value >> 24) & 255), false, IntelField::HwpMin);
         }
         if ((features.words[0] & ((1u << 6) | 1)) && hasIntelRaplProfile(out.identity)) {
@@ -149,6 +151,28 @@ IntelSnapshot readIntelControls(HardwareSession &s, unsigned cpu) {
         auto platform = s.execute(msrRequest(cpu, 0xce));
         const auto ratio = unsigned((platform.value >> 8) & 255);
         if (!platform.error && !ratio) platform.error = -ENODATA;
+        // Only this explicit profile is used for energy telemetry. PP0 is a
+        // package-wide cores domain on B7, not the selected physical core.
+        // SPR/EMR use their unit register, unlike older Xeon's 15.3 uJ DRAM
+        // override (Linux v6.12 rapl_defaults_spr_server). See recovery notes.
+        auto energyUnits = out.units;
+        const auto features = s.cpuid(cpu, 1);
+        if (features.error) out.error = energyUnits.error = features.error;
+        else if (features.words[0] != out.identity.signature) out.error = energyUnits.error = -ENODEV;
+        else if (!(features.words[3] & (1u << 5)) || (features.words[2] & (1u << 31))) energyUnits.error = -ENOTSUP;
+        const auto exponent = unsigned((energyUnits.value >> 8) & 31);
+        const double energyUnit = std::ldexp(1.0, -int(exponent));
+        add("RAPL energy counter unit", "J/tick", 0x606, energyUnits, energyUnit, false, IntelField::Pl1);
+        add("RAPL energy counter wrap range", "J", 0x606, energyUnits, std::ldexp(1.0, 32-int(exponent)), false, IntelField::Pl1);
+        for (bool package : {true,false}) {
+            const unsigned msr = package ? 0x611 : out.identity.model == 0xb7 ? 0x639 : 0x619;
+            const char *name = package ? "Package energy counter" : out.identity.model == 0xb7 ?
+                "CPU cores energy counter (PP0)" : "DRAM energy counter (BIOS mode 0)";
+            Reply energy;
+            if (energyUnits.error) energy.error = energyUnits.error;
+            else energy = s.execute(msrRequest(cpu, msr));
+            add(name, "J", msr, energy, double(std::uint32_t(energy.value))*energyUnit, false, IntelField::Pl1);
+        }
         add("Maximum non-turbo ratio", "ratio", 0xce, platform, ratio, false, IntelField::Pl1);
     }
     return out;

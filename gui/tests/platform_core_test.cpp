@@ -162,13 +162,13 @@ void intelVerificationFailures() {
 void intelVerificationFaults() {
     for (bool hwp : {false, true}) {
         // Inject a failure into each identity/feature read, including readback.
-        for (unsigned pos = 0; pos < 6; ++pos) {
+        for (unsigned pos = 0; pos < 8; ++pos) {
             TestService t; const auto old = snapshot(t); t.fake->failCpuid = int(t.fake->cpuCalls + pos);
             const auto r = apply(t, old, hwp ? IntelField::HwpEpp : IntelField::Pl1, hwp ? 192 : 100);
             assert(r.error && !r.verified && t.fake->writes <= 1);
         }
         // Target and unit/capability read failures must never become zero data.
-        const std::vector<unsigned> positions = hwp ? std::vector<unsigned>{2,3,4,6,9,10,11} : std::vector<unsigned>{0,1,6,7,8};
+        const std::vector<unsigned> positions = hwp ? std::vector<unsigned>{2,3,4,8,11,12,13} : std::vector<unsigned>{0,1,8,9,10};
         for (unsigned pos : positions) {
             TestService t; const auto old = snapshot(t); t.fake->failRead = int(t.fake->reads + pos);
             const auto r = apply(t, old, hwp ? IntelField::HwpEpp : IntelField::Pl1, hwp ? 192 : 100);
@@ -244,6 +244,67 @@ void intelNonTurboRatioFailures() {
         TestService other; other.fake->model=model; const auto r=snapshot(other);
         for (const auto &value:r.readings) assert(value.msr!=0xce);
         for (const auto &request:other.fake->requests) assert(request.address!=0xce);
+    }
+}
+const IntelReading &named(const IntelSnapshot &s, const char *name) {
+    for (const auto &r:s.readings) if (r.name==name) return r;
+    assert(false); return s.readings[0];
+}
+void intelEnergyCountersAndCapabilities() {
+    for (unsigned model : {0xb7,0x8f,0xcf}) for (unsigned exponent=0;exponent<32;++exponent)
+        for (std::uint32_t ticks : {0u,1u,0x80000000u,UINT32_MAX}) {
+            TestService t; t.fake->model=model; t.fake->expectedCpu=130;
+            t.fake->regs[0x606]=UINT64_C(0xfedcba9876500087) | (std::uint64_t(exponent)<<8);
+            for (unsigned msr : {0x611,0x619,0x639}) t.fake->regs[msr]=UINT64_C(0x8765432100000000)|ticks;
+            const auto out=snapshot(t);
+            const auto &unit=named(out,"RAPL energy counter unit"), &range=named(out,"RAPL energy counter wrap range");
+            assert(unit.decoded && unit.value==std::ldexp(1.0,-int(exponent)) && unit.unit=="J/tick" && !unit.editable);
+            assert(range.value==std::ldexp(1.0,32-int(exponent)) && range.unit=="J" && !range.editable);
+            unsigned counters=0;
+            for (const auto &r:out.readings) if (r.msr==0x611 || r.msr==0x619 || r.msr==0x639) {
+                ++counters; assert(r.decoded && !r.error && !r.editable && r.unit=="J");
+                assert(r.value==double(ticks)*unit.value && r.raw==t.fake->regs[r.msr] && r.value<range.value);
+                assert(r.msr==0x611 || r.msr==unsigned(model==0xb7?0x639:0x619));
+            }
+            assert(counters==2 && !t.fake->writes && !t.fake->wrongCpu);
+            for (const auto &r:t.fake->requests) assert(r.address!=unsigned(model==0xb7?0x619:0x639));
+        }
+    for (unsigned byte=0;byte<256;++byte) {
+        TestService t; t.fake->regs[0x771]=UINT64_C(0xfedcba9800000000)|(std::uint64_t(byte)<<8)|
+            (std::uint64_t(255-byte)<<16)|0xff;
+        const auto out=snapshot(t);
+        const auto &guaranteed=named(out,"HWP guaranteed capability"), &efficient=named(out,"HWP most efficient capability");
+        assert(guaranteed.value==byte && efficient.value==255-byte && guaranteed.decoded && efficient.decoded);
+        assert(!guaranteed.editable && !efficient.editable && guaranteed.msr==0x771 && efficient.msr==0x771);
+        assert(guaranteed.unit=="performance level" && efficient.unit=="performance level" && !t.fake->writes);
+    }
+}
+void intelTelemetryErrorsAndGates() {
+    for (int position : {0,3,6,7}) {
+        TestService t; t.fake->failRead=position; const auto out=snapshot(t);
+        for (const auto &r:out.readings) {
+            const bool energy=r.msr==0x611 || r.msr==0x619 || r.msr==0x639 || r.msr==0x606;
+            const bool failed=(position==0 && energy) || (position==3 && r.msr==0x771) ||
+                (position==6 && r.msr==0x611) || (position==7 && r.msr==0x639);
+            if (failed) assert(r.error==-EACCES && !r.decoded && !r.editable);
+        }
+        assert(!t.fake->writes);
+    }
+    for (unsigned mode=0;mode<3;++mode) {
+        TestService t;
+        if (mode==0) t.fake->msr=false;
+        if (mode==1) t.fake->virtualized=true;
+        if (mode==2) t.fake->failCpuid=3;
+        IntelSnapshot out;
+        const auto error=t.service.transaction([&](HardwareSession &s) { out=readIntelControls(s,130); return out.error; });
+        assert(error==(mode==2?-EACCES:0));
+        for (const auto &r:out.readings) if (r.msr==0x611 || r.msr==0x639 || r.msr==0x606)
+            assert(r.error && !r.decoded && !r.editable);
+        for (const auto &r:t.fake->requests) assert(r.address!=0x611 && r.address!=0x619 && r.address!=0x639);
+    }
+    for (unsigned model : {0x55,0xa5,0xad,0xbf,0}) {
+        TestService t; t.fake->model=model; t.fake->hwp=false; const auto out=snapshot(t);
+        for (const auto &r:out.readings) assert(r.msr!=0x611 && r.msr!=0x619 && r.msr!=0x639 && r.msr!=0x771);
     }
 }
 struct SmuFake : Fake {
@@ -343,6 +404,6 @@ void spdAndPstateBits() {
 int main() {
     maskedUpdates(); partialFailure(); transactionBoundaries(); intelRAPL(); intelHwpAndGating(); smuProtocol(); smuTimeouts(); spdAndPstateBits();
     intelVerifiedFields(); intelVerificationFailures(); intelVerificationFaults(); intelVerificationGuards();
-    intelActivityWindow(); intelNonTurboRatio(); intelNonTurboRatioFailures();
-    std::cout << "15 platform scenario groups passed\n";
+    intelActivityWindow(); intelNonTurboRatio(); intelNonTurboRatioFailures(); intelEnergyCountersAndCapabilities(); intelTelemetryErrorsAndGates();
+    std::cout << "17 platform scenario groups passed\n";
 }

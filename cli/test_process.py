@@ -35,9 +35,30 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 794, len(reports)
+assert len(reports) == 843, len(reports)
 platform_reports=[r for r in reports if r['command']=='intel-read' and 'readings' in r['data']]
-assert len(platform_reports)==35  # Existing reads, platform ratios and package thermal events.
+assert len(platform_reports)==54  # Existing reads, platform ratios and package thermal events.
+for report in platform_reports:
+    assert not report['data']['energy_counters_are_instantaneous_power'] and not report['data']['energy_counters_include_wrap_history']
+    readings={r['name']:r for r in report['data']['readings']}
+    unit=readings['RAPL energy counter unit']; limit=readings['RAPL energy counter wrap range']
+    if not unit['error']:
+        exponent=(int(unit['raw'],16)>>8)&31
+        assert unit['unit']=='J/tick' and unit['value']==2.0**-exponent
+        assert limit['value']==2.0**(32-exponent) and not unit['editable'] and not limit['editable']
+    for r in readings.values():
+        if r['msr'] in ('0x00000611','0x00000619','0x00000639'):
+            assert not r['editable'] and r['unit']=='J'
+            if not r['error']:
+                assert r['value']==(int(r['raw'],16)&0xffffffff)*unit['value']
+                assert r['value']<limit['value']
+            else: assert r['raw'] is None and r['value'] is None
+        if r['name'] in ('HWP guaranteed capability','HWP most efficient capability'):
+            assert not r['editable'] and r['msr']=='0x00000771' and r['unit']=='performance level'
+            if not r['error']:
+                shift=8 if r['name']=='HWP guaranteed capability' else 16
+                assert r['value']==((int(r['raw'],16)>>shift)&255)
+            else: assert r['raw'] is None and r['value'] is None
 for report in platform_reports:
     row=next(v for v in report['data']['readings'] if v['name']=='Maximum non-turbo ratio')
     assert row['msr']=='0x000000ce' and row['unit']=='ratio' and not row['editable']
@@ -123,6 +144,25 @@ for report in avx:
         assert data['verified']==report['ok']
         if report['ok']:
             expected=(int(before['raw'],16)&~0x3e0)|(data['requested_offset_bins']<<5)
+            assert int(data['after']['raw'],16)==expected==int(data['expected_raw'],16)
+            assert data['unchanged']==(expected==int(before['raw'],16))
+            assert data['write_attempted']==(not data['unchanged'])
+
+bclkVoltage=[r for r in reports if r['command'] in ('intel-bclk-voltage-read','intel-bclk-voltage-set') and 'before' in r['data']]
+assert len(bclkVoltage)==20 and [r['ok'] for r in bclkVoltage]==[True]*7+[False]*13
+for report in bclkVoltage:
+    data=report['data']; before=data['before']
+    assert not data['hardware_effect_measured']
+    for snap in (before,data.get('after',before)):
+        if snap['valid']:
+            assert snap['enabled']==bool(int(snap['raw'],16)&4)
+            assert snap['editable']==(not snap['locked'])
+        else:
+            assert snap['raw'] is None and snap['enabled'] is None and snap['locked'] is None
+    if report['command']=='intel-bclk-voltage-set':
+        assert data['verified']==report['ok']
+        if report['ok']:
+            expected=(int(before['raw'],16)&~4)|(int(data['requested_enabled'])<<2)
             assert int(data['after']['raw'],16)==expected==int(data['expected_raw'],16)
             assert data['unchanged']==(expected==int(before['raw'],16))
             assert data['write_attempted']==(not data['unchanged'])

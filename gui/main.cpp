@@ -19,6 +19,7 @@
 #include "inteltvbtablepanel.h"
 #include "intelenergypanel.h"
 #include "intelavxpanel.h"
+#include "intelbclkvoltagepanel.h"
 #include "intelthermalpanel.h"
 #include "intellimitspanel.h"
 #include <QJsonDocument>
@@ -105,6 +106,7 @@ int main(int argc, char **argv)
     intel->addTab(new IntelTvbPanel(access, intel, initialCpu), "TVB && Ring DownBin");
     intel->addTab(new IntelTvbTablePanel(access, intel, initialCpu), "TVB thresholds");
     intel->addTab(new IntelEnergyPanel(access, intel, initialCpu), "Energy optimization");
+    intel->addTab(new IntelBclkVoltagePanel(access, intel, initialCpu), "BCLK voltage");
     intel->addTab(new IntelAvxPanel(access, intel, initialCpu), "AVX2 offset");
     intel->addTab(new IntelThermalPanel(access, intel, initialCpu), "Thermal limit");
     intel->addTab(new IntelLimitsPanel(access, intel, initialCpu), "Limit reasons");

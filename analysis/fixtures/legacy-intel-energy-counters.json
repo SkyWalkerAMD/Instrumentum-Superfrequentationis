@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "functions": [
+    {
+      "symbol": "_Z21intel_get_energy_unitv",
+      "address": 3669968,
+      "size": 92,
+      "code_hex": "f30f1efa4883ec18bf0606000064488b042528000000488944240831c0488d5424044889e6c7042400000000c744240400000000e8c7f7feff8b0424c1e80883e01f488b54240864482b14252800000075054883c418c3e8e4a8dcff",
+      "code_sha256": "0a661e1e55551b3ac5c872640d2dd63fcf0ffe464832eab3c9b35e8e73897f10",
+      "calls": [
+        {
+          "instruction": 3670020,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3670055,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z18get_current_energyv",
+      "address": 3670096,
+      "size": 86,
+      "code_hex": "f30f1efa4883ec18bf3906000064488b042528000000488944240831c0488d5424044889e6c7042400000000c744240400000000e847f7feff8b0424488b54240864482b14252800000075054883c418c3e86aa8dcff",
+      "code_sha256": "af543fc876388bf048a3a5f1a0489a6138029ced54604b94c9b74d5f29bc3da7",
+      "calls": [
+        {
+          "instruction": 3670148,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3670177,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    }
+  ],
+  "objects": {},
+  "literals": []
+}

@@ -87,6 +87,10 @@ jobs:
       - name: Verify original AVX offsets and polling failures
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-avx.py --output build/intel-avx.json
+      - name: Verify original BCLK voltage and energy counter helpers
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-bclk-voltage.py --output build/intel-bclk-voltage.json
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-energy-counters.py --output build/intel-energy-counters.json
       - name: Verify original Intel limit history helpers
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-limits.py --output build/intel-limits.json
@@ -151,6 +155,8 @@ jobs:
             build/intel-misc-ratio.json
             build/intel-energy.json
             build/intel-avx.json
+            build/intel-bclk-voltage.json
+            build/intel-energy-counters.json
             build/intel-thermal.json
             build/intel-limits.json
             build/intel-platform.json

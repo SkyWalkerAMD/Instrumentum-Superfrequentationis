@@ -14,6 +14,7 @@
 #include "core/intel_uncore.h"
 #include "core/intel_energy.h"
 #include "core/intel_avx.h"
+#include "core/intel_bclk_voltage.h"
 #include "core/intel_thermal.h"
 #include "core/intel_limits.h"
 #include "core/intel_memory.h"
@@ -109,7 +110,7 @@ struct Command {
 Command parse(const std::vector<std::string> &args) {
     Command c; c.name = args.at(0);
     const std::set<std::string> hardware = {"cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read", "intel-vf-set", "intel-turbo-read", "intel-turbo-set",
-        "intel-memory-read", "intel-clock-read", "intel-tvb-read", "intel-tvb-set", "intel-tvb-table", "intel-tvb-table-set", "intel-energy-read", "intel-energy-set", "intel-avx-read", "intel-avx-set", "intel-thermal-read", "intel-thermal-set", "intel-limits-read", "intel-limits-clear", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
+        "intel-memory-read", "intel-clock-read", "intel-tvb-read", "intel-tvb-set", "intel-tvb-table", "intel-tvb-table-set", "intel-energy-read", "intel-energy-set", "intel-avx-read", "intel-avx-set", "intel-bclk-voltage-read", "intel-bclk-voltage-set", "intel-thermal-read", "intel-thermal-set", "intel-limits-read", "intel-limits-clear", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
     const bool memoryOffline = c.name == "intel-memory-decode";
     const bool clockOffline = c.name == "intel-clock-decode";
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
@@ -118,13 +119,14 @@ Command parse(const std::vector<std::string> &args) {
     std::set<std::string> keys = {"--json"};
     if (hardware.count(c.name)) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
-    const bool writing = c.name == "intel-limits-clear" || c.name == "intel-thermal-set" || c.name == "intel-avx-set" || c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set" || c.name == "intel-energy-set" || c.name == "intel-uncore-set" || c.name == "amd-smu-send" || c.name == "register-write";
+    const bool writing = c.name == "intel-bclk-voltage-set" || c.name == "intel-limits-clear" || c.name == "intel-thermal-set" || c.name == "intel-avx-set" || c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set" || c.name == "intel-energy-set" || c.name == "intel-uncore-set" || c.name == "amd-smu-send" || c.name == "register-write";
     const bool vf = c.name == "intel-vf-read" || c.name == "intel-vf-set";
     const bool turbo = c.name == "intel-turbo-read" || c.name == "intel-turbo-set";
     if (turbo) keys.insert("--core-type");
     if (c.name == "intel-turbo-set") { keys.insert("--group"); keys.insert("--value"); keys.insert("--field"); }
     if (c.name == "intel-uncore-set") { keys.insert("--minimum-ratio"); keys.insert("--maximum-ratio"); }
     if (c.name == "intel-avx-set") keys.insert("--offset");
+    if (c.name == "intel-bclk-voltage-set") keys.insert("--enabled");
     if (c.name == "intel-thermal-set") keys.insert("--offset-degrees");
     if (c.name == "intel-limits-clear") keys.insert("--reason");
     if (c.name == "intel-energy-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set") { keys.insert("--field"); keys.insert("--value"); }
@@ -201,6 +203,7 @@ Command parse(const std::vector<std::string> &args) {
         }
     }
     if (c.name == "intel-avx-set") c.value = uintOption(options, "--offset", 31);
+    if (c.name == "intel-bclk-voltage-set") c.value = uintOption(options, "--enabled", 1);
     if (c.name == "intel-thermal-set") c.value = uintOption(options, "--offset-degrees", 63);
     if (c.name == "intel-limits-clear") {
         c.field=get(options,"--reason");
@@ -391,6 +394,15 @@ std::string avxSnapshot(const IntelAvxSnapshot &s) {
         {"locked",valid?boolean((s.flexRatio & (UINT64_C(1)<<20))!=0):"null"},
         {"avx2_offset_bins",valid?number(intelAvx2Offset(s.response.data)):"null"}});
 }
+std::string bclkVoltageSnapshot(const IntelBclkVoltageSnapshot &s) {
+    const bool valid=s.valid && !s.error;
+    return object({{"error",number(s.error)},{"valid",boolean(valid)},{"identity",identity(s.identity)},
+        {"editable",boolean(intelBclkVoltageEditable(s))},{"raw",valid?hex(s.response.data):"null"},
+        {"query_attempted",boolean(s.response.commandAttempted)},{"query_completed",boolean(s.response.completed)},
+        {"firmware_status",s.response.completed?number(s.response.firmwareStatus):"null"},
+        {"locked",valid?boolean((s.flexRatio & (UINT64_C(1)<<20))!=0):"null"},
+        {"enabled",valid?boolean(intelBclkVoltageEnabled(s.response.data)):"null"}});
+}
 std::string energySnapshot(const IntelEnergySnapshot &s) {
     const bool valid = s.valid && !s.error;
     return object({{"error", number(s.error)}, {"valid", boolean(valid)}, {"identity", identity(s.identity)},
@@ -522,6 +534,8 @@ Result hardware(const Command &c, HardwareSession &s) {
             }
             if (values.empty() && !out.error) out.error = -ENOTSUP;
             out.data.push_back({"readings", array(values)});
+            out.data.push_back({"energy_counters_are_instantaneous_power", "false"});
+            out.data.push_back({"energy_counters_include_wrap_history", "false"});
         }
     } else if (c.name == "intel-oc-read" || c.name == "intel-oc-set") {
         const auto snapshot = readIntelOc(s, c.cpu, c.domain); out.error = snapshot.error;
@@ -648,6 +662,23 @@ Result hardware(const Command &c, HardwareSession &s) {
             out.data.push_back({"stage",number(unsigned(result.stage))});
             out.data.push_back({"firmware_status",result.response.completed?number(result.response.firmwareStatus):"null"});
             out.data.push_back({"after",avxSnapshot(result.after)});
+        }
+    } else if (c.name == "intel-bclk-voltage-read" || c.name == "intel-bclk-voltage-set") {
+        const auto snapshot=readIntelBclkVoltage(s,c.cpu); out.error=snapshot.error;
+        out.data.push_back({"scope",quote("shared processor BCLK adaptive voltage via selected CPU")});
+        out.data.push_back({"hardware_effect_measured","false"});
+        out.data.push_back({"before",bclkVoltageSnapshot(snapshot)});
+        if (c.name == "intel-bclk-voltage-set") {
+            IntelBclkVoltageUpdate result;
+            if (!out.error) { result=applyIntelBclkVoltage(s,snapshot,unsigned(c.value)); out.error=result.error; }
+            out.data.push_back({"requested_enabled",boolean(c.value!=0)});
+            out.data.push_back({"write_attempted",boolean(result.writeAttempted)});
+            out.data.push_back({"verified",boolean(result.verified && !out.error)});
+            out.data.push_back({"unchanged",boolean(result.unchanged)});
+            out.data.push_back({"expected_raw",result.expectedValid?hex(result.expected):"null"});
+            out.data.push_back({"stage",number(unsigned(result.stage))});
+            out.data.push_back({"firmware_status",result.response.completed?number(result.response.firmwareStatus):"null"});
+            out.data.push_back({"after",bclkVoltageSnapshot(result.after)});
         }
     } else if (c.name == "intel-energy-read" || c.name == "intel-energy-set") {
         const auto snapshot = readIntelEnergy(s, c.cpu); out.error = snapshot.error;
@@ -1034,6 +1065,8 @@ Usage: octool-cli COMMAND [OPTIONS]
       Clear recorded history only; active limits remain in effect; 06_B7 only.
   intel-thermal-read --cpu N
   intel-thermal-set --cpu N --offset-degrees 0..63 --apply   TCC offset below TjMax; 06_B7/8F/CF
+  intel-bclk-voltage-read --cpu N
+  intel-bclk-voltage-set --cpu N --enabled 0|1 --apply   BCLK adaptive voltage, 06_B7 only
   intel-avx-read --cpu N
   intel-avx-set --cpu N --offset 0..31 --apply   AVX2 negative ratio offset, 06_B7 only
   intel-energy-read --cpu N

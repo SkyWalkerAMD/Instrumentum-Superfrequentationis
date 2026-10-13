@@ -13,7 +13,9 @@
 #include "intel_uncore_fixture.h"
 #include "intelenergypanel.h"
 #include "intelavxpanel.h"
+#include "intelbclkvoltagepanel.h"
 #include "intel_avx_fixture.h"
+#include "intel_bclk_voltage_fixture.h"
 #include "intelthermalpanel.h"
 #include "intellimitspanel.h"
 #include "intel_limits_fixture.h"
@@ -1254,6 +1256,109 @@ private slots:
             }
         }
     }
+    void intelBclkVoltageReadCopyAndTargetChange() {
+        auto *device=new IntelBclkVoltageFixture;
+        IntelBclkVoltagePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+        auto *read=panel.findChild<QPushButton *>("bclkVoltageRead"); auto *table=panel.findChild<QTableWidget *>("bclkVoltageTable");
+        auto *value=panel.findChild<QComboBox *>("bclkVoltageValue"); auto *apply=panel.findChild<QPushButton *>("bclkVoltageApply");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),1);
+        QCOMPARE(value->currentIndex(),int((device->data>>2)&1)); QVERIFY(apply->isEnabled());
+        panel.findChild<QPushButton *>("bclkVoltageCopy")->click();
+        QVERIFY(QApplication::clipboard()->text().contains(hexValue(device->data,4)));
+        QVERIFY(QApplication::clipboard()->text().contains("BCLK adaptive voltage"));
+        const auto calls=device->calls;
+        panel.findChild<QLineEdit *>("bclkVoltageCpu")->setText("-1"); read->click();
+        QCOMPARE(device->calls,calls); QCOMPARE(table->rowCount(),0); QCOMPARE(value->currentIndex(),-1); QVERIFY(!apply->isEnabled());
+        panel.findChild<QLineEdit *>("bclkVoltageCpu")->setText("130"); device->locked=true;
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),1); QVERIFY(!apply->isEnabled());
+        device->locked=false; device->failAt=int(device->calls);
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),0); QCOMPARE(value->currentIndex(),-1);
+        QVERIFY(panel.findChild<QLabel *>("bclkVoltageRaw")->text().isEmpty()); QCOMPARE(device->settingsAttempts(),0u); QCOMPARE(device->wrongCpu,0u);
+    }
+    void intelBclkVoltageValidateCancelApplyAndNoop() {
+        auto *device=new IntelBclkVoltageFixture;
+        IntelBclkVoltagePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        panel.resize(1100,640); panel.show(); panel.findChild<QPushButton *>("bclkVoltageRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *value=panel.findChild<QComboBox *>("bclkVoltageValue"); auto *apply=panel.findChild<QPushButton *>("bclkVoltageApply");
+        auto *status=panel.findChild<QLabel *>("bclkVoltageStatus"); const auto calls=device->calls;
+        value->setCurrentIndex(-1); apply->click(); QCOMPARE(device->calls,calls);
+        value->setCurrentIndex(1);
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Cancel)->click(); });
+        apply->click(); QCOMPARE(device->calls,calls); QCOMPARE(device->settingsAttempts(),0u);
+        const auto original=device->data; bool described=false;
+        QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) {
+            described=box->text().contains("CPU 130") && box->text().contains("Disabled → Enabled"); box->button(QMessageBox::Yes)->click();
+        } });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(described);
+        QCOMPARE(device->data,original | 4u); QCOMPARE(device->settingsAttempts(),1u);
+        QCOMPARE(value->currentIndex(),1); QVERIFY(status->text().contains("readback verified"));
+        QTRY_VERIFY(status->height()>=status->heightForWidth(status->width())); QVERIFY(status->geometry().bottom()<panel.height());
+        const auto screenshot=qEnvironmentVariable("OCTOOL_INTEL_BCLK_VOLTAGE_TEST_SCREENSHOT"); if (!screenshot.isEmpty()) QVERIFY(panel.grab().save(screenshot));
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settingsAttempts(),1u);
+        QVERIFY(status->text().contains("no settings write performed")); QCOMPARE(device->wrongCpu,0u);
+    }
+    void intelBclkVoltageConfirmationTargetChange() {
+        auto *device=new IntelBclkVoltageFixture;
+        IntelBclkVoltagePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+        panel.findChild<QPushButton *>("bclkVoltageRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        panel.findChild<QComboBox *>("bclkVoltageValue")->setCurrentIndex(1); const auto calls=device->calls;
+        QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) {
+            panel.findChild<QLineEdit *>("bclkVoltageCpu")->setText("131"); box->button(QMessageBox::Yes)->click();
+        } });
+        panel.findChild<QPushButton *>("bclkVoltageApply")->click(); QCOMPARE(device->calls,calls); QCOMPARE(device->settingsAttempts(),0u);
+        QVERIFY(!panel.findChild<QPushButton *>("bclkVoltageApply")->isEnabled()); QCOMPARE(panel.findChild<QTableWidget *>("bclkVoltageTable")->rowCount(),0);
+    }
+    void intelBclkVoltageStaleAndFailedWrites() {
+        for (unsigned mode=0;mode<4;++mode) {
+            auto *device=new IntelBclkVoltageFixture;
+            IntelBclkVoltagePanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+            panel.findChild<QPushButton *>("bclkVoltageRead")->click(); QTRY_VERIFY(panel.isEnabled());
+            panel.findChild<QComboBox *>("bclkVoltageValue")->setCurrentIndex(1);
+            if (mode==0) device->data ^= 1u<<31;
+            if (mode==1) device->discardChange=true;
+            if (mode==2) { device->failCommand=0x15; device->status=255; }
+            if (mode==3) device->afterRequest=[device] { const auto &r=device->requests.back(); if (r.write && ((r.value>>32)&255)==0x15) device->data ^= 1; };
+            QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+            panel.findChild<QPushButton *>("bclkVoltageApply")->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(device->settingsAttempts(),mode==0?0u:1u); QCOMPARE(panel.findChild<QTableWidget *>("bclkVoltageTable")->rowCount(),0);
+            QVERIFY(!panel.findChild<QPushButton *>("bclkVoltageApply")->isEnabled()); QVERIFY(panel.findChild<QLabel *>("bclkVoltageRaw")->text().isEmpty());
+            QCOMPARE(panel.findChild<QComboBox *>("bclkVoltageValue")->currentIndex(),-1);
+            QVERIFY(panel.findChild<QLabel *>("bclkVoltageStatus")->text().contains(mode==0?"No settings write":"not verified"));
+        }
+    }
+    void intelBclkVoltageLifetimeAndStaleResults() {
+        struct Gate { std::atomic<bool> entered{false}, release{false}, destroyed{false}; };
+        struct Device : IntelBclkVoltageFixture {
+            std::shared_ptr<Gate> gate;
+            explicit Device(std::shared_ptr<Gate> g) : gate(g) {}
+            ~Device() override { gate->destroyed=true; }
+        };
+        for (bool writing : {false,true}) for (bool close : {false,true}) {
+            auto gate=std::make_shared<Gate>(); auto *device=new Device(gate);
+            auto *panel=new IntelBclkVoltagePanel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+            if (writing) { panel->findChild<QPushButton *>("bclkVoltageRead")->click(); QTRY_VERIFY(panel->isEnabled()); }
+            device->afterRequest=[gate,writing,device] {
+                const auto &r=device->requests.back();
+                if ((writing && (!r.write || ((r.value>>32)&255)!=0x15)) || gate->entered.exchange(true)) return;
+                const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(3);
+                while (!gate->release && std::chrono::steady_clock::now()<deadline) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            };
+            if (writing) {
+                panel->findChild<QComboBox *>("bclkVoltageValue")->setCurrentIndex(1);
+                QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+                panel->findChild<QPushButton *>("bclkVoltageApply")->click();
+            } else panel->findChild<QPushButton *>("bclkVoltageRead")->click();
+            QTRY_VERIFY(gate->entered.load());
+            if (close) { delete panel; QVERIFY(!gate->destroyed.load()); gate->release=true; QTRY_VERIFY(gate->destroyed.load()); }
+            else {
+                panel->findChild<QLineEdit *>("bclkVoltageCpu")->setText("131"); gate->release=true;
+                QTRY_VERIFY(panel->isEnabled()); QCOMPARE(panel->findChild<QTableWidget *>("bclkVoltageTable")->rowCount(),0);
+                QVERIFY(panel->findChild<QLabel *>("bclkVoltageStatus")->text().contains("discarded"));
+                QCOMPARE(device->settingsAttempts(),writing?1u:0u); QCOMPARE(device->wrongCpu,0u); delete panel;
+            }
+        }
+    }
     void intelEnergyReadCopyAndTargetChange() {
         auto *device = new IntelEnergyFixture;
         auto access = std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
@@ -2136,6 +2241,42 @@ private slots:
             }
             QCOMPARE(events,12u); QCOMPARE(device->writes,0u);
         }
+    }
+    void intelEnergyCounterUnitsCapabilitiesAndReadOnlyAccess() {
+        auto *device=new IntelControlsFixture; device->expectedCpu=130;
+        IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        panel.resize(1180,1100); panel.show();
+        auto *table=panel.findChild<QTableWidget *>("intelTable"); auto *read=panel.findChild<QPushButton *>("intelRead");
+        auto find=[&](const QString &name) { for (int i=0;i<table->rowCount();++i) if (table->item(i,0)->text()==name) return i; return -1; };
+        for (unsigned model : {0xb7,0x8f,0xcf}) {
+            device->model=model; read->click(); QTRY_VERIFY(panel.isEnabled());
+            const auto package=find("Package energy counter"); QVERIFY(package>=0);
+            QCOMPARE(table->item(package,1)->text(),QString("4")); QCOMPARE(table->item(package,2)->text(),QString("J"));
+            QCOMPARE(table->item(package,5)->text(),QString("Read only / locked"));
+            const auto domain=find(model==0xb7?"CPU cores energy counter (PP0)":"DRAM energy counter (BIOS mode 0)"); QVERIFY(domain>=0);
+            QCOMPARE(table->item(domain,1)->text(),model==0xb7?QString("1"):QString("0.5"));
+            QCOMPARE(table->item(find("HWP guaranteed capability"),1)->text(),QString("48"));
+            QCOMPARE(table->item(find("HWP most efficient capability"),1)->text(),QString("32"));
+            QCOMPARE(panel.findChild<QComboBox *>("intelField")->count(),13); QCOMPARE(device->writes,0u);
+            for (auto *button:panel.findChildren<QPushButton *>()) if (button->text()=="Copy snapshot") button->click();
+            QVERIFY(QApplication::clipboard()->text().contains("Package energy counter"));
+        }
+        const auto capture=qEnvironmentVariable("OCTOOL_INTEL_TELEMETRY_TEST_SCREENSHOT"); if (!capture.isEmpty()) QVERIFY(panel.grab().save(capture));
+        panel.findChild<QLineEdit *>("intelCpu")->setText("131"); QCOMPARE(table->rowCount(),0); QCOMPARE(device->wrongCpu,0u);
+    }
+    void intelEnergyCounterFailureClearsValuesAndPreservesIndependentFields() {
+        auto *device=new IntelControlsFixture; device->expectedCpu=130;
+        IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+        auto *read=panel.findChild<QPushButton *>("intelRead"); auto *table=panel.findChild<QTableWidget *>("intelTable");
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        device->failRead=int(device->reads+6); read->click(); QTRY_VERIFY(panel.isEnabled());
+        for (int i=0;i<table->rowCount();++i) if (table->item(i,0)->text()=="Package energy counter") {
+            QCOMPARE(table->item(i,1)->text(),QString("—")); QCOMPARE(table->item(i,4)->text(),QString("—"));
+            QVERIFY(table->item(i,5)->text().startsWith("Failed"));
+        }
+        device->failRead=-1; device->virtualized=true; read->click(); QTRY_VERIFY(panel.isEnabled());
+        for (int i=0;i<table->rowCount();++i) if (table->item(i,0)->text().contains("energy counter")) QCOMPARE(table->item(i,1)->text(),QString("—"));
+        QCOMPARE(device->writes,0u); QCOMPARE(device->wrongCpu,0u);
     }
     void intelNonTurboRatioIsReadOnlyAndErrorsAreUnavailable() {
         auto *device=new IntelControlsFixture; device->expectedCpu=130;

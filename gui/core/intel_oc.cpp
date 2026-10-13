@@ -2,6 +2,7 @@
 #include "intel_oc.h"
 #include "intel_tvb.h"
 #include "intel_avx.h"
+#include "intel_bclk_voltage.h"
 #include <cerrno>
 #include <chrono>
 #include <cmath>
@@ -396,6 +397,67 @@ IntelAvxUpdate applyIntelAvx(HardwareSession &s, const IntelAvxSnapshot &old, un
     if ((out.error = out.after.error)) return out;
     if (out.after.identity.signature != old.identity.signature) { out.error = -ENODEV; return out; }
     if (out.after.flexRatio != old.flexRatio || !intelAvxEditable(out.after)) { out.error = -EAGAIN; return out; }
+    if (out.after.response.data != out.expected) { out.error = -EIO; return out; }
+    if ((out.error = s.checkpoint())) return out;
+    out.verified = true; out.unchanged = !out.writeAttempted; out.stage = IntelOcStage::Complete;
+    return out;
+}
+namespace {
+bool bclkVoltageSnapshotValid(const IntelBclkVoltageSnapshot &s) {
+    return !s.error && s.valid && hasIntelOcProfile(s.identity) &&
+        responseValid(s.response) && s.response.commandAttempted;
+}
+}
+bool intelBclkVoltageEnabled(std::uint32_t word) { return (word & 4u) != 0; }
+int encodeIntelBclkVoltage(unsigned enabled, std::uint32_t previous, std::uint32_t &encoded) {
+    if (enabled > 1) return -ERANGE;
+    encoded = (previous & ~UINT32_C(4)) | (enabled << 2);
+    return 0;
+}
+bool intelBclkVoltageEditable(const IntelBclkVoltageSnapshot &s) {
+    return bclkVoltageSnapshotValid(s) && !(s.flexRatio & ocLock);
+}
+IntelBclkVoltageSnapshot readIntelBclkVoltage(HardwareSession &s, unsigned cpu) {
+    IntelBclkVoltageSnapshot out; out.cpu = cpu; out.identity = identifyCpu(s, cpu);
+    if ((out.error = out.identity.error)) return out;
+    if (!hasIntelOcProfile(out.identity) || out.identity.maximum < 1) { out.error = -ENOTSUP; return out; }
+    const auto features = s.cpuid(cpu, 1);
+    if ((out.error = features.error)) return out;
+    if (features.words[0] != out.identity.signature) { out.error = -ENODEV; return out; }
+    if (!(features.words[3] & (1u << 5)) ||
+        (features.words[2] & (1u << 31))) { out.error = -ENOTSUP; return out; }
+    const auto flex = s.execute(msrRequest(cpu, 0x194));
+    if ((out.error = flex.error)) return out;
+    out.flexRatio = flex.value;
+    out.response = mailboxCommand(s, cpu, 0x14, 0, 0, 0);
+    if ((out.error = out.response.error)) return out;
+    if ((out.error = s.checkpoint())) return out;
+    out.valid = true; return out;
+}
+IntelBclkVoltageUpdate applyIntelBclkVoltage(HardwareSession &s, const IntelBclkVoltageSnapshot &old, unsigned enabled) {
+    IntelBclkVoltageUpdate out;
+    if (!bclkVoltageSnapshotValid(old)) { out.error = -EINVAL; return out; }
+    if ((out.error = encodeIntelBclkVoltage(enabled, old.response.data, out.expected))) return out;
+    out.expectedValid = true;
+    if (!intelBclkVoltageEditable(old)) { out.error = -EPERM; return out; }
+    out.stage = IntelOcStage::Preflight;
+    const auto fresh = readIntelBclkVoltage(s, old.cpu); out.response = fresh.response;
+    if ((out.error = fresh.error)) return out;
+    if (fresh.identity.signature != old.identity.signature) { out.error = -ENODEV; return out; }
+    if (!intelBclkVoltageEditable(fresh)) { out.error = -EPERM; return out; }
+    out.stage = IntelOcStage::Compare;
+    if (fresh.flexRatio != old.flexRatio || fresh.response.data != old.response.data) { out.error = -EAGAIN; return out; }
+    if (out.expected == fresh.response.data) out.after = fresh;
+    else {
+        out.stage = IntelOcStage::Write;
+        out.response = mailboxCommand(s, old.cpu, 0x15, out.expected, 0, 0);
+        out.writeAttempted = out.response.commandAttempted;
+        if ((out.error = out.response.error)) return out;
+        out.stage = IntelOcStage::Verify; out.after = readIntelBclkVoltage(s, old.cpu);
+    }
+    if ((out.error = out.after.error)) return out;
+    if (out.after.identity.signature != old.identity.signature) { out.error = -ENODEV; return out; }
+    if (out.after.flexRatio != old.flexRatio || !intelBclkVoltageEditable(out.after)) { out.error = -EAGAIN; return out; }
     if (out.after.response.data != out.expected) { out.error = -EIO; return out; }
     if ((out.error = s.checkpoint())) return out;
     out.verified = true; out.unchanged = !out.writeAttempted; out.stage = IntelOcStage::Complete;

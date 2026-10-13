@@ -11,6 +11,7 @@
 #include "tests/intel_uncore_fixture.h"
 #include "tests/intel_energy_fixture.h"
 #include "tests/intel_avx_fixture.h"
+#include "tests/intel_bclk_voltage_fixture.h"
 #include "tests/intel_thermal_fixture.h"
 #include "tests/intel_limits_fixture.h"
 #include "tests/intel_memory_fixture.h"
@@ -77,6 +78,16 @@ void invalidBeforeOpen() {
         {"intel-avx-set","--cpu","0","--offset","1.5","--apply"},
         {"intel-avx-set","--cpu","0","--offset","1","--offset","2","--apply"},
         {"intel-avx-set","--cpu","0","--offset","1","--domain","cache","--apply"},
+        {"intel-bclk-voltage-read"},
+        {"intel-bclk-voltage-read","--cpu","0","--apply"},
+        {"intel-bclk-voltage-read","--cpu","0","--enabled","1"},
+        {"intel-bclk-voltage-set","--cpu","0","--enabled","1"},
+        {"intel-bclk-voltage-set","--cpu","0","--apply"},
+        {"intel-bclk-voltage-set","--cpu","0","--enabled","2","--apply"},
+        {"intel-bclk-voltage-set","--cpu","0","--enabled","-1","--apply"},
+        {"intel-bclk-voltage-set","--cpu","0","--enabled","1.5","--apply"},
+        {"intel-bclk-voltage-set","--cpu","0","--enabled","1","--enabled","2","--apply"},
+        {"intel-bclk-voltage-set","--cpu","0","--enabled","1","--domain","cache","--apply"},
         {"intel-energy-read"},
         {"intel-energy-read", "--cpu", "0", "--apply"},
         {"intel-energy-read", "--cpu", "0", "--field", "efficient-turbo"},
@@ -274,6 +285,7 @@ struct Registers : HardwareBackend {
         values[0xce] = UINT64_C(0x8765432140002a00);
         values[0x606] = 0xa0e03; values[0x610] = UINT64_C(0x0800800000008000) | 1000;
         values[0x770] = 1; values[0x771] = 0x08203040; values[0x774] = 0x80004008;
+        values[0x611] = 0x10000; values[0x639] = 0x4000;
         values[0xc0010061] = 1u << 4; values[0xc0010064] = UINT64_C(0xfffffffffffffc00); values[0xc0010065] = 0;
     }
     Reply execute(const Request &r) override {
@@ -286,7 +298,7 @@ struct Registers : HardwareBackend {
     CpuIdReply cpuid(unsigned cpu, std::uint32_t leaf, std::uint32_t subleaf) override {
         assert(cpu == expectedCpu); ++cpuCalls; CpuIdReply out;
         if (!leaf) { out.words[0] = 6; out.words[1] = amd ? 0x68747541 : 0x756e6547; out.words[2] = amd ? 0x444d4163 : 0x6c65746e; out.words[3] = amd ? 0x69746e65 : 0x49656e69; }
-        else if (leaf == 1) out.words[0] = amd ? 0xb00f20 : 0xb0670;
+        else if (leaf == 1) { out.words[0] = amd ? 0xb00f20 : 0xb0670; out.words[3] = 1u << 5; }
         else if (leaf == 6) out.words[0] = (1u << 7) | (1u << 10);
         else if (leaf == 0x80000000) out.words[0] = 0x80000026;
         else if (leaf == 0x80000007) out.words[3] = 1u << 7;
@@ -1061,6 +1073,24 @@ void pmCommands() {
     text("{\"bad\":\"\xed\xa0\x80\"}"); invoke({"amd-pm-decode","--file",path}, 3);
     assert(!opens);
 }
+void telemetryCommands() {
+    for (unsigned model : {0xb7,0x8f,0xcf}) for (unsigned exponent : {0u,14u,16u,31u}) {
+        IntelControlsFixture d; d.model=model; d.expectedCpu=130;
+        d.regs[0x606]=(d.regs[0x606]&~UINT64_C(0x1f00))|(std::uint64_t(exponent)<<8);
+        command(d,{"intel-read","--cpu","130"},0); assert(!d.writes && !d.wrongCpu);
+    }
+    for (unsigned mode=0;mode<7;++mode) {
+        IntelControlsFixture d; d.expectedCpu=130;
+        if (mode==0) d.failRead=0;
+        if (mode==1) d.failRead=3;
+        if (mode==2) d.failRead=6;
+        if (mode==3) d.failRead=7;
+        if (mode==4) d.msr=false;
+        if (mode==5) d.virtualized=true;
+        if (mode==6) d.failCpuid=3;
+        command(d,{"intel-read","--cpu","130"},3); assert(!d.writes && !d.wrongCpu);
+    }
+}
 void thermalEventCommands() {
     for (unsigned model : {0xb7,0x8f,0xcf}) for (unsigned bits : {0u,0xfffu,0xaaau,0x555u}) {
         IntelPackageThermalFixture d; d.model=model; d.regs[0x1b1]|=bits;
@@ -1195,6 +1225,45 @@ void avxCommands() {
         assert(!d.settingsAttempts());
     }
 }
+void bclkVoltageCommands() {
+    for (std::uint32_t raw : {0u,UINT32_MAX,0xdeadbeefu}) {
+        IntelBclkVoltageFixture d; d.data=raw; command(d,{"intel-bclk-voltage-read","--cpu","130"},0);
+        assert(!d.settingsAttempts());
+    }
+    for (unsigned enabled : {0u,1u}) {
+        IntelBclkVoltageFixture d; const auto before=d.data;
+        command(d,{"intel-bclk-voltage-set","--cpu","130","--enabled",std::to_string(enabled),"--apply"},0);
+        assert(d.data==((before & ~4u)|(enabled<<2)) && !d.wrongCpu);
+    }
+    IntelBclkVoltageFixture noop;
+    command(noop,{"intel-bclk-voltage-set","--cpu","130","--enabled",std::to_string((noop.data>>2)&1),"--apply"},0);
+    assert(!noop.settingsAttempts());
+    IntelBclkVoltageFixture locked; locked.locked=true;
+    command(locked,{"intel-bclk-voltage-read","--cpu","130"},0);
+    for (unsigned mode=0;mode<9;++mode) {
+        IntelBclkVoltageFixture d;
+        if (mode==0) d.locked=true;
+        if (mode==1) d.msr=false;
+        if (mode==2) d.hypervisor=true;
+        if (mode==3) d.discardChange=true;
+        if (mode==4) { d.failCommand=0x15; d.status=255; }
+        if (mode==5) d.model=0x8f;
+        if (mode==6) d.afterRequest=[&] { const auto &r=d.requests.back(); if (r.write && ((r.value>>32)&255)==0x15) d.data ^= 1u<<31; };
+        if (mode==7) { d.failCommand=0x14; d.status=7; }
+        if (mode==8) d.failAt=0;
+        command(d,{"intel-bclk-voltage-set","--cpu","130","--enabled","1","--apply"},3);
+        assert(d.settingsAttempts()<=1);
+    }
+    for (unsigned mode=0;mode<4;++mode) {
+        IntelBclkVoltageFixture d;
+        if (mode==0) d.amd=true;
+        if (mode==1) d.msr=false;
+        if (mode==2) { d.failCommand=0x14; d.status=128; }
+        if (mode==3) d.failAt=0;
+        command(d,{"intel-bclk-voltage-read","--cpu","130"},3);
+        assert(!d.settingsAttempts());
+    }
+}
 void tvbCommands() {
     for (unsigned bits : {0u, 2u, 4u, 6u, 8u, 10u, 12u, 14u}) {
         IntelTvbFixture d; d.data |= bits;
@@ -1312,8 +1381,8 @@ int main(int argc, char **argv) {
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); thermalEventCommands();
-    intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands();
+    intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "32 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "34 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }
