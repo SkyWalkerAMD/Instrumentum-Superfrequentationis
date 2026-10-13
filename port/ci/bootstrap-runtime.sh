@@ -6,7 +6,11 @@ test "${OCTOOL_DISPOSABLE_CONTAINER:-}" = 1
 test "$(uname -m)" = x86_64
 . /etc/os-release
 case "$target" in
-    el7) exec bash "$(dirname "$0")/bootstrap-el7.sh" runtime;;
+    el7)
+        bash "$(dirname "$0")/bootstrap-el7.sh" runtime
+        # EL7 xvfb-run invokes which; the minimal base image omits it.
+        yum install -y which
+        exit 0;;
     el8|el9|el10)
         case "$ID" in rocky|almalinux|rhel) ;; *) exit 2;; esac
         test "${VERSION_ID%%.*}" = "${target#el}";;
