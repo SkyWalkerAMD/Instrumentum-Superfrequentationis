@@ -314,7 +314,11 @@ private slots:
         QCOMPARE(table->item(63,2)->text(),QString("8*tCK")); QCOMPARE(table->item(65,2)->text(),QString("tCK"));
         QCOMPARE(table->item(66,2)->text(),QString("Encoded"));
         QVERIFY(panel.findChild<QLabel *>("imcContext")->text().contains("snapshot v4"));
-        QVERIFY(panel.findChild<QLabel *>("imcStatus")->text().contains("do not report the current power state"));
+        auto *status = panel.findChild<QLabel *>("imcStatus");
+        QVERIFY(status->text().contains("do not report the current power state"));
+        // Loading after show() invalidates the label's wrapped-height hint.
+        // Let Qt complete the layout before capturing the whole status text.
+        QTRY_VERIFY(status->height() >= status->heightForWidth(status->width()));
         table->scrollToBottom();
         QTRY_VERIFY(table->viewport()->rect().contains(table->visualItemRect(table->item(57,1))));
         QTRY_VERIFY(table->viewport()->rect().contains(table->visualItemRect(table->item(67,1))));
