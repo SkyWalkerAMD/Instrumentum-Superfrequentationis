@@ -1,0 +1,183 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "functions": [
+    {
+      "symbol": "_Z17is_intel_perfbiasv",
+      "address": 3620128,
+      "size": 91,
+      "code_hex": "f30f1efa4883ec18bf4800000064488b042528000000488944240831c0488d5424044889e6c7042400000000c744240400000000e877baffff8b0424d1e883e001488b54240864482b14252800000075054883c418c3e8956bddff",
+      "code_sha256": "210ec538fba514a972c0e290beedf436e0596be211640882aa3a0b5af92a9b4e",
+      "calls": [
+        {
+          "instruction": 3620180,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3620214,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z18dis_intel_perfbiasv",
+      "address": 3620224,
+      "size": 227,
+      "code_hex": "f30f1efa4154bf4800000055534881ec8001000064488b042528000000488984247801000031c0488d54240c488d742408c744240800000000488d6c2410c744240c00000000e805baffff4889ef83642408fde8f89c1500488b4424504839442458744731db662e0f1f84000000000089de4889efe856d713008b54240c8b74240889c1bf48000000e862b8ffffbfe8030000e88882ddff488b4424584883c301482b4424504839d877c54889efe87da7eaff488b84247801000064482b042528000000750c4881c4800100005b5d415cc3e8b96addfff30f1efa4989c4e9da4bdfff",
+      "code_sha256": "8ec11822b05da97f7d34407170591a6377aeb1dc935e83688c2df9d9e90606c7",
+      "calls": [
+        {
+          "instruction": 3620294,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3620307,
+          "kind": "call",
+          "target": 5036752,
+          "symbols": [
+            "_ZN18My_Processor_CoresC1Ev",
+            "_ZN18My_Processor_CoresC2Ev"
+          ]
+        },
+        {
+          "instruction": 3620341,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 3620361,
+          "kind": "call",
+          "target": 3602032,
+          "symbols": [
+            "_Z7WrmsrTxjjjm"
+          ]
+        },
+        {
+          "instruction": 3620371,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 3620398,
+          "kind": "call",
+          "target": 2221488,
+          "symbols": [
+            "_ZN18My_Processor_CoresD1Ev",
+            "_ZN18My_Processor_CoresD2Ev"
+          ]
+        },
+        {
+          "instruction": 3620434,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 3620446,
+          "kind": "jmp",
+          "target": 1477181,
+          "symbols": [
+            "_Z18dis_intel_perfbiasv.cold"
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "_Z17en_intel_perfbiasv",
+      "address": 3620464,
+      "size": 227,
+      "code_hex": "f30f1efa4154bf4800000055534881ec8001000064488b042528000000488984247801000031c0488d54240c488d742408c744240800000000488d6c2410c744240c00000000e815b9ffff4889ef834c240802e8089c1500488b4424504839442458744731db662e0f1f84000000000089de4889efe866d613008b54240c8b74240889c1bf48000000e872b7ffffbfe8030000e89881ddff488b4424584883c301482b4424504839d877c54889efe88da6eaff488b84247801000064482b042528000000750c4881c4800100005b5d415cc3e8c969ddfff30f1efa4989c4e9fa4adfff",
+      "code_sha256": "23df66db7ddc1c2c43b0de485a014cc81ba650cdbb478e6c4d0b865963249ac5",
+      "calls": [
+        {
+          "instruction": 3620534,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3620547,
+          "kind": "call",
+          "target": 5036752,
+          "symbols": [
+            "_ZN18My_Processor_CoresC1Ev",
+            "_ZN18My_Processor_CoresC2Ev"
+          ]
+        },
+        {
+          "instruction": 3620581,
+          "kind": "call",
+          "target": 4920656,
+          "symbols": [
+            "_ZN18My_Processor_Cores18get_Processor_MaskEi"
+          ]
+        },
+        {
+          "instruction": 3620601,
+          "kind": "call",
+          "target": 3602032,
+          "symbols": [
+            "_Z7WrmsrTxjjjm"
+          ]
+        },
+        {
+          "instruction": 3620611,
+          "kind": "call",
+          "target": 1360032,
+          "symbols": [
+            "usleep@plt"
+          ]
+        },
+        {
+          "instruction": 3620638,
+          "kind": "call",
+          "target": 2221488,
+          "symbols": [
+            "_ZN18My_Processor_CoresD1Ev",
+            "_ZN18My_Processor_CoresD2Ev"
+          ]
+        },
+        {
+          "instruction": 3620674,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        },
+        {
+          "instruction": 3620686,
+          "kind": "jmp",
+          "target": 1477197,
+          "symbols": [
+            "_Z17en_intel_perfbiasv.cold"
+          ]
+        }
+      ]
+    }
+  ],
+  "objects": {},
+  "literals": []
+}

@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "production_commit": "39dc2e573568e5603611c308de9fd30def42b5ff",
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "fixture_sha256": "8ac1cf69f6d2082f29cc0c07a544403c3c0b5ca1682007386bbb447b26155b35",
+  "scenarios": 668,
+  "functions": 3,
+  "scope": "Complete original entries with synthetic MSR, topology/mask and delay boundaries. No real CPU enumeration or I/O.",
+  "findings": [
+    "The named perfbias entries read/write MSR 48 bit 1, not MSR 1B0 energy performance bias.",
+    "One MSR sample is copied to every synthetic target, preserving that sample rather than each target register.",
+    "The 64-bit target mask is truncated through EAX -> ECX before WrmsrTx.",
+    "Wrapper failures are ignored; untouched read outputs become zero, then setters broadcast that value.",
+    "No capability check, per-target old-value comparison or readback occurs in these entries."
+  ],
+  "validation": "Additional local Python/Unicorn research; not part of the production CI counts",
+  "replay_report": {
+    "path": "build/intel-perfbias.json",
+    "sha256": "d41c29b0407763f9ccb01c0de9894f66f7149c36fe8e5bac40b6153e91b4b817",
+    "bytes": 332358
+  },
+  "primary_source": {
+    "url": "https://cdrdv2-public.intel.com/835765/335592-sdm-vol-4.pdf",
+    "sha256": "de47347b8d3827abf4ac1e8c9e72379e6c74f47403ad8976cdb27f38d2e172b9",
+    "pdf_page_one_based": 16
+  }
+}

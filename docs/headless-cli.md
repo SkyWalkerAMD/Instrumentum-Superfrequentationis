@@ -1,7 +1,14 @@
 # 无桌面版 OCTool
 
-2026-10-13 继续补充 [BCLK 自适应电压开关](intel-bclk-voltage.md)与
-[能量计数及 HWP 完整能力/事件历史显示](intel-energy-counters.md)、[B7 PL4 功率限制](intel-pl4.md)，GUI / CLI 共用核心。
+<!-- intel-telemetry-39dc2e5 -->
+2026-10-13：最新验证生产提交 `39dc2e5`，GUI / CLI 同步补齐 **BCLK 自适应电压、B7 PL4 峰值功率、Intel 能量计数及 HWP 能力/历史**。
+
+- [本批交付与适用范围](intel-telemetry-validation.md)：43/43 云端任务通过；11 个 Linux 目标，含 EL7。
+- 各目标 CLI 26 CTest / 873 份 JSON，GUI 147 项回归；共同核心各 24 CTest / 308 场景组；12 套内核 VM。
+- `dist/gui-cli-intel-telemetry-39dc2e5/`：33 个安装包、精确源码、保留扩展的用户源码与 SHA256。
+
+原版全部功能仍未完成；ICCmax/VR、部分 AMD/主板控制及真机验收仍见[还原清单](recovery-status.md)。以下保留此前记录。
+<!-- /intel-telemetry-39dc2e5 -->
 
 2026-10-13 上批补充 [AVX2 倍率偏移](intel-avx-offset.md)和
 [Intel 温控配置](intel-thermal.md)，以及 [Intel 限频原因与历史清除](intel-limits.md)：

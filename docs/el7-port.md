@@ -1,7 +1,7 @@
 # EL7 兼容适配
 
 2026-10-13：第 11 个目标 `el7` 已通过 GUI、CLI、DKMS、全新环境安装和匹配内核 VM 验证。
-固定生产提交 `bc30c4f`，详见[本批完整记录](el7-recovery-validation.md)。测试环境是官方
+首次完整验证提交 `bc30c4f`；本批功能更新在 `39dc2e5` 再次通过，[最新交付记录](intel-telemetry-validation.md)。测试环境是官方
 `oraclelinux:7` 镜像与 Oracle 签名软件仓库，实际为 **Oracle Linux 7.9 x86_64**。
 RHEL/CentOS 7 的 ABI 兼容设计不等于这些系统已经逐台验收。
 
