@@ -35,9 +35,11 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 885, len(reports)
+assert len(reports) == 911, len(reports)
 platform_reports=[r for r in reports if r['command']=='intel-read' and 'readings' in r['data']]
-assert len(platform_reports)==63  # Settings, telemetry and architectural HWP history.
+assert len(platform_reports)==81
+hwp_context_reports=platform_reports[63:]
+platform_reports=platform_reports[:63]  # Preserve the previous telemetry/error fixture assertions.
 for report in platform_reports:
     assert not report['data']['energy_counters_are_instantaneous_power'] and not report['data']['energy_counters_include_wrap_history']
     assert report['data']['hwp_status_is_history']
@@ -86,6 +88,28 @@ for report in platform_reports:
         assert row['value']==((int(row['raw'],16)>>8)&255) and row['value']>0
     else:
         assert row['value'] is None and row['raw'] is None
+
+assert len(hwp_context_reports)==18
+assert [r['ok'] for r in hwp_context_reports]==[True]*12+[False]*6
+for report in hwp_context_reports:
+    d=report['data']; assert d['hwp_requests_are_stored_hints'] and not d['hwp_request_snapshot_atomic']
+    for row in d['readings']:
+        if row['error']:
+            assert row['value'] is None and row['raw'] is None and not row['editable']
+        if row['msr'] in ('0x00000772','0x00000773','0x00000775','0x00000776'):
+            assert not row['editable']
+golden={r['name']:r for r in hwp_context_reports[0]['data']['readings']}
+expected={'HWP package minimum':16,'HWP package maximum':56,'HWP package energy preference':136,
+          'HWP package activity window (0 = automatic)':20000,'HWP PECI minimum':18,'HWP PECI maximum':48,
+          'HWP PECI energy preference':195,'HWP PECI minimum override':0,'HWP PECI maximum override':1,'HWP PECI EPP override':1}
+for name,value in expected.items(): assert golden[name]['value']==value and not golden[name]['editable']
+assert golden['HWP minimum']['editable'] and not golden['HWP maximum']['editable'] and not golden['HWP energy preference']['editable']
+sets=reports[-8:]
+assert all(r['command']=='intel-set' and r['data']['field']=='hwp-epp' for r in sets)
+assert [r['ok'] for r in sets]==[True,True]+[False]*6
+assert [r['data']['write_attempted'] for r in sets]==[True,True,False,False,False,True,True,False]
+assert all(not r['data']['verified'] for r in sets[2:])
+
 event_names=('thermal event','PROCHOT event','critical temperature','thermal threshold 1','thermal threshold 2','power limit')
 event_rows=[]
 for report in platform_reports:

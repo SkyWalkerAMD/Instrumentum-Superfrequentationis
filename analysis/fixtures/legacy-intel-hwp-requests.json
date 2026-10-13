@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "functions": [
+    {
+      "symbol": "_Z25Rd_PECI_HWP_REQUEST_Tunerv",
+      "address": 3687920,
+      "size": 82,
+      "code_hex": "f30f1efa4883ec18bf7507000064488b042528000000488944240831c04889e2488d742404e8b6b1feff8b14248b44240448c1e2204809d0488b54240864482b14252800000075054883c418c3e8ce62dcff",
+      "code_sha256": "c30c5c583a61893b50e4954997b0a7e265abfff11fdccc559889dd921d126a57",
+      "calls": [
+        {
+          "instruction": 3687957,
+          "kind": "call",
+          "target": 3602384,
+          "symbols": [
+            "_Z5RdmsrjPjS_"
+          ]
+        },
+        {
+          "instruction": 3687997,
+          "kind": "call",
+          "target": 1354000,
+          "symbols": [
+            "__stack_chk_fail@plt"
+          ]
+        }
+      ]
+    }
+  ],
+  "objects": {},
+  "literals": []
+}

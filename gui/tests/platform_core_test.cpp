@@ -250,6 +250,126 @@ const IntelReading &named(const IntelSnapshot &s, const char *name) {
     for (const auto &r:s.readings) if (r.name==name) return r;
     assert(false); return s.readings[0];
 }
+
+void intelHwpContextFields() {
+    TestService t; t.fake->enableHwpContext(); t.fake->expectedCpu=130;
+    const auto out=snapshot(t);
+    struct Check { const char *name; double value; const char *unit; unsigned msr; };
+    const Check cases[] = {
+        {"HWP package minimum",16,"performance level",0x772}, {"HWP package maximum",56,"performance level",0x772},
+        {"HWP package desired (0 = autonomous)",0,"performance level",0x772},
+        {"HWP package energy preference",136,"0..255",0x772}, {"HWP package activity window (0 = automatic)",20000,"us",0x772},
+        {"HWP package control bit",0,"0 / 1",0x774}, {"HWP minimum valid bit",1,"0 / 1",0x774},
+        {"HWP maximum valid bit",0,"0 / 1",0x774}, {"HWP desired valid bit",0,"0 / 1",0x774},
+        {"HWP EPP valid bit",0,"0 / 1",0x774}, {"HWP activity window valid bit",0,"0 / 1",0x774},
+        {"HWP PECI minimum",18,"performance level",0x775}, {"HWP PECI maximum",48,"performance level",0x775},
+        {"HWP PECI energy preference",195,"0..255",0x775}, {"HWP PECI minimum override",0,"0 / 1",0x775},
+        {"HWP PECI maximum override",1,"0 / 1",0x775}, {"HWP PECI EPP override",1,"0 / 1",0x775},
+        {"HWP package control polarity",0,"0 / 1",0x776},
+        {"HWP guaranteed change interrupt enabled",1,"0 / 1",0x773},
+        {"HWP minimum excursion interrupt enabled",1,"0 / 1",0x773},
+        {"HWP highest change interrupt enabled",0,"0 / 1",0x773},
+        {"HWP PECI override interrupt enabled",1,"0 / 1",0x773},
+        {"HWP highest performance change history",0,"0 / 1",0x777},
+        {"HWP PECI override entry history",0,"0 / 1",0x777}, {"HWP PECI override exit history",0,"0 / 1",0x777}
+    };
+    for (const auto &c:cases) {
+        const auto &v=named(out,c.name);
+        assert(v.decoded && !v.error && !v.editable && v.value==c.value && v.unit==c.unit && v.msr==c.msr && v.raw==t.fake->regs[c.msr]);
+    }
+    assert(named(out,"HWP minimum").editable && !named(out,"HWP maximum").editable && !named(out,"HWP energy preference").editable);
+    assert(t.fake->reads==14 && !t.fake->writes && !t.fake->wrongCpu);
+    // Every bit of the PECI source, including the reserved fields, is isolated.
+    for (unsigned bit=0;bit<64;++bit) {
+        t.fake->regs[0x775]=UINT64_C(1)<<bit; const auto s=snapshot(t);
+        assert(named(s,"HWP PECI minimum").value==(bit<8?double(1u<<bit):0));
+        assert(named(s,"HWP PECI maximum").value==(bit>=8 && bit<16?double(1u<<(bit-8)):0));
+        assert(named(s,"HWP PECI energy preference").value==(bit>=24 && bit<32?double(1u<<(bit-24)):0));
+        assert(named(s,"HWP PECI minimum override").value==(bit==63));
+        assert(named(s,"HWP PECI maximum override").value==(bit==62));
+        assert(named(s,"HWP PECI EPP override").value==(bit==60));
+    }
+}
+void intelHwpContextCapabilityGates() {
+    for (unsigned mask=0;mask<512;++mask) {
+        TestService t; t.fake->model=0xff; t.fake->hwp=mask&1;
+        t.fake->packageRequest=mask&2; t.fake->flexible=mask&4; t.fake->peci=mask&8;
+        t.fake->control=mask&16; t.fake->notifications=mask&32; t.fake->highestChange=mask&64;
+        t.fake->epp=mask&128; t.fake->activityWindow=mask&256;
+        const auto out=snapshot(t);
+        auto reads=[&](unsigned msr) { return std::count_if(t.fake->requests.begin(),t.fake->requests.end(),[&](const Request &r) { return r.address==msr && !r.write; }); };
+        assert(reads(0x772)==int(t.fake->hwp && t.fake->packageRequest));
+        assert(reads(0x775)==int(t.fake->hwp && t.fake->peci));
+        assert(reads(0x776)==int(t.fake->hwp && t.fake->control));
+        assert(reads(0x773)==int(t.fake->hwp && t.fake->notifications));
+        auto count=[&](unsigned msr) { return std::count_if(out.readings.begin(),out.readings.end(),[&](const IntelReading &r) { return r.msr==msr; }); };
+        assert(count(0x772)==(t.fake->hwp && t.fake->packageRequest?3+int(t.fake->epp)+int(t.fake->activityWindow):0));
+        assert(count(0x775)==(t.fake->hwp && t.fake->peci?6:0));
+        assert(count(0x773)==(t.fake->hwp && t.fake->notifications?2+int(t.fake->highestChange)+int(t.fake->peci):0));
+        assert(count(0x777)==(t.fake->hwp?2+int(t.fake->highestChange)+2*int(t.fake->peci):0));
+        assert(!t.fake->writes);
+    }
+    for (bool failed : {false,true}) {
+        TestService t; t.fake->enableHwpContext(); t.fake->regs[0x770]=0; if (failed) t.fake->failRead=2;
+        const auto s=snapshot(t); assert(!s.hwpEnabled && s.hwpControlValue.error==(failed?-EACCES:-EPERM));
+        for (const auto &r:t.fake->requests) assert(r.address!=0x776);
+        for (const auto &r:s.readings) if (r.msr==0x774) assert(!r.editable);
+    }
+}
+void intelHwpContextReadFailures() {
+    for (unsigned pos=5;pos<9;++pos) {
+        TestService t; t.fake->enableHwpContext(); t.fake->failRead=int(pos); const auto out=snapshot(t);
+        const unsigned msr=pos==5?0x772:pos==6?0x775:pos==7?0x776:0x773;
+        unsigned rows=0;
+        for (const auto &r:out.readings) if (r.msr==msr) { ++rows; assert(r.error==-EACCES && !r.decoded && !r.editable); }
+        assert(rows==(pos==5?5u:pos==6?6u:pos==7?1u:4u));
+        assert(named(out,"Package PL1").editable && named(out,"HWP highest capability").decoded);
+        if (pos==6 || pos==7) for (const auto &r:out.readings) if (r.msr==0x774) assert(!r.editable);
+        assert(!t.fake->writes);
+    }
+}
+void intelHwpPeciAndPolarityGuards() {
+    for (unsigned mask=0;mask<8;++mask) {
+        TestService t; t.fake->enableHwpContext(); t.fake->regs[0x775]=
+            ((mask&1)?UINT64_C(1)<<63:0)|((mask&2)?UINT64_C(1)<<62:0)|((mask&4)?UINT64_C(1)<<60:0);
+        const auto s=snapshot(t);
+        assert(named(s,"HWP minimum").editable==!(mask&1)); assert(named(s,"HWP maximum").editable==!(mask&2));
+        assert(named(s,"HWP energy preference").editable==!(mask&4));
+    }
+    for (unsigned polarity=0;polarity<2;++polarity) for (unsigned bit=0;bit<2;++bit) {
+        TestService t; t.fake->enableHwpContext(); t.fake->regs[0x775]=0; t.fake->regs[0x776]=polarity;
+        t.fake->regs[0x774]=(t.fake->regs[0x774]&~(UINT64_C(1)<<42))|(std::uint64_t(bit)<<42);
+        const auto s=snapshot(t); const auto result=apply(t,s,IntelField::HwpEpp,192);
+        assert(named(s,"HWP energy preference").editable==(polarity==bit));
+        assert(result.verified==(polarity==bit) && result.writeAttempted==(polarity==bit));
+        assert(t.fake->writes==unsigned(polarity==bit));
+        for (const auto &r:t.fake->requests) if (r.write) assert(r.address==0x774);
+    }
+    for (IntelField field : {IntelField::HwpMin,IntelField::HwpMax,IntelField::HwpEpp}) {
+        TestService t; t.fake->enableHwpContext(); t.fake->regs[0x775]=UINT64_MAX;
+        const auto r=apply(t,snapshot(t),field,32); assert(r.error==-EPERM && !r.writeAttempted && !t.fake->writes);
+    }
+}
+void intelHwpContextChangesRejectVerification() {
+    for (bool afterWrite : {false,true}) for (unsigned change=0;change<8;++change) {
+        TestService t; t.fake->enableHwpContext(); t.fake->regs[0x775]=0;
+        const auto old=snapshot(t);
+        auto mutate=[&] {
+            if (change==0) t.fake->regs[0x775]^=1; // Values matter even if override is inactive.
+            if (change==1) t.fake->regs[0x775]^=UINT64_C(1)<<60;
+            if (change==2) t.fake->regs[0x776]^=1;
+            if (change==3) t.fake->peci=false;
+            if (change==4) t.fake->control=false;
+            if (change==5) t.fake->flexible=false;
+            if (change==6) t.fake->failRead=int(t.fake->reads+6);
+            if (change==7) t.fake->failRead=int(t.fake->reads+7);
+        };
+        if (afterWrite) t.fake->afterRequest=[&](const Request &r) { if (r.write) mutate(); }; else mutate();
+        const auto r=apply(t,old,IntelField::HwpEpp,192);
+        assert(r.error && !r.verified && r.writeAttempted==afterWrite && t.fake->writes==unsigned(afterWrite));
+    }
+}
+
 void intelEnergyCountersAndCapabilities() {
     for (unsigned model : {0xb7,0x8f,0xcf}) for (unsigned exponent=0;exponent<32;++exponent)
         for (std::uint32_t ticks : {0u,1u,0x80000000u,UINT32_MAX}) {
@@ -446,5 +566,6 @@ int main() {
     intelVerifiedFields(); intelVerificationFailures(); intelVerificationFaults(); intelVerificationGuards();
     intelActivityWindow(); intelNonTurboRatio(); intelNonTurboRatioFailures(); intelEnergyCountersAndCapabilities(); intelTelemetryErrorsAndGates();
     intelHwpHistory(); intelHwpHistoryGatesAndFailures();
-    std::cout << "19 platform scenario groups passed\n";
+    intelHwpContextFields(); intelHwpContextCapabilityGates(); intelHwpContextReadFailures(); intelHwpPeciAndPolarityGuards(); intelHwpContextChangesRejectVerification();
+    std::cout << "24 platform scenario groups passed\n";
 }

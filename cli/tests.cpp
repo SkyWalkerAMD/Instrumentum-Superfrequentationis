@@ -1129,6 +1129,43 @@ void pl4Commands() {
         assert(!d.wrongCpu && d.writes==unsigned(mode>=5 && mode<=7));
     }
 }
+
+void hwpContextCommands() {
+    // Eighteen independent read reports: full samples, capability omissions,
+    // four source failures and the disabled/failed HWP enable guard.
+    for (unsigned mode=0;mode<18;++mode) {
+        IntelControlsFixture d; d.expectedCpu=130; d.enableHwpContext();
+        if (mode==1 || mode==2) for (unsigned msr : {0x772,0x775,0x776,0x773,0x777}) d.regs[msr]=mode==1?0:UINT64_MAX;
+        if (mode==3) d.packageRequest=false;
+        if (mode==4) d.peci=false;
+        if (mode==5) d.control=false;
+        if (mode==6) d.notifications=false;
+        if (mode==7) d.flexible=false;
+        if (mode==8) d.highestChange=false;
+        if (mode==9) d.epp=false;
+        if (mode==10) d.activityWindow=false;
+        if (mode==11) d.hwp=false;
+        if (mode>=12 && mode<16) d.failRead=int(mode-7);
+        if (mode==16) d.regs[0x770]=0;
+        if (mode==17) d.failRead=2;
+        command(d,{"intel-read","--cpu","130"},mode>=12?3:0);
+        assert(!d.writes && !d.wrongCpu);
+    }
+    for (unsigned mode=0;mode<8;++mode) {
+        IntelControlsFixture d; d.expectedCpu=130; d.enableHwpContext(); d.regs[0x775]=0;
+        if (mode==1) { d.regs[0x776]=1; d.regs[0x774]|=UINT64_C(1)<<42; }
+        if (mode==2) d.regs[0x775]=UINT64_C(1)<<60;
+        if (mode==3) d.regs[0x776]=1;
+        if (mode==4) d.failRead=6;
+        if (mode==5) d.afterRequest=[&](const Request &r) { if (r.write) d.regs[0x775]=1; };
+        if (mode==6) d.afterRequest=[&](const Request &r) { if (r.write) d.regs[0x776]=1; };
+        if (mode==7) d.afterRequest=[&](const Request &r) { if (!r.write && d.reads==14) d.regs[0x775]=1; };
+        command(d,{"intel-set","--cpu","130","--field","hwp-epp","--value","192","--apply"},mode<2?0:3);
+        assert(d.writes==unsigned(mode<2 || mode==5 || mode==6) && !d.wrongCpu);
+        for (const auto &request:d.requests) if (request.write) assert(request.address==0x774);
+    }
+}
+
 void hwpHistoryCommands() {
     for (std::uint64_t raw : {UINT64_C(0),UINT64_C(1),UINT64_C(4),UINT64_C(5),UINT64_C(2),UINT64_MAX}) {
         IntelControlsFixture d; d.expectedCpu=130; d.regs[0x777]=raw;
@@ -1453,8 +1490,8 @@ int main(int argc, char **argv) {
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
     hwpHistoryCommands();
-    pl4Commands();
+    pl4Commands(); hwpContextCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "37 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "38 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

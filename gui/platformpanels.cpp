@@ -63,6 +63,7 @@ IntelControlsPanel::IntelControlsPanel(std::shared_ptr<HardwareAccess> access, Q
     setObjectName("intelControls"); auto *layout = new QVBoxLayout(this);
     description("Intel Controls · package power limits and hardware performance requests\n"
         "HWP levels are performance indices, not MHz. BIOS locks and OS power management may restrict or overwrite changes. "
+        "Package and PECI rows are stored hints; selection flags are sampled separately. PECI override blocks the affected local edit. "
         "HWP history records events since reset or clear; it does not show current performance. "
         "Maximum non-turbo ratio is a fixed platform value. Package events show current status and history since the last reset or clear. "
         "Energy counters wrap; joules are counter readings, not watts or lifetime totals. DRAM telemetry requires BIOS RAPL mode 0. "

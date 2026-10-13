@@ -1,0 +1,54 @@
+{
+  "sdm_sha256": "b56b034c34a1efdb672491a9f5a8eb575b5e0a96f0380fcef354f0682798a353",
+  "pdf_pages": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    18
+  ],
+  "fixture_sha256": "6c9fcf56649a3a1731948ff550a2137d11b4027cca467bf30e8a596e3d069fdc",
+  "schema": 1,
+  "url": "https://cdrdv2-public.intel.com/835755/253669-sdm-vol-3b.pdf",
+  "rendered_and_reviewed": [
+    11,
+    13,
+    14
+  ],
+  "sections": [
+    "16.4.4.1",
+    "16.4.4.2",
+    "16.4.4.3",
+    "16.4.4.4",
+    "16.4.5",
+    "16.4.6"
+  ],
+  "original_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "original_function": {
+    "symbol": "_Z25Rd_PECI_HWP_REQUEST_Tunerv",
+    "address": "0x3845f0",
+    "bytes": 82
+  },
+  "cpuid_06_eax": {
+    "hwp": 7,
+    "notifications": 8,
+    "window": 9,
+    "epp": 10,
+    "package": 11,
+    "highest_change": 15,
+    "peci": 16,
+    "flexible": 17,
+    "polarity_control": 22
+  },
+  "constraints": [
+    "No setting writes to 772/773/775/776/777; 775 is CPU-read-only.",
+    "776 is accessed only when HWP is enabled; an enable read error blocks access.",
+    "Stored hints and selection flags are sampled separately, not an atomic effective request.",
+    "Local edits remain blocked on a package selection even with flexible valid flags.",
+    "PECI override blocks the affected min/max/EPP edit; unknown PECI/control state blocks HWP edits.",
+    "HWP edit verification compares capability flags, full PECI data and full polarity control before and after."
+  ]
+}

@@ -88,6 +88,7 @@ def main():
                    OCTOOL_INTEL_THERMAL_TEST_SCREENSHOT=str((tests / "intel-thermal-fixture.png").resolve()),
                    OCTOOL_INTEL_PACKAGE_EVENTS_SCREENSHOT=str((tests / "intel-package-events-fixture.png").resolve()),
                    OCTOOL_INTEL_BCLK_VOLTAGE_TEST_SCREENSHOT=str((tests / "intel-bclk-voltage-fixture.png").resolve()),
+                   OCTOOL_HWP_REQUESTS_TEST_SCREENSHOT=str((tests / "hwp-requests-fixture.png").resolve()),
                    OCTOOL_INTEL_TELEMETRY_TEST_SCREENSHOT=str((tests / "intel-telemetry-fixture.png").resolve()),
                    OCTOOL_INTEL_PL4_TEST_SCREENSHOT=str((tests / "intel-pl4-fixture.png").resolve()),
                    OCTOOL_INTEL_AVX_TEST_SCREENSHOT=str((tests / "intel-avx-fixture.png").resolve()),

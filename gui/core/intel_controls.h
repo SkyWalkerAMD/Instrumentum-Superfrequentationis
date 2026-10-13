@@ -21,7 +21,10 @@ struct IntelSnapshot {
     int error = 0;
     bool rapl = false, hwp = false, epp = false, hwpEnabled = false, hwpActivityWindow = false;
     bool pl4 = false;
+    bool hwpPackage = false, hwpFlexible = false, hwpPeci = false, hwpControl = false;
+    bool hwpNotifications = false, hwpHighestChange = false;
     Reply units, powerLimit, hwpRequest, hwpCapabilities, peakPowerLimit;
+    Reply hwpPackageRequest, hwpPeciRequest, hwpControlValue;
     std::vector<IntelReading> readings;
 };
 struct IntelControlUpdate : UpdateResult {

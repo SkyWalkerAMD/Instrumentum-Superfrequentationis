@@ -10,6 +10,7 @@
 struct IntelControlsFixture : octool::core::HardwareBackend {
     bool amd = false, hwp = true, epp = true, activityWindow = true, discardChange = false;
     bool msr = true, virtualized = false;
+    bool packageRequest = false, flexible = false, peci = false, control = false, notifications = false, highestChange = false;
     unsigned model = 0xb7, expectedCpu = UINT32_MAX, wrongCpu = 0;
     int failRead = -1, failWrite = -1, failCpuid = -1;
     unsigned reads = 0, writes = 0, cpuCalls = 0;
@@ -22,6 +23,9 @@ struct IntelControlsFixture : octool::core::HardwareBackend {
             (UINT64_C(1) << 47) | 1000 | (1 << 15);
         regs[0x770] = 1; regs[0x771] = 0x08203040;
         regs[0x774] = UINT64_C(0x8000100080004008);
+        regs[0x772] = UINT64_C(0xa5a5019488003810);
+        regs[0x775] = UINT64_C(0x50000000c3003012);
+        regs[0x776] = 0; regs[0x773] = 0xb;
         regs[0x777] = UINT64_C(0x8765432100000005);
         regs[0x601] = UINT64_C(0x8765432140006800); // PL4 256 W, preserve bits 13 and 14.
         regs[0xce] = UINT64_C(0x8765432140002a00);
@@ -30,6 +34,9 @@ struct IntelControlsFixture : octool::core::HardwareBackend {
         regs[0x619] = UINT64_C(0x8765432100002000);
     }
     void checkCpu(unsigned cpu) { if (expectedCpu != UINT32_MAX && cpu != expectedCpu) ++wrongCpu; }
+    void enableHwpContext() {
+        packageRequest = flexible = peci = control = notifications = highestChange = true;
+    }
     octool::core::Reply execute(const octool::core::Request &r) override {
         using namespace octool::core;
         checkCpu(r.cpu); requests.push_back(r); Reply out;
@@ -56,7 +63,9 @@ struct IntelControlsFixture : octool::core::HardwareBackend {
             r.words[2] = virtualized ? 1u << 31 : 0;
             r.words[3] = msr ? 1u << 5 : 0;
         }
-        if (leaf == 6) r.words[0] = (hwp ? 1u << 7 : 0) | (epp ? 1u << 10 : 0) | (activityWindow ? 1u << 9 : 0);
+        if (leaf == 6) r.words[0] = (hwp ? 1u << 7 : 0) | (epp ? 1u << 10 : 0) | (activityWindow ? 1u << 9 : 0) |
+            (packageRequest ? 1u << 11 : 0) | (flexible ? 1u << 17 : 0) | (peci ? 1u << 16 : 0) |
+            (control ? 1u << 22 : 0) | (notifications ? 1u << 8 : 0) | (highestChange ? 1u << 15 : 0);
         return r;
     }
     octool::core::Backend backend(octool::core::Space) const override { return octool::core::Backend::Module; }

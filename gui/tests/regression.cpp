@@ -2324,6 +2324,51 @@ private slots:
         for (int i=0;i<table->rowCount();++i) if (table->item(i,0)->text().contains("energy counter")) QCOMPARE(table->item(i,1)->text(),QString("—"));
         QCOMPARE(device->writes,0u); QCOMPARE(device->wrongCpu,0u);
     }
+
+    void intelHwpRequestsAndPeciReadOnly() {
+        auto *device=new IntelControlsFixture; device->expectedCpu=130; device->model=0xff; device->enableHwpContext();
+        IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        panel.resize(1240,1550); panel.show();
+        auto *table=panel.findChild<QTableWidget *>("intelTable");
+        panel.findChild<QPushButton *>("intelRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(),36);
+        auto find=[&](const QString &name) { for (int i=0;i<table->rowCount();++i) if (table->item(i,0)->text()==name) return i; return -1; };
+        for (const auto &pair : {qMakePair(QString("HWP package minimum"),QString("16")),
+            qMakePair(QString("HWP package activity window (0 = automatic)"),QString("20000")),
+            qMakePair(QString("HWP PECI energy preference"),QString("195")), qMakePair(QString("HWP PECI maximum override"),QString("1"))}) {
+            const int row=find(pair.first); QVERIFY(row>=0); QCOMPARE(table->item(row,1)->text(),pair.second);
+            QCOMPARE(table->item(row,5)->text(),QString("Read only / locked"));
+        }
+        QCOMPARE(panel.findChild<QComboBox *>("intelField")->count(),3);
+        for (auto *button:panel.findChildren<QPushButton *>()) if (button->text()==QString("Copy snapshot")) button->click();
+        QVERIFY(QApplication::clipboard()->text().contains("HWP PECI maximum override\t1"));
+        QVERIFY(QApplication::clipboard()->text().contains("HWP package activity window (0 = automatic)\t20000\tus"));
+        auto *status=panel.findChild<QLabel *>("intelStatus");
+        QTRY_VERIFY(status->height()>=status->heightForWidth(status->width()));
+        const auto capture=qEnvironmentVariable("OCTOOL_HWP_REQUESTS_TEST_SCREENSHOT"); if (!capture.isEmpty()) QVERIFY(panel.grab().save(capture));
+        panel.findChild<QLineEdit *>("intelCpu")->setText("131"); QCOMPARE(table->rowCount(),0);
+        QCOMPARE(device->writes,0u); QCOMPARE(device->wrongCpu,0u);
+    }
+    void intelHwpRequestsFailureAndCapabilityClearsOldValues() {
+        auto *device=new IntelControlsFixture; device->expectedCpu=130; device->enableHwpContext();
+        IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        auto *table=panel.findChild<QTableWidget *>("intelTable"); auto *read=panel.findChild<QPushButton *>("intelRead");
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        device->failRead=int(device->reads+6); read->click(); QTRY_VERIFY(panel.isEnabled());
+        unsigned failed=0;
+        for (int row=0;row<table->rowCount();++row) if (table->item(row,3)->text()==hexValue(0x775,4)) {
+            ++failed; QCOMPARE(table->item(row,1)->text(),QString("—")); QCOMPARE(table->item(row,4)->text(),QString("—"));
+            QVERIFY(table->item(row,5)->text().startsWith("Failed"));
+        }
+        QCOMPARE(failed,6u); QCOMPARE(panel.findChild<QComboBox *>("intelField")->count(),9);
+        device->failRead=-1; device->peci=false; device->packageRequest=false; device->control=false; device->notifications=false;
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        for (int row=0;row<table->rowCount();++row) for (unsigned msr : {0x772,0x773,0x775,0x776})
+            QVERIFY(table->item(row,3)->text()!=hexValue(msr,4));
+        QCOMPARE(panel.findChild<QComboBox *>("intelField")->count(),14);
+        QCOMPARE(device->writes,0u); QCOMPARE(device->wrongCpu,0u);
+    }
+
     void intelHwpHistoryReadOnlyAndCopy() {
         auto *device=new IntelControlsFixture; device->expectedCpu=130;
         IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
