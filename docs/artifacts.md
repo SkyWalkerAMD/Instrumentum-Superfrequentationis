@@ -1,5 +1,16 @@
 # 安装包与源码归档
 
+<!-- intel-memory-odt-cf3e50a -->
+2026-10-18：最新验证提交 `cf3e50a`，GUI / CLI 同步增加 **Intel ODT 矩阵与写数据延迟配置读取**。
+B7/A700 内存读取现为 21 寄存器 / 79 字段，快照 v5 兼容 v1–v4。
+
+- [实现说明](intel-memory-odt.md)、[整批验证](intel-memory-odt-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 992 JSON，GUI 各 160 项，共同核心 330 场景组，12 套内核 VM。
+- `dist/gui-cli-intel-memory-odt-cf3e50a/`：33 个包、精确源码、保留本地扩展的源码和 SHA256。
+
+新增项是存储配置，不推断 ODT 激活、电阻值或有效 tCWL/IOL。原版全部功能和真机验收仍未完成；以下保留历史记录。
+<!-- /intel-memory-odt-cf3e50a -->
+
 <!-- amd-pstates-legacy-fc330a9 -->
 2026-10-18：最新验证提交 `fc330a9`，GUI / CLI 同步恢复 **AMD 17h / 19h PStates 定义读取**，
 保留 1Ah 支持；修正 DFS 09h 频率计算，增加原始编码、异常状态和切换 CPU 后旧结果丢弃。

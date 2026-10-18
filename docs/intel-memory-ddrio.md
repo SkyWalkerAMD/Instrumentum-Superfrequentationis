@@ -1,5 +1,7 @@
 # Intel DDRIO 低功耗时序和配置
 
+2026-10-18 后续扩展：[ODT 矩阵与写数据延迟](intel-memory-odt.md)已加入 v5；当前读取为 21 寄存器 / 79 字段、57 次硬件读取。下文保留 v4 增量及其兼容边界。
+
 GUI 的 Intel Controls → Memory timings 与 CLI `intel-memory-read` /
 `intel-memory-decode` 同步增加 11 项 DDRIO 配置。限定已有的 Raptor Lake-S
 06_B7 / PCI 8086:A700 裸机读取配置；新快照 v4 为 19 个寄存器、68 个字段。
