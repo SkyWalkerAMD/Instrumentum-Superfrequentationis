@@ -173,7 +173,7 @@ int main() {
         assert(s.originalLimits[n].raw==bits && s.originalLimits[n].error==-EDOM);
         for (unsigned j=0; j<24; ++j) assert(s.originalLimits[j].error==(j==n?-EDOM:0) && !s.fields[j].error);
         const auto text=amdPmJson(s); assert(text.find("\"stored_value\":null")!=std::string::npos);
-        const auto parsed=parseAmdPmCapture(text); assert(parsed.error==-EDOM && amdPmJson(parsed)==text);
+        const auto parsedLimits=parseAmdPmCapture(text); assert(parsedLimits.error==-EDOM && amdPmJson(parsedLimits)==text);
     } ++groups;
     auto current=amdPmJson(good); auto forged=current;
     replace(forged,"\"original_limits_units_verified\":false","\"original_limits_units_verified\":true");
