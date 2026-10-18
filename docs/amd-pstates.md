@@ -1,5 +1,7 @@
 # AMD PStates：只读恢复及证据边界
 
+2026-10-18 后续扩展：[17h/19h/1Ah 定义读取](amd-pstates-legacy.md)已接入 GUI / CLI；下面保留早期仅支持 1Ah 的记录。
+
 <!-- intel-oc-recovery-90e16fb -->
 2026-10-10：最新验证生产代码为 `90e16fb`，分支 `refactor/platform-recovery`。
 在 UMC 212 字段、快照文件和 AMD 拓扑基础上，新增 Raptor Lake-S core/cache 电压 offset：

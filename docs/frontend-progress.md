@@ -1,5 +1,16 @@
 # GUI / CLI 同步进度
 
+<!-- amd-pstates-legacy-fc330a9 -->
+2026-10-18：最新验证提交 `fc330a9`，GUI / CLI 同步恢复 **AMD 17h / 19h PStates 定义读取**，
+保留 1Ah 支持；修正 DFS 09h 频率计算，增加原始编码、异常状态和切换 CPU 后旧结果丢弃。
+
+- [实现说明](amd-pstates-legacy.md)、[整批验证](amd-pstates-legacy-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 968 JSON，GUI 各 157 项，共同核心 325 场景组，12 套内核 VM。
+- `dist/gui-cli-amd-pstates-legacy-fc330a9/`：33 个包、精确源码、保留本地扩展的源码和 SHA256。
+
+PStates 设置、完整物理量换算及其它剩余功能和真机验收仍未完成。以下保留历史记录。
+<!-- /amd-pstates-legacy-fc330a9 -->
+
 <!-- intel-hwp-package-783dd96 -->
 2026-10-18：最新验证提交 `783dd96`，GUI / CLI 同步新增 **五项 HWP 包级请求设置**，
 含共享封装范围提示、PECI 覆盖检查、完整上下文比较和读回验证。
@@ -85,7 +96,7 @@ GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-
 
 | 功能 | GUI | CLI | 共同边界 |
 |---|---|---|---|
-| AMD PStates | AMD PStates 页 | `amd-pstates` | Family 1Ah 定义读取，未恢复设置 |
+| AMD PStates | AMD PStates 页 | `amd-pstates` | Family 17h/19h/1Ah 定义读取、范围/编码和逐行状态，未恢复设置 |
 | Intel RAPL / HWP / DTS | Power / performance | `intel-read` / `intel-set` | 型号/能力门控；含 HWP 活动窗口、封装/PECI 请求及覆盖、通知/历史；另按能力提供五项 HWP 包级设置，B7 最多 19 项；完整回读并核验 HWP 上下文 |
 | Intel core/cache offset、最大倍率、目标电压与模式 | Core / cache voltage and ratio | `intel-oc-read` / `intel-oc-set` | B7；[目标电压 + Adaptive/Override](intel-voltage-recovery.md)，锁、旧值与完整回读 |
 | Intel V/F 点 | V/F points 查询、准备与设置 | `intel-vf-read` / `intel-vf-set` | B7，两域，候选 1..15 查询及单点 offset；[完整上下文核对](intel-vf-write-recovery.md)，不改变 override 模式 |
