@@ -15,6 +15,7 @@
 #include "core/intel_energy.h"
 #include "core/intel_avx.h"
 #include "core/intel_bclk_voltage.h"
+#include "core/intel_iccmax.h"
 #include "core/intel_thermal.h"
 #include "core/intel_limits.h"
 #include "core/intel_memory.h"
@@ -112,7 +113,7 @@ struct Command {
 };
 Command parse(const std::vector<std::string> &args) {
     Command c; c.name = args.at(0);
-    const std::set<std::string> hardware = {"cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read", "intel-vf-set", "intel-turbo-read", "intel-turbo-set",
+    const std::set<std::string> hardware = {"intel-iccmax-read", "intel-iccmax-set", "cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read", "intel-vf-set", "intel-turbo-read", "intel-turbo-set",
         "intel-memory-read", "intel-clock-read", "intel-tvb-read", "intel-tvb-set", "intel-tvb-table", "intel-tvb-table-set", "intel-energy-read", "intel-energy-set", "intel-avx-read", "intel-avx-set", "intel-bclk-voltage-read", "intel-bclk-voltage-set", "intel-thermal-read", "intel-thermal-set", "intel-limits-read", "intel-limits-clear", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
     const bool memoryOffline = c.name == "intel-memory-decode";
     const bool clockOffline = c.name == "intel-clock-decode";
@@ -122,7 +123,8 @@ Command parse(const std::vector<std::string> &args) {
     std::set<std::string> keys = {"--json"};
     if (hardware.count(c.name)) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
-    const bool writing = c.name == "intel-bclk-voltage-set" || c.name == "intel-limits-clear" || c.name == "intel-thermal-set" || c.name == "intel-avx-set" || c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set" || c.name == "intel-energy-set" || c.name == "intel-uncore-set" || c.name == "amd-smu-send" || c.name == "register-write";
+    const bool writing = c.name == "intel-iccmax-set" || c.name == "intel-bclk-voltage-set" || c.name == "intel-limits-clear" || c.name == "intel-thermal-set" || c.name == "intel-avx-set" || c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set" || c.name == "intel-energy-set" || c.name == "intel-uncore-set" || c.name == "amd-smu-send" || c.name == "register-write";
+    if (c.name == "intel-iccmax-set") keys.insert("--amps");
     const bool vf = c.name == "intel-vf-read" || c.name == "intel-vf-set";
     const bool turbo = c.name == "intel-turbo-read" || c.name == "intel-turbo-set";
     if (turbo) keys.insert("--core-type");
@@ -192,6 +194,10 @@ Command parse(const std::vector<std::string> &args) {
         require(c.timeout > 0, "--timeout-ms must be 1..120000");
     }
     if (writing) require(options.count("--apply") != 0, "Settings commands require --apply; nothing was opened or changed");
+    if (c.name == "intel-iccmax-set") {
+        c.value = decimal(get(options, "--amps"), "--amps"); std::uint32_t encoded = 0;
+        require(!encodeIntelIccMax(c.value, 0, encoded), "--amps must be 1..511.75 in exact 0.25 A steps");
+    }
     if (c.name == "intel-tvb-table" || c.name == "intel-tvb-table-set") {
         c.forEdit = options.count("--for-edit") != 0;
         if (c.forEdit || writing) require(options.count("--active-cores"), "Editing requires one explicit --active-cores entry");
@@ -406,6 +412,20 @@ std::string bclkVoltageSnapshot(const IntelBclkVoltageSnapshot &s) {
         {"firmware_status",s.response.completed?number(s.response.firmwareStatus):"null"},
         {"locked",valid?boolean((s.flexRatio & (UINT64_C(1)<<20))!=0):"null"},
         {"enabled",valid?boolean(intelBclkVoltageEnabled(s.response.data)):"null"}});
+}
+std::string iccMaxSnapshot(const IntelIccMaxSnapshot &s) {
+    const bool valid = s.valid && !s.error;
+    const bool modeBit = intelIccMaxModeBit31(s.response.data);
+    return object({{"error",number(s.error)},{"valid",boolean(valid)},{"identity",identity(s.identity)},
+        {"editable",boolean(intelIccMaxEditable(s))},{"raw",valid?hex(s.response.data):"null"},
+        {"topology_raw",valid?hex(s.topology.data):"null"},{"ia_svid_address",valid?number(s.address):"null"},
+        {"query_attempted",boolean(s.response.commandAttempted)},{"query_completed",boolean(s.response.completed)},
+        {"topology_firmware_status",s.topology.completed?number(s.topology.firmwareStatus):"null"},
+        {"firmware_status",s.response.completed?number(s.response.firmwareStatus):"null"},
+        {"locked",valid?boolean((s.flexRatio & (UINT64_C(1)<<20))!=0):"null"},
+        {"mode_bit31",valid?boolean(modeBit):"null"},{"unlimited_mode","null"},{"mode_semantics_verified","false"},
+        {"encoded_limit_amps",valid?number(intelIccMaxAmps(s.response.data)):"null"},
+        {"effective_limit_amps","null"}});
 }
 std::string energySnapshot(const IntelEnergySnapshot &s) {
     const bool valid = s.valid && !s.error;
@@ -717,6 +737,22 @@ Result hardware(const Command &c, HardwareSession &s) {
             out.data.push_back({"stage",number(unsigned(result.stage))});
             out.data.push_back({"firmware_status",result.response.completed?number(result.response.firmwareStatus):"null"});
             out.data.push_back({"after",bclkVoltageSnapshot(result.after)});
+        }
+    } else if (c.name == "intel-iccmax-read" || c.name == "intel-iccmax-set") {
+        const auto snapshot=readIntelIccMax(s,c.cpu); out.error=snapshot.error;
+        out.data.push_back({"scope",quote("Alder Lake shared IA rail: P cores, E cores and ring; selected CPU locates mailbox")});
+        out.data.push_back({"hardware_effect_measured","false"});
+        out.data.push_back({"before",iccMaxSnapshot(snapshot)});
+        if (c.name == "intel-iccmax-set") {
+            IntelIccMaxUpdate result;
+            if (!out.error) { result=applyIntelIccMax(s,snapshot,c.value); out.error=result.error; }
+            out.data.push_back({"requested_amps",number(c.value)});
+            out.data.push_back({"write_attempted",boolean(result.writeAttempted)});
+            out.data.push_back({"verified",boolean(result.verified && !out.error)});
+            out.data.push_back({"unchanged",boolean(result.unchanged)});
+            out.data.push_back({"expected_raw",result.expectedValid?hex(result.expected):"null"});
+            out.data.push_back({"firmware_status",result.response.completed?number(result.response.firmwareStatus):"null"});
+            out.data.push_back({"after",iccMaxSnapshot(result.after)});
         }
     } else if (c.name == "intel-energy-read" || c.name == "intel-energy-set") {
         const auto snapshot = readIntelEnergy(s, c.cpu); out.error = snapshot.error;
@@ -1104,6 +1140,8 @@ Usage: octool-cli COMMAND [OPTIONS]
   intel-thermal-read --cpu N
   intel-thermal-set --cpu N --offset-degrees 0..63 --apply   TCC offset below TjMax; 06_B7/8F/CF
   intel-bclk-voltage-read --cpu N
+  intel-iccmax-read --cpu N                             Alder Lake shared IA rail
+  intel-iccmax-set --cpu N --amps A --apply              1..511.75 A, exact 0.25 A steps
   intel-bclk-voltage-set --cpu N --enabled 0|1 --apply   BCLK adaptive voltage, 06_B7 only
   intel-avx-read --cpu N
   intel-avx-set --cpu N --offset 0..31 --apply   AVX2 negative ratio offset, 06_B7 only

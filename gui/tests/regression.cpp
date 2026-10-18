@@ -15,6 +15,9 @@
 #include "intelenergypanel.h"
 #include "intelavxpanel.h"
 #include "intelbclkvoltagepanel.h"
+#include "inteliccmaxpanel.h"
+#include "intel_iccmax_fixture.h"
+#include <QDoubleSpinBox>
 #include "intel_avx_fixture.h"
 #include "intel_bclk_voltage_fixture.h"
 #include "intelthermalpanel.h"
@@ -1534,6 +1537,112 @@ private slots:
                 QVERIFY(panel->findChild<QLabel *>("avxStatus")->text().contains("discarded"));
                 QCOMPARE(device->settingsAttempts(),writing?1u:0u); QCOMPARE(device->wrongCpu,0u); delete panel;
             }
+        }
+    }
+    void intelIccMaxLifetimeAndStaleResults() {
+        struct Gate { std::atomic<bool> entered{false}, release{false}, destroyed{false}; };
+        struct Device : IntelIccMaxFixture {
+            std::shared_ptr<Gate> gate;
+            explicit Device(std::shared_ptr<Gate> g) : gate(g) {}
+            ~Device() override { gate->destroyed=true; }
+        };
+        for (bool writing : {false,true}) for (bool close : {false,true}) {
+            auto gate=std::make_shared<Gate>(); auto *device=new Device(gate);
+            auto *panel=new IntelIccMaxPanel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+            if (writing) { panel->findChild<QPushButton *>("iccMaxRead")->click(); QTRY_VERIFY(panel->isEnabled()); }
+            device->afterRequest=[gate,writing,device] {
+                const auto &r=device->requests.back();
+                if ((writing && (!r.write || ((r.value>>32)&255)!=0x17)) || gate->entered.exchange(true)) return;
+                const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(3);
+                while (!gate->release && std::chrono::steady_clock::now()<deadline) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            };
+            if (writing) {
+                panel->findChild<QDoubleSpinBox *>("iccMaxValue")->setValue(125.25);
+                QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+                panel->findChild<QPushButton *>("iccMaxApply")->click();
+            } else panel->findChild<QPushButton *>("iccMaxRead")->click();
+            QTRY_VERIFY(gate->entered.load());
+            if (close) { delete panel; QVERIFY(!gate->destroyed.load()); gate->release=true; QTRY_VERIFY(gate->destroyed.load()); }
+            else {
+                panel->findChild<QLineEdit *>("iccMaxCpu")->setText("131"); gate->release=true;
+                QTRY_VERIFY(panel->isEnabled()); QCOMPARE(panel->findChild<QTableWidget *>("iccMaxTable")->rowCount(),0);
+                QVERIFY(panel->findChild<QLabel *>("iccMaxStatus")->text().contains("discarded"));
+                QCOMPARE(device->settingsAttempts(),writing?1u:0u); QCOMPARE(device->wrongCpu,0u); delete panel;
+            }
+        }
+    }
+
+    void intelIccMaxReadCopyAndTargetChange() {
+        auto *d=new IntelIccMaxFixture;
+        IntelIccMaxPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130); panel.show();
+        auto *read=panel.findChild<QPushButton *>("iccMaxRead"); auto *table=panel.findChild<QTableWidget *>("iccMaxTable");
+        QCOMPARE(d->calls,0u); read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),3);
+        QCOMPARE(table->item(0,1)->text(),QString("100.00 A")); QCOMPARE(table->item(2,1)->text(),QString("6"));
+        panel.findChild<QPushButton *>("iccMaxCopy")->click(); QVERIFY(QApplication::clipboard()->text().contains("shared IA rail"));
+        QVERIFY(QApplication::clipboard()->text().contains("100.00 A"));
+        panel.findChild<QLineEdit *>("iccMaxCpu")->setText("131"); QCOMPARE(table->rowCount(),0);
+        QVERIFY(!panel.findChild<QPushButton *>("iccMaxApply")->isEnabled());
+        QVERIFY(panel.findChild<QLabel *>("iccMaxRaw")->text().isEmpty()); QCOMPARE(d->settingsAttempts(),0u); QCOMPARE(d->wrongCpu,0u);
+    }
+    void intelIccMaxApplyCancelValidationAndNoop() {
+        auto *d=new IntelIccMaxFixture;
+        IntelIccMaxPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        panel.resize(1150,650); panel.show(); panel.findChild<QPushButton *>("iccMaxRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *value=panel.findChild<QDoubleSpinBox *>("iccMaxValue"); auto *apply=panel.findChild<QPushButton *>("iccMaxApply");
+        auto *status=panel.findChild<QLabel *>("iccMaxStatus"); const auto calls=d->calls;
+        value->setValue(100.1); apply->click(); QCOMPARE(d->calls,calls); QVERIFY(status->text().contains("0.25 A"));
+        value->setValue(125.25);
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Cancel)->click(); });
+        apply->click(); QCOMPARE(d->calls,calls);
+        bool described=false;
+        QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) {
+            described=box->text().contains("shared IA rail") && box->text().contains("100.00 A → 125.25 A"); box->button(QMessageBox::Yes)->click(); } });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(described); QCOMPARE(d->settingsAttempts(),1u);
+        QCOMPARE(value->value(),125.25); QCOMPARE(d->data,0x25c321f5u); QVERIFY(status->text().contains("readback verified"));
+        QTRY_VERIFY(status->height()>=status->heightForWidth(status->width())); QVERIFY(status->geometry().bottom()<panel.height());
+        const auto screenshot=qEnvironmentVariable("OCTOOL_INTEL_ICCMAX_TEST_SCREENSHOT"); if (!screenshot.isEmpty()) QVERIFY(panel.grab().save(screenshot));
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(d->settingsAttempts(),1u); QVERIFY(status->text().contains("already present"));
+    }
+    void intelIccMaxReadOnlyAndErrors() {
+        auto *d=new IntelIccMaxFixture;
+        IntelIccMaxPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        panel.resize(1150,650); panel.show(); auto *read=panel.findChild<QPushButton *>("iccMaxRead");
+        auto *apply=panel.findChild<QPushButton *>("iccMaxApply"); auto *table=panel.findChild<QTableWidget *>("iccMaxTable");
+        for (unsigned mode=0;mode<6;++mode) {
+            d->locked=mode==0; d->data=mode==1?0xa5c32190u:mode==2?0u:0x25c32190u;
+            d->topology=mode==3?0x0a061600u:0x0a060600u; d->model=mode==4?0xb7:0x97; d->failAt=mode==5?int(d->calls):-1;
+            read->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(!apply->isEnabled()); QCOMPARE(table->rowCount(),mode<3?3:0);
+            if (mode==1) { QCOMPARE(table->item(1,1)->text(),QString("Set / unverified"));
+                const auto shot=qEnvironmentVariable("OCTOOL_INTEL_ICCMAX_READONLY_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot)); }
+            if (mode==5) { QVERIFY(panel.findChild<QLabel *>("iccMaxRaw")->text().isEmpty());
+                const auto shot=qEnvironmentVariable("OCTOOL_INTEL_ICCMAX_ERROR_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot)); }
+        }
+        QCOMPARE(d->settingsAttempts(),0u);
+    }
+    void intelIccMaxConfirmationTargetChange() {
+        auto *d=new IntelIccMaxFixture;
+        IntelIccMaxPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130); panel.show();
+        panel.findChild<QPushButton *>("iccMaxRead")->click(); QTRY_VERIFY(panel.isEnabled()); const auto calls=d->calls;
+        panel.findChild<QDoubleSpinBox *>("iccMaxValue")->setValue(125.25);
+        QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) {
+            panel.findChild<QLineEdit *>("iccMaxCpu")->setText("131"); box->button(QMessageBox::Yes)->click(); } });
+        panel.findChild<QPushButton *>("iccMaxApply")->click(); QCOMPARE(d->calls,calls); QCOMPARE(d->settingsAttempts(),0u);
+    }
+    void intelIccMaxWriteFailureAndStale() {
+        for (unsigned mode=0;mode<3;++mode) {
+            auto *d=new IntelIccMaxFixture;
+            IntelIccMaxPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130); panel.show();
+            panel.findChild<QPushButton *>("iccMaxRead")->click(); QTRY_VERIFY(panel.isEnabled());
+            panel.findChild<QDoubleSpinBox *>("iccMaxValue")->setValue(125.25);
+            if (mode==0) d->topology^=1;
+            if (mode==1) d->discardChange=true;
+            if (mode==2) { d->failCommand=0x17; d->status=255; }
+            QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+            panel.findChild<QPushButton *>("iccMaxApply")->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(panel.findChild<QTableWidget *>("iccMaxTable")->rowCount(),0);
+            QVERIFY(!panel.findChild<QPushButton *>("iccMaxApply")->isEnabled()); QCOMPARE(d->settingsAttempts(),unsigned(mode!=0));
+            QVERIFY(panel.findChild<QLabel *>("iccMaxStatus")->text().contains(mode?"not verified":"No settings write"));
         }
     }
     void intelBclkVoltageReadCopyAndTargetChange() {

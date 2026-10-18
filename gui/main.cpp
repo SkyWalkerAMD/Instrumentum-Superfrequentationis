@@ -18,6 +18,7 @@
 #include "inteltvbpanel.h"
 #include "inteltvbtablepanel.h"
 #include "intelenergypanel.h"
+#include "inteliccmaxpanel.h"
 #include "intelavxpanel.h"
 #include "intelbclkvoltagepanel.h"
 #include "intelthermalpanel.h"
@@ -107,6 +108,7 @@ int main(int argc, char **argv)
     intel->addTab(new IntelTvbTablePanel(access, intel, initialCpu), "TVB thresholds");
     intel->addTab(new IntelEnergyPanel(access, intel, initialCpu), "Energy optimization");
     intel->addTab(new IntelBclkVoltagePanel(access, intel, initialCpu), "BCLK voltage");
+    intel->addTab(new IntelIccMaxPanel(access, intel, initialCpu), "IA current limit");
     intel->addTab(new IntelAvxPanel(access, intel, initialCpu), "AVX2 offset");
     intel->addTab(new IntelThermalPanel(access, intel, initialCpu), "Thermal limit");
     intel->addTab(new IntelLimitsPanel(access, intel, initialCpu), "Limit reasons");
@@ -145,6 +147,8 @@ int main(int argc, char **argv)
                 window.grab().save(capture + "-5-tvb-table.png");
                 intel->setCurrentIndex(9);
                 window.grab().save(capture + "-5-energy.png");
+                intel->setCurrentIndex(11);
+                window.grab().save(capture + "-5-iccmax.png");
                 intel->setCurrentIndex(0);
             }
             if (page == 6) {

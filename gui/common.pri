@@ -70,3 +70,5 @@ INCLUDEPATH += $$PWD
 
 SOURCES += $$PWD/intelbclkvoltagepanel.cpp
 HEADERS += $$PWD/intelbclkvoltagepanel.h $$PWD/core/intel_bclk_voltage.h
+SOURCES += $$PWD/inteliccmaxpanel.cpp
+HEADERS += $$PWD/inteliccmaxpanel.h $$PWD/core/intel_iccmax.h

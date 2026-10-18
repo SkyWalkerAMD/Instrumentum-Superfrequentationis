@@ -3,6 +3,7 @@
 #include "intel_tvb.h"
 #include "intel_avx.h"
 #include "intel_bclk_voltage.h"
+#include "intel_iccmax.h"
 #include <cerrno>
 #include <chrono>
 #include <cmath>
@@ -61,6 +62,89 @@ IntelOcResponse exchange(HardwareSession &s, unsigned cpu, IntelOcDomain domain,
 bool hasIntelOcProfile(const CpuIdentity &id) {
     // Raptor Lake-S client path. Never infer this from the board/product name.
     return !id.error && id.intel && id.family == 6 && id.model == 0xb7;
+}
+bool hasIntelIccMaxProfile(const CpuIdentity &id) {
+    if (id.error || !id.intel || id.family != 6) return false;
+    if (id.model == 0x97)
+        return id.stepping == 0 || id.stepping == 1 || id.stepping == 2 || id.stepping == 4 || id.stepping == 5;
+    return id.model == 0x9a && id.stepping >= 1 && id.stepping <= 4;
+}
+double intelIccMaxAmps(std::uint32_t data) { return double(data & 0x7ffu) / 4.0; }
+bool intelIccMaxModeBit31(std::uint32_t data) { return (data & UINT32_C(0x80000000)) != 0; }
+namespace {
+bool iccMaxValid(const IntelIccMaxSnapshot &v) {
+    return v.valid && !v.error && hasIntelIccMaxProfile(v.identity) &&
+        v.topology.commandAttempted && v.topology.completed && !v.topology.error && !v.topology.firmwareStatus &&
+        !(v.topology.data & 0x1000u) && v.address == ((v.topology.data >> 8) & 15) &&
+        v.response.commandAttempted && v.response.completed && !v.response.error && !v.response.firmwareStatus;
+}
+int iccMaxContext(HardwareSession &s, unsigned cpu, CpuIdentity &identity, std::uint64_t &flexRatio) {
+    identity = identifyCpu(s, cpu);
+    if (identity.error) return identity.error;
+    if (!hasIntelIccMaxProfile(identity)) return -ENOTSUP;
+    const auto features = s.cpuid(cpu, 1);
+    if (features.error) return features.error;
+    if (features.words[0] != identity.signature) return -EAGAIN;
+    if (!(features.words[3] & (1u << 5)) || (features.words[2] & (1u << 31))) return -ENOTSUP;
+    const auto flex = s.execute(msrRequest(cpu, 0x194));
+    if (flex.error) return flex.error;
+    flexRatio = flex.value;
+    return 0;
+}
+bool sameIccMaxContext(const IntelIccMaxSnapshot &a, const IntelIccMaxSnapshot &b) {
+    return a.identity.signature == b.identity.signature && a.flexRatio == b.flexRatio &&
+        a.topology.data == b.topology.data && a.address == b.address;
+}
+}
+bool intelIccMaxEditable(const IntelIccMaxSnapshot &v) {
+    return iccMaxValid(v) && !(v.flexRatio & ocLock) && !intelIccMaxModeBit31(v.response.data) &&
+        (v.response.data & 0x7ffu) >= 4;
+}
+int encodeIntelIccMax(double amps, std::uint32_t previous, std::uint32_t &encoded) {
+    if (!std::isfinite(amps) || amps < 1 || amps > 511.75 || std::floor(amps * 4) != amps * 4) return -ERANGE;
+    encoded = (previous & ~UINT32_C(0x7ff)) | std::uint32_t(amps * 4);
+    return 0;
+}
+IntelIccMaxSnapshot readIntelIccMax(HardwareSession &s, unsigned cpu) {
+    IntelIccMaxSnapshot out; out.cpu = cpu;
+    if ((out.error = iccMaxContext(s, cpu, out.identity, out.flexRatio))) return out;
+    out.topology = mailboxCommand(s, cpu, 4, 0, 0, 0);
+    if ((out.error = out.topology.error)) return out;
+    // Active-low SVID flag. Do not use the other rail descriptors as fallbacks.
+    if (out.topology.data & 0x1000u) { out.error = -ENOTSUP; return out; }
+    out.address = (out.topology.data >> 8) & 15;
+    out.response = mailboxCommand(s, cpu, 0x16, 0, out.address, 0);
+    if ((out.error = out.response.error)) return out;
+    const auto topologyAfter = mailboxCommand(s, cpu, 4, 0, 0, 0);
+    if ((out.error = topologyAfter.error)) return out;
+    if (topologyAfter.data != out.topology.data) { out.error = -EAGAIN; return out; }
+    CpuIdentity after; std::uint64_t flex = 0;
+    if ((out.error = iccMaxContext(s, cpu, after, flex))) return out;
+    if (after.signature != out.identity.signature || flex != out.flexRatio) { out.error = -EAGAIN; return out; }
+    if ((out.error = s.checkpoint())) return out;
+    out.valid = true; return out;
+}
+IntelIccMaxUpdate applyIntelIccMax(HardwareSession &s, const IntelIccMaxSnapshot &old, double amps) {
+    IntelIccMaxUpdate out;
+    if (!iccMaxValid(old)) { out.error = -EINVAL; return out; }
+    if (!intelIccMaxEditable(old)) { out.error = -EPERM; return out; }
+    if ((out.error = encodeIntelIccMax(amps, old.response.data, out.expected))) return out;
+    out.expectedValid = true;
+    const auto current = readIntelIccMax(s, old.cpu);
+    if ((out.error = current.error)) return out;
+    if (!sameIccMaxContext(current, old) || current.response.data != old.response.data) { out.error = -EAGAIN; return out; }
+    if (!intelIccMaxEditable(current)) { out.error = -EPERM; return out; }
+    if (out.expected == current.response.data) out.after = current;
+    else {
+        out.response = mailboxCommand(s, old.cpu, 0x17, out.expected, current.address, 0);
+        out.writeAttempted = out.response.commandAttempted;
+        if ((out.error = out.response.error)) return out;
+        out.after = readIntelIccMax(s, old.cpu);
+    }
+    if ((out.error = out.after.error)) return out;
+    if (!sameIccMaxContext(out.after, old) || out.after.response.data != out.expected) { out.error = -EIO; return out; }
+    if ((out.error = s.checkpoint())) return out;
+    out.verified = true; out.unchanged = !out.writeAttempted; return out;
 }
 double intelOcOffsetMillivolts(std::uint32_t data) {
     int code = int(data >> 21);

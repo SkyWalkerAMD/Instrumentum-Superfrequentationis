@@ -12,6 +12,7 @@
 #include "tests/intel_energy_fixture.h"
 #include "tests/intel_avx_fixture.h"
 #include "tests/intel_bclk_voltage_fixture.h"
+#include "tests/intel_iccmax_fixture.h"
 #include "tests/intel_thermal_fixture.h"
 #include "tests/intel_limits_fixture.h"
 #include "tests/intel_memory_fixture.h"
@@ -46,6 +47,59 @@ std::string command(HardwareBackend &device, const std::vector<std::string> &arg
     assert(code == expected);
     if (emit) std::cout << out.str();
     return out.str();
+}
+
+void iccMaxCommands() {
+    IntelIccMaxFixture d;
+    auto result=command(d,{"intel-iccmax-read","--cpu","130"},0);
+    assert(result.find("\"encoded_limit_amps\":100")!=std::string::npos && !d.settingsAttempts());
+    for (const char *amps : {"1","100.25","125.5","511.75","511.75"}) {
+        result=command(d,{"intel-iccmax-set","--cpu","130","--amps",amps,"--apply"},0);
+        assert(result.find("\"verified\":true")!=std::string::npos && !d.wrongCpu);
+    }
+    assert(d.settingsAttempts()==4);
+    for (unsigned mode=0;mode<6;++mode) {
+        IntelIccMaxFixture r;
+        if (mode==0) r.locked=true;
+        if (mode==1) r.data|=0x80000000u;
+        if (mode>=2) r.data=(r.data&~0x7ffu)|(mode-2);
+        result=command(r,{"intel-iccmax-read","--cpu","130"},0);
+        assert(result.find("\"editable\":false")!=std::string::npos);
+        result=command(r,{"intel-iccmax-set","--cpu","130","--amps","125.25","--apply"},3);
+        assert(!r.settingsAttempts() && result.find("\"write_attempted\":false")!=std::string::npos);
+    }
+    for (unsigned mode=0;mode<10;++mode) {
+        IntelIccMaxFixture r;
+        if (mode==0) r.model=0xb7;
+        if (mode==1) r.stepping=3;
+        if (mode==2) r.hypervisor=true;
+        if (mode==3) r.msr=false;
+        if (mode==4) r.topology|=0x1000u;
+        if (mode==5) { r.failCommand=4; r.status=128; }
+        if (mode==6) { r.failCommand=0x16; r.status=255; }
+        if (mode==7) { r.failCommand=0x17; r.status=254; }
+        if (mode==8) r.discardChange=true;
+        if (mode==9) r.afterRequest=[&] { const auto &q=r.requests.back(); if (q.write && ((q.value>>32)&255)==0x16) r.topology^=1; };
+        result=command(r,{"intel-iccmax-set","--cpu","130","--amps","125.25","--apply"},3);
+        assert(result.find("\"verified\":false")!=std::string::npos && r.settingsAttempts()==unsigned(mode==7 || mode==8));
+    }
+}
+void iccMaxInvalidBeforeOpen() {
+    bool opened=false;
+    auto factory=[&] { opened=true; return std::unique_ptr<HardwareBackend>(new IntelIccMaxFixture); };
+    for (const char *amps : {"0","0.75","512","100.1","nan","inf","-1","1 A","","1e999"}) {
+        std::ostringstream out;
+        assert(run({"intel-iccmax-set","--cpu","130","--amps",amps,"--apply"},out,factory)==2 && !opened);
+        if (emit) std::cout<<out.str();
+    }
+    for (auto args : std::vector<std::vector<std::string>>{
+        {"intel-iccmax-read"},{"intel-iccmax-read","--cpu","130","--amps","1"},
+        {"intel-iccmax-set","--cpu","130","--amps","100.25"},
+        {"intel-iccmax-set","--cpu","130","--apply"},
+        {"intel-iccmax-set","--cpu","130","--amps","100.25","--apply","--domain","core"}}) {
+        std::ostringstream out; assert(run(args,out,factory)==2 && !opened);
+        if (emit) std::cout<<out.str();
+    }
 }
 void invalidBeforeOpen() {
     const std::vector<std::vector<std::string>> invalid = {
@@ -1744,8 +1798,9 @@ int main(int argc, char **argv) {
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); intelMemoryOdtCaptures(); intelMemoryOdtLive(); intelMemoryTemperatureCaptures(); intelMemoryTemperatureLive(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
     hwpHistoryCommands(); pmLimitCommands();
+    iccMaxCommands(); iccMaxInvalidBeforeOpen();
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "46 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "48 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

@@ -213,6 +213,27 @@ for report in avx:
             assert data['unchanged']==(expected==int(before['raw'],16))
             assert data['write_attempted']==(not data['unchanged'])
 
+iccmax=[r for r in reports if r['command'] in ('intel-iccmax-read','intel-iccmax-set') and 'before' in r['data']]
+assert len(iccmax)==28
+assert [r['ok'] for r in iccmax]==[True]*6+[v for _ in range(6) for v in (True,False)]+[False]*10
+for i,r in enumerate(iccmax):
+    d=r['data']; b=d['before']
+    assert not d['hardware_effect_measured'] and 'shared IA rail' in d['scope']
+    if b['valid']:
+        raw=int(b['raw'],16)
+        assert b['encoded_limit_amps']==(raw & 2047)/4 and b['mode_bit31']==bool(raw & 0x80000000)
+        assert b['ia_svid_address']==6 and b['topology_raw']=='0x0a060600'
+        assert b['effective_limit_amps'] is None and b['unlimited_mode'] is None and not b['mode_semantics_verified']
+    else:
+        assert all(b[k] is None for k in ('raw','encoded_limit_amps','effective_limit_amps','mode_bit31','ia_svid_address','topology_raw','locked'))
+    if r['command']=='intel-iccmax-set':
+        assert d['verified']==r['ok']
+        if r['ok']:
+            assert d['after']['encoded_limit_amps']==d['requested_amps'] and int(d['expected_raw'],16)==int(d['after']['raw'],16)
+            assert (int(b['raw'],16)&~2047)==(int(d['after']['raw'],16)&~2047)
+assert iccmax[5]['data']['unchanged'] and not iccmax[5]['data']['write_attempted']
+assert sum(r['data'].get('write_attempted',False) for r in iccmax)==6
+
 bclkVoltage=[r for r in reports if r['command'] in ('intel-bclk-voltage-read','intel-bclk-voltage-set') and 'before' in r['data']]
 assert len(bclkVoltage)==20 and [r['ok'] for r in bclkVoltage]==[True]*7+[False]*13
 for report in bclkVoltage:

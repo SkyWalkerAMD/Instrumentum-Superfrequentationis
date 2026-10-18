@@ -1,5 +1,10 @@
 # Intel ICCmax / VR topology recovery evidence
 
+2026-10-18 update: a separately bounded [Alder Lake IA implementation](intel-iccmax.md)
+now has model/stepping, rail polarity and unit evidence from pinned public sources.
+The historical instruction findings below still apply; they do not certify B7,
+other rails, unlimited-mode changes or the legacy scalar shortcut.
+
 This is protocol research, **not an enabled GUI/CLI current-limit control**.
 The [research record](validation/intel-iccmax-research.json) separates local
 instruction replay from the cloud-tested production build `bc30c4f`.
