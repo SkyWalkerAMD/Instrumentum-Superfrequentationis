@@ -1,5 +1,16 @@
 # GUI / CLI 同步进度
 
+<!-- intel-iccmax-dbe9206 -->
+2026-10-18：最新验证提交 `dbe9206`，GUI / CLI 同步增加 **Alder Lake IA 电流上限读取与设置**。
+九个明确型号/stepping 组合，按 SVID 拓扑定位共享 IA 轨；核验旧值和完整回读，保留其它位。
+
+- [实现说明](intel-iccmax.md)、[整批验证](intel-iccmax-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1098 JSON，GUI 各 175 项，核心 357 场景组，12 套内核 VM。
+- `dist/gui-cli-intel-iccmax-dbe9206/`：33 个包、精确源码、保留本地扩展的源码和校验表。
+
+bit 31 模式语义未确认，置位时只读；不推断有效限流或无限流状态。其它型号和调参缺口仍保留，未做真机验收。以下为历史记录。
+<!-- /intel-iccmax-dbe9206 -->
+
 <!-- amd-pstates-electrical-d02f8fc -->
 2026-10-18：最新验证提交 `d02f8fc`，GUI / CLI 同步恢复 **限定型号的 AMD P-state 电压与电流描述值**。
 五个明确型号按 SVI2 / SVI3 解码；保留原始字段，增加关闭编码、保留位、虚拟化和失败状态。
@@ -149,6 +160,7 @@ GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-
 | Intel BCLK 自适应电压 | BCLK voltage | `intel-bclk-voltage-read/set` | B7；独立开关，OC 锁与旧值检查，只改 bit 2 并完整回读；[说明](intel-bclk-voltage.md) |
 | Intel 能量与 HWP 能力/历史 | Power / performance | `intel-read` | B7 封装/PP0、8F/CF 封装/DRAM 计数，单位及回绕范围；HWP 四个能力字节及两项事件历史；[说明](intel-energy-counters.md) |
 | Intel PL4 峰值功率 | Power / performance | `intel-read` / `intel-set --field pl4` | B7；13 位功率字段、RAPL 单位、锁/旧值检查和完整回读；[说明](intel-pl4.md) |
+| Intel IA ICCmax | IA current limit | `intel-iccmax-read/set` | 明确 Alder Lake stepping；共享 IA SVID 地址、1..511.75 A / 0.25 A、旧值/拓扑/锁及回读；bit 31 置位和默认编码只读 |
 | Intel AVX2 偏移 | AVX2 offset | `intel-avx-read/set` | B7；0..31 倍率档，锁、旧值检查，保留其它位及完整回读 |
 | Intel TCC 温控 | Thermal limit | `intel-thermal-read/set` | B7/8F/CF；偏移、默认与有效阈值，能力/锁/范围检查 |
 | Intel 限频原因 | Limit reasons | `intel-limits-read/clear` | B7；11 组当前/历史状态，单项或全部历史 W0C 清除与回读 |
