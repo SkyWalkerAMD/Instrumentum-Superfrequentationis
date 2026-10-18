@@ -30,8 +30,9 @@ FID 小于 `10h` 不生成频率。旧布局仅解码 DFS `08h..1Ah` 以及
 DFS 为零显示 `divider_off`；未启用定义显示 `disabled`。
 这些情况的 CLI 频率为 `null`，GUI 为 `—`，不会伪装成测得的 0 MHz。
 
-某些 19h 型号在 bit 32 扩展 VID。低字节和该位分别保留，不把低字节宣称为完整 VID，
-也不据此转换电压或电流。Family 1Ah 原有解码保持不变。
+某些 17h/19h 型号在 bit 32 扩展 VID。低字节和该位分别保留，不把低字节宣称为完整 VID，
+后续的[型号专用电压/电流视图](amd-pstates-electrical.md)在独立字段提供已确认型号的换算。
+本节的原始位字段与 Family 1Ah 原有解码保持不变。
 
 ## 原版差异与证据
 
@@ -75,5 +76,5 @@ CLI 原命令和 JSON schema 版本保留，增加 family/model/stepping、layou
 CLI 增加 29 份进程级 JSON 场景；Qt 覆盖旧布局、切换新布局、异步失效和部分失败。
 云端结果另见本批验证记录，离线测试不能替代真机验收。
 
-P-state 写入、按具体型号的 VID/Idd 物理量换算、CPPC 实时控制和剩余 AMD/主板功能
-仍未由本批实现；当前功能边界见[还原状态](recovery-status.md)。
+P-state 写入、其它型号的 VID/Idd 物理量换算、CPPC 实时控制和剩余 AMD/主板功能
+仍未实现；当前功能边界见[还原状态](recovery-status.md)。

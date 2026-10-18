@@ -4,6 +4,7 @@
 #error "Core regression assertions must stay enabled"
 #endif
 #include "../core/amd_pstates.h"
+#include "pstates_electrical_fixture.h"
 #include <algorithm>
 #include <cassert>
 #include <cerrno>
@@ -11,13 +12,14 @@
 #include <cstring>
 #include <iostream>
 #include <iterator>
+#include <string>
 #include <vector>
 
 using namespace octool::core;
 
 struct Reader final : PstateReader {
     unsigned expectedCpu = 37;
-    bool amd = true, advertised = true;
+    bool amd = true, advertised = true, hypervisor = false;
     std::uint32_t rootMaximum = 1, signature = 0x00b00f81;
     std::uint32_t extendedMaximum = 0x80000007, failLeaf = UINT32_MAX;
     std::uint32_t failRegister = 0;
@@ -40,7 +42,7 @@ struct Reader final : PstateReader {
             std::memcpy(&words[2], vendor + 8, 4);
             break;
         }
-        case 1: words[0] = signature; break;
+        case 1: words[0] = signature; words[2] = hypervisor ? UINT32_C(1) << 31 : 0; break;
         case 0x80000000: words[0] = extendedMaximum; break;
         case 0x80000007: words[3] = advertised ? 0x80 : 0; break;
         default: assert(false);
@@ -270,6 +272,107 @@ static void legacyReadFailuresAndCapabilities()
     }
 }
 
+static void electricalGoldenDescriptors()
+{
+    const double voltages[2][6] = {{1550,1543.75,1050,6.25,0,0}, {0,250,1525,2800,1520,1925}};
+    const double currents[] = {255,17.5,1.75,0,0,2.55};
+    for (unsigned svi3 = 0; svi3 < 2; ++svi3) for (unsigned row = 0; row < 8; ++row) {
+        const auto e = decodeAmdPstateElectrical(0x17, svi3 ? 0xa0 : 0x18, false, pstateElectricalFixture(svi3 != 0, row));
+        assert(e.encoding == (svi3 ? PstateElectricalEncoding::Svi3 : PstateElectricalEncoding::Svi2));
+        if (row < 6) {
+            assert(e.hasVid && e.hasVoltage && e.voltageMv == voltages[svi3][row]);
+            assert(e.voltageStatus == (voltages[svi3][row] == 0 ? PstateElectricalStatus::VoltageOff : PstateElectricalStatus::Valid));
+            assert(e.hasCurrent == (row != 4));
+            if (e.hasCurrent) assert(e.expectedCoreCurrentA == currents[row]);
+            else assert(e.currentStatus == PstateElectricalStatus::ReservedDivisor);
+        } else {
+            assert(!e.hasVid && !e.hasVoltage && !e.hasCurrent);
+            assert(e.voltageStatus == (row == 6 ? PstateElectricalStatus::Disabled : PstateElectricalStatus::ReservedBits));
+            assert(e.currentStatus == e.voltageStatus);
+        }
+    }
+}
+
+static void electricalExactModelGates()
+{
+    unsigned supported = 0;
+    for (unsigned family = 0; family < 256; ++family) for (unsigned model = 0; model < 256; ++model) {
+        const bool known = (family == 0x17 && (model == 0x11 || model == 0x18 || model == 0x20 || model == 0xa0)) ||
+            (family == 0x19 && model == 0x50);
+        const auto e = decodeAmdPstateElectrical(family, model, false, pstateElectricalFixture(false, 1));
+        assert(e.hasVoltage == known && e.hasCurrent == known && e.hasVid == known);
+        if (known) ++supported;
+        else assert(e.encoding == PstateElectricalEncoding::Unavailable && e.voltageStatus == PstateElectricalStatus::UnsupportedModel);
+    }
+    assert(supported == 5);
+    assert(amdPstateElectricalEncoding(0x117, 0x18) == PstateElectricalEncoding::Unavailable);
+    assert(amdPstateElectricalEncoding(0x17, 0x118) == PstateElectricalEncoding::Unavailable);
+}
+
+static void electricalVoltageBoundaries()
+{
+    // All 512 encodings catch a lost ninth VID bit and SVI2 off-code underflow.
+    for (unsigned svi3 = 0; svi3 < 2; ++svi3) for (unsigned vid = 0; vid < 512; ++vid) {
+        const auto raw = UINT64_C(0x80000000000008a0) | (std::uint64_t(vid & 255) << 14) | (std::uint64_t(vid >> 8) << 32);
+        const auto e = decodeAmdPstateElectrical(0x17, svi3 ? 0xa0 : 0x11, false, raw);
+        if (!svi3 && vid >= 256) {
+            assert(!e.hasVoltage && !e.hasCurrent && e.voltageStatus == PstateElectricalStatus::ReservedBits); continue;
+        }
+        assert(e.hasVoltage && e.vid == vid);
+        if (svi3) assert(e.voltageMv == (vid ? 245 + 5 * vid : 0));
+        else assert(e.voltageMv == (vid < 248 ? 1550 - 6.25 * vid : 0));
+        const auto rawFields = decodeAmdPstate(0x17, raw);
+        assert(rawFields.vidBits == (vid & 255) && rawFields.rawBit32 == (vid >= 256));
+        // Voltage/current validity is independent of an unverified DFS code.
+        const auto badFrequency = decodeAmdPstateElectrical(0x17, svi3 ? 0xa0 : 0x11, false, raw & ~UINT64_C(0x3fff));
+        assert(badFrequency.voltageMv == e.voltageMv && badFrequency.hasVoltage);
+    }
+}
+
+static void electricalCurrentBoundaries()
+{
+    for (unsigned value = 0; value < 256; ++value) for (unsigned div = 0; div < 4; ++div) {
+        const auto raw = UINT64_C(0x80000000001408a0) | (std::uint64_t(value) << 22) | (std::uint64_t(div) << 30);
+        const auto e = decodeAmdPstateElectrical(0x19, 0x50, false, raw);
+        assert(e.hasVoltage && e.voltageMv == 1050 && e.hasCurrent == (div != 3));
+        if (div == 0) assert(e.expectedCoreCurrentA == value);
+        if (div == 1) assert(std::abs(e.expectedCoreCurrentA * 10 - value) < 1e-10);
+        if (div == 2) assert(std::abs(e.expectedCoreCurrentA * 100 - value) < 1e-10);
+        if (div == 3) assert(e.expectedCoreCurrentA == 0 && e.currentStatus == PstateElectricalStatus::ReservedDivisor);
+    }
+}
+
+static void electricalReservedBitsAndDisabled()
+{
+    for (unsigned model : {0x18u,0xa0u}) for (unsigned bit = 32; bit < 63; ++bit) {
+        const auto raw = pstateElectricalFixture(false, 2) | (UINT64_C(1) << bit);
+        const auto e = decodeAmdPstateElectrical(0x17, model, false, raw);
+        if (model == 0xa0 && bit == 32) { assert(e.hasVoltage && e.vid == 336 && e.voltageMv == 1925); continue; }
+        assert(!e.hasVid && !e.hasVoltage && !e.hasCurrent && e.voltageStatus == PstateElectricalStatus::ReservedBits);
+        const auto disabled = decodeAmdPstateElectrical(0x17, model, false, raw & ~(UINT64_C(1) << 63));
+        assert(!disabled.hasVoltage && disabled.voltageStatus == PstateElectricalStatus::Disabled);
+    }
+    assert(std::string(pstateElectricalStatusName(PstateElectricalStatus::VoltageOff)) == "voltage_off");
+    assert(std::string(pstateElectricalEncodingName(PstateElectricalEncoding::Svi3)) == "svi3");
+}
+
+static void electricalIdentityAndVirtualization()
+{
+    for (unsigned signature : {0x00810f10u,0x00810f80u,0x00820f00u,0x008a0f00u,0x00a50f00u})
+        for (unsigned stepping = 0; stepping < 16; ++stepping) for (bool hypervisor : {false,true}) {
+            Reader r; r.signature = signature | stepping; r.hypervisor = hypervisor;
+            const auto p = readAmdPstates(r, r.expectedCpu);
+            assert(p.hasIdentity && p.hypervisor == hypervisor && p.stepping == stepping);
+            assert(p.status == PstateStatus::Complete && r.msrs.size() == 4 && r.leaves.size() == 4);
+            const auto e = decodeAmdPstateElectrical(p.family, p.model, p.hypervisor, pstateElectricalFixture(false, 2));
+            assert(e.hasVoltage == !hypervisor && e.hasCurrent == !hypervisor);
+            if (hypervisor) assert(e.voltageStatus == PstateElectricalStatus::Virtualized && !e.hasVid);
+        }
+    Reader r; r.hypervisor = true; r.failLeaf = 1;
+    const auto p = readAmdPstates(r, r.expectedCpu);
+    assert(!p.hasIdentity && !p.hypervisor && r.msrs.empty());
+}
+
 int main()
 {
     decodeVectors();
@@ -281,5 +384,7 @@ int main()
     limitFailureStopsSampling();
     legacyGoldenVectors(); exhaustiveLegacyFrequencyEncodings(); familyAndRawFieldIsolation();
     allLimitPairsAndFamilies(); legacyReadFailuresAndCapabilities();
-    std::cout << "amd_pstates core: 12 scenario groups passed\n";
+    electricalGoldenDescriptors(); electricalExactModelGates(); electricalVoltageBoundaries();
+    electricalCurrentBoundaries(); electricalReservedBitsAndDisabled(); electricalIdentityAndVirtualization();
+    std::cout << "amd_pstates core: 18 scenario groups passed\n";
 }

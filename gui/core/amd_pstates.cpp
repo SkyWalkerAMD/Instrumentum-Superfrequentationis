@@ -35,7 +35,7 @@ PstateValue decodeAmdPstate(unsigned family, std::uint64_t raw)
     const unsigned fid = unsigned(raw & (value.hasDivider ? 255 : 4095));
     value.frequencyId = fid;
     value.rawBit32 = (raw & (UINT64_C(1) << 32)) != 0;
-    // Preserve bit 32 separately. Some 19h models have an extended VID here;
+    // Preserve bit 32 separately. Some 17h/19h models extend VID here;
     // their low byte must not be advertised as a complete voltage encoding.
     value.vidBits = unsigned((raw >> 14) & 255) |
         (family == 0x1a && value.rawBit32 ? 256u : 0u);
@@ -65,6 +65,76 @@ PstateValue decodeFamily1aPstate(std::uint64_t raw)
     return decodeAmdPstate(0x1a, raw);
 }
 
+PstateElectricalEncoding amdPstateElectricalEncoding(unsigned family, unsigned model)
+{
+    // Pinned coreboot CPU tables, platform Kconfig, MSR layout and SVI paths:
+    // docs/amd-pstates-electrical.md. Do not select by family or brand name.
+    if ((family == 0x17 && (model == 0x11 || model == 0x18 || model == 0x20)) ||
+        (family == 0x19 && model == 0x50)) return PstateElectricalEncoding::Svi2;
+    if (family == 0x17 && model == 0xa0) return PstateElectricalEncoding::Svi3;
+    return PstateElectricalEncoding::Unavailable;
+}
+
+const char *pstateElectricalEncodingName(PstateElectricalEncoding encoding)
+{
+    switch (encoding) {
+    case PstateElectricalEncoding::Svi2: return "svi2";
+    case PstateElectricalEncoding::Svi3: return "svi3";
+    default: return "unavailable";
+    }
+}
+
+const char *pstateElectricalStatusName(PstateElectricalStatus status)
+{
+    switch (status) {
+    case PstateElectricalStatus::Virtualized: return "virtualized";
+    case PstateElectricalStatus::Disabled: return "disabled";
+    case PstateElectricalStatus::ReservedBits: return "reserved_bits";
+    case PstateElectricalStatus::Valid: return "valid";
+    case PstateElectricalStatus::VoltageOff: return "voltage_off";
+    case PstateElectricalStatus::ReservedDivisor: return "reserved_divisor";
+    default: return "unsupported_model";
+    }
+}
+
+PstateElectricalValue decodeAmdPstateElectrical(unsigned family, unsigned model,
+                                               bool hypervisor, std::uint64_t raw)
+{
+    PstateElectricalValue value;
+    value.encoding = amdPstateElectricalEncoding(family, model);
+    if (value.encoding == PstateElectricalEncoding::Unavailable) return value;
+    if (hypervisor) {
+        value.voltageStatus = value.currentStatus = PstateElectricalStatus::Virtualized;
+        return value;
+    }
+    if (!(raw & (UINT64_C(1) << 63))) {
+        value.voltageStatus = value.currentStatus = PstateElectricalStatus::Disabled;
+        return value;
+    }
+    const bool svi3 = value.encoding == PstateElectricalEncoding::Svi3;
+    const std::uint64_t reserved = svi3 ? UINT64_C(0x7ffffffe00000000) : UINT64_C(0x7fffffff00000000);
+    if (raw & reserved) {
+        value.voltageStatus = value.currentStatus = PstateElectricalStatus::ReservedBits;
+        return value;
+    }
+    value.hasVid = value.hasVoltage = true;
+    value.vid = unsigned((raw >> 14) & 255) | (svi3 ? unsigned((raw >> 24) & 256) : 0);
+    const bool off = svi3 ? value.vid == 0 : value.vid >= 0xf8;
+    // Integer microvolts preserve the 6.25 mV step without integer truncation.
+    const unsigned microvolts = off ? 0 : svi3 ? 245000u + 5000u * value.vid : 1550000u - 6250u * value.vid;
+    value.voltageMv = microvolts / 1000.0;
+    value.voltageStatus = off ? PstateElectricalStatus::VoltageOff : PstateElectricalStatus::Valid;
+    const unsigned divisor = unsigned((raw >> 30) & 3);
+    value.currentStatus = PstateElectricalStatus::ReservedDivisor;
+    if (divisor < 3) {
+        static const unsigned divisors[] = {1, 10, 100};
+        value.hasCurrent = true;
+        value.expectedCoreCurrentA = double((raw >> 22) & 255) / divisors[divisor];
+        value.currentStatus = PstateElectricalStatus::Valid;
+    }
+    return value;
+}
+
 PstateSnapshot readAmdPstates(PstateReader &reader, unsigned cpu)
 {
     PstateSnapshot snapshot;
@@ -81,6 +151,7 @@ PstateSnapshot readAmdPstates(PstateReader &reader, unsigned cpu)
     snapshot.error = reader.cpuid(cpu, 1, 0, words);
     if (snapshot.error) return snapshot;
     snapshot.hasIdentity = true;
+    snapshot.hypervisor = (words[2] & (UINT32_C(1) << 31)) != 0;
     const unsigned baseFamily = (words[0] >> 8) & 0xf;
     snapshot.family = baseFamily + (baseFamily == 0xf ? (words[0] >> 20) & 0xff : 0);
     snapshot.model = ((words[0] >> 4) & 0xf) |

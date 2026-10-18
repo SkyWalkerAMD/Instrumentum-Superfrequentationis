@@ -333,3 +333,11 @@ offset 等有符号字段可接受负数。禁止截断、重复/未知选项；
 测试包含模拟设备的实际核心调用、设置保护、失败输出、JSON 精度、稀疏 CPU 亲和性、
 SPD CRC 和 sysfs 清单。硬件参数测试使用模拟设备；不能替代四台目标机器的真机验收。
 实际通过状态以对应提交的 CI 记录和本地产物清单为准。
+
+## AMD PStates 电压/电流描述值
+
+`amd-pstates --cpu N` 的 `rows[].electrical` 与 GUI Voltage / current descriptors 共用解码器。
+仅对 17h/11h、18h、20h、A0h 和 19h/50h 开放；完整 VID、电压 mV、预期最大单核电流 A 及各自状态
+放在独立对象中，原始 `vid_bits` 保持原义。不可用数值为 `null`；未读行整个对象为 `null`。
+这些是 P-state/ACPI 描述值，`electrical_is_measurement` 始终为 false。
+[公式、来源和状态说明](amd-pstates-electrical.md)。

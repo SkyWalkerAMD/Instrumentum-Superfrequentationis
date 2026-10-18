@@ -501,6 +501,11 @@ Result hardware(const Command &c, HardwareSession &s) {
         out.data.push_back({"stepping", p.hasIdentity ? number(p.stepping) : "null"});
         out.data.push_back({"layout", p.hasIdentity ? quote(amdPstateLayout(p.family)) : "null"});
         out.data.push_back({"frequency_is_measurement", "false"});
+        out.data.push_back({"hypervisor", p.hasIdentity ? boolean(p.hypervisor) : "null"});
+        out.data.push_back({"electrical_encoding", p.hasIdentity ?
+            quote(pstateElectricalEncodingName(amdPstateElectricalEncoding(p.family, p.model))) : "null"});
+        out.data.push_back({"electrical_is_measurement", "false"});
+        out.data.push_back({"current_descriptor_scope", quote("expected_maximum_single_core_acpi_pss")});
         out.data.push_back({"vid_bit_positions", p.hasIdentity && p.family == 0x1a ? quote("32,21:14") :
             p.hasIdentity && (p.family == 0x17 || p.family == 0x19) ? quote("21:14") : "null"});
         out.data.push_back({"limit_raw", p.hasLimit ? hex(p.limitRaw, 16) : "null"});
@@ -510,6 +515,7 @@ Result hardware(const Command &c, HardwareSession &s) {
         for (unsigned i = 0; i < p.rows.size(); ++i) {
             const auto &r = p.rows[i]; const auto d = decodeAmdPstate(p.family, r.raw);
             const bool valid = r.status == PstateRowStatus::Read;
+            const auto e = decodeAmdPstateElectrical(p.family, p.model, p.hypervisor, r.raw);
             if (r.error && !out.error) out.error = r.error;
             values.push_back(object({{"pstate", number(i)}, {"status", quote(rows[unsigned(r.status)])}, {"error", number(r.error)},
                 {"raw", valid ? hex(r.raw, 16) : "null"}, {"enabled", valid ? boolean(d.enabled) : "null"},
@@ -519,7 +525,13 @@ Result hardware(const Command &c, HardwareSession &s) {
                 {"divider_id", valid && d.hasDivider ? number(d.dividerId) : "null"},
                 {"raw_bit_32", valid ? boolean(d.rawBit32) : "null"},
                 {"vid_bits", valid ? number(d.vidBits) : "null"}, {"idd_value_bits", valid ? number(d.iddValueBits) : "null"},
-                {"idd_div_bits", valid ? number(d.iddDivBits) : "null"}}));
+                {"idd_div_bits", valid ? number(d.iddDivBits) : "null"},
+                {"electrical", valid ? object({
+                    {"vid_bits", e.hasVid ? number(e.vid) : "null"},
+                    {"voltage_mv", e.hasVoltage ? number(e.voltageMv) : "null"},
+                    {"voltage_status", quote(pstateElectricalStatusName(e.voltageStatus))},
+                    {"expected_core_current_a", e.hasCurrent ? number(e.expectedCoreCurrentA) : "null"},
+                    {"current_status", quote(pstateElectricalStatusName(e.currentStatus))}}) : "null"}}));
         }
         out.data.push_back({"rows", array(values)});
     } else if (c.name == "intel-read" || c.name == "intel-set") {

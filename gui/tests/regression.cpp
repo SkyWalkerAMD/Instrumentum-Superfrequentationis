@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "registerpanel.h"
 #include "pstates.h"
+#include "pstates_electrical_fixture.h"
 #include "platformpanels.h"
 #include "umcpanel.h"
 #include "intelocpanel.h"
@@ -66,7 +67,7 @@
 #include <thread>
 
 struct PstateReference {
-    bool amd = true, hardwarePstate = true;
+    bool amd = true, hardwarePstate = true, hypervisor = false;
     uint32_t signature = 0x00b00f81; // Synthetic family 1Ah/model 08h/stepping 1.
     uint32_t extendedMaximum = 0x80000007;
     uint32_t failLeaf = UINT32_MAX;
@@ -92,7 +93,7 @@ struct PstateReference {
                 std::memcpy(&values[3], state.amd ? "enti" : "ineI", 4);
                 std::memcpy(&values[2], state.amd ? "cAMD" : "ntel", 4);
                 break;
-            case 1: values[0] = state.signature; break;
+            case 1: values[0] = state.signature; values[2] = state.hypervisor ? UINT32_C(1) << 31 : 0; break;
             case 0x80000000: values[0] = state.extendedMaximum; break;
             case 0x80000007: values[3] = state.hardwarePstate ? 0x80 : 0; break;
             case 0x80000026: {
@@ -3706,6 +3707,100 @@ private slots:
         QCOMPARE(table->item(0,4)->text(),QString("5000"));
         QCOMPARE(table->item(1,2)->text(),QString("—"));
         QVERIFY(table->item(1,5)->text().contains("FAILED"));
+        QCOMPARE(reference.writes.load(),0); QCOMPARE(reference.wrongCpu.load(),0);
+    }
+    void pstateElectricalViewsUseSharedDescriptors() {
+        for (bool svi3 : {false,true}) {
+            PstateReference reference; reference.signature = svi3 ? 0x008a0f01 : 0x00810f81; reference.limit = 0x70;
+            for (unsigned i=0;i<8;++i) reference.definitions[i]=pstateElectricalFixture(svi3,i);
+            PstatesPanel panel(reference.access(),nullptr,3); panel.resize(1550,650); panel.show();
+            auto *view=panel.findChild<QComboBox *>("pstateView");
+            auto *read=panel.findChild<QPushButton *>("pstateRead");
+            auto *table=panel.findChild<QTableWidget *>("pstateTable");
+            view->setCurrentIndex(1); QCOMPARE(reference.calls.load(),0);
+            read->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(table->columnCount(),8);
+            QCOMPARE(table->item(1,2)->text(),QString(svi3 ? "250" : "1543.75"));
+            QCOMPARE(table->item(2,1)->text(),QString(svi3 ? "256" : "80"));
+            QCOMPARE(table->item(2,2)->text(),QString(svi3 ? "1525" : "1050"));
+            QCOMPARE(table->item(2,4)->text(),QString("1.75"));
+            QCOMPARE(table->item(0,3)->text(),QString(svi3 ? "voltage off" : "valid"));
+            QCOMPARE(table->item(3,2)->text(),QString(svi3 ? "2800" : "6.25"));
+            QCOMPARE(table->item(3,4)->text(),QString("0"));
+            QCOMPARE(table->item(4,4)->text(),QString("—"));
+            QCOMPARE(table->item(4,5)->text(),QString("reserved divisor"));
+            for (int i=6;i<8;++i) {
+                QCOMPARE(table->item(i,1)->text(),QString("—"));
+                QCOMPARE(table->item(i,2)->text(),QString("—"));
+                QCOMPARE(table->item(i,4)->text(),QString("—"));
+            }
+            QCOMPARE(table->item(6,3)->text(),QString("disabled"));
+            QCOMPARE(table->item(7,3)->text(),QString("reserved bits"));
+            const int calls=reference.calls.load();
+            view->setCurrentIndex(0);
+            QCOMPARE(table->columnCount(),12);
+            QCOMPARE(table->item(2,6)->text(),QString(svi3 ? "0" : "80"));
+            QCOMPARE(table->item(2,11)->text(),QString(svi3 ? "1" : "0"));
+            view->setCurrentIndex(1); QCOMPARE(reference.calls.load(),calls);
+            QCOMPARE(table->item(2,2)->text(),QString(svi3 ? "1525" : "1050"));
+            for (auto *button : panel.findChildren<QPushButton *>()) if (button->text()=="Copy snapshot") button->click();
+            QVERIFY(QApplication::clipboard()->text().contains("Expected core (A)"));
+            QVERIFY(QApplication::clipboard()->text().contains("not live measurements"));
+            const auto shot=qEnvironmentVariable(svi3 ? "OCTOOL_PSTATES_SVI3_TEST_SCREENSHOT" : "OCTOOL_PSTATES_SVI2_TEST_SCREENSHOT");
+            if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+            QCOMPARE(reference.writes.load(),0); QCOMPARE(reference.wrongCpu.load(),0);
+        }
+    }
+    void pstateElectricalFailuresDoNotReuseValues() {
+        PstateReference reference; reference.signature=0x00a50f01; reference.limit=0x70;
+        for (unsigned i=0;i<8;++i) reference.definitions[i]=pstateElectricalFixture(false,i);
+        PstatesPanel panel(reference.access(),nullptr,3); panel.resize(1550,650); panel.show();
+        auto *view=panel.findChild<QComboBox *>("pstateView"); view->setCurrentIndex(1);
+        auto *read=panel.findChild<QPushButton *>("pstateRead");
+        auto *table=panel.findChild<QTableWidget *>("pstateTable");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->item(2,2)->text(),QString("1050"));
+        reference.failRegister=0xc0010066;
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        for (int column : {1,2,3,4,5,7}) QCOMPARE(table->item(2,column)->text(),QString("—"));
+        QVERIFY(table->item(2,6)->text().contains("FAILED"));
+        QCOMPARE(table->item(1,2)->text(),QString("1543.75"));
+        const auto shot=qEnvironmentVariable("OCTOOL_PSTATES_ELECTRICAL_ERROR_SCREENSHOT");
+        if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        reference.failRegister=0; reference.hypervisor=true;
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->item(2,2)->text(),QString("—"));
+        QCOMPARE(table->item(2,3)->text(),QString("virtualized"));
+        reference.hypervisor=false; reference.signature=0x00b00f21;
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->item(2,2)->text(),QString("—"));
+        QCOMPARE(table->item(2,3)->text(),QString("unsupported model"));
+        reference.signature=0x008a0f01; reference.failRegister=0xc0010061;
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        for (int row=0;row<8;++row) for (int column : {1,2,3,4,5,7})
+            QCOMPARE(table->item(row,column)->text(),QString("—"));
+        view->setCurrentIndex(0);
+        for (int row=0;row<8;++row) QCOMPARE(table->item(row,2)->text(),QString("—"));
+        QCOMPARE(reference.writes.load(),0); QCOMPARE(reference.wrongCpu.load(),0);
+    }
+    void pstateElectricalSelectionDiscardsPendingRead() {
+        PstateReference reference; reference.signature=0x00810f81;
+        reference.definitions[0]=pstateElectricalFixture(false,2);
+        PstatesPanel panel(reference.access(),nullptr,3); panel.show();
+        auto *view=panel.findChild<QComboBox *>("pstateView"); view->setCurrentIndex(1);
+        auto *cpu=panel.findChild<QLineEdit *>("pstateCpu");
+        auto *read=panel.findChild<QPushButton *>("pstateRead");
+        auto *table=panel.findChild<QTableWidget *>("pstateTable");
+        read->click(); cpu->setText("4"); cpu->setText("3"); QTRY_VERIFY(panel.isEnabled());
+        QVERIFY(panel.findChild<QLabel *>("pstateStatus")->text().contains("discarded"));
+        QCOMPARE(table->item(0,2)->text(),QString("—"));
+        view->setCurrentIndex(0); view->setCurrentIndex(1);
+        QCOMPARE(table->item(0,2)->text(),QString("—"));
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->item(0,2)->text(),QString("1050"));
+        cpu->setText("4"); QCOMPARE(table->item(0,2)->text(),QString("—"));
+        reference.expectedCpu=4; reference.failLeaf=1;
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->item(0,2)->text(),QString("—"));
+        QCOMPARE(table->item(0,4)->text(),QString("—"));
         QCOMPARE(reference.writes.load(),0); QCOMPARE(reference.wrongCpu.load(),0);
     }
     void directCpuidRestoresThreadAffinity() {

@@ -19,6 +19,7 @@
 #include "tests/intel_tvb_fixture.h"
 #include "tests/intel_tvb_table_fixture.h"
 #include "tests/spd_fixture.h"
+#include "tests/pstates_electrical_fixture.h"
 #include <cassert>
 #include <cerrno>
 #include <iostream>
@@ -346,7 +347,7 @@ void registerCommands() {
 
 struct LegacyPstates : Registers {
     unsigned signature = 0x00800f11, failLeaf = UINT32_MAX, failMsr = 0;
-    bool advertised = true, extended = true;
+    bool advertised = true, extended = true, hypervisor = false;
     LegacyPstates() {
         amd = true; expectedCpu = 641;
         values[0xc0010061] = UINT64_C(0xfedcba9876543271);
@@ -363,7 +364,7 @@ struct LegacyPstates : Registers {
         assert(cpu == expectedCpu && subleaf == 0);
         if (leaf == failLeaf) { ++cpuCalls; CpuIdReply out; out.error = -EACCES; for (auto &word : out.words) word = UINT32_MAX; return out; }
         auto out = Registers::cpuid(cpu, leaf, subleaf);
-        if (leaf == 1) out.words[0] = signature;
+        if (leaf == 1) { out.words[0] = signature; out.words[2] = hypervisor ? UINT32_C(1) << 31 : 0; }
         if (leaf == 0x80000007) out.words[3] = advertised ? 128 : 0;
         if (leaf == 0x80000000 && !extended) out.words[0] = 0x80000006;
         return out;
@@ -399,6 +400,26 @@ void legacyPstateCommands() {
         LegacyPstates d; d.signature = signature(family,1);
         command(d, {"amd-pstates","--cpu","641"}, 3);
         assert(!d.reads && !d.writes);
+    }
+}
+void electricalPstateCommands() {
+    for (unsigned signature : {0x00810f11u,0x00810f81u,0x00820f01u,0x008a0f01u,0x00a50f01u})
+        for (unsigned mode = 0; mode < 4; ++mode) {
+            LegacyPstates d; d.signature = signature; d.expectedCpu = 642;
+            d.values[0xc0010061] = mode == 3 ? 0x10 : 0x70;
+            for (unsigned i = 0; i < 8; ++i) d.values[0xc0010064+i] = pstateElectricalFixture(signature == 0x008a0f01u, i);
+            d.hypervisor = mode == 1; if (mode == 2) d.failMsr = 0xc0010066;
+            const auto report = command(d, {"amd-pstates","--cpu","642"}, mode == 2 ? 3 : 0);
+            assert(report.find("\"electrical_is_measurement\":false") != std::string::npos);
+            assert(d.reads == (mode == 3 ? 3u : 9u) && d.cpuCalls == 4 && !d.writes);
+        }
+    for (unsigned signature : {0x00800f11u,0x008a0f11u,0x00a60f11u,0x00a70f41u,0x00a70f81u,0x00b00f21u,0x00a50f11u}) {
+        LegacyPstates d; d.signature = signature; d.expectedCpu = 642;
+        d.values[0xc0010061] = 0;
+        d.values[0xc0010064] = pstateElectricalFixture(false, 2);
+        const auto report = command(d, {"amd-pstates","--cpu","642"}, 0);
+        assert(report.find("\"voltage_status\":\"unsupported_model\"") != std::string::npos);
+        assert(d.reads == 2 && !d.writes);
     }
 }
 void ocAndCurveCommands() {
@@ -1723,8 +1744,8 @@ int main(int argc, char **argv) {
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); intelMemoryOdtCaptures(); intelMemoryOdtLive(); intelMemoryTemperatureCaptures(); intelMemoryTemperatureLive(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
     hwpHistoryCommands(); pmLimitCommands();
-    pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands();
+    pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "45 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "46 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

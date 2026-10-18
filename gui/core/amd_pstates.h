@@ -25,6 +25,26 @@ PstateValue decodeFamily1aPstate(std::uint64_t raw);
 const char *amdPstateLayout(unsigned family);
 const char *pstateFrequencyStatusName(PstateFrequencyStatus status);
 
+enum class PstateElectricalEncoding { Unavailable, Svi2, Svi3 };
+enum class PstateElectricalStatus {
+    UnsupportedModel, Virtualized, Disabled, ReservedBits, Valid, VoltageOff, ReservedDivisor
+};
+struct PstateElectricalValue {
+    PstateElectricalEncoding encoding = PstateElectricalEncoding::Unavailable;
+    bool hasVid = false, hasVoltage = false, hasCurrent = false;
+    unsigned vid = 0;
+    double voltageMv = 0, expectedCoreCurrentA = 0;
+    PstateElectricalStatus voltageStatus = PstateElectricalStatus::UnsupportedModel;
+    PstateElectricalStatus currentStatus = PstateElectricalStatus::UnsupportedModel;
+};
+// Model-bound P-state descriptors, not measured voltage/current or PBO limits.
+// The legacy decoder above intentionally keeps its original raw VID semantics.
+PstateElectricalEncoding amdPstateElectricalEncoding(unsigned family, unsigned model);
+const char *pstateElectricalEncodingName(PstateElectricalEncoding encoding);
+const char *pstateElectricalStatusName(PstateElectricalStatus status);
+PstateElectricalValue decodeAmdPstateElectrical(unsigned family, unsigned model,
+                                               bool hypervisor, std::uint64_t raw);
+
 // Implementations select the requested OS logical CPU and preserve errors.
 // Return 0 on success or a negative errno; output on failure is ignored.
 // This interface deliberately offers no register writes.
@@ -53,6 +73,7 @@ struct PstateSnapshot {
     PstateStatus status = PstateStatus::CpuReadFailed;
     int error = 0;
     bool hasIdentity = false;
+    bool hypervisor = false;
     unsigned family = 0, model = 0, stepping = 0;
     bool hasLimit = false;
     std::uint64_t limitRaw = 0;
@@ -61,7 +82,7 @@ struct PstateSnapshot {
 };
 
 // One synchronous, explicit sample. No Qt, OS calls, clock, global state,
-// implicit construction-time probes, voltage/current decoding, or writes.
+// implicit construction-time probes, or writes.
 PstateSnapshot readAmdPstates(PstateReader &reader, unsigned cpu);
 
 } // namespace core

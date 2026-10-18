@@ -35,7 +35,7 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 1028, len(reports)
+assert len(reports) == 1055, len(reports)
 platform_reports=[r for r in reports if r['command']=='intel-read' and 'readings' in r['data']]
 assert len(platform_reports)==81
 hwp_context_reports=platform_reports[63:]
@@ -1135,6 +1135,41 @@ for family in range(2):
 for report in legacy_pstates[-3:]:
     assert not report['ok'] and report['data']['status'] == 'unsupported_family'
     assert report['data']['layout'] == 'unsupported' and report['data']['vid_bit_positions'] is None
+electrical_pstates = [r for r in reports if r['command'] == 'amd-pstates' and r['data'].get('cpu') == 642]
+assert len(electrical_pstates) == 27
+for n, report in enumerate(electrical_pstates[:20]):
+    d = report['data']; mode = n % 4; svi3 = n // 4 == 3
+    assert report['ok'] == (mode != 2) and d['hypervisor'] == (mode == 1)
+    assert d['electrical_encoding'] == ('svi3' if svi3 else 'svi2')
+    assert d['current_descriptor_scope'] == 'expected_maximum_single_core_acpi_pss'
+    assert not d['electrical_is_measurement'] and not d['frequency_is_measurement']
+    assert d['vid_bit_positions'] == '21:14'  # Existing raw fragment is unchanged.
+    volts = [0,250,1525,2800,1520,1925] if svi3 else [1550,1543.75,1050,6.25,0,0]
+    vids = [0,1,256,511,255,336] if svi3 else [0,1,80,247,248,255]
+    for i, row in enumerate(d['rows']):
+        e = row['electrical']
+        if (mode == 2 and i == 2) or (mode == 3 and i > 1):
+            assert e is None and row['raw'] is None
+            assert row['status'] == ('read_failed' if mode == 2 else 'above_limit')
+            continue
+        if mode == 1 or i >= 6:
+            status = 'virtualized' if mode == 1 else 'disabled' if i == 6 else 'reserved_bits'
+            assert e['voltage_status'] == status and e['current_status'] == status
+            assert all(e[k] is None for k in ('vid_bits','voltage_mv','expected_core_current_a'))
+            continue
+        assert e['vid_bits'] == vids[i] and row['vid_bits'] == (vids[i] & 255)
+        assert e['voltage_mv'] == volts[i]
+        assert e['voltage_status'] == ('voltage_off' if volts[i] == 0 else 'valid')
+        assert e['current_status'] == ('reserved_divisor' if i == 4 else 'valid')
+        assert e['expected_core_current_a'] == [255,17.5,1.75,0,None,2.55][i]
+for report in electrical_pstates[20:]:
+    assert report['ok'] and report['data']['electrical_encoding'] == 'unavailable'
+    e = report['data']['rows'][0]['electrical']
+    assert e['voltage_status'] == e['current_status'] == 'unsupported_model'
+    assert e['vid_bits'] is None and e['voltage_mv'] is None and e['expected_core_current_a'] is None
+for report in [r for r in reports if r['command'] == 'amd-pstates']:
+    for row in report['data']['rows']:
+        if row['status'] != 'read': assert row['electrical'] is None
 umc = [r for r in reports if r["command"] == "amd-umc-read" and r["ok"]][0]
 contract = json.loads((Path(__file__).resolve().parents[1] / "gui/tests/fixtures/cli-umc.json").read_text())
 assert {k: umc[k] for k in contract if k != "data"} == {k: v for k, v in contract.items() if k != "data"}
