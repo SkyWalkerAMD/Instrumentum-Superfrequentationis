@@ -1,5 +1,16 @@
 # 安装包与源码归档
 
+<!-- intel-hwp-package-783dd96 -->
+2026-10-18：最新验证提交 `783dd96`，GUI / CLI 同步新增 **五项 HWP 包级请求设置**，
+含共享封装范围提示、PECI 覆盖检查、完整上下文比较和读回验证。
+
+- [实现说明](intel-hwp-package.md)、[整批验证](intel-hwp-package-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 939 JSON，GUI 各 154 项，共同核心 320 场景组，12 套内核 VM。
+- `dist/gui-cli-intel-hwp-package-783dd96/`：33 个包、精确源码、保留本地扩展的源码和 SHA256。
+
+原版全部功能及真机验收仍未完成。以下保留历史记录。
+<!-- /intel-hwp-package-783dd96 -->
+
 <!-- intel-hwp-requests-fb09aea -->
 2026-10-13：最新验证生产提交 `fb09aea`。GUI / CLI 同步恢复 **HWP 封装请求、PECI 覆盖和通知/历史**，
 按能力最多新增 25 项只读信息，并补齐本地设置的覆盖/极性上下文核验。

@@ -1,5 +1,7 @@
 # Intel HWP 封装请求与 PECI 覆盖
 
+2026-10-18 后续扩展：[五项包级请求设置](intel-hwp-package.md)已接入 GUI / CLI。下面保留此前查询批次的实现范围。
+
 GUI 的 `Intel Controls → Power / performance` 与 `octool-cli intel-read --cpu N`
 共用解码器，按 CPUID 能力增加最多 25 项只读信息：
 
