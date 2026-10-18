@@ -1,5 +1,16 @@
 # 无桌面版 OCTool
 
+<!-- intel-memory-temperature-02a2dcd -->
+2026-10-18：最新验证提交 `02a2dcd`，GUI / CLI 同步增加 **DDR4 Rank 温度等级与刷新要求**。
+B7/A700 内存读取现为 22 寄存器 / 83 字段，v6 快照兼容 v1–v5。
+
+- [实现说明](intel-memory-temperature.md)、[整批验证](intel-memory-temperature-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1028 JSON，GUI 各 166 项，共同核心 339 场景组，12 套内核 VM。
+- `dist/gui-cli-intel-memory-temperature-02a2dcd/`：33 个包、精确源码、保留本地扩展的源码和 SHA256。
+
+温度类别是控制器存储值，新鲜度未核实，不代表实时摄氏度或实际刷新率。以下保留历史记录。
+<!-- /intel-memory-temperature-02a2dcd -->
+
 <!-- amd-pm-limits-687a5f7 -->
 2026-10-18：最新验证提交 `687a5f7`，GUI / CLI 同步新增 **24 项 AMD PM 原版限制监控值**。
 恢复名称、字节偏移和浮点存储值；单位与物理目标仍标为未核实，已有 24 项公共遥测保留。
