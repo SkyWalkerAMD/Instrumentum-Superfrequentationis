@@ -1,5 +1,16 @@
 # Instrumentum Superfrequentationis
 
+<!-- amd-pm-limits-687a5f7 -->
+2026-10-18：最新验证提交 `687a5f7`，GUI / CLI 同步新增 **24 项 AMD PM 原版限制监控值**。
+恢复名称、字节偏移和浮点存储值；单位与物理目标仍标为未核实，已有 24 项公共遥测保留。
+
+- [实现说明](docs/amd-pm-limits.md)、[整批验证](docs/amd-pm-limits-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1010 JSON，GUI 各 163 项，共同核心 335 场景组，12 套内核 VM。
+- `dist/gui-cli-amd-pm-limits-687a5f7/`：33 个包、精确源码、保留本地扩展的源码和 SHA256。
+
+新增项是原版监控存储值，不代表 PBO 设置、完整 PM 表或真机验收。以下保留历史记录。
+<!-- /amd-pm-limits-687a5f7 -->
+
 <!-- intel-memory-odt-cf3e50a -->
 2026-10-18：最新验证提交 `cf3e50a`，GUI / CLI 同步增加 **Intel ODT 矩阵与写数据延迟配置读取**。
 B7/A700 内存读取现为 21 寄存器 / 79 字段，快照 v5 兼容 v1–v4。
