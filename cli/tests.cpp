@@ -1106,12 +1106,12 @@ void intelMemoryOdtCaptures() {
     struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
     unsigned opens = 0; const auto factory = [&] { ++opens; return std::unique_ptr<HardwareBackend>(); };
     for (unsigned scenario = 0; scenario < 16; ++scenario) {
-        auto registers = intel_memory_fixture::registers(scenario == 1 ? 0 : 1);
+        auto registers = intel_memory_fixture::registers(scenario == 1 ? 0 : 1,5);
         if (scenario == 2) registers[19].raw = registers[20].raw = 0;
         if (scenario == 3) registers[3].raw |= (UINT64_C(1)<<30)|(UINT64_C(1)<<16);
         if (scenario == 4) registers[2].raw = 8;
         if (scenario == 5) registers[2].raw = 15;
-        auto text = intelMemoryJson(decodeIntelMemory({},registers));
+        auto text = intelMemoryJson(decodeIntelMemory({},registers,5));
         if (scenario == 6) {
             text.replace(text.find("\"encoded\":2",text.find("ODT_read_rank0_mask")),11,"\"encoded\":15");
             text.replace(text.find("\"encoded\":45",text.find("Write_delay_add_tCWL")),12,"\"encoded\":99");
@@ -1137,12 +1137,56 @@ void intelMemoryOdtLive() {
         intel_memory_fixture::Device d; d.controller = 1;
         if (scenario == 0) { d.channel = 1; d.memory[0xe454] = 8; d.memory[0xe080] = d.memory[0xe478] = 0; }
         if (scenario == 1) d.memory[0xd800] = 0;
-        const int failures[] = {24,25,50,51};
+        const int failures[] = {24,25,51,52};
         if (scenario >= 2 && scenario <= 5) d.failRead = failures[scenario-2];
-        if (scenario >= 6) d.afterRequest = [&](const Request &) { if (d.reads == 26) d.memory[scenario == 6 ? 0xe080 : 0xe478] ^= 1; };
+        if (scenario >= 6) d.afterRequest = [&](const Request &) { if (d.reads == 27) d.memory[scenario == 6 ? 0xe080 : 0xe478] ^= 1; };
         const auto report = command(d,{"intel-memory-read","--cpu","130","--controller","1","--channel",std::to_string(d.channel)},scenario < 2 ? 0 : 3);
         assert(!d.writes && !d.wrongCpu);
-        if (scenario < 2) assert(d.reads == 57 && d.cpuCalls == 3);
+        if (scenario < 2) assert(d.reads == 59 && d.cpuCalls == 3);
+        else assert(report.find("\"memory\":null") != std::string::npos);
+    }
+}
+void intelMemoryTemperatureCaptures() {
+    char path[] = "/tmp/octool-imc-temperature-XXXXXX"; const int fd = mkstemp(path); assert(fd >= 0); close(fd);
+    struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
+    unsigned opens = 0; const auto factory = [&] { ++opens; return std::unique_ptr<HardwareBackend>(); };
+    for (unsigned scenario = 0; scenario < 12; ++scenario) {
+        auto registers = intel_memory_fixture::registers(scenario == 1 ? 1 : 0); registers[2].raw = 15;
+        if (scenario == 2) registers[21].raw = 0;
+        if (scenario == 3) registers[2].raw = 4;
+        if (scenario == 4) registers[3].raw |= UINT64_C(1)<<30;
+        auto text = intelMemoryJson(decodeIntelMemory({},registers));
+        const auto replace = [&](const std::string &from, const std::string &to) {
+            const auto p = text.find(from); assert(p != std::string::npos); text.replace(p,from.size(),to);
+        };
+        if (scenario == 5) {
+            replace("\"temperature_class\":\"hot\"","\"temperature_class\":\"cold\"");
+            replace("\"required_refresh_multiplier\":2","\"required_refresh_multiplier\":1");
+            replace("\"temperature_freshness_verified\":false","\"temperature_freshness_verified\":true");
+        }
+        if (scenario == 6) text = "{\"schema_version\":1,\"command\":\"intel-memory-read\",\"ok\":true,\"error\":0,\"data\":{\"memory\":"+text+"}}";
+        if (scenario == 7) replace("memory-v6","memory-v5");
+        if (scenario == 8) replace("0x0000e428","0x0000e424");
+        if (scenario == 9) replace("0x0000000003020100","0x0000000103020100");
+        if (scenario == 10) replace("0x0000000003020100","0x00000000ffffffff");
+        if (scenario == 11) replace("0x0000e428","0x0000e478");
+        std::ofstream file(path,std::ios::binary); file << text; file.close(); assert(file);
+        std::ostringstream out; assert(run({"intel-memory-decode","--file",path},out,factory) == (scenario < 7 ? 0 : 3));
+        if (emit) std::cout << out.str();
+    }
+    assert(!opens);
+}
+void intelMemoryTemperatureLive() {
+    for (unsigned scenario = 0; scenario < 6; ++scenario) {
+        intel_memory_fixture::Device d; d.controller = 1; d.memory[0xd800] = 0; d.memory[0xe454] = 15;
+        if (scenario == 1) d.memory[0xe428] = 0;
+        if (scenario == 2) d.failRead = 26;
+        if (scenario == 3) d.failRead = 53;
+        if (scenario == 4) d.afterRequest = [&](const Request &) { if (d.reads == 27) d.memory[0xe428] ^= 1; };
+        if (scenario == 5) d.memory[0xe428] = UINT32_MAX;
+        const auto report = command(d,{"intel-memory-read","--cpu","130","--controller","1","--channel","0"},scenario < 2 ? 0 : 3);
+        assert(!d.writes && !d.wrongCpu);
+        if (scenario < 2) assert(d.reads == 59 && d.cpuCalls == 3);
         else assert(report.find("\"memory\":null") != std::string::npos);
     }
 }
@@ -1676,11 +1720,11 @@ int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--pm-fixture") { pmFilesystem(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
-    offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); intelMemoryOdtCaptures(); intelMemoryOdtLive(); thermalEventCommands();
+    offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); intelMemoryOdtCaptures(); intelMemoryOdtLive(); intelMemoryTemperatureCaptures(); intelMemoryTemperatureLive(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
     hwpHistoryCommands(); pmLimitCommands();
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "43 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "45 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

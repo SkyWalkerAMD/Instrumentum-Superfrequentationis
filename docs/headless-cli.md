@@ -22,7 +22,7 @@ B7/A700 内存读取现为 21 寄存器 / 79 字段，快照 v5 兼容 v1–v4�
 新增项是存储配置，不推断 ODT 激活、电阻值或有效 tCWL/IOL。原版全部功能和真机验收仍未完成；以下保留历史记录。
 <!-- /intel-memory-odt-cf3e50a -->
 
-Intel 内存读取已扩展为 v5：21 寄存器 / 79 字段，新增 [ODT 矩阵与写数据延迟](intel-memory-odt.md)，兼容 v1–v4。GUI 与 CLI 共享解析器；验证结果见[本批交付记录](intel-memory-odt-validation.md)。
+Intel 内存读取已扩展为 v6：22 寄存器 / 83 字段，新增 [DDR4 温度等级与刷新要求](intel-memory-temperature.md)，兼容 v1–v5。GUI 与 CLI 共享解析器；温度新鲜度仍未核实。
 
 <!-- amd-pstates-legacy-fc330a9 -->
 2026-10-18：最新验证提交 `fc330a9`，GUI / CLI 同步恢复 **AMD 17h / 19h PStates 定义读取**，

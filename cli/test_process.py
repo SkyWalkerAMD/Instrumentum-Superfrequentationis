@@ -375,15 +375,15 @@ with tempfile.TemporaryDirectory(prefix="octool-intel-clock-") as directory:
     os.mkfifo(Path(directory)/"fifo")
     assert run("intel-clock-decode","--file",str(Path(directory)/"fifo"),code=3)["data"]["clock"] is None
 imc_reports = [r for r in reports if r["command"] in ("intel-memory-read","intel-memory-decode")]
-assert len(imc_reports) == 76
-assert [r["ok"] for r in imc_reports] == ([True]*4+[False]*6)*2 + [True]*4+[False]*4 + [True]*6+[False]*6 + [True]*6+[False]*6 + [True]*8+[False]*8 + [True]*2+[False]*6
+assert len(imc_reports) == 94
+assert [r["ok"] for r in imc_reports] == ([True]*4+[False]*6)*2 + [True]*4+[False]*4 + [True]*6+[False]*6 + [True]*6+[False]*6 + [True]*8+[False]*8 + [True]*2+[False]*6 + [True]*7+[False]*5 + [True]*2+[False]*4
 for i,r in enumerate(imc_reports[:20]):
     memory = r["data"]["memory"]
     if not r["ok"]:
         assert memory is None
         continue
-    assert memory["format"] == "octool-intel-memory-v5"
-    assert len(memory["registers"]) == 21 and len(memory["fields"]) == 79
+    assert memory["format"] == "octool-intel-memory-v6"
+    assert len(memory["registers"]) == 22 and len(memory["fields"]) == 83
     fields = {v["name"]:v for v in memory["fields"]}
     assert fields["tCL"]["encoded"] == 36 and fields["tWRPRE"]["encoded"] == 80
     assert fields["tWRRD_SG"]["encoded"] == 70 and fields["tWRRD_DD"]["encoded"] == 10
@@ -472,8 +472,8 @@ for i,r in enumerate(imc_reports[52:76]):
     if not r["ok"]:
         assert memory is None
         continue
-    assert memory["format"] == "octool-intel-memory-v5" and memory["offline"] == (i < 16)
-    assert len(memory["registers"]) == 21 and len(memory["fields"]) == 79
+    assert memory["format"] == ("octool-intel-memory-v5" if i < 16 else "octool-intel-memory-v6") and memory["offline"] == (i < 16)
+    assert len(memory["registers"]) == (21 if i < 16 else 22) and len(memory["fields"]) == (79 if i < 16 else 83)
     assert not memory["origin_verified"] and not memory["atomic_snapshot_guaranteed"]
     assert memory["dram_type"] == ("DDR4" if i in (1,17) else "DDR5")
     assert memory["controller"] == (1 if i >= 16 else 0) and memory["channel"] == (1 if i == 16 else 0)
@@ -492,6 +492,29 @@ for i,r in enumerate(imc_reports[52:76]):
     assert fields["tCWL"]["encoded"] == 34 and fields["tCWL"]["unit"] == ("encoded" if i == 3 else "tCK")
     assert memory["registers"][19] == dict(offset="0x0000e080",raw="0x0000000000000000" if i in (2,16) else "0x000000007bde4812")
     assert memory["registers"][20] == dict(offset="0x0000e478",raw="0x0000000000000000" if i in (2,16) else "0x00000000a5a51b4d")
+for i,r in enumerate(imc_reports[76:94]):
+    memory = r["data"]["memory"]
+    if i < 12: assert not r["data"]["hardware_accessed"]
+    if not r["ok"]:
+        assert memory is None
+        continue
+    assert memory["format"] == "octool-intel-memory-v6"
+    assert len(memory["registers"]) == 22 and len(memory["fields"]) == 83
+    assert not memory["temperature_freshness_verified"] and memory["offline"] == (i < 12)
+    assert memory["controller"] == (1 if i >= 12 else 0) and memory["channel"] == 0
+    fields = {v["name"]:v for v in memory["fields"]}
+    assert fields["tCL"]["encoded"] == 36
+    for rank in range(4):
+        field = fields["DDR4_temperature_rank"+str(rank)]
+        code = 0 if i in (2,13) else rank
+        absent = i == 3 and rank != 2
+        unavailable = i == 1 or absent or code == 3
+        assert field["encoded"] == (None if unavailable else code)
+        assert field["unit"] == (None if unavailable else "temperature_class")
+        assert field["temperature_class"] == (None if unavailable else ("cold","normal","hot")[code])
+        assert field["required_refresh_multiplier"] == (None if unavailable else 2 if code == 2 else 1)
+        assert (field["error"] < 0) == unavailable
+    assert memory["registers"][-1]["raw"] == ("0x0000000000000000" if i in (2,13) else "0x0000000003020100")
 with tempfile.TemporaryDirectory(prefix="octool-intel-memory-") as directory:
     path = Path(directory)/"内存快照.json"
     for source in (imc_reports[0]["data"]["memory"],imc_reports[0],imc_reports[10]):

@@ -290,14 +290,14 @@ private slots:
         auto *table = panel.findChild<QTableWidget *>("imcTable");
         const auto latest = QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},intel_memory_fixture::registers())));
         const auto legacy = QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},intel_memory_fixture::registers(0,1),1)));
-        QVERIFY(panel.loadCapture(latest)); QCOMPARE(table->rowCount(),79);
+        QVERIFY(panel.loadCapture(latest)); QCOMPARE(table->rowCount(),83);
         QVERIFY(panel.loadCapture(legacy)); QCOMPARE(table->rowCount(),30); QCOMPARE(panel.captureBytes(),legacy);
         QVERIFY(panel.findChild<QLabel *>("imcStatus")->text().contains("Legacy v1"));
         QCOMPARE(parseIntelMemoryCapture(panel.captureBytes().toStdString()).version,1u);
         const auto v2 = QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},intel_memory_fixture::registers(1,2),2)));
         QVERIFY(panel.loadCapture(v2)); QCOMPARE(table->rowCount(),43); QCOMPARE(panel.captureBytes(),v2);
         QVERIFY(panel.findChild<QLabel *>("imcStatus")->text().contains("were not captured"));
-        QVERIFY(panel.loadCapture(latest)); QCOMPARE(table->rowCount(),79);
+        QVERIFY(panel.loadCapture(latest)); QCOMPARE(table->rowCount(),83);
         auto bad = legacy; bad.replace("memory-v1","memory-v2");
         QVERIFY(!panel.loadCapture(bad)); QCOMPARE(table->rowCount(),0); QVERIFY(panel.captureBytes().isEmpty());
         QCOMPARE(reference.calls.load(),0);
@@ -356,7 +356,7 @@ private slots:
         for (unsigned type = 0; type < 2; ++type) {
             auto regs = intel_memory_fixture::registers(type); regs[2].raw = 15;
             const auto good = QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},regs)));
-            QVERIFY(panel.loadCapture(good)); QCOMPARE(table->rowCount(),79);
+            QVERIFY(panel.loadCapture(good)); QCOMPARE(table->rowCount(),83);
             for (int i = 0; i < 8; ++i) {
                 QCOMPARE(table->item(68+i,1)->text(),QString::fromLatin1(masks[i]));
                 QCOMPARE(table->item(68+i,2)->text(),QString("ODT pin mask"));
@@ -366,7 +366,7 @@ private slots:
             QCOMPARE(table->item(76,1)->text(),QString("45")); QCOMPARE(table->item(76,2)->text(),QString("DCLK"));
             QCOMPARE(table->item(77,1)->text(),QString("13")); QCOMPARE(table->item(77,2)->text(),QString("DCLK"));
             QCOMPARE(table->item(78,1)->text(),QString("1")); QCOMPARE(table->item(78,2)->text(),QString("flag"));
-            QVERIFY(panel.findChild<QLabel *>("imcContext")->text().contains("snapshot v5"));
+            QVERIFY(panel.findChild<QLabel *>("imcContext")->text().contains("snapshot v6"));
             auto *status = panel.findChild<QLabel *>("imcStatus");
             QVERIFY(status->text().contains("matrix activation is unverified"));
             QVERIFY(status->text().contains("No effective tCWL or IOL is derived"));
@@ -406,9 +406,9 @@ private slots:
             QVERIFY(panel.loadCapture(old)); QCOMPARE(table->rowCount(),version == 1 ? 30 : version == 2 ? 43 : version == 3 ? 57 : 68);
             QCOMPARE(panel.captureBytes(),old);
             QVERIFY(panel.findChild<QLabel *>("imcStatus")->text().contains("ODT matrix and write-data delays were not captured"));
-            QVERIFY(panel.loadCapture(latest)); QCOMPARE(table->rowCount(),79); QCOMPARE(panel.captureBytes(),latest);
+            QVERIFY(panel.loadCapture(latest)); QCOMPARE(table->rowCount(),83); QCOMPARE(panel.captureBytes(),latest);
         }
-        auto bad = latest; bad.replace("memory-v5","memory-v4");
+        auto bad = latest; bad.replace("memory-v6","memory-v4");
         QVERIFY(!panel.loadCapture(bad)); QCOMPARE(table->rowCount(),0); QVERIFY(panel.captureBytes().isEmpty());
         QVERIFY(!panel.findChild<QPushButton *>("imcCopy")->isEnabled()); QVERIFY(!panel.findChild<QPushButton *>("imcSave")->isEnabled());
         QCOMPARE(reference.calls.load(),0);
@@ -419,7 +419,7 @@ private slots:
         auto *read = panel.findChild<QPushButton *>("imcRead"); auto *table = panel.findChild<QTableWidget *>("imcTable");
         for (unsigned offset : {0xe080u,0xe478u}) {
             *device = intel_memory_fixture::Device(); read->click(); QTRY_VERIFY(read->isEnabled());
-            QCOMPARE(device->reads,57u); QCOMPARE(table->rowCount(),79); QVERIFY(!panel.captureBytes().isEmpty());
+            QCOMPARE(device->reads,59u); QCOMPARE(table->rowCount(),83); QVERIFY(!panel.captureBytes().isEmpty());
             *device = intel_memory_fixture::Device();
             const auto borrowed = device.get();
             device->afterRequest = [borrowed,offset](const Request &) { if (borrowed->reads == 26) borrowed->memory[offset] ^= 1; };
@@ -428,6 +428,79 @@ private slots:
             QVERIFY(!panel.findChild<QPushButton *>("imcCopy")->isEnabled()); QVERIFY(!panel.findChild<QPushButton *>("imcSave")->isEnabled());
             device->afterRequest = {};
         }
+    }
+    void intelMemoryTemperatureSnapshot() {
+        using namespace octool::core;
+        Reference reference; IntelMemoryPanel panel(reference.access()); panel.resize(1550,1060); panel.show();
+        auto regs = intel_memory_fixture::registers(0); regs[2].raw = 15;
+        const auto good = QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},regs)));
+        QVERIFY(panel.loadCapture(good)); auto *table = panel.findChild<QTableWidget *>("imcTable"); QCOMPARE(table->rowCount(),83);
+        const char *expected[] = {"Cold (<45 C) / 1x refresh required","Normal (45-85 C) / 1x refresh required","Hot (>85 C) / 2x refresh required","Reserved code"};
+        for (int rank = 0; rank < 4; ++rank) {
+            QCOMPARE(table->item(79+rank,0)->text(),QString("DDR4_temperature_rank%1").arg(rank));
+            QCOMPARE(table->item(79+rank,1)->text(),QString::fromLatin1(expected[rank]));
+            QCOMPARE(table->item(79+rank,2)->text(),QString(rank == 3 ? "—" : "Stored category"));
+            QCOMPARE(table->item(79+rank,3)->text(),QString("0x0000E428"));
+        }
+        auto *status = panel.findChild<QLabel *>("imcStatus"); QVERIFY(status->text().contains("freshness is unverified"));
+        QVERIFY(status->text().contains("do not report the active rate"));
+        QTRY_VERIFY(status->height() >= status->heightForWidth(status->width()));
+        table->scrollToBottom();
+        QTRY_VERIFY(table->viewport()->rect().contains(table->visualItemRect(table->item(79,1))));
+        QTRY_VERIFY(table->viewport()->rect().contains(table->visualItemRect(table->item(82,5))));
+        const auto shot = qEnvironmentVariable("OCTOOL_INTEL_MEMORY_TEMPERATURE_TEST_SCREENSHOT");
+        if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        panel.findChild<QPushButton *>("imcCopy")->click(); QCOMPARE(QApplication::clipboard()->text().toUtf8(),good);
+        auto forged = good; forged.replace("\"temperature_class\":\"hot\"","\"temperature_class\":\"cold\"");
+        forged.replace("\"required_refresh_multiplier\":2","\"required_refresh_multiplier\":1");
+        forged.replace("\"temperature_freshness_verified\":false","\"temperature_freshness_verified\":true");
+        QVERIFY(panel.loadCapture(forged)); QCOMPARE(panel.captureBytes(),good);
+        QVERIFY(panel.loadCapture("{\"schema_version\":1,\"command\":\"intel-memory-read\",\"ok\":true,\"error\":0,\"data\":{\"memory\":"+good+"}}"));
+        QCOMPARE(panel.captureBytes(),good); QCOMPARE(reference.calls.load(),0);
+    }
+    void intelMemoryTemperaturePresenceAndLegacy() {
+        using namespace octool::core;
+        Reference reference; IntelMemoryPanel panel(reference.access()); auto *table = panel.findChild<QTableWidget *>("imcTable");
+        for (unsigned type = 0; type < 2; ++type) for (unsigned ranks = 1; ranks < 16; ++ranks) {
+            auto regs = intel_memory_fixture::registers(type); regs[2].raw = ranks; regs[21].raw = 0;
+            regs[3].raw |= (UINT64_C(1)<<30)|(UINT64_C(1)<<16);
+            QVERIFY(panel.loadCapture(QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},regs)))));
+            for (unsigned rank = 0; rank < 4; ++rank) {
+                const auto expected = type ? "Not used" : !(ranks&(1u<<rank)) ? "Rank absent" : "Cold (<45 C) / 1x refresh required";
+                QCOMPARE(table->item(int(79+rank),1)->text(),QString::fromLatin1(expected));
+            }
+        }
+        const auto latest = panel.captureBytes();
+        for (unsigned version = 1; version < 6; ++version) {
+            const auto old = QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},intel_memory_fixture::registers(0,version),version)));
+            QVERIFY(panel.loadCapture(old)); QCOMPARE(table->rowCount(),version == 1 ? 30 : version == 2 ? 43 : version == 3 ? 57 : version == 4 ? 68 : 79);
+            QVERIFY(panel.findChild<QLabel *>("imcStatus")->text().contains("DDR4 temperature categories were not captured"));
+            QCOMPARE(panel.captureBytes(),old); QVERIFY(panel.loadCapture(latest)); QCOMPARE(table->rowCount(),83);
+        }
+        QCOMPARE(reference.calls.load(),0);
+    }
+    void intelMemoryTemperatureLiveClearsFailures() {
+        auto device = std::make_shared<intel_memory_fixture::Device>();
+        IntelMemoryPanel panel(intelMemoryAccess(device),nullptr,130); panel.resize(1550,1060); panel.show();
+        auto *read = panel.findChild<QPushButton *>("imcRead"); auto *table = panel.findChild<QTableWidget *>("imcTable");
+        for (unsigned scenario = 0; scenario < 4; ++scenario) {
+            *device = intel_memory_fixture::Device(); device->memory[0xd800] = 0;
+            read->click(); QTRY_VERIFY(read->isEnabled()); QCOMPARE(device->reads,59u); QCOMPARE(table->rowCount(),83);
+            *device = intel_memory_fixture::Device(); device->memory[0xd800] = 0;
+            if (scenario < 2) device->failRead = scenario ? 53 : 26;
+            if (scenario == 2) {
+                const auto borrowed = device.get();
+                device->afterRequest = [borrowed](const Request &) { if (borrowed->reads == 27) borrowed->memory[0xe428] ^= 1; };
+            }
+            if (scenario == 3) device->memory[0xe428] = UINT32_MAX;
+            read->click(); QCOMPARE(table->rowCount(),0); QTRY_VERIFY(read->isEnabled());
+            QCOMPARE(table->rowCount(),0); QVERIFY(panel.captureBytes().isEmpty()); QCOMPARE(device->writes,0u);
+            QVERIFY(!panel.findChild<QPushButton *>("imcCopy")->isEnabled()); QVERIFY(!panel.findChild<QPushButton *>("imcSave")->isEnabled());
+            QVERIFY(panel.findChild<QLabel *>("imcStatus")->text().contains("Read failed"));
+            device->afterRequest = {};
+        }
+        const auto shot = qEnvironmentVariable("OCTOOL_INTEL_MEMORY_TEMPERATURE_ERROR_TEST_SCREENSHOT");
+        if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
     }
     void intelMemoryRefreshSnapshot() {
         using namespace octool::core;
@@ -519,7 +592,7 @@ private slots:
         auto *read = panel.findChild<QPushButton *>("imcRead"); auto *table = panel.findChild<QTableWidget *>("imcTable");
         for (int failure : {0,5,6,7,8,11,17,18,19,20,21,22,23,24,25,26,36,37,42,43,44,45,46,47,48,49,50,51,52,56}) {
             *device = intel_memory_fixture::Device(); read->click(); QTRY_VERIFY(read->isEnabled());
-            QCOMPARE(table->rowCount(),79); QVERIFY(panel.findChild<QPushButton *>("imcCopy")->isEnabled());
+            QCOMPARE(table->rowCount(),83); QVERIFY(panel.findChild<QPushButton *>("imcCopy")->isEnabled());
             QVERIFY(!octool::core::parseIntelMemoryCapture(panel.captureBytes().toStdString()).error);
             *device = intel_memory_fixture::Device(); device->failRead = failure;
             read->click(); QCOMPARE(table->rowCount(),0); QTRY_VERIFY(read->isEnabled());

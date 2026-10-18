@@ -35,7 +35,8 @@
       "3.2.103",
       "3.2.83",
       "3.2.81",
-      "3.2.100"
+      "3.2.100",
+      "3.2.88"
     ],
     "visually_inspected_printed_pages": [
       129,
@@ -51,6 +52,7 @@
       155,
       156,
       157,
+      161,
       162,
       163,
       164,
@@ -247,7 +249,65 @@
           "unit": "flag",
           "meaning": "Gear2 option; no effective delay inferred"
         }
-      ]
+      ],
+      "ddr4_temperature": {
+        "offset": "0xe428",
+        "width_bits": 32,
+        "reset": "0x01010101",
+        "fields": [
+          {
+            "name": "DDR4_temperature_rank0",
+            "low": 0,
+            "high": 1,
+            "rank_bit": 1
+          },
+          {
+            "name": "DDR4_temperature_rank1",
+            "low": 8,
+            "high": 9,
+            "rank_bit": 2
+          },
+          {
+            "name": "DDR4_temperature_rank2",
+            "low": 16,
+            "high": 17,
+            "rank_bit": 4
+          },
+          {
+            "name": "DDR4_temperature_rank3",
+            "low": 24,
+            "high": 25,
+            "rank_bit": 8
+          }
+        ],
+        "categories": [
+          {
+            "encoded": 0,
+            "name": "cold",
+            "range_celsius": "below 45",
+            "required_refresh_multiplier": 1
+          },
+          {
+            "encoded": 1,
+            "name": "normal",
+            "range_celsius": "45 to 85",
+            "required_refresh_multiplier": 1
+          },
+          {
+            "encoded": 2,
+            "name": "hot",
+            "range_celsius": "above 85",
+            "required_refresh_multiplier": 2
+          },
+          {
+            "encoded": 3,
+            "name": "reserved",
+            "error": "ENODATA"
+          }
+        ],
+        "freshness_verified": false,
+        "active_refresh_rate_inferred": false
+      }
     }
   },
   "linux_pci_reference": {
@@ -264,17 +324,18 @@
     "pci_vendor": "0x8086",
     "pci_device": "0xa700",
     "physical_hardware_validated": false,
-    "register_count": 21,
-    "field_count": 79,
+    "register_count": 22,
+    "field_count": 83,
     "write_operations": 0,
-    "capture_version": 5,
+    "capture_version": 6,
     "legacy_versions": [
       1,
       2,
       3,
-      4
+      4,
+      5
     ],
-    "hardware_reads": 57,
+    "hardware_reads": 59,
     "cpuid_reads": 3
   },
   "exclusions": [
@@ -292,6 +353,9 @@
     "no 9*tREFI inference from TREFIX9 name",
     "no inferred ODT activation or electrical resistance",
     "no absent-target-rank ODT mask values",
-    "no effective tCWL or IOL derived from write-delay configuration"
+    "no effective tCWL or IOL derived from write-delay configuration",
+    "no precise Celsius sample inferred from DDR4 categories",
+    "no category freshness or active refresh rate inference",
+    "no E424 MR4 temperature decode or DDR5 split-rank mapping"
   ]
 }

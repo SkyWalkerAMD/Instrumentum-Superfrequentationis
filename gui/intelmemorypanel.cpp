@@ -22,7 +22,7 @@ using namespace octool::core;
 IntelMemoryPanel::IntelMemoryPanel(std::shared_ptr<HardwareAccess> access, QWidget *parent, unsigned cpu)
     : QWidget(parent), access_(std::move(access)), cancelled_(std::make_shared<std::atomic<bool>>(false)) {
     setObjectName("intelMemory"); auto *layout = new QVBoxLayout(this);
-    auto *heading = new QLabel("Intel memory timings · Raptor Lake-S\n"
+    auto *heading = new QLabel("Intel memory timings and thermal categories · Raptor Lake-S\n"
         "Read one controller channel or open a saved snapshot. Supported hardware: CPU 06_B7 and host bridge 8086:A700. "
         "DDR4 uses channel 0; DDR5 uses channel 0 or 1. Controller/channel indices are not motherboard DIMM labels.", this);
     heading->setWordWrap(true); layout->addWidget(heading);
@@ -41,7 +41,7 @@ IntelMemoryPanel::IntelMemoryPanel(std::shared_ptr<HardwareAccess> access, QWidg
     layout->addLayout(buttons);
     context_ = new QLabel("No timing snapshot loaded.",this); context_->setObjectName("imcContext"); context_->setWordWrap(true); layout->addWidget(context_);
     table_ = new QTableWidget(0,6,this); table_->setObjectName("imcTable");
-    table_->setHorizontalHeaderLabels({"Timing","Value","Unit","Offset","Bits","Register (hex)"});
+    table_->setHorizontalHeaderLabels({"Field","Value","Unit","Offset","Bits","Register (hex)"});
     table_->setEditTriggers(QAbstractItemView::NoEditTriggers); table_->verticalHeader()->hide();
     table_->verticalHeader()->setDefaultSectionSize(25);
     table_->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -86,7 +86,12 @@ void IntelMemoryPanel::present(const IntelMemorySnapshot &s) {
         if (unit == "tREFI_count") unit = "tREFI count";
         const bool pinMask = unit == "odt_pin_mask";
         if (pinMask) unit = "ODT pin mask";
-        const QStringList values = {QString::fromLatin1(f.name),v.error == -ENODEV ? "Rank absent" : v.error ? "Not used" : pinMask ? hexValue(v.encoded,1) : QString::number(v.encoded),
+        const auto *temperature = intelMemoryTemperature(f,v);
+        if (temperature) unit = "Stored category";
+        const auto value = temperature ? QString("%1 / %2x refresh required").arg(temperature->label).arg(temperature->requiredRefreshMultiplier) :
+            v.error == -ENODEV ? QString("Rank absent") : v.error == -ENODATA ? QString("Reserved code") :
+            v.error ? QString("Not used") : pinMask ? hexValue(v.encoded,1) : QString::number(v.encoded);
+        const QStringList values = {QString::fromLatin1(f.name),value,
             v.error ? "—" : unit,hexValue(f.offset,4),
             QString("%1:%2").arg(f.high).arg(f.low),hexValue(raw,8)};
         for (int col = 0; col < values.size(); ++col) table_->setItem(int(i),col,new QTableWidgetItem(values[col]));
@@ -105,6 +110,8 @@ void IntelMemoryPanel::present(const IntelMemorySnapshot &s) {
         (s.version < 5 ? "ODT matrix and write-data delays were not captured. " :
             "Stored ODT masks select pins 3:0; matrix activation is unverified. DDR5 uses non-target ODT. "
             "Write-delay add/subtract counts use DCLK; the 1QCLK flag is a Gear2 option. No effective tCWL or IOL is derived. ") +
+        (s.version < 6 ? "DDR4 temperature categories were not captured. " :
+            "DDR4 MPR categories are stored values: freshness is unverified. Refresh requirements do not report the active rate. ") +
         "tWRPRE is the write-command-to-precharge interval. No settings were changed.");
 }
 bool IntelMemoryPanel::loadCapture(const QByteArray &bytes) {

@@ -39,6 +39,7 @@ def stage_cli(stage, binary, floor=None):
     copy(ROOT / "docs/intel-memory.md", stage / "usr/share/doc/octool-cli/intel-memory.md")
     copy(ROOT / "docs/intel-memory-extended.md", stage / "usr/share/doc/octool-cli/intel-memory-extended.md")
     copy(ROOT / "docs/intel-memory-refresh.md", stage / "usr/share/doc/octool-cli/intel-memory-refresh.md")
+    copy(ROOT / "docs/intel-memory-temperature.md", stage / "usr/share/doc/octool-cli/intel-memory-temperature.md")
     copy(ROOT / "docs/intel-clock.md", stage / "usr/share/doc/octool-cli/intel-clock.md")
     copy(ROOT / "docs/intel-tvb.md", stage / "usr/share/doc/octool-cli/intel-tvb.md")
     copy(ROOT / "docs/turbo-thresholds.md", stage / "usr/share/doc/octool-cli/turbo-thresholds.md")

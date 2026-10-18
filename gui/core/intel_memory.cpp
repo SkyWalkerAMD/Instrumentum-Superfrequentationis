@@ -25,16 +25,16 @@ std::uint64_t word64(const capture_json::Json &v) {
 }
 const std::vector<IntelMemoryRegisterSpec> &intelMemoryRegisters(unsigned version) {
     // Intel 743846-001, sections 3.2.46, 3.2.49-50, 3.2.70-76, 3.2.79-83,
-    // 3.2.89-91, 3.2.93-94, 3.2.100 and 3.2.103. Context precedes timing registers.
+    // 3.2.88-91, 3.2.93-94, 3.2.100 and 3.2.103. Context precedes timing registers.
     static const std::vector<IntelMemoryRegisterSpec> specs = {
         {0xd800,4}, {0xd80c,4}, {0xe454,4}, {0xe088,8}, {0xe000,8}, {0xe008,4},
         {0xe00c,4}, {0xe010,4}, {0xe014,4}, {0xe018,4}, {0xe070,8}, {0xe43c,4},
         {0xe020,8}, {0xe050,8}, {0xe438,4}, {0xe440,4}, {0xe448,8}, {0xe4c0,8}, {0xe0b8,4},
-        {0xe080,4}, {0xe478,4}
+        {0xe080,4}, {0xe478,4}, {0xe428,4}
     };
     static const std::vector<IntelMemoryRegisterSpec> v1(specs.begin(), specs.begin()+12), v2(specs.begin(), specs.begin()+14),
-        v3(specs.begin(), specs.begin()+18), v4(specs.begin(), specs.begin()+19), empty;
-    return version == 5 ? specs : version == 4 ? v4 : version == 3 ? v3 : version == 2 ? v2 : version == 1 ? v1 : empty;
+        v3(specs.begin(), specs.begin()+18), v4(specs.begin(), specs.begin()+19), v5(specs.begin(), specs.begin()+21), empty;
+    return version == 6 ? specs : version == 5 ? v5 : version == 4 ? v4 : version == 3 ? v3 : version == 2 ? v2 : version == 1 ? v1 : empty;
 }
 const std::vector<IntelMemoryField> &intelMemoryFields(unsigned version) {
     static const std::vector<IntelMemoryField> fields = {
@@ -104,11 +104,23 @@ const std::vector<IntelMemoryField> &intelMemoryFields(unsigned version) {
         // Do not combine these with tCWL to claim an effective delay or IOL.
         {"Write_delay_add_tCWL",0xe478,6,11,3,"DCLK",0,true},
         {"Write_delay_subtract_tCWL",0xe478,0,5,3,"DCLK",0,true},
-        {"Write_delay_add_1QCLK",0xe478,12,12,3,"flag",0,true}
+        {"Write_delay_add_1QCLK",0xe478,12,12,3,"flag",0,true},
+        // 3.2.88: cached DDR4 MPR categories. Zero means cold; 3 is reserved.
+        // Reading this register neither triggers MPR nor establishes freshness.
+        {"DDR4_temperature_rank0",0xe428,0,1,1,"temperature_class",1,true},
+        {"DDR4_temperature_rank1",0xe428,8,9,1,"temperature_class",2,true},
+        {"DDR4_temperature_rank2",0xe428,16,17,1,"temperature_class",4,true},
+        {"DDR4_temperature_rank3",0xe428,24,25,1,"temperature_class",8,true}
     };
     static const std::vector<IntelMemoryField> v1(fields.begin(), fields.begin()+30), v2(fields.begin(), fields.begin()+43),
-        v3(fields.begin(), fields.begin()+57), v4(fields.begin(), fields.begin()+68), empty;
-    return version == 5 ? fields : version == 4 ? v4 : version == 3 ? v3 : version == 2 ? v2 : version == 1 ? v1 : empty;
+        v3(fields.begin(), fields.begin()+57), v4(fields.begin(), fields.begin()+68), v5(fields.begin(), fields.begin()+79), empty;
+    return version == 6 ? fields : version == 5 ? v5 : version == 4 ? v4 : version == 3 ? v3 : version == 2 ? v2 : version == 1 ? v1 : empty;
+}
+const IntelMemoryTemperatureClass *intelMemoryTemperature(const IntelMemoryField &field, const IntelMemoryValue &value) {
+    static const IntelMemoryTemperatureClass classes[] = {
+        {"cold","Cold (<45 C)",1}, {"normal","Normal (45-85 C)",1}, {"hot","Hot (>85 C)",2}
+    };
+    return field.offset == 0xe428 && !value.error && value.encoded < 3 ? &classes[value.encoded] : nullptr;
 }
 const char *intelMemoryUnit(const IntelMemorySnapshot &s, const IntelMemoryField &f) {
     // QCLK and MC DCLK are already controller-domain quantities. Do not apply
@@ -132,7 +144,7 @@ IntelMemorySnapshot decodeIntelMemory(const IntelMemoryTarget &t, const std::vec
         if (it == raw.end() || (spec.width == 4 && it->second > UINT32_MAX)) { out.error = -EINVAL; return out; }
         const auto full = spec.width == 4 ? UINT64_C(0xffffffff) : UINT64_MAX;
         const bool policy = spec.offset == 0xe438 || spec.offset == 0xe440 || spec.offset == 0xe448 || spec.offset == 0xe4c0 ||
-            spec.offset == 0xe0b8 || spec.offset == 0xe080 || spec.offset == 0xe478;
+            spec.offset == 0xe0b8 || spec.offset == 0xe080 || spec.offset == 0xe478 || spec.offset == 0xe428;
         if (it->second == full || (!it->second && spec.offset != 0xd800 && spec.offset != 0xe088 && !policy)) { out.error = -ENODATA; return out; }
     }
     out.dramType = unsigned(raw[0xd800] & 7);
@@ -155,6 +167,7 @@ IntelMemorySnapshot decodeIntelMemory(const IntelMemoryTarget &t, const std::vec
         v.encoded = unsigned((raw[field.offset] >> field.low) & ((UINT64_C(1) << (field.high - field.low + 1)) - 1));
         if (!(field.dramTypes & (1u << out.dramType))) v.error = -ENOTSUP;
         else if (field.rankBit && !(out.rankMask & field.rankBit)) v.error = -ENODEV;
+        else if (field.offset == 0xe428 && v.encoded == 3) v.error = -ENODATA;
         // Do not turn an uninitialized register into a timing measurement.
         // tCPDED and subsequent policy/delay codes preserve zero as configured.
         // Absent ranks have no RTL measurement or applicable ODT target mask.
@@ -208,7 +221,9 @@ std::string intelMemoryJson(const IntelMemorySnapshot &s) {
         "\",\"rank_mask\":" + std::to_string(d.rankMask) + ",\"gear2\":" + boolean(d.gear2) + ",\"gear4\":" + boolean(d.gear4) +
         ",\"no_gear2_divide\":" + boolean(d.noGear2Divide) + ",\"no_gear4_divide\":" + boolean(d.noGear4Divide) +
         ",\"command_stretch_encoded\":" + std::to_string(d.commandStretch) + ",\"n_to_1_encoded\":" + std::to_string(d.nTo1) +
-        ",\"offline\":" + boolean(s.offline) + ",\"origin_verified\":false,\"atomic_snapshot_guaranteed\":false,\"registers\":[";
+        ",\"offline\":" + boolean(s.offline) + ",\"origin_verified\":false,\"atomic_snapshot_guaranteed\":false";
+    if (d.version >= 6) out += ",\"temperature_freshness_verified\":false";
+    out += ",\"registers\":[";
     for (const auto &r : s.registers) {
         if (out.back() != '[') out += ',';
         out += "{\"offset\":" + hex(r.offset, 8) + ",\"raw\":" + hex(r.raw, 16) + '}';
@@ -220,7 +235,13 @@ std::string intelMemoryJson(const IntelMemorySnapshot &s) {
         const auto &v = d.values[i]; const auto &f = fields[i];
         out += "{\"name\":\"" + std::string(f.name) + "\",\"offset\":" + hex(f.offset, 8) + ",\"low\":" + std::to_string(f.low) +
             ",\"high\":" + std::to_string(f.high) + ",\"error\":" + std::to_string(v.error) + ",\"encoded\":" +
-            (v.error ? "null" : std::to_string(v.encoded)) + ",\"unit\":" + (v.error ? "null" : "\"" + std::string(intelMemoryUnit(d,f)) + "\"") + '}';
+            (v.error ? "null" : std::to_string(v.encoded)) + ",\"unit\":" + (v.error ? "null" : "\"" + std::string(intelMemoryUnit(d,f)) + "\"");
+        if (f.offset == 0xe428) {
+            const auto *temperature = intelMemoryTemperature(f,v);
+            out += ",\"temperature_class\":" + (temperature ? "\"" + std::string(temperature->name) + "\"" : "null") +
+                ",\"required_refresh_multiplier\":" + (temperature ? std::to_string(temperature->requiredRefreshMultiplier) : "null");
+        }
+        out += '}';
     }
     return out + "]}";
 }
@@ -240,7 +261,8 @@ IntelMemorySnapshot parseIntelMemoryCapture(const std::string &json) {
             equals(data->at("format"), Json::String, "octool-intel-memory-v2") ? 2 :
             equals(data->at("format"), Json::String, "octool-intel-memory-v3") ? 3 :
             equals(data->at("format"), Json::String, "octool-intel-memory-v4") ? 4 :
-            equals(data->at("format"), Json::String, "octool-intel-memory-v5") ? 5 : 0;
+            equals(data->at("format"), Json::String, "octool-intel-memory-v5") ? 5 :
+            equals(data->at("format"), Json::String, "octool-intel-memory-v6") ? 6 : 0;
         check(version &&
             equals(data->at("layout"), Json::String, "raptor-lake-s-743846-001"), "Unsupported Intel memory layout");
         IntelMemoryTarget t; t.controller = uint(data->at("controller"), 1); t.channel = uint(data->at("channel"), 1);
