@@ -63,7 +63,8 @@ IntelControlsPanel::IntelControlsPanel(std::shared_ptr<HardwareAccess> access, Q
     setObjectName("intelControls"); auto *layout = new QVBoxLayout(this);
     description("Intel Controls · package power limits and hardware performance requests\n"
         "HWP levels are performance indices, not MHz. BIOS locks and OS power management may restrict or overwrite changes. "
-        "Package and PECI rows are stored hints; selection flags are sampled separately. PECI override blocks the affected local edit. "
+        "Package HWP edits change shared hints for the physical package containing the selected CPU; selection flags remain unchanged. "
+        "Package and PECI rows are stored hints; selection flags are sampled separately. PECI override blocks the affected edit. "
         "HWP history records events since reset or clear; it does not show current performance. "
         "Maximum non-turbo ratio is a fixed platform value. Package events show current status and history since the last reset or clear. "
         "Energy counters wrap; joules are counter readings, not watts or lifetime totals. DRAM telemetry requires BIOS RAPL mode 0. "
@@ -124,8 +125,10 @@ void IntelControlsPanel::apply() {
     if (!ok || field_->currentIndex() < 0) { status_->setText("Read a snapshot and enter a valid value."); return; }
     const auto field = octool::core::IntelField(field_->currentData().toInt()); const auto snapshot = snapshot_;
     const auto preparedRevision=revision_;
-    if (QMessageBox::question(this, "Apply Intel control", QString("CPU %1: set %2 to %3?\nPower and time values round down to the register encoding. An HWP window of 0 lets hardware choose. A fresh comparison precedes the write.")
-        .arg(snapshot.cpu).arg(field_->currentText()).arg(value, 0, 'g', 12), QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Yes) return;
+    QString confirmation=QString("CPU %1: set %2 to %3?\nPower and time values round down to the register encoding. An HWP window of 0 lets hardware choose. A fresh comparison precedes the write.")
+        .arg(snapshot.cpu).arg(field_->currentText()).arg(value, 0, 'g', 12);
+    if (octool::core::isIntelHwpPackageField(field)) confirmation += "\nThis changes a shared package hint and can affect other logical CPUs using package control. The value is checked against the selected CPU's capabilities; selection flags are preserved.";
+    if (QMessageBox::question(this, "Apply Intel control", confirmation, QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Yes) return;
     if (preparedRevision!=revision_) { status_->setText("CPU changed. Read again before applying a control."); return; }
     invalidate(); setEnabled(false); status_->setText("Checking, applying and reading back…"); const auto revision=revision_;
     auto *watcher = new QFutureWatcher<octool::core::IntelControlUpdate>(this);

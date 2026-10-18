@@ -2325,7 +2325,7 @@ private slots:
         QCOMPARE(device->writes,0u); QCOMPARE(device->wrongCpu,0u);
     }
 
-    void intelHwpRequestsAndPeciReadOnly() {
+    void intelHwpRequestsAndPeciPresentation() {
         auto *device=new IntelControlsFixture; device->expectedCpu=130; device->model=0xff; device->enableHwpContext();
         IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
         panel.resize(1240,1550); panel.show();
@@ -2337,9 +2337,9 @@ private slots:
             qMakePair(QString("HWP package activity window (0 = automatic)"),QString("20000")),
             qMakePair(QString("HWP PECI energy preference"),QString("195")), qMakePair(QString("HWP PECI maximum override"),QString("1"))}) {
             const int row=find(pair.first); QVERIFY(row>=0); QCOMPARE(table->item(row,1)->text(),pair.second);
-            QCOMPARE(table->item(row,5)->text(),QString("Read only / locked"));
+            QCOMPARE(table->item(row,5)->text(),pair.first.startsWith("HWP package")?QString("Editable"):QString("Read only / locked"));
         }
-        QCOMPARE(panel.findChild<QComboBox *>("intelField")->count(),3);
+        QCOMPARE(panel.findChild<QComboBox *>("intelField")->count(),6);
         for (auto *button:panel.findChildren<QPushButton *>()) if (button->text()==QString("Copy snapshot")) button->click();
         QVERIFY(QApplication::clipboard()->text().contains("HWP PECI maximum override\t1"));
         QVERIFY(QApplication::clipboard()->text().contains("HWP package activity window (0 = automatic)\t20000\tus"));
@@ -2348,6 +2348,68 @@ private slots:
         const auto capture=qEnvironmentVariable("OCTOOL_HWP_REQUESTS_TEST_SCREENSHOT"); if (!capture.isEmpty()) QVERIFY(panel.grab().save(capture));
         panel.findChild<QLineEdit *>("intelCpu")->setText("131"); QCOMPARE(table->rowCount(),0);
         QCOMPARE(device->writes,0u); QCOMPARE(device->wrongCpu,0u);
+    }
+    void intelHwpPackageEditsAndNoop() {
+        using octool::core::IntelField;
+        const IntelField fields[]={IntelField::HwpPackageMin,IntelField::HwpPackageMax,IntelField::HwpPackageDesired,IntelField::HwpPackageEpp,IntelField::HwpPackageActivityWindow};
+        const char *values[]={"24","48","32","192","15333"};
+        const unsigned shifts[]={0,8,16,24,32}, codes[]={24,48,32,192,399};
+        for (unsigned i=0;i<5;++i) {
+            auto *device=new IntelControlsFixture; device->model=0xff; device->expectedCpu=130; device->enableHwpContext(); device->regs[0x775]=0;
+            IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+            panel.resize(1240,1600); panel.show();
+            auto *field=panel.findChild<QComboBox *>("intelField"); auto *value=panel.findChild<QLineEdit *>("intelValue");
+            auto *apply=panel.findChild<QPushButton *>("intelApply"); auto *status=panel.findChild<QLabel *>("intelStatus");
+            panel.findChild<QPushButton *>("intelRead")->click(); QTRY_VERIFY(panel.isEnabled());
+            const auto before=device->regs;
+            for (bool noop:{false,true}) {
+                QVERIFY(field->findData(int(fields[i]))>=0); field->setCurrentIndex(field->findData(int(fields[i]))); value->setText(values[i]);
+                bool described=false;
+                QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (!box) return;
+                    described=box->text().contains("shared package hint") && box->text().contains("other logical CPUs") && box->text().contains("CPU 130");
+                    box->button(QMessageBox::Yes)->click(); });
+                apply->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(described);
+                const auto mask=std::uint64_t(i==4?1023:255)<<shifts[i];
+                QCOMPARE(device->regs[0x772],(before.at(0x772)&~mask)|(std::uint64_t(codes[i])<<shifts[i]));
+                QCOMPARE(device->writes,1u); QCOMPARE(device->wrongCpu,0u);
+                QVERIFY(status->text().contains(noop?"Already set":"Applied."));
+                for (const auto &r:before) if (r.first!=0x772) QCOMPARE(device->regs.at(r.first),r.second);
+            }
+            if (i==4) {
+                field->setCurrentIndex(field->findData(int(fields[i])));
+                QTRY_VERIFY(status->height()>=status->heightForWidth(status->width()));
+                const auto capture=qEnvironmentVariable("OCTOOL_HWP_PACKAGE_TEST_SCREENSHOT"); if (!capture.isEmpty()) QVERIFY(panel.grab().save(capture));
+            }
+        }
+    }
+    void intelHwpPackageCancelAndChangedCpu() {
+        auto *device=new IntelControlsFixture; device->model=0xff; device->enableHwpContext(); device->regs[0x775]=0;
+        IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+        panel.findChild<QPushButton *>("intelRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *field=panel.findChild<QComboBox *>("intelField"); field->setCurrentIndex(field->findData(int(octool::core::IntelField::HwpPackageEpp)));
+        panel.findChild<QLineEdit *>("intelValue")->setText("192"); const auto reads=device->reads;
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Cancel)->click(); });
+        panel.findChild<QPushButton *>("intelApply")->click(); QCOMPARE(device->reads,reads); QCOMPARE(device->writes,0u);
+        QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (!box) return;
+            panel.findChild<QLineEdit *>("intelCpu")->setText("131"); box->button(QMessageBox::Yes)->click(); });
+        panel.findChild<QPushButton *>("intelApply")->click(); QCOMPARE(device->reads,reads); QCOMPARE(device->writes,0u);
+        QCOMPARE(field->count(),0); QVERIFY(panel.findChild<QLabel *>("intelStatus")->text().contains("CPU changed"));
+    }
+    void intelHwpPackageFailuresClearState() {
+        for (unsigned mode=0;mode<3;++mode) {
+            auto *device=new IntelControlsFixture; device->model=0xff; device->enableHwpContext(); device->regs[0x775]=0;
+            IntelControlsPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130); panel.show();
+            panel.findChild<QPushButton *>("intelRead")->click(); QTRY_VERIFY(panel.isEnabled());
+            auto *field=panel.findChild<QComboBox *>("intelField"); field->setCurrentIndex(field->findData(int(octool::core::IntelField::HwpPackageEpp)));
+            panel.findChild<QLineEdit *>("intelValue")->setText("192");
+            if (mode==0) device->regs[0x775]=UINT64_C(1)<<60;
+            if (mode==1) device->discardChange=true;
+            if (mode==2) device->afterRequest=[&](const octool::core::Request &r) { if (r.write) device->regs[0x774]^=1; };
+            QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+            panel.findChild<QPushButton *>("intelApply")->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(device->writes,mode==0?0u:1u); QCOMPARE(field->count(),0); QCOMPARE(panel.findChild<QTableWidget *>("intelTable")->rowCount(),0);
+            QVERIFY(panel.findChild<QLabel *>("intelStatus")->text().contains(mode==0?"No write was attempted":"readback was not verified"));
+        }
     }
     void intelHwpRequestsFailureAndCapabilityClearsOldValues() {
         auto *device=new IntelControlsFixture; device->expectedCpu=130; device->enableHwpContext();

@@ -21,6 +21,29 @@ int compareHwpContext(const IntelSnapshot &old, const IntelSnapshot &fresh) {
     }
     return 0;
 }
+int comparePackageHwpContext(const IntelSnapshot &old, const IntelSnapshot &fresh) {
+    if (const int error = compareHwpContext(old, fresh)) return error;
+    if (!old.hwpPackage || !fresh.hwpPackage) return -EAGAIN;
+    if (old.hwpRequest.error) return old.hwpRequest.error;
+    if (fresh.hwpRequest.error) return fresh.hwpRequest.error;
+    // Keep the selected CPU's request and selection flags stable as well as
+    // the shared PECI/polarity context. Other CPUs and the OS can still race;
+    // this is a verified stored hint, never an atomic package-wide policy.
+    return old.hwpRequest.value == fresh.hwpRequest.value ? 0 : -EAGAIN;
+}
+IntelField hwpLocalField(IntelField field) {
+    switch (field) {
+    case IntelField::HwpPackageMin: return IntelField::HwpMin;
+    case IntelField::HwpPackageMax: return IntelField::HwpMax;
+    case IntelField::HwpPackageDesired: return IntelField::HwpDesired;
+    case IntelField::HwpPackageEpp: return IntelField::HwpEpp;
+    case IntelField::HwpPackageActivityWindow: return IntelField::HwpActivityWindow;
+    default: return field;
+    }
+}
+}
+bool isIntelHwpPackageField(IntelField field) {
+    return field >= IntelField::HwpPackageMin && field <= IntelField::HwpPackageActivityWindow;
 }
 bool hasIntelRaplProfile(const CpuIdentity &id) {
     if (!id.intel || id.family != 6) return false;
@@ -162,12 +185,14 @@ IntelSnapshot readIntelControls(HardwareSession &s, unsigned cpu) {
             // or a measurement of the performance delivered by the processor.
             if (out.hwpPackage) {
                 const auto &p = out.hwpPackageRequest;
-                add("HWP package minimum", "performance level", 0x772, p, double(p.value & 255), false, IntelField::Pl1);
-                add("HWP package maximum", "performance level", 0x772, p, double((p.value >> 8) & 255), false, IntelField::Pl1);
-                add("HWP package desired (0 = autonomous)", "performance level", 0x772, p, double((p.value >> 16) & 255), false, IntelField::Pl1);
-                if (out.epp) add("HWP package energy preference", "0..255", 0x772, p, double((p.value >> 24) & 255), false, IntelField::Pl1);
+                const bool packageEditable = out.hwpEnabled && !out.hwpCapabilities.error && !r.error &&
+                    (!out.hwpPeci || !out.hwpPeciRequest.error) && (!out.hwpControl || !out.hwpControlValue.error);
+                add("HWP package minimum", "performance level", 0x772, p, double(p.value & 255), packageEditable && !overridden(63), IntelField::HwpPackageMin);
+                add("HWP package maximum", "performance level", 0x772, p, double((p.value >> 8) & 255), packageEditable && !overridden(62), IntelField::HwpPackageMax);
+                add("HWP package desired (0 = autonomous)", "performance level", 0x772, p, double((p.value >> 16) & 255), packageEditable, IntelField::HwpPackageDesired);
+                if (out.epp) add("HWP package energy preference", "0..255", 0x772, p, double((p.value >> 24) & 255), packageEditable && !overridden(60), IntelField::HwpPackageEpp);
                 if (out.hwpActivityWindow) add("HWP package activity window (0 = automatic)", "us", 0x772, p,
-                    hwpActivityWindowMicroseconds(unsigned((p.value >> 32) & 1023)), false, IntelField::Pl1);
+                    hwpActivityWindowMicroseconds(unsigned((p.value >> 32) & 1023)), packageEditable && !((p.value >> 16) & 255), IntelField::HwpPackageActivityWindow);
                 add("HWP package control bit", "0 / 1", 0x774, r, double((r.value >> 42) & 1), false, IntelField::Pl1);
             }
             if (out.hwpFlexible) {
@@ -285,7 +310,7 @@ IntelControlUpdate applyIntelControl(HardwareSession &s, const IntelSnapshot &ol
     IntelControlUpdate result;
     auto fail = [&result](int e) { result.error = e; return result; };
     if (!std::isfinite(value) || old.error || old.identity.error || !old.identity.intel ||
-        field < IntelField::Pl1 || field > IntelField::Pl4) return fail(-EINVAL);
+        field < IntelField::Pl1 || field > IntelField::HwpPackageActivityWindow) return fail(-EINVAL);
     const auto fresh = readIntelControls(s, old.cpu);
     if (fresh.error) return fail(fresh.error);
     if (fresh.identity.signature != old.identity.signature || !fresh.identity.intel) return fail(-ENODEV);
@@ -295,6 +320,8 @@ IntelControlUpdate applyIntelControl(HardwareSession &s, const IntelSnapshot &ol
     RegisterUpdate u; unsigned shift = 0; std::uint64_t raw = 0;
     const bool peak = field == IntelField::Pl4;
     const bool rapl = peak || field <= IntelField::Pl2Window;
+    const bool package = isIntelHwpPackageField(field);
+    const IntelField hwpField = hwpLocalField(field);
     if (rapl) {
         const auto &limit = peak ? old.peakPowerLimit : old.powerLimit;
         if (!old.rapl || old.units.error || limit.error || old.units.value != fresh.units.value ||
@@ -319,32 +346,35 @@ IntelControlUpdate applyIntelControl(HardwareSession &s, const IntelSnapshot &ol
             u.mask = UINT64_C(1) << shift;
         }
     } else {
-        if (const int contextError = compareHwpContext(old, fresh)) return fail(contextError);
-        if (!old.hwp || old.hwpRequest.error || old.hwpCapabilities.error ||
+        const int contextError = package ? comparePackageHwpContext(old, fresh) : compareHwpContext(old, fresh);
+        if (contextError) return fail(contextError);
+        const auto &request = package ? old.hwpPackageRequest : old.hwpRequest;
+        const auto &currentRequest = package ? fresh.hwpPackageRequest : fresh.hwpRequest;
+        if (!old.hwp || request.error || old.hwpCapabilities.error ||
             old.hwpCapabilities.value != fresh.hwpCapabilities.value) return fail(-EAGAIN);
-        const bool window = field == IntelField::HwpActivityWindow;
+        const bool window = hwpField == IntelField::HwpActivityWindow;
         if (value < 0 || value > (window ? 1270000000.0 : 255.0) || value != std::floor(value)) return fail(-ERANGE);
         raw = std::uint64_t(value);
         const unsigned lo = unsigned((fresh.hwpCapabilities.value >> 24) & 255), hi = unsigned(fresh.hwpCapabilities.value & 255);
         if (lo > hi) return fail(-ERANGE);
-        if (!window && field != IntelField::HwpEpp && !(field == IntelField::HwpDesired && raw == 0) && (raw < lo || raw > hi)) return fail(-ERANGE);
-        shift = field == IntelField::HwpMin ? 0 : field == IntelField::HwpMax ? 8 : field == IntelField::HwpDesired ? 16 : 24;
+        if (!window && hwpField != IntelField::HwpEpp && !(hwpField == IntelField::HwpDesired && raw == 0) && (raw < lo || raw > hi)) return fail(-ERANGE);
+        shift = hwpField == IntelField::HwpMin ? 0 : hwpField == IntelField::HwpMax ? 8 : hwpField == IntelField::HwpDesired ? 16 : 24;
         if (window) {
             unsigned encoded = 0;
             const int error = encodeHwpActivityWindow(std::uint32_t(raw), encoded);
             if (error) return fail(error);
             raw = encoded; shift = 32;
         }
-        u.mask = (window ? UINT64_C(1023) : UINT64_C(255)) << shift; u.target = msrRequest(old.cpu, 0x774);
-        u.expected = old.hwpRequest.value; u.compareMask = UINT64_MAX;
-        const auto next = (fresh.hwpRequest.value & ~u.mask) | (raw << shift);
+        u.mask = (window ? UINT64_C(1023) : UINT64_C(255)) << shift; u.target = msrRequest(old.cpu, package ? 0x772 : 0x774);
+        u.expected = request.value; u.compareMask = UINT64_MAX;
+        const auto next = (currentRequest.value & ~u.mask) | (raw << shift);
         const auto minimum = next & 255, maximum = (next >> 8) & 255, desired = (next >> 16) & 255;
         if (minimum > maximum || (desired && (desired < minimum || desired > maximum))) return fail(-ERANGE);
     }
     u.bits = raw << shift;
     result.msr = std::uint32_t(u.target.address);
     result.expected = (u.expected & ~u.mask) | u.bits;
-    const auto &current = peak ? fresh.peakPowerLimit : rapl ? fresh.powerLimit : fresh.hwpRequest;
+    const auto &current = peak ? fresh.peakPowerLimit : rapl ? fresh.powerLimit : package ? fresh.hwpPackageRequest : fresh.hwpRequest;
     if (current.error) return fail(current.error);
     if (current.value != u.expected) return fail(-EAGAIN);
     if (result.expected != u.expected) {
@@ -357,8 +387,8 @@ IntelControlUpdate applyIntelControl(HardwareSession &s, const IntelSnapshot &ol
         result.after = fresh;
     }
     const auto &after = result.after;
-    const auto &observed = peak ? after.peakPowerLimit : rapl ? after.powerLimit : after.hwpRequest;
-    result.readbackValid = !after.error && !observed.error && (peak ? after.pl4 : rapl ? after.rapl : after.hwp);
+    const auto &observed = peak ? after.peakPowerLimit : rapl ? after.powerLimit : package ? after.hwpPackageRequest : after.hwpRequest;
+    result.readbackValid = !after.error && !observed.error && (peak ? after.pl4 : rapl ? after.rapl : after.hwp && (!package || after.hwpPackage));
     if (after.error) return fail(after.error);
     if (observed.error) return fail(observed.error);
     if (!after.identity.intel || after.identity.signature != old.identity.signature) return fail(-ENODEV);
@@ -366,10 +396,11 @@ IntelControlUpdate applyIntelControl(HardwareSession &s, const IntelSnapshot &ol
         if (after.units.error) return fail(after.units.error);
         if (!after.rapl || (peak && !after.pl4) || after.units.value != old.units.value) return fail(-EAGAIN);
     } else {
-        if (const int contextError = compareHwpContext(old, after)) return fail(contextError);
+        const int contextError = package ? comparePackageHwpContext(old, after) : compareHwpContext(old, after);
+        if (contextError) return fail(contextError);
         if (after.hwpCapabilities.error) return fail(after.hwpCapabilities.error);
-        if (!after.hwp || !after.hwpEnabled || (field == IntelField::HwpEpp && !after.epp) ||
-            (field == IntelField::HwpActivityWindow && !after.hwpActivityWindow) ||
+        if (!after.hwp || !after.hwpEnabled || (hwpField == IntelField::HwpEpp && !after.epp) ||
+            (hwpField == IntelField::HwpActivityWindow && !after.hwpActivityWindow) ||
             after.hwpCapabilities.value != old.hwpCapabilities.value) return fail(-EAGAIN);
     }
     if (observed.value != result.expected) return fail(-EIO);

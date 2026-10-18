@@ -35,7 +35,7 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 911, len(reports)
+assert len(reports) == 939, len(reports)
 platform_reports=[r for r in reports if r['command']=='intel-read' and 'readings' in r['data']]
 assert len(platform_reports)==81
 hwp_context_reports=platform_reports[63:]
@@ -96,19 +96,40 @@ for report in hwp_context_reports:
     for row in d['readings']:
         if row['error']:
             assert row['value'] is None and row['raw'] is None and not row['editable']
-        if row['msr'] in ('0x00000772','0x00000773','0x00000775','0x00000776'):
+        if row['msr'] in ('0x00000773','0x00000775','0x00000776'):
             assert not row['editable']
 golden={r['name']:r for r in hwp_context_reports[0]['data']['readings']}
 expected={'HWP package minimum':16,'HWP package maximum':56,'HWP package energy preference':136,
           'HWP package activity window (0 = automatic)':20000,'HWP PECI minimum':18,'HWP PECI maximum':48,
           'HWP PECI energy preference':195,'HWP PECI minimum override':0,'HWP PECI maximum override':1,'HWP PECI EPP override':1}
-for name,value in expected.items(): assert golden[name]['value']==value and not golden[name]['editable']
+for name,value in expected.items():
+    assert golden[name]['value']==value
+    assert golden[name]['editable']==(name in ('HWP package minimum','HWP package activity window (0 = automatic)'))
 assert golden['HWP minimum']['editable'] and not golden['HWP maximum']['editable'] and not golden['HWP energy preference']['editable']
-sets=reports[-8:]
+sets=[r for r in reports if r['command']=='intel-set' and r.get('data',{}).get('field')=='hwp-epp'][-8:]
 assert all(r['command']=='intel-set' and r['data']['field']=='hwp-epp' for r in sets)
 assert [r['ok'] for r in sets]==[True,True]+[False]*6
 assert [r['data']['write_attempted'] for r in sets]==[True,True,False,False,False,True,True,False]
 assert all(not r['data']['verified'] for r in sets[2:])
+
+package=[r for r in reports if r['command']=='intel-set' and r.get('data',{}).get('shared_package_hint')]
+assert len(package)==22 and [r['ok'] for r in package]==[True]*10+[False]*12
+original=0xa5a5019488003810
+for i,report in enumerate(package):
+    data=report['data']
+    assert data['capability_reference_cpu']==130 and not data['selection_flags_changed']
+    assert not data['hardware_effect_measured'] and data['verified']==report['ok']
+    if i<10:
+        index=i//2; shift=(0,8,16,24,32)[index]; mask=(1023 if index==4 else 255)<<shift
+        expected_raw=(original & ~mask)|((24,48,32,192,399)[index]<<shift)
+        assert data['msr']=='0x00000772' and int(data['expected_raw'],16)==expected_raw
+        assert int(data['readback_raw'],16)==expected_raw
+        assert data['readback_value']==(24,48,32,192,15000)[index]
+        assert data['write_attempted']==(i%2==0) and data['unchanged']==(i%2==1)
+        assert data['completed_writes']==(1 if i%2==0 else 0)
+    else:
+        assert data['readback_value'] is None
+        assert data['write_attempted']==(i-10 in (6,7,8,9,11))
 
 event_names=('thermal event','PROCHOT event','critical temperature','thermal threshold 1','thermal threshold 2','power limit')
 event_rows=[]
@@ -919,7 +940,7 @@ for i,r in enumerate(pl4):
         assert data['msr']=='0x00000601' and data['write_attempted']==(i%2==0) and data['unchanged']==(i%2==1)
     else: assert data['readback_value'] is None
 assert [r['data']['write_attempted'] for r in pl4[6:]]==[False]*5+[True]*3+[False]
-controls = [r for r in reports if r["command"] == "intel-set" and "verified" in r.get("data", {}) and r['data'].get('field')!='pl4']
+controls = [r for r in reports if r["command"] == "intel-set" and "verified" in r.get("data", {}) and r['data'].get('field')!='pl4' and not r['data']['shared_package_hint']]
 assert len(controls) == 18
 for result in controls:
     data = result["data"]

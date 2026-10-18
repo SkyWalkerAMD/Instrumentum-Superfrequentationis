@@ -79,7 +79,10 @@ const std::map<std::string, IntelField> intelFields = {
     {"pl2-enable", IntelField::Pl2Enable}, {"pl1-clamp", IntelField::Pl1Clamp}, {"pl2-clamp", IntelField::Pl2Clamp},
     {"pl1-window", IntelField::Pl1Window}, {"pl2-window", IntelField::Pl2Window},
     {"hwp-min", IntelField::HwpMin}, {"hwp-max", IntelField::HwpMax}, {"hwp-desired", IntelField::HwpDesired}, {"hwp-epp", IntelField::HwpEpp},
-    {"hwp-window-us", IntelField::HwpActivityWindow}, {"pl4", IntelField::Pl4}
+    {"hwp-window-us", IntelField::HwpActivityWindow}, {"pl4", IntelField::Pl4},
+    {"hwp-package-min", IntelField::HwpPackageMin}, {"hwp-package-max", IntelField::HwpPackageMax},
+    {"hwp-package-desired", IntelField::HwpPackageDesired}, {"hwp-package-epp", IntelField::HwpPackageEpp},
+    {"hwp-package-window-us", IntelField::HwpPackageActivityWindow}
 };
 const std::map<std::string, IntelEnergyField> energyFields = {
     {"efficient-turbo", IntelEnergyField::EfficientTurbo}, {"race-to-halt", IntelEnergyField::RaceToHalt}
@@ -247,7 +250,7 @@ Command parse(const std::vector<std::string> &args) {
             else if (f == IntelField::Pl4) require(c.value > 0 && c.value <= 8191, "PL4 must be >0 and <=8191 W; hardware units impose further limits");
             else if (f == IntelField::Pl1Window || f == IntelField::Pl2Window) require(c.value > 0 && c.value <= raplWindowSeconds(127, 0), "Averaging window is out of range");
             else if (f <= IntelField::Pl2Clamp) require(c.value == 0 || c.value == 1, "Enable/clamp must be 0 or 1");
-            else if (f == IntelField::HwpActivityWindow) require(c.value >= 0 && c.value <= 1270000000 && std::floor(c.value) == c.value, "HWP window must be an integer 0..1270000000 us (0 = automatic)");
+            else if (f == IntelField::HwpActivityWindow || f == IntelField::HwpPackageActivityWindow) require(c.value >= 0 && c.value <= 1270000000 && std::floor(c.value) == c.value, "HWP window must be an integer 0..1270000000 us (0 = automatic)");
             else require(c.value >= 0 && c.value <= 255 && std::floor(c.value) == c.value, "HWP value must be an integer 0..255");
         } else {
             require(c.field == "offset-mv" || c.field == "max-ratio" || c.field == "target-mv", "OC field must be offset-mv, max-ratio or target-mv");
@@ -513,6 +516,11 @@ Result hardware(const Command &c, HardwareSession &s) {
             IntelControlUpdate result;
             if (!out.error) { result = applyIntelControl(s, snapshot, intelFields.at(c.field), c.value); out.error = result.error; }
             out.data.push_back({"field", quote(c.field)}); out.data.push_back({"requested", number(c.value)});
+            out.data.push_back({"shared_package_hint", boolean(isIntelHwpPackageField(intelFields.at(c.field)))});
+            if (isIntelHwpPackageField(intelFields.at(c.field))) {
+                out.data.push_back({"selection_flags_changed", "false"});
+                out.data.push_back({"capability_reference_cpu", number(c.cpu)});
+            }
             out.data.push_back({"write_attempted", boolean(result.writeAttempted)});
             out.data.push_back({"completed_writes", number(result.completed)});
             out.data.push_back({"verified", boolean(result.verified && !out.error)});
@@ -520,7 +528,7 @@ Result hardware(const Command &c, HardwareSession &s) {
             out.data.push_back({"msr", result.msr ? hex(result.msr) : "null"});
             out.data.push_back({"readback_value", result.verified && !out.error ? number(result.readbackValue) : "null"});
             out.data.push_back({"expected_raw", result.msr ? hex(result.expected, 16) : "null"});
-            const auto &observed = result.msr == 0x601 ? result.after.peakPowerLimit : result.msr == 0x610 ? result.after.powerLimit : result.after.hwpRequest;
+            const auto &observed = result.msr == 0x601 ? result.after.peakPowerLimit : result.msr == 0x610 ? result.after.powerLimit : result.msr == 0x772 ? result.after.hwpPackageRequest : result.after.hwpRequest;
             out.data.push_back({"readback_raw", result.readbackValid ? hex(observed.value, 16) : "null"});
             std::vector<std::string> submitted;
             for (auto v : result.submitted) submitted.push_back(hex(v, 16));
@@ -1101,6 +1109,11 @@ Intel fields: pl1/pl2 (W), pl4 (W, 06_B7 only, >0; register-unit range applies),
   hwp-window-us (0 = automatic; integer 1..1270000000 us, rounds down) requires
   CPUID activity-window support and HWP desired = 0. RAPL/HWP changes check full
   register readback; these are configured hints, not measured performance.
+  hwp-package-min/max/desired/epp and hwp-package-window-us use the same units
+  and edit a shared physical-package hint. They require package-request support
+  and enabled HWP. PECI overrides block the affected field; selection flags stay
+  unchanged. Performance bounds use the selected CPU's capabilities. Other CPUs
+  using package control may be affected; effective policy is not sampled atomically.
 CPU commands require explicit --cpu; raw MMIO/PCI commands select their own target.
 All hardware commands accept --timeout-ms 1..120000. PCI raw access is domain 0,
 first 256 bytes only; all three BDF components and the access width are required.

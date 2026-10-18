@@ -235,6 +235,12 @@ void invalidBeforeOpen() {
         {"intel-set", "--cpu", "0", "--field", "hwp-window-us", "--value", "-1", "--apply"},
         {"intel-set", "--cpu", "0", "--field", "hwp-window-us", "--value", "1270000001", "--apply"},
         {"intel-set", "--cpu", "0", "--field", "hwp-window-us", "--value", "0.5", "--apply"},
+        {"intel-set", "--cpu", "0", "--field", "hwp-package-max", "--value", "256", "--apply"},
+        {"intel-set", "--cpu", "0", "--field", "hwp-package-min", "--value", "-1", "--apply"},
+        {"intel-set", "--cpu", "0", "--field", "hwp-package-epp", "--value", "nan", "--apply"},
+        {"intel-set", "--cpu", "0", "--field", "hwp-package-window-us", "--value", "1270000001", "--apply"},
+        {"intel-set", "--cpu", "0", "--field", "hwp-package-window-us", "--value", "0.5", "--apply"},
+        {"intel-set", "--cpu", "0", "--field", "hwp-package-desired", "--value", "32"},
         {"intel-turbo-read", "--core-type", "p"},
         {"intel-turbo-read", "--cpu", "0"},
         {"intel-turbo-read", "--cpu", "0", "--core-type", "core"},
@@ -1166,6 +1172,45 @@ void hwpContextCommands() {
     }
 }
 
+void hwpPackageCommands() {
+    const char *fields[]={"hwp-package-min","hwp-package-max","hwp-package-desired","hwp-package-epp","hwp-package-window-us"};
+    const char *values[]={"24","48","32","192","15333"};
+    const unsigned shifts[]={0,8,16,24,32}, codes[]={24,48,32,192,399};
+    for (unsigned i=0;i<5;++i) {
+        IntelControlsFixture d; d.model=0xff; d.expectedCpu=130; d.enableHwpContext(); d.regs[0x775]=0;
+        const auto before=d.regs;
+        for (unsigned noop=0;noop<2;++noop) {
+            const auto result=command(d,{"intel-set","--cpu","130","--field",fields[i],"--value",values[i],"--apply"},0);
+            assert(result.find("\"shared_package_hint\":true")!=std::string::npos);
+            assert(result.find("\"msr\":\"0x00000772\"")!=std::string::npos);
+            assert(result.find("\"selection_flags_changed\":false")!=std::string::npos);
+            const auto mask=std::uint64_t(i==4?1023:255)<<shifts[i];
+            assert(d.regs[0x772]==((before.at(0x772)&~mask)|(std::uint64_t(codes[i])<<shifts[i])));
+            assert(d.writes==1 && !d.wrongCpu);
+            for (const auto &item:before) if (item.first!=0x772) assert(d.regs.at(item.first)==item.second);
+        }
+    }
+    for (unsigned mode=0;mode<12;++mode) {
+        IntelControlsFixture d; d.model=0xff; d.expectedCpu=130; d.enableHwpContext(); d.regs[0x775]=0;
+        if (mode==0) d.packageRequest=false;
+        if (mode==1) d.hwp=false;
+        if (mode==2) d.regs[0x770]=0;
+        if (mode==3) d.epp=false;
+        if (mode==4) d.regs[0x775]=UINT64_C(1)<<60;
+        if (mode==5) d.failRead=3;
+        if (mode==6) d.failWrite=0;
+        if (mode==7) d.discardChange=true;
+        if (mode==8) d.afterRequest=[&](const Request &r) { if (r.write) d.regs[0x774]^=1; };
+        if (mode==9) d.afterRequest=[&](const Request &r) { if (r.write) d.regs[0x775]^=1; };
+        if (mode==10) d.afterRequest=[&](const Request &r) { if (!r.write && d.reads==8) d.regs[0x772]^=UINT64_C(1)<<55; };
+        if (mode==11) d.afterRequest=[&](const Request &r) { if (r.write) d.packageRequest=false; };
+        const auto result=command(d,{"intel-set","--cpu","130","--field","hwp-package-epp","--value","192","--apply"},3);
+        assert(result.find("\"verified\":false")!=std::string::npos && result.find("\"readback_value\":null")!=std::string::npos);
+        assert(d.writes==unsigned((mode>=6 && mode<=9) || mode==11) && !d.wrongCpu);
+        for (const auto &r:d.requests) if (r.write) assert(r.address==0x772);
+    }
+}
+
 void hwpHistoryCommands() {
     for (std::uint64_t raw : {UINT64_C(0),UINT64_C(1),UINT64_C(4),UINT64_C(5),UINT64_C(2),UINT64_MAX}) {
         IntelControlsFixture d; d.expectedCpu=130; d.regs[0x777]=raw;
@@ -1490,8 +1535,8 @@ int main(int argc, char **argv) {
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
     hwpHistoryCommands();
-    pl4Commands(); hwpContextCommands();
+    pl4Commands(); hwpContextCommands(); hwpPackageCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "38 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "39 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

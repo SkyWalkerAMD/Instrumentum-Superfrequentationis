@@ -5,7 +5,8 @@
 
 namespace octool { namespace core {
 enum class IntelField { Pl1, Pl2, Pl1Enable, Pl2Enable, Pl1Clamp, Pl2Clamp,
-    Pl1Window, Pl2Window, HwpMin, HwpMax, HwpDesired, HwpEpp, HwpActivityWindow, Pl4 };
+    Pl1Window, Pl2Window, HwpMin, HwpMax, HwpDesired, HwpEpp, HwpActivityWindow, Pl4,
+    HwpPackageMin, HwpPackageMax, HwpPackageDesired, HwpPackageEpp, HwpPackageActivityWindow };
 struct IntelReading {
     std::string name, unit;
     std::uint32_t msr = 0;
@@ -39,6 +40,9 @@ double raplWindowSeconds(unsigned code, unsigned timeExponent);
 int encodeRaplWindow(double seconds, unsigned timeExponent, unsigned &code);
 std::uint32_t hwpActivityWindowMicroseconds(unsigned code);
 int encodeHwpActivityWindow(std::uint32_t microseconds, unsigned &code);
+// Package hints are shared by the physical package containing the selected
+// logical CPU. This does not select package control or change any valid bits.
+bool isIntelHwpPackageField(IntelField field);
 IntelSnapshot readIntelControls(HardwareSession &session, unsigned cpu);
 // Verify the entire configuration register and its decoding context after one
 // write. A mismatch is reported without retry or rollback; OS policy may race.

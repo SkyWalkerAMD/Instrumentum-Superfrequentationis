@@ -178,7 +178,7 @@ void intelVerificationFaults() {
 }
 void intelVerificationGuards() {
     TestService t; const auto old = snapshot(t);
-    for (auto field : {IntelField(-1), IntelField(14)}) {
+    for (auto field : {IntelField(-1), IntelField(int(IntelField::HwpPackageActivityWindow)+1)}) {
         const auto calls = t.fake->cpuCalls, reads = t.fake->reads;
         assert(apply(t, old, field, 1).error == -EINVAL);
         assert(t.fake->cpuCalls == calls && t.fake->reads == reads && !t.fake->writes);
@@ -275,7 +275,8 @@ void intelHwpContextFields() {
     };
     for (const auto &c:cases) {
         const auto &v=named(out,c.name);
-        assert(v.decoded && !v.error && !v.editable && v.value==c.value && v.unit==c.unit && v.msr==c.msr && v.raw==t.fake->regs[c.msr]);
+        const bool edit=c.msr==0x772 && (v.field==IntelField::HwpPackageMin || v.field==IntelField::HwpPackageDesired || v.field==IntelField::HwpPackageActivityWindow);
+        assert(v.decoded && !v.error && v.editable==edit && v.value==c.value && v.unit==c.unit && v.msr==c.msr && v.raw==t.fake->regs[c.msr]);
     }
     assert(named(out,"HWP minimum").editable && !named(out,"HWP maximum").editable && !named(out,"HWP energy preference").editable);
     assert(t.fake->reads==14 && !t.fake->writes && !t.fake->wrongCpu);
@@ -367,6 +368,140 @@ void intelHwpContextChangesRejectVerification() {
         if (afterWrite) t.fake->afterRequest=[&](const Request &r) { if (r.write) mutate(); }; else mutate();
         const auto r=apply(t,old,IntelField::HwpEpp,192);
         assert(r.error && !r.verified && r.writeAttempted==afterWrite && t.fake->writes==unsigned(afterWrite));
+    }
+}
+
+void intelHwpPackageWrites() {
+    struct Case { IntelField field; double value, observed; unsigned shift, mask, encoded; };
+    const Case cases[] = {
+        {IntelField::HwpPackageMin,24,24,0,255,24}, {IntelField::HwpPackageMax,48,48,8,255,48},
+        {IntelField::HwpPackageDesired,32,32,16,255,32}, {IntelField::HwpPackageEpp,192,192,24,255,192},
+        {IntelField::HwpPackageActivityWindow,15333,15000,32,1023,399}
+    };
+    for (const auto &c:cases) for (unsigned selection=0;selection<4;++selection) {
+        TestService t; t.fake->enableHwpContext(); t.fake->regs[0x775]=0; t.fake->expectedCpu=130;
+        t.fake->regs[0x776]=selection&1;
+        t.fake->regs[0x774]|=(std::uint64_t(selection>>1)<<42);
+        const auto old=snapshot(t); const auto before=t.fake->regs;
+        const auto r=apply(t,old,c.field,c.value);
+        const auto mask=std::uint64_t(c.mask)<<c.shift;
+        const auto expected=(before.at(0x772)&~mask)|(std::uint64_t(c.encoded)<<c.shift);
+        assert(!r.error && r.verified && r.readbackValid && !r.unchanged && r.writeAttempted && r.completed==1);
+        assert(r.msr==0x772 && r.expected==expected && r.readbackValue==c.observed && t.fake->regs[0x772]==expected);
+        for (const auto &item:before) if (item.first!=0x772) assert(t.fake->regs.at(item.first)==item.second);
+        const auto noop=apply(t,r.after,c.field,c.value);
+        assert(!noop.error && noop.verified && noop.unchanged && !noop.writeAttempted && !noop.completed && t.fake->writes==1);
+        for (const auto &request:t.fake->requests) if (request.write) assert(request.address==0x772 && request.cpu==130);
+        assert(!t.fake->wrongCpu);
+    }
+}
+void intelHwpPackageBoundsAndOverrides() {
+    for (IntelField field:{IntelField::HwpPackageMin,IntelField::HwpPackageMax,IntelField::HwpPackageDesired,
+                          IntelField::HwpPackageEpp,IntelField::HwpPackageActivityWindow}) {
+        TestService t; t.fake->enableHwpContext(); t.fake->regs[0x775]=0;
+        const auto old=snapshot(t);
+        for (double invalid:{-1.0,0.5,1270000001.0}) {
+            const auto r=apply(t,old,field,invalid); assert(r.error==-ERANGE && !r.writeAttempted && !t.fake->writes);
+        }
+        for (unsigned mode=0;mode<6;++mode) {
+            TestService gated; gated.fake->enableHwpContext(); gated.fake->regs[0x775]=0;
+            if (mode==0) gated.fake->packageRequest=false;
+            if (mode==1) gated.fake->hwp=false;
+            if (mode==2) gated.fake->regs[0x770]=0;
+            if (mode==3) gated.fake->failRead=3; // Capabilities unavailable.
+            if (mode==4) gated.fake->failRead=6; // PECI unavailable.
+            if (mode==5) gated.fake->failRead=7; // Polarity unavailable.
+            const auto snap=snapshot(gated);
+            for (const auto &row:snap.readings) if (row.msr==0x772) assert(!row.editable);
+            const auto r=apply(gated,snap,field,32); assert(r.error && !r.verified && !gated.fake->writes);
+        }
+    }
+    for (unsigned overrideMask=0;overrideMask<8;++overrideMask) for (unsigned field=0;field<3;++field) {
+        const IntelField fields[]={IntelField::HwpPackageMin,IntelField::HwpPackageMax,IntelField::HwpPackageEpp};
+        TestService t; t.fake->enableHwpContext();
+        t.fake->regs[0x775]=((overrideMask&1)?UINT64_C(1)<<63:0)|((overrideMask&2)?UINT64_C(1)<<62:0)|((overrideMask&4)?UINT64_C(1)<<60:0);
+        const bool blocked=(overrideMask&(1u<<field))!=0;
+        const auto r=apply(t,snapshot(t),fields[field],32);
+        assert(r.verified==!blocked && r.writeAttempted==!blocked && t.fake->writes==unsigned(!blocked));
+        if (blocked) assert(r.error==-EPERM);
+    }
+    TestService t; t.fake->enableHwpContext(); t.fake->regs[0x775]=0; auto old=snapshot(t);
+    for (const auto field:{IntelField::HwpPackageMin,IntelField::HwpPackageMax,IntelField::HwpPackageDesired}) {
+        for (unsigned value:{7u,65u,255u}) assert(apply(t,old,field,value).error==-ERANGE && !t.fake->writes);
+    }
+    assert(apply(t,old,IntelField::HwpPackageMin,57).error==-ERANGE);
+    assert(apply(t,old,IntelField::HwpPackageMax,15).error==-ERANGE);
+    assert(apply(t,old,IntelField::HwpPackageDesired,15).error==-ERANGE);
+    assert(apply(t,old,IntelField::HwpPackageDesired,57).error==-ERANGE && !t.fake->writes);
+    t.fake->regs[0x772]|=UINT64_C(32)<<16; old=snapshot(t);
+    assert(apply(t,old,IntelField::HwpPackageActivityWindow,1).error==-EPERM);
+    assert(apply(t,old,IntelField::HwpPackageMin,33).error==-ERANGE);
+    assert(apply(t,old,IntelField::HwpPackageMax,31).error==-ERANGE && !t.fake->writes);
+    assert(apply(t,old,IntelField::HwpPackageDesired,0).verified);
+    for (double value:{0.0,255.0}) assert(apply(t,snapshot(t),IntelField::HwpPackageEpp,value).verified);
+    for (double value:{0.0,1.0,1270000000.0}) assert(apply(t,snapshot(t),IntelField::HwpPackageActivityWindow,value).verified);
+    t.fake->epp=false; old=snapshot(t); assert(apply(t,old,IntelField::HwpPackageEpp,32).error==-EPERM);
+    t.fake->activityWindow=false; old=snapshot(t); assert(apply(t,old,IntelField::HwpPackageActivityWindow,32).error==-EPERM);
+}
+void intelHwpPackageContextChanges() {
+    for (bool afterWrite:{false,true}) for (unsigned mode=0;mode<15;++mode) {
+        TestService t; t.fake->enableHwpContext(); t.fake->regs[0x775]=0;
+        const auto old=snapshot(t);
+        auto mutate=[&] {
+            switch (mode) {
+            case 0: t.fake->regs[0x774]^=UINT64_C(1)<<42; break;
+            case 1: t.fake->regs[0x774]^=UINT64_C(1)<<63; break;
+            case 2: t.fake->regs[0x774]^=1; break;
+            case 3: t.fake->regs[0x772]^=UINT64_C(1)<<55; break;
+            case 4: t.fake->regs[0x775]^=1; break;
+            case 5: t.fake->regs[0x775]^=UINT64_C(1)<<60; break;
+            case 6: t.fake->regs[0x776]^=1; break;
+            case 7: t.fake->control=false; break;
+            case 8: t.fake->peci=false; break;
+            case 9: t.fake->packageRequest=false; break;
+            case 10: t.fake->epp=false; break;
+            case 11: t.fake->activityWindow=false; break;
+            case 12: t.fake->regs[0x771]^=UINT64_C(1)<<8; break;
+            case 13: t.fake->regs[0x770]=0; break;
+            case 14: t.fake->model=0xff; break;
+            }
+        };
+        if (afterWrite) t.fake->afterRequest=[&](const Request &r) { if (r.write) mutate(); }; else mutate();
+        const auto r=apply(t,old,IntelField::HwpPackageEpp,192);
+        assert(r.error && !r.verified && r.writeAttempted==afterWrite && t.fake->writes==unsigned(afterWrite));
+    }
+    // A competing writer after the fresh snapshot is caught by the final RMW
+    // comparison. Even a reserved-bit change must not be silently overwritten.
+    TestService t; t.fake->model=0xff; t.fake->enableHwpContext(); t.fake->regs[0x775]=0;
+    const auto old=snapshot(t); const auto last=t.fake->reads+8;
+    t.fake->afterRequest=[&](const Request &r) { if (!r.write && t.fake->reads==last) t.fake->regs[0x772]^=UINT64_C(1)<<55; };
+    const auto r=apply(t,old,IntelField::HwpPackageEpp,192);
+    assert(r.error==-EAGAIN && !r.verified && !r.writeAttempted && !t.fake->writes);
+}
+void intelHwpPackageFailures() {
+    // Non-RAPL fixture: 770,771,774,772,775,776,773,777; then the final
+    // target comparison and a second snapshot. Notification/history failures
+    // do not invalidate independent request fields.
+    for (unsigned pos:{0u,1u,2u,3u,4u,5u,8u,9u,10u,11u,12u,13u,14u}) {
+        TestService t; t.fake->model=0xff; t.fake->enableHwpContext(); t.fake->regs[0x775]=0;
+        const auto old=snapshot(t); t.fake->failRead=int(t.fake->reads+pos);
+        const auto r=apply(t,old,IntelField::HwpPackageEpp,192);
+        assert(r.error && !r.verified && t.fake->writes<=1);
+    }
+    for (unsigned pos=0;pos<6;++pos) {
+        TestService t; t.fake->model=0xff; t.fake->enableHwpContext(); t.fake->regs[0x775]=0;
+        const auto old=snapshot(t); t.fake->failCpuid=int(t.fake->cpuCalls+pos);
+        const auto r=apply(t,old,IntelField::HwpPackageEpp,192); assert(r.error && !r.verified && t.fake->writes<=1);
+    }
+    for (unsigned mode=0;mode<3;++mode) {
+        TestService t; t.fake->enableHwpContext(); t.fake->regs[0x775]=0;
+        const auto old=snapshot(t); std::atomic<bool> cancelled{false};
+        if (mode==0) t.fake->discardChange=true;
+        if (mode==1) t.fake->failWrite=0;
+        if (mode==2) t.fake->afterRequest=[&](const Request &r) { if (r.write) cancelled=true; };
+        IntelControlUpdate r;
+        t.service.transaction([&](HardwareSession &s) { r=applyIntelControl(s,old,IntelField::HwpPackageEpp,192); return r.error; },1000,&cancelled);
+        assert(r.error && !r.verified && r.writeAttempted && t.fake->writes==1);
     }
 }
 
@@ -567,5 +702,6 @@ int main() {
     intelActivityWindow(); intelNonTurboRatio(); intelNonTurboRatioFailures(); intelEnergyCountersAndCapabilities(); intelTelemetryErrorsAndGates();
     intelHwpHistory(); intelHwpHistoryGatesAndFailures();
     intelHwpContextFields(); intelHwpContextCapabilityGates(); intelHwpContextReadFailures(); intelHwpPeciAndPolarityGuards(); intelHwpContextChangesRejectVerification();
-    std::cout << "24 platform scenario groups passed\n";
+    intelHwpPackageWrites(); intelHwpPackageBoundsAndOverrides(); intelHwpPackageContextChanges(); intelHwpPackageFailures();
+    std::cout << "28 platform scenario groups passed\n";
 }
