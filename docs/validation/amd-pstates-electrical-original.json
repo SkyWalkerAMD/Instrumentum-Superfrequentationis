@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "function": "_ZN17AMD_Configuration16cal_vid_from_rawEi",
+  "address": "0x21f3e0",
+  "size": 131,
+  "code_sha256": "cd6af6bc4138bd0f8c60c20b6fa1ebe2ea7d5cc4c490310cab67c9c512803b47",
+  "references": [
+    {
+      "instruction": "0x21f3fb",
+      "mnemonic": "lea",
+      "target": "0x1c7c503",
+      "symbols": [
+        "GLOBAL_IS_GRANITE"
+      ]
+    },
+    {
+      "instruction": "0x21f40c",
+      "mnemonic": "movsd",
+      "target": "0x15cd128",
+      "symbols": [],
+      "bytes": "0000000000389840",
+      "double": 1550.0
+    },
+    {
+      "instruction": "0x21f415",
+      "mnemonic": "mulsd",
+      "target": "0x15cd120",
+      "symbols": [],
+      "bytes": "0000000000001940",
+      "double": 6.25
+    },
+    {
+      "instruction": "0x21f430",
+      "mnemonic": "lea",
+      "target": "0x1c7c502",
+      "symbols": [
+        "GLOBAL_IS_SHIMADA"
+      ]
+    },
+    {
+      "instruction": "0x21f43c",
+      "mnemonic": "lea",
+      "target": "0x1c7c501",
+      "symbols": [
+        "GLOBAL_IS_GPT"
+      ]
+    },
+    {
+      "instruction": "0x21f44e",
+      "mnemonic": "mulsd",
+      "target": "0x15cd110",
+      "symbols": [],
+      "bytes": "0000000000001440",
+      "double": 5.0
+    },
+    {
+      "instruction": "0x21f456",
+      "mnemonic": "addsd",
+      "target": "0x15cd118",
+      "symbols": [],
+      "bytes": "0000000000a06e40",
+      "double": 245.0
+    }
+  ],
+  "executed": false,
+  "hardware_execution": false
+}

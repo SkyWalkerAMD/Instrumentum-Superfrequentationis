@@ -1,5 +1,16 @@
 # 无桌面版 OCTool
 
+<!-- amd-pstates-electrical-d02f8fc -->
+2026-10-18：最新验证提交 `d02f8fc`，GUI / CLI 同步恢复 **限定型号的 AMD P-state 电压与电流描述值**。
+五个明确型号按 SVI2 / SVI3 解码；保留原始字段，增加关闭编码、保留位、虚拟化和失败状态。
+
+- [实现说明](amd-pstates-electrical.md)、[整批验证](amd-pstates-electrical-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1055 JSON，GUI 各 169 项，共同核心 345 场景组，12 套内核 VM。
+- `dist/gui-cli-amd-pstates-electrical-d02f8fc/`：33 个包、精确源码、保留本地扩展的源码和 SHA256。
+
+数值来自 P-state 定义，不是实时电压、电流或 PBO 限制；其它型号与写入仍见还原清单。以下保留历史记录。
+<!-- /amd-pstates-electrical-d02f8fc -->
+
 <!-- intel-memory-temperature-02a2dcd -->
 2026-10-18：最新验证提交 `02a2dcd`，GUI / CLI 同步增加 **DDR4 Rank 温度等级与刷新要求**。
 B7/A700 内存读取现为 22 寄存器 / 83 字段，v6 快照兼容 v1–v5。
