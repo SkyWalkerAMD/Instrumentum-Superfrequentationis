@@ -33,7 +33,7 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader) : QWidget(parent), r
     auto *intro = new QLabel("AMD PM telemetry: eight exact Shimada table versions. Read the installed ryzen_smu driver, "
         "or open a saved table. Driver reads may request a firmware transfer; no driver is loaded automatically. "
         "Clock storage values and clocks scaled with a supplied BCLK are shown separately. "
-        "These fields do not identify physical cores or enable tuning.", this);
+        "The original limit monitor exposes stored floats with unverified units; its 0/1 labels do not identify physical targets.", this);
     intro->setWordWrap(true); layout->addWidget(intro);
     controls_ = new QWidget(this); auto *controls = new QVBoxLayout(controls_); controls->setContentsMargins(0,0,0,0);
     auto *buttons = new QHBoxLayout;
@@ -50,6 +50,11 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader) : QWidget(parent), r
     scale_ = new QCheckBox("Scale clocks with supplied BCLK", controls_); scale_->setObjectName("pmScale"); inputs->addWidget(scale_);
     bclk_ = new QLineEdit(controls_); bclk_->setObjectName("pmBclk"); bclk_->setPlaceholderText("MHz"); bclk_->setMaximumWidth(140); inputs->addWidget(bclk_);
     controls->addLayout(inputs); layout->addWidget(controls_);
+    auto *viewRow = new QHBoxLayout;
+    viewRow->addWidget(new QLabel("Display", this));
+    view_ = new QComboBox(this); view_->setObjectName("pmView");
+    view_->addItems({"Public telemetry", "Limit monitor (original mapping)"}); viewRow->addWidget(view_); viewRow->addStretch();
+    layout->addLayout(viewRow);
     metadata_ = new QLabel(this); metadata_->setObjectName("pmMetadata"); metadata_->setTextFormat(Qt::PlainText); layout->addWidget(metadata_);
     table_ = new QTableWidget(0, 7, this); table_->setObjectName("pmTable");
     table_->setHorizontalHeaderLabels({"Field", "Stored value", "Unit", "Scaled clock (MHz)", "Raw word", "Offset", "Status"});
@@ -70,6 +75,7 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader) : QWidget(parent), r
     connect(version_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this] { clear(); });
     connect(scale_, &QCheckBox::toggled, this, [this] { clear(); });
     connect(bclk_, &QLineEdit::textChanged, this, [this] { clear(); });
+    connect(view_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this] { showFields(); });
     clear();
 }
 void AmdPmPanel::clear() {
@@ -127,17 +133,23 @@ void AmdPmPanel::present(const AmdPmSnapshot &s, const QString &source) {
     scale_->setChecked(s.options.hasBclk); bclk_->setText(s.options.hasBclk ? QString::number(s.options.bclkMHz, 'g', 17) : QString());
     metadata_->setText(QString("Table %1 | captured %2 / expected %3 bytes | no table checksum")
         .arg(hex(s.version)).arg(qulonglong(s.capturedBytes)).arg(qulonglong(s.expectedBytes)));
-    for (const auto &f : s.fields) {
+    showFields(); copy_->setEnabled(!s.fields.empty());
+    QString status = source;
+    if (s.error) status += "\n" + QString::fromStdString(s.detail) + " (" + QString::fromLocal8Bit(std::strerror(-s.error)) + ")";
+    else status += "\nStored values decoded. BCLK correction uses the supplied value. Limit-monitor units and physical target identities are unverified.";
+    status_->setText(status);
+}
+void AmdPmPanel::showFields() {
+    const auto &s = snapshot_;
+    const bool original = view_->currentIndex() == 1;
+    table_->setRowCount(0);
+    for (const auto &f : original ? s.originalLimits : s.fields) {
         const int row = table_->rowCount(); table_->insertRow(row);
         const QString state = f.error ? "Non-finite stored value" : f.scaleError ? "Clock scaling out of range" :
-            f.clock && !s.options.hasBclk ? "BCLK not supplied" : "Decoded";
-        const QStringList values{QString::fromStdString(f.name), f.error ? "Unavailable" : number(f.value), QString::fromStdString(f.unit),
+            original ? "Units unverified" : f.clock && !s.options.hasBclk ? "BCLK not supplied" : "Decoded";
+        const QStringList values{QString::fromStdString(f.name), f.error ? "Unavailable" : number(f.value), original ? QString("Unverified") : QString::fromStdString(f.unit),
             f.scaled ? number(f.scaledValue) : QString("—"), hex(f.raw), hex(f.offset), state};
         for (int col = 0; col < values.size(); ++col) table_->setItem(row, col, new QTableWidgetItem(values[col]));
     }
-    table_->resizeColumnsToContents(); copy_->setEnabled(!s.fields.empty());
-    QString status = source;
-    if (s.error) status += "\n" + QString::fromStdString(s.detail) + " (" + QString::fromLocal8Bit(std::strerror(-s.error)) + ")";
-    else status += "\nStored values decoded. Any BCLK correction uses the supplied value; it is not a BCLK measurement.";
-    status_->setText(status);
+    table_->resizeColumnsToContents();
 }

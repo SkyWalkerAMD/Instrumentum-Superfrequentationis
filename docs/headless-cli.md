@@ -171,6 +171,9 @@ octool-cli amd-pm-decode --file pm.bin --version 0x730204 --bclk-mhz 102.5
 此接口不保证原子样本、实际新鲜度或物理目标。`amd-pm-decode` 支持 GUI / CLI JSON 双向导入，
 从原始字节重新解码；原始二进制必须指定版本。默认显示存储时钟，可选外部 BCLK 单独修正，
 未测量 BCLK。详细单位、错误和 JSON 约定见[PM 实现说明](amd-pm-recovery.md)。
+另含独立的 `original_limits` 数组：24 项[原版限制监控值](amd-pm-limits.md)，
+保留名称、偏移和浮点存储值，单位标为 `unverified`，不作为 PBO 设置或 W/A/°C 读数。
+GUI 的 Display 可切换同一快照中的两组字段；旧 schema-1 快照无需转换即可导入。
 
 CPU 硬件命令必须明确指定 `--cpu`，从 `diagnose` 的 `data.allowed_cpus` 选择。
 原始 MMIO/PCI 命令分别指定物理地址或 BDF，不使用 `--cpu`。

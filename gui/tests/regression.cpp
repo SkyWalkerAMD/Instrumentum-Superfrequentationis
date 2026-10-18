@@ -598,6 +598,85 @@ private slots:
         const auto shot = qEnvironmentVariable("OCTOOL_PM_TEST_SCREENSHOT");
         if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
     }
+    void pmOriginalLimitMonitorRoundtrip() {
+        using namespace octool::core;
+        QTemporaryDir directory; QVERIFY(directory.isValid());
+        const auto raw=directory.filePath("limits.bin"), json=directory.filePath("limits.json");
+        auto driver=std::make_shared<pm_fixture::Driver>(); AmdPmPanel panel(nullptr,pmReader(driver));
+        panel.resize(1400,1060); panel.show();
+        auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
+        auto *copy=panel.findChild<QPushButton *>("pmCopy");
+        view->setCurrentIndex(1);
+        for (const auto &layout : amdPmLayouts()) {
+            QVERIFY(savePmFile(raw,pm_fixture::bytes(layout.bytes))); QVERIFY(panel.loadRawFile(raw,layout.version));
+            QCOMPARE(table->rowCount(),24); QCOMPARE(table->item(0,0)->text(),QString("Fast PPT Limit"));
+            QCOMPARE(table->item(0,1)->text(),QString("400.5")); QCOMPARE(table->item(0,2)->text(),QString("Unverified"));
+            QCOMPARE(table->item(21,1)->text(),QString("220.25")); QCOMPARE(table->item(21,5)->text(),QString("0x000001dc"));
+            for (int row=0; row<24; ++row) {
+                QCOMPARE(table->item(row,3)->text(),QString::fromUtf8("—"));
+                QCOMPARE(table->item(row,6)->text(),QString("Units unverified"));
+            }
+            copy->click(); const auto captured=QApplication::clipboard()->text();
+            QCOMPARE(parseAmdPmCapture(captured.toStdString()).originalLimits.size(),std::size_t(24));
+            QVERIFY(savePmJson(json,"{\"schema_version\":1,\"command\":\"amd-pm-read\",\"data\":{\"pm\":"+captured.toStdString()+"}}"));
+            QVERIFY(panel.loadSnapshotFile(json)); QCOMPARE(table->item(0,1)->text(),QString("400.5"));
+            view->setCurrentIndex(0); QCOMPARE(table->item(0,1)->text(),QString("2000"));
+            view->setCurrentIndex(1); copy->click(); QCOMPARE(QApplication::clipboard()->text(),captured);
+        }
+        auto forged=QApplication::clipboard()->text();
+        forged.replace("\"stored_value\":400.5","\"stored_value\":999");
+        forged.replace("\"unit\":\"unverified\"","\"unit\":\"W\"");
+        forged.replace("\"original_limits_units_verified\":false","\"original_limits_units_verified\":true");
+        QVERIFY(savePmJson(json,forged.toStdString())); QVERIFY(panel.loadSnapshotFile(json));
+        QCOMPARE(table->item(0,1)->text(),QString("400.5")); QCOMPARE(table->item(0,2)->text(),QString("Unverified"));
+        auto *status=panel.findChild<QLabel *>("pmStatus");
+        QTRY_VERIFY(status->height()>=status->heightForWidth(status->width()));
+        QVERIFY(status->geometry().bottom()<panel.height()); QVERIFY(driver->calls.empty());
+        const auto shot=qEnvironmentVariable("OCTOOL_PM_LIMITS_TEST_SCREENSHOT");
+        if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+    }
+    void pmOriginalLimitMonitorInvalidation() {
+        QTemporaryDir directory; QVERIFY(directory.isValid()); const auto raw=directory.filePath("limits.bin");
+        QVERIFY(savePmFile(raw,pm_fixture::bytes()));
+        auto driver=std::make_shared<pm_fixture::Driver>(); AmdPmPanel panel(nullptr,pmReader(driver));
+        auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
+        auto *copy=panel.findChild<QPushButton *>("pmCopy"); view->setCurrentIndex(1);
+        for (unsigned mode=0; mode<3; ++mode) {
+            QVERIFY(panel.loadRawFile(raw,0x730204)); QVERIFY(copy->isEnabled());
+            if (mode==0) QVERIFY(!panel.loadSnapshotFile(directory.filePath("missing")));
+            if (mode==1) panel.findChild<QLineEdit *>("pmBclk")->setText("102.5");
+            if (mode==2) panel.findChild<QComboBox *>("pmVersion")->setCurrentIndex(2);
+            QCOMPARE(table->rowCount(),0); QVERIFY(!copy->isEnabled());
+            view->setCurrentIndex(0); QCOMPARE(table->rowCount(),0);
+            view->setCurrentIndex(1); QCOMPARE(table->rowCount(),0);
+        }
+        QVERIFY(driver->calls.empty());
+    }
+    void pmOriginalLimitDriverErrors() {
+        auto driver=std::make_shared<pm_fixture::Driver>(); AmdPmPanel panel(nullptr,pmReader(driver));
+        panel.resize(1400,1060); panel.show();
+        auto *view=panel.findChild<QComboBox *>("pmView"); view->setCurrentIndex(1);
+        auto *table=panel.findChild<QTableWidget *>("pmTable"); auto *read=panel.findChild<QPushButton *>("pmRead");
+        auto *copy=panel.findChild<QPushButton *>("pmCopy");
+        pm_fixture::put(driver->files["pm_table"],0,0x7f800001);
+        read->click(); QTRY_VERIFY(read->isEnabled());
+        QCOMPARE(table->rowCount(),24); QCOMPARE(table->item(0,1)->text(),QString("Unavailable"));
+        QCOMPARE(table->item(1,1)->text(),QString("350.25")); QCOMPARE(table->item(0,4)->text(),QString("0x7f800001"));
+        QVERIFY(copy->isEnabled()); copy->click();
+        const auto decoded=octool::core::parseAmdPmCapture(QApplication::clipboard()->text().toStdString());
+        QCOMPARE(decoded.error,-EDOM); QCOMPARE(decoded.originalLimits[0].error,-EDOM);
+        view->setCurrentIndex(0); QCOMPARE(table->item(0,1)->text(),QString("2000"));
+        view->setCurrentIndex(1);
+        auto *status=panel.findChild<QLabel *>("pmStatus");
+        QTRY_VERIFY(status->height()>=status->heightForWidth(status->width()));
+        QVERIFY(status->geometry().bottom()<panel.height());
+        const auto shot=qEnvironmentVariable("OCTOOL_PM_LIMITS_ERROR_TEST_SCREENSHOT");
+        if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        *driver=pm_fixture::Driver(); driver->mutateAfter=4;
+        read->click(); QTRY_VERIFY(read->isEnabled()); QCOMPARE(table->rowCount(),0); QVERIFY(!copy->isEnabled());
+        view->setCurrentIndex(0); QCOMPARE(table->rowCount(),0);
+        QVERIFY(status->text().contains("discarded"));
+    }
     void pmPartialErrorsAndFailedImportClearOldData() {
         QTemporaryDir directory; QVERIFY(directory.isValid()); const auto raw = directory.filePath("synthetic-nonfinite.bin");
         auto driver = std::make_shared<pm_fixture::Driver>(); AmdPmPanel panel(nullptr, pmReader(driver));

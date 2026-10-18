@@ -27,6 +27,9 @@ struct AmdPmSnapshot {
     std::string detail;
     std::vector<std::uint8_t> raw;
     std::vector<AmdPmField> fields;
+    // Original Shimada monitor mappings. Labels/float storage are recovered;
+    // physical units, rail/target identity and setter semantics are unverified.
+    std::vector<AmdPmField> originalLimits;
 };
 // Exact version and length; no prefix fallback or inferred CPU/core identity.
 // IEEE binary32 little endian. Invalid fields retain their bits, not a fake 0.

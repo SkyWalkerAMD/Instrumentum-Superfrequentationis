@@ -35,7 +35,7 @@ std::string quote(const std::string &s) {
 std::string word(std::uint32_t value) {
     std::ostringstream s; s.imbue(std::locale::classic()); s << "\"0x" << std::hex << std::setw(8) << std::setfill('0') << value << '"'; return s.str();
 }
-void field(AmdPmSnapshot &out, const char *name, const char *unit, unsigned offset, bool clock = false) {
+void field(AmdPmSnapshot &out, const char *name, const char *unit, unsigned offset, bool clock = false, bool original = false) {
     AmdPmField v; v.name = name; v.unit = unit; v.offset = offset; v.clock = clock;
     v.raw = std::uint32_t(little(out.raw, offset, 4));
     // Classify both quiet and signalling NaNs before touching the FPU.
@@ -50,7 +50,7 @@ void field(AmdPmSnapshot &out, const char *name, const char *unit, unsigned offs
         }
     }
     if (!out.error) out.error = v.error ? v.error : v.scaleError;
-    out.fields.push_back(v);
+    (original ? out.originalLimits : out.fields).push_back(v);
 }
 }
 const std::vector<AmdPmLayout> &amdPmLayouts() {
@@ -86,6 +86,17 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
     const unsigned offsets[] = {0, 4, 8, 16};
     for (unsigned r = 0; r < 4; ++r) for (unsigned f = 0; f < 4; ++f)
         field(out, (std::string(rails[r]) + " " + names[f]).c_str(), units[f], 0x178 + 20 * r + offsets[f]);
+    // Pinned original constructor + common-field decoder replay, documented in
+    // docs/amd-pm-limits.md. Keep these separate from the public telemetry facts.
+    // Indices 0/1 are original labels, not CPU/CCD or physical rail identifiers.
+    const char *limits[] = {"Fast PPT Limit", "Fast PPT Value", "TDC0 Limit", "TDC0 Current Value",
+        "TDC1 Limit", "TDC1 Current Value", "THM0 Limit", "THM0 Current Value",
+        "THM1 Limit", "THM1 Current Value", "FIT Limit", "FIT Current Value",
+        "VID0 Limit", "VID0 Current Value", "VID1 Limit", "VID1 Current Value",
+        "EDC_LIMIT_0", "PEAK_TELEMETRY_CURRENT_0", "PCC_LIMIT_0", "PCC_RESIDENCY_0",
+        "EDC_LIMIT_1", "PEAK_TELEMETRY_CURRENT_1", "PCC_LIMIT_1", "PCC_RESIDENCY_1"};
+    for (unsigned i = 0; i < 24; ++i)
+        field(out, limits[i], "unverified", i < 16 ? i * 4 : 0x1c8 + (i-16)*4, false, true);
     if (out.error) out.detail = "Some fields are non-finite or clock scaling is out of range; valid stored fields are retained";
     return out;
 }
@@ -96,8 +107,9 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
         ",\"captured_bytes\":" + std::to_string(s.capturedBytes) + ",\"expected_bytes\":" + std::to_string(s.expectedBytes) +
         ",\"error\":" + std::to_string(s.error) + ",\"detail\":" + quote(s.detail) + ",\"bclk_mhz\":" +
         (s.options.hasBclk && validOptions(s.options) ? number(s.options.bclkMHz) : "null") + ",\"raw_hex\":" + quote(raw) + ",\"fields\":[";
-    bool first = true;
-    for (const auto &v : s.fields) {
+    auto appendFields = [&out](const std::vector<AmdPmField> &fields) {
+      bool first = true;
+      for (const auto &v : fields) {
         if (!first) out += ',';
         first = false;
         out += "{\"name\":" + quote(v.name) + ",\"unit\":" + quote(v.unit) + ",\"offset\":" + word(v.offset) +
@@ -105,7 +117,11 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
             (v.error ? "null" : number(v.value)) + ",\"clock\":" + (v.clock ? "true" : "false") +
             ",\"scale_error\":" + std::to_string(v.scaleError) + ",\"scaled_clock_mhz\":" +
             (v.scaled ? number(v.scaledValue) : "null") + '}';
-    }
+      }
+    };
+    appendFields(s.fields);
+    out += "],\"original_limits_units_verified\":false,\"original_limits\":[";
+    appendFields(s.originalLimits);
     return out + "]}";
 }
 AmdPmSnapshot parseAmdPmCapture(const std::string &input) {

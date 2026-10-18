@@ -1,5 +1,8 @@
 # AMD PM 遥测、离线解码与 GUI / CLI 快照互通
 
+2026-10-18：[原版限制监控区](amd-pm-limits.md)增加独立的 24 项 `original_limits`，
+保留原版名称、偏移和浮点存储值。物理单位及目标仍未核实；下文的 24 项公共 `fields` 保持原语义。
+
 2026-10-11：新增八个精确 Shimada PM 表版本的公共字段解析。GUI 位于 AMD tuning → PM telemetry；
 CLI 为 `amd-pm-read` 和 `amd-pm-decode`。二者共用无 Qt 的解码、快照格式和驱动读取顺序。
 本次是公共遥测功能，尚未恢复整张 PM 表、物理核心映射、曲线设置或完整 PBO。

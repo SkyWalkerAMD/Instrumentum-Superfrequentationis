@@ -130,5 +130,70 @@ int main() {
     pm_fixture::Driver longTable; longTable.files["pm_table"].push_back(0);
     assert(readAmdPmDriver(longTable.reader()).snapshot.error == -EFBIG && longTable.calls.size() == 3);
     assert(readAmdPmDriver({}).snapshot.error == -EINVAL); ++groups;
+    const char *limitNames[] = {"Fast PPT Limit","Fast PPT Value","TDC0 Limit","TDC0 Current Value",
+        "TDC1 Limit","TDC1 Current Value","THM0 Limit","THM0 Current Value",
+        "THM1 Limit","THM1 Current Value","FIT Limit","FIT Current Value",
+        "VID0 Limit","VID0 Current Value","VID1 Limit","VID1 Current Value",
+        "EDC_LIMIT_0","PEAK_TELEMETRY_CURRENT_0","PCC_LIMIT_0","PCC_RESIDENCY_0",
+        "EDC_LIMIT_1","PEAK_TELEMETRY_CURRENT_1","PCC_LIMIT_1","PCC_RESIDENCY_1"};
+    const unsigned limitOffsets[] = {0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,
+        456,460,464,468,472,476,480,484};
+    const double limitValues[] = {400.5,350.25,100,63.5,150,74.25,95,82.5,80,71.25,1,0.25,1.5,1.25,1.375,1.125,
+        200,180.5,4,0.75,250,220.25,5,0.5};
+    for (unsigned i = 0; i < 8; ++i) {
+        AmdPmOptions o; o.hasBclk = true; o.bclkMHz = 123.25;
+        const auto s = decodeAmdPm(pm_fixture::bytes(lengths[i]),versions[i],o);
+        assert(!s.error && s.originalLimits.size()==24 && s.fields.size()==24);
+        for (unsigned n=0; n<24; ++n) {
+            const auto &v=s.originalLimits[n];
+            assert(v.name==limitNames[n] && v.offset==limitOffsets[n] && v.value==limitValues[n]);
+            assert(v.unit=="unverified" && !v.clock && !v.scaled && !v.scaleError && !v.error);
+        }
+        const auto text=amdPmJson(s); assert(text.size()<65536);
+        assert(text.find("\"original_limits_units_verified\":false")!=std::string::npos);
+        assert(amdPmJson(parseAmdPmCapture(text))==text);
+    } ++groups;
+    for (unsigned n=0; n<24; ++n) {
+        for (unsigned bit=0; bit<32; ++bit) {
+            auto b=base; const auto bits=UINT32_C(1)<<bit; pm_fixture::put(b,limitOffsets[n],bits);
+            const auto s=decodeAmdPm(b,0x730204); assert(!s.error);
+            assert(s.originalLimits[n].raw==bits && std::isfinite(s.originalLimits[n].value));
+            for (unsigned j=0; j<24; ++j) if (j!=n) assert(s.originalLimits[j].value==limitValues[j]);
+            for (unsigned j=0; j<24; ++j) assert(s.fields[j].raw==good.fields[j].raw);
+        }
+        for (auto bits : {UINT32_C(0),UINT32_C(0x80000000),UINT32_C(0xbf800000),UINT32_C(0x7f7fffff)}) {
+            auto b=base; pm_fixture::put(b,limitOffsets[n],bits); const auto s=decodeAmdPm(b,0x730204);
+            assert(!s.error && s.originalLimits[n].raw==bits);
+            if (bits==0x80000000) assert(std::signbit(s.originalLimits[n].value));
+        }
+    } ++groups;
+    for (unsigned n=0; n<24; ++n) for (auto bits : {UINT32_C(0x7f800000),UINT32_C(0xff800000),UINT32_C(0x7fc12345),UINT32_C(0x7f800001)}) {
+        auto b=base; pm_fixture::put(b,limitOffsets[n],bits); const auto s=decodeAmdPm(b,0x730204);
+        assert(s.error==-EDOM && s.originalLimits.size()==24 && s.fields.size()==24);
+        assert(s.originalLimits[n].raw==bits && s.originalLimits[n].error==-EDOM);
+        for (unsigned j=0; j<24; ++j) assert(s.originalLimits[j].error==(j==n?-EDOM:0) && !s.fields[j].error);
+        const auto text=amdPmJson(s); assert(text.find("\"stored_value\":null")!=std::string::npos);
+        const auto parsed=parseAmdPmCapture(text); assert(parsed.error==-EDOM && amdPmJson(parsed)==text);
+    } ++groups;
+    auto current=amdPmJson(good); auto forged=current;
+    replace(forged,"\"original_limits_units_verified\":false","\"original_limits_units_verified\":true");
+    replace(forged,"\"unit\":\"unverified\"","\"unit\":\"W\"");
+    replace(forged,"\"stored_value\":400.5","\"stored_value\":1");
+    assert(amdPmJson(parseAmdPmCapture(forged))==current);
+    const auto extension=current.find(",\"original_limits_units_verified\""); assert(extension!=std::string::npos);
+    const auto old=current.substr(0,extension)+"}"; // Earlier schema-1 captures have no added array.
+    assert(amdPmJson(parseAmdPmCapture(old))==current);
+    const auto maximum=amdPmJson(decodeAmdPm(pm_fixture::bytes(11636),0x731004));
+    assert(maximum.size()<65536 && !parseAmdPmCapture(maximum).error);
+    ++groups;
+    for (unsigned i=0; i<8; ++i) {
+        pm_fixture::Driver d; d.files["pm_table_version"]=pm_fixture::le(versions[i],4);
+        d.files["pm_table_size"]=pm_fixture::le(lengths[i],8); d.files["pm_table"]=pm_fixture::bytes(lengths[i]);
+        pm_fixture::put(d.files["pm_table"],0x1dc,0x7f800001);
+        const auto s=readAmdPmDriver(d.reader()); assert(s.snapshot.error==-EDOM && d.calls.size()==5);
+        assert(s.snapshot.originalLimits[21].error==-EDOM && s.snapshot.fields[0].value==2000);
+        d.calls.clear(); d.failCall=4; const auto failed=readAmdPmDriver(d.reader());
+        assert(failed.snapshot.originalLimits.empty() && failed.snapshot.fields.empty() && failed.snapshot.raw.empty());
+    } ++groups;
     std::cout << groups << " AMD PM scenario groups passed\n";
 }

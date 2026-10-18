@@ -16,11 +16,12 @@ public:
 private:
     void readDriver();
     void clear();
+    void showFields();
     bool options(octool::core::AmdPmOptions &out);
     void present(const octool::core::AmdPmSnapshot &snapshot, const QString &source);
     octool::core::AmdPmReader reader_;
     octool::core::AmdPmSnapshot snapshot_;
-    QComboBox *version_;
+    QComboBox *version_, *view_;
     QCheckBox *scale_;
     QLineEdit *bclk_;
     QWidget *controls_;

@@ -35,7 +35,7 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 992, len(reports)
+assert len(reports) == 1010, len(reports)
 platform_reports=[r for r in reports if r['command']=='intel-read' and 'readings' in r['data']]
 assert len(platform_reports)==81
 hwp_context_reports=platform_reports[63:]
@@ -508,7 +508,8 @@ with tempfile.TemporaryDirectory(prefix="octool-intel-memory-") as directory:
     os.mkfifo(Path(directory)/"fifo")
     assert run("intel-memory-decode","--file",str(Path(directory)/"fifo"),code=3)["data"]["memory"] is None
 pm_reports = [r for r in reports if r["command"] == "amd-pm-decode" and "pm" in r["data"]]
-assert len(pm_reports) == 20
+assert len(pm_reports) == 38
+limit_reports, pm_reports = pm_reports[20:], pm_reports[:20]
 assert [r["ok"] for r in pm_reports] == [True] * 9 + [False, True, True, False, False, False, False, True, True, False, False]
 for i, r in enumerate(pm_reports):
     assert r["data"]["offline"] and not r["data"]["table_read_attempted"] and not r["data"]["direct_register_access"]
@@ -525,6 +526,39 @@ for i, r in enumerate(pm_reports):
         assert pm["fields"][1]["stored_value"] == 1800
     else:
         assert pm["fields"] == []
+limit_names = ['Fast PPT Limit','Fast PPT Value','TDC0 Limit','TDC0 Current Value',
+    'TDC1 Limit','TDC1 Current Value','THM0 Limit','THM0 Current Value',
+    'THM1 Limit','THM1 Current Value','FIT Limit','FIT Current Value',
+    'VID0 Limit','VID0 Current Value','VID1 Limit','VID1 Current Value',
+    'EDC_LIMIT_0','PEAK_TELEMETRY_CURRENT_0','PCC_LIMIT_0','PCC_RESIDENCY_0',
+    'EDC_LIMIT_1','PEAK_TELEMETRY_CURRENT_1','PCC_LIMIT_1','PCC_RESIDENCY_1']
+limit_values = [400.5,350.25,100,63.5,150,74.25,95,82.5,80,71.25,1,0.25,1.5,1.25,1.375,1.125,
+    200,180.5,4,0.75,250,220.25,5,0.5]
+limit_offsets = list(range(0,64,4))+list(range(0x1c8,0x1e8,4))
+assert [r['ok'] for r in limit_reports] == [True]*8+[False]*4+[True]*5+[False]
+for i, report in enumerate(limit_reports):
+    pm = report['data']['pm']
+    assert report['data']['offline'] and not report['data']['table_read_attempted'] and not report['data']['direct_register_access']
+    assert pm['original_limits_units_verified'] is False
+    if i == 17:
+        assert pm['original_limits'] == [] and pm['fields'] == []
+        continue
+    fields = pm['original_limits']
+    assert len(fields) == len(pm['fields']) == 24 and all(f['error'] == 0 for f in pm['fields'])
+    assert [f['name'] for f in fields] == limit_names
+    assert [int(f['offset'],16) for f in fields] == limit_offsets
+    for n, field in enumerate(fields):
+        assert field['unit'] == 'unverified' and field['clock'] is False and field['scaled_clock_mhz'] is None and field['scale_error'] == 0
+        if 8 <= i <= 11 and n == [0,15,16,23][i-8]:
+            assert field['stored_value'] is None and field['error'] == -33
+            assert field['raw'] == ['0x7f800000','0xff800000','0x7fc12345','0x7f800001'][i-8]
+        elif i == 12 and n < 5:
+            raw = [0,0x80000000,0xbf800000,1,0x7f7fffff][n]
+            assert field['error'] == 0 and int(field['raw'],16) == raw
+            assert field['stored_value'] == struct.unpack('<f',struct.pack('<I',raw))[0]
+        else:
+            assert field['error'] == 0 and field['stored_value'] == limit_values[n]
+    assert pm['fields'][0]['scaled_clock_mhz'] == (2465 if i == 16 else None)
 with tempfile.TemporaryDirectory(prefix="octool-pm-") as directory:
     root = Path(directory)
     capture = pm_reports[8]["data"]["pm"]
@@ -534,6 +568,10 @@ with tempfile.TemporaryDirectory(prefix="octool-pm-") as directory:
     assert decoded["data"]["pm"] == capture
     path.write_text(json.dumps(decoded), encoding="utf-8")
     assert run("amd-pm-decode", "--file", str(path))["data"]["pm"] == capture
+    for source in (limit_reports[0], limit_reports[11], limit_reports[12], limit_reports[16]):
+        path.write_text(json.dumps(source),encoding='utf-8')
+        decoded = run('amd-pm-decode','--file',str(path),code=0 if source['ok'] else 3)
+        assert decoded['data']['pm'] == source['data']['pm']
     raw = root / "raw.bin"; raw.write_bytes(bytes.fromhex(capture["raw_hex"]))
     decoded = run("amd-pm-decode", "--file", str(raw), "--version", capture["version"])
     assert decoded["data"]["pm"]["fields"][0]["scaled_clock_mhz"] is None

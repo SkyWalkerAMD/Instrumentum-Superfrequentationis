@@ -1151,6 +1151,8 @@ firmware table transfer. OCTool does not load that driver or open a register dev
 Eight exact Shimada PM versions are supported; files do not identify physical
 cores. PM captures have no checksum. BCLK is caller supplied, not measured here;
 raw clock values remain separate from scaled values. Non-finite fields are null.
+original_limits contains 24 original monitor values with unverified units and
+physical targets; these are not PBO settings or measured W/A/C values.
 PM JSON from either frontend can be imported by both; displayed fields are
 recomputed from raw bytes. --version selects a raw binary file, not a JSON report.
 CCD/core are firmware indices, not Linux CPU IDs; UMC values are raw encodings.
