@@ -1609,10 +1609,20 @@ private slots:
         IntelIccMaxPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
         panel.resize(1150,650); panel.show(); auto *read=panel.findChild<QPushButton *>("iccMaxRead");
         auto *apply=panel.findChild<QPushButton *>("iccMaxApply"); auto *table=panel.findChild<QTableWidget *>("iccMaxTable");
+        auto *raw=panel.findChild<QLabel *>("iccMaxRaw"); auto *status=panel.findChild<QLabel *>("iccMaxStatus");
         for (unsigned mode=0;mode<6;++mode) {
             d->locked=mode==0; d->data=mode==1?0xa5c32190u:mode==2?0u:0x25c32190u;
             d->topology=mode==3?0x0a061600u:0x0a060600u; d->model=mode==4?0xb7:0x97; d->failAt=mode==5?int(d->calls):-1;
             read->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(!apply->isEnabled()); QCOMPARE(table->rowCount(),mode<3?3:0);
+            // The worker finishing does not imply Qt has applied the labels'
+            // new height-for-width layout. Verify it before capturing pixels.
+            if (mode<3) {
+                QVERIFY(!raw->text().isEmpty()); QVERIFY(raw->heightForWidth(raw->width())>0);
+                QTRY_VERIFY(raw->height()>=raw->heightForWidth(raw->width()));
+                QVERIFY(raw->geometry().bottom()<panel.height());
+            }
+            QTRY_VERIFY(status->height()>=status->heightForWidth(status->width()));
+            QVERIFY(status->geometry().bottom()<panel.height());
             if (mode==1) { QCOMPARE(table->item(1,1)->text(),QString("Set / unverified"));
                 const auto shot=qEnvironmentVariable("OCTOOL_INTEL_ICCMAX_READONLY_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot)); }
             if (mode==5) { QVERIFY(panel.findChild<QLabel *>("iccMaxRaw")->text().isEmpty());
