@@ -33,11 +33,11 @@ struct IntelIccMaxFixture : octool::core::HardwareBackend {
         if (failing(r.cpu)) { out.error = -EACCES; out.value = UINT64_MAX; return out; }
         if (r.space != Space::Msr || r.width != 8) { out.error = -EINVAL; return out; }
         if (r.address == 0x194 && !r.write) out.value = flexExtra | (locked ? UINT64_C(1) << 20 : 0);
-        else if (r.address == 0x170 && !r.write) {
+        else if (r.address == 0x150 && !r.write) {
             out.value = mailbox;
             if ((busyBefore && commands.empty()) ||
                 (busyCommand && !commands.empty() && commands.back() == busyCommand)) out.value |= UINT64_C(1) << 63;
-        } else if (r.address == 0x170 && r.write) {
+        } else if (r.address == 0x150 && r.write) {
             const unsigned command = unsigned((r.value >> 32) & 255);
             commands.push_back(command);
             if ((command != 4 && command != 0x16 && command != 0x17) ||
