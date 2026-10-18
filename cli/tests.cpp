@@ -1080,10 +1080,10 @@ void intelMemoryDdrioCaptures() {
     struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
     unsigned opens = 0; const auto factory = [&] { ++opens; return std::unique_ptr<HardwareBackend>(); };
     for (unsigned scenario = 0; scenario < 12; ++scenario) {
-        auto registers = intel_memory_fixture::registers(scenario == 1 ? 0 : 1);
+        auto registers = intel_memory_fixture::registers(scenario == 1 ? 0 : 1,4);
         if (scenario == 2) registers[18].raw = 0;
         if (scenario == 3) registers[3].raw |= UINT64_C(1)<<30;
-        auto text = intelMemoryJson(decodeIntelMemory({},registers));
+        auto text = intelMemoryJson(decodeIntelMemory({},registers,4));
         if (scenario == 4) {
             text.replace(text.find("\"encoded\":21",text.find("DDRIO_self_refresh_latency")),12,"\"encoded\":99");
             text.replace(text.find("8*tCK"),5,"ns");
@@ -1100,6 +1100,51 @@ void intelMemoryDdrioCaptures() {
         if (emit) std::cout << out.str();
     }
     assert(!opens);
+}
+void intelMemoryOdtCaptures() {
+    char path[] = "/tmp/octool-imc-odt-XXXXXX"; const int fd = mkstemp(path); assert(fd >= 0); close(fd);
+    struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
+    unsigned opens = 0; const auto factory = [&] { ++opens; return std::unique_ptr<HardwareBackend>(); };
+    for (unsigned scenario = 0; scenario < 16; ++scenario) {
+        auto registers = intel_memory_fixture::registers(scenario == 1 ? 0 : 1);
+        if (scenario == 2) registers[19].raw = registers[20].raw = 0;
+        if (scenario == 3) registers[3].raw |= (UINT64_C(1)<<30)|(UINT64_C(1)<<16);
+        if (scenario == 4) registers[2].raw = 8;
+        if (scenario == 5) registers[2].raw = 15;
+        auto text = intelMemoryJson(decodeIntelMemory({},registers));
+        if (scenario == 6) {
+            text.replace(text.find("\"encoded\":2",text.find("ODT_read_rank0_mask")),11,"\"encoded\":15");
+            text.replace(text.find("\"encoded\":45",text.find("Write_delay_add_tCWL")),12,"\"encoded\":99");
+            text.replace(text.find("odt_pin_mask"),12,"ohms");
+        }
+        if (scenario == 7) text = "{\"schema_version\":1,\"command\":\"intel-memory-decode\",\"ok\":true,\"error\":0,\"data\":{\"memory\":"+text+"}}";
+        if (scenario == 8) text.replace(text.find("memory-v5"),9,"memory-v4");
+        if (scenario == 9) text.replace(text.find("0x0000e478"),10,"0x0000e47c");
+        if (scenario == 10) text.replace(text.find("0x000000007bde4812"),18,"0x000000017bde4812");
+        if (scenario == 11) text.replace(text.find("0x00000000a5a51b4d"),18,"0x00000001a5a51b4d");
+        if (scenario == 12) text.replace(text.find("0x000000007bde4812"),18,"0x00000000ffffffff");
+        if (scenario == 13) text.replace(text.find("0x00000000a5a51b4d"),18,"0x00000000ffffffff");
+        if (scenario == 14) text.replace(text.find("0x0000e080"),10,"0x0000e478");
+        if (scenario == 15) text.replace(text.find("memory-v5"),9,"memory-v6");
+        std::ofstream file(path,std::ios::binary); file << text; file.close(); assert(file);
+        std::ostringstream out; assert(run({"intel-memory-decode","--file",path},out,factory) == (scenario < 8 ? 0 : 3));
+        if (emit) std::cout << out.str();
+    }
+    assert(!opens);
+}
+void intelMemoryOdtLive() {
+    for (unsigned scenario = 0; scenario < 8; ++scenario) {
+        intel_memory_fixture::Device d; d.controller = 1;
+        if (scenario == 0) { d.channel = 1; d.memory[0xe454] = 8; d.memory[0xe080] = d.memory[0xe478] = 0; }
+        if (scenario == 1) d.memory[0xd800] = 0;
+        const int failures[] = {24,25,50,51};
+        if (scenario >= 2 && scenario <= 5) d.failRead = failures[scenario-2];
+        if (scenario >= 6) d.afterRequest = [&](const Request &) { if (d.reads == 26) d.memory[scenario == 6 ? 0xe080 : 0xe478] ^= 1; };
+        const auto report = command(d,{"intel-memory-read","--cpu","130","--controller","1","--channel",std::to_string(d.channel)},scenario < 2 ? 0 : 3);
+        assert(!d.writes && !d.wrongCpu);
+        if (scenario < 2) assert(d.reads == 57 && d.cpuCalls == 3);
+        else assert(report.find("\"memory\":null") != std::string::npos);
+    }
 }
 void intelMemoryRefreshCaptures() {
     char path[] = "/tmp/octool-imc-refresh-XXXXXX"; const int fd = mkstemp(path); assert(fd >= 0); close(fd);
@@ -1590,11 +1635,11 @@ int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--pm-fixture") { pmFilesystem(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
-    offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); thermalEventCommands();
+    offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); intelMemoryOdtCaptures(); intelMemoryOdtLive(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
     hwpHistoryCommands();
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "40 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "42 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "date": "2026-10-13",
+  "date": "2026-10-18",
   "official_pdf": {
     "url": "https://cdrdv2-public.intel.com/743846/743846-001.pdf",
     "bytes": 5087799,
@@ -33,7 +33,9 @@
       "3.2.91",
       "3.2.93",
       "3.2.103",
-      "3.2.83"
+      "3.2.83",
+      "3.2.81",
+      "3.2.100"
     ],
     "visually_inspected_printed_pages": [
       129,
@@ -45,14 +47,17 @@
       149,
       152,
       153,
+      154,
       155,
+      156,
+      157,
       162,
       163,
       164,
       165,
       166,
-      173,
-      157
+      170,
+      173
     ],
     "numeric_facts": {
       "mchbar_pci_offset": "0x48",
@@ -162,6 +167,86 @@
           "high": 0,
           "unit": "flag"
         }
+      ],
+      "odt_matrix_offset": "0xe080",
+      "odt_matrix_width_bits": 32,
+      "odt_matrix_enable_bit": "Mentioned in section 3.2.81 but not defined in the section 3.2.82 bit table; no position inferred",
+      "odt_matrix_unit": "odt_pin_mask",
+      "odt_matrix_pin_mapping": "Mask bits 3:0 select ODT pins 3:0 for access to the named target rank",
+      "odt_matrix_ddr5": "non-target ODT only",
+      "odt_matrix_active_state_verified": false,
+      "odt_matrix_fields": [
+        {
+          "name": "ODT_read_rank0_mask",
+          "low": 0,
+          "high": 3,
+          "rank_bit": 1
+        },
+        {
+          "name": "ODT_read_rank1_mask",
+          "low": 4,
+          "high": 7,
+          "rank_bit": 2
+        },
+        {
+          "name": "ODT_read_rank2_mask",
+          "low": 8,
+          "high": 11,
+          "rank_bit": 4
+        },
+        {
+          "name": "ODT_read_rank3_mask",
+          "low": 12,
+          "high": 15,
+          "rank_bit": 8
+        },
+        {
+          "name": "ODT_write_rank0_mask",
+          "low": 16,
+          "high": 19,
+          "rank_bit": 1
+        },
+        {
+          "name": "ODT_write_rank1_mask",
+          "low": 20,
+          "high": 23,
+          "rank_bit": 2
+        },
+        {
+          "name": "ODT_write_rank2_mask",
+          "low": 24,
+          "high": 27,
+          "rank_bit": 4
+        },
+        {
+          "name": "ODT_write_rank3_mask",
+          "low": 28,
+          "high": 31,
+          "rank_bit": 8
+        }
+      ],
+      "write_delay_offset": "0xe478",
+      "write_delay_width_bits": 32,
+      "write_delay_fields": [
+        {
+          "name": "Write_delay_add_tCWL",
+          "low": 6,
+          "high": 11,
+          "unit": "DCLK"
+        },
+        {
+          "name": "Write_delay_subtract_tCWL",
+          "low": 0,
+          "high": 5,
+          "unit": "DCLK"
+        },
+        {
+          "name": "Write_delay_add_1QCLK",
+          "low": 12,
+          "high": 12,
+          "unit": "flag",
+          "meaning": "Gear2 option; no effective delay inferred"
+        }
       ]
     }
   },
@@ -179,16 +264,17 @@
     "pci_vendor": "0x8086",
     "pci_device": "0xa700",
     "physical_hardware_validated": false,
-    "register_count": 19,
-    "field_count": 68,
+    "register_count": 21,
+    "field_count": 79,
     "write_operations": 0,
-    "capture_version": 4,
+    "capture_version": 5,
     "legacy_versions": [
       1,
       2,
-      3
+      3,
+      4
     ],
-    "hardware_reads": 53,
+    "hardware_reads": 57,
     "cpuid_reads": 3
   },
   "exclusions": [
@@ -203,6 +289,9 @@
     "no TXSR LPDDR interpretation for DDR4/DDR5",
     "no implied units for TXSDLL or TSR",
     "no recommended-configuration or training validation",
-    "no 9*tREFI inference from TREFIX9 name"
+    "no 9*tREFI inference from TREFIX9 name",
+    "no inferred ODT activation or electrical resistance",
+    "no absent-target-rank ODT mask values",
+    "no effective tCWL or IOL derived from write-delay configuration"
   ]
 }

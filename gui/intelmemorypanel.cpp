@@ -84,7 +84,9 @@ void IntelMemoryPanel::present(const IntelMemorySnapshot &s) {
         if (unit == "MC_DCLK") unit = "MC DCLK";
         if (unit == "1024_DCLK") unit = "1024 DCLK";
         if (unit == "tREFI_count") unit = "tREFI count";
-        const QStringList values = {QString::fromLatin1(f.name),v.error == -ENODEV ? "Rank absent" : v.error ? "Not used" : QString::number(v.encoded),
+        const bool pinMask = unit == "odt_pin_mask";
+        if (pinMask) unit = "ODT pin mask";
+        const QStringList values = {QString::fromLatin1(f.name),v.error == -ENODEV ? "Rank absent" : v.error ? "Not used" : pinMask ? hexValue(v.encoded,1) : QString::number(v.encoded),
             v.error ? "—" : unit,hexValue(f.offset,4),
             QString("%1:%2").arg(f.high).arg(f.low),hexValue(raw,8)};
         for (int col = 0; col < values.size(); ++col) table_->setItem(int(i),col,new QTableWidgetItem(values[col]));
@@ -100,6 +102,9 @@ void IntelMemoryPanel::present(const IntelMemorySnapshot &s) {
             "tREFIx9 uses 1024 DCLK; tZQCAL uses 2*tCK unless overridden. Self-refresh delays without documented units remain encoded. ") +
         (s.version < 4 ? "DDRIO low-power fields were not captured. " :
             "DDRIO flags permit power-mode indications; they do not report the current power state. ") +
+        (s.version < 5 ? "ODT matrix and write-data delays were not captured. " :
+            "Stored ODT masks select pins 3:0; matrix activation is unverified. DDR5 uses non-target ODT. "
+            "Write-delay add/subtract counts use DCLK; the 1QCLK flag is a Gear2 option. No effective tCWL or IOL is derived. ") +
         "tWRPRE is the write-command-to-precharge interval. No settings were changed.");
 }
 bool IntelMemoryPanel::loadCapture(const QByteArray &bytes) {

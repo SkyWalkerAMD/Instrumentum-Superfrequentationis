@@ -1,5 +1,7 @@
 # 无桌面版 OCTool
 
+Intel 内存读取已扩展为 v5：21 寄存器 / 79 字段，新增 [ODT 矩阵与写数据延迟](intel-memory-odt.md)，兼容 v1–v4。GUI 与 CLI 共享解析器；新增项的云端验证结果在本批交付记录中更新。
+
 <!-- amd-pstates-legacy-fc330a9 -->
 2026-10-18：最新验证提交 `fc330a9`，GUI / CLI 同步恢复 **AMD 17h / 19h PStates 定义读取**，
 保留 1Ah 支持；修正 DFS 09h 频率计算，增加原始编码、异常状态和切换 CPU 后旧结果丢弃。

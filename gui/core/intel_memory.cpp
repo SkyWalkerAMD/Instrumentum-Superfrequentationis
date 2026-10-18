@@ -24,16 +24,17 @@ std::uint64_t word64(const capture_json::Json &v) {
 }
 }
 const std::vector<IntelMemoryRegisterSpec> &intelMemoryRegisters(unsigned version) {
-    // Intel 743846-001, sections 3.2.46, 3.2.49-50, 3.2.70-76, 3.2.79-80, 3.2.82,
-    // 3.2.83, 3.2.89-91, 3.2.93-94 and 3.2.103. Context precedes timing registers.
+    // Intel 743846-001, sections 3.2.46, 3.2.49-50, 3.2.70-76, 3.2.79-83,
+    // 3.2.89-91, 3.2.93-94, 3.2.100 and 3.2.103. Context precedes timing registers.
     static const std::vector<IntelMemoryRegisterSpec> specs = {
         {0xd800,4}, {0xd80c,4}, {0xe454,4}, {0xe088,8}, {0xe000,8}, {0xe008,4},
         {0xe00c,4}, {0xe010,4}, {0xe014,4}, {0xe018,4}, {0xe070,8}, {0xe43c,4},
-        {0xe020,8}, {0xe050,8}, {0xe438,4}, {0xe440,4}, {0xe448,8}, {0xe4c0,8}, {0xe0b8,4}
+        {0xe020,8}, {0xe050,8}, {0xe438,4}, {0xe440,4}, {0xe448,8}, {0xe4c0,8}, {0xe0b8,4},
+        {0xe080,4}, {0xe478,4}
     };
     static const std::vector<IntelMemoryRegisterSpec> v1(specs.begin(), specs.begin()+12), v2(specs.begin(), specs.begin()+14),
-        v3(specs.begin(), specs.begin()+18), empty;
-    return version == 4 ? specs : version == 3 ? v3 : version == 2 ? v2 : version == 1 ? v1 : empty;
+        v3(specs.begin(), specs.begin()+18), v4(specs.begin(), specs.begin()+19), empty;
+    return version == 5 ? specs : version == 4 ? v4 : version == 3 ? v3 : version == 2 ? v2 : version == 1 ? v1 : empty;
 }
 const std::vector<IntelMemoryField> &intelMemoryFields(unsigned version) {
     static const std::vector<IntelMemoryField> fields = {
@@ -86,11 +87,28 @@ const std::vector<IntelMemoryField> &intelMemoryFields(unsigned version) {
         {"DDRIO_power_down_length",0xe0b8,10,13,3,"MC_DCLK",0,true},
         {"DDRIO_power_down_latency",0xe0b8,5,9,3,"tCK",0,true},
         {"DDRIO_idle_length",0xe0b8,1,4,3,"encoded",0,true},
-        {"DDRIO_raise_CKE_after_exit",0xe0b8,0,0,3,"flag",0,true}
+        {"DDRIO_raise_CKE_after_exit",0xe0b8,0,0,3,"flag",0,true},
+        // 3.2.81: each mask selects ODT pins 3:0 when accessing this target
+        // rank. These are stored masks; the matrix enable bit is not defined
+        // in the published SC_GS_CFG table. No active termination is inferred.
+        {"ODT_read_rank0_mask",0xe080,0,3,3,"odt_pin_mask",1,true},
+        {"ODT_read_rank1_mask",0xe080,4,7,3,"odt_pin_mask",2,true},
+        {"ODT_read_rank2_mask",0xe080,8,11,3,"odt_pin_mask",4,true},
+        {"ODT_read_rank3_mask",0xe080,12,15,3,"odt_pin_mask",8,true},
+        {"ODT_write_rank0_mask",0xe080,16,19,3,"odt_pin_mask",1,true},
+        {"ODT_write_rank1_mask",0xe080,20,23,3,"odt_pin_mask",2,true},
+        {"ODT_write_rank2_mask",0xe080,24,27,3,"odt_pin_mask",4,true},
+        {"ODT_write_rank3_mask",0xe080,28,31,3,"odt_pin_mask",8,true},
+        // 3.2.100: additions/subtractions are DCLK counts. The Gear2 1QCLK
+        // option is a configuration flag, not a duration in this clock domain.
+        // Do not combine these with tCWL to claim an effective delay or IOL.
+        {"Write_delay_add_tCWL",0xe478,6,11,3,"DCLK",0,true},
+        {"Write_delay_subtract_tCWL",0xe478,0,5,3,"DCLK",0,true},
+        {"Write_delay_add_1QCLK",0xe478,12,12,3,"flag",0,true}
     };
     static const std::vector<IntelMemoryField> v1(fields.begin(), fields.begin()+30), v2(fields.begin(), fields.begin()+43),
-        v3(fields.begin(), fields.begin()+57), empty;
-    return version == 4 ? fields : version == 3 ? v3 : version == 2 ? v2 : version == 1 ? v1 : empty;
+        v3(fields.begin(), fields.begin()+57), v4(fields.begin(), fields.begin()+68), empty;
+    return version == 5 ? fields : version == 4 ? v4 : version == 3 ? v3 : version == 2 ? v2 : version == 1 ? v1 : empty;
 }
 const char *intelMemoryUnit(const IntelMemorySnapshot &s, const IntelMemoryField &f) {
     // QCLK and MC DCLK are already controller-domain quantities. Do not apply
@@ -113,7 +131,8 @@ IntelMemorySnapshot decodeIntelMemory(const IntelMemoryTarget &t, const std::vec
         const auto it = raw.find(spec.offset);
         if (it == raw.end() || (spec.width == 4 && it->second > UINT32_MAX)) { out.error = -EINVAL; return out; }
         const auto full = spec.width == 4 ? UINT64_C(0xffffffff) : UINT64_MAX;
-        const bool policy = spec.offset == 0xe438 || spec.offset == 0xe440 || spec.offset == 0xe448 || spec.offset == 0xe4c0 || spec.offset == 0xe0b8;
+        const bool policy = spec.offset == 0xe438 || spec.offset == 0xe440 || spec.offset == 0xe448 || spec.offset == 0xe4c0 ||
+            spec.offset == 0xe0b8 || spec.offset == 0xe080 || spec.offset == 0xe478;
         if (it->second == full || (!it->second && spec.offset != 0xd800 && spec.offset != 0xe088 && !policy)) { out.error = -ENODATA; return out; }
     }
     out.dramType = unsigned(raw[0xd800] & 7);
@@ -138,7 +157,7 @@ IntelMemorySnapshot decodeIntelMemory(const IntelMemoryTarget &t, const std::vec
         else if (field.rankBit && !(out.rankMask & field.rankBit)) v.error = -ENODEV;
         // Do not turn an uninitialized register into a timing measurement.
         // tCPDED and subsequent policy/delay codes preserve zero as configured.
-        // Absent ranks have no RTL measurement.
+        // Absent ranks have no RTL measurement or applicable ODT target mask.
         else if (!v.encoded && !field.zeroAllowed) { out.error = -ENODATA; out.values.clear(); return out; }
         out.values.push_back(v);
     }
@@ -220,7 +239,8 @@ IntelMemorySnapshot parseIntelMemoryCapture(const std::string &json) {
         const unsigned version = equals(data->at("format"), Json::String, "octool-intel-memory-v1") ? 1 :
             equals(data->at("format"), Json::String, "octool-intel-memory-v2") ? 2 :
             equals(data->at("format"), Json::String, "octool-intel-memory-v3") ? 3 :
-            equals(data->at("format"), Json::String, "octool-intel-memory-v4") ? 4 : 0;
+            equals(data->at("format"), Json::String, "octool-intel-memory-v4") ? 4 :
+            equals(data->at("format"), Json::String, "octool-intel-memory-v5") ? 5 : 0;
         check(version &&
             equals(data->at("layout"), Json::String, "raptor-lake-s-743846-001"), "Unsupported Intel memory layout");
         IntelMemoryTarget t; t.controller = uint(data->at("controller"), 1); t.channel = uint(data->at("channel"), 1);

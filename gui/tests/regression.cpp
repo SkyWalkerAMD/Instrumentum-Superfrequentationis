@@ -290,14 +290,14 @@ private slots:
         auto *table = panel.findChild<QTableWidget *>("imcTable");
         const auto latest = QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},intel_memory_fixture::registers())));
         const auto legacy = QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},intel_memory_fixture::registers(0,1),1)));
-        QVERIFY(panel.loadCapture(latest)); QCOMPARE(table->rowCount(),68);
+        QVERIFY(panel.loadCapture(latest)); QCOMPARE(table->rowCount(),79);
         QVERIFY(panel.loadCapture(legacy)); QCOMPARE(table->rowCount(),30); QCOMPARE(panel.captureBytes(),legacy);
         QVERIFY(panel.findChild<QLabel *>("imcStatus")->text().contains("Legacy v1"));
         QCOMPARE(parseIntelMemoryCapture(panel.captureBytes().toStdString()).version,1u);
         const auto v2 = QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},intel_memory_fixture::registers(1,2),2)));
         QVERIFY(panel.loadCapture(v2)); QCOMPARE(table->rowCount(),43); QCOMPARE(panel.captureBytes(),v2);
         QVERIFY(panel.findChild<QLabel *>("imcStatus")->text().contains("were not captured"));
-        QVERIFY(panel.loadCapture(latest)); QCOMPARE(table->rowCount(),68);
+        QVERIFY(panel.loadCapture(latest)); QCOMPARE(table->rowCount(),79);
         auto bad = legacy; bad.replace("memory-v1","memory-v2");
         QVERIFY(!panel.loadCapture(bad)); QCOMPARE(table->rowCount(),0); QVERIFY(panel.captureBytes().isEmpty());
         QCOMPARE(reference.calls.load(),0);
@@ -305,7 +305,7 @@ private slots:
     void intelMemoryDdrioSnapshot() {
         using namespace octool::core;
         Reference reference; IntelMemoryPanel panel(reference.access()); panel.resize(1450,1000); panel.show();
-        const auto good = QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},intel_memory_fixture::registers())));
+        const auto good = QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},intel_memory_fixture::registers(1,4),4)));
         QVERIFY(panel.loadCapture(good));
         auto *table = panel.findChild<QTableWidget *>("imcTable"); QCOMPARE(table->rowCount(),68);
         for (int row = 57; row < 68; ++row) QCOMPARE(table->item(row,1)->text(),QString::number(intel_memory_fixture::expected(unsigned(row))));
@@ -336,17 +336,98 @@ private slots:
         Reference reference; IntelMemoryPanel panel(reference.access());
         auto *table = panel.findChild<QTableWidget *>("imcTable");
         for (unsigned type = 0; type < 2; ++type) {
-            auto regs = intel_memory_fixture::registers(type); regs[3].raw |= UINT64_C(1)<<16;
-            QVERIFY(panel.loadCapture(QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},regs)))));
+            auto regs = intel_memory_fixture::registers(type,4); regs[3].raw |= UINT64_C(1)<<16;
+            QVERIFY(panel.loadCapture(QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},regs,4)))));
             QCOMPARE(table->item(63,2)->text(),QString("Encoded")); QCOMPARE(table->item(65,2)->text(),QString("Encoded"));
             QCOMPARE(table->item(61,2)->text(),QString("DCLK")); QCOMPARE(table->item(62,2)->text(),QString("MC DCLK"));
             regs[18].raw = 0;
-            QVERIFY(panel.loadCapture(QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},regs)))));
+            QVERIFY(panel.loadCapture(QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},regs,4)))));
             for (int row = 57; row < 68; ++row) QCOMPARE(table->item(row,1)->text(),QString("0"));
             auto bad = panel.captureBytes(); bad.replace("memory-v4","memory-v3");
             QVERIFY(!panel.loadCapture(bad)); QCOMPARE(table->rowCount(),0); QVERIFY(panel.captureBytes().isEmpty());
         }
         QCOMPARE(reference.calls.load(),0);
+    }
+    void intelMemoryOdtSnapshot() {
+        using namespace octool::core;
+        Reference reference; IntelMemoryPanel panel(reference.access()); panel.resize(1500,1060); panel.show();
+        auto *table = panel.findChild<QTableWidget *>("imcTable");
+        const char *masks[] = {"0x02","0x01","0x08","0x04","0x0E","0x0D","0x0B","0x07"};
+        for (unsigned type = 0; type < 2; ++type) {
+            auto regs = intel_memory_fixture::registers(type); regs[2].raw = 15;
+            const auto good = QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},regs)));
+            QVERIFY(panel.loadCapture(good)); QCOMPARE(table->rowCount(),79);
+            for (int i = 0; i < 8; ++i) {
+                QCOMPARE(table->item(68+i,1)->text(),QString::fromLatin1(masks[i]));
+                QCOMPARE(table->item(68+i,2)->text(),QString("ODT pin mask"));
+            }
+            QCOMPARE(table->item(68,0)->text(),QString("ODT_read_rank0_mask"));
+            QCOMPARE(table->item(75,0)->text(),QString("ODT_write_rank3_mask"));
+            QCOMPARE(table->item(76,1)->text(),QString("45")); QCOMPARE(table->item(76,2)->text(),QString("DCLK"));
+            QCOMPARE(table->item(77,1)->text(),QString("13")); QCOMPARE(table->item(77,2)->text(),QString("DCLK"));
+            QCOMPARE(table->item(78,1)->text(),QString("1")); QCOMPARE(table->item(78,2)->text(),QString("flag"));
+            QVERIFY(panel.findChild<QLabel *>("imcContext")->text().contains("snapshot v5"));
+            auto *status = panel.findChild<QLabel *>("imcStatus");
+            QVERIFY(status->text().contains("matrix activation is unverified"));
+            QVERIFY(status->text().contains("No effective tCWL or IOL is derived"));
+            QTRY_VERIFY(status->height() >= status->heightForWidth(status->width()));
+            table->scrollToBottom();
+            QTRY_VERIFY(table->viewport()->rect().contains(table->visualItemRect(table->item(68,1))));
+            QTRY_VERIFY(table->viewport()->rect().contains(table->visualItemRect(table->item(78,1))));
+            const auto shot = qEnvironmentVariable(type ? "OCTOOL_INTEL_ODT_DDR5_TEST_SCREENSHOT" : "OCTOOL_INTEL_ODT_DDR4_TEST_SCREENSHOT");
+            if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+            panel.findChild<QPushButton *>("imcCopy")->click(); QCOMPARE(QApplication::clipboard()->text().toUtf8(),good);
+            auto forged = good; forged.replace("\"encoded\":45","\"encoded\":99"); forged.replace("odt_pin_mask","ohms");
+            QVERIFY(panel.loadCapture(forged)); QCOMPARE(panel.captureBytes(),good);
+            QVERIFY(panel.loadCapture("{\"schema_version\":1,\"command\":\"intel-memory-read\",\"ok\":true,\"error\":0,\"data\":{\"memory\":"+good+"}}"));
+            QCOMPARE(panel.captureBytes(),good);
+        }
+        QCOMPARE(reference.calls.load(),0);
+    }
+    void intelMemoryOdtRanksAndLegacySwitch() {
+        using namespace octool::core;
+        Reference reference; IntelMemoryPanel panel(reference.access()); auto *table = panel.findChild<QTableWidget *>("imcTable");
+        for (unsigned type = 0; type < 2; ++type) for (unsigned ranks = 1; ranks < 16; ++ranks) {
+            auto regs = intel_memory_fixture::registers(type); regs[2].raw = ranks;
+            regs[3].raw |= (UINT64_C(1)<<30)|(UINT64_C(1)<<16); regs[19].raw = regs[20].raw = 0;
+            QVERIFY(panel.loadCapture(QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},regs)))));
+            for (int i = 0; i < 8; ++i) {
+                const bool present = (ranks & (1u<<(i%4))) != 0;
+                QCOMPARE(table->item(68+i,1)->text(),QString(present ? "0x00" : "Rank absent"));
+                QCOMPARE(table->item(68+i,2)->text(),QString(present ? "ODT pin mask" : "—"));
+            }
+            for (int i = 76; i < 79; ++i) QCOMPARE(table->item(i,1)->text(),QString("0"));
+            QCOMPARE(table->item(76,2)->text(),QString("DCLK")); QCOMPARE(table->item(77,2)->text(),QString("DCLK"));
+            QCOMPARE(table->item(78,2)->text(),QString("flag")); QCOMPARE(table->item(4,2)->text(),QString("Encoded"));
+        }
+        const auto latest = panel.captureBytes();
+        for (unsigned version = 1; version < 5; ++version) {
+            const auto old = QByteArray::fromStdString(intelMemoryJson(decodeIntelMemory({},intel_memory_fixture::registers(1,version),version)));
+            QVERIFY(panel.loadCapture(old)); QCOMPARE(table->rowCount(),version == 1 ? 30 : version == 2 ? 43 : version == 3 ? 57 : 68);
+            QCOMPARE(panel.captureBytes(),old);
+            QVERIFY(panel.findChild<QLabel *>("imcStatus")->text().contains("ODT matrix and write-data delays were not captured"));
+            QVERIFY(panel.loadCapture(latest)); QCOMPARE(table->rowCount(),79); QCOMPARE(panel.captureBytes(),latest);
+        }
+        auto bad = latest; bad.replace("memory-v5","memory-v4");
+        QVERIFY(!panel.loadCapture(bad)); QCOMPARE(table->rowCount(),0); QVERIFY(panel.captureBytes().isEmpty());
+        QVERIFY(!panel.findChild<QPushButton *>("imcCopy")->isEnabled()); QVERIFY(!panel.findChild<QPushButton *>("imcSave")->isEnabled());
+        QCOMPARE(reference.calls.load(),0);
+    }
+    void intelMemoryOdtLiveCoherency() {
+        auto device = std::make_shared<intel_memory_fixture::Device>();
+        IntelMemoryPanel panel(intelMemoryAccess(device),nullptr,130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("imcRead"); auto *table = panel.findChild<QTableWidget *>("imcTable");
+        for (unsigned offset : {0xe080u,0xe478u}) {
+            *device = intel_memory_fixture::Device(); read->click(); QTRY_VERIFY(read->isEnabled());
+            QCOMPARE(device->reads,57u); QCOMPARE(table->rowCount(),79); QVERIFY(!panel.captureBytes().isEmpty());
+            *device = intel_memory_fixture::Device();
+            const auto borrowed = device.get();
+            device->afterRequest = [borrowed,offset](const Request &) { if (borrowed->reads == 26) borrowed->memory[offset] ^= 1; };
+            read->click(); QCOMPARE(table->rowCount(),0); QTRY_VERIFY(read->isEnabled());
+            QCOMPARE(table->rowCount(),0); QVERIFY(panel.captureBytes().isEmpty()); QCOMPARE(device->writes,0u);
+            QVERIFY(!panel.findChild<QPushButton *>("imcCopy")->isEnabled()); QVERIFY(!panel.findChild<QPushButton *>("imcSave")->isEnabled());
+            device->afterRequest = {};
+        }
     }
     void intelMemoryRefreshSnapshot() {
         using namespace octool::core;
@@ -436,9 +517,9 @@ private slots:
         auto device = std::make_shared<intel_memory_fixture::Device>();
         IntelMemoryPanel panel(intelMemoryAccess(device),nullptr,130); panel.show();
         auto *read = panel.findChild<QPushButton *>("imcRead"); auto *table = panel.findChild<QTableWidget *>("imcTable");
-        for (int failure : {0,5,6,7,8,11,17,18,19,20,21,22,23,24,36,37,42,43,44,45,46,47,48,50,52}) {
+        for (int failure : {0,5,6,7,8,11,17,18,19,20,21,22,23,24,25,26,36,37,42,43,44,45,46,47,48,49,50,51,52,56}) {
             *device = intel_memory_fixture::Device(); read->click(); QTRY_VERIFY(read->isEnabled());
-            QCOMPARE(table->rowCount(),68); QVERIFY(panel.findChild<QPushButton *>("imcCopy")->isEnabled());
+            QCOMPARE(table->rowCount(),79); QVERIFY(panel.findChild<QPushButton *>("imcCopy")->isEnabled());
             QVERIFY(!octool::core::parseIntelMemoryCapture(panel.captureBytes().toStdString()).error);
             *device = intel_memory_fixture::Device(); device->failRead = failure;
             read->click(); QCOMPARE(table->rowCount(),0); QTRY_VERIFY(read->isEnabled());
