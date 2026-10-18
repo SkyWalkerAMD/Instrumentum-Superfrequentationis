@@ -56,6 +56,7 @@ PstateSnapshot readAmdPstates(HardwareAccess &access, unsigned cpu)
     });
     if (error) { sample.error = error; sample.status = octool::core::PstateStatus::CpuReadFailed; }
     PstateSnapshot snapshot;
+    snapshot.family = sample.hasIdentity ? sample.family : 0;
     const QString target = QString("Logical CPU %1: ").arg(cpu);
     const QString description = sample.hasIdentity ?
         target + QString("family %1h, model %2h, stepping %3. ")
@@ -66,16 +67,19 @@ PstateSnapshot readAmdPstates(HardwareAccess &access, unsigned cpu)
     case Status::LimitReadFailed:
         snapshot.status = description + errorText(sample.error); return snapshot;
     case Status::NotAmd:
-        snapshot.status = target + "Requires an AMD Family 1Ah CPU. No MSR read performed.";
+        snapshot.status = target + "Requires an AMD Family 17h, 19h or 1Ah CPU. No MSR read performed.";
         return snapshot;
     case Status::UnsupportedFamily:
-        snapshot.status = description + "This PStates decoder supports Family 1Ah only. No MSR read performed.";
+        snapshot.status = description + "This PStates decoder supports Family 17h, 19h and 1Ah. No MSR read performed.";
         return snapshot;
     case Status::CapabilityUnavailable:
         snapshot.status = description + "Hardware P-state capability unavailable. No MSR read performed.";
         return snapshot;
     case Status::CapabilityNotAdvertised:
         snapshot.status = description + "Hardware P-states not advertised. No MSR read performed.";
+        return snapshot;
+    case Status::InconsistentLimit:
+        snapshot.status = description + "FAILED: inconsistent P-state limits. No definitions read.";
         return snapshot;
     case Status::Complete:
         break;
@@ -88,12 +92,20 @@ PstateSnapshot readAmdPstates(HardwareAccess &access, unsigned cpu)
         if (item.status == RowStatus::ReadFailed) { row.status = errorText(item.error); continue; }
         if (item.status != RowStatus::Read) continue;
         row.read = true; row.raw = item.raw;
-        auto decoded = decodeFamily1aPstate(row.raw);
-        row.status = !decoded.enabled ? "Definition disabled" :
-            decoded.validFrequency ? "Definition read" : "Reserved frequency ID";
+        row.decoded = octool::core::decodeAmdPstate(sample.family, row.raw);
+        using Frequency = octool::core::PstateFrequencyStatus;
+        switch (row.decoded.frequencyStatus) {
+        case Frequency::Valid: row.status = "Definition read"; break;
+        case Frequency::Disabled: row.status = "Definition disabled"; break;
+        case Frequency::ReservedFid: row.status = "Reserved frequency ID"; break;
+        case Frequency::DividerOff: row.status = "Divider off"; break;
+        case Frequency::UnverifiedDivider: row.status = "Unverified divider code"; break;
+        default: row.status = "Unsupported frequency encoding"; break;
+        }
     }
-    snapshot.status = description + QString("P0-P%1 requested; %2 read failure(s). %3")
-        .arg(sample.maximum).arg(sample.failures).arg(QDateTime::currentDateTime().toString(Qt::ISODate));
+    snapshot.status = description + QString("P0-P%1 read pass; allowed non-boosted range P%2-P%1; %3 read failure(s). Limit %4. %5")
+        .arg(sample.maximum).arg(sample.minimum).arg(sample.failures).arg(hexValue(sample.limitRaw, 8))
+        .arg(QDateTime::currentDateTime().toString(Qt::ISODate));
     return snapshot;
 }
 
@@ -102,9 +114,10 @@ PstatesPanel::PstatesPanel(std::shared_ptr<HardwareAccess> access, QWidget *pare
 {
     auto *layout = new QVBoxLayout(this);
     auto *description = new QLabel("AMD CPU Functions / PStates — read only\n"
-        "Legacy P-state definitions for AMD Family 1Ah. Configured MHz is not a live clock measurement; "
+        "Legacy P-state definitions for AMD Family 17h, 19h and 1Ah. Configured MHz is not a live clock measurement; "
         "CPPC / amd-pstate may control the running frequency independently.\n"
-        "VID / Idd columns show encoded bits, not mV / A. Voltage and current conversion and P-state writes remain unverified.", this);
+        "FID / DFS describe the frequency encoding. VID / Idd are raw bits, not mV / A; the 17h/19h VID column is the low byte only. "
+        "Raw bit 32 is shown separately. P-state writes and voltage/current conversion remain unavailable.", this);
     description->setWordWrap(true); layout->addWidget(description);
     auto *controls = new QHBoxLayout;
     controls->addWidget(new QLabel("Logical CPU (decimal)", this));
@@ -113,9 +126,9 @@ PstatesPanel::PstatesPanel(std::shared_ptr<HardwareAccess> access, QWidget *pare
     controls->addWidget(read);
     auto *copy = new QPushButton("Copy snapshot", this); controls->addWidget(copy);
     layout->addLayout(controls);
-    table_ = new QTableWidget(8, 9, this); table_->setObjectName("pstateTable");
+    table_ = new QTableWidget(8, 12, this); table_->setObjectName("pstateTable");
     table_->setHorizontalHeaderLabels({"P-state", "MSR", "Raw value (hex)", "Enabled", "Configured MHz", "Status",
-        "VID bits 32,21:14", "Idd bits 29:22", "Div bits 31:30"});
+        "VID bits", "Idd bits 29:22", "Div bits 31:30", "FID", "DFS ID", "Raw bit 32"});
     table_->setEditTriggers(QAbstractItemView::NoEditTriggers);
     table_->verticalHeader()->hide();
     table_->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -126,6 +139,7 @@ PstatesPanel::PstatesPanel(std::shared_ptr<HardwareAccess> access, QWidget *pare
     clearRows();
     connect(read, &QPushButton::clicked, this, [this] { refresh(); });
     connect(cpu_, &QLineEdit::textChanged, this, [this] {
+        ++revision_;
         clearRows(); status_->setText("CPU selection changed. Read again to obtain a new snapshot.");
     });
     connect(copy, &QPushButton::clicked, this, [this] {
@@ -141,6 +155,7 @@ PstatesPanel::PstatesPanel(std::shared_ptr<HardwareAccess> access, QWidget *pare
 
 void PstatesPanel::clearRows()
 {
+    table_->horizontalHeaderItem(6)->setText("VID bits");
     for (int row = 0; row < 8; ++row)
         for (int column = 0; column < table_->columnCount(); ++column)
             table_->setItem(row, column, new QTableWidgetItem(column == 0 ? QString("P%1").arg(row) :
@@ -153,21 +168,32 @@ void PstatesPanel::refresh()
     if (!parseNumber(cpu_->text(), 10, UINT32_MAX, number)) {
         status_->setText("Invalid logical CPU: enter an unsigned decimal number."); return;
     }
+    const auto revision = revision_;
     clearRows(); setEnabled(false); status_->setText("Reading CPU identity and P-state definitions…");
     auto *watcher = new QFutureWatcher<PstateSnapshot>(this);
-    connect(watcher, &QFutureWatcher<PstateSnapshot>::finished, this, [this, watcher] {
+    connect(watcher, &QFutureWatcher<PstateSnapshot>::finished, this, [this, watcher, revision] {
         const auto snapshot = watcher->result();
+        if (revision != revision_) {
+            clearRows(); status_->setText("CPU changed during the read. Result discarded; read again.");
+            setEnabled(true); watcher->deleteLater(); return;
+        }
+        if (snapshot.family == 0x1a) table_->horizontalHeaderItem(6)->setText("VID bits 32,21:14");
+        else if (snapshot.family == 0x17 || snapshot.family == 0x19)
+            table_->horizontalHeaderItem(6)->setText("VID low bits 21:14");
         for (int row = 0; row < snapshot.rows.size(); ++row) {
             const auto &item = snapshot.rows[row];
             table_->item(row, 5)->setText(item.status);
             if (!item.read) continue;
-            auto decoded = decodeFamily1aPstate(item.raw);
+            const auto &decoded = item.decoded;
             table_->item(row, 2)->setText(hexValue(item.raw, 8));
             table_->item(row, 3)->setText(decoded.enabled ? "Yes" : "No");
-            if (decoded.validFrequency) table_->item(row, 4)->setText(QString::number(decoded.frequencyMHz));
+            if (decoded.validFrequency) table_->item(row, 4)->setText(QString::number(decoded.frequencyMHz, 'g', 12));
             table_->item(row, 6)->setText(QString::number(decoded.vidBits));
             table_->item(row, 7)->setText(QString::number(decoded.iddValueBits));
             table_->item(row, 8)->setText(QString::number(decoded.iddDivBits));
+            table_->item(row, 9)->setText(QString::number(decoded.frequencyId));
+            if (decoded.hasDivider) table_->item(row, 10)->setText(QString::number(decoded.dividerId));
+            table_->item(row, 11)->setText(decoded.rawBit32 ? "1" : "0");
         }
         status_->setText(snapshot.status); setEnabled(true); watcher->deleteLater();
     });

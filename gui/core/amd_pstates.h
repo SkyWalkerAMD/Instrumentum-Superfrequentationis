@@ -6,13 +6,24 @@
 namespace octool {
 namespace core {
 
+enum class PstateFrequencyStatus {
+    UnsupportedFamily, Disabled, ReservedFid, DividerOff, UnverifiedDivider, Valid
+};
 struct PstateValue {
     bool enabled = false;
     bool validFrequency = false;
-    unsigned frequencyMHz = 0;
+    double frequencyMHz = 0;
     unsigned frequencyId = 0, vidBits = 0, iddValueBits = 0, iddDivBits = 0;
+    bool hasDivider = false, rawBit32 = false;
+    unsigned dividerId = 0;
+    PstateFrequencyStatus frequencyStatus = PstateFrequencyStatus::UnsupportedFamily;
 };
+// 17h/19h use FID[7:0] and DFS[13:8]; 1Ah uses FID[11:0].
+// The 17h/19h VID result is the low byte only, not a complete model-specific VID.
+PstateValue decodeAmdPstate(unsigned family, std::uint64_t raw);
 PstateValue decodeFamily1aPstate(std::uint64_t raw);
+const char *amdPstateLayout(unsigned family);
+const char *pstateFrequencyStatusName(PstateFrequencyStatus status);
 
 // Implementations select the requested OS logical CPU and preserve errors.
 // Return 0 on success or a negative errno; output on failure is ignored.
@@ -28,7 +39,7 @@ public:
 // Complete means the sampling pass ended; failures/row errors still matter.
 enum class PstateStatus {
     CpuReadFailed, NotAmd, UnsupportedFamily, CapabilityUnavailable,
-    CapabilityNotAdvertised, LimitReadFailed, Complete
+    CapabilityNotAdvertised, LimitReadFailed, Complete, InconsistentLimit
 };
 enum class PstateRowStatus { NotRead, AboveLimit, ReadFailed, Read };
 
@@ -43,7 +54,9 @@ struct PstateSnapshot {
     int error = 0;
     bool hasIdentity = false;
     unsigned family = 0, model = 0, stepping = 0;
-    unsigned maximum = 0, failures = 0;
+    bool hasLimit = false;
+    std::uint64_t limitRaw = 0;
+    unsigned minimum = 0, maximum = 0, failures = 0;
     std::array<PstateRow, 8> rows{};
 };
 

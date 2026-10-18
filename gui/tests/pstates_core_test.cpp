@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <cassert>
 #include <cerrno>
+#include <cmath>
 #include <cstring>
 #include <iostream>
+#include <iterator>
 #include <vector>
 
 using namespace octool::core;
@@ -86,7 +88,7 @@ static void capabilityGuards()
         Reader reader;
         if (scenario == 0) reader.amd = false;
         if (scenario == 1) reader.rootMaximum = 0;
-        if (scenario == 2) reader.signature = 0x00a00f11;
+        if (scenario == 2) reader.signature = 0x00900f11;
         if (scenario == 3) reader.extendedMaximum = 0x80000006;
         if (scenario == 4) reader.advertised = false;
         assert(reader.leaves.empty() && reader.msrs.empty());
@@ -164,6 +166,110 @@ static void limitFailureStopsSampling()
     allUnread(snapshot);
 }
 
+static void legacyGoldenVectors()
+{
+    const unsigned fid[] = {160, 171, 165, 255, 16};
+    const unsigned dfs[] = {8, 12, 9, 44, 8};
+    const double mhz[] = {4000, 2850, 3666.6666666666665, 1159.090909090909, 400};
+    for (unsigned family : {0x17u, 0x19u}) for (unsigned i = 0; i < 5; ++i) {
+        const auto raw = UINT64_C(0xfedcba99abcdc000) | (dfs[i] << 8) | fid[i];
+        const auto d = decodeAmdPstate(family, raw);
+        assert(d.enabled && d.hasDivider && d.validFrequency && d.rawBit32);
+        assert(d.frequencyId == fid[i] && d.dividerId == dfs[i]);
+        assert(std::abs(d.frequencyMHz - mhz[i]) < 1e-9);
+        assert(d.vidBits == 55 && d.iddValueBits == 175 && d.iddDivBits == 2);
+        assert(d.frequencyStatus == PstateFrequencyStatus::Valid);
+    }
+}
+
+static void exhaustiveLegacyFrequencyEncodings()
+{
+    // Independent value table from OSRR pp130-131, not the decoder predicate.
+    const unsigned accepted[] = {8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,
+                                 28,30,32,34,36,38,40,42,44};
+    for (unsigned family : {0x17u, 0x19u}) for (unsigned enabled = 0; enabled < 2; ++enabled)
+        for (unsigned fid = 0; fid < 256; ++fid) for (unsigned dfs = 0; dfs < 64; ++dfs) {
+            const std::uint64_t raw = (std::uint64_t(enabled) << 63) | (dfs << 8) | fid;
+            const auto d = decodeAmdPstate(family, raw);
+            const bool divisor = std::find(std::begin(accepted), std::end(accepted), dfs) != std::end(accepted);
+            const bool valid = enabled && fid >= 16 && divisor;
+            assert(d.validFrequency == valid && d.frequencyId == fid && d.dividerId == dfs);
+            if (valid) assert(std::abs(d.frequencyMHz * dfs - 200.0 * fid) < 1e-7);
+            else {
+                assert(d.frequencyMHz == 0);
+                const auto status = !enabled ? PstateFrequencyStatus::Disabled : fid < 16 ? PstateFrequencyStatus::ReservedFid :
+                    dfs == 0 ? PstateFrequencyStatus::DividerOff : PstateFrequencyStatus::UnverifiedDivider;
+                assert(d.frequencyStatus == status);
+            }
+        }
+}
+
+static void familyAndRawFieldIsolation()
+{
+    for (unsigned family = 0; family < 256; ++family) {
+        Reader reader; reader.signature = ((family >= 15 ? family - 15 : 0) << 20) | ((family >= 15 ? 15 : family) << 8);
+        const auto p = readAmdPstates(reader, reader.expectedCpu);
+        const bool supported = family == 0x17 || family == 0x19 || family == 0x1a;
+        assert((p.status == PstateStatus::Complete) == supported);
+        assert(reader.msrs.empty() != supported);
+        if (!supported) {
+            const auto d = decodeAmdPstate(family, UINT64_MAX);
+            assert(!d.validFrequency && d.frequencyStatus == PstateFrequencyStatus::UnsupportedFamily);
+        }
+    }
+    for (unsigned family : {0x17u,0x19u,0x1au}) for (unsigned bit = 14; bit < 63; ++bit) {
+        const auto base = UINT64_C(0x80000000000008a0);
+        const auto a = decodeAmdPstate(family, base), b = decodeAmdPstate(family, base | (UINT64_C(1) << bit));
+        assert(a.frequencyMHz == b.frequencyMHz && a.frequencyId == b.frequencyId && a.dividerId == b.dividerId);
+        if (bit == 32) assert(b.rawBit32 && b.vidBits == (family == 0x1a ? 256u : 0u));
+    }
+}
+
+static void allLimitPairsAndFamilies()
+{
+    for (unsigned family : {0x17u,0x19u,0x1au}) for (unsigned minimum = 0; minimum < 8; ++minimum)
+        for (unsigned maximum = 0; maximum < 8; ++maximum) {
+            Reader reader; reader.signature = ((family-15) << 20) | 0x000a0f91;
+            reader.limit = UINT64_C(0xabcdef1234567808) | (maximum << 4) | minimum;
+            const auto p = readAmdPstates(reader, reader.expectedCpu);
+            assert(p.family == family && p.model == 0xa9 && p.stepping == 1);
+            assert(p.hasLimit && p.limitRaw == reader.limit && p.minimum == minimum && p.maximum == maximum);
+            if (minimum > maximum) {
+                assert(p.status == PstateStatus::InconsistentLimit && p.error == -ERANGE);
+                assert(reader.msrs.size() == 1); allUnread(p);
+            } else {
+                assert(p.status == PstateStatus::Complete && !p.error);
+                assert(reader.msrs.size() == maximum + 2);
+                for (unsigned i = 0; i < 8; ++i)
+                    assert(p.rows[i].status == (i <= maximum ? PstateRowStatus::Read : PstateRowStatus::AboveLimit));
+            }
+        }
+}
+
+static void legacyReadFailuresAndCapabilities()
+{
+    for (auto signature : {0x00800f11u,0x00a20f10u}) {
+        for (auto leaf : {0u,1u,0x80000000u,0x80000007u}) {
+            Reader r; r.signature = signature; r.failLeaf = leaf;
+            const auto p = readAmdPstates(r, r.expectedCpu);
+            assert(p.error == -EACCES && r.msrs.empty()); allUnread(p);
+        }
+        for (unsigned mode = 0; mode < 11; ++mode) {
+            Reader r; r.signature = signature; r.limit = 0x70;
+            if (mode == 0) r.advertised = false;
+            else if (mode == 1) r.extendedMaximum = 0x80000006;
+            else r.failRegister = mode == 2 ? 0xc0010061u : 0xc0010064u + mode - 3;
+            const auto p = readAmdPstates(r, r.expectedCpu);
+            if (mode < 2) { assert(r.msrs.empty()); allUnread(p); }
+            else if (mode == 2) { assert(!p.hasLimit && p.limitRaw == 0 && r.msrs.size() == 1); allUnread(p); }
+            else {
+                assert(p.failures == 1 && p.rows[mode-3].raw == 0 && p.rows[mode-3].error == -EIO);
+                assert(p.status == PstateStatus::Complete && r.msrs.size() == 9);
+            }
+        }
+    }
+}
+
 int main()
 {
     decodeVectors();
@@ -173,5 +279,7 @@ int main()
     maximumRange();
     rowFailureIsNotAValue();
     limitFailureStopsSampling();
-    std::cout << "amd_pstates core: 7 scenario groups passed\n";
+    legacyGoldenVectors(); exhaustiveLegacyFrequencyEncodings(); familyAndRawFieldIsolation();
+    allLimitPairsAndFamilies(); legacyReadFailuresAndCapabilities();
+    std::cout << "amd_pstates core: 12 scenario groups passed\n";
 }

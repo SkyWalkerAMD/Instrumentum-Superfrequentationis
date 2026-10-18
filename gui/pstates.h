@@ -13,10 +13,12 @@ PstateValue decodeFamily1aPstate(quint64 raw);
 struct PstateRow {
     bool read = false;
     quint64 raw = 0;
+    PstateValue decoded;
     QString status = "Not read";
 };
 struct PstateSnapshot {
     QString status;
+    unsigned family = 0;
     QVector<PstateRow> rows = QVector<PstateRow>(8);
 };
 PstateSnapshot readAmdPstates(HardwareAccess &access, unsigned cpu);
@@ -31,4 +33,5 @@ private:
     QLineEdit *cpu_;
     QLabel *status_;
     QTableWidget *table_;
+    quint64 revision_ = 0;
 };

@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "date": "2026-10-18",
+  "sources": [
+    {
+      "url": "https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/programmer-references/56255_OSRR.pdf",
+      "file": "56255.pdf",
+      "bytes": 1759552,
+      "sha256": "2debf1122c806d2ed309b00f81733eb8b190c6b69793c5334b5427d7e01f77c7",
+      "revision": "3.03",
+      "published": "2018-07",
+      "scope": "AMD Family 17h Models 00h-2Fh",
+      "printed_pages": [
+        129,
+        130,
+        131
+      ],
+      "rendered_and_visually_inspected_pages": [
+        130,
+        131
+      ]
+    },
+    {
+      "url": "https://raw.githubusercontent.com/torvalds/linux/v6.12/tools/power/cpupower/utils/helpers/amd.c",
+      "file": "linux-v6.12-amd.c",
+      "bytes": 6234,
+      "sha256": "32de6c9ec5018f53389efc126a3e33d6c3347e88df1f85467106926b018e8b39",
+      "scope": "Pinned Linux v6.12 source, not a claim about the latest kernel"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/torvalds/linux/v6.12/tools/power/cpupower/utils/helpers/cpuid.c",
+      "file": "linux-v6.12-cpuid.c",
+      "bytes": 5562,
+      "sha256": "91adcb8c0474ac9b3bc9c4b6de9482903c4326465c7917650570c6752f3bf83e",
+      "scope": "Pinned Linux v6.12 source, not a claim about the latest kernel"
+    },
+    {
+      "url": "https://docs.amd.com/v/u/en-US/57238",
+      "file": "57238_C1_pub_1.pdf",
+      "bytes": 3395710,
+      "sha256": "e4a55e3db7863ff0d70abb5d01d67a133fa3c6ba35899a66a9f4a7d9ce45c0a4",
+      "revision": "0.49",
+      "published": "2026-03-06",
+      "printed_page": 240,
+      "scope": "Existing 1Ah FID and raw VID layout"
+    },
+    {
+      "sha": "c889b57129cfd8280378855981b2efc0582c651c",
+      "url": "https://github.com/cyring/CoreFreq/blob/4d032cff9ee0ef18d489fb85e38198110564b90d/x86_64/amd_reg.h",
+      "bytes": 64484,
+      "sha256": "f56d7addb99a49e49ce499374bee975d72449a700f8e7bf953fd982b9e866cdc",
+      "scope": "Auxiliary implementation evidence for model-dependent VID bit 32; not used as a frequency formula"
+    }
+  ],
+  "original_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "original_function": {
+    "symbol": "_ZN17AMD_Configuration15Get_PStates_VecERSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS6_EE",
+    "address": "0x22c450",
+    "bytes": 1340,
+    "sha256": "49a22024fa587f5507120b509a10547481d08b847141e0a3cbc1ca233b26dbad"
+  },
+  "fixture": {
+    "path": "analysis/fixtures/legacy-amd-pstate-frequency.json",
+    "sha256": "d70a28e35e8e0d895d40b159d70a1ff2610b9c8f84b40c292c84dff39577befd"
+  },
+  "hardware_execution": false,
+  "decisions": [
+    "Only AMD 17h/19h/1Ah with CPUID 80000007h EDX bit 7; read-only configured definitions.",
+    "17h/19h frequency is 200*FID/DFS MHz; 1Ah remains 5*FID MHz.",
+    "Use the unambiguous OSRR table through DFS 2Ch; expose other codes without a frequency.",
+    "Correct original DFS 09h constant from 1.25 to documented 1.125; retain fractional MHz.",
+    "Legacy VID is a low-byte fragment; expose bit 32 separately. Do not infer model-specific voltage/current or enable writes."
+  ]
+}

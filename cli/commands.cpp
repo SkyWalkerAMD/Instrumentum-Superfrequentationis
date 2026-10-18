@@ -492,19 +492,32 @@ Result hardware(const Command &c, HardwareSession &s) {
         const auto id = identifyCpu(s, c.cpu); out.error = id.error; out.data.push_back({"identity", identity(id)});
     } else if (c.name == "amd-pstates") {
         Pstates reader(s); const auto p = readAmdPstates(reader, c.cpu);
-        static const char *const statuses[] = {"cpu_read_failed", "not_amd", "unsupported_family", "capability_unavailable", "capability_not_advertised", "limit_read_failed", "complete"};
+        static const char *const statuses[] = {"cpu_read_failed", "not_amd", "unsupported_family", "capability_unavailable", "capability_not_advertised", "limit_read_failed", "complete", "inconsistent_limit"};
         static const char *const rows[] = {"not_read", "above_limit", "read_failed", "read"};
         out.error = p.error ? p.error : p.status != PstateStatus::Complete ? -ENOTSUP : 0;
         out.data.push_back({"status", quote(statuses[unsigned(p.status)])});
+        out.data.push_back({"family", p.hasIdentity ? number(p.family) : "null"});
+        out.data.push_back({"model", p.hasIdentity ? number(p.model) : "null"});
+        out.data.push_back({"stepping", p.hasIdentity ? number(p.stepping) : "null"});
+        out.data.push_back({"layout", p.hasIdentity ? quote(amdPstateLayout(p.family)) : "null"});
+        out.data.push_back({"frequency_is_measurement", "false"});
+        out.data.push_back({"vid_bit_positions", p.hasIdentity && p.family == 0x1a ? quote("32,21:14") :
+            p.hasIdentity && (p.family == 0x17 || p.family == 0x19) ? quote("21:14") : "null"});
+        out.data.push_back({"limit_raw", p.hasLimit ? hex(p.limitRaw, 16) : "null"});
+        out.data.push_back({"minimum", p.status == PstateStatus::Complete ? number(p.minimum) : "null"});
         out.data.push_back({"maximum", p.status == PstateStatus::Complete ? number(p.maximum) : "null"});
         std::vector<std::string> values;
         for (unsigned i = 0; i < p.rows.size(); ++i) {
-            const auto &r = p.rows[i]; const auto d = decodeFamily1aPstate(r.raw);
+            const auto &r = p.rows[i]; const auto d = decodeAmdPstate(p.family, r.raw);
             const bool valid = r.status == PstateRowStatus::Read;
             if (r.error && !out.error) out.error = r.error;
             values.push_back(object({{"pstate", number(i)}, {"status", quote(rows[unsigned(r.status)])}, {"error", number(r.error)},
                 {"raw", valid ? hex(r.raw, 16) : "null"}, {"enabled", valid ? boolean(d.enabled) : "null"},
                 {"frequency_mhz", valid && d.validFrequency ? number(d.frequencyMHz) : "null"},
+                {"frequency_status", valid ? quote(pstateFrequencyStatusName(d.frequencyStatus)) : "null"},
+                {"frequency_id", valid ? number(d.frequencyId) : "null"},
+                {"divider_id", valid && d.hasDivider ? number(d.dividerId) : "null"},
+                {"raw_bit_32", valid ? boolean(d.rawBit32) : "null"},
                 {"vid_bits", valid ? number(d.vidBits) : "null"}, {"idd_value_bits", valid ? number(d.iddValueBits) : "null"},
                 {"idd_div_bits", valid ? number(d.iddDivBits) : "null"}}));
         }
@@ -1055,7 +1068,7 @@ Usage: octool-cli COMMAND [OPTIONS]
   register-read --space mmio --address A --width 1|2|4|8
   register-read --space pci --address A --width 1|2|4 --bus B --device D --function F
   register-write [same target options] --value V --apply
-  amd-pstates --cpu N               Family 1Ah P0..P7 (read only)
+  amd-pstates --cpu N               Family 17h/19h/1Ah P0..P7 definitions (read only)
   intel-read --cpu N                RAPL, HWP, temperatures, package events and non-turbo ratio
   intel-set --cpu N --field F --value V --apply
   intel-oc-read --cpu N --domain core|cache

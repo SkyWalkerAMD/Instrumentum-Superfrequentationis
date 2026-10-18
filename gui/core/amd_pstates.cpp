@@ -1,25 +1,68 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "amd_pstates.h"
+#include <cerrno>
 
 namespace octool {
 namespace core {
 
-// Existing verified frequency rule; sources and limits: docs/amd-pstates.md.
-// Family-wide frequency only, without model-specific VID/current assumptions.
-PstateValue decodeFamily1aPstate(std::uint64_t raw)
+const char *amdPstateLayout(unsigned family)
+{
+    return family == 0x1a ? "fid12-x5" :
+        family == 0x17 || family == 0x19 ? "fid8-dfs6" : "unsupported";
+}
+
+const char *pstateFrequencyStatusName(PstateFrequencyStatus status)
+{
+    switch (status) {
+    case PstateFrequencyStatus::Disabled: return "disabled";
+    case PstateFrequencyStatus::ReservedFid: return "reserved_fid";
+    case PstateFrequencyStatus::DividerOff: return "divider_off";
+    case PstateFrequencyStatus::UnverifiedDivider: return "unverified_divider";
+    case PstateFrequencyStatus::Valid: return "valid";
+    default: return "unsupported_family";
+    }
+}
+
+// Linux cpupower and AMD OSRR 56255; docs/amd-pstates-legacy.md.
+// These are configured definitions, not a measurement or a writable policy.
+PstateValue decodeAmdPstate(unsigned family, std::uint64_t raw)
 {
     PstateValue value;
+    if (family != 0x17 && family != 0x19 && family != 0x1a) return value;
     value.enabled = (raw >> 63) != 0;
-    const unsigned fid = unsigned(raw & 0xfff);
+    value.hasDivider = family != 0x1a;
+    value.dividerId = value.hasDivider ? unsigned((raw >> 8) & 63) : 0;
+    const unsigned fid = unsigned(raw & (value.hasDivider ? 255 : 4095));
     value.frequencyId = fid;
-    // Bit extraction only. The UI labels the exact positions; these are not
-    // a model-independent mV/A conversion or a measured current limit.
-    value.vidBits = unsigned((raw >> 14) & 255) | unsigned((raw >> 24) & 256);
+    value.rawBit32 = (raw & (UINT64_C(1) << 32)) != 0;
+    // Preserve bit 32 separately. Some 19h models have an extended VID here;
+    // their low byte must not be advertised as a complete voltage encoding.
+    value.vidBits = unsigned((raw >> 14) & 255) |
+        (family == 0x1a && value.rawBit32 ? 256u : 0u);
     value.iddValueBits = unsigned((raw >> 22) & 255);
     value.iddDivBits = unsigned((raw >> 30) & 3);
-    value.validFrequency = value.enabled && fid >= 0x10;
-    if (value.validFrequency) value.frequencyMHz = fid * 5;
+    value.frequencyStatus = PstateFrequencyStatus::Disabled;
+    if (!value.enabled) return value;
+    value.frequencyStatus = PstateFrequencyStatus::ReservedFid;
+    if (fid < 0x10) return value;
+    if (value.hasDivider) {
+        value.frequencyStatus = PstateFrequencyStatus::DividerOff;
+        if (!value.dividerId) return value;
+        value.frequencyStatus = PstateFrequencyStatus::UnverifiedDivider;
+        // The OSRR value table ends at 2Ch, while nearby prose mentions 30h.
+        // Decode the unambiguous intersection; expose other codes as raw.
+        if (value.dividerId < 8 || value.dividerId > 0x2c ||
+            (value.dividerId > 0x1a && (value.dividerId & 1))) return value;
+        value.frequencyMHz = 200.0 * fid / value.dividerId;
+    } else value.frequencyMHz = fid * 5.0;
+    value.validFrequency = true;
+    value.frequencyStatus = PstateFrequencyStatus::Valid;
     return value;
+}
+
+PstateValue decodeFamily1aPstate(std::uint64_t raw)
+{
+    return decodeAmdPstate(0x1a, raw);
 }
 
 PstateSnapshot readAmdPstates(PstateReader &reader, unsigned cpu)
@@ -43,7 +86,7 @@ PstateSnapshot readAmdPstates(PstateReader &reader, unsigned cpu)
     snapshot.model = ((words[0] >> 4) & 0xf) |
         ((baseFamily == 6 || baseFamily == 0xf) ? (words[0] >> 12) & 0xf0 : 0);
     snapshot.stepping = words[0] & 0xf;
-    if (snapshot.family != 0x1a) {
+    if (snapshot.family != 0x17 && snapshot.family != 0x19 && snapshot.family != 0x1a) {
         snapshot.status = PstateStatus::UnsupportedFamily;
         return snapshot;
     }
@@ -65,7 +108,15 @@ PstateSnapshot readAmdPstates(PstateReader &reader, unsigned cpu)
         snapshot.status = PstateStatus::LimitReadFailed;
         return snapshot;
     }
+    snapshot.hasLimit = true;
+    snapshot.limitRaw = limit;
+    snapshot.minimum = unsigned(limit & 7);
     snapshot.maximum = unsigned((limit >> 4) & 7);
+    if (snapshot.minimum > snapshot.maximum) {
+        snapshot.status = PstateStatus::InconsistentLimit;
+        snapshot.error = -ERANGE;
+        return snapshot;
+    }
     for (unsigned i = 0; i < snapshot.rows.size(); ++i) {
         auto &row = snapshot.rows[i];
         if (i > snapshot.maximum) {

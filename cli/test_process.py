@@ -35,7 +35,7 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 939, len(reports)
+assert len(reports) == 968, len(reports)
 platform_reports=[r for r in reports if r['command']=='intel-read' and 'readings' in r['data']]
 assert len(platform_reports)==81
 hwp_context_reports=platform_reports[63:]
@@ -1010,6 +1010,44 @@ assert curve_fail["data"]["raw"] is None and curve_fail["data"]["message_attempt
 pstate = [r for r in reports if r["command"] == "amd-pstates" and r["ok"]][0]
 assert pstate["data"]["rows"][0]["raw"] == "0xfffffffffffffc00"
 assert pstate["data"]["rows"][2]["raw"] is None
+assert pstate['data']['family'] == 0x1a and pstate['data']['layout'] == 'fid12-x5'
+assert pstate['data']['vid_bit_positions'] == '32,21:14'
+assert pstate['data']['rows'][0]['frequency_id'] == 3072 and pstate['data']['rows'][0]['frequency_mhz'] == 15360
+assert pstate['data']['rows'][0]['divider_id'] is None and pstate['data']['rows'][0]['vid_bits'] == 511
+legacy_pstates = [r for r in reports if r['command'] == 'amd-pstates' and r['data'].get('cpu') == 641]
+assert len(legacy_pstates) == 29
+for n, report in enumerate(legacy_pstates[:6]):
+    d = report['data']; rows = d['rows']
+    assert report['ok'] and d['family'] == (0x17 if n < 3 else 0x19)
+    assert d['model'] == (1, 0x31, 0x71)[n % 3] and d['stepping'] == 1
+    assert d['layout'] == 'fid8-dfs6' and d['vid_bit_positions'] == '21:14' and not d['frequency_is_measurement']
+    assert d['minimum'] == 1 and d['maximum'] == 7 and d['limit_raw'] == '0xfedcba9876543271'
+    assert [r['frequency_id'] for r in rows] == [160,171,165,160,160,15,160,160]
+    assert [r['divider_id'] for r in rows] == [8,12,9,8,0,8,27,46]
+    assert rows[0]['frequency_mhz'] == 4000 and rows[1]['frequency_mhz'] == 2850
+    assert abs(rows[2]['frequency_mhz'] - 3666.6666666666665) < 1e-8
+    assert [r['frequency_status'] for r in rows] == ['valid']*3 + ['disabled','divider_off','reserved_fid','unverified_divider','unverified_divider']
+    assert all(r['frequency_mhz'] is None for r in rows[3:])
+    assert all(r['vid_bits'] == 55 and r['raw_bit_32'] and r['idd_value_bits'] == 175 and r['idd_div_bits'] == 2 for r in rows)
+for family in range(2):
+    for mode, report in enumerate(legacy_pstates[6+family*10:16+family*10]):
+        d = report['data']
+        assert not report['ok']
+        if mode in (5,6):
+            bad = d['rows'][0 if mode == 5 else 7]
+            assert bad['status'] == 'read_failed' and bad['error'] == -5
+            assert all(bad[k] is None for k in ('raw','enabled','frequency_mhz','frequency_status','frequency_id','divider_id','vid_bits','raw_bit_32'))
+            assert sum(r['status'] == 'read' for r in d['rows']) == 7
+        else:
+            assert all(r['raw'] is None and r['frequency_status'] is None for r in d['rows'])
+            assert d['minimum'] is None and d['maximum'] is None
+        if mode == 9:
+            assert d['status'] == 'inconsistent_limit' and d['limit_raw'] == '0x0000000000000023' and report['error'] == -34
+        if mode < 2:
+            assert all(d[k] is None for k in ('family','model','stepping','layout','vid_bit_positions'))
+for report in legacy_pstates[-3:]:
+    assert not report['ok'] and report['data']['status'] == 'unsupported_family'
+    assert report['data']['layout'] == 'unsupported' and report['data']['vid_bit_positions'] is None
 umc = [r for r in reports if r["command"] == "amd-umc-read" and r["ok"]][0]
 contract = json.loads((Path(__file__).resolve().parents[1] / "gui/tests/fixtures/cli-umc.json").read_text())
 assert {k: umc[k] for k in contract if k != "data"} == {k: v for k, v in contract.items() if k != "data"}

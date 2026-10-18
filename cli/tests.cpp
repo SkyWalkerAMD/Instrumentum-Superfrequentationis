@@ -343,6 +343,64 @@ void registerCommands() {
     r.amd = false; command(r, {"amd-pstates", "--cpu", "130"}, 3);
     assert(r.writes == 2);
 }
+
+struct LegacyPstates : Registers {
+    unsigned signature = 0x00800f11, failLeaf = UINT32_MAX, failMsr = 0;
+    bool advertised = true, extended = true;
+    LegacyPstates() {
+        amd = true; expectedCpu = 641;
+        values[0xc0010061] = UINT64_C(0xfedcba9876543271);
+        const std::uint64_t base = UINT64_C(0xa5a5a5a9abcdc000);
+        const unsigned bits[] = {0x08a0,0x0cab,0x09a5,0x08a0,0x00a0,0x080f,0x1ba0,0x2ea0};
+        for (unsigned i = 0; i < 8; ++i) values[0xc0010064+i] = (base | bits[i]) & (i == 3 ? ~(UINT64_C(1)<<63) : UINT64_MAX);
+    }
+    Reply execute(const Request &r) override {
+        assert(!r.write && r.cpu == expectedCpu && r.space == Space::Msr);
+        if (r.address == failMsr) { ++reads; Reply out; out.error = -EIO; out.value = UINT64_MAX; return out; }
+        return Registers::execute(r);
+    }
+    CpuIdReply cpuid(unsigned cpu, std::uint32_t leaf, std::uint32_t subleaf) override {
+        assert(cpu == expectedCpu && subleaf == 0);
+        if (leaf == failLeaf) { ++cpuCalls; CpuIdReply out; out.error = -EACCES; for (auto &word : out.words) word = UINT32_MAX; return out; }
+        auto out = Registers::cpuid(cpu, leaf, subleaf);
+        if (leaf == 1) out.words[0] = signature;
+        if (leaf == 0x80000007) out.words[3] = advertised ? 128 : 0;
+        if (leaf == 0x80000000 && !extended) out.words[0] = 0x80000006;
+        return out;
+    }
+};
+
+void legacyPstateCommands() {
+    const auto signature = [](unsigned family, unsigned model) {
+        return ((family-15)<<20) | ((model & 0xf0)<<12) | 0xf00 | ((model & 15)<<4) | 1;
+    };
+    for (unsigned family : {0x17u,0x19u}) for (unsigned model : {0x01u,0x31u,0x71u}) {
+        LegacyPstates d; d.signature = signature(family, model);
+        const auto result = command(d, {"amd-pstates","--cpu","641"}, 0);
+        assert(result.find("\"layout\":\"fid8-dfs6\"") != std::string::npos);
+        assert(result.find("\"frequency_mhz\":4000") != std::string::npos);
+        assert(result.find("\"frequency_status\":\"divider_off\"") != std::string::npos);
+        assert(d.reads == 9 && !d.writes);
+    }
+    for (unsigned family : {0x17u,0x19u}) for (unsigned mode = 0; mode < 10; ++mode) {
+        LegacyPstates d; d.signature = signature(family,1);
+        if (mode < 4) d.failLeaf = mode == 0 ? 0 : mode == 1 ? 1 : mode == 2 ? 0x80000000 : 0x80000007;
+        if (mode == 4) d.failMsr = 0xc0010061;
+        if (mode == 5) d.failMsr = 0xc0010064;
+        if (mode == 6) d.failMsr = 0xc001006b;
+        if (mode == 7) d.advertised = false;
+        if (mode == 8) d.extended = false;
+        if (mode == 9) d.values[0xc0010061] = 0x23;
+        command(d, {"amd-pstates","--cpu","641"}, 3);
+        assert(!d.writes);
+        assert(d.reads == (mode == 4 || mode == 9 ? 1u : mode == 5 || mode == 6 ? 9u : 0u));
+    }
+    for (unsigned family : {0x16u,0x18u,0x1bu}) {
+        LegacyPstates d; d.signature = signature(family,1);
+        command(d, {"amd-pstates","--cpu","641"}, 3);
+        assert(!d.reads && !d.writes);
+    }
+}
 void ocAndCurveCommands() {
     IntelOcFixture intel;
     command(intel, {"intel-oc-read", "--cpu", "130", "--domain", "cache"}, 0);
@@ -1535,8 +1593,8 @@ int main(int argc, char **argv) {
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
     hwpHistoryCommands();
-    pl4Commands(); hwpContextCommands(); hwpPackageCommands();
+    pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "39 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "40 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

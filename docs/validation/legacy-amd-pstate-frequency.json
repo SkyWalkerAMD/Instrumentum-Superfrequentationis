@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "fixture_sha256": "d70a28e35e8e0d895d40b159d70a1ff2610b9c8f84b40c292c84dff39577befd",
+  "cases": 16384,
+  "result_sha256": "c2d3d15c3588d905c585c5b0fe1a60931f29a872d872ddd1285be0944176d8b5",
+  "hardware_execution": false,
+  "scope": "Only the original legacy-frequency arithmetic branch; synthetic extraction of bits 13:8. No full original function/GUI/MSR execution.",
+  "observations": [
+    "The original branch accepts DFS 08h..1Ah and even 1Ch..2Ch, and returns zero for the other codes.",
+    "DFS 09h divides by 1.25 in the original instructions, whereas AMD OSRR specifies 1.125.",
+    "Other accepted codes use FID * 25 / (DFS / 8); the original truncates the result to integer MHz.",
+    "FID below 10h is not rejected by this arithmetic branch. The new decoder checks the reserved FID range."
+  ],
+  "divider9_example": {
+    "fid": 165,
+    "original_mhz": 3300.0,
+    "documented_mhz": 3666.6666666666665
+  }
+}
