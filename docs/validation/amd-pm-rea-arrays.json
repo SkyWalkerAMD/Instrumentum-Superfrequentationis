@@ -1,0 +1,913 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "source_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "rea_version": "6.7.0",
+  "ghidra_version": "12.1.4",
+  "hardware_execution": false,
+  "runs": [
+    {
+      "id": 39425573426,
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/39425573426",
+      "source_commit": "e8313b2eb4854f5497259afd65d3330232d345e7",
+      "study": {
+        "schema": 1,
+        "source_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+        "hardware_execution": false,
+        "rea_version": "6.7.0",
+        "ghidra_version": "12.1.4",
+        "records": [
+          {
+            "tool": "open_binary",
+            "arguments": {
+              "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/rea-input/octool",
+              "provider_id": "ghidra"
+            },
+            "file": "open.json",
+            "seconds": 0.32,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "file-offset:0x2e7360"
+            },
+            "file": "pseudo-0x2e7360.json",
+            "seconds": 622.7,
+            "error": false
+          },
+          {
+            "tool": "procedure_info",
+            "arguments": {
+              "procedure": "0x3e7360"
+            },
+            "file": "info-0x2e7360.json",
+            "seconds": 0.05,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "file-offset:0x2c7910"
+            },
+            "file": "pseudo-0x2c7910.json",
+            "seconds": 6.64,
+            "error": false
+          },
+          {
+            "tool": "procedure_info",
+            "arguments": {
+              "procedure": "0x3c7910"
+            },
+            "file": "info-0x2c7910.json",
+            "seconds": 0.04,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "file-offset:0x6d4710"
+            },
+            "file": "pseudo-0x6d4710.json",
+            "seconds": 0.58,
+            "error": false
+          },
+          {
+            "tool": "procedure_info",
+            "arguments": {
+              "procedure": "0x7d4710"
+            },
+            "file": "info-0x6d4710.json",
+            "seconds": 0.03,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "file-offset:0x6d7e90"
+            },
+            "file": "pseudo-0x6d7e90.json",
+            "seconds": 0.6,
+            "error": false
+          },
+          {
+            "tool": "procedure_info",
+            "arguments": {
+              "procedure": "0x7d7e90"
+            },
+            "file": "info-0x6d7e90.json",
+            "seconds": 0.02,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "file-offset:0x2e66f0"
+            },
+            "file": "pseudo-0x2e66f0.json",
+            "seconds": 0.12,
+            "error": false
+          },
+          {
+            "tool": "procedure_info",
+            "arguments": {
+              "procedure": "0x3e66f0"
+            },
+            "file": "info-0x2e66f0.json",
+            "seconds": 0.01,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "file-offset:0x2daee0"
+            },
+            "file": "pseudo-0x2daee0.json",
+            "seconds": 0.06,
+            "error": false
+          },
+          {
+            "tool": "procedure_info",
+            "arguments": {
+              "procedure": "0x3daee0"
+            },
+            "file": "info-0x2daee0.json",
+            "seconds": 0.01,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "file-offset:0x6f2800"
+            },
+            "file": "pseudo-0x6f2800.json",
+            "seconds": 0.03,
+            "error": false
+          },
+          {
+            "tool": "procedure_info",
+            "arguments": {
+              "procedure": "0x7f2800"
+            },
+            "file": "info-0x6f2800.json",
+            "seconds": 0.0,
+            "error": false
+          },
+          {
+            "tool": "procedure_callers",
+            "arguments": {
+              "procedure": "0x3e7360"
+            },
+            "file": "pm-callers.json",
+            "seconds": 0.01,
+            "error": false
+          },
+          {
+            "tool": "export_evidence_bundle",
+            "arguments": {
+              "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/rea-evidence/evidence.json"
+            },
+            "file": "export.json",
+            "seconds": 0.02,
+            "error": false
+          },
+          {
+            "tool": "close_binary",
+            "arguments": {},
+            "file": "close.json",
+            "seconds": 0.51,
+            "error": false
+          }
+        ],
+        "startup_timeout_ms": 900000,
+        "disabled_analyzers": "GCC Exception Handlers,Decompiler Switch Analysis,Call Convention ID",
+        "study": "arrays",
+        "error": null
+      },
+      "files": [
+        {
+          "path": "build/rea-arrays-39425573426/artifacts.json",
+          "bytes": 790,
+          "sha256": "2dbfd26e44d824df5723eb8713ac7184f6260e21580eaea74022e15aed0d9edc"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/close.json",
+          "bytes": 251,
+          "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/evidence.json",
+          "bytes": 1253716,
+          "sha256": "0b51976b16862d241358abfd089e199ffe58534d5152710f438740b6330a1f3a"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/export.json",
+          "bytes": 521,
+          "sha256": "871dac7d22da14ae5eff515fdedf0bf3e838bf1a327ecc0fbaef8149b456af92"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/info-0x2c7910.json",
+          "bytes": 118614,
+          "sha256": "f9a4df3d224e0f50359459e77a03866f4951c5862bb11af7d0ea15a118c12123"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/info-0x2daee0.json",
+          "bytes": 23458,
+          "sha256": "b6d9d147ff91ae207e93717eedaba03f35a91be96f2b9045b0e3ed50f8b1eb5c"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/info-0x2e66f0.json",
+          "bytes": 29550,
+          "sha256": "fd0e3a7a2eb161665484c210bd5ae8cae7d0a0e4e7b0fe00bd9d3d011100a24d"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/info-0x2e7360.json",
+          "bytes": 44846,
+          "sha256": "eb12a301a6ca608e16fc8197cbec15e13ccb5c86279f31c64359ca17191cecb5"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/info-0x6d4710.json",
+          "bytes": 107334,
+          "sha256": "d845f0d9db651c1ce076116ca8094eb52c6ee33c5a1b14f0a9a9aab49588a8ae"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/info-0x6d7e90.json",
+          "bytes": 32466,
+          "sha256": "220100733e619fc63bc41c340de347c1380fc3381dc3e3c27f165d7da2e123f9"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/info-0x6f2800.json",
+          "bytes": 16074,
+          "sha256": "c515422722c286a482d47996fcf0ea1b62808043129f227be060e0ab81416d55"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/initialize.json",
+          "bytes": 1222,
+          "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/open.json",
+          "bytes": 816,
+          "sha256": "a7a7b8c88ab3de82162c7b84e62e67872ae01c8f16e44f9b04a42e3e2db4248c"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/package-lock.json",
+          "bytes": 78634,
+          "sha256": "97abc4b821245cdb3f432d0fc677bf14ee3046b1a8befa13de065f98003fbbaa"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/pm-callers.json",
+          "bytes": 19114,
+          "sha256": "490f725345a4eea3149daabd47ee9fb7ac2c9f75619f7c32f6e526a87aec1ae7"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/pseudo-0x2c7910.c",
+          "bytes": 259124,
+          "sha256": "80f2269ebbaca440cfbba8f3990db6be81021bae606eb1d86701fc4bb84d3350"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/pseudo-0x2c7910.json",
+          "bytes": 1096886,
+          "sha256": "b12b1a74963de4c82ed654984af4319d66bcffd51dbd61f8be5085dc8f71f66f"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/pseudo-0x2daee0.c",
+          "bytes": 5651,
+          "sha256": "852de7cfbddff6fd2255b643ef8af262abd6dca591f934ae35b76da99381fad0"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/pseudo-0x2daee0.json",
+          "bytes": 39314,
+          "sha256": "04f66f421ed778d541f49f5ee03e41317183cc0246b9bc6786fba279d85d85ac"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/pseudo-0x2e66f0.c",
+          "bytes": 16280,
+          "sha256": "8b76f2e699cc62c04983a898d3edb2a96148017c8cc631571b51ac1975ae586c"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/pseudo-0x2e66f0.json",
+          "bytes": 86108,
+          "sha256": "1c4433f92219c1d0f29df7027800e3b9fb3dccfe5c9d636e105512c3023aecad"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/pseudo-0x2e7360.c",
+          "bytes": 111109,
+          "sha256": "9c606955ccf1dc4f7b2e4a6b1d45463942f51c258301e0f27f43fd39491a3557"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/pseudo-0x2e7360.json",
+          "bytes": 478862,
+          "sha256": "7d92f9b706102e7525a018e3571564ac3d8ddcc62c10efadfb75a13761e93742"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/pseudo-0x6d4710.c",
+          "bytes": 63060,
+          "sha256": "77154db996fde83e2d679cd3a2012c227310677426d6a4b2e048fe44f600c191"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/pseudo-0x6d4710.json",
+          "bytes": 319544,
+          "sha256": "0bfab9b0ec899efb7af9e7db224170fb82f062869441263cadbfd5ecc48c0e65"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/pseudo-0x6d7e90.c",
+          "bytes": 41471,
+          "sha256": "3d218896992706824e8b6848afdba94e0b4c9f3531f965362f99e37317dcbeb9"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/pseudo-0x6d7e90.json",
+          "bytes": 192868,
+          "sha256": "aca4bb307294e62a60e978cf747a600c1cd13b9b92bdfcac6f4b313994566b01"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/pseudo-0x6f2800.c",
+          "bytes": 2604,
+          "sha256": "7ade3ebfaf690462c129153f998b1dda5804f0b1a26b0348ffef47feb0566b94"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/pseudo-0x6f2800.json",
+          "bytes": 25360,
+          "sha256": "3274152d32dae8718a3c3c58bef16071229189b4867b909604a5406bf734d8ec"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/rea-stderr.log",
+          "bytes": 3079,
+          "sha256": "d84a9d06bd5408e709054502852f6233a661af5323e7ee2723139344ca4db418"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/resolved-functions.json",
+          "bytes": 68293,
+          "sha256": "bfcaeb5479b5f2a46330fbb000fd6f62d2edc67b76ae5307d8dc2ae96cba7d48"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/run.json",
+          "bytes": 2560,
+          "sha256": "9ade55c2b2f908dc472c9217a9dcc8a737e6cbcd9519bc7d70f7ce38da710392"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/run.log",
+          "bytes": 34468,
+          "sha256": "9475e65cd1d8b6c0d4916fdff6bbe30a422b3d7c78b4497dcb1b4c74e34569ca"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/selected-tool-schemas.json",
+          "bytes": 80370,
+          "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
+        },
+        {
+          "path": "build/rea-arrays-39425573426/study.json",
+          "bytes": 4062,
+          "sha256": "c592f7e77dc3f93e2d234a57522fc9b8414cf4464e5747c59ca91c653daa4452"
+        }
+      ]
+    },
+    {
+      "id": 39427529490,
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/39427529490",
+      "source_commit": "52f823dd410d93cc514c79eb3f2b8ec76436c198",
+      "study": {
+        "schema": 1,
+        "source_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+        "hardware_execution": false,
+        "rea_version": "6.7.0",
+        "ghidra_version": "12.1.4",
+        "records": [
+          {
+            "tool": "open_binary",
+            "arguments": {
+              "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/rea-input/octool",
+              "provider_id": "ghidra"
+            },
+            "file": "open.json",
+            "seconds": 2.87,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "file-offset:0x2e7360"
+            },
+            "file": "pseudo-0x2e7360.json",
+            "seconds": 606.76,
+            "error": false
+          },
+          {
+            "tool": "procedure_info",
+            "arguments": {
+              "procedure": "0x3e7360"
+            },
+            "file": "info-0x2e7360.json",
+            "seconds": 0.04,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "file-offset:0x6c1210"
+            },
+            "file": "pseudo-0x6c1210.json",
+            "seconds": 0.71,
+            "error": false
+          },
+          {
+            "tool": "procedure_info",
+            "arguments": {
+              "procedure": "0x7c1210"
+            },
+            "file": "info-0x6c1210.json",
+            "seconds": 0.02,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "file-offset:0x6c40c0"
+            },
+            "file": "pseudo-0x6c40c0.json",
+            "seconds": 0.54,
+            "error": false
+          },
+          {
+            "tool": "procedure_info",
+            "arguments": {
+              "procedure": "0x7c40c0"
+            },
+            "file": "info-0x6c40c0.json",
+            "seconds": 0.02,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "file-offset:0x6c7690"
+            },
+            "file": "pseudo-0x6c7690.json",
+            "seconds": 0.27,
+            "error": false
+          },
+          {
+            "tool": "procedure_info",
+            "arguments": {
+              "procedure": "0x7c7690"
+            },
+            "file": "info-0x6c7690.json",
+            "seconds": 0.01,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "file-offset:0x8fb1f0"
+            },
+            "file": "pseudo-0x8fb1f0.json",
+            "seconds": 0.94,
+            "error": false
+          },
+          {
+            "tool": "procedure_info",
+            "arguments": {
+              "procedure": "0x9fb1f0"
+            },
+            "file": "info-0x8fb1f0.json",
+            "seconds": 0.03,
+            "error": false
+          },
+          {
+            "tool": "procedure_callers",
+            "arguments": {
+              "procedure": "0x3e7360"
+            },
+            "file": "pm-callers.json",
+            "seconds": 0.02,
+            "error": false
+          },
+          {
+            "tool": "export_evidence_bundle",
+            "arguments": {
+              "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/rea-evidence/evidence.json"
+            },
+            "file": "export.json",
+            "seconds": 0.02,
+            "error": false
+          },
+          {
+            "tool": "close_binary",
+            "arguments": {},
+            "file": "close.json",
+            "seconds": 0.63,
+            "error": false
+          }
+        ],
+        "startup_timeout_ms": 900000,
+        "disabled_analyzers": "GCC Exception Handlers,Decompiler Switch Analysis,Call Convention ID",
+        "study": "monitors",
+        "error": null
+      },
+      "files": [
+        {
+          "path": "build/rea-arrays-39427529490/artifacts.json",
+          "bytes": 790,
+          "sha256": "953eedb1d6abe3124d1f14f17e9e11236813bed689d8437dc600024de8ea4b3d"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/close.json",
+          "bytes": 251,
+          "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/evidence.json",
+          "bytes": 846450,
+          "sha256": "88551d4b3fc9dd4b554312ddbf8819bbfb230a4b0afa28f7a6615bf18ae7f604"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/export.json",
+          "bytes": 519,
+          "sha256": "56df9900995bf2cc06360dec013926bd1adfee87bc211c2424c02e7d5cef8749"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/info-0x2e7360.json",
+          "bytes": 44846,
+          "sha256": "eb12a301a6ca608e16fc8197cbec15e13ccb5c86279f31c64359ca17191cecb5"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/info-0x6c1210.json",
+          "bytes": 95234,
+          "sha256": "168922888d5fe578c13fb98793b6763dd9e022652d39a4e0bcf0089bcde33a1f"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/info-0x6c40c0.json",
+          "bytes": 111342,
+          "sha256": "1135e10b0cb459c3930d67ef3785bdb54b22cae2049d3af8830c2ed92ec114c5"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/info-0x6c7690.json",
+          "bytes": 51422,
+          "sha256": "87bb29dba55beb02d3668d751ec179a089977163154492feb2be43b775d2dcce"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/info-0x8fb1f0.json",
+          "bytes": 102458,
+          "sha256": "ace57f97657d81585c3cce749da2b71ca61af4932f39f2cea76577020f3856bc"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/initialize.json",
+          "bytes": 1222,
+          "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/open.json",
+          "bytes": 816,
+          "sha256": "a7a7b8c88ab3de82162c7b84e62e67872ae01c8f16e44f9b04a42e3e2db4248c"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/package-lock.json",
+          "bytes": 78634,
+          "sha256": "97abc4b821245cdb3f432d0fc677bf14ee3046b1a8befa13de065f98003fbbaa"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/pm-callers.json",
+          "bytes": 19114,
+          "sha256": "490f725345a4eea3149daabd47ee9fb7ac2c9f75619f7c32f6e526a87aec1ae7"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/pseudo-0x2e7360.c",
+          "bytes": 111109,
+          "sha256": "9c606955ccf1dc4f7b2e4a6b1d45463942f51c258301e0f27f43fd39491a3557"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/pseudo-0x2e7360.json",
+          "bytes": 478862,
+          "sha256": "7d92f9b706102e7525a018e3571564ac3d8ddcc62c10efadfb75a13761e93742"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/pseudo-0x6c1210.c",
+          "bytes": 40221,
+          "sha256": "5758be34c0a8a47b7a8e14adf7d6af155e3c83f74bf0f27574b6ed3470e5385a"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/pseudo-0x6c1210.json",
+          "bytes": 233296,
+          "sha256": "96614b503ef0ec726cfb0b99bc39ca26be36bff0923d3de807bed92d655327ee"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/pseudo-0x6c40c0.c",
+          "bytes": 34795,
+          "sha256": "f4175615cc9a4ac6ec2f7e6e7ce4a28187775a21985005d85061aede2bb061a2"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/pseudo-0x6c40c0.json",
+          "bytes": 229320,
+          "sha256": "70362b44b181fc58d49a971040cde6e69bcd2d5258557bfdadf580729d199604"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/pseudo-0x6c7690.c",
+          "bytes": 17829,
+          "sha256": "3bbf2ef4e531c140dceeb59574b715f9924c3b6805fb1d8146cc95597b877d98"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/pseudo-0x6c7690.json",
+          "bytes": 99944,
+          "sha256": "42b7d5a1c838c4123b03f24e4564d6a58961b50cba4e7eb63e855fa986384a87"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/pseudo-0x8fb1f0.c",
+          "bytes": 56852,
+          "sha256": "8ee2b41d32bc1b9fcc09af6226236ab87afa9384b7af63c7206801b291313138"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/pseudo-0x8fb1f0.json",
+          "bytes": 301572,
+          "sha256": "d3bc7872f1d9bf2213eeca96c7f36f4ed9cad69cba2f3e77d1b6f4e8f130e6f9"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/rea-stderr.log",
+          "bytes": 2355,
+          "sha256": "27cd21edea622207596ecd35effba1d7871bc0a81c9344eaced37cf503079776"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/resolved-functions.json",
+          "bytes": 44824,
+          "sha256": "a22749914c67c75e2774ea55966af3e07a736b94f4c8ff02385a8ddd22e2c3eb"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/run.json",
+          "bytes": 2560,
+          "sha256": "5d136488f8503ee745da0e02bcf888fadfc5208f74894f46d3e6ae0e181ac39a"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/run.log",
+          "bytes": 34278,
+          "sha256": "3a4ca09bf058c717745c7e0b130a65fc366789ebbf4ba6844fcc60057212ad8b"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/selected-tool-schemas.json",
+          "bytes": 80370,
+          "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
+        },
+        {
+          "path": "build/rea-arrays-39427529490/study.json",
+          "bytes": 3277,
+          "sha256": "873d5dca911a6f6a84be1f07b5a8c98b26646354615ec878b069824796b1b27c"
+        }
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "run": 39425573426,
+      "file_offset": "0x2e7360",
+      "analysis_address": "0x3e7360",
+      "name": "AMD_PM_LOG::get_pm_patch",
+      "elf_symbols": [
+        "_ZN10AMD_PM_LOG12get_pm_patchEi"
+      ],
+      "elf_symbol_bytes": 22281,
+      "ghidra_body_bytes": 21923,
+      "ghidra_span_bytes": 22149,
+      "full_symbol_coverage": false,
+      "pseudocode_characters": 111109,
+      "evidence_id": "ev_7be46c5e68568729c7b0e156d206ec8e635cb349ab2e117556d1e9e8560f8e44",
+      "pseudo_sha256": "7d92f9b706102e7525a018e3571564ac3d8ddcc62c10efadfb75a13761e93742"
+    },
+    {
+      "run": 39425573426,
+      "file_offset": "0x2c7910",
+      "analysis_address": "0x3c7910",
+      "name": "AMD_PM_LOG::AMD_PM_LOG",
+      "elf_symbols": [
+        "_ZN10AMD_PM_LOGC2Ev",
+        "_ZN10AMD_PM_LOGC1Ev"
+      ],
+      "elf_symbol_bytes": 36961,
+      "ghidra_body_bytes": 34284,
+      "ghidra_span_bytes": 34585,
+      "full_symbol_coverage": false,
+      "pseudocode_characters": 259124,
+      "evidence_id": "ev_bc0bafb2c91763ced0d045479991bee185fdd8a82c5c9af190bccbabc6181ea7",
+      "pseudo_sha256": "b12b1a74963de4c82ed654984af4319d66bcffd51dbd61f8be5085dc8f71f66f"
+    },
+    {
+      "run": 39425573426,
+      "file_offset": "0x6d4710",
+      "analysis_address": "0x7d4710",
+      "name": "amd_bycore::populate_lines",
+      "elf_symbols": [
+        "_ZN10amd_bycore14populate_linesEv"
+      ],
+      "elf_symbol_bytes": 13371,
+      "ghidra_body_bytes": 12585,
+      "ghidra_span_bytes": 13359,
+      "full_symbol_coverage": false,
+      "pseudocode_characters": 63060,
+      "evidence_id": "ev_8752a82d1ff7e757a670afcfe4dde887486fc947aa8631372cc6ba863ff03c06",
+      "pseudo_sha256": "0bfab9b0ec899efb7af9e7db224170fb82f062869441263cadbfd5ecc48c0e65"
+    },
+    {
+      "run": 39425573426,
+      "file_offset": "0x6d7e90",
+      "analysis_address": "0x7d7e90",
+      "name": "amd_bycore::on_pushButton_clicked",
+      "elf_symbols": [
+        "_ZN10amd_bycore21on_pushButton_clickedEv"
+      ],
+      "elf_symbol_bytes": 16025,
+      "ghidra_body_bytes": 14479,
+      "ghidra_span_bytes": 14501,
+      "full_symbol_coverage": false,
+      "pseudocode_characters": 41471,
+      "evidence_id": "ev_05cbb6611eefc3de60fc4c6cfbf07db9eefdd83556a094556cb70e3496432f39",
+      "pseudo_sha256": "aca4bb307294e62a60e978cf747a600c1cd13b9b92bdfcac6f4b313994566b01"
+    },
+    {
+      "run": 39425573426,
+      "file_offset": "0x2e66f0",
+      "analysis_address": "0x3e66f0",
+      "name": "AMD_PM_LOG::Update1_fast",
+      "elf_symbols": [
+        "_ZN10AMD_PM_LOG12Update1_fastEv"
+      ],
+      "elf_symbol_bytes": 3183,
+      "ghidra_body_bytes": 3060,
+      "ghidra_span_bytes": 3183,
+      "full_symbol_coverage": false,
+      "pseudocode_characters": 16280,
+      "evidence_id": "ev_3cd9710ae63102e08c145bd38562beda2e986be1a52bc7b64d4508ae81056b6d",
+      "pseudo_sha256": "1c4433f92219c1d0f29df7027800e3b9fb3dccfe5c9d636e105512c3023aecad"
+    },
+    {
+      "run": 39425573426,
+      "file_offset": "0x2daee0",
+      "analysis_address": "0x3daee0",
+      "name": "AMD_PM_LOG::Update2_fast",
+      "elf_symbols": [
+        "_ZN10AMD_PM_LOG12Update2_fastEv"
+      ],
+      "elf_symbol_bytes": 1095,
+      "ghidra_body_bytes": 1058,
+      "ghidra_span_bytes": 1083,
+      "full_symbol_coverage": false,
+      "pseudocode_characters": 5651,
+      "evidence_id": "ev_0b69b01636b19ec5b7f1d79c12282526469203480e261f2f9a236f43a3287df4",
+      "pseudo_sha256": "04f66f421ed778d541f49f5ee03e41317183cc0246b9bc6786fba279d85d85ac"
+    },
+    {
+      "run": 39425573426,
+      "file_offset": "0x6f2800",
+      "analysis_address": "0x7f2800",
+      "name": "Reader_Thread::pm_monitor",
+      "elf_symbols": [
+        "_ZN13Reader_Thread10pm_monitorEv"
+      ],
+      "elf_symbol_bytes": 406,
+      "ghidra_body_bytes": 399,
+      "ghidra_span_bytes": 406,
+      "full_symbol_coverage": false,
+      "pseudocode_characters": 2604,
+      "evidence_id": "ev_ae3f9cb585391baaa9db49220aabdecbb85924274fb2865692fd426f341af094",
+      "pseudo_sha256": "3274152d32dae8718a3c3c58bef16071229189b4867b909604a5406bf734d8ec"
+    },
+    {
+      "run": 39427529490,
+      "file_offset": "0x2e7360",
+      "analysis_address": "0x3e7360",
+      "name": "AMD_PM_LOG::get_pm_patch",
+      "elf_symbols": [
+        "_ZN10AMD_PM_LOG12get_pm_patchEi"
+      ],
+      "elf_symbol_bytes": 22281,
+      "ghidra_body_bytes": 21923,
+      "ghidra_span_bytes": 22149,
+      "full_symbol_coverage": false,
+      "pseudocode_characters": 111109,
+      "evidence_id": "ev_7be46c5e68568729c7b0e156d206ec8e635cb349ab2e117556d1e9e8560f8e44",
+      "pseudo_sha256": "7d92f9b706102e7525a018e3571564ac3d8ddcc62c10efadfb75a13761e93742"
+    },
+    {
+      "run": 39427529490,
+      "file_offset": "0x6c1210",
+      "analysis_address": "0x7c1210",
+      "name": "amd_am3::pm0_monitor",
+      "elf_symbols": [
+        "_ZN7amd_am311pm0_monitorEv"
+      ],
+      "elf_symbol_bytes": 8035,
+      "ghidra_body_bytes": 7863,
+      "ghidra_span_bytes": 7930,
+      "full_symbol_coverage": false,
+      "pseudocode_characters": 40221,
+      "evidence_id": "ev_cc9b1586e818296a4ccb9b8895aad006f5a01c1bce29c8c280fb8b2603d89692",
+      "pseudo_sha256": "96614b503ef0ec726cfb0b99bc39ca26be36bff0923d3de807bed92d655327ee"
+    },
+    {
+      "run": 39427529490,
+      "file_offset": "0x6c40c0",
+      "analysis_address": "0x7c40c0",
+      "name": "amd_am4::pm0_monitor",
+      "elf_symbols": [
+        "_ZN7amd_am411pm0_monitorEv"
+      ],
+      "elf_symbol_bytes": 7304,
+      "ghidra_body_bytes": 7150,
+      "ghidra_span_bytes": 7202,
+      "full_symbol_coverage": false,
+      "pseudocode_characters": 34795,
+      "evidence_id": "ev_434b1652aedafaf431bbab50af12b00e309750f9ae63c3430e984d763de44c36",
+      "pseudo_sha256": "70362b44b181fc58d49a971040cde6e69bcd2d5258557bfdadf580729d199604"
+    },
+    {
+      "run": 39427529490,
+      "file_offset": "0x6c7690",
+      "analysis_address": "0x7c7690",
+      "name": "amd_am5::pm0_monitor",
+      "elf_symbols": [
+        "_ZN7amd_am511pm0_monitorEv"
+      ],
+      "elf_symbol_bytes": 3904,
+      "ghidra_body_bytes": 3781,
+      "ghidra_span_bytes": 3844,
+      "full_symbol_coverage": false,
+      "pseudocode_characters": 17829,
+      "evidence_id": "ev_b58df3ace45d1254a36d488cc8599aebfdcfe47406a10560686d83a94c14b48b",
+      "pseudo_sha256": "42b7d5a1c838c4123b03f24e4564d6a58961b50cba4e7eb63e855fa986384a87"
+    },
+    {
+      "run": 39427529490,
+      "file_offset": "0x8fb1f0",
+      "analysis_address": "0x9fb1f0",
+      "name": "mainwindow2::handleTimeout",
+      "elf_symbols": [
+        "_ZN11mainwindow213handleTimeoutEv"
+      ],
+      "elf_symbol_bytes": 12223,
+      "ghidra_body_bytes": 11951,
+      "ghidra_span_bytes": 12082,
+      "full_symbol_coverage": false,
+      "pseudocode_characters": 56852,
+      "evidence_id": "ev_813d8786f7d62fe7a8098c95918bb74902fa08cdcbee6242e6c81eb987f23b0c",
+      "pseudo_sha256": "d3bc7872f1d9bf2213eeca96c7f36f4ed9cad69cba2f3e77d1b6f4e8f130e6f9"
+    }
+  ],
+  "instruction_checks": [
+    {
+      "address": "0x6f2820",
+      "bytes": "be04000000",
+      "mnemonic": "mov",
+      "operands": "esi, 4"
+    },
+    {
+      "address": "0x6c1497",
+      "bytes": "be01000000",
+      "mnemonic": "mov",
+      "operands": "esi, 1"
+    },
+    {
+      "address": "0x6c14a5",
+      "bytes": "be04000000",
+      "mnemonic": "mov",
+      "operands": "esi, 4"
+    },
+    {
+      "address": "0x6c434c",
+      "bytes": "be01000000",
+      "mnemonic": "mov",
+      "operands": "esi, 1"
+    },
+    {
+      "address": "0x6c435a",
+      "bytes": "be04000000",
+      "mnemonic": "mov",
+      "operands": "esi, 4"
+    },
+    {
+      "address": "0x2daf75",
+      "bytes": "c7442420b0020000",
+      "mnemonic": "mov",
+      "operands": "dword ptr [rsp + 0x20], 0x2b0"
+    },
+    {
+      "address": "0x2db28a",
+      "bytes": "c744242020030000",
+      "mnemonic": "mov",
+      "operands": "dword ptr [rsp + 0x20], 0x320"
+    }
+  ],
+  "findings": [
+    "The seven-function array study and five-function monitor follow-up both succeeded; get_pm_patch appears in both, giving eleven distinct original functions in this batch.",
+    "All twelve query entries were mapped from exact file offsets to Ghidra addresses at +0x100000, then checked against ELF symbols and reported body ranges.",
+    "The two amd_bycore UI candidates collect QLineEdit pointers and parse tuning inputs. Equal member offsets in a different object do not establish PM array display bindings.",
+    "Reader_Thread::pm_monitor calls get_pm with ESI=4; amd_am3 and amd_am4 monitors call it with ESI=1 then ESI=4. The returned pseudocode omits these mode arguments.",
+    "Update2_fast instructions select 0x2b0 or 0x320 as initial read offsets, but its pseudocode omits the MMIO offset argument. This fast path is not proof of the exact Shimada per-core layout.",
+    "New GMI/DIMM/PCIe decoding is based on independent original-instruction replay of the common path. UI research does not certify units, physical slot identity, actual population or native firmware access.",
+    "Mode 4 observed in the UI was replayed through the core/CCD loops for 24 synthetic contexts. The read ranges equal the prior mode-3 probe, so changing mode does not resolve the layout/length mismatch. Neither experiment certifies physical buffer bounds or topology."
+  ],
+  "monitor_mode_probe": {
+    "path": "docs/validation/amd-pm-monitor-modes.json",
+    "cases": 24,
+    "full_report_sha256": "e776837765262870eaa83218b5719b25d677fb1f915f6a4a090c6c10f5f00c52",
+    "production_enabled": false,
+    "mode_3_ranges_match": true,
+    "synthetic_core_mismatch_cases": 1,
+    "synthetic_ccd_mismatch_cases": 15
+  }
+}

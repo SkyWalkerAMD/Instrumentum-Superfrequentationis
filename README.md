@@ -1,5 +1,17 @@
 # Instrumentum Superfrequentationis
 
+<!-- amd-pm-arrays-52f823d -->
+2026-10-20：最新验证提交 `52f823d`，GUI / CLI 同步增加 **92 个 AMD PM GMI/DIMM/PCIe 数组值**，
+PM 共 220 个显示字段、12 个视图。槽位表示原始存储顺序，物理目标、实际数量和单位未认证。
+
+- [实现说明](docs/amd-pm-arrays.md)、[整批验证](docs/amd-pm-arrays-validation.md)：43/43 云端功能验证任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1154 JSON，GUI 各 185 项，核心 373 场景组，12 次内核 VM。
+- `dist/gui-cli-amd-pm-arrays-52f823d/`：33 个包、精确源码、本地扩展源码与校验表。
+- [REA 后续研究](docs/amd-pm-rea-arrays.md)：两次成功分析，12 次函数查询、11 个不同函数；原版全部功能和真机验收仍未完成。
+
+以下保留历史记录。
+<!-- /amd-pm-arrays-52f823d -->
+
 <!-- amd-pm-fabric-c3631f4 -->
 2026-10-20：最新验证提交 `c3631f4`，GUI / CLI 同步增加 **27 项 AMD PM 原版链路与片内时钟监控值**，
 按两组查看；连同既有字段共 128 项。名称、偏移与浮点存储已核对，物理单位、策略状态及目标仍未认证。

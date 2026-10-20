@@ -1,5 +1,17 @@
 # 功能还原状态
 
+<!-- amd-pm-arrays-52f823d -->
+2026-10-20：最新验证提交 `52f823d`，GUI / CLI 同步增加 **92 个 AMD PM GMI/DIMM/PCIe 数组值**，
+PM 共 220 个显示字段、12 个视图。槽位表示原始存储顺序，物理目标、实际数量和单位未认证。
+
+- [实现说明](amd-pm-arrays.md)、[整批验证](amd-pm-arrays-validation.md)：43/43 云端功能验证任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1154 JSON，GUI 各 185 项，核心 373 场景组，12 次内核 VM。
+- `dist/gui-cli-amd-pm-arrays-52f823d/`：33 个包、精确源码、本地扩展源码与校验表。
+- [REA 后续研究](amd-pm-rea-arrays.md)：两次成功分析，12 次函数查询、11 个不同函数；原版全部功能和真机验收仍未完成。
+
+以下保留历史记录。
+<!-- /amd-pm-arrays-52f823d -->
+
 <!-- amd-pm-fabric-c3631f4 -->
 2026-10-20：最新验证提交 `c3631f4`，GUI / CLI 同步增加 **27 项 AMD PM 原版链路与片内时钟监控值**，
 按两组查看；连同既有字段共 128 项。名称、偏移与浮点存储已核对，物理单位、策略状态及目标仍未认证。
@@ -506,7 +518,7 @@ PStates 写入、曲线写入、Intel server VF/fabric、板级专用控制等�
 |---|---|---|
 | AMD PStates | 17h/19h/1Ah 按逻辑 CPU 采样 P0–P7、范围/能力检查、带小数的配置频率、64 位原值、FID/DFS；1Ah 9 位 VID，旧布局低 VID 字节及独立 bit 32；Idd 编码与明确错误状态；[五个明确型号](amd-pstates-electrical.md)的 SVI2/SVI3 VID 电压与预期单核电流，含关闭/保留编码及虚拟化门控 | 其它型号 mV/A 换算；满足跨核/跨 coherent fabric 一致性的设置 |
 | Intel Controls | RAPL、HWP 含活动窗口，原有设置完整读回；另按能力提供五项 HWP 包级设置，B7 在全部相应能力具备时最多 19 项；HWP 封装请求、PECI 覆盖、选择标志、通知及新增历史，含本地编辑的外部覆盖/极性核验；温度；Raptor Lake-S core/cache offset、最大 OC ratio、目标电压与 Adaptive/Override；VF 点查询及受条件限制的单点 offset；P/E 睿频分组读取、单组倍率及中间组活动核心阈值设置；B7/8F Ring/LLC 最小、最大倍率范围；B7/A700 报告 BCLK 与历史 MRC 请求；B7 TVB 高温倍频裁剪、电压优化与 Ring DownBin 开关、活动 P 核候选表的两组温度 / 降倍率查询及保守范围单字段设置；B7 节能睿频 / Race to Halt 独立设置与完整回读；B7 BCLK 自适应电压开关；B7 封装/PP0 与 8F/CF 封装/DRAM 能量计数、单位/回绕范围及 HWP 四项能力/两项历史；B7 PL4 功率限制与完整回读；B7 AVX2 偏移、11 组限频原因及选择性历史清除；B7/8F/CF TCC 偏移、默认阈值/核心与封装温度、最大非睿频倍率、6 对封装热事件；[限定 Alder Lake 的共享 IA ICCmax](intel-iccmax.md)读取与单值设置 | 其它型号/供电轨 ICCmax、unlimited 模式语义与切换、Vmax/增强 TVB；W790/W890 电压域；其它型号 VF、逐物理核心 override、末组阈值/组数量重建、TVB 完整写入范围 / 逐物理核心表与其它型号控制、VID rank/SP、fabric/BCLK 写入和其它型号时钟信息 |
-| AMD 调参 | 三套独立 BIOS SMUIO；Shimada 已提取命令和逐核频率参数准备；CPUID 稀疏拓扑；限定身份的原始曲线查询；PM 表八个版本的 24 项公共字段及 24 项原版限制监控及 [53 项原版公共功耗/策略存储值](amd-pm-package.md)及 [27 项链路/片内时钟存储值](amd-pm-fabric.md)（单位/策略状态/物理目标未核实），合计 128 个显示字段、已有驱动读取及 GUI/CLI 快照互通 | CPUID 与固件目标 ID 对应；MP1/PBO 高层单位、曲线设置/电流/温度限制、完整 PM 表与原生传输、profiles/hotkeys |
+| AMD 调参 | 三套独立 BIOS SMUIO；Shimada 已提取命令和逐核频率参数准备；CPUID 稀疏拓扑；限定身份的原始曲线查询；PM 表八个版本的 24 项公共字段及 24 项原版限制监控及 [53 项原版公共功耗/策略存储值](amd-pm-package.md)及 [27 项链路/片内时钟存储值](amd-pm-fabric.md)（单位/策略状态/物理目标未核实）及 [92 个 GMI/DIMM/PCIe 原始数组值](amd-pm-arrays.md)，合计 220 个显示字段、已有驱动读取及 GUI/CLI 快照互通 | CPUID 与固件目标 ID 对应；MP1/PBO 高层单位、曲线设置/电流/温度限制、完整 PM 表与原生传输、profiles/hotkeys |
 | 内存与主板 | DMI/BIOS、内核传感器、绑定驱动的 SPD、DDR4/5 基础 CRC/组织/时序/CAS 支持列表，含 DDR4 写延迟、DDR5 次级时序及 1.2 新增字段；DDR4 XMP 2.0 两组电压/时序、独立时间基准、限定 CAS/推荐 DIMM 数及无扩展 CRC 状态；对称堆叠容量、DDR4 已确认布局及 DDR5 混合 rank 分项、DDR5 子通道/3DS 刷新要求；DDR5 XMP 3.0 厂家档案名称、电压、基础与 8 项次级时序/独立周期下限、CAS/命令率及逐区 CRC；EXPO 1.0 两组基础档案、增强时序存储字及整块 CRC；XMP 3.0 两个用户槽独立检查/校验与解码；AMD UMC 212 字段、GUI/CLI 快照双向离线导入及同 bank/slot 比较；限定 B7/A700 的 Intel 内存控制器 83 字段（含有效 rank RTL、掉电、刷新、自刷新、ZQ、DDRIO、ODT 矩阵、写数据延迟配置及 DDR4 MPR 温度等级/刷新要求）、双次一致读与 GUI/CLI v1–v6 快照 | EXPO 增强启用语义 / 1.1 / 用户档案；XMP 用户槽启用与写入；XMP 3.0 推荐 DIMM 数；其余 DDR4 非对称 Rank 布局；UMC 各型号物理单位/通道标签；DDR5 温度映射与实时采样；其它 Intel 型号 RTL、剩余时序/IOL、实时内存频率及特殊 Gear 换算；PMIC/VRM/EC/时钟芯片和训练写入 |
 
 入口与代码：[平台控制](platform-controls.md)、[Intel offset](intel-oc-recovery.md)、
