@@ -1410,7 +1410,8 @@ void pmFabricCommands() {
     }
     text(forged); invoke({},0);
     text(capture); invoke({"--bclk-mhz","123.25"},0);
-    binary(pm_fixture::bytes()); invoke({"--version","0x730205"},3);
+    auto truncated=pm_fixture::bytes(); truncated.resize(0x293); binary(truncated);
+    invoke({"--version","0x730204"},3);
     assert(!opens);
 }
 void pmPackageCommands() {
