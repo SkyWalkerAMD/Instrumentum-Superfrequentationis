@@ -762,7 +762,7 @@ private slots:
         panel.resize(1150,650); panel.show();
         auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
         auto *copy=panel.findChild<QPushButton *>("pmCopy"); auto *status=panel.findChild<QLabel *>("pmStatus");
-        QCOMPARE(view->count(),7);
+        QCOMPARE(view->count(),9);
         const int counts[]={7,8,4,10,24}; const char *names[]={"CPU Power","PPT_WC","VDDCR_CPU_DYN_POWER_WC","FIT PID0","PPT0"};
         const char *values[]={"10","11.75","13.75","14.75","17.25"};
         for (const auto &layout : amdPmLayouts()) {
@@ -833,6 +833,95 @@ private slots:
             panel.findChild<QLineEdit *>("pmBclk")->setText(QString::number(100+group));
             QVERIFY(!copy->isEnabled());
             for (int i=0; i<7; ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
+        }
+        QVERIFY(driver->calls.empty());
+    }
+    void pmOriginalFabricRoundtrip() {
+        using namespace octool::core;
+        QTemporaryDir directory; QVERIFY(directory.isValid());
+        const auto raw=directory.filePath("fabric.bin"), json=directory.filePath("fabric.json");
+        auto driver=std::make_shared<pm_fixture::Driver>(); AmdPmPanel panel(nullptr,pmReader(driver));
+        panel.resize(1150,650); panel.show();
+        auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
+        auto *copy=panel.findChild<QPushButton *>("pmCopy"); auto *status=panel.findChild<QLabel *>("pmStatus");
+        QCOMPARE(view->count(),9);
+        for (const auto &layout : amdPmLayouts()) {
+            QVERIFY(savePmFile(raw,pm_fixture::bytes(layout.bytes))); QVERIFY(panel.loadRawFile(raw,layout.version));
+            view->setCurrentIndex(7); QCOMPARE(table->rowCount(),9);
+            QCOMPARE(table->item(0,0)->text(),QString("FCLK_PCIE_UP_THRESHOLD"));
+            QCOMPARE(table->item(8,0)->text(),QString("FCLK_CXL_DOWN_THRESHOLD"));
+            QCOMPARE(table->item(0,1)->text(),QString("20"));
+            view->setCurrentIndex(8); QCOMPARE(table->rowCount(),18);
+            QCOMPARE(table->item(0,0)->text(),QString("SMNCLK"));
+            QCOMPARE(table->item(17,0)->text(),QString("MPDMA_PM_CLK_EFF"));
+            QCOMPARE(table->item(17,1)->text(),QString("33"));
+            for (int row=0; row<table->rowCount(); ++row) {
+                QCOMPARE(table->item(row,2)->text(),QString("Unverified"));
+                QCOMPARE(table->item(row,3)->text(),QString::fromUtf8("—"));
+            }
+            copy->click(); const auto captured=QApplication::clipboard()->text();
+            QCOMPARE(parseAmdPmCapture(captured.toStdString()).originalFabric.size(),std::size_t(27));
+            QVERIFY(savePmJson(json,"{\"schema_version\":1,\"command\":\"amd-pm-decode\",\"data\":{\"pm\":"+captured.toStdString()+"}}"));
+            QVERIFY(panel.loadSnapshotFile(json)); copy->click(); QCOMPARE(QApplication::clipboard()->text(),captured);
+        }
+        auto capture=QApplication::clipboard()->text();
+        auto forged=capture;
+        forged.replace("\"name\":\"SMNCLK\"","\"name\":\"Forged MHz\"");
+        forged.replace("\"original_fabric_units_verified\":false","\"original_fabric_units_verified\":true");
+        QVERIFY(savePmJson(json,forged.toStdString())); QVERIFY(panel.loadSnapshotFile(json));
+        QCOMPARE(table->item(0,0)->text(),QString("SMNCLK"));
+        const int extension=capture.indexOf(",\"original_fabric_units_verified\"");
+        QVERIFY(extension>0); QVERIFY(savePmJson(json,(capture.left(extension)+"}").toStdString()));
+        QVERIFY(panel.loadSnapshotFile(json)); copy->click(); QCOMPARE(QApplication::clipboard()->text(),capture);
+        view->setCurrentIndex(7);
+        QTRY_VERIFY(table->columnWidth(0)>=table->fontMetrics().boundingRect("FCLK_PCIE_DOWN_THRESHOLD").width());
+        QTRY_VERIFY(status->height()>=status->heightForWidth(status->width()));
+        QVERIFY(status->geometry().bottom()<panel.height());
+        auto shot=qEnvironmentVariable("OCTOOL_PM_LINK_TEST_SCREENSHOT");
+        if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        view->setCurrentIndex(8); panel.resize(1150,940);
+        QTRY_VERIFY(table->viewport()->height()>table->rowCount()*table->rowHeight(0));
+        QTRY_VERIFY(status->geometry().bottom()<panel.height());
+        shot=qEnvironmentVariable("OCTOOL_PM_CLOCK_TEST_SCREENSHOT");
+        if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        QVERIFY(driver->calls.empty());
+    }
+    void pmOriginalFabricDriverErrors() {
+        using namespace octool::core;
+        auto driver=std::make_shared<pm_fixture::Driver>(); AmdPmPanel panel(nullptr,pmReader(driver));
+        panel.resize(1150,940); panel.show();
+        auto *view=panel.findChild<QComboBox *>("pmView"); view->setCurrentIndex(8);
+        auto *table=panel.findChild<QTableWidget *>("pmTable");
+        auto *read=panel.findChild<QPushButton *>("pmRead"); auto *copy=panel.findChild<QPushButton *>("pmCopy");
+        pm_fixture::put(driver->files["pm_table"],0x24c,0x7f800001);
+        read->click(); QTRY_VERIFY(read->isEnabled());
+        QCOMPARE(table->rowCount(),18); QCOMPARE(table->item(0,1)->text(),QString("Unavailable"));
+        QCOMPARE(table->item(0,4)->text(),QString("0x7f800001")); QCOMPARE(table->item(1,1)->text(),QString("25"));
+        QVERIFY(copy->isEnabled()); copy->click();
+        const auto s=parseAmdPmCapture(QApplication::clipboard()->text().toStdString());
+        QCOMPARE(s.originalFabric[9].error,-EDOM); QCOMPARE(s.originalFabric[0].value,20.0);
+        const auto shot=qEnvironmentVariable("OCTOOL_PM_FABRIC_ERROR_TEST_SCREENSHOT");
+        if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        driver->calls.clear(); driver->failCall=4;
+        read->click(); QTRY_VERIFY(read->isEnabled()); QVERIFY(!copy->isEnabled());
+        for (int i=0; i<9; ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
+    }
+    void pmOriginalFabricInvalidation() {
+        QTemporaryDir directory; QVERIFY(directory.isValid()); const auto raw=directory.filePath("fabric.bin");
+        QVERIFY(savePmFile(raw,pm_fixture::bytes()));
+        auto driver=std::make_shared<pm_fixture::Driver>(); AmdPmPanel panel(nullptr,pmReader(driver));
+        auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
+        auto *copy=panel.findChild<QPushButton *>("pmCopy");
+        for (int group=7; group<9; ++group) {
+            view->setCurrentIndex(group); QVERIFY(panel.loadRawFile(raw,0x730204)); QVERIFY(copy->isEnabled());
+            QVERIFY(!panel.loadRawFile(raw,0x730205)); QVERIFY(!copy->isEnabled()); QCOMPARE(table->rowCount(),0);
+            QVERIFY(panel.loadRawFile(raw,0x730204));
+            QVERIFY(!panel.loadSnapshotFile(directory.filePath("missing"))); QVERIFY(!copy->isEnabled());
+            for (int i=0; i<9; ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
+            QVERIFY(panel.loadRawFile(raw,0x730204));
+            panel.findChild<QLineEdit *>("pmBclk")->setText(QString::number(100+group));
+            QVERIFY(!copy->isEnabled());
+            for (int i=0; i<9; ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
         }
         QVERIFY(driver->calls.empty());
     }

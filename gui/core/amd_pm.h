@@ -33,6 +33,9 @@ struct AmdPmSnapshot {
     // Five additional original common monitor groups. Group IDs organize the
     // original labels; they do not certify units, active policies or targets.
     std::vector<AmdPmField> originalPackage;
+    // Original link thresholds and internal-clock storage. No frequency,
+    // bandwidth unit, active link state or physical index mapping is certified.
+    std::vector<AmdPmField> originalFabric;
 };
 // Exact version and length; no prefix fallback or inferred CPU/core identity.
 // IEEE binary32 little endian. Invalid fields retain their bits, not a fake 0.

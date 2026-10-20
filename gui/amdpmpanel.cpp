@@ -33,7 +33,7 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader) : QWidget(parent), r
     auto *intro = new QLabel("AMD PM telemetry: eight exact Shimada table versions. Read the installed ryzen_smu driver, "
         "or open a saved table. Driver reads may request a firmware transfer; no driver is loaded automatically. "
         "Clock storage values and clocks scaled with a supplied BCLK are shown separately. "
-        "Original power, policy and limit monitors show stored values; their units, active-policy meaning and physical targets are unverified.", this);
+        "Original power, policy, limit, link and internal-clock monitors show stored values; their units, active state and physical targets are unverified.", this);
     intro->setWordWrap(true); layout->addWidget(intro);
     controls_ = new QWidget(this); auto *controls = new QVBoxLayout(controls_); controls->setContentsMargins(0,0,0,0);
     auto *buttons = new QHBoxLayout;
@@ -55,7 +55,8 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader) : QWidget(parent), r
     view_ = new QComboBox(this); view_->setObjectName("pmView");
     view_->addItems({"Public telemetry", "Limit monitor (original mapping)",
         "Power (original mapping)", "Workload (original mapping)", "Power model (original mapping)",
-        "Voltage policy (original mapping)", "Limit contributors (original mapping)"});
+        "Voltage policy (original mapping)", "Limit contributors (original mapping)",
+        "Link bandwidth (original mapping)", "Internal clocks (original mapping)"});
     viewRow->addWidget(view_); viewRow->addStretch();
     layout->addLayout(viewRow);
     metadata_ = new QLabel(this); metadata_->setObjectName("pmMetadata"); metadata_->setTextFormat(Qt::PlainText); layout->addWidget(metadata_);
@@ -146,11 +147,13 @@ void AmdPmPanel::showFields() {
     const auto &s = snapshot_;
     const int index = view_->currentIndex();
     const bool original = index != 0;
-    const char *groups[] = {"power", "workload", "power_model", "voltage_policy", "limit_contributors"};
-    const auto &fields = index == 0 ? s.fields : index == 1 ? s.originalLimits : s.originalPackage;
+    const char *groups[] = {"power", "workload", "power_model", "voltage_policy", "limit_contributors",
+        "link_bandwidth", "internal_clocks"};
+    const auto &fields = index == 0 ? s.fields : index == 1 ? s.originalLimits :
+        index < 7 ? s.originalPackage : s.originalFabric;
     table_->setRowCount(0);
     for (const auto &f : fields) {
-        if (index >= 2 && (index > 6 || f.group != groups[index-2])) continue;
+        if (index >= 2 && (index > 8 || f.group != groups[index-2])) continue;
         const int row = table_->rowCount(); table_->insertRow(row);
         const QString state = f.error ? "Non-finite stored value" : f.scaleError ? "Clock scaling out of range" :
             original ? "Units unverified" : f.clock && !s.options.hasBclk ? "BCLK not supplied" : "Decoded";

@@ -75,6 +75,9 @@ jobs:
       - name: Verify original AMD common power and policy monitor vectors
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-amd-pm-package.py --output build/amd-pm-package.json
+      - name: Verify original link and internal-clock monitor words without hardware
+        run: |
+          PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-amd-pm-fabric.py --output build/amd-pm-fabric.json
       - name: Verify original Intel client ratio fields and ignored firmware failures
         run: |
           PYTHONPATH="$PWD/build/reference-tools" python3 analysis/tools/legacy-intel-ratio.py --output build/intel-ratio.json
@@ -154,6 +157,7 @@ jobs:
             build/amd-transport.json
             build/amd-mp1.json
             build/amd-pm-package.json
+            build/amd-pm-fabric.json
             build/amd-limit-bindings.json
             build/amd-limits.json
             build/intel-ratio.json

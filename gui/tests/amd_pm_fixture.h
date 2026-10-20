@@ -51,6 +51,18 @@ inline std::vector<std::uint8_t> bytes(std::size_t size = 2844) {
         {0x128,0x41b60000}, {0x12c,0x41b80000}
     };
     for (const auto &entry : packageWords) put(b, entry[0], entry[1]);
+    const std::uint32_t fabricWords[][2] = {
+        {0x154,0x41a00000},{0x158,0x41a40000},{0x15c,0x41a80000},
+        {0x160,0x41ac0000},{0x164,0x41b00000},{0x168,0x41b40000},
+        {0x16c,0x41b80000},{0x170,0x41bc0000},{0x174,0x41c00000},
+        {0x24c,0x41c40000},{0x250,0x41c80000},{0x254,0x41cc0000},
+        {0x258,0x41d00000},{0x25c,0x41d40000},{0x260,0x41d80000},
+        {0x264,0x41dc0000},{0x268,0x41e00000},{0x26c,0x41e40000},
+        {0x270,0x41e80000},{0x274,0x41ec0000},{0x278,0x41f00000},
+        {0x27c,0x41f40000},{0x280,0x41f80000},{0x284,0x41fc0000},
+        {0x288,0x42000000},{0x28c,0x42020000},{0x290,0x42040000}
+    };
+    for (const auto &entry : fabricWords) put(b, entry[0], entry[1]);
     return b;
 }
 inline std::vector<std::uint8_t> le(std::uint64_t n, unsigned width) {
@@ -62,11 +74,12 @@ struct Driver {
     std::map<std::string, std::vector<std::uint8_t>> files;
     std::vector<std::string> calls;
     unsigned failCall = 0, mutateAfter = 0;
+    std::uint32_t mutatedVersion = 0x730404;
     Driver() : files{{"pm_table_version", le(0x730204, 4)}, {"pm_table_size", le(2844, 8)}, {"pm_table", bytes()}} {}
     int read(const std::string &name, std::vector<std::uint8_t> &b, std::size_t maximum) {
         calls.push_back(name); b.clear();
         if (failCall == calls.size()) return -EACCES;
-        if (mutateAfter == calls.size()) files["pm_table_version"] = le(0x730404, 4);
+        if (mutateAfter == calls.size()) files["pm_table_version"] = le(mutatedVersion, 4);
         const auto found = files.find(name); if (found == files.end()) return -ENOENT;
         if (found->second.size() > maximum) return -EFBIG;
         b = found->second; return 0;

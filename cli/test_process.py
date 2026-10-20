@@ -552,8 +552,8 @@ with tempfile.TemporaryDirectory(prefix="octool-intel-memory-") as directory:
     os.mkfifo(Path(directory)/"fifo")
     assert run("intel-memory-decode","--file",str(Path(directory)/"fifo"),code=3)["data"]["memory"] is None
 pm_reports = [r for r in reports if r["command"] == "amd-pm-decode" and "pm" in r["data"]]
-assert len(pm_reports) == 56
-package_reports, limit_reports, pm_reports = pm_reports[38:], pm_reports[20:38], pm_reports[:20]
+assert len(pm_reports) == 72
+fabric_reports, package_reports, limit_reports, pm_reports = pm_reports[56:], pm_reports[38:56], pm_reports[20:38], pm_reports[:20]
 assert [r["ok"] for r in pm_reports] == [True] * 9 + [False, True, True, False, False, False, False, True, True, False, False]
 for i, r in enumerate(pm_reports):
     assert r["data"]["offline"] and not r["data"]["table_read_attempted"] and not r["data"]["direct_register_access"]
@@ -625,6 +625,35 @@ for i, report in enumerate(package_reports):
             assert f['stored_value']==10+n/4 and not f['error']
     assert pm['fields'][0]['scaled_clock_mhz']==(2465 if i==16 else None)
     assert all(not f['error'] for f in pm['fields']+pm['original_limits'])
+fabric_offsets = list(range(0x154,0x178,4))+list(range(0x24c,0x294,4))
+fabric_names = ['FCLK_PCIE_UP_THRESHOLD','FCLK_PCIE_BANDWIDTH','FCLK_PCIE_DOWN_THRESHOLD',
+    'FCLK_XGMI_UP_THRESHOLD','FCLK_XGMI_BANDWIDTH','FCLK_XGMI_DOWN_THRESHOLD',
+    'FCLK_CXL_UP_THRESHOLD','FCLK_CXL_BANDWIDTH','FCLK_CXL_DOWN_THRESHOLD',
+    'SMNCLK','SMNCLK_EFF','WAFLCLK','WAFLCLK_EFF','MP0CLK','MP0CLK_EFF',
+    'MP1CLK','MP1CLK_EFF','MPIOCLK','MPIOCLK_EFF','ACLK','ACLK_EFF','SVI3CLK','SVI3CLK_EFF',
+    'MPDMA_TF_CLK','MPDMA_TF_CLK_EFF','MPDMA_PM_CLK','MPDMA_PM_CLK_EFF']
+assert [r['ok'] for r in fabric_reports] == [True]*8+[False]*2+[True]*5+[False]
+for i, report in enumerate(fabric_reports):
+    pm=report['data']['pm']
+    assert report['data']['offline'] and not report['data']['table_read_attempted'] and not report['data']['direct_register_access']
+    assert pm['original_fabric_units_verified'] is False and pm['original_fabric_targets_verified'] is False
+    fields=pm['original_fabric']
+    if i==15:
+        assert fields==[] and pm['fields']==[] and pm['original_package']==[] and pm['original_limits']==[]
+        continue
+    assert [f['name'] for f in fields]==fabric_names
+    assert [int(f['offset'],16) for f in fields]==fabric_offsets
+    assert [f['group'] for f in fields]==['link_bandwidth']*9+['internal_clocks']*18
+    for n,f in enumerate(fields):
+        assert f['unit']=='unverified' and not f['clock'] and not f['scale_error'] and f['scaled_clock_mhz'] is None
+        if (i,n) in ((8,0),(9,9)):
+            assert f['stored_value'] is None and f['raw']=='0x7f800001' and f['error']==-33
+        elif i==10 and n==26:
+            assert f['stored_value']==0 and f['raw']=='0x80000000' and not f['error']
+        else:
+            assert f['stored_value']==20+n/2 and not f['error']
+    assert pm['fields'][0]['scaled_clock_mhz']==(2465 if i==14 else None)
+    assert all(not f['error'] for f in pm['fields']+pm['original_limits']+pm['original_package'])
 with tempfile.TemporaryDirectory(prefix="octool-pm-") as directory:
     root = Path(directory)
     capture = pm_reports[8]["data"]["pm"]

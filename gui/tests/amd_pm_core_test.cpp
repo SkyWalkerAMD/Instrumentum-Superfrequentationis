@@ -260,5 +260,82 @@ int main() {
         d.calls.clear(); d.failCall=4;
         assert(readAmdPmDriver(d.reader()).snapshot.originalPackage.empty());
     } ++groups;
+    const unsigned fabricOffsets[] = {0x154,0x158,0x15c,0x160,0x164,0x168,0x16c,0x170,0x174,
+        0x24c,0x250,0x254,0x258,0x25c,0x260,0x264,0x268,0x26c,0x270,
+        0x274,0x278,0x27c,0x280,0x284,0x288,0x28c,0x290};
+    const char *fabricNames[] = {"FCLK_PCIE_UP_THRESHOLD","FCLK_PCIE_BANDWIDTH","FCLK_PCIE_DOWN_THRESHOLD",
+        "FCLK_XGMI_UP_THRESHOLD","FCLK_XGMI_BANDWIDTH","FCLK_XGMI_DOWN_THRESHOLD",
+        "FCLK_CXL_UP_THRESHOLD","FCLK_CXL_BANDWIDTH","FCLK_CXL_DOWN_THRESHOLD",
+        "SMNCLK","SMNCLK_EFF","WAFLCLK","WAFLCLK_EFF","MP0CLK","MP0CLK_EFF",
+        "MP1CLK","MP1CLK_EFF","MPIOCLK","MPIOCLK_EFF","ACLK","ACLK_EFF","SVI3CLK","SVI3CLK_EFF",
+        "MPDMA_TF_CLK","MPDMA_TF_CLK_EFF","MPDMA_PM_CLK","MPDMA_PM_CLK_EFF"};
+    for (unsigned i=0; i<8; ++i) {
+        AmdPmOptions o; o.hasBclk=true; o.bclkMHz=105.5;
+        const auto s=decodeAmdPm(pm_fixture::bytes(lengths[i]),versions[i],o);
+        assert(!s.error && s.originalFabric.size()==27);
+        for (unsigned n=0; n<27; ++n) {
+            const auto &f=s.originalFabric[n];
+            assert(f.name==fabricNames[n] && f.offset==fabricOffsets[n] && f.value==20+n/2.0);
+            assert(f.group==(n<9?"link_bandwidth":"internal_clocks"));
+            assert(f.unit=="unverified" && !f.clock && !f.scaled && !f.scaleError && !f.error);
+        }
+        const auto text=amdPmJson(s);
+        assert(text.size()<65536 && amdPmJson(parseAmdPmCapture(text))==text);
+    } ++groups;
+    for (unsigned n=0; n<27; ++n) for (unsigned bit=0; bit<32; ++bit) {
+        auto b=base; pm_fixture::put(b,fabricOffsets[n],UINT32_C(1)<<bit);
+        const auto s=decodeAmdPm(b,0x730204); assert(!s.error && s.originalFabric[n].raw==(UINT32_C(1)<<bit));
+        if (bit==31) assert(std::signbit(s.originalFabric[n].value));
+        for (unsigned j=0; j<27; ++j) if (j!=n) assert(s.originalFabric[j].value==20+j/2.0);
+        for (unsigned j=0; j<24; ++j) {
+            assert(s.fields[j].raw==good.fields[j].raw);
+            assert(s.originalLimits[j].raw==good.originalLimits[j].raw);
+        }
+        for (unsigned j=0; j<53; ++j) assert(s.originalPackage[j].raw==good.originalPackage[j].raw);
+    } ++groups;
+    for (unsigned n=0; n<27; ++n) for (auto bits : {UINT32_C(0x7f800000),UINT32_C(0xff800000),UINT32_C(0x7fc12345),UINT32_C(0x7f800001)}) {
+        auto b=base; pm_fixture::put(b,fabricOffsets[n],bits);
+        const auto s=decodeAmdPm(b,0x730204); assert(s.error==-EDOM && s.originalFabric.size()==27);
+        for (unsigned j=0; j<27; ++j) assert(s.originalFabric[j].error==(n==j?-EDOM:0));
+        for (const auto &f : s.fields) assert(!f.error);
+        for (const auto &f : s.originalLimits) assert(!f.error);
+        for (const auto &f : s.originalPackage) assert(!f.error);
+        const auto text=amdPmJson(s); assert(amdPmJson(parseAmdPmCapture(text))==text);
+    } ++groups;
+    auto fabricForged=current;
+    replace(fabricForged,"\"original_fabric_units_verified\":false","\"original_fabric_units_verified\":true");
+    replace(fabricForged,"\"original_fabric_targets_verified\":false","\"original_fabric_targets_verified\":true");
+    replace(fabricForged,"\"name\":\"SMNCLK\"","\"name\":\"Forged MHz\"");
+    replace(fabricForged,"\"group\":\"internal_clocks\"","\"group\":\"physical_ccd_0\"");
+    assert(amdPmJson(parseAmdPmCapture(fabricForged))==current);
+    const auto fabricStart=current.find(",\"original_fabric_units_verified\"");
+    assert(fabricStart!=std::string::npos && amdPmJson(parseAmdPmCapture(current.substr(0,fabricStart)+"}"))==current);
+    // Largest supported table with every decoded float at maximum negative
+    // magnitude, plus a supplied BCLK: the full current capture must fit.
+    auto allExtreme=pm_fixture::bytes(11636);
+    for (unsigned offset=0; offset<allExtreme.size(); offset+=4) pm_fixture::put(allExtreme,offset,0xff7fffff);
+    AmdPmOptions hugeOptions; hugeOptions.hasBclk=true; hugeOptions.bclkMHz=123.25;
+    const auto allExtremeJson=amdPmJson(decodeAmdPm(allExtreme,0x731004,hugeOptions));
+    assert(allExtremeJson.size()<65536 && amdPmJson(parseAmdPmCapture(allExtremeJson))==allExtremeJson);
+    assert(parseAmdPmCapture("{}").originalFabric.empty());
+    assert(decodeAmdPm(base,0x730205).originalFabric.empty());
+    assert(decodeAmdPm(std::vector<std::uint8_t>(0x294),0x730204).originalFabric.empty());
+    ++groups;
+    for (unsigned i=0; i<8; ++i) {
+        pm_fixture::Driver d; d.files["pm_table_version"]=pm_fixture::le(versions[i],4);
+        d.files["pm_table_size"]=pm_fixture::le(lengths[i],8); d.files["pm_table"]=pm_fixture::bytes(lengths[i]);
+        pm_fixture::put(d.files["pm_table"],0x24c,0x7f800001);
+        const auto s=readAmdPmDriver(d.reader()); assert(s.snapshot.error==-EDOM && d.calls.size()==5);
+        assert(s.snapshot.originalFabric[9].error==-EDOM && s.snapshot.originalFabric[0].value==20);
+        for (unsigned failed=1; failed<=5; ++failed) {
+            d.calls.clear(); d.failCall=failed;
+            const auto result=readAmdPmDriver(d.reader());
+            assert(result.snapshot.originalFabric.empty() && result.snapshot.raw.empty());
+        }
+        d.calls.clear(); d.failCall=0; d.mutateAfter=4;
+        d.mutatedVersion=versions[i]==0x730404?0x731004:0x730404;
+        const auto moved=readAmdPmDriver(d.reader());
+        assert(moved.snapshot.error==-EAGAIN && moved.snapshot.originalFabric.empty() && d.calls.size()==5);
+    } ++groups;
     std::cout << groups << " AMD PM scenario groups passed\n";
 }

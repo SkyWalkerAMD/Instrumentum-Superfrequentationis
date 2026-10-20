@@ -118,6 +118,21 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
     append("power_model", 0x7c, model, 4);
     append("voltage_policy", 0x8c, voltage, 10);
     append("limit_contributors", 0xd0, contributors, 24);
+    // Two independent original vectors, checked by legacy-amd-pm-fabric.py.
+    // Keep these stored floats distinct from public clock fields and BCLK
+    // scaling. Exclude the original FCLK/UCLK/MCLK vector with conflicting
+    // offsets; a label alone cannot establish a physical frequency or link.
+    const char *links[] = {"FCLK_PCIE_UP_THRESHOLD","FCLK_PCIE_BANDWIDTH","FCLK_PCIE_DOWN_THRESHOLD",
+        "FCLK_XGMI_UP_THRESHOLD","FCLK_XGMI_BANDWIDTH","FCLK_XGMI_DOWN_THRESHOLD",
+        "FCLK_CXL_UP_THRESHOLD","FCLK_CXL_BANDWIDTH","FCLK_CXL_DOWN_THRESHOLD"};
+    const char *clocks[] = {"SMNCLK","SMNCLK_EFF","WAFLCLK","WAFLCLK_EFF",
+        "MP0CLK","MP0CLK_EFF","MP1CLK","MP1CLK_EFF","MPIOCLK","MPIOCLK_EFF",
+        "ACLK","ACLK_EFF","SVI3CLK","SVI3CLK_EFF","MPDMA_TF_CLK","MPDMA_TF_CLK_EFF",
+        "MPDMA_PM_CLK","MPDMA_PM_CLK_EFF"};
+    for (unsigned i = 0; i < 9; ++i)
+        field(out, out.originalFabric, links[i], "unverified", 0x154 + 4*i, false, "link_bandwidth");
+    for (unsigned i = 0; i < 18; ++i)
+        field(out, out.originalFabric, clocks[i], "unverified", 0x24c + 4*i, false, "internal_clocks");
     if (out.error) out.detail = "Some fields are non-finite or clock scaling is out of range; valid stored fields are retained";
     return out;
 }
@@ -147,6 +162,8 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
     appendFields(s.originalLimits);
     out += "],\"original_package_units_verified\":false,\"original_package_targets_verified\":false,\"original_package\":[";
     appendFields(s.originalPackage);
+    out += "],\"original_fabric_units_verified\":false,\"original_fabric_targets_verified\":false,\"original_fabric\":[";
+    appendFields(s.originalFabric);
     return out + "]}";
 }
 AmdPmSnapshot parseAmdPmCapture(const std::string &input) {
