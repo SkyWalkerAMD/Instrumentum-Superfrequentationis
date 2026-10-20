@@ -1,5 +1,17 @@
 # Instrumentum Superfrequentationis
 
+<!-- amd-pm-package-e2660cb -->
+2026-10-20：最新验证提交 `e2660cb`，GUI / CLI 同步增加 **53 项 AMD PM 原版公共功耗与策略监控值**，
+按五组查看；连同既有字段共 101 项。名称、偏移与浮点存储已核对，物理单位、策略状态及目标仍未认证。
+
+- [实现说明](docs/amd-pm-package.md)、[整批验证](docs/amd-pm-package-validation.md)：43/43 云端功能验证任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1116 JSON，GUI 各 178 项，核心 362 场景组，12 次内核 VM 启动。
+- `dist/gui-cli-amd-pm-package-e2660cb/`：33 个包、精确源码、本地扩展源码及校验表。
+- [REA 辅助研究](docs/amd-pm-rea-study.md)另记录；原版全部功能与真机验收仍未完成。
+
+以下保留历史记录。
+<!-- /amd-pm-package-e2660cb -->
+
 <!-- intel-iccmax-dbe9206 -->
 2026-10-18：最新验证提交 `dbe9206`，GUI / CLI 同步增加 **Alder Lake IA 电流上限读取与设置**。
 九个明确型号/stepping 组合，按 SVID 拓扑定位共享 IA 轨；核验旧值和完整回读，保留其它位。

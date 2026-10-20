@@ -1,0 +1,392 @@
+{
+  "source_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "fixture_sha256": "9936d25c9a2ffb61def0035529223cea0710a04ffeb2a067c9356897880f3475",
+  "hardware_execution": false,
+  "scope": "Bounded original calibration prefix only; all MMIO reads return one caller-selected synthetic float word. 10000-instruction cutoff is imposed by the harness, not claimed as an original timeout.",
+  "cases": [
+    {
+      "version": "0x730204",
+      "synthetic_ccds": 1,
+      "sample_bits": "0x40a00000",
+      "outcome": "returned_to_decoder",
+      "instructions": 64,
+      "reads": 2,
+      "first_reads": [
+        "0x57c",
+        "0x59c"
+      ],
+      "last_reads": [
+        "0x57c",
+        "0x59c"
+      ],
+      "changed_members": [
+        "0xcdc"
+      ],
+      "calibrated": true,
+      "percore_counts_unchanged": true
+    },
+    {
+      "version": "0x730204",
+      "synthetic_ccds": 1,
+      "sample_bits": "0x0",
+      "outcome": "instruction_budget",
+      "instructions": 10000,
+      "reads": 688,
+      "first_reads": [
+        "0x57c",
+        "0x59c",
+        "0x580",
+        "0x5a0"
+      ],
+      "last_reads": [
+        "0xad4",
+        "0xaf4",
+        "0xad8",
+        "0xaf8"
+      ],
+      "changed_members": [
+        "0xcd8",
+        "0xcd9",
+        "0xce0"
+      ],
+      "calibrated": false,
+      "percore_counts_unchanged": true
+    },
+    {
+      "version": "0x730204",
+      "synthetic_ccds": 1,
+      "sample_bits": "0x41000000",
+      "outcome": "instruction_budget",
+      "instructions": 10000,
+      "reads": 644,
+      "first_reads": [
+        "0x57c",
+        "0x59c",
+        "0x580",
+        "0x5a0"
+      ],
+      "last_reads": [
+        "0xa7c",
+        "0xa9c",
+        "0xa80",
+        "0xaa0"
+      ],
+      "changed_members": [
+        "0xcd8",
+        "0xcd9",
+        "0xce0"
+      ],
+      "calibrated": false,
+      "percore_counts_unchanged": true
+    },
+    {
+      "version": "0x730204",
+      "synthetic_ccds": 1,
+      "sample_bits": "0x7fc12345",
+      "outcome": "returned_to_decoder",
+      "instructions": 63,
+      "reads": 2,
+      "first_reads": [
+        "0x57c",
+        "0x59c"
+      ],
+      "last_reads": [
+        "0x57c",
+        "0x59c"
+      ],
+      "changed_members": [
+        "0xcdc"
+      ],
+      "calibrated": true,
+      "percore_counts_unchanged": true
+    },
+    {
+      "version": "0x730204",
+      "synthetic_ccds": 16,
+      "sample_bits": "0x40a00000",
+      "outcome": "returned_to_decoder",
+      "instructions": 64,
+      "reads": 2,
+      "first_reads": [
+        "0x165c",
+        "0x185c"
+      ],
+      "last_reads": [
+        "0x165c",
+        "0x185c"
+      ],
+      "changed_members": [
+        "0xcdc"
+      ],
+      "calibrated": true,
+      "percore_counts_unchanged": true
+    },
+    {
+      "version": "0x730204",
+      "synthetic_ccds": 16,
+      "sample_bits": "0x0",
+      "outcome": "instruction_budget",
+      "instructions": 10000,
+      "reads": 688,
+      "first_reads": [
+        "0x165c",
+        "0x185c",
+        "0x1660",
+        "0x1860"
+      ],
+      "last_reads": [
+        "0x1bb4",
+        "0x1db4",
+        "0x1bb8",
+        "0x1db8"
+      ],
+      "changed_members": [
+        "0xcd8",
+        "0xcd9",
+        "0xce0"
+      ],
+      "calibrated": false,
+      "percore_counts_unchanged": true
+    },
+    {
+      "version": "0x730204",
+      "synthetic_ccds": 16,
+      "sample_bits": "0x41000000",
+      "outcome": "instruction_budget",
+      "instructions": 10000,
+      "reads": 644,
+      "first_reads": [
+        "0x165c",
+        "0x185c",
+        "0x1660",
+        "0x1860"
+      ],
+      "last_reads": [
+        "0x1b5c",
+        "0x1d5c",
+        "0x1b60",
+        "0x1d60"
+      ],
+      "changed_members": [
+        "0xcd8",
+        "0xcd9",
+        "0xce0"
+      ],
+      "calibrated": false,
+      "percore_counts_unchanged": true
+    },
+    {
+      "version": "0x730204",
+      "synthetic_ccds": 16,
+      "sample_bits": "0x7fc12345",
+      "outcome": "returned_to_decoder",
+      "instructions": 63,
+      "reads": 2,
+      "first_reads": [
+        "0x165c",
+        "0x185c"
+      ],
+      "last_reads": [
+        "0x165c",
+        "0x185c"
+      ],
+      "changed_members": [
+        "0xcdc"
+      ],
+      "calibrated": true,
+      "percore_counts_unchanged": true
+    },
+    {
+      "version": "0x731004",
+      "synthetic_ccds": 1,
+      "sample_bits": "0x40a00000",
+      "outcome": "returned_to_decoder",
+      "instructions": 64,
+      "reads": 2,
+      "first_reads": [
+        "0x57c",
+        "0x59c"
+      ],
+      "last_reads": [
+        "0x57c",
+        "0x59c"
+      ],
+      "changed_members": [
+        "0xcdc"
+      ],
+      "calibrated": true,
+      "percore_counts_unchanged": true
+    },
+    {
+      "version": "0x731004",
+      "synthetic_ccds": 1,
+      "sample_bits": "0x0",
+      "outcome": "instruction_budget",
+      "instructions": 10000,
+      "reads": 688,
+      "first_reads": [
+        "0x57c",
+        "0x59c",
+        "0x580",
+        "0x5a0"
+      ],
+      "last_reads": [
+        "0xad4",
+        "0xaf4",
+        "0xad8",
+        "0xaf8"
+      ],
+      "changed_members": [
+        "0xcd8",
+        "0xcd9",
+        "0xce0"
+      ],
+      "calibrated": false,
+      "percore_counts_unchanged": true
+    },
+    {
+      "version": "0x731004",
+      "synthetic_ccds": 1,
+      "sample_bits": "0x41000000",
+      "outcome": "instruction_budget",
+      "instructions": 10000,
+      "reads": 644,
+      "first_reads": [
+        "0x57c",
+        "0x59c",
+        "0x580",
+        "0x5a0"
+      ],
+      "last_reads": [
+        "0xa7c",
+        "0xa9c",
+        "0xa80",
+        "0xaa0"
+      ],
+      "changed_members": [
+        "0xcd8",
+        "0xcd9",
+        "0xce0"
+      ],
+      "calibrated": false,
+      "percore_counts_unchanged": true
+    },
+    {
+      "version": "0x731004",
+      "synthetic_ccds": 1,
+      "sample_bits": "0x7fc12345",
+      "outcome": "returned_to_decoder",
+      "instructions": 63,
+      "reads": 2,
+      "first_reads": [
+        "0x57c",
+        "0x59c"
+      ],
+      "last_reads": [
+        "0x57c",
+        "0x59c"
+      ],
+      "changed_members": [
+        "0xcdc"
+      ],
+      "calibrated": true,
+      "percore_counts_unchanged": true
+    },
+    {
+      "version": "0x731004",
+      "synthetic_ccds": 16,
+      "sample_bits": "0x40a00000",
+      "outcome": "returned_to_decoder",
+      "instructions": 64,
+      "reads": 2,
+      "first_reads": [
+        "0x165c",
+        "0x185c"
+      ],
+      "last_reads": [
+        "0x165c",
+        "0x185c"
+      ],
+      "changed_members": [
+        "0xcdc"
+      ],
+      "calibrated": true,
+      "percore_counts_unchanged": true
+    },
+    {
+      "version": "0x731004",
+      "synthetic_ccds": 16,
+      "sample_bits": "0x0",
+      "outcome": "instruction_budget",
+      "instructions": 10000,
+      "reads": 688,
+      "first_reads": [
+        "0x165c",
+        "0x185c",
+        "0x1660",
+        "0x1860"
+      ],
+      "last_reads": [
+        "0x1bb4",
+        "0x1db4",
+        "0x1bb8",
+        "0x1db8"
+      ],
+      "changed_members": [
+        "0xcd8",
+        "0xcd9",
+        "0xce0"
+      ],
+      "calibrated": false,
+      "percore_counts_unchanged": true
+    },
+    {
+      "version": "0x731004",
+      "synthetic_ccds": 16,
+      "sample_bits": "0x41000000",
+      "outcome": "instruction_budget",
+      "instructions": 10000,
+      "reads": 644,
+      "first_reads": [
+        "0x165c",
+        "0x185c",
+        "0x1660",
+        "0x1860"
+      ],
+      "last_reads": [
+        "0x1b5c",
+        "0x1d5c",
+        "0x1b60",
+        "0x1d60"
+      ],
+      "changed_members": [
+        "0xcd8",
+        "0xcd9",
+        "0xce0"
+      ],
+      "calibrated": false,
+      "percore_counts_unchanged": true
+    },
+    {
+      "version": "0x731004",
+      "synthetic_ccds": 16,
+      "sample_bits": "0x7fc12345",
+      "outcome": "returned_to_decoder",
+      "instructions": 63,
+      "reads": 2,
+      "first_reads": [
+        "0x165c",
+        "0x185c"
+      ],
+      "last_reads": [
+        "0x165c",
+        "0x185c"
+      ],
+      "changed_members": [
+        "0xcdc"
+      ],
+      "calibrated": true,
+      "percore_counts_unchanged": true
+    }
+  ]
+}

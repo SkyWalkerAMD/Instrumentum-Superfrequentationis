@@ -1,0 +1,199 @@
+{
+  "schema": 1,
+  "source_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "production_commit": "e2660cb3c7a39fecde8d3d67e5fb3c1b13dfdf1b",
+  "hardware_execution": false,
+  "functional_ci_job": false,
+  "run": {
+    "id": 39391260244,
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/39391260244",
+    "source_commit": "7c35efecfa2cdf6260c4879146812b3b3c036bc5",
+    "status": "completed",
+    "conclusion": "failure",
+    "created_at": "2026-10-20T08:08:26Z",
+    "updated_at": "2026-10-20T08:49:13Z"
+  },
+  "tools": {
+    "rea": {
+      "version": "6.7.0",
+      "source": "https://github.com/morluto/rea",
+      "documentation_revision": "2538214e2c731ed4d9f0cebdc9a75f84d74a56a4",
+      "tarball": "https://registry.npmjs.org/rea-agents/-/rea-agents-6.7.0.tgz",
+      "sha512_base64": "yhIx2ioJYYT1C/tONfYeitC6LhnKmCh+ZwRUOgYuhSc733lGhkkt73zhug9WmLgxoMdKuqIYGCoBfD4fXkOhFw=="
+    },
+    "ghidra": {
+      "version": "12.1.4",
+      "release": "https://github.com/NationalSecurityAgency/ghidra/releases/tag/Ghidra_12.1.4_build",
+      "sha256": "ddac49f903da9d5bac833e5cc79395098b9c33cfd3279be5f31bd00387d2d4db"
+    },
+    "node": "24.11.1",
+    "java": "Temurin 21",
+    "ghidra_max_heap": "4G",
+    "startup_timeout_ms": 2400000
+  },
+  "original_identification": {
+    "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/rea-input/octool",
+    "format": "elf",
+    "kind": "executable",
+    "sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+    "architecture": "x86_64"
+  },
+  "queries": {
+    "planned_procedures": 5,
+    "attempted_pseudocode": 1,
+    "successful_pseudocode": 0,
+    "unattempted_procedures": 4,
+    "successful_procedure_info": 0,
+    "callers_attempted": false,
+    "evidence_export_attempted": false,
+    "records": [
+      {
+        "tool": "open_binary",
+        "arguments": {
+          "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/rea-input/octool",
+          "provider_id": "ghidra"
+        },
+        "file": "open.json",
+        "seconds": 3.16,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "0x2e7360"
+        },
+        "file": "pseudo-0x2e7360.json",
+        "seconds": 2401.66,
+        "error": true
+      },
+      {
+        "tool": "close_binary",
+        "arguments": {},
+        "file": "close.json",
+        "seconds": 0.01,
+        "error": false
+      }
+    ]
+  },
+  "error": {
+    "code": "resource_constraint",
+    "category": "resource_constraint",
+    "message": "The tool failed, but its complete error response exceeds the MCP response budget.",
+    "retryable": false,
+    "remediation": {
+      "action": "Export the retained original error through export_evidence_bundle to a caller-selected path. The connection remains usable."
+    },
+    "details": {
+      "operation": "procedure_pseudo_code",
+      "resource": "transport",
+      "reason": "The tool failed, but its complete error response exceeds the MCP response budget.",
+      "reported_limits": {
+        "boundary": "mcp-response",
+        "original_error_code": "provider_timeout",
+        "result_budget_bytes": 10484736,
+        "response_bytes_at_least": 10519398,
+        "constraint": "receive-buffer",
+        "evidence_reference": {
+          "kind": "retained-evidence",
+          "evidence_id": "ev_a1abdcea6c6a9a58236685368b3fcc825a48c4a65bd48c560395f00abe0e5a6a"
+        }
+      }
+    }
+  },
+  "limitation": "REA reported provider_timeout on the first Ghidra query, then replaced the oversized original error with a transport resource_constraint. The runner closed the session without exporting retained error evidence. The underlying Ghidra log and dominating analyzer are unavailable; do not infer a root cause or claim successful decompilation.",
+  "artifact": {
+    "id": 12252335090,
+    "node_id": "MDg6QXJ0aWZhY3QxMjI1MjMzNTA5MA==",
+    "name": "rea-amd-pm-study",
+    "size_in_bytes": 30873,
+    "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/12252335090",
+    "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/12252335090/zip",
+    "expired": false,
+    "digest": "sha256:1f5d541986c630c91d974feec53ee1d37480354524dd98a556146211330b3ccb",
+    "created_at": "2026-10-20T08:49:09Z",
+    "updated_at": "2026-10-20T08:49:09Z",
+    "expires_at": "2026-11-03T08:49:08Z",
+    "workflow_run": {
+      "id": 39391260244,
+      "repository_id": 1396820807,
+      "head_repository_id": 1396820807,
+      "head_branch": "refactor/platform-recovery",
+      "head_sha": "7c35efecfa2cdf6260c4879146812b3b3c036bc5"
+    }
+  },
+  "local_evidence": [
+    {
+      "path": "build/rea-study-39391260244/artifacts.json",
+      "bytes": 791,
+      "sha256": "72bf8fc57c145d5aae37eff2d6150ec105fbd5c37ecd3c1d6d0a7fb22f7a81eb"
+    },
+    {
+      "path": "build/rea-study-39391260244/close.json",
+      "bytes": 251,
+      "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
+    },
+    {
+      "path": "build/rea-study-39391260244/initialize.json",
+      "bytes": 1222,
+      "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
+    },
+    {
+      "path": "build/rea-study-39391260244/open.json",
+      "bytes": 816,
+      "sha256": "a7a7b8c88ab3de82162c7b84e62e67872ae01c8f16e44f9b04a42e3e2db4248c"
+    },
+    {
+      "path": "build/rea-study-39391260244/package-lock.json",
+      "bytes": 78634,
+      "sha256": "97abc4b821245cdb3f432d0fc677bf14ee3046b1a8befa13de065f98003fbbaa"
+    },
+    {
+      "path": "build/rea-study-39391260244/pseudo-0x2e7360.json",
+      "bytes": 1085,
+      "sha256": "26ef5995471be1bad5c6597ec7266ee5d7ec54b27a81e9e519073bbea4a45fd4"
+    },
+    {
+      "path": "build/rea-study-39391260244/rea-stderr.log",
+      "bytes": 544,
+      "sha256": "ccf39b30fb5259c0e544879ec0951c4a66e2bef638f00bb15b7266236133e0bc"
+    },
+    {
+      "path": "build/rea-study-39391260244/run.json",
+      "bytes": 2561,
+      "sha256": "70eb50fd5e0af19da93bc79b7afc887a8104ef5f007705e5dba9c1f286a8c32a"
+    },
+    {
+      "path": "build/rea-study-39391260244/run.log",
+      "bytes": 33891,
+      "sha256": "e8fe20042f18272d2943d239779643b3ba1251d674ce1c57f7218a4986a091e8"
+    },
+    {
+      "path": "build/rea-study-39391260244/selected-tool-schemas.json",
+      "bytes": 80370,
+      "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
+    },
+    {
+      "path": "build/rea-study-39391260244/study.json",
+      "bytes": 850,
+      "sha256": "0b45e6eb18feb8fc6fc4df7d21ca586bff370db36925ba0fe30c1d2b0258f4da"
+    }
+  ],
+  "independent_original_instruction_probes": {
+    "family_selector": {
+      "path": "docs/validation/amd-pm-family-probe.json",
+      "sha256": "667a795d2ed96a9339ee05b218c892ce8ab687866501a470740385a869baf930",
+      "cases": 256
+    },
+    "bounded_calibration": {
+      "path": "docs/validation/amd-pm-calibration-probe.json",
+      "sha256": "8db7948292ca8210ef2829e3b5cb29f15793575dbdda0237140d3db7dbc7c3c4",
+      "cases": 16
+    }
+  },
+  "probe_limitations": [
+    "FamilyType only; the CPUID wrapper is synthetic. This is not a complete constructor model.",
+    "Calibration only under 16 constant synthetic MMIO scenarios. The 10000-instruction cutoff belongs to the harness.",
+    "Neither experiment authenticates per-core or CCD offsets, units, topology, firmware targets, or native transport.",
+    "Probe scripts and full cloud logs are retained in the user build directory; build directories are excluded from source archives."
+  ]
+}
