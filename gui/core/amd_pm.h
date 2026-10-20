@@ -12,7 +12,7 @@ const std::vector<AmdPmLayout> &amdPmLayouts();
 std::size_t amdPmTableSize(std::uint32_t version);
 struct AmdPmOptions { bool hasBclk = false; double bclkMHz = 0; };
 struct AmdPmField {
-    std::string name, unit;
+    std::string name, unit, group;
     unsigned offset = 0;
     std::uint32_t raw = 0;
     bool clock = false, scaled = false;
@@ -30,6 +30,9 @@ struct AmdPmSnapshot {
     // Original Shimada monitor mappings. Labels/float storage are recovered;
     // physical units, rail/target identity and setter semantics are unverified.
     std::vector<AmdPmField> originalLimits;
+    // Five additional original common monitor groups. Group IDs organize the
+    // original labels; they do not certify units, active policies or targets.
+    std::vector<AmdPmField> originalPackage;
 };
 // Exact version and length; no prefix fallback or inferred CPU/core identity.
 // IEEE binary32 little endian. Invalid fields retain their bits, not a fake 0.

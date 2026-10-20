@@ -195,5 +195,70 @@ int main() {
         d.calls.clear(); d.failCall=4; const auto failed=readAmdPmDriver(d.reader());
         assert(failed.snapshot.originalLimits.empty() && failed.snapshot.fields.empty() && failed.snapshot.raw.empty());
     } ++groups;
+    const unsigned packageOffsets[] = {0x60,0x64,0x68,0x6c,0x70,0x74,0x78,
+        0x40,0x44,0x48,0x4c,0x50,0x54,0x58,0x5c,0x7c,0x80,0x84,0x88,
+        0x8c,0x90,0x94,0x98,0x9c,0xa0,0xa4,0xa8,0xac,0xb0,
+        0xd0,0xd4,0xd8,0xdc,0xe0,0xe4,0xe8,0xec,0xf0,0xf4,0xf8,0xfc,
+        0x100,0x104,0x108,0x10c,0x110,0x114,0x118,0x11c,0x120,0x124,0x128,0x12c};
+    for (unsigned i=0; i<8; ++i) {
+        AmdPmOptions o; o.hasBclk=true; o.bclkMHz=105;
+        const auto s=decodeAmdPm(pm_fixture::bytes(lengths[i]),versions[i],o);
+        assert(!s.error && s.originalPackage.size()==53);
+        for (unsigned n=0; n<53; ++n) {
+            const auto &f=s.originalPackage[n];
+            const char *group=n<7?"power":n<15?"workload":n<19?"power_model":n<29?"voltage_policy":"limit_contributors";
+            assert(f.offset==packageOffsets[n] && f.value==10.0+n/4.0 && f.group==group);
+            assert(f.unit=="unverified" && !f.clock && !f.scaled && !f.scaleError && !f.error);
+        }
+        assert(s.originalPackage[0].name=="CPU Power" && s.originalPackage[6].name=="Socket Power");
+        assert(s.originalPackage[15].name=="VDDCR_CPU_DYN_POWER_WC" && s.originalPackage[19].name=="FIT PID0");
+        assert(s.originalPackage[29].name=="PPT0" && s.originalPackage[52].name=="PPT_APU1");
+        const auto text=amdPmJson(s); assert(text.size()<65536 && amdPmJson(parseAmdPmCapture(text))==text);
+        assert(text.find("\"original_package_units_verified\":false")!=std::string::npos);
+        assert(text.find("\"original_package_targets_verified\":false")!=std::string::npos);
+    } ++groups;
+    for (unsigned n=0; n<53; ++n) for (unsigned bit=0; bit<32; ++bit) {
+        auto b=base; const auto bits=UINT32_C(1)<<bit; pm_fixture::put(b,packageOffsets[n],bits);
+        const auto s=decodeAmdPm(b,0x730204); assert(!s.error && s.originalPackage[n].raw==bits);
+        if (bit==31) assert(std::signbit(s.originalPackage[n].value));
+        for (unsigned j=0; j<53; ++j) if (j!=n) assert(s.originalPackage[j].value==10.0+j/4.0);
+        for (unsigned j=0; j<24; ++j) {
+            assert(s.fields[j].raw==good.fields[j].raw);
+            assert(s.originalLimits[j].raw==good.originalLimits[j].raw);
+        }
+    } ++groups;
+    for (unsigned n=0; n<53; ++n) for (auto bits : {UINT32_C(0x7f800000),UINT32_C(0xff800000),UINT32_C(0x7fc12345),UINT32_C(0x7f800001)}) {
+        auto b=base; pm_fixture::put(b,packageOffsets[n],bits);
+        const auto s=decodeAmdPm(b,0x730204); assert(s.error==-EDOM && s.originalPackage.size()==53);
+        for (unsigned j=0; j<53; ++j) assert(s.originalPackage[j].error==(n==j?-EDOM:0));
+        for (unsigned j=0; j<24; ++j) assert(!s.fields[j].error && !s.originalLimits[j].error);
+        const auto text=amdPmJson(s); assert(amdPmJson(parseAmdPmCapture(text))==text);
+    } ++groups;
+    auto packageForged=current;
+    replace(packageForged,"\"original_package_units_verified\":false","\"original_package_units_verified\":true");
+    replace(packageForged,"\"original_package_targets_verified\":false","\"original_package_targets_verified\":true");
+    replace(packageForged,"\"name\":\"CPU Power\"","\"name\":\"Forged\"");
+    replace(packageForged,"\"group\":\"power\"","\"group\":\"physical_cpu_0\"");
+    assert(amdPmJson(parseAmdPmCapture(packageForged))==current);
+    const auto packageStart=current.find(",\"original_package_units_verified\"");
+    assert(packageStart!=std::string::npos && amdPmJson(parseAmdPmCapture(current.substr(0,packageStart)+"}"))==current);
+    auto extreme=pm_fixture::bytes(11636);
+    for (unsigned offset : packageOffsets) pm_fixture::put(extreme,offset,0xff7fffff);
+    const auto extremeJson=amdPmJson(decodeAmdPm(extreme,0x731004));
+    assert(extremeJson.size()<65536 && amdPmJson(parseAmdPmCapture(extremeJson))==extremeJson);
+    assert(parseAmdPmCapture("{}").originalPackage.empty());
+    assert(decodeAmdPm(base,0x730205).originalPackage.empty());
+    assert(decodeAmdPm(std::vector<std::uint8_t>(0x130),0x730204).originalPackage.empty());
+    ++groups;
+    for (unsigned i=0; i<8; ++i) {
+        pm_fixture::Driver d; d.files["pm_table_version"]=pm_fixture::le(versions[i],4);
+        d.files["pm_table_size"]=pm_fixture::le(lengths[i],8); d.files["pm_table"]=pm_fixture::bytes(lengths[i]);
+        pm_fixture::put(d.files["pm_table"],0x60,0x7f800001);
+        const auto s=readAmdPmDriver(d.reader()); assert(s.snapshot.error==-EDOM && d.calls.size()==5);
+        assert(s.snapshot.originalPackage[0].error==-EDOM && s.snapshot.originalPackage[1].value==10.25);
+        assert(s.snapshot.originalLimits[0].value==400.5 && s.snapshot.fields[0].value==2000);
+        d.calls.clear(); d.failCall=4;
+        assert(readAmdPmDriver(d.reader()).snapshot.originalPackage.empty());
+    } ++groups;
     std::cout << groups << " AMD PM scenario groups passed\n";
 }

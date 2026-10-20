@@ -122,6 +122,9 @@ def main():
                    OCTOOL_PM_TEST_SCREENSHOT=str((tests / "pm-fixture.png").resolve()),
                    OCTOOL_PM_LIMITS_TEST_SCREENSHOT=str((tests / "pm-limits-fixture.png").resolve()),
                    OCTOOL_PM_LIMITS_ERROR_TEST_SCREENSHOT=str((tests / "pm-limits-error-fixture.png").resolve()),
+                   OCTOOL_PM_PACKAGE_TEST_SCREENSHOT=str((tests / "pm-package-fixture.png").resolve()),
+                   OCTOOL_PM_POLICY_TEST_SCREENSHOT=str((tests / "pm-policy-fixture.png").resolve()),
+                   OCTOOL_PM_PACKAGE_ERROR_TEST_SCREENSHOT=str((tests / "pm-package-error-fixture.png").resolve()),
                    OCTOOL_PM_ERROR_TEST_SCREENSHOT=str((tests / "pm-error-fixture.png").resolve()))
         try:
             subprocess.run([str((tests / "gui-regression").resolve()), "-o", "gui-tests.txt,txt"],

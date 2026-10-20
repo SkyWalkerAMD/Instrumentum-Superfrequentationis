@@ -1375,6 +1375,41 @@ void pmLimitCommands() {
     b=pm_fixture::bytes(); b.resize(0x1e7); binary(b); invoke({"--version","0x730204"},3);
     assert(!opens);
 }
+void pmPackageCommands() {
+    char path[]="/tmp/octool-pm-package-XXXXXX"; const int fd=mkstemp(path); assert(fd>=0); close(fd);
+    struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
+    unsigned opens=0; const auto factory=[&] { ++opens; return std::unique_ptr<HardwareBackend>(); };
+    const auto text=[&](const std::string &s) { std::ofstream f(path,std::ios::binary); f<<s; f.close(); assert(f); };
+    const auto binary=[&](const std::vector<std::uint8_t> &b) { text(std::string(b.begin(),b.end())); };
+    const auto invoke=[&](std::vector<std::string> options, int code) {
+        std::vector<std::string> args{"amd-pm-decode","--file",path}; args.insert(args.end(),options.begin(),options.end());
+        std::ostringstream out; assert(run(args,out,factory)==code);
+        if (emit) std::cout<<out.str();
+        return out.str();
+    };
+    for (const auto &layout : amdPmLayouts()) {
+        binary(pm_fixture::bytes(layout.bytes)); invoke({"--version",std::to_string(layout.version)},0);
+    }
+    for (unsigned offset : {0x60u,0x40u,0x7cu,0x8cu,0xd0u}) {
+        auto b=pm_fixture::bytes(); pm_fixture::put(b,offset,0x7f800001); binary(b);
+        invoke({"--version","0x730204"},3);
+    }
+    const auto capture=amdPmJson(decodeAmdPm(pm_fixture::bytes(),0x730204));
+    const auto extension=capture.find(",\"original_package_units_verified\""); assert(extension!=std::string::npos);
+    text(capture.substr(0,extension)+"}"); invoke({},0);
+    auto forged=capture;
+    for (const auto &pair : {std::make_pair("\"original_package_units_verified\":false","\"original_package_units_verified\":true"),
+        std::make_pair("\"original_package_targets_verified\":false","\"original_package_targets_verified\":true"),
+        std::make_pair("\"name\":\"CPU Power\"","\"name\":\"Forgery\""),
+        std::make_pair("\"group\":\"power\"","\"group\":\"physical_cpu_0\"")}) {
+        const auto at=forged.find(pair.first); assert(at!=std::string::npos);
+        forged.replace(at,std::string(pair.first).size(),pair.second);
+    }
+    text(forged); const auto report=invoke({},0); text(report); invoke({},0);
+    text(capture); invoke({"--bclk-mhz","123.25"},0);
+    auto b=pm_fixture::bytes(); b.resize(0x12f); binary(b); invoke({"--version","0x730204"},3);
+    assert(!opens);
+}
 void pl4Commands() {
     for (const char *watts : {"0.125","100.12","1023.875"}) {
         IntelControlsFixture d; d.expectedCpu=130;
@@ -1797,10 +1832,10 @@ int main(int argc, char **argv) {
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); intelMemoryOdtCaptures(); intelMemoryOdtLive(); intelMemoryTemperatureCaptures(); intelMemoryTemperatureLive(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
-    hwpHistoryCommands(); pmLimitCommands();
+    hwpHistoryCommands(); pmLimitCommands(); pmPackageCommands();
     iccMaxCommands(); iccMaxInvalidBeforeOpen();
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "48 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "49 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

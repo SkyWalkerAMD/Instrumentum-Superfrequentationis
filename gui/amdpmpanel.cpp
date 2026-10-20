@@ -33,7 +33,7 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader) : QWidget(parent), r
     auto *intro = new QLabel("AMD PM telemetry: eight exact Shimada table versions. Read the installed ryzen_smu driver, "
         "or open a saved table. Driver reads may request a firmware transfer; no driver is loaded automatically. "
         "Clock storage values and clocks scaled with a supplied BCLK are shown separately. "
-        "The original limit monitor exposes stored floats with unverified units; its 0/1 labels do not identify physical targets.", this);
+        "Original power, policy and limit monitors show stored values; their units, active-policy meaning and physical targets are unverified.", this);
     intro->setWordWrap(true); layout->addWidget(intro);
     controls_ = new QWidget(this); auto *controls = new QVBoxLayout(controls_); controls->setContentsMargins(0,0,0,0);
     auto *buttons = new QHBoxLayout;
@@ -53,7 +53,10 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader) : QWidget(parent), r
     auto *viewRow = new QHBoxLayout;
     viewRow->addWidget(new QLabel("Display", this));
     view_ = new QComboBox(this); view_->setObjectName("pmView");
-    view_->addItems({"Public telemetry", "Limit monitor (original mapping)"}); viewRow->addWidget(view_); viewRow->addStretch();
+    view_->addItems({"Public telemetry", "Limit monitor (original mapping)",
+        "Power (original mapping)", "Workload (original mapping)", "Power model (original mapping)",
+        "Voltage policy (original mapping)", "Limit contributors (original mapping)"});
+    viewRow->addWidget(view_); viewRow->addStretch();
     layout->addLayout(viewRow);
     metadata_ = new QLabel(this); metadata_->setObjectName("pmMetadata"); metadata_->setTextFormat(Qt::PlainText); layout->addWidget(metadata_);
     table_ = new QTableWidget(0, 7, this); table_->setObjectName("pmTable");
@@ -136,14 +139,18 @@ void AmdPmPanel::present(const AmdPmSnapshot &s, const QString &source) {
     showFields(); copy_->setEnabled(!s.fields.empty());
     QString status = source;
     if (s.error) status += "\n" + QString::fromStdString(s.detail) + " (" + QString::fromLocal8Bit(std::strerror(-s.error)) + ")";
-    else status += "\nStored values decoded. BCLK correction uses the supplied value. Limit-monitor units and physical target identities are unverified.";
+    else status += "\nStored values decoded. BCLK correction uses the supplied value. Original-monitor units, active policies and physical targets are unverified.";
     status_->setText(status);
 }
 void AmdPmPanel::showFields() {
     const auto &s = snapshot_;
-    const bool original = view_->currentIndex() == 1;
+    const int index = view_->currentIndex();
+    const bool original = index != 0;
+    const char *groups[] = {"power", "workload", "power_model", "voltage_policy", "limit_contributors"};
+    const auto &fields = index == 0 ? s.fields : index == 1 ? s.originalLimits : s.originalPackage;
     table_->setRowCount(0);
-    for (const auto &f : original ? s.originalLimits : s.fields) {
+    for (const auto &f : fields) {
+        if (index >= 2 && (index > 6 || f.group != groups[index-2])) continue;
         const int row = table_->rowCount(); table_->insertRow(row);
         const QString state = f.error ? "Non-finite stored value" : f.scaleError ? "Clock scaling out of range" :
             original ? "Units unverified" : f.clock && !s.options.hasBclk ? "BCLK not supplied" : "Decoded";

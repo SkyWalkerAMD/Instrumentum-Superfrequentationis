@@ -35,7 +35,7 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 1098, len(reports)
+assert len(reports) == 1116, len(reports)
 platform_reports=[r for r in reports if r['command']=='intel-read' and 'readings' in r['data']]
 assert len(platform_reports)==81
 hwp_context_reports=platform_reports[63:]
@@ -552,8 +552,8 @@ with tempfile.TemporaryDirectory(prefix="octool-intel-memory-") as directory:
     os.mkfifo(Path(directory)/"fifo")
     assert run("intel-memory-decode","--file",str(Path(directory)/"fifo"),code=3)["data"]["memory"] is None
 pm_reports = [r for r in reports if r["command"] == "amd-pm-decode" and "pm" in r["data"]]
-assert len(pm_reports) == 38
-limit_reports, pm_reports = pm_reports[20:], pm_reports[:20]
+assert len(pm_reports) == 56
+package_reports, limit_reports, pm_reports = pm_reports[38:], pm_reports[20:38], pm_reports[:20]
 assert [r["ok"] for r in pm_reports] == [True] * 9 + [False, True, True, False, False, False, False, True, True, False, False]
 for i, r in enumerate(pm_reports):
     assert r["data"]["offline"] and not r["data"]["table_read_attempted"] and not r["data"]["direct_register_access"]
@@ -603,6 +603,28 @@ for i, report in enumerate(limit_reports):
         else:
             assert field['error'] == 0 and field['stored_value'] == limit_values[n]
     assert pm['fields'][0]['scaled_clock_mhz'] == (2465 if i == 16 else None)
+package_offsets = list(range(0x60,0x7c,4))+list(range(0x40,0x60,4))+list(range(0x7c,0xb4,4))+list(range(0xd0,0x130,4))
+package_groups = ['power']*7+['workload']*8+['power_model']*4+['voltage_policy']*10+['limit_contributors']*24
+assert [r['ok'] for r in package_reports] == [True]*8+[False]*5+[True]*4+[False]
+for i, report in enumerate(package_reports):
+    pm=report['data']['pm']
+    assert report['data']['offline'] and not report['data']['table_read_attempted'] and not report['data']['direct_register_access']
+    assert pm['original_package_units_verified'] is False and pm['original_package_targets_verified'] is False
+    if i==17:
+        assert pm['original_package']==[] and pm['original_limits']==[] and pm['fields']==[]
+        continue
+    fields=pm['original_package']; assert len(fields)==53
+    assert [int(f['offset'],16) for f in fields]==package_offsets
+    assert [f['group'] for f in fields]==package_groups
+    assert fields[0]['name']=='CPU Power' and fields[-1]['name']=='PPT_APU1'
+    for n,f in enumerate(fields):
+        assert f['unit']=='unverified' and not f['clock'] and not f['scale_error'] and f['scaled_clock_mhz'] is None
+        if 8<=i<13 and n==[0,7,15,19,29][i-8]:
+            assert f['stored_value'] is None and f['raw']=='0x7f800001' and f['error']==-33
+        else:
+            assert f['stored_value']==10+n/4 and not f['error']
+    assert pm['fields'][0]['scaled_clock_mhz']==(2465 if i==16 else None)
+    assert all(not f['error'] for f in pm['fields']+pm['original_limits'])
 with tempfile.TemporaryDirectory(prefix="octool-pm-") as directory:
     root = Path(directory)
     capture = pm_reports[8]["data"]["pm"]
@@ -612,7 +634,8 @@ with tempfile.TemporaryDirectory(prefix="octool-pm-") as directory:
     assert decoded["data"]["pm"] == capture
     path.write_text(json.dumps(decoded), encoding="utf-8")
     assert run("amd-pm-decode", "--file", str(path))["data"]["pm"] == capture
-    for source in (limit_reports[0], limit_reports[11], limit_reports[12], limit_reports[16]):
+    for source in (limit_reports[0], limit_reports[11], limit_reports[12], limit_reports[16],
+                   package_reports[0], package_reports[8], package_reports[16]):
         path.write_text(json.dumps(source),encoding='utf-8')
         decoded = run('amd-pm-decode','--file',str(path),code=0 if source['ok'] else 3)
         assert decoded['data']['pm'] == source['data']['pm']

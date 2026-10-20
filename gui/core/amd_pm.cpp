@@ -35,8 +35,9 @@ std::string quote(const std::string &s) {
 std::string word(std::uint32_t value) {
     std::ostringstream s; s.imbue(std::locale::classic()); s << "\"0x" << std::hex << std::setw(8) << std::setfill('0') << value << '"'; return s.str();
 }
-void field(AmdPmSnapshot &out, const char *name, const char *unit, unsigned offset, bool clock = false, bool original = false) {
-    AmdPmField v; v.name = name; v.unit = unit; v.offset = offset; v.clock = clock;
+void field(AmdPmSnapshot &out, std::vector<AmdPmField> &target, const char *name,
+           const char *unit, unsigned offset, bool clock = false, const char *group = "") {
+    AmdPmField v; v.name = name; v.unit = unit; v.offset = offset; v.clock = clock; v.group = group;
     v.raw = std::uint32_t(little(out.raw, offset, 4));
     // Classify both quiet and signalling NaNs before touching the FPU.
     if ((v.raw & 0x7f800000u) == 0x7f800000u) v.error = -EDOM;
@@ -50,7 +51,7 @@ void field(AmdPmSnapshot &out, const char *name, const char *unit, unsigned offs
         }
     }
     if (!out.error) out.error = v.error ? v.error : v.scaleError;
-    (original ? out.originalLimits : out.fields).push_back(v);
+    target.push_back(v);
 }
 }
 const std::vector<AmdPmLayout> &amdPmLayouts() {
@@ -72,20 +73,20 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
     if (bytes.size() != out.expectedBytes) { out.error = -EMSGSIZE; out.detail = "PM table length does not match its version"; return out; }
     // Independently implemented from the pinned layout facts in
     // docs/amd-pm-recovery.md; never infer per-core target IDs from this table.
-    field(out, "FCLK", "MHz", 0x20c, true);
-    field(out, "UCLK", "MHz", 0x21c, true);
-    field(out, "MCLK", "MHz", 0x22c, true);
-    field(out, "VDDCR_SOC", "V", 0x1a4);
-    field(out, "CLDO_VDDP", "V", 0x5cc);
-    field(out, "CLDO_VDDG_IOD", "V", 0x714);
-    field(out, "CLDO_VDDG_CCD", "V", 0x71c);
-    field(out, "VDD_MISC", "V", 0x1b8);
+    field(out, out.fields, "FCLK", "MHz", 0x20c, true);
+    field(out, out.fields, "UCLK", "MHz", 0x21c, true);
+    field(out, out.fields, "MCLK", "MHz", 0x22c, true);
+    field(out, out.fields, "VDDCR_SOC", "V", 0x1a4);
+    field(out, out.fields, "CLDO_VDDP", "V", 0x5cc);
+    field(out, out.fields, "CLDO_VDDG_IOD", "V", 0x714);
+    field(out, out.fields, "CLDO_VDDG_CCD", "V", 0x71c);
+    field(out, out.fields, "VDD_MISC", "V", 0x1b8);
     const char *rails[] = {"VDD", "VDD1", "SoC", "Misc"};
     const char *names[] = {"requested voltage (VID)", "measured voltage", "current", "VRM temperature"};
     const char *units[] = {"V", "V", "A", "C"};
     const unsigned offsets[] = {0, 4, 8, 16};
     for (unsigned r = 0; r < 4; ++r) for (unsigned f = 0; f < 4; ++f)
-        field(out, (std::string(rails[r]) + " " + names[f]).c_str(), units[f], 0x178 + 20 * r + offsets[f]);
+        field(out, out.fields, (std::string(rails[r]) + " " + names[f]).c_str(), units[f], 0x178 + 20 * r + offsets[f]);
     // Pinned original constructor + common-field decoder replay, documented in
     // docs/amd-pm-limits.md. Keep these separate from the public telemetry facts.
     // Indices 0/1 are original labels, not CPU/CCD or physical rail identifiers.
@@ -96,7 +97,27 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
         "EDC_LIMIT_0", "PEAK_TELEMETRY_CURRENT_0", "PCC_LIMIT_0", "PCC_RESIDENCY_0",
         "EDC_LIMIT_1", "PEAK_TELEMETRY_CURRENT_1", "PCC_LIMIT_1", "PCC_RESIDENCY_1"};
     for (unsigned i = 0; i < 24; ++i)
-        field(out, limits[i], "unverified", i < 16 ? i * 4 : 0x1c8 + (i-16)*4, false, true);
+        field(out, out.originalLimits, limits[i], "unverified", i < 16 ? i * 4 : 0x1c8 + (i-16)*4);
+    // Original constructor/get_pm_patch common vectors, independently replayed
+    // in legacy-amd-pm-package.py. Deliberately exclude core/CCD paths, SVI power
+    // guesses and the original's conflicting clock mappings.
+    const char *power[] = {"CPU Power","SOC Power","Misc Power","Mem Power","1.8V Power","ROC Power","Socket Power"};
+    const char *workload[] = {"PPT_WC","PPT_ACTUAL","TDC_0_WC","TDC_0_ACTUAL","TDC_1_WC","TDC_1_ACTUAL","FIT_WC","FIT_ACTUAL"};
+    const char *model[] = {"VDDCR_CPU_DYN_POWER_WC","VDDCR_CPU_LKG_POWER_WC","VDDCR_SOC_DYN_POWER_WC","VDDCR_SOC_LKG_POWER_WC"};
+    const char *voltage[] = {"FIT PID0","LATCHUP0","PPT_VOLTAGE_0","TDC_VOLTAGE_0","THM_VOLTAGE_0",
+        "FIT_VOLTAGE_1","LATCHUP_VOLTAGE_1","PPT_VOLTAGE_1","TDC_VOLTAGE_1","THM_VOLTAGE_1"};
+    const char *contributors[] = {"PPT0","TDC0","STAPM0","THM0","HTFMax0","VRHOT0","ProcHot0","Voltage0",
+        "EDC0","CState0","PPT_SLOW0","PPT_APU0","PPT1","TDC1","STAPM1","THM1","HTFMax1","VRHOT1",
+        "ProcHot1","Voltage1","EDC1","CState1","PPT_SLOW1","PPT_APU1"};
+    const auto append = [&](const char *group, unsigned offset, const char *const *labels, unsigned count) {
+        for (unsigned i = 0; i < count; ++i)
+            field(out, out.originalPackage, labels[i], "unverified", offset + 4*i, false, group);
+    };
+    append("power", 0x60, power, 7);
+    append("workload", 0x40, workload, 8);
+    append("power_model", 0x7c, model, 4);
+    append("voltage_policy", 0x8c, voltage, 10);
+    append("limit_contributors", 0xd0, contributors, 24);
     if (out.error) out.detail = "Some fields are non-finite or clock scaling is out of range; valid stored fields are retained";
     return out;
 }
@@ -116,12 +137,16 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
             ",\"raw\":" + word(v.raw) + ",\"error\":" + std::to_string(v.error) + ",\"stored_value\":" +
             (v.error ? "null" : number(v.value)) + ",\"clock\":" + (v.clock ? "true" : "false") +
             ",\"scale_error\":" + std::to_string(v.scaleError) + ",\"scaled_clock_mhz\":" +
-            (v.scaled ? number(v.scaledValue) : "null") + '}';
+            (v.scaled ? number(v.scaledValue) : "null");
+        if (!v.group.empty()) out += ",\"group\":" + quote(v.group);
+        out += '}';
       }
     };
     appendFields(s.fields);
     out += "],\"original_limits_units_verified\":false,\"original_limits\":[";
     appendFields(s.originalLimits);
+    out += "],\"original_package_units_verified\":false,\"original_package_targets_verified\":false,\"original_package\":[";
+    appendFields(s.originalPackage);
     return out + "]}";
 }
 AmdPmSnapshot parseAmdPmCapture(const std::string &input) {
