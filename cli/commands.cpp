@@ -104,6 +104,9 @@ struct Command {
     bool forEdit = false;
     std::uint32_t pmVersion = 0;
     AmdPmOptions pmOptions;
+    AmdCurveSnapshot curve;
+    int margin = 0;
+    bool multipleCores = false;
     SmuTarget smu; SmuCommand message; UmcTarget umc;
     IntelMemoryTarget memory;
     Request reg;
@@ -114,7 +117,7 @@ struct Command {
 Command parse(const std::vector<std::string> &args) {
     Command c; c.name = args.at(0);
     const std::set<std::string> hardware = {"intel-iccmax-read", "intel-iccmax-set", "cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read", "intel-vf-set", "intel-turbo-read", "intel-turbo-set",
-        "intel-memory-read", "intel-clock-read", "intel-tvb-read", "intel-tvb-set", "intel-tvb-table", "intel-tvb-table-set", "intel-energy-read", "intel-energy-set", "intel-avx-read", "intel-avx-set", "intel-bclk-voltage-read", "intel-bclk-voltage-set", "intel-thermal-read", "intel-thermal-set", "intel-limits-read", "intel-limits-clear", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-topology", "amd-umc-read", "register-read", "register-write"};
+        "intel-memory-read", "intel-clock-read", "intel-tvb-read", "intel-tvb-set", "intel-tvb-table", "intel-tvb-table-set", "intel-energy-read", "intel-energy-set", "intel-avx-read", "intel-avx-set", "intel-bclk-voltage-read", "intel-bclk-voltage-set", "intel-thermal-read", "intel-thermal-set", "intel-limits-read", "intel-limits-clear", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-curve-set", "amd-topology", "amd-umc-read", "register-read", "register-write"};
     const bool memoryOffline = c.name == "intel-memory-decode";
     const bool clockOffline = c.name == "intel-clock-decode";
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
@@ -123,7 +126,7 @@ Command parse(const std::vector<std::string> &args) {
     std::set<std::string> keys = {"--json"};
     if (hardware.count(c.name)) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
-    const bool writing = c.name == "intel-iccmax-set" || c.name == "intel-bclk-voltage-set" || c.name == "intel-limits-clear" || c.name == "intel-thermal-set" || c.name == "intel-avx-set" || c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set" || c.name == "intel-energy-set" || c.name == "intel-uncore-set" || c.name == "amd-smu-send" || c.name == "register-write";
+    const bool writing = c.name == "amd-curve-set" || c.name == "intel-iccmax-set" || c.name == "intel-bclk-voltage-set" || c.name == "intel-limits-clear" || c.name == "intel-thermal-set" || c.name == "intel-avx-set" || c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set" || c.name == "intel-energy-set" || c.name == "intel-uncore-set" || c.name == "amd-smu-send" || c.name == "register-write";
     if (c.name == "intel-iccmax-set") keys.insert("--amps");
     const bool vf = c.name == "intel-vf-read" || c.name == "intel-vf-set";
     const bool turbo = c.name == "intel-turbo-read" || c.name == "intel-turbo-set";
@@ -153,7 +156,10 @@ Command parse(const std::vector<std::string> &args) {
     if (smu || c.name == "amd-umc-read") for (const char *key : {"--bus", "--device", "--function"}) keys.insert(key);
     if (c.name == "amd-smu-read" || c.name == "amd-smu-send") keys.insert("--message");
     if (c.name == "amd-smu-send") for (unsigned i = 0; i < 6; ++i) keys.insert("--arg" + std::to_string(i));
-    if (c.name == "amd-curve-read") { keys.insert("--ccd"); keys.insert("--core"); }
+    if (c.name == "amd-curve-read" || c.name == "amd-curve-set") {
+        keys.insert("--ccd"); keys.insert("--core"); keys.insert("--cores");
+    }
+    if (c.name == "amd-curve-set") { keys.insert("--margin"); keys.insert("--expect-raw"); }
     if (c.name == "amd-umc-read") { keys.insert("--bank"); keys.insert("--refresh-slot"); }
     if (c.name == "spd-decode") keys.insert("--file");
     if (pm) keys.insert("--bclk-mhz");
@@ -310,9 +316,32 @@ Command parse(const std::vector<std::string> &args) {
             for (unsigned i = 1; i < 6; ++i) c.message.args[i] = optional(options, "--arg" + std::to_string(i), UINT32_MAX);
         }
     }
-    if (c.name == "amd-curve-read") {
-        c.ccd = uintOption(options, "--ccd", 15); c.core = uintOption(options, "--core", 7);
+    if (c.name == "amd-curve-read" || c.name == "amd-curve-set") {
+        c.ccd = c.curve.ccd = uintOption(options, "--ccd", 15);
+        require(options.count("--core") + options.count("--cores") == 1, "Choose exactly one of --core and --cores");
+        c.multipleCores = options.count("--cores") != 0;
+        if (c.multipleCores) require(parseAmdCurveCores(get(options, "--cores"), c.curve.coreMask), "--cores requires ascending unique indices 0..7, e.g. 0,2,7");
+        else { c.core = uintOption(options, "--core", 7); c.curve.coreMask = 1u << c.core; }
         c.smu.profile = SmuProfile::Shimada;
+        if (c.name == "amd-curve-set") {
+            const auto value = get(options, "--margin");
+            const auto start = !value.empty() && value[0] == '-' ? 1u : 0u;
+            require(start < value.size() && value.find_first_not_of("0123456789", start) == std::string::npos,
+                    "--margin requires an integer CO count -50..50, not mV");
+            const auto magnitude = wideInteger(value.substr(start), 50, "--margin");
+            c.margin = start ? -int(magnitude) : int(magnitude);
+            const auto values = get(options, "--expect-raw"); std::size_t begin = 0;
+            for (unsigned core = 0; core < 8; ++core) if (c.curve.coreMask & (1u << core)) {
+                require(begin < values.size(), "--expect-raw needs one raw value per selected core in ascending order");
+                const auto end = values.find(',', begin);
+                const auto raw = std::uint32_t(wideInteger(values.substr(begin, end == std::string::npos ? end : end-begin), UINT32_MAX, "--expect-raw"));
+                require(raw <= 50 || raw >= UINT32_MAX-49, "--expect-raw must encode a signed 32-bit CO count -50..50");
+                c.curve.raw[core] = raw;
+                begin = end == std::string::npos ? values.size()+1 : end+1;
+            }
+            require(begin == values.size()+1, "--expect-raw has extra values or a trailing separator");
+            c.curve.valid = true;
+        }
     }
     if (c.name == "amd-umc-read") { c.umc.bank = uintOption(options, "--bank", 22); c.umc.refreshSlot = uintOption(options, "--refresh-slot", 15); }
     if (c.name == "spd-decode") { c.path = get(options, "--file"); require(!c.path.empty(), "Empty SPD path"); }
@@ -864,6 +893,40 @@ Result hardware(const Command &c, HardwareSession &s) {
             if (!r.error) for (auto v : r.args) values.push_back(hex(v));
             out.data.push_back({"args", r.error ? "null" : array(values)});
         }
+    } else if (c.name == "amd-curve-set") {
+        const auto r = setShimadaCurves(s, c.smu, c.curve, c.margin); out.error = r.error;
+        out.data.push_back({"firmware_ccd", number(c.ccd)});
+        out.data.push_back({"physical_mapping_verified", "false"});
+        out.data.push_back({"margin_counts", number(c.margin)});
+        out.data.push_back({"core_mask", hex(c.curve.coreMask)});
+        out.data.push_back({"phase", quote(amdCurvePhaseName(r.phase))});
+        out.data.push_back({"stopped_core", r.core < 8 ? number(r.core) : "null"});
+        out.data.push_back({"response", hex(r.response)});
+        out.data.push_back({"attempted_mask", hex(r.attemptedMask)});
+        out.data.push_back({"accepted_mask", hex(r.acceptedMask)});
+        out.data.push_back({"verified_mask", hex(r.verifiedMask)});
+        out.data.push_back({"unchanged_mask", hex(r.unchangedMask)});
+        out.data.push_back({"verified", boolean(!out.error && r.verifiedMask == c.curve.coreMask)});
+        out.data.push_back({"hardware_effect_measured", "false"});
+        std::vector<std::string> cores;
+        for (unsigned core = 0; core < 8; ++core) if (c.curve.coreMask & (1u << core)) {
+            const unsigned bit = 1u << core;
+            cores.push_back(object({{"firmware_core", number(core)}, {"expected_raw", hex(c.curve.raw[core])},
+                {"before_raw", r.beforeMask & bit ? hex(r.before[core]) : "null"},
+                {"readback_raw", r.afterMask & bit ? hex(r.after[core]) : "null"},
+                {"attempted", boolean(r.attemptedMask & bit)}, {"accepted", boolean(r.acceptedMask & bit)},
+                {"verified", boolean(r.verifiedMask & bit)}, {"unchanged", boolean(r.unchangedMask & bit)}}));
+        }
+        out.data.push_back({"cores", array(cores)});
+    } else if (c.name == "amd-curve-read" && c.multipleCores) {
+        const auto r = readShimadaCurves(s, c.smu, c.ccd, c.curve.coreMask); out.error = r.error;
+        out.data.push_back({"firmware_ccd", number(c.ccd)}); out.data.push_back({"core_mask", hex(c.curve.coreMask)});
+        out.data.push_back({"physical_mapping_verified", "false"});
+        std::vector<std::string> cores;
+        if (r.valid) for (unsigned core = 0; core < 8; ++core) if (r.coreMask & (1u << core))
+            cores.push_back(object({{"firmware_core", number(core)}, {"raw", hex(r.raw[core])},
+                {"raw_signed", number(r.raw[core] <= 0x7fffffff ? double(r.raw[core]) : double(r.raw[core])-4294967296.0)}}));
+        out.data.push_back({"cores", r.valid ? array(cores) : "null"});
     } else if (c.name == "amd-curve-read") {
         const auto r = readShimadaCurve(s, c.smu, c.ccd, c.core); out.error = r.error ? r.error : !r.valid ? -EIO : 0;
         out.data.push_back({"firmware_ccd", number(c.ccd)}); out.data.push_back({"firmware_core", number(c.core)});
@@ -1157,6 +1220,12 @@ Usage: octool-cli COMMAND [OPTIONS]
   amd-smu-read --cpu N --profile P --message 1|2 [PCI]
   amd-smu-send --cpu N --profile P --message M --arg0 A [--arg1 A ... --arg5 A] [PCI] --apply
   amd-curve-read --cpu N --ccd N --core N
+  amd-curve-read --cpu N --ccd N --cores 0,2,7
+  amd-curve-set --cpu N --ccd N (--core N | --cores 0,2,7)
+    --margin -50..50 --expect-raw RAW[,RAW...] --apply
+    Shimada 1Ah/08h only; explicit firmware indices. Expected raw values follow
+    ascending core order. CO counts, not mV. Recheck and readback per core;
+    stop on first failure, report partial completion, no retry or rollback.
   amd-topology --cpu N
   amd-pm-read [--bclk-mhz N]        Read an already installed ryzen_smu driver
   amd-pm-decode --file SNAPSHOT     Decode GUI/CLI PM JSON offline

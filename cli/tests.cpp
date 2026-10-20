@@ -495,6 +495,48 @@ void ocAndCurveCommands() {
     command(amd, {"amd-curve-read", "--cpu", "130", "--ccd", "0", "--core", "0"}, 3);
     assert(amd.commands == 2 && amd.argumentReads == 1);
 }
+void curveSettingCommands() {
+    for (unsigned mode = 0; mode < 12; ++mode) {
+        std::vector<std::string> args = {"amd-curve-set","--cpu","130","--ccd","3","--cores","0,2,7","--margin","-25","--expect-raw","0xffffffe2,0xffffffe2,0xffffffe2","--apply"};
+        if (mode == 0) args.pop_back();
+        if (mode == 1) args[8] = "-51";
+        if (mode == 2) args[8] = "25.0";
+        if (mode == 3) args[8] = "1e1";
+        if (mode == 4) args[6] = "0,2,2";
+        if (mode == 5) args[6] = "2,0,7";
+        if (mode == 6) args[10] = "0xffffffe2,0xffffffe2";
+        if (mode == 7) args[10] += ",0";
+        if (mode == 8) args[10] += ",";
+        if (mode == 9) args[10] = "0xffe2,0,0";
+        if (mode == 10) { args.push_back("--core"); args.push_back("0"); }
+        if (mode == 11) args[10] = "0,0,4294967296";
+        std::ostringstream output; unsigned opened = 0;
+        assert(run(args,output,[&] { ++opened; return std::unique_ptr<HardwareBackend>(); }) == 2 && !opened);
+        if (emit) std::cout << output.str();
+    }
+    const std::vector<std::string> args = {"amd-curve-set","--cpu","130","--ccd","3","--cores","0,2,7","--margin","-25","--expect-raw","0xffffffe2,0xffffffe2,0xffffffe2","--apply"};
+    for (unsigned mode = 0; mode < 8; ++mode) {
+        AmdCurveFixture device; device.writable = true;
+        if (mode == 1) device.margins[26] = 0;
+        if (mode == 2) device.discardChange = true;
+        if (mode == 3) device.writeCompletion = 0xfe;
+        if (mode == 4) device.afterRequest = [&] { if (device.settings) device.writeCompletion = 0xfe; };
+        if (mode == 5) device.model = 0x18;
+        if (mode == 6) device.completion = 0xfe;
+        auto commandArgs = args;
+        if (mode == 7) commandArgs[8] = "-30";
+        const auto report = command(device,commandArgs,mode == 0 || mode == 7 ? 0 : 3);
+        assert(device.settings == (mode == 0 ? 3u : mode == 2 || mode == 3 ? 1u : mode == 4 ? 2u : 0u));
+        assert(report.find("\"verified\":true") != std::string::npos || (mode != 0 && mode != 7));
+        assert(!device.wrongCpu);
+    }
+    AmdCurveFixture single; single.writable = true;
+    command(single,{"amd-curve-set","--cpu","130","--ccd","15","--core","7","--margin","50","--expect-raw","0xffffffe2","--apply"},0);
+    assert(single.margins[127] == 50 && single.settings == 1);
+    command(single,{"amd-curve-read","--cpu","130","--ccd","15","--cores","0,2,7"},0);
+    single.completion = 0xfe;
+    command(single,{"amd-curve-read","--cpu","130","--ccd","15","--cores","0,2,7"},3);
+}
 void verifiedControls() {
     IntelControlsFixture device; device.expectedCpu = 130;
     const std::vector<std::string> power = {"intel-set", "--cpu", "130", "--field", "pl1", "--value", "100.12", "--apply"};
@@ -1920,6 +1962,7 @@ int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--inventory-fixture") { inventory(argv[2]); return 0; }
     if (argc == 3 && std::string(argv[1]) == "--pm-fixture") { pmFilesystem(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
+    curveSettingCommands();
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); intelMemoryOdtCaptures(); intelMemoryOdtLive(); intelMemoryTemperatureCaptures(); intelMemoryTemperatureLive(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
@@ -1928,5 +1971,5 @@ int main(int argc, char **argv) {
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "51 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "52 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

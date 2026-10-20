@@ -35,7 +35,23 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 1154, len(reports)
+assert len(reports) == 1177, len(reports)
+curve_settings = [r for r in reports if r['command'] == 'amd-curve-set' and r['error'] != -22]
+assert len(curve_settings) == 9
+assert [r['ok'] for r in curve_settings] == [True, False, False, False, False, False, False, True, True]
+assert [int(r['data']['attempted_mask'],16) for r in curve_settings] == [0x85,0,1,1,5,0,0,0,0x80]
+assert [int(r['data']['verified_mask'],16) for r in curve_settings] == [0x85,0,0,0,1,0,0,0x85,0x80]
+for r in curve_settings:
+    data = r['data']
+    assert not data['physical_mapping_verified'] and not data['hardware_effect_measured']
+    assert data['verified'] == r['ok']
+    for core in data['cores']:
+        if core['verified']: assert int(core['readback_raw'],16) == data['margin_counts'] & 0xffffffff
+        if not core['attempted']: assert not core['accepted']
+assert curve_settings[4]['data']['stopped_core'] == 2 and curve_settings[4]['data']['cores'][2]['readback_raw'] is None
+curve_selections = [r for r in reports if r['command'] == 'amd-curve-read' and 'cores' in r['data']]
+assert len(curve_selections) == 2 and curve_selections[1]['data']['cores'] is None
+assert [c['firmware_core'] for c in curve_selections[0]['data']['cores']] == [0,2,7]
 platform_reports=[r for r in reports if r['command']=='intel-read' and 'readings' in r['data']]
 assert len(platform_reports)==81
 hwp_context_reports=platform_reports[63:]
@@ -1204,9 +1220,9 @@ for result in vf[2:5]:
     assert all(failed[0][key] is None for key in ("raw", "ratio", "offset_mv"))
 assert not vf[4]["data"]["scan_completed"] and vf[4]["data"]["points"][0]["firmware_status"] is None
 assert vf[5]["data"]["points"] == [] and not vf[5]["data"]["scan_completed"]
-curve = [r for r in reports if r["command"] == "amd-curve-read" and r["ok"]][0]
+curve = [r for r in reports if r["command"] == "amd-curve-read" and r["ok"] and "raw" in r["data"]][0]
 assert curve["data"]["raw"] == "0xffffffe2" and curve["data"]["raw_signed"] == -30
-curve_fail = [r for r in reports if r["command"] == "amd-curve-read" and r["error"] == -5][0]
+curve_fail = [r for r in reports if r["command"] == "amd-curve-read" and r["error"] == -5 and "raw" in r["data"]][0]
 assert curve_fail["data"]["raw"] is None and curve_fail["data"]["message_attempted"]
 pstate = [r for r in reports if r["command"] == "amd-pstates" and r["ok"]][0]
 assert pstate["data"]["rows"][0]["raw"] == "0xfffffffffffffc00"

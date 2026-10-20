@@ -3367,6 +3367,97 @@ private slots:
         device->pciId = 0x14d81022; read->click(); QTRY_VERIFY(panel.isEnabled());
         QCOMPARE(table->rowCount(), 0); QCOMPARE(device->commands, 2u);
     }
+    void curveSelectionWritesAndNoops() {
+        auto *device = new AmdCurveFixture; device->writable = true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
+        panel.resize(1100,900); panel.show();
+        panel.findChild<QLineEdit *>("curveCcd")->setText("3");
+        panel.findChild<QLineEdit *>("curveCore")->setText("0,2,7");
+        panel.findChild<QLineEdit *>("curveMargin")->setText("-25");
+        auto *read = panel.findChild<QPushButton *>("curveRead"), *apply = panel.findChild<QPushButton *>("curveApply");
+        auto *table = panel.findChild<QTableWidget *>("smuTable"); auto *status = panel.findChild<QLabel *>("smuStatus");
+        apply->click(); QCOMPARE(device->calls, 0u); QVERIFY(status->text().contains("Read selected"));
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(), 4);
+        auto shot = qEnvironmentVariable("OCTOOL_CURVE_SELECTION_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        const unsigned calls = device->calls;
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Cancel)->click(); });
+        apply->click(); QCOMPARE(device->calls, calls);
+        bool described = false;
+        QTimer::singleShot(0, [&] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) {
+            described = box->text().contains("CCD 3") && box->text().contains("cores 0,2,7") && box->text().contains("-25 (not mV)");
+            box->button(QMessageBox::Yes)->click();
+        }});
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(described); QCOMPARE(device->settings, 3u);
+        QVERIFY(status->text().contains("verified by firmware readback")); QCOMPARE(table->rowCount(), 10);
+        QCOMPARE(table->item(1,1)->text(), QString("Readback matched")); QCOMPARE(table->item(3,1)->text(), hexValue(std::uint32_t(-25),4));
+        shot = qEnvironmentVariable("OCTOOL_CURVE_WRITE_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        apply->click(); QVERIFY(status->text().contains("Read selected")); QCOMPARE(device->settings, 3u);
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settings, 3u);
+        QCOMPARE(table->item(1,1)->text(), QString("Unchanged; rechecked"));
+    }
+    void curvePartialUpdateReportsEachCore() {
+        auto *device = new AmdCurveFixture; device->writable = true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
+        panel.resize(1100,900); panel.show();
+        panel.findChild<QLineEdit *>("curveCcd")->setText("3"); panel.findChild<QLineEdit *>("curveCore")->setText("0,2,7");
+        panel.findChild<QLineEdit *>("curveMargin")->setText("-25");
+        panel.findChild<QPushButton *>("curveRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        device->afterRequest = [&] { if (device->settings) device->writeCompletion = 0xfe; };
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        panel.findChild<QPushButton *>("curveApply")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *table = panel.findChild<QTableWidget *>("smuTable"); auto *status = panel.findChild<QLabel *>("smuStatus");
+        QCOMPARE(device->settings, 2u); QVERIFY(status->text().contains("Stopped at write, core 2"));
+        QCOMPARE(table->item(1,1)->text(), QString("Readback matched"));
+        QCOMPARE(table->item(4,1)->text(), QString("Attempted; not confirmed"));
+        QCOMPARE(table->item(6,1)->text(), QString("No setting command sent"));
+        QVERIFY(status->text().contains("Earlier changes may remain"));
+        const auto shot = qEnvironmentVariable("OCTOOL_CURVE_PARTIAL_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+    }
+    void curveSetRejectsInvalidCountsAndConflicts() {
+        auto *device = new AmdCurveFixture; device->writable = true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
+        panel.findChild<QLineEdit *>("curveCcd")->setText("3"); panel.findChild<QLineEdit *>("curveCore")->setText("0");
+        panel.findChild<QPushButton *>("curveRead")->click(); QTRY_VERIFY(panel.isEnabled()); const unsigned calls = device->calls;
+        auto *margin = panel.findChild<QLineEdit *>("curveMargin"); auto *apply = panel.findChild<QPushButton *>("curveApply");
+        for (const QString value : {QString(""),QString("-51"),QString("51"),QString("1.5"),QString("1e1")}) {
+            margin->setText(value); apply->click(); QCOMPARE(device->calls, calls);
+        }
+        margin->setText("-25"); device->margins[24] = 0;
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settings, 0u);
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("Stopped at preflight"));
+        panel.findChild<QPushButton *>("curveRead")->click(); QTRY_VERIFY(panel.isEnabled()); device->discardChange = true;
+        QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settings, 1u);
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("Stopped at verify"));
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->item(1,1)->text(), QString("Accepted; readback not confirmed"));
+    }
+    void curveTargetChangesInvalidateConfirmation() {
+        auto *device = new AmdCurveFixture; device->writable = true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
+        panel.findChild<QLineEdit *>("curveCcd")->setText("3"); panel.findChild<QLineEdit *>("curveCore")->setText("0,2");
+        panel.findChild<QLineEdit *>("curveMargin")->setText("-25");
+        panel.findChild<QPushButton *>("curveRead")->click(); QTRY_VERIFY(panel.isEnabled()); const unsigned calls = device->calls;
+        QTimer::singleShot(0, [&] {
+            panel.findChild<QLineEdit *>("curveCore")->setText("7");
+            auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click();
+        });
+        panel.findChild<QPushButton *>("curveApply")->click(); QCOMPARE(device->calls, calls); QCOMPARE(device->settings, 0u);
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("Inputs changed"));
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(), 0);
+    }
+    void curvePendingReadDoesNotPublishChangedTarget() {
+        auto *device = new AmdCurveFixture;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
+        panel.findChild<QLineEdit *>("curveCcd")->setText("3"); panel.findChild<QLineEdit *>("curveCore")->setText("0");
+        panel.findChild<QPushButton *>("curveRead")->click();
+        panel.findChild<QLineEdit *>("curveCore")->setText("7");
+        QTRY_VERIFY(panel.isEnabled()); QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(), 0);
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("Inputs changed"));
+        const unsigned calls = device->calls; panel.findChild<QPushButton *>("curveApply")->click(); QCOMPARE(device->calls, calls);
+    }
     void spdXmpOfflineValuesAndSectionErrors() {
         QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path = dir.filePath("profiles.spd");
         auto bytes = octool::test::spdFixture();

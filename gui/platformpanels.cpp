@@ -159,7 +159,7 @@ void IntelControlsPanel::apply() {
 AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *parent, unsigned cpu)
     : QWidget(parent), access_(std::move(access)), cancelled_(std::make_shared<std::atomic<bool>>(false)) {
     setObjectName("amdTuning"); auto *layout = new QVBoxLayout(this);
-    description("AMD tuning · firmware commands and curve query\n"
+    description("AMD tuning · firmware commands and per-core / CCD curve controls\n"
         "Probe checks CPU family and the selected PCI device without sending a command. "
         "Arguments are firmware encodings in hex; physical units and board-specific presets are still being verified. "
         "Shimada control names come from the original program, with no target-machine validation yet.", layout, this);
@@ -194,12 +194,18 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     form->addRow("Shimada frequency (decimal firmware indices)",frequency);
     auto *curve = new QHBoxLayout;
     curveCcd_ = edit("curveCcd", "", this); curveCore_ = edit("curveCore", "", this);
-    curveCcd_->setPlaceholderText("CCD 0..15"); curveCore_->setPlaceholderText("Core 0..7");
+    curveCcd_->setPlaceholderText("CCD 0..15"); curveCore_->setPlaceholderText("Cores: 0 or 0,2,7");
     curve->addWidget(curveCcd_); curve->addWidget(curveCore_);
     auto *readCurveButton = new QPushButton("Read curve", this); readCurveButton->setObjectName("curveRead");
     curve->addWidget(readCurveButton);
     form->addRow("Shimada curve (decimal firmware indices)", curve);
     connect(readCurveButton, &QPushButton::clicked, this, [this] { readCurve(); });
+    auto *curveEdit = new QHBoxLayout;
+    curveMargin_ = edit("curveMargin", "", this); curveMargin_->setPlaceholderText("CO count -50..50");
+    curveEdit->addWidget(curveMargin_);
+    auto *applyCurveButton = new QPushButton("Apply curve to selected cores…", this); applyCurveButton->setObjectName("curveApply");
+    curveEdit->addWidget(applyCurveButton); form->addRow("Read selected cores first · counts, not mV", curveEdit);
+    connect(applyCurveButton, &QPushButton::clicked, this, [this] { applyCurve(); });
     auto *args = new QHBoxLayout;
     for (unsigned i = 0; i < 6; ++i) { args_[i] = edit(qPrintable(QString("smuArg%1").arg(i)), "0", this); args_[i]->setPlaceholderText(QString("Arg%1").arg(i)); args->addWidget(args_[i]); }
     form->addRow("Arg0 … Arg5 (32-bit hex)", args); layout->addLayout(form);
@@ -226,53 +232,109 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
         status_->setText("Frequency command prepared. CCD/core are firmware indices, not Linux CPU numbers; their presence is not verified. Review before sending.");
     });
     connect(probe, &QPushButton::clicked, this, [this] { submit(true); }); connect(send, &QPushButton::clicked, this, [this] { submit(false); });
-    auto clear = [this] { table_->setRowCount(0); status_->setText("Inputs changed. Previous results cleared."); };
+    auto clear = [this] { invalidateCurve(); status_->setText("Inputs changed. Previous results cleared."); };
     for (auto *e : {cpu_, bus_, device_, function_, curveCcd_, curveCore_}) connect(e, &QLineEdit::textChanged, this, clear);
     connect(profile_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, clear);
 }
 AmdTuningPanel::~AmdTuningPanel() { cancelled_->store(true); }
+void AmdTuningPanel::invalidateCurve() { ++curveRevision_; curveSnapshot_ = {}; table_->setRowCount(0); }
 void AmdTuningPanel::readCurve() {
     using namespace octool::core;
-    table_->setRowCount(0);
-    quint64 cpu = 0, bus = 0, device = 0, function = 0, ccd = 0, core = 0;
+    invalidateCurve();
+    quint64 cpu = 0, bus = 0, device = 0, function = 0, ccd = 0;
+    unsigned coreMask = 0;
     if (profile_->currentData().toInt() != int(SmuProfile::Shimada) ||
         !parseNumber(cpu_->text(), 10, UINT32_MAX, cpu) || !parseNumber(bus_->text(), 16, 0, bus) ||
         !parseNumber(device_->text(), 16, 0, device) || !parseNumber(function_->text(), 16, 0, function) ||
-        !parseNumber(curveCcd_->text(), 10, 15, ccd) || !parseNumber(curveCore_->text(), 10, 7, core)) {
-        status_->setText("Curve query requires Shimada at 0000:00:00.0, a valid logical CPU, and decimal firmware CCD 0..15 / core 0..7. No query sent.");
+        !parseNumber(curveCcd_->text(), 10, 15, ccd) || !parseAmdCurveCores(curveCore_->text().toStdString(), coreMask)) {
+        status_->setText("Curve query requires Shimada at 0000:00:00.0, a valid logical CPU, decimal firmware CCD 0..15 and ascending core indices 0..7 (e.g. 0,2,7). No query sent.");
         return;
     }
     SmuTarget target; target.cpu = unsigned(cpu); target.profile = SmuProfile::Shimada;
     setEnabled(false); status_->setText("Reading curve for the specified firmware CCD/core…");
-    auto *watcher = new QFutureWatcher<AmdCurveReply>(this);
-    connect(watcher, &QFutureWatcher<AmdCurveReply>::finished, this, [this, watcher, ccd, core] {
+    const unsigned revision = curveRevision_;
+    auto *watcher = new QFutureWatcher<AmdCurveSnapshot>(this);
+    connect(watcher, &QFutureWatcher<AmdCurveSnapshot>::finished, this, [this, watcher, target, revision] {
         const auto r = watcher->result();
-        if (r.error || !r.valid) {
+        if (revision != curveRevision_) {
+            status_->setText("Inputs changed while reading. Read selected cores again.");
+        } else if (r.error || !r.valid) {
             status_->setText(failure(r.error ? r.error : -EIO) +
-                QString(" Curve value unavailable. Firmware response: %1. No retry performed.").arg(hexValue(r.response, 4)));
+                " Curve value unavailable. No retry performed.");
         } else {
-            append(table_, {"Firmware CCD", QString::number(ccd)});
-            append(table_, {"Firmware core in CCD", QString::number(core)});
-            append(table_, {"Firmware response", hexValue(r.response, 4)});
-            append(table_, {"Curve raw (hex)", hexValue(r.raw, 4)});
-            const qint64 signedRaw = r.raw <= 0x7fffffffu ? qint64(r.raw) : qint64(r.raw) - (Q_INT64_C(1) << 32);
-            append(table_, {"Curve raw (signed decimal)", QString::number(signedRaw)});
-            status_->setText("Curve query completed. Raw firmware value, not mV. Physical-core mapping is unverified; no curve setting changed.");
+            curveSnapshot_ = r; curveTarget_ = target;
+            const bool single = !(r.coreMask & (r.coreMask-1));
+            append(table_, {"Firmware CCD", QString::number(r.ccd)});
+            for (unsigned core = 0; core < 8; ++core) if (r.coreMask & (1u << core)) {
+                const qint64 raw = r.raw[core] <= 0x7fffffffu ? qint64(r.raw[core]) : qint64(r.raw[core]) - (Q_INT64_C(1) << 32);
+                if (single) {
+                    append(table_, {"Firmware core in CCD", QString::number(core)});
+                    append(table_, {"Firmware response", hexValue(1, 4)});
+                    append(table_, {"Curve raw (hex)", hexValue(r.raw[core], 4)});
+                    append(table_, {"Curve raw (signed decimal)", QString::number(raw)});
+                } else append(table_, {QString("Firmware core %1").arg(core), QString("%1 · signed %2").arg(hexValue(r.raw[core], 4)).arg(raw)});
+            }
+            status_->setText("Curve query completed. Raw firmware value, not mV. Physical-core mapping is unverified. Review selected cores and count before applying.");
         }
         setEnabled(true); watcher->deleteLater();
     });
     const auto access = access_; const auto cancelled = cancelled_;
-    watcher->setFuture(QtConcurrent::run([access, cancelled, target, ccd, core] {
-        AmdCurveReply out;
+    watcher->setFuture(QtConcurrent::run([access, cancelled, target, ccd, coreMask] {
+        AmdCurveSnapshot out;
         const int error = access->transaction([&](HardwareSession &s) {
-            out = readShimadaCurve(s, target, unsigned(ccd), unsigned(core)); return out.error;
+            out = readShimadaCurves(s, target, unsigned(ccd), coreMask); return out.error;
         }, 10000, cancelled.get());
-        if (error) { out.error = error; out.valid = false; out.raw = 0; }
+        if (error) { out.error = error; out.valid = false; out.raw = {}; }
+        return out;
+    }));
+}
+void AmdTuningPanel::applyCurve() {
+    using namespace octool::core;
+    if (!curveSnapshot_.valid) { status_->setText("Read selected cores before applying a curve count."); return; }
+    bool ok = false; const int margin = curveMargin_->text().toInt(&ok, 10);
+    if (!ok || margin < -50 || margin > 50) { status_->setText("Curve margin requires an integer CO count -50..50, not mV."); return; }
+    const auto expected = curveSnapshot_; const auto target = curveTarget_; const unsigned revision = curveRevision_;
+    QStringList cores;
+    for (unsigned core = 0; core < 8; ++core) if (expected.coreMask & (1u << core)) cores << QString::number(core);
+    if (QMessageBox::question(this, "Apply AMD curve counts",
+        QString("Shimada family 1Ah/model 08h · logical CPU %1\nFirmware CCD %2 · cores %3\nNew CO count: %4 (not mV)\n"
+                "Firmware indices are entered manually; physical-core mapping is unverified.\n"
+                "Old values will be rechecked, then each change read back. Stops on first failure; earlier changes may remain. No automatic retry or rollback.")
+            .arg(target.cpu).arg(expected.ccd).arg(cores.join(",")).arg(margin),
+        QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Yes) return;
+    if (revision != curveRevision_) { status_->setText("Inputs changed. Read selected cores again."); return; }
+    curveSnapshot_ = {}; table_->setRowCount(0); setEnabled(false); status_->setText("Rechecking and updating selected curve counts…");
+    auto *watcher = new QFutureWatcher<AmdCurveUpdate>(this);
+    connect(watcher, &QFutureWatcher<AmdCurveUpdate>::finished, this, [this, watcher, expected, revision] {
+        const auto r = watcher->result();
+        if (revision == curveRevision_) {
+            append(table_, {"Firmware CCD", QString::number(expected.ccd)});
+            for (unsigned core = 0; core < 8; ++core) if (expected.coreMask & (1u << core)) {
+                const unsigned bit = 1u << core;
+                const QString state = r.unchangedMask & bit ? "Unchanged; rechecked" : r.verifiedMask & bit ? "Readback matched" :
+                    r.acceptedMask & bit ? "Accepted; readback not confirmed" : r.attemptedMask & bit ? "Attempted; not confirmed" : "No setting command sent";
+                append(table_, {QString("Firmware core %1").arg(core), state});
+                if (r.beforeMask & bit) append(table_, {QString("Core %1 previous raw").arg(core), hexValue(r.before[core], 4)});
+                if (r.afterMask & bit) append(table_, {QString("Core %1 readback raw").arg(core), hexValue(r.after[core], 4)});
+            }
+        }
+        status_->setText((r.error ? failure(r.error) + QString(" Stopped at %1, core %2. Earlier changes may remain. No retry or rollback.")
+            .arg(amdCurvePhaseName(r.phase)).arg(r.core < 8 ? QString::number(r.core) : "—") :
+            QString("Selected curve counts verified by firmware readback. Physical voltage, stability and physical-core mapping are not measured.")) +
+            (revision == curveRevision_ ? " Read again before another edit." : " Inputs changed; read selected cores again."));
+        setEnabled(true); watcher->deleteLater();
+    });
+    const auto access = access_; const auto cancelled = cancelled_;
+    watcher->setFuture(QtConcurrent::run([access, cancelled, target, expected, margin] {
+        AmdCurveUpdate out;
+        const int error = access->transaction([&](HardwareSession &s) { out = setShimadaCurves(s, target, expected, margin); return out.error; }, 10000, cancelled.get());
+        if (error) out.error = error;
         return out;
     }));
 }
 void AmdTuningPanel::readTopology() {
     using namespace octool::core;
+    invalidateCurve();
     quint64 cpu=0;
     if(!parseNumber(cpu_->text(),10,UINT32_MAX,cpu)) { table_->setRowCount(0); status_->setText("Invalid logical CPU."); return; }
     table_->setRowCount(0); setEnabled(false); status_->setText("Reading selected CPU topology…");
@@ -317,6 +379,7 @@ void AmdTuningPanel::submit(bool probeOnly) {
     if (!probeOnly && QMessageBox::question(this,"Send AMD firmware command",QString("%1\nTarget 0000:%2:%3.%4\n%5\nArguments: %6\nThis sends a firmware command; no automatic retry or rollback.")
         .arg(profile_->currentText()).arg(bus,2,16,QChar('0')).arg(device,2,16,QChar('0')).arg(function,0,16)
         .arg(command_->currentText()).arg(arguments),QMessageBox::Yes|QMessageBox::Cancel,QMessageBox::Cancel) != QMessageBox::Yes) return;
+    invalidateCurve();
     struct Result { SmuProbe probe; SmuReply reply; int error = 0; };
     table_->setRowCount(0); setEnabled(false); status_->setText(probeOnly ? "Checking identity…" : "Waiting for firmware…");
     auto *watcher = new QFutureWatcher<Result>(this);

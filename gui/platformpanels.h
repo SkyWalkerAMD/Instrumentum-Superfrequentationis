@@ -2,6 +2,7 @@
 #pragma once
 #include "access.h"
 #include "core/intel_controls.h"
+#include "core/amd_curve.h"
 #include <QWidget>
 class QLabel;
 class QLineEdit;
@@ -34,10 +35,15 @@ private:
     void submit(bool probeOnly);
     void readTopology();
     void readCurve();
+    void applyCurve();
+    void invalidateCurve();
     std::shared_ptr<HardwareAccess> access_;
     std::shared_ptr<std::atomic<bool>> cancelled_;
     QLineEdit *cpu_, *bus_, *device_, *function_, *args_[6];
-    QLineEdit *curveCcd_, *curveCore_;
+    QLineEdit *curveCcd_, *curveCore_, *curveMargin_;
+    octool::core::AmdCurveSnapshot curveSnapshot_;
+    octool::core::SmuTarget curveTarget_;
+    unsigned curveRevision_ = 0;
     QComboBox *profile_, *command_;
     QLabel *status_;
     QTableWidget *table_;

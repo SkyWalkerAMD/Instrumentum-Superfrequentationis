@@ -26,4 +26,4 @@ class AmdCurveCore(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             result = subprocess.run([str(binary)], capture_output=True, text=True, timeout=90)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertEqual(result.stdout.strip(), '7 AMD curve query scenario groups passed')
+            self.assertEqual(result.stdout.strip(), '15 AMD curve scenario groups passed')
