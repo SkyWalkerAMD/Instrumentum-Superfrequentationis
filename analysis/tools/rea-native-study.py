@@ -36,6 +36,10 @@ def main():
     if not node or not rea.is_file():
         raise ValueError('Missing analysis runtime')
     sequence, records = 0, []
+    startup_ms = int(os.environ.get('REA_GHIDRA_STARTUP_TIMEOUT_MS', '600000'))
+    if not 1 <= startup_ms <= 2147483647:
+        raise ValueError('Invalid Ghidra startup deadline')
+    request_timeout = startup_ms / 1000 + 120
 
     def save(name, value):
         (output / (name + '.json')).write_text(json.dumps(value, indent=2) + '\n', encoding='utf-8')
@@ -44,7 +48,7 @@ def main():
         # Deliberately do not inherit GitHub credentials or the caller's configs.
         env = {key: os.environ[key] for key in (
             'PATH', 'JAVA_HOME', 'GHIDRA_INSTALL_DIR', 'GHIDRA_HEADLESS_MAXMEM',
-            'REA_GHIDRA_STARTUP_TIMEOUT_MS') if key in os.environ}
+            'REA_GHIDRA_STARTUP_TIMEOUT_MS', 'REA_GHIDRA_DISABLED_ANALYZERS') if key in os.environ}
         env.update(HOME=temporary, TMPDIR=temporary, LANG='C.UTF-8',
                    REA_ANALYSIS_PROVIDER='ghidra')
         with (output / 'rea-stderr.log').open('w', encoding='utf-8') as errors:
@@ -67,7 +71,7 @@ def main():
 
             threading.Thread(target=receive, daemon=True).start()
 
-            def send(method, params, request=True, timeout=2520):
+            def send(method, params, request=True, timeout=request_timeout):
                 nonlocal sequence
                 sequence += 1
                 message = dict(jsonrpc='2.0', method=method, params=params)
@@ -101,6 +105,7 @@ def main():
                 return value
 
             opened = False
+            failure = None
             try:
                 save('initialize', send('initialize', dict(protocolVersion='2024-11-05',
                     capabilities={}, clientInfo=dict(name='octool-static-study', version='1'))))
@@ -121,15 +126,29 @@ def main():
                     call('procedure_pseudo_code', dict(procedure=address), 'pseudo-' + address)
                     call('procedure_info', dict(procedure=address), 'info-' + address)
                 call('procedure_callers', dict(procedure=PROCEDURES[0]), 'pm-callers')
-                call('export_evidence_bundle', dict(path=str(output / 'evidence.json')), 'export')
+            except Exception as error:
+                failure = error
             finally:
                 if opened:
+                    # Provider errors can exceed the MCP response budget. Export
+                    # retained evidence before closing, even on a failed query.
+                    try:
+                        call('export_evidence_bundle', dict(path=str(output / 'evidence.json')), 'export')
+                    except Exception as error:
+                        save('export-error', dict(error=str(error)))
+                        if failure is None:
+                            failure = error
                     try:
                         call('close_binary', {}, 'close')
                     except Exception as error:
                         save('close-error', dict(error=str(error)))
+                        if failure is None:
+                            failure = error
                 save('study', dict(schema=1, source_sha256=SOURCE_SHA, hardware_execution=False,
-                    rea_version='6.7.0', ghidra_version='12.1.4', records=records))
+                    rea_version='6.7.0', ghidra_version='12.1.4', records=records,
+                    startup_timeout_ms=startup_ms,
+                    disabled_analyzers=env.get('REA_GHIDRA_DISABLED_ANALYZERS', ''),
+                    error=None if failure is None else str(failure)))
                 proc.stdin.close()
                 try:
                     proc.wait(timeout=30)
@@ -142,6 +161,8 @@ def main():
                         proc.wait(timeout=10)
     if hashlib.sha256(binary.read_bytes()).hexdigest() != SOURCE_SHA:
         raise ValueError('Reference changed during analysis')
+    if failure is not None:
+        raise failure
     print('Static study completed; no target execution or hardware acceptance', flush=True)
 
 

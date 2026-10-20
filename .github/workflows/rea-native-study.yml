@@ -5,6 +5,15 @@ on:
       - '.github/workflows/rea-native-study.yml'
       - 'analysis/tools/rea-native-study.py'
   workflow_dispatch:
+    inputs:
+      startup_timeout_ms:
+        description: Ghidra startup deadline in milliseconds
+        type: string
+        default: '600000'
+      disabled_analyzers:
+        description: Exact Ghidra analyzer names to disable (comma-separated)
+        type: string
+        default: ''
 permissions:
   contents: read
 jobs:
@@ -59,7 +68,8 @@ jobs:
         env:
           GHIDRA_INSTALL_DIR: ${{ github.workspace }}/build/rea-tools/ghidra_12.1.4_PUBLIC
           GHIDRA_HEADLESS_MAXMEM: 4G
-          REA_GHIDRA_STARTUP_TIMEOUT_MS: '2400000'
+          REA_GHIDRA_STARTUP_TIMEOUT_MS: ${{ inputs.startup_timeout_ms || '600000' }}
+          REA_GHIDRA_DISABLED_ANALYZERS: ${{ inputs.disabled_analyzers }}
         run: |
           python3 analysis/tools/rea-native-study.py \
             --binary build/rea-input/octool \
