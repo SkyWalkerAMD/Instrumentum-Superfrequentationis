@@ -35,7 +35,7 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 1116, len(reports)
+assert len(reports) == 1132, len(reports)
 platform_reports=[r for r in reports if r['command']=='intel-read' and 'readings' in r['data']]
 assert len(platform_reports)==81
 hwp_context_reports=platform_reports[63:]
@@ -664,7 +664,8 @@ with tempfile.TemporaryDirectory(prefix="octool-pm-") as directory:
     path.write_text(json.dumps(decoded), encoding="utf-8")
     assert run("amd-pm-decode", "--file", str(path))["data"]["pm"] == capture
     for source in (limit_reports[0], limit_reports[11], limit_reports[12], limit_reports[16],
-                   package_reports[0], package_reports[8], package_reports[16]):
+                   package_reports[0], package_reports[8], package_reports[16],
+                   fabric_reports[0], fabric_reports[8], fabric_reports[10], fabric_reports[14]):
         path.write_text(json.dumps(source),encoding='utf-8')
         decoded = run('amd-pm-decode','--file',str(path),code=0 if source['ok'] else 3)
         assert decoded['data']['pm'] == source['data']['pm']

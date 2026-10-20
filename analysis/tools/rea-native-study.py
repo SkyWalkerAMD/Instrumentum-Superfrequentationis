@@ -18,8 +18,25 @@ import threading
 import time
 
 SOURCE_SHA = '44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10'
-# Exact symbol starts in the hash-verified original ELF.
-PROCEDURES = ('0x2e7360', '0x2c7910', '0x2254c0', '0x21e770', '0x21e6f0')
+# Exact file offsets in the executable PT_LOAD of the hash-verified ELF.
+# These happen to equal ELF virtual addresses. Ghidra may relocate this PIE;
+# unqualified hexadecimal queries could select an unrelated function.
+PROCEDURES = (('0x2e7360', 'get_pm_patch'), ('0x2c7910', 'AMD_PM_LOG'),
+              ('0x2254c0', 'Wr_Scratch2'), ('0x21e770', 'get_fused_ccd'),
+              ('0x21e6f0', 'get_amd_native_thread_count'))
+
+
+def selected_address(reply, offset):
+    evidence = reply['structuredContent']
+    if not isinstance(evidence.get('normalized_result'), str) or not evidence['normalized_result'].strip():
+        raise ValueError('REA returned no function pseudocode')
+    locations = evidence.get('locations', [])
+    source = [item['offset'] for item in locations if item.get('kind') == 'file-offset']
+    addresses = [item['address'] for item in locations if item.get('kind') == 'address']
+    # REA 6.7.0 supplies the mapped address then the containing procedure start.
+    if source != [int(offset, 16)] or len(addresses) != 2 or addresses[0] != addresses[1]:
+        raise ValueError('File offset did not resolve to an exact procedure start')
+    return addresses[0]
 
 
 def main():
@@ -122,10 +139,19 @@ def main():
                 save('selected-tool-schemas', {name: schemas[name] for name in names})
                 call('open_binary', dict(path=str(binary), provider_id='ghidra'), 'open')
                 opened = True
-                for address in PROCEDURES:
-                    call('procedure_pseudo_code', dict(procedure=address), 'pseudo-' + address)
-                    call('procedure_info', dict(procedure=address), 'info-' + address)
-                call('procedure_callers', dict(procedure=PROCEDURES[0]), 'pm-callers')
+                resolved = []
+                for offset, name in PROCEDURES:
+                    pseudo = call('procedure_pseudo_code',
+                        dict(procedure='file-offset:' + offset), 'pseudo-' + offset)
+                    address = selected_address(pseudo, offset)
+                    info = call('procedure_info', dict(procedure=address), 'info-' + offset)
+                    function = info['structuredContent']['normalized_result']
+                    if function['entrypoint'] != address or name not in function['name']:
+                        raise ValueError('Resolved function does not match the original ELF symbol')
+                    resolved.append(dict(file_offset=offset, analysis_address=address,
+                        expected_name=name, function=function, evidence_id=pseudo['structuredContent']['evidence_id']))
+                    save('resolved-functions', resolved)
+                call('procedure_callers', dict(procedure=resolved[0]['analysis_address']), 'pm-callers')
             except Exception as error:
                 failure = error
             finally:
