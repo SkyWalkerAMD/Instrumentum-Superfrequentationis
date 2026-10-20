@@ -133,6 +133,26 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
         field(out, out.originalFabric, links[i], "unverified", 0x154 + 4*i, false, "link_bandwidth");
     for (unsigned i = 0; i < 18; ++i)
         field(out, out.originalFabric, clocks[i], "unverified", 0x24c + 4*i, false, "internal_clocks");
+    // Original common vectors independently replayed by legacy-amd-pm-arrays.py.
+    // Slots are zero-based storage order; labels do not establish physical
+    // endpoints, actual DIMM population, units, or Boolean/mask semantics.
+    const auto array = [&](const char *group, const char *name, unsigned offset, unsigned count) {
+        for (unsigned i = 0; i < count; ++i) {
+            field(out, out.originalArrays, name, "unverified", offset + 4*i, false, group);
+            out.originalArrays.back().slot = i;
+            out.originalArrays.back().slotCount = count;
+        }
+    };
+    array("gmi_storage", "GMI_FULL_WIDTH", 0x294, 12);
+    array("gmi_storage", "GMI_HALF_WIDTH", 0x2c4, 12);
+    array("gmi_storage", "GMI_QUARTER_WIDTH", 0x2f4, 12);
+    array("dimm_storage", "DIMM_POWER", 0x324, 24);
+    array("dimm_storage", "DIMM_TEMP", 0x384, 24);
+    array("pcie_storage", "PCIE_ALLOWED", 0x3e4, 1);
+    array("pcie_storage", "PCIE_ACTIVE", 0x3e8, 1);
+    array("pcie_storage", "PCIE_UP_THRESHOLD", 0x3ec, 1);
+    array("pcie_storage", "PCIE_DOWN_THRESHOLD", 0x3f0, 1);
+    array("pcie_storage", "PCIE_IOHC_BANDWIDTH[4]", 0x3f4, 4);
     if (out.error) out.detail = "Some fields are non-finite or clock scaling is out of range; valid stored fields are retained";
     return out;
 }
@@ -154,6 +174,7 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
             ",\"scale_error\":" + std::to_string(v.scaleError) + ",\"scaled_clock_mhz\":" +
             (v.scaled ? number(v.scaledValue) : "null");
         if (!v.group.empty()) out += ",\"group\":" + quote(v.group);
+        if (v.slotCount) out += ",\"slot\":" + std::to_string(v.slot) + ",\"slot_count\":" + std::to_string(v.slotCount);
         out += '}';
       }
     };
@@ -164,13 +185,15 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
     appendFields(s.originalPackage);
     out += "],\"original_fabric_units_verified\":false,\"original_fabric_targets_verified\":false,\"original_fabric\":[";
     appendFields(s.originalFabric);
+    out += "],\"original_arrays_units_verified\":false,\"original_arrays_targets_verified\":false,\"original_arrays\":[";
+    appendFields(s.originalArrays);
     return out + "]}";
 }
 AmdPmSnapshot parseAmdPmCapture(const std::string &input) {
     using capture_json::Json; using capture_json::check;
     AmdPmSnapshot out;
     try {
-        const auto root = capture_json::Parser(input).parse();
+        const auto root = capture_json::Parser(input, amdPmCaptureMaximumBytes).parse();
         const Json *record = &root;
         if (root.has("schema_version")) {
             check(capture_json::uint(root.at("schema_version"), 1) == 1, "Unsupported CLI report version");

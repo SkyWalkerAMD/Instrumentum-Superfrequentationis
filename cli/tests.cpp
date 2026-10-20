@@ -1414,6 +1414,58 @@ void pmFabricCommands() {
     invoke({"--version","0x730204"},3);
     assert(!opens);
 }
+void pmArrayCommands() {
+    char path[]="/tmp/octool-pm-arrays-XXXXXX"; const int fd=mkstemp(path); assert(fd>=0); close(fd);
+    struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
+    unsigned opens=0; const auto factory=[&] { ++opens; return std::unique_ptr<HardwareBackend>(); };
+    const auto text=[&](const std::string &s) { std::ofstream f(path,std::ios::binary); f<<s; f.close(); assert(f); };
+    const auto binary=[&](const std::vector<std::uint8_t> &b) { text(std::string(b.begin(),b.end())); };
+    const auto invoke=[&](std::vector<std::string> options, int code) {
+        std::vector<std::string> args{"amd-pm-decode","--file",path}; args.insert(args.end(),options.begin(),options.end());
+        std::ostringstream out; assert(run(args,out,factory)==code);
+        if (emit) std::cout<<out.str();
+        return out.str();
+    };
+    for (const auto &layout : amdPmLayouts()) {
+        binary(pm_fixture::bytes(layout.bytes)); invoke({"--version",std::to_string(layout.version)},0);
+    }
+    for (unsigned offset : {0x294u,0x384u,0x400u}) {
+        auto b=pm_fixture::bytes(); pm_fixture::put(b,offset,0x7f800001); binary(b);
+        invoke({"--version","0x730204"},3);
+    }
+    auto negative=pm_fixture::bytes(); pm_fixture::put(negative,0x400,0x80000000); binary(negative);
+    invoke({"--version","0x730204"},0);
+    const auto capture=amdPmJson(decodeAmdPm(pm_fixture::bytes(),0x730204));
+    text(capture); invoke({},0);
+    const auto extension=capture.find(",\"original_arrays_units_verified\""); assert(extension!=std::string::npos);
+    text(capture.substr(0,extension)+"}"); invoke({},0);
+    auto forged=capture;
+    for (const auto &pair : {std::make_pair("\"original_arrays_units_verified\":false","\"original_arrays_units_verified\":true"),
+        std::make_pair("\"original_arrays_targets_verified\":false","\"original_arrays_targets_verified\":true"),
+        std::make_pair("\"name\":\"DIMM_POWER\"","\"name\":\"Forged module power\""),
+        std::make_pair("\"slot\":0,\"slot_count\":12","\"slot\":999,\"slot_count\":1000")}) {
+        const auto at=forged.find(pair.first); assert(at!=std::string::npos);
+        forged.replace(at,std::string(pair.first).size(),pair.second);
+    }
+    text(forged); const auto report=invoke({},0);
+    text(report); invoke({},0);
+    text(capture); invoke({"--bclk-mhz","123.25"},0);
+    auto truncated=pm_fixture::bytes(); truncated.resize(0x403); binary(truncated);
+    invoke({"--version","0x730204"},3);
+    auto extreme=pm_fixture::bytes(11636);
+    for (unsigned offset=0; offset<extreme.size(); offset+=4) pm_fixture::put(extreme,offset,0xff7fffff);
+    AmdPmOptions o; o.hasBclk=true; o.bclkMHz=123.25;
+    const auto full=amdPmJson(decodeAmdPm(extreme,0x731004,o));
+    assert(full.size()>65536 && full.size()<amdPmCaptureMaximumBytes);
+    text(full); const auto envelope=invoke({},0);
+    text(envelope); invoke({},0);
+    assert(envelope.size()<amdPmCaptureMaximumBytes);
+    const auto padded=envelope+std::string(amdPmCaptureMaximumBytes-envelope.size(),' ');
+    text(padded); invoke({},0);
+    text(padded+" "); const auto rejected=invoke({},3);
+    assert(rejected.find("\"error\":-27")!=std::string::npos);
+    assert(!opens);
+}
 void pmPackageCommands() {
     char path[]="/tmp/octool-pm-package-XXXXXX"; const int fd=mkstemp(path); assert(fd>=0); close(fd);
     struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
@@ -1871,10 +1923,10 @@ int main(int argc, char **argv) {
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); intelMemoryOdtCaptures(); intelMemoryOdtLive(); intelMemoryTemperatureCaptures(); intelMemoryTemperatureLive(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
-    hwpHistoryCommands(); pmLimitCommands(); pmPackageCommands(); pmFabricCommands();
+    hwpHistoryCommands(); pmLimitCommands(); pmPackageCommands(); pmFabricCommands(); pmArrayCommands();
     iccMaxCommands(); iccMaxInvalidBeforeOpen();
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "50 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "51 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

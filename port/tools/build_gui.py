@@ -128,6 +128,10 @@ def main():
                    OCTOOL_PM_LINK_TEST_SCREENSHOT=str((tests / "pm-link-fixture.png").resolve()),
                    OCTOOL_PM_CLOCK_TEST_SCREENSHOT=str((tests / "pm-clock-fixture.png").resolve()),
                    OCTOOL_PM_FABRIC_ERROR_TEST_SCREENSHOT=str((tests / "pm-fabric-error-fixture.png").resolve()),
+                   OCTOOL_PM_GMI_TEST_SCREENSHOT=str((tests / "pm-gmi-fixture.png").resolve()),
+                   OCTOOL_PM_DIMM_TEST_SCREENSHOT=str((tests / "pm-dimm-fixture.png").resolve()),
+                   OCTOOL_PM_PCIE_TEST_SCREENSHOT=str((tests / "pm-pcie-fixture.png").resolve()),
+                   OCTOOL_PM_ARRAY_ERROR_TEST_SCREENSHOT=str((tests / "pm-array-error-fixture.png").resolve()),
                    OCTOOL_PM_ERROR_TEST_SCREENSHOT=str((tests / "pm-error-fixture.png").resolve()))
         try:
             subprocess.run([str((tests / "gui-regression").resolve()), "-o", "gui-tests.txt,txt"],

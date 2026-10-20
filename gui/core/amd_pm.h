@@ -7,6 +7,9 @@
 #include <vector>
 
 namespace octool { namespace core {
+// PM captures include the full table and derived arrays. Other capture formats
+// retain their existing 64 KiB bound; JSON depth/node limits are unchanged.
+constexpr std::size_t amdPmCaptureMaximumBytes = 131072;
 struct AmdPmLayout { std::uint32_t version; std::size_t bytes; };
 const std::vector<AmdPmLayout> &amdPmLayouts();
 std::size_t amdPmTableSize(std::uint32_t version);
@@ -14,6 +17,8 @@ struct AmdPmOptions { bool hasBclk = false; double bclkMHz = 0; };
 struct AmdPmField {
     std::string name, unit, group;
     unsigned offset = 0;
+    // Nonzero only for original array storage. Never a physical target ID.
+    unsigned slot = 0, slotCount = 0;
     std::uint32_t raw = 0;
     bool clock = false, scaled = false;
     int error = 0, scaleError = 0;
@@ -36,6 +41,9 @@ struct AmdPmSnapshot {
     // Original link thresholds and internal-clock storage. No frequency,
     // bandwidth unit, active link state or physical index mapping is certified.
     std::vector<AmdPmField> originalFabric;
+    // GMI/DIMM/PCIe stored arrays. Counts describe storage, not installed or
+    // active devices. No unit, topology, enable mask or physical ID inferred.
+    std::vector<AmdPmField> originalArrays;
 };
 // Exact version and length; no prefix fallback or inferred CPU/core identity.
 // IEEE binary32 little endian. Invalid fields retain their bits, not a fake 0.

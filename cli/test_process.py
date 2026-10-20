@@ -35,7 +35,7 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 1132, len(reports)
+assert len(reports) == 1154, len(reports)
 platform_reports=[r for r in reports if r['command']=='intel-read' and 'readings' in r['data']]
 assert len(platform_reports)==81
 hwp_context_reports=platform_reports[63:]
@@ -552,8 +552,9 @@ with tempfile.TemporaryDirectory(prefix="octool-intel-memory-") as directory:
     os.mkfifo(Path(directory)/"fifo")
     assert run("intel-memory-decode","--file",str(Path(directory)/"fifo"),code=3)["data"]["memory"] is None
 pm_reports = [r for r in reports if r["command"] == "amd-pm-decode" and "pm" in r["data"]]
-assert len(pm_reports) == 72
-fabric_reports, package_reports, limit_reports, pm_reports = pm_reports[56:], pm_reports[38:56], pm_reports[20:38], pm_reports[:20]
+assert len(pm_reports) == 94
+array_reports = pm_reports[72:]
+fabric_reports, package_reports, limit_reports, pm_reports = pm_reports[56:72], pm_reports[38:56], pm_reports[20:38], pm_reports[:20]
 assert [r["ok"] for r in pm_reports] == [True] * 9 + [False, True, True, False, False, False, False, True, True, False, False]
 for i, r in enumerate(pm_reports):
     assert r["data"]["offline"] and not r["data"]["table_read_attempted"] and not r["data"]["direct_register_access"]
@@ -654,6 +655,38 @@ for i, report in enumerate(fabric_reports):
             assert f['stored_value']==20+n/2 and not f['error']
     assert pm['fields'][0]['scaled_clock_mhz']==(2465 if i==14 else None)
     assert all(not f['error'] for f in pm['fields']+pm['original_limits']+pm['original_package'])
+array_names = ['GMI_FULL_WIDTH','GMI_HALF_WIDTH','GMI_QUARTER_WIDTH','DIMM_POWER','DIMM_TEMP',
+    'PCIE_ALLOWED','PCIE_ACTIVE','PCIE_UP_THRESHOLD','PCIE_DOWN_THRESHOLD','PCIE_IOHC_BANDWIDTH[4]']
+array_widths = [12,12,12,24,24,1,1,1,1,4]
+array_labels = [name for name,width in zip(array_names,array_widths) for _ in range(width)]
+array_slots = [slot for width in array_widths for slot in range(width)]
+assert [r['ok'] for r in array_reports] == [True]*8+[False]*3+[True]*6+[False]+[True]*3+[False]
+for i, report in enumerate(array_reports):
+    pm=report['data']['pm']
+    assert report['data']['offline'] and not report['data']['table_read_attempted'] and not report['data']['direct_register_access']
+    assert pm['original_arrays_units_verified'] is False and pm['original_arrays_targets_verified'] is False
+    if i in (17,21):
+        assert all(pm[key]==[] for key in ('fields','original_limits','original_package','original_fabric','original_arrays'))
+        continue
+    fields=pm['original_arrays']
+    assert [f['name'] for f in fields]==array_labels
+    assert [int(f['offset'],16) for f in fields]==list(range(0x294,0x404,4))
+    assert [f['slot'] for f in fields]==array_slots
+    assert [f['slot_count'] for f in fields]==[width for width in array_widths for _ in range(width)]
+    assert [f['group'] for f in fields]==['gmi_storage']*36+['dimm_storage']*48+['pcie_storage']*8
+    for n,f in enumerate(fields):
+        assert f['unit']=='unverified' and not f['clock'] and not f['scale_error'] and f['scaled_clock_mhz'] is None
+        if (i,n) in ((8,0),(9,60),(10,91)):
+            assert f['stored_value'] is None and f['raw']=='0x7f800001' and f['error']==-33
+        elif i==11 and n==91:
+            assert f['stored_value']==0 and f['raw']=='0x80000000' and not f['error']
+        elif i>=18:
+            assert f['raw']=='0xff7fffff' and f['stored_value']==struct.unpack('<f',bytes.fromhex('ffff7fff'))[0]
+        else:
+            assert f['stored_value']==64+n and not f['error']
+    assert all(not f['error'] for f in pm['fields']+pm['original_limits']+pm['original_package']+pm['original_fabric'])
+    if i<18:
+        assert pm['fields'][0]['scaled_clock_mhz']==(2465 if i==16 else None)
 with tempfile.TemporaryDirectory(prefix="octool-pm-") as directory:
     root = Path(directory)
     capture = pm_reports[8]["data"]["pm"]
@@ -665,10 +698,17 @@ with tempfile.TemporaryDirectory(prefix="octool-pm-") as directory:
     assert run("amd-pm-decode", "--file", str(path))["data"]["pm"] == capture
     for source in (limit_reports[0], limit_reports[11], limit_reports[12], limit_reports[16],
                    package_reports[0], package_reports[8], package_reports[16],
-                   fabric_reports[0], fabric_reports[8], fabric_reports[10], fabric_reports[14]):
+                   fabric_reports[0], fabric_reports[8], fabric_reports[10], fabric_reports[14],
+                   array_reports[0],array_reports[9],array_reports[11],array_reports[16],array_reports[18],array_reports[19]):
         path.write_text(json.dumps(source),encoding='utf-8')
         decoded = run('amd-pm-decode','--file',str(path),code=0 if source['ok'] else 3)
         assert decoded['data']['pm'] == source['data']['pm']
+    complete=json.dumps(array_reports[18]).encode('utf-8')
+    assert 65536<len(complete)<131072
+    path.write_bytes(complete+b' '*(131072-len(complete)))
+    assert run('amd-pm-decode','--file',str(path))['data']['pm']==array_reports[18]['data']['pm']
+    path.write_bytes(path.read_bytes()+b' ')
+    assert run('amd-pm-decode','--file',str(path),code=3)['error']==-27
     raw = root / "raw.bin"; raw.write_bytes(bytes.fromhex(capture["raw_hex"]))
     decoded = run("amd-pm-decode", "--file", str(raw), "--version", capture["version"])
     assert decoded["data"]["pm"]["fields"][0]["scaled_clock_mhz"] is None

@@ -1039,7 +1039,7 @@ Result pmTable(const Command &c) {
     bool attempted = false;
     if (offline) {
         std::vector<std::uint8_t> bytes;
-        snapshot.error = platform::readBoundedFile(c.path, bytes, c.pmVersion ? amdPmTableSize(c.pmVersion) : 65536);
+        snapshot.error = platform::readBoundedFile(c.path, bytes, c.pmVersion ? amdPmTableSize(c.pmVersion) : amdPmCaptureMaximumBytes);
         if (snapshot.error) snapshot.detail = "Cannot read bounded PM capture file";
         else if (c.pmVersion) snapshot = decodeAmdPm(bytes, c.pmVersion, c.pmOptions);
         else {

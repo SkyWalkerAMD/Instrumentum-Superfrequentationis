@@ -40,6 +40,7 @@ inline void utf8(std::string &out, unsigned cp) {
 }
 class Parser {
     const std::string &input;
+    const std::size_t maximumBytes;
     std::size_t pos = 0, nodes = 0;
     char peek() const { return pos < input.size() ? input[pos] : '\0'; }
     char take() { check(pos < input.size(), "Truncated JSON"); return input[pos++]; }
@@ -129,9 +130,10 @@ class Parser {
         check(false, "Invalid JSON value"); return v;
     }
 public:
-    explicit Parser(const std::string &text) : input(text) {}
+    explicit Parser(const std::string &text, std::size_t byteLimit = 65536)
+        : input(text), maximumBytes(byteLimit) {}
     Json parse() {
-        check(!input.empty() && input.size() <= 65536, "Snapshot must contain 1..65536 bytes");
+        check(!input.empty() && input.size() <= maximumBytes, "Snapshot is empty or exceeds its byte limit");
         if (input.compare(0, 3, "\xef\xbb\xbf") == 0) pos = 3;
         auto out = value(0); space(); check(pos == input.size(), "Trailing data after JSON"); return out;
     }

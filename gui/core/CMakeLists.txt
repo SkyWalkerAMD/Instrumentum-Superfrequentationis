@@ -36,5 +36,5 @@ if(BUILD_TESTING)
     set_tests_properties(amd_curve_core PROPERTIES TIMEOUT 90)
     # Keep every-byte JSON truncation coverage as the monitor fields grow.
     # Address/undefined-behavior sanitizers make this parser exercise slower.
-    set_tests_properties(amd_pm_core PROPERTIES TIMEOUT 120)
+    set_tests_properties(amd_pm_core PROPERTIES TIMEOUT 240)
 endif()

@@ -33,7 +33,8 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader) : QWidget(parent), r
     auto *intro = new QLabel("AMD PM telemetry: eight exact Shimada table versions. Read the installed ryzen_smu driver, "
         "or open a saved table. Driver reads may request a firmware transfer; no driver is loaded automatically. "
         "Clock storage values and clocks scaled with a supplied BCLK are shown separately. "
-        "Original power, policy, limit, link and internal-clock monitors show stored values; their units, active state and physical targets are unverified.", this);
+        "Original monitors show stored values; their units, active state and physical targets are unverified. "
+        "GMI, DIMM and PCIe slots are storage indices, not installed devices or physical port numbers.", this);
     intro->setWordWrap(true); layout->addWidget(intro);
     controls_ = new QWidget(this); auto *controls = new QVBoxLayout(controls_); controls->setContentsMargins(0,0,0,0);
     auto *buttons = new QHBoxLayout;
@@ -56,7 +57,8 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader) : QWidget(parent), r
     view_->addItems({"Public telemetry", "Limit monitor (original mapping)",
         "Power (original mapping)", "Workload (original mapping)", "Power model (original mapping)",
         "Voltage policy (original mapping)", "Limit contributors (original mapping)",
-        "Link bandwidth (original mapping)", "Internal clocks (original mapping)"});
+        "Link bandwidth (original mapping)", "Internal clocks (original mapping)",
+        "GMI stored arrays", "DIMM stored arrays", "PCIe stored arrays"});
     viewRow->addWidget(view_); viewRow->addStretch();
     layout->addLayout(viewRow);
     metadata_ = new QLabel(this); metadata_->setObjectName("pmMetadata"); metadata_->setTextFormat(Qt::PlainText); layout->addWidget(metadata_);
@@ -113,7 +115,7 @@ void AmdPmPanel::readDriver() {
 bool AmdPmPanel::loadSnapshotFile(const QString &path) {
     if (busy_) return false;
     clear(); std::vector<std::uint8_t> bytes; AmdPmSnapshot result;
-    result.error = octool::platform::readBoundedFile(path.toStdString(), bytes, 65536);
+    result.error = octool::platform::readBoundedFile(path.toStdString(), bytes, amdPmCaptureMaximumBytes);
     if (result.error) result.detail = "Cannot read PM snapshot file";
     else result = parseAmdPmCapture(std::string(bytes.begin(), bytes.end()));
     present(result, "Offline snapshot: " + path); return !result.error;
@@ -148,16 +150,18 @@ void AmdPmPanel::showFields() {
     const int index = view_->currentIndex();
     const bool original = index != 0;
     const char *groups[] = {"power", "workload", "power_model", "voltage_policy", "limit_contributors",
-        "link_bandwidth", "internal_clocks"};
+        "link_bandwidth", "internal_clocks", "gmi_storage", "dimm_storage", "pcie_storage"};
     const auto &fields = index == 0 ? s.fields : index == 1 ? s.originalLimits :
-        index < 7 ? s.originalPackage : s.originalFabric;
+        index < 7 ? s.originalPackage : index < 9 ? s.originalFabric : s.originalArrays;
     table_->setRowCount(0);
     for (const auto &f : fields) {
-        if (index >= 2 && (index > 8 || f.group != groups[index-2])) continue;
+        if (index >= 2 && (index > 11 || f.group != groups[index-2])) continue;
         const int row = table_->rowCount(); table_->insertRow(row);
         const QString state = f.error ? "Non-finite stored value" : f.scaleError ? "Clock scaling out of range" :
             original ? "Units unverified" : f.clock && !s.options.hasBclk ? "BCLK not supplied" : "Decoded";
-        const QStringList values{QString::fromStdString(f.name), f.error ? "Unavailable" : number(f.value), original ? QString("Unverified") : QString::fromStdString(f.unit),
+        const QString label = QString::fromStdString(f.name) +
+            (f.slotCount > 1 ? QString(" [slot %1]").arg(f.slot) : QString());
+        const QStringList values{label, f.error ? "Unavailable" : number(f.value), original ? QString("Unverified") : QString::fromStdString(f.unit),
             f.scaled ? number(f.scaledValue) : QString("—"), hex(f.raw), hex(f.offset), state};
         for (int col = 0; col < values.size(); ++col) table_->setItem(row, col, new QTableWidgetItem(values[col]));
     }
