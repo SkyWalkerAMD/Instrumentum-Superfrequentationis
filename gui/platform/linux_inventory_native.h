@@ -22,6 +22,7 @@ struct NativeInventorySnapshot {
 // EEPROMs of bound ee1004/spd5118 drivers; never scans or creates I2C devices.
 NativeInventorySnapshot linuxInventoryNative(const std::string &root = "/sys");
 // Regular files only; nonblocking open also rejects FIFOs/devices without waiting.
-// Keep the 4 KiB inventory/SPD default; offline JSON may request up to 64 KiB.
+// Keep the 4 KiB inventory/SPD default. PM explicitly requests 128 KiB;
+// other offline formats retain their own 64 KiB (or smaller) caller limit.
 int readBoundedFile(const std::string &path, std::vector<std::uint8_t> &bytes, std::size_t maximum = 4096);
 } }

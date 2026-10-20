@@ -881,7 +881,7 @@ void offlineUmcDoesNotCreateBackend() {
     }
     std::vector<std::uint8_t> buffer{1};
     assert(octool::platform::readBoundedFile(path, buffer, 0) == -EINVAL && buffer.empty());
-    assert(octool::platform::readBoundedFile(path, buffer, 65537) == -EINVAL);
+    assert(octool::platform::readBoundedFile(path, buffer, 131073) == -EINVAL);
     assert(octool::platform::readBoundedFile(std::string(path) + '\0' + "suffix", buffer, 65536) == -EINVAL);
     assert(!opens);
 }

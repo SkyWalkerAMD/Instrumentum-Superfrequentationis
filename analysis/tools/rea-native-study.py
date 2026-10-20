@@ -28,6 +28,11 @@ ARRAY_PROCEDURES = (('0x2e7360', 'get_pm_patch'), ('0x2c7910', 'AMD_PM_LOG'),
                    ('0x6d4710', 'populate_lines'), ('0x6d7e90', 'on_pushButton_clicked'),
                    ('0x2e66f0', 'Update1_fast'), ('0x2daee0', 'Update2_fast'),
                    ('0x6f2800', 'pm_monitor'))
+MONITOR_PROCEDURES = (('0x2e7360', 'get_pm_patch'),
+                      ('0x6c1210', 'amd_am3::pm0_monitor'),
+                      ('0x6c40c0', 'amd_am4::pm0_monitor'),
+                      ('0x6c7690', 'amd_am5::pm0_monitor'),
+                      ('0x8fb1f0', 'mainwindow2::handleTimeout'))
 
 
 def selected_address(reply, offset):
@@ -48,7 +53,7 @@ def main():
     parser.add_argument('--binary', type=Path, required=True)
     parser.add_argument('--rea', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--study', choices=('baseline', 'arrays'), default='baseline')
+    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors'), default='baseline')
     args = parser.parse_args()
     binary, rea, output = args.binary.resolve(), args.rea.resolve(), args.output.resolve()
     if hashlib.sha256(binary.read_bytes()).hexdigest() != SOURCE_SHA:
@@ -145,7 +150,8 @@ def main():
                 call('open_binary', dict(path=str(binary), provider_id='ghidra'), 'open')
                 opened = True
                 resolved = []
-                procedures = ARRAY_PROCEDURES if args.study == 'arrays' else PROCEDURES
+                procedures = {'baseline': PROCEDURES, 'arrays': ARRAY_PROCEDURES,
+                              'monitors': MONITOR_PROCEDURES}[args.study]
                 for offset, name in procedures:
                     pseudo = call('procedure_pseudo_code',
                         dict(procedure='file-offset:' + offset), 'pseudo-' + offset)

@@ -37,6 +37,9 @@ JSON schema 仍为 1，新增 `original_arrays`。每个元素包含 `group`、`
 [紧凑证据](validation/legacy-amd-pm-arrays.json)。传输、拓扑、C++ 库边界均为合成，
 校准假定完成，在逐核路径之前停止；不能据此声称真实硬件验收。
 
-REA 本轮进一步查询原版 `amd_bycore::populate_lines`、
-`amd_bycore::on_pushButton_clicked` 和刷新路径。REA 伪代码需要与原指令交叉核对，
-不作为未知固件协议或实际单位的独立证明。跨系统构建与最终 REA 记录在本批验证后补齐。
+REA 本轮已返回七个函数，包含构造、解码、快速刷新及候选界面路径。
+`amd_bycore::populate_lines` 和 `on_pushButton_clicked` 实际处理调参输入：
+相同成员偏移属于不同对象，不能证明 PM 数组的界面绑定。后续改查三个
+`amd_am*::pm0_monitor` 与 `mainwindow2::handleTimeout`。
+REA 伪代码需要与原指令交叉核对，不作为未知固件协议或实际单位的独立证明。
+跨系统构建与最终 REA 记录在本批验证后补齐。
