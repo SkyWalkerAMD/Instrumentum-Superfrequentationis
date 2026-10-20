@@ -33,6 +33,16 @@ MONITOR_PROCEDURES = (('0x2e7360', 'get_pm_patch'),
                       ('0x6c40c0', 'amd_am4::pm0_monitor'),
                       ('0x6c7690', 'amd_am5::pm0_monitor'),
                       ('0x8fb1f0', 'mainwindow2::handleTimeout'))
+PERCORE_PROCEDURES = (('0x239100', 'get_percore_power_offset'),
+                     ('0x236b80', 'get_layout'), ('0x230ea0', 'Rd_MMIO'),
+                     ('0x2df0e0', 'AMD_PM_LOG'),
+                     ('0x238d90', 'AMD_PM_LOG::set_curve_opt'),
+                     ('0x238f40', 'set_curve_opt_percore'),
+                     ('0x239400', 'AMD_PBO::set_curve_opt'),
+                     ('0x2397b0', 'set_fmax'), ('0x239990', 'set_core01_rails'),
+                     ('0x236890', 'get_mem_address64bit'),
+                     ('0x2365c0', 'start_monitor'),
+                     ('0x750b70', 'on_per_ccx_oc_apply_5_clicked'))
 
 
 def selected_address(reply, offset):
@@ -53,7 +63,7 @@ def main():
     parser.add_argument('--binary', type=Path, required=True)
     parser.add_argument('--rea', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors'), default='baseline')
+    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore'), default='baseline')
     args = parser.parse_args()
     binary, rea, output = args.binary.resolve(), args.rea.resolve(), args.output.resolve()
     if hashlib.sha256(binary.read_bytes()).hexdigest() != SOURCE_SHA:
@@ -151,7 +161,7 @@ def main():
                 opened = True
                 resolved = []
                 procedures = {'baseline': PROCEDURES, 'arrays': ARRAY_PROCEDURES,
-                              'monitors': MONITOR_PROCEDURES}[args.study]
+                              'monitors': MONITOR_PROCEDURES, 'percore': PERCORE_PROCEDURES}[args.study]
                 for offset, name in procedures:
                     pseudo = call('procedure_pseudo_code',
                         dict(procedure='file-offset:' + offset), 'pseudo-' + offset)
@@ -163,7 +173,8 @@ def main():
                     resolved.append(dict(file_offset=offset, analysis_address=address,
                         expected_name=name, function=function, evidence_id=pseudo['structuredContent']['evidence_id']))
                     save('resolved-functions', resolved)
-                call('procedure_callers', dict(procedure=resolved[0]['analysis_address']), 'pm-callers')
+                call('procedure_callers', dict(procedure=resolved[0]['analysis_address']),
+                     'entry-callers' if args.study == 'percore' else 'pm-callers')
             except Exception as error:
                 failure = error
             finally:
