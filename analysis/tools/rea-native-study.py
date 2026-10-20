@@ -24,6 +24,10 @@ SOURCE_SHA = '44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10'
 PROCEDURES = (('0x2e7360', 'get_pm_patch'), ('0x2c7910', 'AMD_PM_LOG'),
               ('0x2254c0', 'Wr_Scratch2'), ('0x21e770', 'get_fused_ccd'),
               ('0x21e6f0', 'get_amd_native_thread_count'))
+ARRAY_PROCEDURES = (('0x2e7360', 'get_pm_patch'), ('0x2c7910', 'AMD_PM_LOG'),
+                   ('0x6d4710', 'populate_lines'), ('0x6d7e90', 'on_pushButton_clicked'),
+                   ('0x2e66f0', 'Update1_fast'), ('0x2daee0', 'Update2_fast'),
+                   ('0x6f2800', 'pm_monitor'))
 
 
 def selected_address(reply, offset):
@@ -44,6 +48,7 @@ def main():
     parser.add_argument('--binary', type=Path, required=True)
     parser.add_argument('--rea', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--study', choices=('baseline', 'arrays'), default='baseline')
     args = parser.parse_args()
     binary, rea, output = args.binary.resolve(), args.rea.resolve(), args.output.resolve()
     if hashlib.sha256(binary.read_bytes()).hexdigest() != SOURCE_SHA:
@@ -140,7 +145,8 @@ def main():
                 call('open_binary', dict(path=str(binary), provider_id='ghidra'), 'open')
                 opened = True
                 resolved = []
-                for offset, name in PROCEDURES:
+                procedures = ARRAY_PROCEDURES if args.study == 'arrays' else PROCEDURES
+                for offset, name in procedures:
                     pseudo = call('procedure_pseudo_code',
                         dict(procedure='file-offset:' + offset), 'pseudo-' + offset)
                     address = selected_address(pseudo, offset)
@@ -174,6 +180,7 @@ def main():
                     rea_version='6.7.0', ghidra_version='12.1.4', records=records,
                     startup_timeout_ms=startup_ms,
                     disabled_analyzers=env.get('REA_GHIDRA_DISABLED_ANALYZERS', ''),
+                    study=args.study,
                     error=None if failure is None else str(failure)))
                 proc.stdin.close()
                 try:

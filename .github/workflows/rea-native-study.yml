@@ -6,14 +6,19 @@ on:
       - 'analysis/tools/rea-native-study.py'
   workflow_dispatch:
     inputs:
+      study:
+        description: Selected, hash-verified original functions
+        type: choice
+        options: [baseline, arrays]
+        default: baseline
       startup_timeout_ms:
         description: Ghidra startup deadline in milliseconds
         type: string
-        default: '600000'
+        default: '900000'
       disabled_analyzers:
         description: Exact Ghidra analyzer names to disable (comma-separated)
         type: string
-        default: ''
+        default: 'GCC Exception Handlers,Decompiler Switch Analysis,Call Convention ID'
 permissions:
   contents: read
 jobs:
@@ -68,13 +73,14 @@ jobs:
         env:
           GHIDRA_INSTALL_DIR: ${{ github.workspace }}/build/rea-tools/ghidra_12.1.4_PUBLIC
           GHIDRA_HEADLESS_MAXMEM: 4G
-          REA_GHIDRA_STARTUP_TIMEOUT_MS: ${{ inputs.startup_timeout_ms || '600000' }}
-          REA_GHIDRA_DISABLED_ANALYZERS: ${{ inputs.disabled_analyzers }}
+          REA_GHIDRA_STARTUP_TIMEOUT_MS: ${{ inputs.startup_timeout_ms || '900000' }}
+          REA_GHIDRA_DISABLED_ANALYZERS: ${{ inputs.disabled_analyzers || 'GCC Exception Handlers,Decompiler Switch Analysis,Call Convention ID' }}
+          REA_STUDY: ${{ inputs.study || 'baseline' }}
         run: |
           python3 analysis/tools/rea-native-study.py \
             --binary build/rea-input/octool \
             --rea build/rea-tools/node_modules/rea-agents/scripts/rea.mjs \
-            --output build/rea-evidence
+            --output build/rea-evidence --study "$REA_STUDY"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
