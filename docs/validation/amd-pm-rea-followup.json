@@ -1,0 +1,1446 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "source_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "production_commit": "c3631f4d2b987b36b4af47ab6ab5d43804c2ddc9",
+  "hardware_execution": false,
+  "functional_ci_job": false,
+  "tools": {
+    "rea": {
+      "version": "6.7.0",
+      "source": "https://github.com/morluto/rea",
+      "documentation_revision": "2538214e2c731ed4d9f0cebdc9a75f84d74a56a4",
+      "tarball": "https://registry.npmjs.org/rea-agents/-/rea-agents-6.7.0.tgz",
+      "sha512_base64": "yhIx2ioJYYT1C/tONfYeitC6LhnKmCh+ZwRUOgYuhSc733lGhkkt73zhug9WmLgxoMdKuqIYGCoBfD4fXkOhFw=="
+    },
+    "ghidra": {
+      "version": "12.1.4",
+      "release": "https://github.com/NationalSecurityAgency/ghidra/releases/tag/Ghidra_12.1.4_build",
+      "sha256": "ddac49f903da9d5bac833e5cc79395098b9c33cfd3279be5f31bd00387d2d4db"
+    },
+    "node": "24.11.1",
+    "java": "Temurin 21",
+    "ghidra_max_heap": "4G"
+  },
+  "runs": [
+    {
+      "id": 39417148443,
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/39417148443",
+      "source_commit": "1ebb78f3740869b92fc6324194df889132c6aa58",
+      "conclusion": "failure",
+      "started": "2026-10-20T11:44:48Z",
+      "updated": "2026-10-20T11:47:26Z",
+      "study": {
+        "schema": 1,
+        "source_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+        "hardware_execution": false,
+        "rea_version": "6.7.0",
+        "ghidra_version": "12.1.4",
+        "records": [
+          {
+            "tool": "open_binary",
+            "arguments": {
+              "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/rea-input/octool",
+              "provider_id": "ghidra"
+            },
+            "file": "open.json",
+            "seconds": 0.33,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "0x2e7360"
+            },
+            "file": "pseudo-0x2e7360.json",
+            "seconds": 121.28,
+            "error": true
+          },
+          {
+            "tool": "export_evidence_bundle",
+            "arguments": {
+              "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/rea-evidence/evidence.json"
+            },
+            "file": "export.json",
+            "seconds": 0.15,
+            "error": false
+          },
+          {
+            "tool": "close_binary",
+            "arguments": {},
+            "file": "close.json",
+            "seconds": 0.01,
+            "error": false
+          }
+        ],
+        "startup_timeout_ms": 120000,
+        "disabled_analyzers": "",
+        "error": "REA operation failed; see pseudo-0x2e7360.json"
+      },
+      "errors": [
+        {
+          "file": "pseudo-0x2e7360.json",
+          "code": "resource_constraint",
+          "original_error_code": "provider_timeout"
+        }
+      ],
+      "complete_study": true,
+      "exported_evidence_records": 1,
+      "artifact": {
+        "id": 12262123447,
+        "node_id": "MDg6QXJ0aWZhY3QxMjI2MjEyMzQ0Nw==",
+        "name": "rea-amd-pm-study",
+        "size_in_bytes": 200959,
+        "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/12262123447",
+        "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/12262123447/zip",
+        "expired": false,
+        "digest": "sha256:e579916751835b89c634ec3d38e64fb08193d14d845b6c2f9058082e7d3fbe5d",
+        "created_at": "2026-10-20T11:47:23Z",
+        "updated_at": "2026-10-20T11:47:23Z",
+        "expires_at": "2026-11-03T11:47:22Z",
+        "workflow_run": {
+          "id": 39417148443,
+          "repository_id": 1396820807,
+          "head_repository_id": 1396820807,
+          "head_branch": "refactor/platform-recovery",
+          "head_sha": "1ebb78f3740869b92fc6324194df889132c6aa58"
+        }
+      },
+      "files": [
+        {
+          "path": "build/rea-diagnostic-39417148443/artifacts.json",
+          "bytes": 790,
+          "sha256": "6c6d9ca0b8fdf071de488f67524094428fb636d0f8229de43c56b6d82848a1cb"
+        },
+        {
+          "path": "build/rea-diagnostic-39417148443/close.json",
+          "bytes": 251,
+          "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
+        },
+        {
+          "path": "build/rea-diagnostic-39417148443/evidence.json",
+          "bytes": 33976046,
+          "sha256": "ea2c4356323d845e27832558e28903f04c5884d6fa1311d3618afc2d46f9b29e"
+        },
+        {
+          "path": "build/rea-diagnostic-39417148443/export.json",
+          "bytes": 521,
+          "sha256": "34c36af25dab777c0c615455222589aac07e0e1807d8b7837ee1ac08c2442756"
+        },
+        {
+          "path": "build/rea-diagnostic-39417148443/initialize.json",
+          "bytes": 1222,
+          "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
+        },
+        {
+          "path": "build/rea-diagnostic-39417148443/open.json",
+          "bytes": 816,
+          "sha256": "a7a7b8c88ab3de82162c7b84e62e67872ae01c8f16e44f9b04a42e3e2db4248c"
+        },
+        {
+          "path": "build/rea-diagnostic-39417148443/package-lock.json",
+          "bytes": 78634,
+          "sha256": "97abc4b821245cdb3f432d0fc677bf14ee3046b1a8befa13de065f98003fbbaa"
+        },
+        {
+          "path": "build/rea-diagnostic-39417148443/pseudo-0x2e7360.json",
+          "bytes": 1085,
+          "sha256": "152a192eeff65d838455030b0e1af2ded2dfd8e01f4daf05bc8749f3665f8bb2"
+        },
+        {
+          "path": "build/rea-diagnostic-39417148443/rea-stderr.log",
+          "bytes": 543,
+          "sha256": "263ac9fff2c840984f58898636e829ac88aba8297d9a49b551204adfe65f528a"
+        },
+        {
+          "path": "build/rea-diagnostic-39417148443/run.json",
+          "bytes": 2560,
+          "sha256": "a67e1001a8237f093348da67c2a715371decd05bd0724b90647c43f64edabffb"
+        },
+        {
+          "path": "build/rea-diagnostic-39417148443/run.log",
+          "bytes": 34103,
+          "sha256": "a47fc1bfabf727f1aa93a5b09c91b6827c4ae616e9589d0572a6c9c3bb59a6ce"
+        },
+        {
+          "path": "build/rea-diagnostic-39417148443/selected-tool-schemas.json",
+          "bytes": 80370,
+          "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
+        },
+        {
+          "path": "build/rea-diagnostic-39417148443/study.json",
+          "bytes": 1263,
+          "sha256": "4b9498f7dbd79eff6d86a4df65008d7dfa1dd0986742a1c23cb1a5693c206f7c"
+        }
+      ],
+      "cancellation_reason": null
+    },
+    {
+      "id": 39417696591,
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/39417696591",
+      "source_commit": "1ebb78f3740869b92fc6324194df889132c6aa58",
+      "conclusion": "failure",
+      "started": "2026-10-20T11:49:20Z",
+      "updated": "2026-10-20T11:59:57Z",
+      "study": {
+        "schema": 1,
+        "source_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+        "hardware_execution": false,
+        "rea_version": "6.7.0",
+        "ghidra_version": "12.1.4",
+        "records": [
+          {
+            "tool": "open_binary",
+            "arguments": {
+              "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/rea-input/octool",
+              "provider_id": "ghidra"
+            },
+            "file": "open.json",
+            "seconds": 1.28,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "0x2e7360"
+            },
+            "file": "pseudo-0x2e7360.json",
+            "seconds": 600.98,
+            "error": true
+          },
+          {
+            "tool": "export_evidence_bundle",
+            "arguments": {
+              "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/rea-evidence/evidence.json"
+            },
+            "file": "export.json",
+            "seconds": 0.01,
+            "error": false
+          },
+          {
+            "tool": "close_binary",
+            "arguments": {},
+            "file": "close.json",
+            "seconds": 0.0,
+            "error": false
+          }
+        ],
+        "startup_timeout_ms": 600000,
+        "disabled_analyzers": "GCC Exception Handlers",
+        "error": "REA operation failed; see pseudo-0x2e7360.json"
+      },
+      "errors": [
+        {
+          "file": "pseudo-0x2e7360.json",
+          "code": "provider_timeout",
+          "original_error_code": "provider_timeout"
+        }
+      ],
+      "complete_study": true,
+      "exported_evidence_records": 0,
+      "artifact": {
+        "id": 12262301990,
+        "node_id": "MDg6QXJ0aWZhY3QxMjI2MjMwMTk5MA==",
+        "name": "rea-amd-pm-study",
+        "size_in_bytes": 50992,
+        "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/12262301990",
+        "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/12262301990/zip",
+        "expired": false,
+        "digest": "sha256:df29564914ad316b8ed8b4157c857deac13e0b13849b844986e3e7db468ef170",
+        "created_at": "2026-10-20T11:59:54Z",
+        "updated_at": "2026-10-20T11:59:54Z",
+        "expires_at": "2026-11-03T11:59:54Z",
+        "workflow_run": {
+          "id": 39417696591,
+          "repository_id": 1396820807,
+          "head_repository_id": 1396820807,
+          "head_branch": "refactor/platform-recovery",
+          "head_sha": "1ebb78f3740869b92fc6324194df889132c6aa58"
+        }
+      },
+      "files": [
+        {
+          "path": "build/rea-retry-39417696591/artifacts.json",
+          "bytes": 789,
+          "sha256": "835cacc18adf969766e5a3af74447f96c3f65fc7bf8a68b124672dc1d174c72b"
+        },
+        {
+          "path": "build/rea-retry-39417696591/close.json",
+          "bytes": 251,
+          "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
+        },
+        {
+          "path": "build/rea-retry-39417696591/evidence.json",
+          "bytes": 105,
+          "sha256": "000bef2a45fbd4b17adc4e2ab0acd65b076ef5c25f0d8479244c8088730de9cd"
+        },
+        {
+          "path": "build/rea-retry-39417696591/export.json",
+          "bytes": 511,
+          "sha256": "9f05df78cc4d813921baefae06cf17486518008582c7cd788f33f70a0a499129"
+        },
+        {
+          "path": "build/rea-retry-39417696591/ghidra-stdout.log",
+          "bytes": 253135,
+          "sha256": "478e6861905f06c08dd500e4eb011c418acb65f66fcc9862f785bde65594e9d9"
+        },
+        {
+          "path": "build/rea-retry-39417696591/initialize.json",
+          "bytes": 1222,
+          "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
+        },
+        {
+          "path": "build/rea-retry-39417696591/open.json",
+          "bytes": 816,
+          "sha256": "a7a7b8c88ab3de82162c7b84e62e67872ae01c8f16e44f9b04a42e3e2db4248c"
+        },
+        {
+          "path": "build/rea-retry-39417696591/package-lock.json",
+          "bytes": 78634,
+          "sha256": "97abc4b821245cdb3f432d0fc677bf14ee3046b1a8befa13de065f98003fbbaa"
+        },
+        {
+          "path": "build/rea-retry-39417696591/pseudo-0x2e7360.json",
+          "bytes": 512886,
+          "sha256": "537381251815683032b97026271e29e838e980b2267245279e692de3e9607cc1"
+        },
+        {
+          "path": "build/rea-retry-39417696591/rea-stderr.log",
+          "bytes": 544,
+          "sha256": "c1d0b0d7a82953de0b708e1d0bf75a13961b014c43f2154b6d3ee7bbb1885cec"
+        },
+        {
+          "path": "build/rea-retry-39417696591/run.json",
+          "bytes": 2560,
+          "sha256": "030278e06248f7895266395f40a6e9bc28a00661006fde028fd9c97339c6d426"
+        },
+        {
+          "path": "build/rea-retry-39417696591/run.log",
+          "bytes": 34266,
+          "sha256": "3b9c75585477ab2a620be4dcf4b974015ae0895f37e6183d173f962c4e3f46cd"
+        },
+        {
+          "path": "build/rea-retry-39417696591/selected-tool-schemas.json",
+          "bytes": 80370,
+          "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
+        },
+        {
+          "path": "build/rea-retry-39417696591/study.json",
+          "bytes": 1284,
+          "sha256": "218022f3ca842cbaf405dd8d86e5b7ce58a4d116e2d030256dc8c0db827e9b52"
+        }
+      ],
+      "cancellation_reason": null
+    },
+    {
+      "id": 39419160257,
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/39419160257",
+      "source_commit": "fdb4caaf9dfdc3c927397af6454543007749eed9",
+      "conclusion": "failure",
+      "started": "2026-10-20T12:01:31Z",
+      "updated": "2026-10-20T12:17:18Z",
+      "study": {
+        "schema": 1,
+        "source_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+        "hardware_execution": false,
+        "rea_version": "6.7.0",
+        "ghidra_version": "12.1.4",
+        "records": [
+          {
+            "tool": "open_binary",
+            "arguments": {
+              "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/rea-input/octool",
+              "provider_id": "ghidra"
+            },
+            "file": "open.json",
+            "seconds": 1.54,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "0x2e7360"
+            },
+            "file": "pseudo-0x2e7360.json",
+            "seconds": 900.86,
+            "error": true
+          },
+          {
+            "tool": "export_evidence_bundle",
+            "arguments": {
+              "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/rea-evidence/evidence.json"
+            },
+            "file": "export.json",
+            "seconds": 0.01,
+            "error": false
+          },
+          {
+            "tool": "close_binary",
+            "arguments": {},
+            "file": "close.json",
+            "seconds": 0.0,
+            "error": false
+          }
+        ],
+        "startup_timeout_ms": 900000,
+        "disabled_analyzers": "GCC Exception Handlers,Decompiler Switch Analysis",
+        "error": "REA operation failed; see pseudo-0x2e7360.json"
+      },
+      "errors": [
+        {
+          "file": "pseudo-0x2e7360.json",
+          "code": "provider_timeout",
+          "original_error_code": "provider_timeout"
+        }
+      ],
+      "complete_study": true,
+      "exported_evidence_records": 0,
+      "artifact": {
+        "id": 12263029940,
+        "node_id": "MDg6QXJ0aWZhY3QxMjI2MzAyOTk0MA==",
+        "name": "rea-amd-pm-study",
+        "size_in_bytes": 51677,
+        "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/12263029940",
+        "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/12263029940/zip",
+        "expired": false,
+        "digest": "sha256:ef871fb07f68daa2b1defe7056135990c640d546fb1901f1928215df5820dbc9",
+        "created_at": "2026-10-20T12:17:14Z",
+        "updated_at": "2026-10-20T12:17:14Z",
+        "expires_at": "2026-11-03T12:17:14Z",
+        "workflow_run": {
+          "id": 39419160257,
+          "repository_id": 1396820807,
+          "head_repository_id": 1396820807,
+          "head_branch": "refactor/platform-recovery",
+          "head_sha": "fdb4caaf9dfdc3c927397af6454543007749eed9"
+        }
+      },
+      "files": [
+        {
+          "path": "build/rea-focused-39419160257/artifacts.json",
+          "bytes": 789,
+          "sha256": "0758f3af91d6f0b912c7a9b8b37f8cbadd62f589ff3eb8c67b7d021fdbba5c73"
+        },
+        {
+          "path": "build/rea-focused-39419160257/close.json",
+          "bytes": 251,
+          "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
+        },
+        {
+          "path": "build/rea-focused-39419160257/diagnostic-diagnostics-failure_output-stdout-text.txt",
+          "bytes": 254273,
+          "sha256": "34a53f5ebb12bea001a8aba019bac39f42f1fbbf69b891a5b8729e9bdafe2b17"
+        },
+        {
+          "path": "build/rea-focused-39419160257/diagnostic-diagnostics-stdout-text.txt",
+          "bytes": 254273,
+          "sha256": "34a53f5ebb12bea001a8aba019bac39f42f1fbbf69b891a5b8729e9bdafe2b17"
+        },
+        {
+          "path": "build/rea-focused-39419160257/evidence.json",
+          "bytes": 105,
+          "sha256": "000bef2a45fbd4b17adc4e2ab0acd65b076ef5c25f0d8479244c8088730de9cd"
+        },
+        {
+          "path": "build/rea-focused-39419160257/export.json",
+          "bytes": 511,
+          "sha256": "9f05df78cc4d813921baefae06cf17486518008582c7cd788f33f70a0a499129"
+        },
+        {
+          "path": "build/rea-focused-39419160257/initialize.json",
+          "bytes": 1222,
+          "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
+        },
+        {
+          "path": "build/rea-focused-39419160257/open.json",
+          "bytes": 816,
+          "sha256": "a7a7b8c88ab3de82162c7b84e62e67872ae01c8f16e44f9b04a42e3e2db4248c"
+        },
+        {
+          "path": "build/rea-focused-39419160257/package-lock.json",
+          "bytes": 78634,
+          "sha256": "97abc4b821245cdb3f432d0fc677bf14ee3046b1a8befa13de065f98003fbbaa"
+        },
+        {
+          "path": "build/rea-focused-39419160257/pseudo-0x2e7360.json",
+          "bytes": 518686,
+          "sha256": "c5bf3fc2243b4ff7a8ddaa77ced74919bf5a6c85ea92a6736d3aec1417878173"
+        },
+        {
+          "path": "build/rea-focused-39419160257/rea-stderr.log",
+          "bytes": 544,
+          "sha256": "6aa6703db3a397bd15f96c6c5da702088074f3560e5ab4ed2b186d30f0061686"
+        },
+        {
+          "path": "build/rea-focused-39419160257/run.json",
+          "bytes": 2560,
+          "sha256": "936afddd1d5d32fc109149df55d029d721891403aca12ddaf3c91553c2093b46"
+        },
+        {
+          "path": "build/rea-focused-39419160257/run.log",
+          "bytes": 34297,
+          "sha256": "1a7a766d7bebe3e9a0fd15b8f1bbf920185b8c3fbca8982b5adef33afe342127"
+        },
+        {
+          "path": "build/rea-focused-39419160257/selected-tool-schemas.json",
+          "bytes": 80370,
+          "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
+        },
+        {
+          "path": "build/rea-focused-39419160257/study.json",
+          "bytes": 1311,
+          "sha256": "798bd07e71eefa04ef2ee6399469f73bbacd2def1ef91a5a49e862ec1b66f7d2"
+        }
+      ],
+      "cancellation_reason": null
+    },
+    {
+      "id": 39420888286,
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/39420888286",
+      "source_commit": "c3631f4d2b987b36b4af47ab6ab5d43804c2ddc9",
+      "conclusion": "cancelled",
+      "started": "2026-10-20T12:15:28Z",
+      "updated": "2026-10-20T12:20:51Z",
+      "study": null,
+      "errors": [],
+      "complete_study": false,
+      "exported_evidence_records": null,
+      "artifact": {
+        "id": 12263940739,
+        "node_id": "MDg6QXJ0aWZhY3QxMjI2Mzk0MDczOQ==",
+        "name": "rea-amd-pm-study",
+        "size_in_bytes": 29389,
+        "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/12263940739",
+        "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/12263940739/zip",
+        "expired": false,
+        "digest": "sha256:c911bbce8efb2e84d314c805503cd6a12d692d4c42a65ae59409889e12483c68",
+        "created_at": "2026-10-20T12:20:47Z",
+        "updated_at": "2026-10-20T12:20:47Z",
+        "expires_at": "2026-11-03T12:20:46Z",
+        "workflow_run": {
+          "id": 39420888286,
+          "repository_id": 1396820807,
+          "head_repository_id": 1396820807,
+          "head_branch": "refactor/platform-recovery",
+          "head_sha": "c3631f4d2b987b36b4af47ab6ab5d43804c2ddc9"
+        }
+      },
+      "files": [
+        {
+          "path": "build/rea-offsets-39420888286/artifacts.json",
+          "bytes": 789,
+          "sha256": "62189f4a36ba0b42dd88741398bf96f4c45062b0e3b4400235e3fb6be8a991e7"
+        },
+        {
+          "path": "build/rea-offsets-39420888286/initialize.json",
+          "bytes": 1222,
+          "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
+        },
+        {
+          "path": "build/rea-offsets-39420888286/open.json",
+          "bytes": 816,
+          "sha256": "a7a7b8c88ab3de82162c7b84e62e67872ae01c8f16e44f9b04a42e3e2db4248c"
+        },
+        {
+          "path": "build/rea-offsets-39420888286/package-lock.json",
+          "bytes": 78634,
+          "sha256": "97abc4b821245cdb3f432d0fc677bf14ee3046b1a8befa13de065f98003fbbaa"
+        },
+        {
+          "path": "build/rea-offsets-39420888286/rea-stderr.log",
+          "bytes": 176,
+          "sha256": "f09c0fdc25f6162d8e7cbe1ee4b32223f82150dff298a73b25ca1665d2fbd77b"
+        },
+        {
+          "path": "build/rea-offsets-39420888286/run.json",
+          "bytes": 2566,
+          "sha256": "12d4d42e9726ed305191958927b9645cfd1abd3423e240e85db8fa92214b864a"
+        },
+        {
+          "path": "build/rea-offsets-39420888286/run.log",
+          "bytes": 32793,
+          "sha256": "3d779292ba2b7ceff00c064a2cb0e80b3b713f40b03fccd1271ce9b3e03d8df1"
+        },
+        {
+          "path": "build/rea-offsets-39420888286/selected-tool-schemas.json",
+          "bytes": 80370,
+          "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
+        }
+      ],
+      "cancellation_reason": "Superseded after the completed same-preset run still timed out; add Call Convention ID exclusion."
+    },
+    {
+      "id": 39421426795,
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/39421426795",
+      "source_commit": "c3631f4d2b987b36b4af47ab6ab5d43804c2ddc9",
+      "conclusion": "success",
+      "started": "2026-10-20T12:19:50Z",
+      "updated": "2026-10-20T12:32:25Z",
+      "study": {
+        "schema": 1,
+        "source_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+        "hardware_execution": false,
+        "rea_version": "6.7.0",
+        "ghidra_version": "12.1.4",
+        "records": [
+          {
+            "tool": "open_binary",
+            "arguments": {
+              "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/rea-input/octool",
+              "provider_id": "ghidra"
+            },
+            "file": "open.json",
+            "seconds": 1.53,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "file-offset:0x2e7360"
+            },
+            "file": "pseudo-0x2e7360.json",
+            "seconds": 697.56,
+            "error": false
+          },
+          {
+            "tool": "procedure_info",
+            "arguments": {
+              "procedure": "0x3e7360"
+            },
+            "file": "info-0x2e7360.json",
+            "seconds": 0.05,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "file-offset:0x2c7910"
+            },
+            "file": "pseudo-0x2c7910.json",
+            "seconds": 11.83,
+            "error": false
+          },
+          {
+            "tool": "procedure_info",
+            "arguments": {
+              "procedure": "0x3c7910"
+            },
+            "file": "info-0x2c7910.json",
+            "seconds": 0.06,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "file-offset:0x2254c0"
+            },
+            "file": "pseudo-0x2254c0.json",
+            "seconds": 0.02,
+            "error": false
+          },
+          {
+            "tool": "procedure_info",
+            "arguments": {
+              "procedure": "0x3254c0"
+            },
+            "file": "info-0x2254c0.json",
+            "seconds": 0.01,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "file-offset:0x21e770"
+            },
+            "file": "pseudo-0x21e770.json",
+            "seconds": 0.04,
+            "error": false
+          },
+          {
+            "tool": "procedure_info",
+            "arguments": {
+              "procedure": "0x31e770"
+            },
+            "file": "info-0x21e770.json",
+            "seconds": 0.01,
+            "error": false
+          },
+          {
+            "tool": "procedure_pseudo_code",
+            "arguments": {
+              "procedure": "file-offset:0x21e6f0"
+            },
+            "file": "pseudo-0x21e6f0.json",
+            "seconds": 0.02,
+            "error": false
+          },
+          {
+            "tool": "procedure_info",
+            "arguments": {
+              "procedure": "0x31e6f0"
+            },
+            "file": "info-0x21e6f0.json",
+            "seconds": 0.01,
+            "error": false
+          },
+          {
+            "tool": "procedure_callers",
+            "arguments": {
+              "procedure": "0x3e7360"
+            },
+            "file": "pm-callers.json",
+            "seconds": 0.02,
+            "error": false
+          },
+          {
+            "tool": "export_evidence_bundle",
+            "arguments": {
+              "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/rea-evidence/evidence.json"
+            },
+            "file": "export.json",
+            "seconds": 0.02,
+            "error": false
+          },
+          {
+            "tool": "close_binary",
+            "arguments": {},
+            "file": "close.json",
+            "seconds": 0.7,
+            "error": false
+          }
+        ],
+        "startup_timeout_ms": 900000,
+        "disabled_analyzers": "GCC Exception Handlers,Decompiler Switch Analysis,Call Convention ID",
+        "error": null
+      },
+      "errors": [],
+      "complete_study": true,
+      "exported_evidence_records": 11,
+      "artifact": {
+        "id": 12263977179,
+        "node_id": "MDg6QXJ0aWZhY3QxMjI2Mzk3NzE3OQ==",
+        "name": "rea-amd-pm-study",
+        "size_in_bytes": 282050,
+        "url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/12263977179",
+        "archive_download_url": "https://api.github.com/repos/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/artifacts/12263977179/zip",
+        "expired": false,
+        "digest": "sha256:8c97dcf38c5aceeeab26ce299b7f2689a40eab4037b674b05485e5118b87a9f1",
+        "created_at": "2026-10-20T12:32:20Z",
+        "updated_at": "2026-10-20T12:32:20Z",
+        "expires_at": "2026-11-03T12:32:19Z",
+        "workflow_run": {
+          "id": 39421426795,
+          "repository_id": 1396820807,
+          "head_repository_id": 1396820807,
+          "head_branch": "refactor/platform-recovery",
+          "head_sha": "c3631f4d2b987b36b4af47ab6ab5d43804c2ddc9"
+        }
+      },
+      "files": [
+        {
+          "path": "build/rea-conventions-39421426795/artifacts.json",
+          "bytes": 790,
+          "sha256": "f79c7f370fac080ead46390f964b0c2660ed755558a20f3f23a3183d118eaeec"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/close.json",
+          "bytes": 251,
+          "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/evidence.json",
+          "bytes": 875308,
+          "sha256": "1d29ccdb7e7cd25ccbd69032eba49ffc1c5e5d962ade3c78b174d4d879d4bc80"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/export.json",
+          "bytes": 519,
+          "sha256": "76acb2c914db4924780a98959858d4d4c2cfdd6f4858266bcdcdf8e4e61435da"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/info-0x21e6f0.json",
+          "bytes": 13386,
+          "sha256": "852678e79e6c89f1a9f0e51edd81afa08b53bda899702c996dfb66766455af94"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/info-0x21e770.json",
+          "bytes": 10173,
+          "sha256": "aabaae4ee4ccbc9b683a0f21029bcbc9fd9a06bf06a82c0286253b8f4e344786"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/info-0x2254c0.json",
+          "bytes": 9625,
+          "sha256": "00e513ed96248af724d7b5e368bd4b8271818d5e662365fe1406f0a12b978432"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/info-0x2c7910.json",
+          "bytes": 118614,
+          "sha256": "f9a4df3d224e0f50359459e77a03866f4951c5862bb11af7d0ea15a118c12123"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/info-0x2e7360.json",
+          "bytes": 44846,
+          "sha256": "eb12a301a6ca608e16fc8197cbec15e13ccb5c86279f31c64359ca17191cecb5"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/initialize.json",
+          "bytes": 1222,
+          "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/open.json",
+          "bytes": 816,
+          "sha256": "a7a7b8c88ab3de82162c7b84e62e67872ae01c8f16e44f9b04a42e3e2db4248c"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/package-lock.json",
+          "bytes": 78634,
+          "sha256": "97abc4b821245cdb3f432d0fc677bf14ee3046b1a8befa13de065f98003fbbaa"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/pm-callers.json",
+          "bytes": 19114,
+          "sha256": "490f725345a4eea3149daabd47ee9fb7ac2c9f75619f7c32f6e526a87aec1ae7"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/pseudo-0x21e6f0.c",
+          "bytes": 670,
+          "sha256": "ee2e4b84cf7e8c0bffe62aad6abf9200d33169157a7f1522277e75a0bc0ed89b"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/pseudo-0x21e6f0.json",
+          "bytes": 12326,
+          "sha256": "25eba70fe6b816fd38185ff80dd3529d4f4a27af33cca61602efa526c7d6c3ac"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/pseudo-0x21e770.c",
+          "bytes": 1535,
+          "sha256": "47541039548253b39dfdbf656e8ce93f71deb0630f691390f2761787734a6305"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/pseudo-0x21e770.json",
+          "bytes": 14765,
+          "sha256": "5c7c4df8237c27fcfbfd29f6fb5bad76ea93104777ebaba4df67cb2019fe6032"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/pseudo-0x2254c0.c",
+          "bytes": 310,
+          "sha256": "ab5f1bb89d4eb228de0552aa399f35882b49359358d33c65a88cc6f34671b498"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/pseudo-0x2254c0.json",
+          "bytes": 9619,
+          "sha256": "86798c0188721dbac41785f444d3853454e0f54f01f39447b7d02760301cafa7"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/pseudo-0x2c7910.c",
+          "bytes": 259124,
+          "sha256": "80f2269ebbaca440cfbba8f3990db6be81021bae606eb1d86701fc4bb84d3350"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/pseudo-0x2c7910.json",
+          "bytes": 1096886,
+          "sha256": "b12b1a74963de4c82ed654984af4319d66bcffd51dbd61f8be5085dc8f71f66f"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/pseudo-0x2e7360.c",
+          "bytes": 111109,
+          "sha256": "9c606955ccf1dc4f7b2e4a6b1d45463942f51c258301e0f27f43fd39491a3557"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/pseudo-0x2e7360.json",
+          "bytes": 478862,
+          "sha256": "7d92f9b706102e7525a018e3571564ac3d8ddcc62c10efadfb75a13761e93742"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/rea-stderr.log",
+          "bytes": 2353,
+          "sha256": "27211f39eed8adc2f41e12cc3c8f414086b39d27ecee09659e77d1bb95c5e9db"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/resolved-functions.json",
+          "bytes": 43477,
+          "sha256": "e2facffb75b3ed28ee179ee1373971870ca05784e89384ebd2384e1a85c1a17a"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/run.json",
+          "bytes": 2560,
+          "sha256": "2cc23a96fd47c588b1d7e81889a21adc01aeabc780dcc8660c065e2cc0fcdd5e"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/run.log",
+          "bytes": 34012,
+          "sha256": "64301523e556a2d63dd9985250e2ea68f3525075a1de9cfc74d583d6dd3035aa"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/selected-tool-schemas.json",
+          "bytes": 80370,
+          "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
+        },
+        {
+          "path": "build/rea-conventions-39421426795/study.json",
+          "bytes": 3254,
+          "sha256": "618c837ca5819541221eb8ef677b862603973c745424c4e51589b5fa77748605"
+        }
+      ],
+      "cancellation_reason": null
+    }
+  ],
+  "verified_functions": [
+    {
+      "file_offset": "0x2e7360",
+      "analysis_address": "0x3e7360",
+      "name": "AMD_PM_LOG::get_pm_patch",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x3e7360",
+            "end": "0x3e7ad7"
+          },
+          {
+            "start": "0x3e7ae0",
+            "end": "0x3e7c5c"
+          },
+          {
+            "start": "0x3e7c60",
+            "end": "0x3e7cca"
+          },
+          {
+            "start": "0x3e7cd0",
+            "end": "0x3e7ef9"
+          },
+          {
+            "start": "0x3e7f00",
+            "end": "0x3e7f06"
+          },
+          {
+            "start": "0x3e7f10",
+            "end": "0x3e81c5"
+          },
+          {
+            "start": "0x3e81d0",
+            "end": "0x3e8274"
+          },
+          {
+            "start": "0x3e8278",
+            "end": "0x3e8328"
+          },
+          {
+            "start": "0x3e8330",
+            "end": "0x3e8454"
+          },
+          {
+            "start": "0x3e8458",
+            "end": "0x3e860c"
+          },
+          {
+            "start": "0x3e8610",
+            "end": "0x3e86b4"
+          },
+          {
+            "start": "0x3e86b8",
+            "end": "0x3e8c5d"
+          },
+          {
+            "start": "0x3e8c60",
+            "end": "0x3e8d42"
+          },
+          {
+            "start": "0x3e8d48",
+            "end": "0x3e8dea"
+          },
+          {
+            "start": "0x3e8df0",
+            "end": "0x3e8f14"
+          },
+          {
+            "start": "0x3e8f18",
+            "end": "0x3e8fba"
+          },
+          {
+            "start": "0x3e8fc0",
+            "end": "0x3e905c"
+          },
+          {
+            "start": "0x3e9060",
+            "end": "0x3e919c"
+          },
+          {
+            "start": "0x3e91a0",
+            "end": "0x3e92e3"
+          },
+          {
+            "start": "0x3e92e8",
+            "end": "0x3e9388"
+          },
+          {
+            "start": "0x3e9390",
+            "end": "0x3e9430"
+          },
+          {
+            "start": "0x3e9438",
+            "end": "0x3e94d8"
+          },
+          {
+            "start": "0x3e94e0",
+            "end": "0x3e9585"
+          },
+          {
+            "start": "0x3e9590",
+            "end": "0x3e9633"
+          },
+          {
+            "start": "0x3e9638",
+            "end": "0x3e96d8"
+          },
+          {
+            "start": "0x3e96e0",
+            "end": "0x3e9779"
+          },
+          {
+            "start": "0x3e9780",
+            "end": "0x3e98d6"
+          },
+          {
+            "start": "0x3e98e0",
+            "end": "0x3e99b6"
+          },
+          {
+            "start": "0x3e99c0",
+            "end": "0x3e9a8c"
+          },
+          {
+            "start": "0x3e9a90",
+            "end": "0x3e9b76"
+          },
+          {
+            "start": "0x3e9b80",
+            "end": "0x3e9dc7"
+          },
+          {
+            "start": "0x3e9dd0",
+            "end": "0x3ea545"
+          },
+          {
+            "start": "0x3ea550",
+            "end": "0x3eb129"
+          },
+          {
+            "start": "0x3eb130",
+            "end": "0x3eb585"
+          },
+          {
+            "start": "0x3eb590",
+            "end": "0x3eb75b"
+          },
+          {
+            "start": "0x3eb760",
+            "end": "0x3eb833"
+          },
+          {
+            "start": "0x3eb838",
+            "end": "0x3eb9a5"
+          },
+          {
+            "start": "0x3eb9b0",
+            "end": "0x3ebe29"
+          },
+          {
+            "start": "0x3ebe30",
+            "end": "0x3ec9e4"
+          }
+        ],
+        "total_bytes": 21923,
+        "span_bytes": 22149,
+        "non_contiguous": true,
+        "contains_entry": true
+      },
+      "length": 21923,
+      "basicblock_count": 892,
+      "pseudocode_characters": 111109,
+      "pseudocode_sha256": "9c606955ccf1dc4f7b2e4a6b1d45463942f51c258301e0f27f43fd39491a3557",
+      "evidence_id": "ev_7be46c5e68568729c7b0e156d206ec8e635cb349ab2e117556d1e9e8560f8e44",
+      "limitations": [
+        "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+        "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+        "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+        "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+        "Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.",
+        "External functions and functions without an analyzable body return null; other decompiler failures remain explicit.",
+        "Ghidra Listing reports a terminal call at 0x3e8030 to 0x24a2a0 <EXTERNAL>::operator.delete (external=false, thunk=true, hasNoReturn=false); fallthrough is excluded by Ghidra's flow model. The reason for the terminal flow is not established by this observation.",
+        "Ghidra Listing reports a terminal call at 0x3e9d31 to 0x24d010 <EXTERNAL>::std::__throw_bad_array_new_length (external=false, thunk=true, hasNoReturn=true); fallthrough is excluded by Ghidra's flow model. This records Ghidra's FunctionManager flag, not an independent verification that the callee cannot return.",
+        "Ghidra Listing reports a terminal call at 0x3e9e31 to 0x24c6a0 <EXTERNAL>::std::__throw_bad_alloc (external=false, thunk=true, hasNoReturn=true); fallthrough is excluded by Ghidra's flow model. This records Ghidra's FunctionManager flag, not an independent verification that the callee cannot return.",
+        "Ghidra Listing reports a terminal call at 0x3e9e3f to 0x24d010 <EXTERNAL>::std::__throw_bad_array_new_length (external=false, thunk=true, hasNoReturn=true); fallthrough is excluded by Ghidra's flow model. This records Ghidra's FunctionManager flag, not an independent verification that the callee cannot return.",
+        "Ghidra Listing reports a terminal call at 0x3ea3af to 0x24c6a0 <EXTERNAL>::std::__throw_bad_alloc (external=false, thunk=true, hasNoReturn=true); fallthrough is excluded by Ghidra's flow model. This records Ghidra's FunctionManager flag, not an independent verification that the callee cannot return.",
+        "Ghidra Listing reports a terminal call at 0x3eba8f to 0x24d010 <EXTERNAL>::std::__throw_bad_array_new_length (external=false, thunk=true, hasNoReturn=true); fallthrough is excluded by Ghidra's flow model. This records Ghidra's FunctionManager flag, not an independent verification that the callee cannot return.",
+        "Ghidra Listing reports a terminal call at 0x3ebae2 to 0x24c6a0 <EXTERNAL>::std::__throw_bad_alloc (external=false, thunk=true, hasNoReturn=true); fallthrough is excluded by Ghidra's flow model. This records Ghidra's FunctionManager flag, not an independent verification that the callee cannot return.",
+        "Ghidra Listing reports a terminal call at 0x3ec94e to 0x32ee80 std::__cxx11::string::assign (external=false, thunk=false, hasNoReturn=false); fallthrough is excluded by Ghidra's flow model. The reason for the terminal flow is not established by this observation.",
+        "Ghidra Listing reports a terminal call at 0x3ec987 to 0x24a910 <EXTERNAL>::__stack_chk_fail (external=false, thunk=true, hasNoReturn=true); fallthrough is excluded by Ghidra's flow model. This records Ghidra's FunctionManager flag, not an independent verification that the callee cannot return."
+      ]
+    },
+    {
+      "file_offset": "0x2c7910",
+      "analysis_address": "0x3c7910",
+      "name": "AMD_PM_LOG::AMD_PM_LOG",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x3c7910",
+            "end": "0x3c7b8d"
+          },
+          {
+            "start": "0x3c7b90",
+            "end": "0x3c7d8a"
+          },
+          {
+            "start": "0x3c7d90",
+            "end": "0x3c805c"
+          },
+          {
+            "start": "0x3c8060",
+            "end": "0x3c8210"
+          },
+          {
+            "start": "0x3c8218",
+            "end": "0x3c83c8"
+          },
+          {
+            "start": "0x3c83d0",
+            "end": "0x3c8850"
+          },
+          {
+            "start": "0x3c8858",
+            "end": "0x3c8932"
+          },
+          {
+            "start": "0x3c8938",
+            "end": "0x3c8ad0"
+          },
+          {
+            "start": "0x3c8ad8",
+            "end": "0x3c8e5e"
+          },
+          {
+            "start": "0x3c8e60",
+            "end": "0x3c8f92"
+          },
+          {
+            "start": "0x3c8f98",
+            "end": "0x3c9c92"
+          },
+          {
+            "start": "0x3c9c98",
+            "end": "0x3c9e4a"
+          },
+          {
+            "start": "0x3c9e50",
+            "end": "0x3c9fd5"
+          },
+          {
+            "start": "0x3c9fe0",
+            "end": "0x3ca165"
+          },
+          {
+            "start": "0x3ca170",
+            "end": "0x3ca50a"
+          },
+          {
+            "start": "0x3ca510",
+            "end": "0x3ca5fe"
+          },
+          {
+            "start": "0x3ca600",
+            "end": "0x3ca917"
+          },
+          {
+            "start": "0x3ca920",
+            "end": "0x3cae2c"
+          },
+          {
+            "start": "0x3cae30",
+            "end": "0x3caf63"
+          },
+          {
+            "start": "0x3caf68",
+            "end": "0x3cb276"
+          },
+          {
+            "start": "0x3cb280",
+            "end": "0x3cb4ad"
+          },
+          {
+            "start": "0x3cb4b0",
+            "end": "0x3cb592"
+          },
+          {
+            "start": "0x3cb598",
+            "end": "0x3cb67a"
+          },
+          {
+            "start": "0x3cb680",
+            "end": "0x3cb7c9"
+          },
+          {
+            "start": "0x3cb7d0",
+            "end": "0x3cb9a7"
+          },
+          {
+            "start": "0x3cb9b0",
+            "end": "0x3cbae7"
+          },
+          {
+            "start": "0x3cbaf0",
+            "end": "0x3cbbe3"
+          },
+          {
+            "start": "0x3cbbe8",
+            "end": "0x3cbffe"
+          },
+          {
+            "start": "0x3cc000",
+            "end": "0x3cc783"
+          },
+          {
+            "start": "0x3cc788",
+            "end": "0x3cca0c"
+          },
+          {
+            "start": "0x3cca10",
+            "end": "0x3cce97"
+          },
+          {
+            "start": "0x3ccea0",
+            "end": "0x3ccf5e"
+          },
+          {
+            "start": "0x3ccf60",
+            "end": "0x3ccfde"
+          },
+          {
+            "start": "0x3ccfe0",
+            "end": "0x3cd1db"
+          },
+          {
+            "start": "0x3cd1e0",
+            "end": "0x3cd7ac"
+          },
+          {
+            "start": "0x3cd7b0",
+            "end": "0x3ce118"
+          },
+          {
+            "start": "0x3ce120",
+            "end": "0x3ce42e"
+          },
+          {
+            "start": "0x3ce430",
+            "end": "0x3ce5d6"
+          },
+          {
+            "start": "0x3ce5e0",
+            "end": "0x3ce955"
+          },
+          {
+            "start": "0x3ce960",
+            "end": "0x3ceb28"
+          },
+          {
+            "start": "0x3ceb30",
+            "end": "0x3cec67"
+          },
+          {
+            "start": "0x3cec70",
+            "end": "0x3ced63"
+          },
+          {
+            "start": "0x3ced68",
+            "end": "0x3cef0b"
+          },
+          {
+            "start": "0x3cef16",
+            "end": "0x3cef2b"
+          },
+          {
+            "start": "0x3cef4a",
+            "end": "0x3ceffd"
+          },
+          {
+            "start": "0x3cf000",
+            "end": "0x3cf47a"
+          },
+          {
+            "start": "0x3cf480",
+            "end": "0x3cf640"
+          },
+          {
+            "start": "0x3cf648",
+            "end": "0x3cf873"
+          },
+          {
+            "start": "0x3cf888",
+            "end": "0x3cfde6"
+          },
+          {
+            "start": "0x3cfdf0",
+            "end": "0x3d0028"
+          }
+        ],
+        "total_bytes": 34284,
+        "span_bytes": 34585,
+        "non_contiguous": true,
+        "contains_entry": true
+      },
+      "length": 34284,
+      "basicblock_count": 577,
+      "pseudocode_characters": 259124,
+      "pseudocode_sha256": "80f2269ebbaca440cfbba8f3990db6be81021bae606eb1d86701fc4bb84d3350",
+      "evidence_id": "ev_bc0bafb2c91763ced0d045479991bee185fdd8a82c5c9af190bccbabc6181ea7",
+      "limitations": [
+        "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+        "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+        "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+        "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+        "Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.",
+        "External functions and functions without an analyzable body return null; other decompiler failures remain explicit.",
+        "Ghidra Listing reports a terminal call at 0x3d0024 to 0x24a910 <EXTERNAL>::__stack_chk_fail (external=false, thunk=true, hasNoReturn=true); fallthrough is excluded by Ghidra's flow model. This records Ghidra's FunctionManager flag, not an independent verification that the callee cannot return."
+      ]
+    },
+    {
+      "file_offset": "0x2254c0",
+      "analysis_address": "0x3254c0",
+      "name": "Wr_Scratch2",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x3254c0",
+            "end": "0x325503"
+          }
+        ],
+        "total_bytes": 68,
+        "span_bytes": 68,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "length": 68,
+      "basicblock_count": 1,
+      "pseudocode_characters": 310,
+      "pseudocode_sha256": "ab5f1bb89d4eb228de0552aa399f35882b49359358d33c65a88cc6f34671b498",
+      "evidence_id": "ev_855687255ef7162c665d5955a38cc78967936090077cce9d319ed0360d9ef826",
+      "limitations": [
+        "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+        "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+        "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+        "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+        "Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.",
+        "External functions and functions without an analyzable body return null; other decompiler failures remain explicit."
+      ]
+    },
+    {
+      "file_offset": "0x21e770",
+      "analysis_address": "0x31e770",
+      "name": "get_fused_ccd",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x31e770",
+            "end": "0x31e7a9"
+          },
+          {
+            "start": "0x31e7b0",
+            "end": "0x31e7f1"
+          },
+          {
+            "start": "0x31e7f8",
+            "end": "0x31e911"
+          }
+        ],
+        "total_bytes": 406,
+        "span_bytes": 418,
+        "non_contiguous": true,
+        "contains_entry": true
+      },
+      "length": 406,
+      "basicblock_count": 19,
+      "pseudocode_characters": 1535,
+      "pseudocode_sha256": "47541039548253b39dfdbf656e8ce93f71deb0630f691390f2761787734a6305",
+      "evidence_id": "ev_2e003fd0b1ee57f05ab37cc2ab355dbe43ecf9bfb63aa6273fb69e8399515a67",
+      "limitations": [
+        "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+        "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+        "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+        "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+        "Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.",
+        "External functions and functions without an analyzable body return null; other decompiler failures remain explicit."
+      ]
+    },
+    {
+      "file_offset": "0x21e6f0",
+      "analysis_address": "0x31e6f0",
+      "name": "get_amd_native_thread_count",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x31e6f0",
+            "end": "0x31e769"
+          }
+        ],
+        "total_bytes": 122,
+        "span_bytes": 122,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "length": 122,
+      "basicblock_count": 3,
+      "pseudocode_characters": 670,
+      "pseudocode_sha256": "ee2e4b84cf7e8c0bffe62aad6abf9200d33169157a7f1522277e75a0bc0ed89b",
+      "evidence_id": "ev_a802d6fee8a7047d1e732fc7ae9261f9d8534dcd76bfdfc54118996ec05537d2",
+      "limitations": [
+        "The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.",
+        "The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.",
+        "Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.",
+        "Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.",
+        "Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.",
+        "External functions and functions without an analyzable body return null; other decompiler failures remain explicit.",
+        "Ghidra Listing reports a terminal call at 0x31e765 to 0x24a910 <EXTERNAL>::__stack_chk_fail (external=false, thunk=true, hasNoReturn=true); fallthrough is excluded by Ghidra's flow model. This records Ghidra's FunctionManager flag, not an independent verification that the callee cannot return."
+      ]
+    }
+  ],
+  "instruction_crosscheck": {
+    "path": "docs/validation/amd-pm-rea-instruction-crosscheck.json",
+    "sha256": "c8a5b0f9bbba2cf55bbf2c282a2123d3797ae78efa648a8b46f6d31bb3ed7e76"
+  },
+  "selector_checks": {
+    "path": "build/rea-selector-check.json",
+    "sha256": "17a7557d6a03a57367ff558cd50d81422ef2c0586230397efd954b9ac4ac33dc",
+    "results": {
+      "valid_relocated_entry": true,
+      "rejected": [
+        "interior",
+        "wrong_file",
+        "no_mapping",
+        "null_code",
+        "empty_code",
+        "duplicate_mapping"
+      ],
+      "hardware_execution": false
+    }
+  },
+  "limits": [
+    "Selected decompiler observations only; not original source, whole-program proof, firmware semantics or hardware acceptance.",
+    "GCC Exception Handlers, Decompiler Switch Analysis and Call Convention ID were disabled in the final preset. Exception paths, jump recovery and inferred calling conventions are incomplete.",
+    "Function file offsets come from the hash-pinned executable PT_LOAD. Address mapping and exact entry/name are checked independently; inferred C types and function body coverage still require instruction comparison.",
+    "Earlier three failures were import/analysis provider timeouts before pseudocode. The first diagnostic is retained with its original output-retention limits; no out-of-memory conclusion is established.",
+    "One duplicate run was cancelled after new diagnostic evidence. It has no completed study record.",
+    "The 27 new stored fields are established by the separate original-instruction replay, not by the REA result."
+  ]
+}

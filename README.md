@@ -1,5 +1,17 @@
 # Instrumentum Superfrequentationis
 
+<!-- amd-pm-fabric-c3631f4 -->
+2026-10-20：最新验证提交 `c3631f4`，GUI / CLI 同步增加 **27 项 AMD PM 原版链路与片内时钟监控值**，
+按两组查看；连同既有字段共 128 项。名称、偏移与浮点存储已核对，物理单位、策略状态及目标仍未认证。
+
+- [实现说明](docs/amd-pm-fabric.md)、[整批验证](docs/amd-pm-fabric-validation.md)：43/43 云端功能验证任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1132 JSON，GUI 各 181 项，核心 367 场景组，12 次内核 VM 启动。
+- `dist/gui-cli-amd-pm-fabric-c3631f4/`：33 个包、精确源码、本地扩展源码及校验表。
+- [REA 辅助研究](docs/amd-pm-rea-followup.md)另记录；原版全部功能与真机验收仍未完成。
+
+以下保留历史记录。
+<!-- /amd-pm-fabric-c3631f4 -->
+
 <!-- amd-pm-package-e2660cb -->
 2026-10-20：最新验证提交 `e2660cb`，GUI / CLI 同步增加 **53 项 AMD PM 原版公共功耗与策略监控值**，
 按五组查看；连同既有字段共 101 项。名称、偏移与浮点存储已核对，物理单位、策略状态及目标仍未认证。

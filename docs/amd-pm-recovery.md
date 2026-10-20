@@ -1,5 +1,7 @@
 # AMD PM 遥测、离线解码与 GUI / CLI 快照互通
 
+2026-10-20：新增 [27 项原版链路/片内时钟监控](amd-pm-fabric.md)，在 `original_fabric` 中分组保留存储值；单位、策略状态和物理目标未核实。
+
 2026-10-20：新增 [53 项原版公共功耗/策略监控](amd-pm-package.md)，在 `original_package` 中分组保留存储值；单位、策略状态和物理目标未核实。
 
 2026-10-18：[原版限制监控区](amd-pm-limits.md)增加独立的 24 项 `original_limits`，
