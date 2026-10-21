@@ -15,7 +15,7 @@ const std::vector<AmdPmLayout> &amdPmLayouts();
 std::size_t amdPmTableSize(std::uint32_t version);
 struct AmdPmLayoutRange {
     std::string group, label;
-    unsigned first = 0, end = 0, slots = 0, outsideWords = 0, overlapWords = 0, publicFieldConflicts = 0;
+    unsigned first = 0, end = 0, slotCount = 0, outsideWords = 0, overlapWords = 0, publicFieldConflicts = 0;
 };
 struct AmdPmLayoutAudit {
     int error = 0;

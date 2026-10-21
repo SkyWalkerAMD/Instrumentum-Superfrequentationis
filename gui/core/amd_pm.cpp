@@ -86,7 +86,7 @@ AmdPmLayoutAudit auditLegacyAmdPmLayout(std::uint32_t version, std::size_t captu
         const unsigned start = group ? ccdStart : coreStart, otherFirst = group ? coreStart : ccdStart, otherEnd = group ? coreEnd : ccdEnd;
         for (unsigned i = 0; i < count; ++i) {
             AmdPmLayoutRange r; r.group = group ? "ccd" : "core"; r.label = group ? ccds[i] : cores[i];
-            r.first = start + i * slots * 4; r.end = r.first + slots * 4; r.slots = slots;
+            r.first = start + i * slots * 4; r.end = r.first + slots * 4; r.slotCount = slots;
             for (unsigned off = r.first; off < r.end; off += 4) {
                 if (std::size_t(off) + 4 > captured) ++r.outsideWords;
                 if (off >= otherFirst && off < otherEnd) ++r.overlapWords;
@@ -115,7 +115,7 @@ std::string amdPmLayoutAuditJson(const AmdPmLayoutAudit &s) {
         if (!first) out += ',';
         first = false;
         out += "{\"group\":" + quote(r.group) + ",\"label\":" + quote(r.label) + ",\"first_byte\":" + word(r.first) +
-            ",\"end_byte_exclusive\":" + word(r.end) + ",\"slots\":" + std::to_string(r.slots) +
+            ",\"end_byte_exclusive\":" + word(r.end) + ",\"slots\":" + std::to_string(r.slotCount) +
             ",\"outside_words\":" + std::to_string(r.outsideWords) + ",\"overlap_words\":" + std::to_string(r.overlapWords) +
             ",\"public_field_conflicts\":" + std::to_string(r.publicFieldConflicts) + '}';
     }

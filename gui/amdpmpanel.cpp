@@ -112,7 +112,7 @@ void AmdPmPanel::auditLayout() {
     for (const auto &range : r.ranges) {
         const int row = table_->rowCount(); table_->insertRow(row);
         const QStringList cells{QString::fromStdString(range.group + " / " + range.label), hex(range.first), hex(range.end),
-            QString::number(range.slots), QString::number(range.outsideWords), QString::number(range.overlapWords), QString::number(range.publicFieldConflicts)};
+            QString::number(range.slotCount), QString::number(range.outsideWords), QString::number(range.overlapWords), QString::number(range.publicFieldConflicts)};
         for (int col = 0; col < cells.size(); ++col) table_->setItem(row, col, new QTableWidgetItem(cells[col]));
     }
     table_->resizeColumnsToContents(); layoutAuditJson_ = amdPmLayoutAuditJson(r); copyAudit_->setEnabled(true);
