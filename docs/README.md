@@ -1,5 +1,18 @@
 # 项目知识入口
 
+<!-- amd-oc-cores-8c85a28 -->
+2026-10-21：最新生产验证提交 `8c85a28`，GUI / CLI 同步新增
+**同一 CCD 内显式核心列表的频率设置**。每核重查能力与身份，首错停止并报告部分完成状态。
+
+- [用法](amd-manual-oc.md)、[整批验证](amd-oc-cores-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1359 JSON、GUI 各 212 项、核心 422 场景组；12 次内核 VM。
+- `dist/gui-cli-amd-oc-cores-8c85a28/`：33 个包、精确云端源码、更新用户源码及校验表。
+- [REA 研究](amd-oc-cores-research.md)：八个原函数、768 组原指令边界实验；不沿用原版无条件八核循环。
+- 频率只有固件确认，物理映射/真机验收未验证；逐核/CCD 遥测、rails、动态内存/EC 及其它平台仍未完成。
+
+以下保留历史记录。
+<!-- /amd-oc-cores-8c85a28 -->
+
 <!-- el7-recovery-bc30c4f -->
 2026-10-13：本批已验证提交 `bc30c4f`，新增 **EL7（Oracle Linux 7.9 x86_64）**，并同步恢复 GUI / CLI 的 AVX2 偏移、TCC 温控、限频原因与历史清除、最大非睿频倍率和封装热事件。
 
@@ -411,7 +424,7 @@ GUI 与 CLI 共用硬件核心和无 Qt 清单读取；驱动/HAL/ABI 未变。C
 2026-10-10：新增 AMD UMC 212 字段 / 12 分组、显式地址组和刷新槽、离线 JSON 快照，
 以及 AMD 扩展 CPUID 拓扑读取；验证源码为 `728671d`。
 原构造的通道搜索和同名字段问题已从原指令复现，重构版不会沿用错误地址或以名称覆盖字段。
-功能说明见 [UMC](amd-umc-recovery.md)、[CPU 拓扑 / PStates 剩余问题](amd-topology-recovery.md)。
+功能说明见 [UMC](amd-umc-implementation.md)、[CPU 拓扑 / PStates 剩余问题](amd-topology-recovery.md)。
 
 - [Linux 验证](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38007763354) 23/23；十目标各 24 Qt / 30 Python，11 套目标内核 VM 启动。
 - [核心验证](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38007763396) 四环境通过，各 5 CTest / 35 场景组。
@@ -458,15 +471,18 @@ EL8 容器以本地账户测试，移除只在系统启动后可用的 NSS syste
 
 以下保留此前研究与验证记录。
 
-前次重构提交 `beb10b7` 已把 PStates、寄存器请求/校验/串行服务和 Linux 硬件适配分离。
-独立核心四环境通过，Linux 完整矩阵 23/23；EL8 基线与十目标各 13 项 Qt 测试通过，
-每目标 26 项 Python 回归无跳过，见[本次源码、测试及产物哈希](validation/refactor-hardware-ci-beb10b7.json)。
-当前主线是先完成功能重构，再移植重构版；Windows/macOS 此时只验证核心，尚无硬件后端/完整 GUI。
-该轮之后的系统信息、授权与 Linux 适配已由本文开头的新验证覆盖；多步硬件事务、其他平台面板和真机验收仍待继续。
-
-以下保留此前研究与验证记录。
-
 更新日期：2026-10-09。接手时先读这里，再读根目录 `CHANGELOG.md`。
+
+当前任务按作者最新澄清执行：**先重构OCTool整套组件，再把重构后的版本移植到其他系统**。
+范围包括程序功能与界面、依赖组织、内核驱动、启动/安装脚本、polkit和说明；Windows版提供功能与接口参考。
+当前主线是恢复功能规格、拆分业务逻辑与系统后端、实现可测试的新源码；后续用重构产物做跨系统适配和验收。
+已有NVL/CPU等原指令证据继续用于实现与缺陷修正；原版私有运行库和旧加载器实验保留为对照资料。
+先读[重构架构、组件职责与移植验收](multi-distro.md)，以及[功能恢复规格](platform-recovery.md)。
+此前核心拆分增量 `beb10b7` 已把 PStates 和寄存器请求/校验/串行访问抽到[独立核心](../gui/core/hardware.h)，
+Linux HAL 与 CPUID 亲和性处理进入[系统适配器](../gui/platform/linux_hwio.cpp)，Qt 界面复用核心。
+云端四环境核心测试及 23/23 Linux 矩阵通过，见[实际结果与源码哈希](validation/refactor-hardware-ci-beb10b7.json)。
+这仍是功能重构增量，Windows/macOS 的硬件后端及完整 GUI 尚未实现。
+最新[组件输入清单](validation/component-porting-inputs-20261009.json)来自本地原Linux ZIP与Windows目录的只读核对。
 
 本轮在用户提供的 `octool-linux-refactor.tar.gz` 上继续扩展。作者确认旧 GUI 源码丢失后，
 授权按 Windows/Linux 二进制证据重构，首批选择基础信息和 MSR/MMIO/PCI 原始读写。
@@ -474,6 +490,7 @@ EL8 容器以本地账户测试，移除只在系统启动后可用的 NSS syste
 公开 GitHub Actions 的十目标基础版矩阵已有全绿记录，包含 AMD PStates 只读页；
 这不代表旧 GUI 直接替换与硬件验收完成。最新复查和修正结果见下列报告。
 
+- [2026-10-09 项目调研与修复](project-research-2026-10-09.md)：架构/分支/基线CI，以及接续修复的Windows解包错误、源包敏感文件排除和本地验证。
 - [2026-10-08 全面复查](review-2026-10-08.md)：基线证据、边界修正、未解决问题及后续研究顺序。
 - [PCI/EC 协调与线程权限](bus-coordination.md)：接续修复、公共内核API选择、离线负例和本轮验证。
 - [模块能力识别](module-capabilities.md)：只读查询、未知驱动拒绝扩展、旧模块MMIO对拍和升级检查。
@@ -485,7 +502,7 @@ EL8 容器以本地账户测试，移除只在系统启动后可用的 NSS syste
 - [Actions 实测修复记录](actions-debugging.md)：软件源、Kbuild 探测与 EL headers 的实际失败及处理。
 - [GUI 恢复与重构](gui-recovery.md)：源码丢失后的作者授权、Windows 输入现状与恢复边界。
 - [首批 GUI 重构](gui-phase1.md)：作者选择的基础信息和原始读写、传输修复与测试范围。
-- [平台面板恢复](platform-recovery.md)：作者已选择继续；23 个原面板类的证据与待补硬件/字段规格。
+- [平台面板恢复](platform-recovery.md)：23个原面板类、字段/操作规格、后端边界和重构实施顺序。
 - [AMD PStates 只读页](amd-pstates.md)：CPU/能力探测、配置频率、原始值及旧算法核对边界。
 - [EL8 静态 Qt SDK](qt-sdk.md)：成功 run、产物哈希、依赖配置及复用边界。
 - [原版 ELF 的 EL8–EL10 兼容性](legacy-el-compatibility.md)：继续反汇编的调用点证据和私有运行库实验，区别于重构基础版。
@@ -502,7 +519,8 @@ EL8 容器以本地账户测试，移除只在系统启动后可用的 NSS syste
 - [原内存页和64位写路由](legacy-mmio-clients.md)：原槽请求零地址、NVL查询仍写命令、fallback丢高32位及168项实验。
 - [原公共邮箱与FIVR/FCH](legacy-mmio-services.md)：耗尽返回0、一致性AND比较、位操作边界及260项原指令实验。
 - [原I2C与MMIO直接调用覆盖](legacy-mmio-i2c.md)：119项、错误返回/部分输出/无界等待，以及10函数28处CALL逐点请求核对。
-- [原NVL配置文件门禁](legacy-nvl-profile.md)：6386字节导出、无导入上限、短读仍到原MSR请求及42项实验。
+- [原NVL配置、时钟及拓扑来源](legacy-nvl-profile.md)：96项完整存取、125项9595、130项配置拓扑、134项完整CPU拓扑及45项末段表实验；错误CPU归属、空表重建、邻表/计数覆盖，以及前序存取缺陷。
+- [NVL字段契约（重构输入）](../analysis/contracts/nvl-components.json)：639项子对象原指令实验，125主描述/44辅助描述、CPU位运算及已知缺陷；源地址/哈希、未知单位和未绑定标签单独记录。
 - [逆向覆盖台账](reverse-engineering-status.md)：清单、算法、模拟和真机证据的区别与尚未完成范围。
 - [原版模块重复加载握手](legacy-module-handoff.md)：同名 `.ko` 的真实 EEXIST 路径、runner 探针与 Secure Boot 边界。
 - [原版 MMIO 邮箱契约](legacy-mailbox-contract.md)：56 组原指令模拟、三份旧模块映射、错误完成字导致的兼容缺口。

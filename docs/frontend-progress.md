@@ -1,5 +1,19 @@
 # GUI / CLI 同步进度
 
+<!-- amd-oc-cores-8c85a28 -->
+2026-10-21：最新生产验证提交 `8c85a28`，GUI / CLI 同步新增
+**同一 CCD 内显式核心列表的频率设置**。每核重查能力与身份，首错停止并报告部分完成状态。
+
+- [用法](amd-manual-oc.md)、[整批验证](amd-oc-cores-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1359 JSON、GUI 各 212 项、核心 422 场景组；12 次内核 VM。
+- `dist/gui-cli-amd-oc-cores-8c85a28/`：33 个包、精确云端源码、更新用户源码及校验表。
+- [REA 研究](amd-oc-cores-research.md)：八个原函数、768 组原指令边界实验；不沿用原版无条件八核循环。
+- 频率只有固件确认，物理映射/真机验收未验证；逐核/CCD 遥测、rails、动态内存/EC 及其它平台仍未完成。
+
+以下保留历史记录。
+<!-- /amd-oc-cores-8c85a28 -->
+
+
 <!-- amd-manual-oc-f4332b7 -->
 2026-10-21：最新生产验证提交 `f4332b7`，GUI / CLI 同步新增
 **Shimada 手动 OC 模式切换、全核及明确单核频率设置**。模式位可回读；频率仅有命令确认。
@@ -279,7 +293,7 @@ GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-
 | AMD PBO Scalar | AMD tuning → Read / Apply scalar | `amd-pbo-scalar-read/set` | Shimada 1Ah/08h；旧值比较及精确回读，1..10 整数倍；不是物理电压或功率测量 |
 | AMD Fmax 与 PPT/TDC/EDC/温度限制 | AMD tuning → Read PBO capability / Apply | `amd-pbo-capabilities` / `amd-pbo-fmax-set` / `amd-pbo-limit-set` | Shimada 1Ah/08h；完整能力字比较及单项设置，只有命令确认，当前限制未验证 |
 | AMD 手动 OC 模式 | AMD tuning → Read OC capability / Apply mode | `amd-oc-mode-set` | Shimada 1Ah/08h；显式开启/关闭、旧能力核对及模式位回读；不隐含重置 Scalar 或写 VID |
-| AMD 全核 / 明确单核频率 | AMD tuning → Manual OC frequency | `amd-oc-frequency-set --scope all-cores/core` | Shimada 1Ah/08h；要求手动 OC 已启用；明确固件 CCD/core，频率只有命令确认，物理映射与实际频率未验证 |
+| AMD 全核 / 单核 / CCD 选定核心频率 | AMD tuning → Manual OC frequency / Selected cores in CCD | `amd-oc-frequency-set --scope all-cores/core/cores` | Shimada 1Ah/08h；显式核心列表、逐核能力检查、首错停止与部分完成报告；只有命令确认，物理映射与实际频率未验证 |
 | AMD 曲线读取 | AMD tuning 曲线查询 | `amd-curve-read` | Shimada；显式固件 CCD/core；不推导 mV |
 | AMD 逐核 / CCD 选核曲线设置 | AMD tuning → Read curve / Apply curve to selected cores | `amd-curve-set --core/--cores --margin --expect-raw --apply` | 1Ah/08h；旧值检查、逐核回读、部分完成报告；CO count，不是 mV；真机及物理映射未验收 |
 | AMD 拓扑 | AMD tuning | `amd-topology` | CPUID 拓扑，不作为固件目标映射 |

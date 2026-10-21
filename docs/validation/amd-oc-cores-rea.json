@@ -1,0 +1,537 @@
+{
+  "schema": 1,
+  "date": "2026-10-21",
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "hardware_execution": false,
+  "run": {
+    "databaseId": 39559121955,
+    "headSha": "d19c38ae77cafaccaa47e7eed12ef8511f458646",
+    "conclusion": "success",
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/39559121955"
+  },
+  "study": {
+    "schema": 1,
+    "source_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+    "hardware_execution": false,
+    "rea_version": "6.7.0",
+    "ghidra_version": "12.1.4",
+    "records": [
+      {
+        "tool": "open_binary",
+        "arguments": {
+          "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/rea-input/octool",
+          "provider_id": "ghidra"
+        },
+        "file": "open.json",
+        "seconds": 0.34,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0x21ffb0"
+        },
+        "file": "pseudo-0x21ffb0.json",
+        "seconds": 604.53,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0x31ffb0"
+        },
+        "file": "info-0x21ffb0.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0x2202b0"
+        },
+        "file": "pseudo-0x2202b0.json",
+        "seconds": 0.04,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0x3202b0"
+        },
+        "file": "info-0x2202b0.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0x21f140"
+        },
+        "file": "pseudo-0x21f140.json",
+        "seconds": 0.02,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0x31f140"
+        },
+        "file": "info-0x21f140.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0x21ef30"
+        },
+        "file": "pseudo-0x21ef30.json",
+        "seconds": 0.03,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0x31ef30"
+        },
+        "file": "info-0x21ef30.json",
+        "seconds": 0.0,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0x220110"
+        },
+        "file": "pseudo-0x220110.json",
+        "seconds": 0.04,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0x320110"
+        },
+        "file": "info-0x220110.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0x21f1f0"
+        },
+        "file": "pseudo-0x21f1f0.json",
+        "seconds": 0.03,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0x31f1f0"
+        },
+        "file": "info-0x21f1f0.json",
+        "seconds": 0.0,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0x220430"
+        },
+        "file": "pseudo-0x220430.json",
+        "seconds": 0.04,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0x320430"
+        },
+        "file": "info-0x220430.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0x752270"
+        },
+        "file": "pseudo-0x752270.json",
+        "seconds": 0.09,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0x852270"
+        },
+        "file": "info-0x752270.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "procedure_callers",
+        "arguments": {
+          "procedure": "0x31ffb0"
+        },
+        "file": "pm-callers.json",
+        "seconds": 0.0,
+        "error": false
+      },
+      {
+        "tool": "export_evidence_bundle",
+        "arguments": {
+          "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/rea-evidence/evidence.json"
+        },
+        "file": "export.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "close_binary",
+        "arguments": {},
+        "file": "close.json",
+        "seconds": 0.51,
+        "error": false
+      }
+    ],
+    "startup_timeout_ms": 900000,
+    "disabled_analyzers": "GCC Exception Handlers,Decompiler Switch Analysis,Call Convention ID",
+    "study": "oc_cores",
+    "error": null
+  },
+  "procedures": [
+    {
+      "file_offset": "0x21ffb0",
+      "analysis_address": "0x31ffb0",
+      "name": "amd_per_ccd_vermeer",
+      "original_symbols": [
+        "_Z19amd_per_ccd_vermeersi"
+      ],
+      "original_size": 339,
+      "code_sha256": "dbe524538556305c444546d9be10750d56b8a69b7b38c42415d26267926c24db",
+      "ghidra_body_bytes": 331,
+      "evidence_id": "ev_6f3566bcd95ac8db7059431f6494be4ab151d6ea2d0f9b027baeafe4ee786fb7"
+    },
+    {
+      "file_offset": "0x2202b0",
+      "analysis_address": "0x3202b0",
+      "name": "one_core_freq_vermeer",
+      "original_symbols": [
+        "_Z21one_core_freq_vermeerii"
+      ],
+      "original_size": 383,
+      "code_sha256": "5553e25b2c347111cf8ff087f18519b1bd2ac53d8f6da7eca3c1e490dc90f932",
+      "ghidra_body_bytes": 377,
+      "evidence_id": "ev_d1fced9bdc22d2161ba0bc2345e8bab774c38191055c55791b73701ec81abc34"
+    },
+    {
+      "file_offset": "0x21f140",
+      "analysis_address": "0x31f140",
+      "name": "per_ccx_freq_vermeer_fast",
+      "original_symbols": [
+        "_Z25per_ccx_freq_vermeer_fastsij"
+      ],
+      "original_size": 164,
+      "code_sha256": "35584f23f46cb09997865c59013a0c47c14adb68a0ca642728b6c761567bc4b9",
+      "ghidra_body_bytes": 164,
+      "evidence_id": "ev_c181ea2459af0b7786e8ee9f0141a4d9a0a12bbc2fd62d402014dbfc4453e6f9"
+    },
+    {
+      "file_offset": "0x21ef30",
+      "analysis_address": "0x31ef30",
+      "name": "one_core_freq_vermeer_fast",
+      "original_symbols": [
+        "_Z26one_core_freq_vermeer_fastiij"
+      ],
+      "original_size": 164,
+      "code_sha256": "000169ccbcb648c5df1fb7d06421533e9bc2e8f35832a95e1f6db07ce96d8e05",
+      "ghidra_body_bytes": 164,
+      "evidence_id": "ev_f89cfd0ffef048274c14bb0e98decaaf32c449c6161c58b8d35acec40f016180"
+    },
+    {
+      "file_offset": "0x220110",
+      "analysis_address": "0x320110",
+      "name": "per_ccx_freq",
+      "original_symbols": [
+        "_Z12per_ccx_freqsi"
+      ],
+      "original_size": 411,
+      "code_sha256": "94034697a817feea6979b7c06600cc4e9c52dad9b7786ef2de1fe1e32202d0fb",
+      "ghidra_body_bytes": 398,
+      "evidence_id": "ev_45a2b7ea774e6f47b1033aba10c99ae316ec2724d63decc9c231718465d19048"
+    },
+    {
+      "file_offset": "0x21f1f0",
+      "analysis_address": "0x31f1f0",
+      "name": "per_ccx_freq_fast",
+      "original_symbols": [
+        "_Z17per_ccx_freq_fastsij"
+      ],
+      "original_size": 309,
+      "code_sha256": "605973bf49fa3ea231064fede4867f7419e3c5f41e29d2c9a93c8406a310b220",
+      "ghidra_body_bytes": 300,
+      "evidence_id": "ev_da445228a6222683806b6effe60f74ef5fd9607296c39384829049d0b5296072"
+    },
+    {
+      "file_offset": "0x220430",
+      "analysis_address": "0x320430",
+      "name": "one_core_freq2",
+      "original_symbols": [
+        "_Z14one_core_freq2ii"
+      ],
+      "original_size": 463,
+      "code_sha256": "c5f15999b407e8268584922ece28dd8a4fab81a209094658e143406c51f78a65",
+      "ghidra_body_bytes": 313,
+      "evidence_id": "ev_905fe8d98037dce1a0661900654e4558271847e8c65d541ccad6ca328aad2c8c"
+    },
+    {
+      "file_offset": "0x752270",
+      "analysis_address": "0x852270",
+      "name": "cpufunctions::on_per_ccx_oc_apply_clicked",
+      "original_symbols": [
+        "_ZN12cpufunctions27on_per_ccx_oc_apply_clickedEv"
+      ],
+      "original_size": 1770,
+      "code_sha256": "4c3960e835c762fd2c56d05ac5b485c68cd95b5310b410762e29badd4e4ae2e5",
+      "ghidra_body_bytes": 1601,
+      "evidence_id": "ev_cda0738dd65271f7935c4dd9b2261625a28cc7709f66e7d35d124176eb089f9c"
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "build/rea-oc-cores-39559121955/artifacts.json",
+      "bytes": 789,
+      "sha256": "4d2b29fbb591fa5ad777cf6d1e7bffc1221bbf9bcaed7f464dc6c21d44b5c79e"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/close.json",
+      "bytes": 251,
+      "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/evidence.json",
+      "bytes": 112369,
+      "sha256": "a4909daadb5b299345f5abc06a07683188dc12ae01bace7c69c825ad5ff01726"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/export.json",
+      "bytes": 519,
+      "sha256": "56c80ee08ae32d8f6224ba03f9bcaf5d4e5a27d11211bc4f94a8bc2203b0527d"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/info-0x21ef30.json",
+      "bytes": 10874,
+      "sha256": "29330698de5564f04447f5763a219d38a9b71ea9b14581d52381bbada8f8acbd"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/info-0x21f140.json",
+      "bytes": 11402,
+      "sha256": "15470299b0fccd5a9f24b954693ee17052e7aa5c387afa7c4d3f79afc73df113"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/info-0x21f1f0.json",
+      "bytes": 13446,
+      "sha256": "a4ac284f010a93a627a878598dfe07bfd6fb59bce71ef70c1825dfa1d139513f"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/info-0x21ffb0.json",
+      "bytes": 12226,
+      "sha256": "a16b948bc94ca13a93cb9b5f1799b956fbebf266e4a8f8bc3ddaa04f025e2cfa"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/info-0x220110.json",
+      "bytes": 14302,
+      "sha256": "e9b7c5b5582ef5fbf0b03f1dfed48f0acc2f6f4dfab5be7a43cd3acc85ae723d"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/info-0x2202b0.json",
+      "bytes": 13242,
+      "sha256": "a8642f3a101b1d1a0c567e0db378c6b30a94a00142c0dbdf491fb96588459e64"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/info-0x220430.json",
+      "bytes": 12602,
+      "sha256": "305f7cd49d4edbd9041ead0ace59e8fb11f31465e9f4b190bfebc91d16dda9e4"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/info-0x752270.json",
+      "bytes": 16714,
+      "sha256": "db4dce5238b77debdb7ed537d1c0ca86273b63af0a7f4e713f84c91b58028e0a"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/initialize.json",
+      "bytes": 1222,
+      "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/open.json",
+      "bytes": 816,
+      "sha256": "a7a7b8c88ab3de82162c7b84e62e67872ae01c8f16e44f9b04a42e3e2db4248c"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/package-lock.json",
+      "bytes": 78634,
+      "sha256": "97abc4b821245cdb3f432d0fc677bf14ee3046b1a8befa13de065f98003fbbaa"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/pm-callers.json",
+      "bytes": 9438,
+      "sha256": "b663d075bd6ab7d3efc3503f6fda62f0eec327a54c06246d9163029aa7f746b2"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/pseudo-0x21ef30.c",
+      "bytes": 664,
+      "sha256": "ccb2264a2abea3ee0a4bfaec45aa2be9abbf3f6a085367c6a34f6a9be797c0f2"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/pseudo-0x21ef30.json",
+      "bytes": 12108,
+      "sha256": "24c4d9d6841a28a8e1eeeeb5dca7836afd2539108cb1723f6e59bd038d589df4"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/pseudo-0x21f140.c",
+      "bytes": 645,
+      "sha256": "700c95e52e54e7bebd10bb884598a8b2b5f6f708821b48b05bc2e7d38c53167c"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/pseudo-0x21f140.json",
+      "bytes": 12054,
+      "sha256": "60c9587f041a6c02992585708a096637565fd31937735f946405e654cdeaa8f6"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/pseudo-0x21f1f0.c",
+      "bytes": 1142,
+      "sha256": "cb0477c1639da23ef3d0d0482f8f8626c07f8a098bba5568257c12066a52adeb"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/pseudo-0x21f1f0.json",
+      "bytes": 15244,
+      "sha256": "407c80c36656a6b853e8bce5b5f38b7ba5679f639e2348c9a5d9876ec5192b1d"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/pseudo-0x21ffb0.c",
+      "bytes": 1272,
+      "sha256": "dc0fe93b08625d888fe60fa8ee48ea1eaa3cbafc89e24bcf84c83298c066e28b"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/pseudo-0x21ffb0.json",
+      "bytes": 14884,
+      "sha256": "6f58e3cdc0d74791eb80ef5082932c11ad4d00c11a9399cc6341aa6066b06786"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/pseudo-0x220110.c",
+      "bytes": 1292,
+      "sha256": "a9c7d1ceabbc0a54706659b630adfa04716ff9639085d9f0cc907250792296fd"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/pseudo-0x220110.json",
+      "bytes": 15850,
+      "sha256": "15098ee12922fe53cad5135814eb571d7f79874fa8ca13cfb8bcc14cafce2e63"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/pseudo-0x2202b0.c",
+      "bytes": 1366,
+      "sha256": "25a728429d0516df4d772943ace2f10cf336e779fd31b5a83e6c5fd3d7f6cf61"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/pseudo-0x2202b0.json",
+      "bytes": 16326,
+      "sha256": "f1cb0b92057e49fa38106776cc4f336718999d70575fbcb32462936b0269eeaf"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/pseudo-0x220430.c",
+      "bytes": 2638,
+      "sha256": "b7f5a30a6ee9feaf3efdd73acd9129be3c3142dc1f6d65c6f5bd34ab0fef9b93"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/pseudo-0x220430.json",
+      "bytes": 21652,
+      "sha256": "dac8c5b164d27f5396206d1f6061338c20f18955a2cf0b550a2c14c506b20e3c"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/pseudo-0x752270.c",
+      "bytes": 5758,
+      "sha256": "0e0b2ba4f3ea32cc1996eec7834bf057aacbf2855b814e6762c467c13a6fcf56"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/pseudo-0x752270.json",
+      "bytes": 34118,
+      "sha256": "b5e9e84f174fca7a7ce26fadf250771162ef105e2a9c2dd2a3292e3a67d42a93"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/rea-stderr.log",
+      "bytes": 3431,
+      "sha256": "77760bccc73492ee151400797912d766af729b07b932af8eac22b57d8d1ab8da"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/resolved-functions.json",
+      "bytes": 11798,
+      "sha256": "45614499a560f6e97676fef3e19004c952c3ac66a8ab1512ffeffe5f99c95bff"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/run.json",
+      "bytes": 2585,
+      "sha256": "7f0517f4650b6147c3e546cd18087c46b6d49559cf3376e9e1f9fbf401d04ee9"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/run.log",
+      "bytes": 34640,
+      "sha256": "6fff25e6a1a7556d8ec27a17fc543d5034772fd3b0c5a810868842a86c49dcb8"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/selected-tool-schemas.json",
+      "bytes": 80370,
+      "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
+    },
+    {
+      "path": "build/rea-oc-cores-39559121955/study.json",
+      "bytes": 4459,
+      "sha256": "9d99435fc32363aa31e0fa4bca405e95c2d959e38f97e9d0491ecec185a4e4ab"
+    }
+  ],
+  "original_static_report": {
+    "path": "build/oc-cores-original-static.json",
+    "bytes": 117653,
+    "sha256": "342a6f798e518c2f59de8f54d7845d49ec3b6c1d05201af09abe9671ba133307"
+  },
+  "public_source": {
+    "path": "Cpu.cs",
+    "file": "Cpu.cs",
+    "commit": "869b7e82572337e5a673e92230edc92bddf0e44b",
+    "blob": "aab138a16882fa59f19e216cf90de4f3bb8f886c",
+    "sha256": "814009ae2144a4ca816dc579320d401ab419c74314926f53c935779e775ada26"
+  },
+  "original_replay": {
+    "total": 768,
+    "scope": "Original per-CCD wrapper and helper instructions. One Wr_SMU_arg command-write boundary per run returns a selected synthetic value; all other command writes return one. This is not an emulated firmware response or proof of a real I/O failure.",
+    "report": {
+      "path": "build/oc-cores-original-replay.json",
+      "bytes": 3566076,
+      "sha256": "6fde576d6115353e8634943b06178edcc25701600770aca2054e49701599dea5"
+    },
+    "fixture": {
+      "path": "analysis/fixtures/legacy-amd-oc-frequency.json",
+      "bytes": 41577,
+      "sha256": "a6b9abbb4e0e355d84d6256f7de2ad0f7a3e24b16e98e398603d1082e07ab2dc"
+    }
+  },
+  "local_tests": {
+    "count": 2,
+    "log": {
+      "path": "build/oc-cores-local-tests.txt",
+      "bytes": 449,
+      "sha256": "a3ab95ac92ac1ee11fc902085a339e1262c7b910fc5dd56c2cfe25d2d8493e0e"
+    }
+  },
+  "observations": [
+    "REA normal amd_per_ccd_vermeer and fast per_ccx_freq_vermeer_fast expose fixed eight-core loops; normal writes six arguments and fast only argument zero.",
+    "768 original-instruction runs vary both wrappers, 16 CCD indices, eight command-write positions and three synthetic return values. Both wrappers continue all eight writes. This is not a real firmware rejection or failure of a real bus.",
+    "REA per_ccx_freq and fast wrappers have older four-core/CCX routing and modern eight-core routing selected by original globals. These globals are not new-platform hardware identity evidence.",
+    "REA single-core helpers confirm division by eight mixed with remainder modulo seven; do not infer physical mapping from flat original indices.",
+    "REA Qt caller implicitly enables OC and selects a voltage before the frequency loop, then reports Settings Applied without per-core acknowledgement checks. The new operation has no such implicit settings.",
+    "Pinned public Cpu.cs SetFrequencyMultipleCores stops when a single command fails, but assumes a count supplied by CCX helpers. New code requires an explicit list and compares full capabilities before each selected core.",
+    "New API supports Shimada 1Ah/08h and explicit CCD/core firmware encoding only, stops on first error and preserves partial acknowledgements. Frequency telemetry, active-core discovery, physical mapping and hardware acceptance remain unavailable."
+  ]
+}
