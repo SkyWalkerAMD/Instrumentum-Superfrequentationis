@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "commands.h"
+#include "core/amd_curve.h"
 #include "json.h"
 #include "platform/linux_inventory_native.h"
 #include "platform/linux_amd_pm.h"
