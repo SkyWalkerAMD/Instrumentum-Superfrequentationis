@@ -3595,6 +3595,124 @@ private slots:
         QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0);
         const auto calls=device->calls; apply->click(); QCOMPARE(device->calls,calls);
     }
+    void ocModeChecksReadback() {
+        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=6;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        panel.resize(1300,1200);panel.show();QApplication::processEvents();
+        auto *read=panel.findChild<QPushButton *>("ocCapsRead"),*apply=panel.findChild<QPushButton *>("ocModeApply");
+        auto *mode=panel.findChild<QComboBox *>("ocMode");auto *table=panel.findChild<QTableWidget *>("smuTable");
+        apply->click();QCOMPARE(device->calls,0u);
+        for(unsigned i=0;i<3;++i) {
+            mode->setCurrentIndex(i==0?1:0);
+            read->click();QTRY_VERIFY(panel.isEnabled());
+            QTimer::singleShot(0,[]{auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());if(box)box->button(QMessageBox::Yes)->click();});
+            apply->click();QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(device->capsRaw,i==0?7u:6u);QCOMPARE(device->settings,i==0?1u:2u);
+            QCOMPARE(table->item(2,1)->text(),i==0?QString("Enabled"):QString("Disabled"));
+            QCOMPARE(table->item(3,1)->text(),QString("Mode bit matches"));
+            if(i==2)QCOMPARE(table->item(1,1)->text(),QString("Not sent; already requested mode"));
+            if(i==0) {
+                QApplication::processEvents();const auto shot=qEnvironmentVariable("OCTOOL_OC_MODE_TEST_SCREENSHOT");
+                if(!shot.isEmpty())QVERIFY(panel.grab().save(shot));
+            }
+            const auto calls=device->calls;apply->click();QCOMPARE(device->calls,calls);
+        }
+        QCOMPARE(device->scalarRaw,0x3f800000u);QCOMPARE(device->ocAllMHz,0u);QCOMPARE(device->ocCoreArgument,0u);QCOMPARE(device->wrongCpu,0u);
+    }
+    void ocModeRejectsUnverifiedResult() {
+        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=6;device->discardChange=true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        panel.resize(1300,1200);panel.show();QApplication::processEvents();
+        panel.findChild<QComboBox *>("ocMode")->setCurrentIndex(1);
+        panel.findChild<QPushButton *>("ocCapsRead")->click();QTRY_VERIFY(panel.isEnabled());
+        QTimer::singleShot(0,[]{auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());if(box)box->button(QMessageBox::Yes)->click();});
+        panel.findChild<QPushButton *>("ocModeApply")->click();QTRY_VERIFY(panel.isEnabled());
+        auto *table=panel.findChild<QTableWidget *>("smuTable");
+        QCOMPARE(device->settings,1u);QCOMPARE(table->item(1,1)->text(),QString("Firmware accepted"));
+        QCOMPARE(table->item(2,1)->text(),QString("Disabled"));QCOMPARE(table->item(3,1)->text(),QString("Not verified"));
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("may have changed"));
+        QApplication::processEvents();const auto shot=qEnvironmentVariable("OCTOOL_OC_FAILURE_TEST_SCREENSHOT");
+        if(!shot.isEmpty())QVERIFY(panel.grab().save(shot));
+    }
+    void ocFrequencyAcknowledgementOnly() {
+        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=7;device->discardChange=true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        panel.resize(1300,1200);panel.show();QApplication::processEvents();
+        auto *read=panel.findChild<QPushButton *>("ocCapsRead"),*apply=panel.findChild<QPushButton *>("ocFrequencyApply");
+        auto *scope=panel.findChild<QComboBox *>("ocFrequencyScope");
+        auto *ccd=panel.findChild<QLineEdit *>("ocCcd"),*core=panel.findChild<QLineEdit *>("ocCore"),*mhz=panel.findChild<QLineEdit *>("ocMHz");
+        QVERIFY(ccd->text().isEmpty() && core->text().isEmpty() && mhz->text().isEmpty());
+        apply->click();QCOMPARE(device->calls,0u);
+        for(int all=0;all<2;++all) {
+            scope->setCurrentIndex(all);mhz->setText("5000");
+            if(!all){ccd->setText("15");core->setText("7");}
+            else QVERIFY(!ccd->isEnabled() && !core->isEnabled() && ccd->text().isEmpty() && core->text().isEmpty());
+            read->click();QTRY_VERIFY(panel.isEnabled());
+            QTimer::singleShot(0,[]{auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());if(box)box->button(QMessageBox::Yes)->click();});
+            apply->click();QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(device->messages.back(),all?0x5fu:0x60u);QCOMPARE(device->commandArgs.back()[0],all?5000u:0xf0701388u);
+            auto *table=panel.findChild<QTableWidget *>("smuTable");
+            QCOMPARE(table->item(1,1)->text(),QString("5000"));QCOMPARE(table->item(2,1)->text(),QString("Firmware accepted"));
+            QCOMPARE(table->item(4,1)->text(),QString("Unavailable / not verified"));
+            QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("remain unverified"));
+            QApplication::processEvents();const auto shot=qEnvironmentVariable(all?"OCTOOL_OC_ALL_TEST_SCREENSHOT":"OCTOOL_OC_CORE_TEST_SCREENSHOT");
+            if(!shot.isEmpty())QVERIFY(panel.grab().save(shot));
+            const auto calls=device->calls;apply->click();QCOMPARE(device->calls,calls);
+        }
+        QCOMPARE(device->settings,2u);QCOMPARE(device->ocAllMHz,0u);QCOMPARE(device->ocCoreArgument,0u);QCOMPARE(device->capsRaw,7u);QCOMPARE(device->scalarRaw,0x3f800000u);
+        scope->setCurrentIndex(0);QVERIFY(ccd->isEnabled() && core->isEnabled() && ccd->text().isEmpty() && core->text().isEmpty());
+    }
+    void ocRejectsInvalidAndChangedConfirmation() {
+        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=7;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        auto *read=panel.findChild<QPushButton *>("ocCapsRead"),*frequency=panel.findChild<QPushButton *>("ocFrequencyApply"),*modeApply=panel.findChild<QPushButton *>("ocModeApply");
+        auto *scope=panel.findChild<QComboBox *>("ocFrequencyScope"),*mode=panel.findChild<QComboBox *>("ocMode");
+        auto *ccd=panel.findChild<QLineEdit *>("ocCcd"),*core=panel.findChild<QLineEdit *>("ocCore"),*mhz=panel.findChild<QLineEdit *>("ocMHz"),*cpu=panel.findChild<QLineEdit *>("smuCpu");
+        read->click();QTRY_VERIFY(panel.isEnabled());const auto calls=device->calls;
+        for(const QString text:{QString(""),QString("0"),QString("-1"),QString("1048576"),QString("5000.5"),QString("0x1388")}) {
+            ccd->setText("0");core->setText("0");mhz->setText(text);frequency->click();QCOMPARE(device->calls,calls);
+        }
+        mhz->setText("5000");ccd->setText("16");frequency->click();QCOMPARE(device->calls,calls);
+        ccd->setText("0");core->setText("8");frequency->click();QCOMPARE(device->calls,calls);
+        for(unsigned n=0;n<9;++n) {
+            cpu->setText("130");scope->setCurrentIndex(0);ccd->setText("0");core->setText("0");mhz->setText("5000");mode->setCurrentIndex(0);
+            read->click();QTRY_VERIFY(panel.isEnabled());const auto before=device->calls;
+            QTimer::singleShot(0,[&]{
+                auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());if(!box)return;
+                if(n==0)mhz->setText("5100");
+                if(n==1)ccd->setText("1");
+                if(n==2)core->setText("1");
+                if(n==3)scope->setCurrentIndex(1);
+                if(n==4 || n==7)cpu->setText("131");
+                if(n==6)mode->setCurrentIndex(1);
+                box->button(n==5 || n==8?QMessageBox::Cancel:QMessageBox::Yes)->click();
+            });
+            (n<6?frequency:modeApply)->click();QCOMPARE(device->calls,before);QCOMPARE(device->settings,0u);
+        }
+        device->capsRaw=6;cpu->setText("130");read->click();QTRY_VERIFY(panel.isEnabled());const auto disabled=device->calls;
+        frequency->click();QCOMPARE(device->calls,disabled);QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("must already be enabled"));
+    }
+    void ocRejectsStaleCapabilitiesAndTargets() {
+        for(bool frequency:{false,true})for(unsigned fault=0;fault<3;++fault) {
+            auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=frequency?7:6;
+            AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+            auto *read=panel.findChild<QPushButton *>("ocCapsRead"),*apply=panel.findChild<QPushButton *>(frequency?"ocFrequencyApply":"ocModeApply");
+            panel.findChild<QComboBox *>("ocMode")->setCurrentIndex(1);
+            panel.findChild<QLineEdit *>("ocCcd")->setText("0");panel.findChild<QLineEdit *>("ocCore")->setText("0");panel.findChild<QLineEdit *>("ocMHz")->setText("5000");
+            read->click();QTRY_VERIFY(panel.isEnabled());
+            if(fault==0)device->capsRaw^=0x80000000;
+            if(fault==1)device->writeCompletion=0xfd;
+            QTimer::singleShot(0,[]{auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());if(box)box->button(QMessageBox::Yes)->click();});
+            apply->click();
+            if(fault==2)panel.findChild<QLineEdit *>("smuCpu")->setText("131");
+            QTRY_VERIFY(panel.isEnabled());QCOMPARE(device->settings,fault==0?0u:1u);
+            if(fault==2) {
+                QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0);
+                QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("result belongs to CPU 130"));
+            }
+            const auto calls=device->calls;apply->click();QCOMPARE(device->calls,calls);
+        }
+    }
     void pboRailsEncodingIsOffline() {
         auto *device = new AmdPboFixture;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);

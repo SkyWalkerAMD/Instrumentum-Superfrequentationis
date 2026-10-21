@@ -108,7 +108,7 @@ void faultsAndCancellation() {
     assert(deadline.set(AmdPboLimit::Ppt,350,6,nullptr,1).error == -ETIMEDOUT && !deadline.fake->settings);
 }
 void transportAllowlist() {
-    for (std::uint32_t command : {0x53u,0x54u,0x55u,0x5du,0x61u,0x31u,0x3eu}) {
+    for (std::uint32_t command : {0x53u,0x54u,0x55u,0x61u,0x31u,0x3eu}) {
         Test t;
         assert(t.service.transaction([&](HardwareSession &s) { return detail::exchangeShimadaRsmu(s,command,1000,false,true).error; },10000) == -EINVAL);
         assert(!t.fake->calls);

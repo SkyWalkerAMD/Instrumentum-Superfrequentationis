@@ -39,3 +39,4 @@ install(FILES ../docs/intel-clock.md ../docs/intel-memory.md ../docs/intel-memor
 install(FILES ../docs/intel-tvb.md ../docs/intel-energy.md ../docs/intel-avx-offset.md ../docs/intel-thermal.md ../docs/intel-limits.md DESTINATION share/doc/octool-cli)
 install(FILES ../docs/intel-iccmax.md ../docs/intel-bclk-voltage.md ../docs/intel-energy-counters.md ../docs/intel-pl4.md DESTINATION share/doc/octool-cli)
 install(FILES ../docs/amd-pstates-legacy.md ../docs/amd-pstates-electrical.md DESTINATION share/doc/octool-cli)
+install(FILES ../docs/amd-manual-oc.md ../docs/amd-pbo-limits.md DESTINATION share/doc/octool-cli)

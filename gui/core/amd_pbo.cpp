@@ -165,6 +165,68 @@ AmdPboLimitUpdate setShimadaPboLimit(HardwareSession &s, const SmuTarget &target
     // comparison establishes the current setting or its effect on the package.
     out.phase = AmdPboPhase::Complete; return out;
 }
+AmdOcModeUpdate setShimadaOcMode(HardwareSession &s, const SmuTarget &target,
+                                 std::uint32_t expectedCapabilities, bool enabled) {
+    AmdOcModeUpdate out; out.requestedEnabled = enabled; out.command = enabled ? 0x5d : 0x5e;
+    out.phase = AmdPboPhase::Compare;
+    out.before = readShimadaPboCapabilities(s, target);
+    if ((out.error = out.before.error)) return out;
+    if (out.before.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
+    if (bool(out.before.raw & 1u) == enabled) {
+        if ((out.error = s.checkpoint())) return out;
+        out.after = out.before; out.verified = out.unchanged = true;
+        out.phase = AmdPboPhase::Complete; return out;
+    }
+    if ((out.error = checkTarget(s, target))) return out;
+    out.phase = AmdPboPhase::Write;
+    const auto reply = detail::exchangeShimadaRsmu(s, out.command, 0, false, true);
+    out.writeAttempted = reply.messageAttempted; out.response = reply.response;
+    out.accepted = reply.response == 1;
+    if ((out.error = reply.error)) return out;
+    out.phase = AmdPboPhase::Verify;
+    out.after = readShimadaPboCapabilities(s, target);
+    if ((out.error = out.after.error)) return out;
+    // Other capability bits may legitimately change when switching OC mode.
+    // Keep both complete words; verify only the requested mode bit.
+    if (bool(out.after.raw & 1u) != enabled) { out.error = -EIO; return out; }
+    if ((out.error = s.checkpoint())) return out;
+    out.verified = true; out.phase = AmdPboPhase::Complete; return out;
+}
+const char *amdOcFrequencyScopeName(AmdOcFrequencyScope scope) {
+    switch (scope) {
+    case AmdOcFrequencyScope::AllCores: return "all-cores";
+    case AmdOcFrequencyScope::Core: return "core";
+    }
+    return "invalid";
+}
+int encodeShimadaOcFrequency(AmdOcFrequencyScope scope, unsigned ccd, unsigned core, unsigned mhz,
+                            std::uint32_t &command, std::uint32_t &argument) {
+    command = argument = 0;
+    if (scope != AmdOcFrequencyScope::AllCores && scope != AmdOcFrequencyScope::Core) return -EINVAL;
+    if (scope == AmdOcFrequencyScope::AllCores && (ccd || core)) return -EINVAL;
+    std::uint32_t encoded = 0;
+    const int error = encodeShimadaCoreFrequency(ccd, core, mhz, encoded);
+    if (error) return error;
+    command = scope == AmdOcFrequencyScope::AllCores ? 0x5f : 0x60;
+    argument = encoded; return 0;
+}
+AmdOcFrequencyUpdate setShimadaOcFrequency(HardwareSession &s, const SmuTarget &target,
+    std::uint32_t expectedCapabilities, AmdOcFrequencyScope scope, unsigned ccd, unsigned core, unsigned mhz) {
+    AmdOcFrequencyUpdate out; out.scope = scope; out.ccd = ccd; out.core = core; out.requestedMHz = mhz;
+    if ((out.error = encodeShimadaOcFrequency(scope, ccd, core, mhz, out.command, out.argument))) return out;
+    if (!(expectedCapabilities & 1u)) { out.error = -ENOTSUP; return out; }
+    out.phase = AmdPboPhase::Compare;
+    out.before = readShimadaPboCapabilities(s, target);
+    if ((out.error = out.before.error)) return out;
+    if (out.before.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
+    if ((out.error = checkTarget(s, target))) return out;
+    out.phase = AmdPboPhase::Write;
+    const auto reply = detail::exchangeShimadaRsmu(s, out.command, out.argument, false, true);
+    out.writeAttempted = reply.messageAttempted; out.response = reply.response;
+    out.accepted = reply.response == 1;
+    if ((out.error = reply.error)) return out;
+    out.phase = AmdPboPhase::Complete; return out;
+}
 AmdPboRailsEncoding encodeLegacyAmdPboRails(unsigned a, unsigned b) {
     AmdPboRailsEncoding out;
     const auto valid = [](unsigned v) { return !v || (v >= 250 && v <= 2800 && v % 5 == 0); };

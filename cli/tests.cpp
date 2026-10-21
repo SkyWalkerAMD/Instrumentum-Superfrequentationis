@@ -2043,6 +2043,76 @@ void pboLimitInvalidBeforeOpen() {
         if (emit) std::cout << output.str();
     }
 }
+void ocModeCommands() {
+    for (unsigned mode=0;mode<3;++mode) {
+        AmdPboFixture d; d.allowManualOc=true; d.capsRaw=mode==0?6:7;
+        const auto result=command(d,{"amd-oc-mode-set","--cpu","130","--enabled",mode==1?"0":"1","--expect-caps",mode==0?"6":"7","--apply"},0);
+        assert(result.find("\"verified\":true")!=std::string::npos && !d.wrongCpu);
+        assert(d.capsRaw==(mode==1?6u:7u) && d.settings==(mode==2?0u:1u));
+        assert(d.scalarRaw==0x3f800000 && !d.ocAllMHz && !d.ocCoreArgument);
+    }
+    for (unsigned mode=0;mode<6;++mode) {
+        AmdPboFixture d; d.allowManualOc=true; d.capsRaw=6;
+        if(mode==0)d.capsRaw=4;
+        if(mode==1)d.model=0x18;
+        if(mode==2)d.writeCompletion=0xfd;
+        if(mode==3)d.discardChange=true;
+        if(mode==4)d.failAt=0;
+        if(mode==5)d.afterRequest=[&]{if(d.settings)d.completion=0xfe;};
+        const auto result=command(d,{"amd-oc-mode-set","--cpu","130","--enabled","1","--expect-caps","6","--apply"},3);
+        assert(result.find("\"verified\":false")!=std::string::npos);
+        assert(d.settings==((mode==2 || mode==3 || mode==5)?1u:0u));
+    }
+}
+void ocFrequencyCommands() {
+    for(bool all:{false,true})for(bool drop:{false,true}) {
+        AmdPboFixture d;d.allowManualOc=true;d.capsRaw=7;d.discardChange=drop;
+        std::vector<std::string> args={"amd-oc-frequency-set","--cpu","130","--scope",all?"all-cores":"core","--mhz","5000","--expect-caps","7","--apply"};
+        if(!all)args.insert(args.end(),{"--ccd","15","--core","7"});
+        const auto result=command(d,args,0);
+        assert(result.find("\"accepted\":true")!=std::string::npos && result.find("\"verified\":false")!=std::string::npos);
+        assert((d.messages==std::vector<std::uint32_t>{0x6f,all?0x5fu:0x60u}) && !d.wrongCpu);
+        assert(d.commandArgs.back()[0]==(all?5000u:0xf0701388u));
+        assert(d.scalarRaw==0x3f800000 && d.capsRaw==7 && d.settings==1);
+    }
+    for(unsigned mode=0;mode<5;++mode) {
+        AmdPboFixture d;d.allowManualOc=true;d.capsRaw=7;
+        if(mode==0)d.capsRaw=5;
+        if(mode==1)d.model=0x18;
+        if(mode==2)d.writeCompletion=0xfd;
+        if(mode==3)d.failAt=0;
+        if(mode==4)d.completion=0xfe;
+        const auto result=command(d,{"amd-oc-frequency-set","--cpu","130","--scope","core","--ccd","3","--core","7","--mhz","5000","--expect-caps","7","--apply"},3);
+        assert(result.find("\"verified\":false")!=std::string::npos && d.settings==(mode==2?1u:0u));
+    }
+}
+void ocInvalidBeforeOpen() {
+    const std::vector<std::string> mode={"amd-oc-mode-set","--cpu","130","--enabled","1","--expect-caps","6","--apply"};
+    const std::vector<std::string> freq={"amd-oc-frequency-set","--cpu","130","--scope","core","--ccd","3","--core","7","--mhz","5000","--expect-caps","7","--apply"};
+    std::vector<std::vector<std::string>> invalid;
+    for(const auto &base:{mode,freq}) {
+        auto args=base;args.pop_back();invalid.push_back(args);
+        for(std::size_t i=1;i+1<base.size();i+=2) {
+            args=base;args.erase(args.begin()+i,args.begin()+i+2);invalid.push_back(args);
+        }
+    }
+    for(const char *v:{"true","2","-1","0x1","","1.0"}){auto a=mode;a[4]=v;invalid.push_back(a);}
+    for(const char *v:{"-1","0x100000000","6.5"}){auto a=mode;a[6]=v;invalid.push_back(a);}
+    for(const char *v:{"0","-1","1048576","4294967295","5000.0","0x1388","1e3","+5000",""}){auto a=freq;a[10]=v;invalid.push_back(a);}
+    for(const char *v:{"all","ccd","CORE"}){auto a=freq;a[4]=v;invalid.push_back(a);}
+    for(const char *v:{"0","2","4","6","0xfffffffe"}){auto a=freq;a[12]=v;invalid.push_back(a);}
+    for(const char *v:{"16","-1","0x10"}){auto a=freq;a[6]=v;invalid.push_back(a);}
+    for(const char *v:{"8","-1","0xffffffff"}){auto a=freq;a[8]=v;invalid.push_back(a);}
+    auto all=freq;all[4]="all-cores";invalid.push_back(all);
+    all.erase(all.begin()+5,all.begin()+9);all.pop_back();invalid.push_back(all);
+    auto duplicate=mode;duplicate.insert(duplicate.end(),{"--enabled","0"});invalid.push_back(duplicate);
+    assert(invalid.size()==46);
+    for(const auto &args:invalid) {
+        unsigned opened=0;std::ostringstream output;
+        assert(run(args,output,[&]{++opened;return std::unique_ptr<HardwareBackend>(new AmdPboFixture);})==2 && !opened);
+        if(emit)std::cout<<output.str();
+    }
+}
 void pboOfflineCommands() {
     unsigned opened = 0;
     const auto factory = [&] { ++opened; return std::unique_ptr<HardwareBackend>(new AmdPboFixture); };
@@ -2095,6 +2165,7 @@ int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--pm-fixture") { pmFilesystem(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     curveSettingCommands(); pboScalarCommands(); pboFmaxCommands(); pboOfflineCommands(); pboLimitCommands(); pboLimitInvalidBeforeOpen();
+    ocModeCommands(); ocFrequencyCommands(); ocInvalidBeforeOpen();
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); intelMemoryOdtCaptures(); intelMemoryOdtLive(); intelMemoryTemperatureCaptures(); intelMemoryTemperatureLive(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
@@ -2103,5 +2174,5 @@ int main(int argc, char **argv) {
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "57 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "60 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

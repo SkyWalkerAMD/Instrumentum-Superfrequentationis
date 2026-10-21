@@ -35,7 +35,34 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 1251, len(reports)
+assert len(reports) == 1315, len(reports)
+oc_modes = [r for r in reports if r['command'] == 'amd-oc-mode-set' and 'requested_enabled' in r['data']]
+assert len(oc_modes) == 9 and [r['ok'] for r in oc_modes] == [True]*3 + [False]*6
+for r in oc_modes:
+    d = r['data']
+    assert d['verified'] == r['ok'] and not d['hardware_effect_measured'] and not d['scalar_reset_requested']
+    assert int(d['command'],16) == (0x5d if d['requested_enabled'] else 0x5e)
+    if r['ok']: assert d['after']['manual_oc_enabled'] == d['requested_enabled']
+assert oc_modes[2]['data']['unchanged'] and not oc_modes[2]['data']['write_attempted']
+assert [r['data']['accepted'] for r in oc_modes] == [True,True,False,False,False,False,True,False,True]
+assert oc_modes[6]['data']['after']['manual_oc_enabled'] is False
+assert oc_modes[8]['data']['after']['manual_oc_enabled'] is None
+oc_freq = [r for r in reports if r['command'] == 'amd-oc-frequency-set' and 'requested_mhz' in r['data']]
+assert len(oc_freq) == 9 and [r['ok'] for r in oc_freq] == [True]*4 + [False]*5
+for r in oc_freq:
+    d = r['data']
+    assert not d['verified'] and not d['readback_supported'] and d['current_frequency_mhz'] is None
+    assert not d['hardware_effect_measured'] and not d['physical_mapping_verified']
+for r in oc_freq[:4]:
+    d = r['data']; single = d['scope'] == 'core'
+    assert d['accepted'] and d['write_attempted'] and d['requested_mhz'] == 5000
+    assert d['firmware_ccd'] == (15 if single else None) and d['firmware_core'] == (7 if single else None)
+    assert int(d['command'],16) == (0x60 if single else 0x5f)
+    assert int(d['argument'],16) == (0xf0701388 if single else 5000)
+run('amd-oc-mode-set','--cpu',str(cpu),'--enabled','1','--expect-caps','6',code=2)
+run('amd-oc-mode-set','--cpu',str(cpu),'--enabled','true','--expect-caps','6','--apply',code=2)
+run('amd-oc-frequency-set','--cpu',str(cpu),'--scope','all-cores','--mhz','5000','--expect-caps','7',code=2)
+run('amd-oc-frequency-set','--cpu',str(cpu),'--scope','core','--ccd','0','--core','0','--mhz','5000','--expect-caps','6','--apply',code=2)
 limits = [r for r in reports if r['command'] == 'amd-pbo-limit-set' and 'requested_value' in r['data']]
 assert len(limits) == 9 and [r['ok'] for r in limits] == [True]*4 + [False]*5
 for r,kind,unit,value,arg,cmd in zip(limits[:4],('ppt','tdc','edc','temperature'),('W','A','A','C'),(350,280,500,90),(350000,280000,500000,90),(0x56,0x57,0x58,0x59)):

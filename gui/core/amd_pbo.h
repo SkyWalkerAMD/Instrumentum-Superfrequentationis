@@ -73,6 +73,36 @@ struct AmdPboLimitUpdate {
 // current-limit readback from an unverified PM field or echoed argument.
 AmdPboLimitUpdate setShimadaPboLimit(HardwareSession &session, const SmuTarget &target,
                                     std::uint32_t expectedCapabilities, AmdPboLimit limit, unsigned value);
+// Manual OC mode is a separate, explicit action. Verification below means only
+// that bit 0 of a fresh 6F reply matches; it is not voltage/frequency telemetry.
+struct AmdOcModeUpdate {
+    int error = 0;
+    AmdPboPhase phase = AmdPboPhase::Validate;
+    AmdPboCapabilities before, after;
+    bool requestedEnabled = false, writeAttempted = false, accepted = false;
+    bool verified = false, unchanged = false;
+    std::uint32_t command = 0, response = 0;
+};
+AmdOcModeUpdate setShimadaOcMode(HardwareSession &session, const SmuTarget &target,
+                                 std::uint32_t expectedCapabilities, bool enabled);
+enum class AmdOcFrequencyScope { AllCores, Core };
+const char *amdOcFrequencyScopeName(AmdOcFrequencyScope scope);
+int encodeShimadaOcFrequency(AmdOcFrequencyScope scope, unsigned ccd, unsigned core, unsigned mhz,
+                            std::uint32_t &command, std::uint32_t &argument);
+struct AmdOcFrequencyUpdate {
+    int error = 0;
+    AmdPboPhase phase = AmdPboPhase::Validate;
+    AmdPboCapabilities before;
+    AmdOcFrequencyScope scope = AmdOcFrequencyScope::AllCores;
+    unsigned ccd = 0, core = 0, requestedMHz = 0;
+    std::uint32_t command = 0, argument = 0, response = 0;
+    bool writeAttempted = false, accepted = false, verified = false;
+};
+// RSMU 5F/60, explicit all-core or single firmware target. Manual OC must
+// already be enabled. No implicit mode/VID/scalar changes and no frequency
+// readback. 1..1048575 MHz is the encoding range, not an operating range.
+AmdOcFrequencyUpdate setShimadaOcFrequency(HardwareSession &session, const SmuTarget &target,
+    std::uint32_t expectedCapabilities, AmdOcFrequencyScope scope, unsigned ccd, unsigned core, unsigned mhz);
 struct AmdPboRailsEncoding {
     int error = 0;
     unsigned rail0Millivolts = 0, rail1Millivolts = 0;

@@ -237,6 +237,29 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
         pboLimitValue_->setPlaceholderText(QString("Integer 1..%1 %2").arg(octool::core::amdPboLimitMaximum(kind)).arg(octool::core::amdPboLimitUnit(kind)));
     });
     connect(applyLimit, &QPushButton::clicked, this, [this] { applyPboLimit(); });
+    auto *ocMode = new QHBoxLayout;
+    ocMode_ = new QComboBox(this); ocMode_->setObjectName("ocMode");
+    ocMode_->addItem("Disabled",0); ocMode_->addItem("Enabled",1); ocMode->addWidget(ocMode_);
+    auto *ocRead = new QPushButton("Read OC capability",this); ocRead->setObjectName("ocCapsRead"); ocMode->addWidget(ocRead);
+    auto *ocApply = new QPushButton("Apply mode…",this); ocApply->setObjectName("ocModeApply"); ocMode->addWidget(ocApply);
+    form->addRow("Requested manual OC mode · read first",ocMode);
+    connect(ocRead,&QPushButton::clicked,this,[this]{readPboCapabilities();});
+    connect(ocApply,&QPushButton::clicked,this,[this]{applyOcMode();});
+    auto *ocFrequency = new QHBoxLayout;
+    ocFrequencyScope_ = new QComboBox(this); ocFrequencyScope_->setObjectName("ocFrequencyScope");
+    ocFrequencyScope_->addItem("One firmware core",int(octool::core::AmdOcFrequencyScope::Core));
+    ocFrequencyScope_->addItem("All cores",int(octool::core::AmdOcFrequencyScope::AllCores)); ocFrequency->addWidget(ocFrequencyScope_);
+    ocCcd_=edit("ocCcd","",this); ocCcd_->setPlaceholderText("CCD 0..15"); ocFrequency->addWidget(ocCcd_);
+    ocCore_=edit("ocCore","",this); ocCore_->setPlaceholderText("Core 0..7"); ocFrequency->addWidget(ocCore_);
+    ocMHz_=edit("ocMHz","",this); ocMHz_->setPlaceholderText("MHz"); ocFrequency->addWidget(ocMHz_);
+    auto *ocFrequencyApply=new QPushButton("Apply frequency…",this); ocFrequencyApply->setObjectName("ocFrequencyApply"); ocFrequency->addWidget(ocFrequencyApply);
+    form->addRow("Manual OC frequency · mode must be enabled",ocFrequency);
+    connect(ocFrequencyScope_,QOverload<int>::of(&QComboBox::currentIndexChanged),this,[this]{
+        const bool single=ocFrequencyScope_->currentData().toInt()==int(octool::core::AmdOcFrequencyScope::Core);
+        if(!single){ocCcd_->clear();ocCore_->clear();}
+        ocCcd_->setEnabled(single);ocCore_->setEnabled(single);
+    });
+    connect(ocFrequencyApply,&QPushButton::clicked,this,[this]{applyOcFrequency();});
     auto *rails = new QHBoxLayout;
     auto *rail0 = edit("pboRail0", "", this); rail0->setPlaceholderText("Rail 0 mV"); rails->addWidget(rail0);
     auto *rail1 = edit("pboRail1", "", this); rail1->setPlaceholderText("Rail 1 mV"); rails->addWidget(rail1);
@@ -311,10 +334,12 @@ void AmdTuningPanel::readPboCapabilities() {
             append(table_, {"Current Fmax", "Unavailable: no verified readback"});
             append(table_, {"Power limits available", r.raw & 2u ? "Yes" : "No"});
             append(table_, {"PPT / TDC / EDC / temperature commands", amdPboLimitsAvailable(r.raw) ? "Available; effective limits unverified" : "Unavailable"});
+            append(table_, {"Manual OC frequency commands", r.raw & 1u ? "Mode enabled; frequency readback unavailable" : "Mode disabled; explicit mode change required"});
             status_->setText((amdPboFmaxAvailable(r.raw) ?
                 "Fmax command available. Enter a MHz ceiling. Firmware acceptance does not verify the effective limit or operating frequency." :
                 "Fmax unavailable: PBO must be available and manual OC disabled. No mode change was requested.") +
-                QString(amdPboLimitsAvailable(r.raw) ? " PBO limit commands available; select one limit to change." : " PBO limit commands unavailable."));
+                QString(amdPboLimitsAvailable(r.raw) ? " PBO limit commands available; select one limit to change." : " PBO limit commands unavailable.") +
+                QString(r.raw & 1u ? " Manual OC is enabled." : " Manual OC is disabled."));
         }
         setEnabled(true); watcher->deleteLater();
     });
@@ -409,6 +434,93 @@ void AmdTuningPanel::applyPboLimit() {
         AmdPboLimitUpdate out;
         const int error = access->transaction([&](HardwareSession &s) { out = setShimadaPboLimit(s, target, before.raw, kind, unsigned(value)); return out.error; }, 10000, cancelled.get());
         if (error) out.error = error;
+        return out;
+    }));
+}
+void AmdTuningPanel::applyOcMode() {
+    using namespace octool::core;
+    if(!pboCaps_.valid || pboCaps_.error || ocMode_->currentIndex()<0) {
+        status_->setText("Read OC capability before changing manual OC mode."); return;
+    }
+    const bool enabled=ocMode_->currentData().toInt()!=0;
+    const auto target=pboTarget_;const auto before=pboCaps_;const auto prepared=curveRevision_;
+    if(QMessageBox::question(this,"Change AMD manual OC mode",
+        QString("CPU %1 · requested manual OC mode: %2\n"
+                "Mode changes affect boost behavior, voltage, power and stability. Only the mode flag will be checked. "
+                "No frequency, VID or scalar command is sent. Disabling does not guarantee all defaults are restored. Apply this mode?")
+            .arg(target.cpu).arg(enabled?"Enabled":"Disabled"),QMessageBox::Yes|QMessageBox::Cancel,QMessageBox::Cancel)!=QMessageBox::Yes)return;
+    if(prepared!=curveRevision_ || ocMode_->currentIndex()<0 || enabled!=(ocMode_->currentData().toInt()!=0)) {
+        invalidateCurve();status_->setText("Inputs changed. Read OC capability again.");return;
+    }
+    invalidateCurve();const auto revision=curveRevision_;setEnabled(false);status_->setText("Checking capability and changing manual OC mode…");
+    auto *watcher=new QFutureWatcher<AmdOcModeUpdate>(this);
+    connect(watcher,&QFutureWatcher<AmdOcModeUpdate>::finished,this,[this,watcher,revision,target,enabled]{
+        const auto r=watcher->result();
+        if(revision==curveRevision_) {
+            append(table_,{"Requested manual OC mode",enabled?"Enabled":"Disabled"});
+            append(table_,{"Setting command",r.unchanged?"Not sent; already requested mode":r.accepted?"Firmware accepted":r.writeAttempted?"Attempted; not confirmed":"Not sent"});
+            append(table_,{"Mode flag readback",r.after.valid && !r.after.error?(r.after.raw & 1u?"Enabled":"Disabled"):"Unavailable"});
+            append(table_,{"Mode verification",r.verified && !r.error?"Mode bit matches":"Not verified"});
+            append(table_,{"Capability before / after",QString("%1 / %2").arg(r.before.valid?hexValue(r.before.raw,4):"Unavailable").arg(r.after.valid?hexValue(r.after.raw,4):"Unavailable")});
+        }
+        status_->setText((r.error?failure(r.error)+(r.writeAttempted?". Mode may have changed; read again before another action.":". No mode setting sent."):
+            QString("Manual OC mode flag %1. Frequency, voltage and stability remain unverified; other defaults are not confirmed.").arg(r.unchanged?"already matched":"readback matches"))+
+            (revision==curveRevision_?" Read capability again before another edit.":QString(" Inputs changed; result belongs to CPU %1.").arg(target.cpu)));
+        setEnabled(true);watcher->deleteLater();
+    });
+    const auto access=access_;const auto cancelled=cancelled_;
+    watcher->setFuture(QtConcurrent::run([access,cancelled,target,before,enabled]{
+        AmdOcModeUpdate out;out.requestedEnabled=enabled;
+        const int e=access->transaction([&](HardwareSession &s){out=setShimadaOcMode(s,target,before.raw,enabled);return out.error;},10000,cancelled.get());
+        if(e)out.error=e;
+        return out;
+    }));
+}
+void AmdTuningPanel::applyOcFrequency() {
+    using namespace octool::core;
+    if(!pboCaps_.valid || pboCaps_.error || !(pboCaps_.raw & 1u)) {
+        status_->setText("Read OC capability first. Manual OC must already be enabled; no mode change was requested.");return;
+    }
+    const auto scope=AmdOcFrequencyScope(ocFrequencyScope_->currentData().toInt());
+    quint64 ccd=0,core=0,mhz=0;std::uint32_t command=0,argument=0;
+    if(ocFrequencyScope_->currentIndex()<0 ||
+       (scope==AmdOcFrequencyScope::Core && (!parseNumber(ocCcd_->text(),10,15,ccd) || !parseNumber(ocCore_->text(),10,7,core))) ||
+       !parseNumber(ocMHz_->text(),10,0xfffff,mhz) || encodeShimadaOcFrequency(scope,unsigned(ccd),unsigned(core),unsigned(mhz),command,argument)) {
+        status_->setText("Enter an explicit scope, firmware CCD 0..15/core 0..7 for one core, and integer MHz 1..1048575. Encoding limits only; no command sent.");return;
+    }
+    const auto target=pboTarget_;const auto before=pboCaps_;const auto prepared=curveRevision_;
+    const auto ccdText=ocCcd_->text(),coreText=ocCore_->text(),mhzText=ocMHz_->text();
+    const auto scopeText=scope==AmdOcFrequencyScope::AllCores?QString("All cores"):QString("Firmware CCD %1 / core %2 (physical mapping unverified)").arg(ccd).arg(core);
+    if(QMessageBox::question(this,"Set AMD manual OC frequency",
+        QString("CPU %1 · %2 · requested %3 MHz\n"
+                "This can affect voltage, heat, power and stability. Firmware acceptance can be checked; current frequency cannot be read back. "
+                "No mode or VID command, automatic retry or rollback. Apply this frequency?").arg(target.cpu).arg(scopeText).arg(mhz),
+        QMessageBox::Yes|QMessageBox::Cancel,QMessageBox::Cancel)!=QMessageBox::Yes)return;
+    if(prepared!=curveRevision_ || int(scope)!=ocFrequencyScope_->currentData().toInt() || ocFrequencyScope_->currentIndex()<0 ||
+       ccdText!=ocCcd_->text() || coreText!=ocCore_->text() || mhzText!=ocMHz_->text()) {
+        invalidateCurve();status_->setText("Inputs changed. Read OC capability again.");return;
+    }
+    invalidateCurve();const auto revision=curveRevision_;setEnabled(false);status_->setText("Checking capability and submitting manual OC frequency…");
+    auto *watcher=new QFutureWatcher<AmdOcFrequencyUpdate>(this);
+    connect(watcher,&QFutureWatcher<AmdOcFrequencyUpdate>::finished,this,[this,watcher,revision,target,scopeText,mhz]{
+        const auto r=watcher->result();
+        if(revision==curveRevision_) {
+            append(table_,{"Requested target",scopeText});
+            append(table_,{"Requested frequency (MHz)",QString::number(mhz)});
+            append(table_,{"Setting command",r.accepted?"Firmware accepted":r.writeAttempted?"Attempted; not confirmed":"Not sent"});
+            append(table_,{"Firmware response",hexValue(r.response,4)});
+            append(table_,{"Current frequency readback","Unavailable / not verified"});
+        }
+        status_->setText((r.error?failure(r.error)+(r.writeAttempted?". Frequency may have changed; no automatic retry.":". No frequency setting sent."):
+            QString("Firmware accepted %1 MHz. Current frequency and physical target mapping remain unverified.").arg(mhz))+
+            (revision==curveRevision_?" Read capability again before another edit.":QString(" Inputs changed; result belongs to CPU %1.").arg(target.cpu)));
+        setEnabled(true);watcher->deleteLater();
+    });
+    const auto access=access_;const auto cancelled=cancelled_;
+    watcher->setFuture(QtConcurrent::run([access,cancelled,target,before,scope,ccd,core,mhz]{
+        AmdOcFrequencyUpdate out;out.scope=scope;out.ccd=unsigned(ccd);out.core=unsigned(core);out.requestedMHz=unsigned(mhz);
+        const int e=access->transaction([&](HardwareSession &s){out=setShimadaOcFrequency(s,target,before.raw,scope,unsigned(ccd),unsigned(core),unsigned(mhz));return out.error;},10000,cancelled.get());
+        if(e)out.error=e;
         return out;
     }));
 }

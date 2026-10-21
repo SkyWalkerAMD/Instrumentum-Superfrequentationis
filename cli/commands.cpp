@@ -111,6 +111,9 @@ struct Command {
     std::uint32_t pboExpected = 0;
     AmdPboLimit pboLimit = AmdPboLimit::Ppt;
     unsigned pboLimitValue = 0;
+    bool ocEnabled = false;
+    AmdOcFrequencyScope ocFrequencyScope = AmdOcFrequencyScope::AllCores;
+    unsigned ocMHz = 0;
     int margin = 0;
     bool multipleCores = false;
     SmuTarget smu; SmuCommand message; UmcTarget umc;
@@ -128,7 +131,8 @@ Command parse(const std::vector<std::string> &args) {
     const bool clockOffline = c.name == "intel-clock-decode";
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
     const bool pm = c.name == "amd-pm-read" || c.name == "amd-pm-decode";
-    const bool pboCapabilityCommand = c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-fmax-set" || c.name == "amd-pbo-limit-set";
+    const bool pboCapabilityCommand = c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-fmax-set" || c.name == "amd-pbo-limit-set" ||
+        c.name == "amd-oc-mode-set" || c.name == "amd-oc-frequency-set";
     const bool rails = c.name == "amd-pbo-rails-encode";
     const bool layoutAudit = c.name == "amd-pm-layout-audit";
     require(hardware.count(c.name) || pboCapabilityCommand || rails || layoutAudit || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || memoryOffline || clockOffline || pm, "Unknown command: " + c.name);
@@ -156,6 +160,8 @@ Command parse(const std::vector<std::string> &args) {
     if (writing) keys.insert("--apply");
     if (c.name == "amd-pbo-fmax-set") { keys.insert("--mhz"); keys.insert("--expect-caps"); keys.insert("--apply"); }
     if (c.name == "amd-pbo-limit-set") { keys.insert("--limit"); keys.insert("--value"); keys.insert("--expect-caps"); keys.insert("--apply"); }
+    if (c.name == "amd-oc-mode-set") for (const char *key : {"--enabled","--expect-caps","--apply"}) keys.insert(key);
+    if (c.name == "amd-oc-frequency-set") for (const char *key : {"--scope","--ccd","--core","--mhz","--expect-caps","--apply"}) keys.insert(key);
     if (rails) { keys.insert("--rail0-mv"); keys.insert("--rail1-mv"); }
     if (layoutAudit) { keys.insert("--version"); keys.insert("--bytes"); keys.insert("--fused-ccds"); }
     if (c.name == "intel-set" || c.name == "intel-oc-set") { keys.insert("--field"); keys.insert("--value"); }
@@ -369,6 +375,28 @@ Command parse(const std::vector<std::string> &args) {
     }
     if (pboCapabilityCommand) {
         c.smu.profile = SmuProfile::Shimada;
+        if (c.name == "amd-oc-mode-set" || c.name == "amd-oc-frequency-set") {
+            require(options.count("--apply"), "Manual OC settings require --apply");
+            c.pboExpected = uintOption(options, "--expect-caps", UINT32_MAX);
+        }
+        if (c.name == "amd-oc-mode-set") {
+            const auto enabled = get(options,"--enabled");
+            require(enabled == "0" || enabled == "1", "--enabled must be 0 or 1");
+            c.ocEnabled = enabled == "1";
+        }
+        if (c.name == "amd-oc-frequency-set") {
+            const auto scope = get(options,"--scope");
+            require(scope == "all-cores" || scope == "core", "--scope must be all-cores or core");
+            c.ocFrequencyScope = scope == "core" ? AmdOcFrequencyScope::Core : AmdOcFrequencyScope::AllCores;
+            if (c.ocFrequencyScope == AmdOcFrequencyScope::Core) {
+                c.ccd = uintOption(options,"--ccd",15); c.core = uintOption(options,"--core",7);
+            } else require(!options.count("--ccd") && !options.count("--core"), "All-core scope does not accept individual CCD/core selectors");
+            const auto mhz = get(options,"--mhz");
+            require(!mhz.empty() && mhz.find_first_not_of("0123456789") == std::string::npos, "--mhz requires an unsigned decimal integer");
+            c.ocMHz = uintOption(options,"--mhz",0xfffff);
+            require(c.ocMHz != 0, "--mhz must be 1..1048575 (encoding range, not operating recommendations)");
+            require(c.pboExpected & 1u, "Manual OC must already be enabled; the frequency command never changes mode");
+        }
         if (c.name == "amd-pbo-limit-set") {
             require(options.count("--apply"), "Setting a PBO limit requires --apply; acknowledgement does not verify the effective limit");
             const auto kind = get(options, "--limit");
@@ -958,6 +986,30 @@ Result hardware(const Command &c, HardwareSession &s) {
             {"limit_commands_available", boolean(r.valid && amdPboLimitsAvailable(r.raw))},
             {"fmax_command_available", boolean(r.valid && amdPboFmaxAvailable(r.raw))},
             {"current_fmax_mhz", "null"}, {"readback_supported", "false"}, {"response", hex(r.response)}};
+    } else if (c.name == "amd-oc-mode-set") {
+        const auto r = setShimadaOcMode(s,c.smu,c.pboExpected,c.ocEnabled); out.error = r.error;
+        const auto snapshot = [](const AmdPboCapabilities &v) {
+            const bool valid = v.valid && !v.error;
+            return object({{"valid",boolean(valid)},{"error",number(v.error)},
+                {"capabilities_raw",valid?hex(v.raw):"null"},{"manual_oc_enabled",valid?boolean(v.raw & 1u):"null"}});
+        };
+        out.data = {{"requested_enabled",boolean(c.ocEnabled)},{"expected_capabilities",hex(c.pboExpected)},
+            {"before",snapshot(r.before)},{"after",snapshot(r.after)},{"command",hex(r.command)},
+            {"phase",quote(amdPboPhaseName(r.phase))},{"write_attempted",boolean(r.writeAttempted)},
+            {"accepted",boolean(r.accepted)},{"verified",boolean(r.verified && !r.error)},{"unchanged",boolean(r.unchanged)},
+            {"response",hex(r.response)},{"hardware_effect_measured","false"},{"scalar_reset_requested","false"},
+            {"detail",quote("Verification covers the firmware manual-OC mode bit only. No frequency, voltage or scalar command is sent; disabling does not guarantee all defaults have been restored.")}};
+    } else if (c.name == "amd-oc-frequency-set") {
+        const auto r = setShimadaOcFrequency(s,c.smu,c.pboExpected,c.ocFrequencyScope,c.ccd,c.core,c.ocMHz); out.error = r.error;
+        const bool single = c.ocFrequencyScope == AmdOcFrequencyScope::Core;
+        out.data = {{"scope",quote(amdOcFrequencyScopeName(c.ocFrequencyScope))},{"firmware_ccd",single?number(c.ccd):"null"},
+            {"firmware_core",single?number(c.core):"null"},{"requested_mhz",number(c.ocMHz)},
+            {"expected_capabilities",hex(c.pboExpected)},{"capabilities_raw",r.before.valid?hex(r.before.raw):"null"},
+            {"command",hex(r.command)},{"argument",hex(r.argument)},{"phase",quote(amdPboPhaseName(r.phase))},
+            {"write_attempted",boolean(r.writeAttempted)},{"accepted",boolean(r.accepted)},{"verified","false"},
+            {"current_frequency_mhz","null"},{"readback_supported","false"},{"physical_mapping_verified","false"},
+            {"hardware_effect_measured","false"},{"response",hex(r.response)},
+            {"detail",quote("Firmware acknowledgement only. Explicit firmware indices are not Linux CPU IDs. No mode, VID or scalar command, automatic retry or rollback.")}};
     } else if (c.name == "amd-pbo-limit-set") {
         const auto r = setShimadaPboLimit(s, c.smu, c.pboExpected, c.pboLimit, c.pboLimitValue); out.error = r.error;
         out.data = {{"limit", quote(amdPboLimitName(c.pboLimit))}, {"unit", quote(amdPboLimitUnit(c.pboLimit))},
@@ -1339,6 +1391,16 @@ Usage: octool-cli COMMAND [OPTIONS]
   amd-pbo-scalar-read --cpu N
   amd-pbo-scalar-set --cpu N --scalar 1..10 --expect-raw RAW --apply
   amd-pbo-capabilities --cpu N      Read Shimada PBO/manual OC capability flags
+  amd-oc-mode-set --cpu N --enabled 0|1 --expect-caps RAW --apply
+                                   Change mode explicitly; re-read the mode bit
+  amd-oc-frequency-set --cpu N --scope all-cores --mhz N --expect-caps RAW --apply
+  amd-oc-frequency-set --cpu N --scope core --ccd N --core N --mhz N --expect-caps RAW --apply
+    Shimada 1Ah/08h only. Manual OC must already be enabled for frequency commands.
+    CCD 0..15/core 0..7 are firmware indices, not Linux CPU IDs or verified physical
+    targets. MHz 1..1048575 is an encoding range, not an operating recommendation.
+    Frequency has acknowledgement only, with no current-frequency readback.
+    Mode changes do not send VID, frequency or scalar resets; disabling mode is
+    not an assurance that all firmware settings have returned to defaults.
   amd-pbo-fmax-set --cpu N --mhz N --expect-caps RAW --apply
                                    Firmware acknowledgement only; no Fmax readback
   amd-pbo-limit-set --cpu N --limit ppt|tdc|edc|temperature --value N --expect-caps RAW --apply
