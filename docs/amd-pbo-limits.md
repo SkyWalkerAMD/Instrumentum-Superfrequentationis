@@ -49,6 +49,8 @@ bit 2 是 PBO/Fmax 能力，单独置位不表示上述限制可用。
 本次继续通过 [REA 云端任务](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/39545928793)
 分析十个原函数，包含六字段槽、动态 EDC 读取/更新/应用、三个测试消息入口、动态内存及温度读取。
 REA 伪代码须与完整原指令交叉核对，不等同于固件规范或实际效果。
+动态内存与 EC 动态 EDC 的 311 个原指令实验见[详细研究](amd-pbo-dynamic-research.md)，
+包含忽略写入失败、16 位截断以及在刷新前显示 Applied 的行为；尚未开放这两条硬件路径。
 
 命令号与单位转换依据固定的公开实现：
 

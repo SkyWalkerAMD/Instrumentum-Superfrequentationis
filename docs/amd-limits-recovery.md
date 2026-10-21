@@ -1,5 +1,10 @@
 # AMD 六字段限制设置：完整槽执行
 
+2026-10-21 更新：GUI / CLI 已按独立核对的 Shimada RSMU 协议实现
+[PPT、TDC、EDC 与温度限制](amd-pbo-limits.md)，只报告固件接受命令。
+下文保留原版槽的分支研究，不代表这些原分支可直接用于 Shimada。
+动态内存和 EC 动态 EDC 的最新进展见 [REA 研究](amd-pbo-dynamic-research.md)。
+
 对固定 ELF 的 `cpufunctions::on_per_ccx_oc_apply_4_clicked`（0x7502d0，2196 字节）完成
 882 组合成执行。源码 SHA 与前述 UMC/PStates 研究相同。
 [原函数静态证据](validation/legacy-amd-limits-static.json)、[原字节 fixture](../analysis/fixtures/legacy-amd-limits.json)、

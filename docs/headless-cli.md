@@ -1,5 +1,19 @@
 # 无桌面版 OCTool
 
+<!-- amd-pbo-limits-3b374a0 -->
+2026-10-21：最新生产验证提交 `3b374a0`，GUI / CLI 同步新增
+**Shimada PPT、TDC、EDC 和温度限制单项设置**，返回固件接受状态；实际限制回读尚未验证。
+
+- [用法](amd-pbo-limits.md)、[整批验证](amd-pbo-limits-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1251 JSON、GUI 各 203 项、核心 405 场景组；12 次内核 VM。
+- `dist/gui-cli-amd-pbo-limits-3b374a0/`：33 个包、精确云端源码、更新用户源码及校验表。
+- [REA 后续研究](amd-pbo-dynamic-research.md)：十个函数、30 个动态内存与 281 个 EC 动态 EDC 原指令实验；新增三项本机分析回归。
+- rails 写入、逐核/CCD 真实遥测、动态内存与 EC 自动策略仍未完成；真机验收未执行。
+
+以下保留历史记录。
+<!-- /amd-pbo-limits-3b374a0 -->
+
+
 <!-- amd-pbo-fmax-layout-0d360d7 -->
 2026-10-21：最新生产验证提交 `0d360d7`，GUI / CLI 同步新增
 **Shimada Fmax 能力读取与命令确认、rails 离线编码、逐核/CCD PM 布局诊断**。
