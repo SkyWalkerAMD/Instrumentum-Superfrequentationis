@@ -52,7 +52,8 @@ GUI：AMD tuning → Read OC capability → 选择请求模式或频率范围 �
 
 原 ELF `44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10` 的
 enableocmode、amd_disableocmode、Wr_AMD_freq、per_ccx_freq、one_core_freq2、两个 fast 入口、Wr_ocvid、rails 与 Qt apply 槽
-已提交独立 [REA 研究任务](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/39553845129)。
+已完成独立 [REA 研究任务](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/39553845129)。
+十二函数的 1217 条原指令回放及单核编号换算冲突见[研究记录](amd-manual-oc-research.md)。
 原版 BIOS/MP1 混合路径、UI 隐式电压设置和核心循环不直接用作新平台协议。
 REA 伪代码需要原指令交叉核对，不能替代硬件验收。
 

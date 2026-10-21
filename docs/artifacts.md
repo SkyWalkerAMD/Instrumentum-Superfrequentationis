@@ -1,5 +1,19 @@
 # 安装包与源码归档
 
+<!-- amd-manual-oc-f4332b7 -->
+2026-10-21：最新生产验证提交 `f4332b7`，GUI / CLI 同步新增
+**Shimada 手动 OC 模式切换、全核及明确单核频率设置**。模式位可回读；频率仅有命令确认。
+
+- [用法](amd-manual-oc.md)、[整批验证](amd-manual-oc-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1315 JSON、GUI 各 208 项、核心 415 场景组；12 次内核 VM。
+- `dist/gui-cli-amd-oc-frequency-f4332b7/`：33 个包、精确云端源码、更新用户源码及校验表。
+- [REA 研究](amd-manual-oc-research.md)：十个 REA 函数、十二函数 1217 条原指令回放；发现平坦单核编号换算冲突，新接口使用明确 CCD/core。
+- 逐核/CCD 遥测、rails 写入、动态内存/EC 及其它平台仍未全部完成；物理映射和真机验收未验证。
+
+以下保留历史记录。
+<!-- /amd-manual-oc-f4332b7 -->
+
+
 <!-- amd-pbo-limits-3b374a0 -->
 2026-10-21：最新生产验证提交 `3b374a0`，GUI / CLI 同步新增
 **Shimada PPT、TDC、EDC 和温度限制单项设置**，返回固件接受状态；实际限制回读尚未验证。

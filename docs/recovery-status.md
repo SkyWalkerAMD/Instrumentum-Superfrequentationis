@@ -1,5 +1,19 @@
 # 功能还原状态
 
+<!-- amd-manual-oc-f4332b7 -->
+2026-10-21：最新生产验证提交 `f4332b7`，GUI / CLI 同步新增
+**Shimada 手动 OC 模式切换、全核及明确单核频率设置**。模式位可回读；频率仅有命令确认。
+
+- [用法](amd-manual-oc.md)、[整批验证](amd-manual-oc-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1315 JSON、GUI 各 208 项、核心 415 场景组；12 次内核 VM。
+- `dist/gui-cli-amd-oc-frequency-f4332b7/`：33 个包、精确云端源码、更新用户源码及校验表。
+- [REA 研究](amd-manual-oc-research.md)：十个 REA 函数、十二函数 1217 条原指令回放；发现平坦单核编号换算冲突，新接口使用明确 CCD/core。
+- 逐核/CCD 遥测、rails 写入、动态内存/EC 及其它平台仍未全部完成；物理映射和真机验收未验证。
+
+以下保留历史记录。
+<!-- /amd-manual-oc-f4332b7 -->
+
+
 <!-- amd-pbo-limits-3b374a0 -->
 2026-10-21：最新生产验证提交 `3b374a0`，GUI / CLI 同步新增
 **Shimada PPT、TDC、EDC 和温度限制单项设置**，返回固件接受状态；实际限制回读尚未验证。
@@ -573,7 +587,7 @@ PStates 写入、曲线写入、Intel server VF/fabric、板级专用控制等�
 |---|---|---|
 | AMD PStates | 17h/19h/1Ah 按逻辑 CPU 采样 P0–P7、范围/能力检查、带小数的配置频率、64 位原值、FID/DFS；1Ah 9 位 VID，旧布局低 VID 字节及独立 bit 32；Idd 编码与明确错误状态；[五个明确型号](amd-pstates-electrical.md)的 SVI2/SVI3 VID 电压与预期单核电流，含关闭/保留编码及虚拟化门控 | 其它型号 mV/A 换算；满足跨核/跨 coherent fabric 一致性的设置 |
 | Intel Controls | RAPL、HWP 含活动窗口，原有设置完整读回；另按能力提供五项 HWP 包级设置，B7 在全部相应能力具备时最多 19 项；HWP 封装请求、PECI 覆盖、选择标志、通知及新增历史，含本地编辑的外部覆盖/极性核验；温度；Raptor Lake-S core/cache offset、最大 OC ratio、目标电压与 Adaptive/Override；VF 点查询及受条件限制的单点 offset；P/E 睿频分组读取、单组倍率及中间组活动核心阈值设置；B7/8F Ring/LLC 最小、最大倍率范围；B7/A700 报告 BCLK 与历史 MRC 请求；B7 TVB 高温倍频裁剪、电压优化与 Ring DownBin 开关、活动 P 核候选表的两组温度 / 降倍率查询及保守范围单字段设置；B7 节能睿频 / Race to Halt 独立设置与完整回读；B7 BCLK 自适应电压开关；B7 封装/PP0 与 8F/CF 封装/DRAM 能量计数、单位/回绕范围及 HWP 四项能力/两项历史；B7 PL4 功率限制与完整回读；B7 AVX2 偏移、11 组限频原因及选择性历史清除；B7/8F/CF TCC 偏移、默认阈值/核心与封装温度、最大非睿频倍率、6 对封装热事件；[限定 Alder Lake 的共享 IA ICCmax](intel-iccmax.md)读取与单值设置 | 其它型号/供电轨 ICCmax、unlimited 模式语义与切换、Vmax/增强 TVB；W790/W890 电压域；其它型号 VF、逐物理核心 override、末组阈值/组数量重建、TVB 完整写入范围 / 逐物理核心表与其它型号控制、VID rank/SP、fabric/BCLK 写入和其它型号时钟信息 |
-| AMD 调参 | 三套独立 BIOS SMUIO；Shimada 命令和逐核频率参数准备；CPUID 稀疏拓扑；原始曲线查询及 [1Ah/08h 逐核 / CCD 选核曲线设置](amd-curve-settings.md)，旧值比较和逐核回读；PM 八个版本共 220 个显示字段，包括 [公共功耗/策略](amd-pm-package.md)、[链路/片内时钟](amd-pm-fabric.md)、[GMI/DIMM/PCIe 数组](amd-pm-arrays.md)，已有驱动读取及 GUI/CLI 快照互通（部分字段单位/策略状态/物理目标未核实） | CPUID 与固件目标 ID 对应；其它 AMD 平台曲线/Curve Shaper、MP1/PBO 高层单位及电流/温度限制、逐核/CCD PM 完整布局与原生传输、profiles/hotkeys、真机验收 |
+| AMD 调参 | 三套独立 BIOS SMUIO；Shimada BIOS 命令和参数准备；[Scalar 读写与精确回读](amd-pbo-scalar.md)、[Fmax 命令确认与布局诊断](amd-pbo-fmax-layout.md)、[PPT/TDC/EDC/温度单项设置](amd-pbo-limits.md)；[手动 OC 模式位验证及全核/明确单核频率设置](amd-manual-oc.md)，频率只有命令确认；CPUID 稀疏拓扑；原始曲线查询及 [1Ah/08h 逐核 / CCD 选核曲线设置](amd-curve-settings.md)，旧值比较和逐核回读；PM 八个版本共 220 个显示字段，包括 [公共功耗/策略](amd-pm-package.md)、[链路/片内时钟](amd-pm-fabric.md)、[GMI/DIMM/PCIe 数组](amd-pm-arrays.md)，已有驱动读取及 GUI/CLI 快照互通（部分字段单位/策略状态/物理目标未核实） | CPUID 与固件目标 ID 对应；其它 AMD 平台曲线/Curve Shaper、其它 MP1/PBO 命令、实际频率/限制回读、rails 写入及动态内存/EC 策略、逐核/CCD PM 完整布局与原生传输、profiles/hotkeys、真机验收 |
 | 内存与主板 | DMI/BIOS、内核传感器、绑定驱动的 SPD、DDR4/5 基础 CRC/组织/时序/CAS 支持列表，含 DDR4 写延迟、DDR5 次级时序及 1.2 新增字段；DDR4 XMP 2.0 两组电压/时序、独立时间基准、限定 CAS/推荐 DIMM 数及无扩展 CRC 状态；对称堆叠容量、DDR4 已确认布局及 DDR5 混合 rank 分项、DDR5 子通道/3DS 刷新要求；DDR5 XMP 3.0 厂家档案名称、电压、基础与 8 项次级时序/独立周期下限、CAS/命令率及逐区 CRC；EXPO 1.0 两组基础档案、增强时序存储字及整块 CRC；XMP 3.0 两个用户槽独立检查/校验与解码；AMD UMC 212 字段、GUI/CLI 快照双向离线导入及同 bank/slot 比较；限定 B7/A700 的 Intel 内存控制器 83 字段（含有效 rank RTL、掉电、刷新、自刷新、ZQ、DDRIO、ODT 矩阵、写数据延迟配置及 DDR4 MPR 温度等级/刷新要求）、双次一致读与 GUI/CLI v1–v6 快照 | EXPO 增强启用语义 / 1.1 / 用户档案；XMP 用户槽启用与写入；XMP 3.0 推荐 DIMM 数；其余 DDR4 非对称 Rank 布局；UMC 各型号物理单位/通道标签；DDR5 温度映射与实时采样；其它 Intel 型号 RTL、剩余时序/IOL、实时内存频率及特殊 Gear 换算；PMIC/VRM/EC/时钟芯片和训练写入 |
 
 入口与代码：[平台控制](platform-controls.md)、[Intel offset](intel-oc-recovery.md)、
@@ -596,7 +610,8 @@ AMD [六字段完整槽实验](amd-limits-recovery.md)确认大多数字段走 M
 仍需要完成 MP1 隐含写入、参数语义和返回校验；[曲线查询](amd-curve-query-recovery.md)已有原指令实验与独立实现；[目标列表和设置入口](amd-curve-target-mapping.md)的静态追踪进一步区分了 PM 表编号与物理核心。
 把同名 BIOS 命令换上这些输入单位，并不足以还原原硬件行为。
 [Shimada 外部实现交叉核对](amd-shimada-crosscheck.md)进一步记录了 setter 访问端口、
-PBO 命令表与型号支持差异；这些差异尚未形成可验证的新增写入契约。
+PBO 命令表与型号支持差异。固定 Shimada 公开协议已支持上述有限 Scalar、限制与手动 OC 实现；其它平台及剩余写入契约仍待验证。
+[本轮 REA 与原指令实验](amd-manual-oc-research.md)另确认原单核编号除 8/余 7 混用和 fast 编号下溢；新接口不沿用该平坦编号换算。
 
 内存与主板寄存器依赖内存代际、通道/插槽路由、芯片 ID 和固件状态；当前 UMC 先按原编码显示。
 板级写入仍缺少各芯片的确认、访问协调及可验证的更新/恢复规则。
