@@ -1,0 +1,96 @@
+name: GUI fixture review
+on:
+  push:
+    paths: ['.github/workflows/gui-fixture-review.yml']
+  workflow_dispatch:
+    inputs:
+      baseline_run:
+        description: Successful portability run with identical application/build inputs (blank selects latest success on this branch)
+        type: string
+        default: ''
+permissions:
+  contents: read
+  actions: read
+jobs:
+  screenshots:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {target: el7, image: 'oraclelinux:7', sdk: el7-baseline}
+          - {target: ubuntu24.04, image: 'ubuntu:24.04', sdk: el8-baseline}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Resolve baseline and verify unchanged application inputs
+        id: baseline
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASELINE_RUN: ${{ inputs.baseline_run }}
+        run: |
+          mkdir -p build/fixture-review
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess
+          repo=os.environ['GITHUB_REPOSITORY']; run=os.environ.get('BASELINE_RUN','')
+          if not run:
+              found=json.loads(subprocess.check_output(['gh','api','--method','GET',f'repos/{repo}/actions/workflows/portability.yml/runs',
+                  '-f','status=success','-f','branch='+os.environ['GITHUB_REF_NAME'],'-f','per_page=1']))['workflow_runs']
+              assert found, 'No successful baseline on this branch'
+              run=str(found[0]['id'])
+          assert run.isdecimal()
+          baseline=json.loads(subprocess.check_output(['gh','api',f'repos/{repo}/actions/runs/{run}']))
+          assert baseline['conclusion']=='success' and baseline['path']=='.github/workflows/portability.yml'
+          base=baseline['head_sha']; head=os.environ['GITHUB_SHA']
+          changed=subprocess.check_output(['git','diff','--name-only',base,head]).decode().splitlines()
+          allowed={'port/ci/in-container.sh','.github/workflows/gui-fixture-review.yml'}
+          assert all(p in allowed or p.startswith(('docs/','analysis/')) or p=='README.md' for p in changed), changed
+          path='port/ci/in-container.sh'; old=subprocess.check_output(['git','show',base+':'+path]).decode()
+          current=pathlib.Path(path).read_text(); expected=old
+          names=('pbo-fmax-fixture.png','pbo-rails-fixture.png','pm-layout-fixture.png')
+          for prefix in ('build/gui/regression','build/gui-$target/regression'):
+              anchor=f'        cp "{prefix}/pbo-scalar-failure-fixture.png" "$out/pbo-scalar-failure-fixture.png"'
+              assert expected.count(anchor)==1
+              additions=''.join(f'\n        cp "{prefix}/{name}" "$out/{name}"' for name in names)
+              if anchor+additions not in expected: expected=expected.replace(anchor,anchor+additions)
+          assert current==expected, 'Supplement must only add the six screenshot copy commands'
+          evidence={'source_commit':head,'baseline_commit':base,'baseline_run':int(run),'baseline_url':baseline['html_url'],
+                    'changed_paths':changed,'runtime_inputs_identical':True,'change_scope':'Six screenshot copy commands plus evidence workflow'}
+          pathlib.Path('build/fixture-review/provenance.json').write_text(json.dumps(evidence,indent=2)+'\n')
+          with open(os.environ['GITHUB_OUTPUT'],'a') as output: output.write('run='+run+'\n')
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.sdk }}
+          run-id: ${{ steps.baseline.outputs.run }}
+          github-token: ${{ github.token }}
+          path: build/inputs
+      - name: Compile unchanged GUI and retain fixture pages
+        env:
+          TARGET: ${{ matrix.target }}
+          IMAGE: ${{ matrix.image }}
+        run: |
+          docker pull "$IMAGE"
+          docker image inspect "$IMAGE" > build/fixture-review/container-image.json
+          docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -e JOBS=4 \
+            -v "$PWD:/src" -v "$PWD/build/inputs:/inputs:ro" -v "$PWD/build/fixture-review:/out" \
+            -w /src "$IMAGE" bash port/ci/in-container.sh desktop "$TARGET"
+          for page in pbo-fmax-fixture pbo-rails-fixture pm-layout-fixture; do
+            test -s "build/fixture-review/$page.png"
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gui-fixture-review-${{ matrix.target }}
+          path: |
+            build/fixture-review/provenance.json
+            build/fixture-review/container-image.json
+            build/fixture-review/gui-tests.txt
+            build/fixture-review/pbo-fmax-fixture.png
+            build/fixture-review/pbo-rails-fixture.png
+            build/fixture-review/pm-layout-fixture.png
+          if-no-files-found: error
+          retention-days: 14
