@@ -960,7 +960,9 @@ private slots:
         QVERIFY(status->geometry().bottom()<panel.height());
         auto shot=qEnvironmentVariable("OCTOOL_PM_LINK_TEST_SCREENSHOT");
         if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
-        view->setCurrentIndex(8); panel.resize(1150,940);
+        // Leave room for the native-capture controls while still checking that
+        // this exported screenshot shows every internal-clock row.
+        view->setCurrentIndex(8); panel.resize(1150,1020);
         QTRY_VERIFY(table->viewport()->height()>table->rowCount()*table->rowHeight(0));
         QTRY_VERIFY(status->geometry().bottom()<panel.height());
         shot=qEnvironmentVariable("OCTOOL_PM_CLOCK_TEST_SCREENSHOT");
