@@ -83,6 +83,14 @@ OC_FREQUENCY_PROCEDURES = (('0x21fb00', 'enableocmode'),
                            ('0x21fd00', 'Wr_ocvid'),
                            ('0x239990', 'set_core01_rails'),
                            ('0x752270', 'on_per_ccx_oc_apply_clicked'))
+OC_CORES_PROCEDURES = (('0x21ffb0', 'amd_per_ccd_vermeer'),
+                       ('0x2202b0', 'one_core_freq_vermeer'),
+                       ('0x21f140', 'per_ccx_freq_vermeer_fast'),
+                       ('0x21ef30', 'one_core_freq_vermeer_fast'),
+                       ('0x220110', 'per_ccx_freq'),
+                       ('0x21f1f0', 'per_ccx_freq_fast'),
+                       ('0x220430', 'one_core_freq2'),
+                       ('0x752270', 'on_per_ccx_oc_apply_clicked'))
 
 
 def selected_address(reply, offset):
@@ -103,7 +111,7 @@ def main():
     parser.add_argument('--binary', type=Path, required=True)
     parser.add_argument('--rea', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout', 'pbo_semantics', 'pbo_limits', 'oc_frequency'), default='baseline')
+    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout', 'pbo_semantics', 'pbo_limits', 'oc_frequency', 'oc_cores'), default='baseline')
     args = parser.parse_args()
     binary, rea, output = args.binary.resolve(), args.rea.resolve(), args.output.resolve()
     if hashlib.sha256(binary.read_bytes()).hexdigest() != SOURCE_SHA:
@@ -205,7 +213,8 @@ def main():
                               'pbo_layout': PBO_LAYOUT_PROCEDURES,
                               'pbo_semantics': PBO_SEMANTICS_PROCEDURES,
                               'pbo_limits': PBO_LIMITS_PROCEDURES,
-                              'oc_frequency': OC_FREQUENCY_PROCEDURES}[args.study]
+                              'oc_frequency': OC_FREQUENCY_PROCEDURES,
+                              'oc_cores': OC_CORES_PROCEDURES}[args.study]
                 for offset, name in procedures:
                     pseudo = call('procedure_pseudo_code',
                         dict(procedure='file-offset:' + offset), 'pseudo-' + offset)
