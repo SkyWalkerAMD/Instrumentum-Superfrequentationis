@@ -73,6 +73,16 @@ PBO_LIMITS_PROCEDURES = (('0x7502d0', 'on_per_ccx_oc_apply_4_clicked'),
                          ('0x2395b0', 'toggle_dynamic_mem'),
                          ('0x238cf0', 'get_THM'),
                          ('0x21d380', 'set_to_shimada'))
+OC_FREQUENCY_PROCEDURES = (('0x21fb00', 'enableocmode'),
+                           ('0x21fc00', 'amd_disableocmode'),
+                           ('0x21feb0', 'Wr_AMD_freq'),
+                           ('0x220110', 'per_ccx_freq'),
+                           ('0x220430', 'one_core_freq2'),
+                           ('0x21efe0', 'one_core_freq_fast'),
+                           ('0x21f1f0', 'per_ccx_freq_fast'),
+                           ('0x21fd00', 'Wr_ocvid'),
+                           ('0x239990', 'set_core01_rails'),
+                           ('0x752270', 'on_per_ccx_oc_apply_clicked'))
 
 
 def selected_address(reply, offset):
@@ -93,7 +103,7 @@ def main():
     parser.add_argument('--binary', type=Path, required=True)
     parser.add_argument('--rea', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout', 'pbo_semantics', 'pbo_limits'), default='baseline')
+    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout', 'pbo_semantics', 'pbo_limits', 'oc_frequency'), default='baseline')
     args = parser.parse_args()
     binary, rea, output = args.binary.resolve(), args.rea.resolve(), args.output.resolve()
     if hashlib.sha256(binary.read_bytes()).hexdigest() != SOURCE_SHA:
@@ -194,7 +204,8 @@ def main():
                               'monitors': MONITOR_PROCEDURES, 'percore': PERCORE_PROCEDURES,
                               'pbo_layout': PBO_LAYOUT_PROCEDURES,
                               'pbo_semantics': PBO_SEMANTICS_PROCEDURES,
-                              'pbo_limits': PBO_LIMITS_PROCEDURES}[args.study]
+                              'pbo_limits': PBO_LIMITS_PROCEDURES,
+                              'oc_frequency': OC_FREQUENCY_PROCEDURES}[args.study]
                 for offset, name in procedures:
                     pseudo = call('procedure_pseudo_code',
                         dict(procedure='file-offset:' + offset), 'pseudo-' + offset)
