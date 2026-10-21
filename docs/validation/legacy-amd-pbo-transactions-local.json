@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "date": "2026-10-21",
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "fixture_sha256": "4af8d9f173b4daabdc93d9f56945cc389eb59f3ef9300a8e05abd5d8c6d3316c",
+  "full_report_path": "build/legacy-amd-pbo-transactions.json",
+  "full_report_sha256": "44e64148b51c00cd870d948c18a596b62d98ee7ffde2574042ab0355b686a728",
+  "hardware_execution": false,
+  "scope": "Full pinned PBO constructor/setter and MP1 instructions; synthetic PCI lookup/access, globals, locks, delay and family. Neither firmware nor hardware behavior is validated.",
+  "cases": {
+    "constructors": 4,
+    "setters": 21,
+    "mp1": 12,
+    "faults": 42
+  },
+  "observations": [
+    "Shimada PCI 153a constructor sets flag +11h to one; subsequent Fmax uses 70h.",
+    "The other Fmax flag path uses 6Dh; neither setter waits for completion.",
+    "Rails input mirrors one zero input, packs two low 9-bit fields and sends 61h then 5Dh.",
+    "A8 uses RSMU addresses despite the MP1_C2PMSG function name; failed response still publishes the output word.",
+    "Every injected original PCI failure permits later accesses; this is evidence of original behavior, not a recommended protocol."
+  ]
+}

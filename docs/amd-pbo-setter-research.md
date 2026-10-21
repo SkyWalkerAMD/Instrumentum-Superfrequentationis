@@ -1,5 +1,18 @@
 # REA 后续：Fmax 与 core01 rails 设置入口
 
+2026-10-21 后续：新的 [11 函数 REA 分析与完整事务回放](amd-pm-percore-layout-research.md)
+确认 Shimada Fmax 走 `70h`，并揭示名为 `MP1_C2PMSG` 的函数在该分支实际访问 RSMU。
+本轮已独立完成 [PBO Scalar 读取与设置](amd-pbo-scalar.md)，以下 Fmax/rails 写入仍未开放。
+
+补查原始调用指令后，`tr5_get_both` 在 `6fed3fh..6fed4fh` 将保存的 PM binary32 转为
+binary64、乘以精确常量 1000、向零截断成整数并存于对象 `+9ch`。
+该值在 `7021e1h..7021efh` 作为 ESI 参数交给 `set_fmax`；析构也在值非零时传回同一保存值。
+这补上了 REA 伪代码丢失的参数，但仍只是原版换算和恢复路径，不是独立的实时 Fmax 查询合同。
+两个 rails 按钮在调用点分别把解析出的整数放入 ESI/EDX；原版界面还带有提前启用 OC 的行为。
+指令、函数 SHA256 和常量见[调用证据](validation/amd-pbo-caller-arguments.json)。
+
+以下保留先前的 setter 静态记录。
+
 2026-10-21：同一批 [REA 任务](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/39435187923)
 还返回 `AMD_PBO::set_fmax` 和 `set_core01_rails`。
 伪代码丢失了部分混合调用约定参数，以下结论以

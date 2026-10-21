@@ -1,0 +1,2033 @@
+{
+  "schema": 1,
+  "date": "2026-10-21",
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "fixture_sha256": "9936d25c9a2ffb61def0035529223cea0710a04ffeb2a067c9356897880f3475",
+  "full_report_path": "build/legacy-amd-pm-percore.json",
+  "full_report_sha256": "bcaf741919456b43bb4173bf68325255970506b7c837b942117fafb61bba7998",
+  "scope": "Original constructor and mode-4 core/CCD loops, with synthetic topology, transport and C++ boundaries; calibration assumed complete. CCD inputs are deliberately not asserted to correspond to the table version. Storage labels/ranges do not prove physical mapping, units, or a valid firmware layout.",
+  "hardware_execution": false,
+  "production_decoder_enabled": false,
+  "total_cases": 144,
+  "patterns": 2,
+  "range_conflict_cases": 92,
+  "overlapping_cases": 18,
+  "layouts": [
+    {
+      "version": "0x730204",
+      "synthetic_ccds": 1,
+      "public_table_bytes": 2844,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 8,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x810",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 1,
+          "rows": 11,
+          "first_offset": "0x1fb4",
+          "last_offset": "0x1fdc",
+          "outside_public_table_words": 11
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730204",
+      "synthetic_ccds": 2,
+      "public_table_bytes": 2844,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 16,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x9f0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 2,
+          "rows": 11,
+          "first_offset": "0x1fb4",
+          "last_offset": "0x2008",
+          "outside_public_table_words": 22
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730204",
+      "synthetic_ccds": 4,
+      "public_table_bytes": 2844,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 32,
+          "rows": 15,
+          "first_offset": "0x5f4",
+          "last_offset": "0xd70",
+          "outside_public_table_words": 150
+        },
+        {
+          "name": "ccd",
+          "slots": 4,
+          "rows": 11,
+          "first_offset": "0x1f74",
+          "last_offset": "0x2020",
+          "outside_public_table_words": 44
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730204",
+      "synthetic_ccds": 6,
+      "public_table_bytes": 2844,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 16,
+          "rows": 15,
+          "first_offset": "0x5f4",
+          "last_offset": "0x9b0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 2,
+          "rows": 11,
+          "first_offset": "0x1f74",
+          "last_offset": "0x1fc8",
+          "outside_public_table_words": 22
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730204",
+      "synthetic_ccds": 8,
+      "public_table_bytes": 2844,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 64,
+          "rows": 15,
+          "first_offset": "0x5f4",
+          "last_offset": "0x14f0",
+          "outside_public_table_words": 630
+        },
+        {
+          "name": "ccd",
+          "slots": 8,
+          "rows": 11,
+          "first_offset": "0x1f74",
+          "last_offset": "0x20d0",
+          "outside_public_table_words": 88
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730204",
+      "synthetic_ccds": 10,
+      "public_table_bytes": 2844,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 80,
+          "rows": 15,
+          "first_offset": "0x5f4",
+          "last_offset": "0x18b0",
+          "outside_public_table_words": 870
+        },
+        {
+          "name": "ccd",
+          "slots": 10,
+          "rows": 11,
+          "first_offset": "0x1f74",
+          "last_offset": "0x2128",
+          "outside_public_table_words": 110
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730204",
+      "synthetic_ccds": 12,
+      "public_table_bytes": 2844,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 96,
+          "rows": 15,
+          "first_offset": "0x5f4",
+          "last_offset": "0x1c70",
+          "outside_public_table_words": 1110
+        },
+        {
+          "name": "ccd",
+          "slots": 12,
+          "rows": 11,
+          "first_offset": "0x1f74",
+          "last_offset": "0x2180",
+          "outside_public_table_words": 132
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730204",
+      "synthetic_ccds": 14,
+      "public_table_bytes": 2844,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 112,
+          "rows": 15,
+          "first_offset": "0x5f4",
+          "last_offset": "0x2030",
+          "outside_public_table_words": 1350
+        },
+        {
+          "name": "ccd",
+          "slots": 14,
+          "rows": 11,
+          "first_offset": "0x1f74",
+          "last_offset": "0x21d8",
+          "outside_public_table_words": 154
+        }
+      ],
+      "core_ccd_overlap_words": 48,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730204",
+      "synthetic_ccds": 16,
+      "public_table_bytes": 2844,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 128,
+          "rows": 15,
+          "first_offset": "0x5f4",
+          "last_offset": "0x23f0",
+          "outside_public_table_words": 1590
+        },
+        {
+          "name": "ccd",
+          "slots": 16,
+          "rows": 11,
+          "first_offset": "0x1f74",
+          "last_offset": "0x2230",
+          "outside_public_table_words": 176
+        }
+      ],
+      "core_ccd_overlap_words": 176,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730404",
+      "synthetic_ccds": 1,
+      "public_table_bytes": 4100,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 8,
+          "rows": 15,
+          "first_offset": "0x674",
+          "last_offset": "0x850",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 1,
+          "rows": 11,
+          "first_offset": "0x2174",
+          "last_offset": "0x219c",
+          "outside_public_table_words": 11
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730404",
+      "synthetic_ccds": 2,
+      "public_table_bytes": 4100,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 16,
+          "rows": 15,
+          "first_offset": "0x674",
+          "last_offset": "0xa30",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 2,
+          "rows": 11,
+          "first_offset": "0x2174",
+          "last_offset": "0x21c8",
+          "outside_public_table_words": 22
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730404",
+      "synthetic_ccds": 4,
+      "public_table_bytes": 4100,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 32,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0xdb0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 4,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x21e0",
+          "outside_public_table_words": 44
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730404",
+      "synthetic_ccds": 6,
+      "public_table_bytes": 4100,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 16,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x9f0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 2,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2188",
+          "outside_public_table_words": 22
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730404",
+      "synthetic_ccds": 8,
+      "public_table_bytes": 4100,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 64,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x1530",
+          "outside_public_table_words": 332
+        },
+        {
+          "name": "ccd",
+          "slots": 8,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2290",
+          "outside_public_table_words": 88
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730404",
+      "synthetic_ccds": 10,
+      "public_table_bytes": 4100,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 80,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x18f0",
+          "outside_public_table_words": 572
+        },
+        {
+          "name": "ccd",
+          "slots": 10,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x22e8",
+          "outside_public_table_words": 110
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730404",
+      "synthetic_ccds": 12,
+      "public_table_bytes": 4100,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 96,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x1cb0",
+          "outside_public_table_words": 812
+        },
+        {
+          "name": "ccd",
+          "slots": 12,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2340",
+          "outside_public_table_words": 132
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730404",
+      "synthetic_ccds": 14,
+      "public_table_bytes": 4100,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 112,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x2070",
+          "outside_public_table_words": 1052
+        },
+        {
+          "name": "ccd",
+          "slots": 14,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2398",
+          "outside_public_table_words": 154
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730404",
+      "synthetic_ccds": 16,
+      "public_table_bytes": 4100,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 128,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x2430",
+          "outside_public_table_words": 1292
+        },
+        {
+          "name": "ccd",
+          "slots": 16,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x23f0",
+          "outside_public_table_words": 176
+        }
+      ],
+      "core_ccd_overlap_words": 176,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730604",
+      "synthetic_ccds": 1,
+      "public_table_bytes": 5356,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 8,
+          "rows": 15,
+          "first_offset": "0x674",
+          "last_offset": "0x850",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 1,
+          "rows": 11,
+          "first_offset": "0x2174",
+          "last_offset": "0x219c",
+          "outside_public_table_words": 11
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730604",
+      "synthetic_ccds": 2,
+      "public_table_bytes": 5356,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 16,
+          "rows": 15,
+          "first_offset": "0x674",
+          "last_offset": "0xa30",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 2,
+          "rows": 11,
+          "first_offset": "0x2174",
+          "last_offset": "0x21c8",
+          "outside_public_table_words": 22
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730604",
+      "synthetic_ccds": 4,
+      "public_table_bytes": 5356,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 32,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0xdb0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 4,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x21e0",
+          "outside_public_table_words": 44
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730604",
+      "synthetic_ccds": 6,
+      "public_table_bytes": 5356,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 16,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x9f0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 2,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2188",
+          "outside_public_table_words": 22
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730604",
+      "synthetic_ccds": 8,
+      "public_table_bytes": 5356,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 64,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x1530",
+          "outside_public_table_words": 18
+        },
+        {
+          "name": "ccd",
+          "slots": 8,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2290",
+          "outside_public_table_words": 88
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730604",
+      "synthetic_ccds": 10,
+      "public_table_bytes": 5356,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 80,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x18f0",
+          "outside_public_table_words": 258
+        },
+        {
+          "name": "ccd",
+          "slots": 10,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x22e8",
+          "outside_public_table_words": 110
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730604",
+      "synthetic_ccds": 12,
+      "public_table_bytes": 5356,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 96,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x1cb0",
+          "outside_public_table_words": 498
+        },
+        {
+          "name": "ccd",
+          "slots": 12,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2340",
+          "outside_public_table_words": 132
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730604",
+      "synthetic_ccds": 14,
+      "public_table_bytes": 5356,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 112,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x2070",
+          "outside_public_table_words": 738
+        },
+        {
+          "name": "ccd",
+          "slots": 14,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2398",
+          "outside_public_table_words": 154
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730604",
+      "synthetic_ccds": 16,
+      "public_table_bytes": 5356,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 128,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x2430",
+          "outside_public_table_words": 978
+        },
+        {
+          "name": "ccd",
+          "slots": 16,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x23f0",
+          "outside_public_table_words": 176
+        }
+      ],
+      "core_ccd_overlap_words": 176,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730804",
+      "synthetic_ccds": 1,
+      "public_table_bytes": 6612,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 8,
+          "rows": 15,
+          "first_offset": "0x674",
+          "last_offset": "0x850",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 1,
+          "rows": 11,
+          "first_offset": "0x2174",
+          "last_offset": "0x219c",
+          "outside_public_table_words": 11
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730804",
+      "synthetic_ccds": 2,
+      "public_table_bytes": 6612,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 16,
+          "rows": 15,
+          "first_offset": "0x674",
+          "last_offset": "0xa30",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 2,
+          "rows": 11,
+          "first_offset": "0x2174",
+          "last_offset": "0x21c8",
+          "outside_public_table_words": 22
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730804",
+      "synthetic_ccds": 4,
+      "public_table_bytes": 6612,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 32,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0xdb0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 4,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x21e0",
+          "outside_public_table_words": 44
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730804",
+      "synthetic_ccds": 6,
+      "public_table_bytes": 6612,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 16,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x9f0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 2,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2188",
+          "outside_public_table_words": 22
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730804",
+      "synthetic_ccds": 8,
+      "public_table_bytes": 6612,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 64,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x1530",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 8,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2290",
+          "outside_public_table_words": 88
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730804",
+      "synthetic_ccds": 10,
+      "public_table_bytes": 6612,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 80,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x18f0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 10,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x22e8",
+          "outside_public_table_words": 110
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730804",
+      "synthetic_ccds": 12,
+      "public_table_bytes": 6612,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 96,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x1cb0",
+          "outside_public_table_words": 184
+        },
+        {
+          "name": "ccd",
+          "slots": 12,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2340",
+          "outside_public_table_words": 132
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730804",
+      "synthetic_ccds": 14,
+      "public_table_bytes": 6612,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 112,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x2070",
+          "outside_public_table_words": 424
+        },
+        {
+          "name": "ccd",
+          "slots": 14,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2398",
+          "outside_public_table_words": 154
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730804",
+      "synthetic_ccds": 16,
+      "public_table_bytes": 6612,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 128,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x2430",
+          "outside_public_table_words": 664
+        },
+        {
+          "name": "ccd",
+          "slots": 16,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x23f0",
+          "outside_public_table_words": 176
+        }
+      ],
+      "core_ccd_overlap_words": 176,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730a04",
+      "synthetic_ccds": 1,
+      "public_table_bytes": 7868,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 8,
+          "rows": 15,
+          "first_offset": "0x674",
+          "last_offset": "0x850",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 1,
+          "rows": 11,
+          "first_offset": "0x2174",
+          "last_offset": "0x219c",
+          "outside_public_table_words": 11
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730a04",
+      "synthetic_ccds": 2,
+      "public_table_bytes": 7868,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 16,
+          "rows": 15,
+          "first_offset": "0x674",
+          "last_offset": "0xa30",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 2,
+          "rows": 11,
+          "first_offset": "0x2174",
+          "last_offset": "0x21c8",
+          "outside_public_table_words": 22
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730a04",
+      "synthetic_ccds": 4,
+      "public_table_bytes": 7868,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 32,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0xdb0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 4,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x21e0",
+          "outside_public_table_words": 44
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730a04",
+      "synthetic_ccds": 6,
+      "public_table_bytes": 7868,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 16,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x9f0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 2,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2188",
+          "outside_public_table_words": 22
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730a04",
+      "synthetic_ccds": 8,
+      "public_table_bytes": 7868,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 64,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x1530",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 8,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2290",
+          "outside_public_table_words": 88
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730a04",
+      "synthetic_ccds": 10,
+      "public_table_bytes": 7868,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 80,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x18f0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 10,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x22e8",
+          "outside_public_table_words": 110
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730a04",
+      "synthetic_ccds": 12,
+      "public_table_bytes": 7868,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 96,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x1cb0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 12,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2340",
+          "outside_public_table_words": 132
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730a04",
+      "synthetic_ccds": 14,
+      "public_table_bytes": 7868,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 112,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x2070",
+          "outside_public_table_words": 110
+        },
+        {
+          "name": "ccd",
+          "slots": 14,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2398",
+          "outside_public_table_words": 154
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730a04",
+      "synthetic_ccds": 16,
+      "public_table_bytes": 7868,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 128,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x2430",
+          "outside_public_table_words": 350
+        },
+        {
+          "name": "ccd",
+          "slots": 16,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x23f0",
+          "outside_public_table_words": 176
+        }
+      ],
+      "core_ccd_overlap_words": 176,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730c04",
+      "synthetic_ccds": 1,
+      "public_table_bytes": 9124,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 8,
+          "rows": 15,
+          "first_offset": "0x674",
+          "last_offset": "0x850",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 1,
+          "rows": 11,
+          "first_offset": "0x2174",
+          "last_offset": "0x219c",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730c04",
+      "synthetic_ccds": 2,
+      "public_table_bytes": 9124,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 16,
+          "rows": 15,
+          "first_offset": "0x674",
+          "last_offset": "0xa30",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 2,
+          "rows": 11,
+          "first_offset": "0x2174",
+          "last_offset": "0x21c8",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730c04",
+      "synthetic_ccds": 4,
+      "public_table_bytes": 9124,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 32,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0xdb0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 4,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x21e0",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730c04",
+      "synthetic_ccds": 6,
+      "public_table_bytes": 9124,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 16,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x9f0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 2,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2188",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730c04",
+      "synthetic_ccds": 8,
+      "public_table_bytes": 9124,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 64,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x1530",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 8,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2290",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730c04",
+      "synthetic_ccds": 10,
+      "public_table_bytes": 9124,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 80,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x18f0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 10,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x22e8",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730c04",
+      "synthetic_ccds": 12,
+      "public_table_bytes": 9124,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 96,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x1cb0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 12,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2340",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730c04",
+      "synthetic_ccds": 14,
+      "public_table_bytes": 9124,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 112,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x2070",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 14,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2398",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730c04",
+      "synthetic_ccds": 16,
+      "public_table_bytes": 9124,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 128,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x2430",
+          "outside_public_table_words": 36
+        },
+        {
+          "name": "ccd",
+          "slots": 16,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x23f0",
+          "outside_public_table_words": 20
+        }
+      ],
+      "core_ccd_overlap_words": 176,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730e04",
+      "synthetic_ccds": 1,
+      "public_table_bytes": 10380,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 8,
+          "rows": 15,
+          "first_offset": "0x674",
+          "last_offset": "0x850",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 1,
+          "rows": 11,
+          "first_offset": "0x2174",
+          "last_offset": "0x219c",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730e04",
+      "synthetic_ccds": 2,
+      "public_table_bytes": 10380,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 16,
+          "rows": 15,
+          "first_offset": "0x674",
+          "last_offset": "0xa30",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 2,
+          "rows": 11,
+          "first_offset": "0x2174",
+          "last_offset": "0x21c8",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730e04",
+      "synthetic_ccds": 4,
+      "public_table_bytes": 10380,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 32,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0xdb0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 4,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x21e0",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730e04",
+      "synthetic_ccds": 6,
+      "public_table_bytes": 10380,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 16,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x9f0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 2,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2188",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730e04",
+      "synthetic_ccds": 8,
+      "public_table_bytes": 10380,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 64,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x1530",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 8,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2290",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730e04",
+      "synthetic_ccds": 10,
+      "public_table_bytes": 10380,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 80,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x18f0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 10,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x22e8",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730e04",
+      "synthetic_ccds": 12,
+      "public_table_bytes": 10380,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 96,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x1cb0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 12,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2340",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730e04",
+      "synthetic_ccds": 14,
+      "public_table_bytes": 10380,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 112,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x2070",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 14,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2398",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x730e04",
+      "synthetic_ccds": 16,
+      "public_table_bytes": 10380,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 128,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x2430",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 16,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x23f0",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 176,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x731004",
+      "synthetic_ccds": 1,
+      "public_table_bytes": 11636,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 8,
+          "rows": 15,
+          "first_offset": "0x674",
+          "last_offset": "0x850",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 1,
+          "rows": 11,
+          "first_offset": "0x2174",
+          "last_offset": "0x219c",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x731004",
+      "synthetic_ccds": 2,
+      "public_table_bytes": 11636,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 16,
+          "rows": 15,
+          "first_offset": "0x674",
+          "last_offset": "0xa30",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 2,
+          "rows": 11,
+          "first_offset": "0x2174",
+          "last_offset": "0x21c8",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x731004",
+      "synthetic_ccds": 4,
+      "public_table_bytes": 11636,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 32,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0xdb0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 4,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x21e0",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x731004",
+      "synthetic_ccds": 6,
+      "public_table_bytes": 11636,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 16,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x9f0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 2,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2188",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x731004",
+      "synthetic_ccds": 8,
+      "public_table_bytes": 11636,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 64,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x1530",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 8,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2290",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x731004",
+      "synthetic_ccds": 10,
+      "public_table_bytes": 11636,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 80,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x18f0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 10,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x22e8",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x731004",
+      "synthetic_ccds": 12,
+      "public_table_bytes": 11636,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 96,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x1cb0",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 12,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2340",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x731004",
+      "synthetic_ccds": 14,
+      "public_table_bytes": 11636,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 112,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x2070",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 14,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x2398",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 0,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    },
+    {
+      "version": "0x731004",
+      "synthetic_ccds": 16,
+      "public_table_bytes": 11636,
+      "groups": [
+        {
+          "name": "core",
+          "slots": 128,
+          "rows": 15,
+          "first_offset": "0x634",
+          "last_offset": "0x2430",
+          "outside_public_table_words": 0
+        },
+        {
+          "name": "ccd",
+          "slots": 16,
+          "rows": 11,
+          "first_offset": "0x2134",
+          "last_offset": "0x23f0",
+          "outside_public_table_words": 0
+        }
+      ],
+      "core_ccd_overlap_words": 176,
+      "common_field_conflicts": [
+        "0x714",
+        "0x71c"
+      ]
+    }
+  ]
+}

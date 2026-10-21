@@ -74,11 +74,12 @@ Ghidra 对本 ELF 增加 `0x100000` 基址，混合调用约定会错误显示 P
 
 ## 逐核 / CCD 监控仍待确认
 
-`get_percore_power_offset()` 实际调用 MP1 A8，忽略调用状态后返回输出字；不是可直接用的常量。
+`get_percore_power_offset()` 调用名为 `MP1_C2PMSG` 的 A8 请求，忽略调用状态后返回输出字；不是可直接用的常量。
+后续[完整事务回放](amd-pm-percore-layout-research.md)确认该函数的 Shimada 分支实际访问 RSMU 地址，不能仅凭函数名归为 MP1。
 原调参页在 `GLOBAL_IS_SHIMADA` 非零时调用它并显示返回字，确认了平台分支，
-但尚未证明独立 MP1 初始化、成功响应或该返回字与完整 PM 表布局的契约。
+但尚未证明隐含初始化适合新后端、返回状态可靠，或该返回字与完整 PM 表布局的契约。
 直接调用审计确认调参页 `cpufunctions` 使用默认 PM 构造器，逐核校准路径还会使用 `AMD_PM_LOG(int)`。
 后者包含不同的起始偏移和计数分支，不能替换默认构造器加 `get_pm_patch` 的布局。
 现有固定偏移与八种 PM 表长度的冲突仍未解决，因此没有用越界裁剪或算术外推启用逐核/CCD 功耗解码。
-自动核心映射、其它 AMD 平台、高层 PBO/Curve Shaper、原生 PM 传输及板级调参仍未完成。
+本轮后续已加入 [PBO Scalar](amd-pbo-scalar.md)。自动核心映射、其它 AMD 平台、其它 PBO/Curve Shaper、原生 PM 传输及板级调参仍未完成。
 Fmax 与 core01 rails 的额外状态写入和连续命令见[后续入口研究](amd-pbo-setter-research.md)。

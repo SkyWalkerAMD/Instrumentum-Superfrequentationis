@@ -1,5 +1,19 @@
 # GUI / CLI 同步进度
 
+<!-- amd-pbo-scalar-7467c96 -->
+2026-10-21：最新验证提交 `7467c96`，GUI / CLI 同步新增
+**Shimada 1Ah/08h PBO Scalar 读取与设置**，包含旧值检查、六参数传输和精确回读。
+
+- [用法](amd-pbo-scalar.md)、[整批验证](amd-pbo-scalar-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1200 JSON、GUI 各 195 项、核心 391 场景组；12 次内核 VM。
+- `dist/gui-cli-amd-pbo-scalar-7467c96/`：33 个包、精确云端源码、更新用户源码和校验表。
+- [REA 后续研究](amd-pm-percore-layout-research.md)：11 函数，79 个 PBO/邮箱场景、144 个功耗表布局组合。
+- 逐核/CCD 功耗表、其它 PBO/曲线及真机验收仍未全部完成；已发现的布局冲突保留为可重放证据。
+
+以下保留历史记录。
+<!-- /amd-pbo-scalar-7467c96 -->
+
+
 <!-- amd-curve-settings-8c5424b -->
 2026-10-21：最新验证提交 `8c5424b`，GUI / CLI 同步新增
 **Shimada 1Ah/08h 逐核及同 CCD 选核曲线设置**，包含旧值检查、逐核回读和部分完成报告。
