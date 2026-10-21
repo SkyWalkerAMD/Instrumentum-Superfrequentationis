@@ -91,6 +91,16 @@ OC_CORES_PROCEDURES = (('0x21ffb0', 'amd_per_ccd_vermeer'),
                        ('0x21f1f0', 'per_ccx_freq_fast'),
                        ('0x220430', 'one_core_freq2'),
                        ('0x752270', 'on_per_ccx_oc_apply_clicked'))
+PM_TRANSPORT_PROCEDURES = (('0x236730', 'AMD_PM_LOG::get_mem_address'),
+                           ('0x236890', 'get_mem_address64bit'),
+                           ('0x2365c0', 'AMD_PM_LOG::start_monitor'),
+                           ('0x236310', 'AMD_PM_LOG_PARENT::start_monitor'),
+                           ('0x236450', 'AMD_PM_LOG_PARENT::get_mem_address'),
+                           ('0x236b80', 'get_layout'),
+                           ('0x21f3e0', 'cal_vid_from_raw'),
+                           ('0x21f470', 'cal_raw_from_vid'),
+                           ('0x220db0', 'TEST_SMC_MSG_ForceCpuVid'),
+                           ('0x239990', 'set_core01_rails'))
 
 
 def selected_address(reply, offset):
@@ -111,7 +121,7 @@ def main():
     parser.add_argument('--binary', type=Path, required=True)
     parser.add_argument('--rea', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout', 'pbo_semantics', 'pbo_limits', 'oc_frequency', 'oc_cores'), default='baseline')
+    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout', 'pbo_semantics', 'pbo_limits', 'oc_frequency', 'oc_cores', 'pm_transport'), default='baseline')
     args = parser.parse_args()
     binary, rea, output = args.binary.resolve(), args.rea.resolve(), args.output.resolve()
     if hashlib.sha256(binary.read_bytes()).hexdigest() != SOURCE_SHA:
@@ -214,7 +224,8 @@ def main():
                               'pbo_semantics': PBO_SEMANTICS_PROCEDURES,
                               'pbo_limits': PBO_LIMITS_PROCEDURES,
                               'oc_frequency': OC_FREQUENCY_PROCEDURES,
-                              'oc_cores': OC_CORES_PROCEDURES}[args.study]
+                              'oc_cores': OC_CORES_PROCEDURES,
+                              'pm_transport': PM_TRANSPORT_PROCEDURES}[args.study]
                 for offset, name in procedures:
                     pseudo = call('procedure_pseudo_code',
                         dict(procedure='file-offset:' + offset), 'pseudo-' + offset)
