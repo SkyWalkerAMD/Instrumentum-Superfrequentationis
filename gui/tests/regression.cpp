@@ -3475,6 +3475,7 @@ private slots:
         auto *device = new AmdPboFixture; device->discardChange = true;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
         panel.resize(1150,1000); panel.show();
+        QApplication::processEvents(); // Settle PBO/PM fixture layout.
         auto *apply = panel.findChild<QPushButton *>("pboFmaxApply");
         auto *input = panel.findChild<QLineEdit *>("pboFmax"); input->setText("5000");
         apply->click(); QCOMPARE(device->calls,0u);
@@ -3488,6 +3489,7 @@ private slots:
         QCOMPARE(table->item(3,1)->text(),QString("Unavailable / not verified"));
         QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("remain unverified"));
         const auto calls = device->calls; apply->click(); QCOMPARE(device->calls,calls);
+        QApplication::processEvents(); // Settle PBO/PM fixture layout.
         const auto shot=qEnvironmentVariable("OCTOOL_PBO_FMAX_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
     }
     void pboFmaxRejectsChangedAndInvalidInputs() {
@@ -3513,11 +3515,13 @@ private slots:
         auto *device = new AmdPboFixture;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
         panel.resize(1150,1000); panel.show();
+        QApplication::processEvents(); // Settle PBO/PM fixture layout.
         auto *a=panel.findChild<QLineEdit *>("pboRail0"), *b=panel.findChild<QLineEdit *>("pboRail1");
         a->setText("700"); b->setText("1250"); panel.findChild<QPushButton *>("pboRailsEncode")->click();
         QCOMPARE(device->calls,0u);
         QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->item(0,1)->text(),hexValue(91u | (201u << 17),4));
         QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("sending is unavailable"));
+        QApplication::processEvents(); // Settle PBO/PM fixture layout.
         const auto shot=qEnvironmentVariable("OCTOOL_PBO_RAILS_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
         a->setText("701"); panel.findChild<QPushButton *>("pboRailsEncode")->click();
         QCOMPARE(device->calls,0u); QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("Invalid rail encoding"));
@@ -3525,6 +3529,7 @@ private slots:
     void pmCoreCcdLayoutAudit() {
         QTemporaryDir directory; QVERIFY(directory.isValid()); const auto raw=directory.filePath("pm.bin");
         AmdPmPanel panel; panel.resize(1400,1000); panel.show();
+        QApplication::processEvents(); // Settle PBO/PM fixture layout.
         auto *input=panel.findChild<QLineEdit *>("pmLayoutCcds");
         auto *audit=panel.findChild<QPushButton *>("pmLayoutAudit"), *copy=panel.findChild<QPushButton *>("pmLayoutCopy");
         auto *table=panel.findChild<QTableWidget *>("pmTable");
@@ -3534,6 +3539,7 @@ private slots:
         copy->click(); const auto json=QJsonDocument::fromJson(QApplication::clipboard()->text().toUtf8()).object();
         QCOMPARE(json.value("overlapping_words").toInt(),176); QVERIFY(!json.value("decoder_enabled").toBool());
         QCOMPARE(json.value("outside_words").toInt(),0);
+        QApplication::processEvents(); // Settle PBO/PM fixture layout.
         const auto shot=qEnvironmentVariable("OCTOOL_PM_LAYOUT_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
         input->setText("6"); QVERIFY(!copy->isEnabled()); audit->click(); copy->click();
         QVERIFY(QJsonDocument::fromJson(QApplication::clipboard()->text().toUtf8()).object().value("constructor_fallback").toBool());
