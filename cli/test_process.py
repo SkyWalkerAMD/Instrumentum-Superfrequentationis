@@ -35,7 +35,19 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 1221, len(reports)
+assert len(reports) == 1251, len(reports)
+limits = [r for r in reports if r['command'] == 'amd-pbo-limit-set' and 'requested_value' in r['data']]
+assert len(limits) == 9 and [r['ok'] for r in limits] == [True]*4 + [False]*5
+for r,kind,unit,value,arg,cmd in zip(limits[:4],('ppt','tdc','edc','temperature'),('W','A','A','C'),(350,280,500,90),(350000,280000,500000,90),(0x56,0x57,0x58,0x59)):
+    d = r['data']
+    assert d['limit'] == kind and d['unit'] == unit and d['requested_value'] == value
+    assert int(d['command'],16) == cmd and int(d['argument'],16) == arg and d['accepted'] and d['write_attempted']
+for r in limits:
+    assert not r['data']['verified'] and not r['data']['readback_supported'] and r['data']['current_limit'] is None
+    assert not r['data']['hardware_effect_measured']
+assert [r['data']['write_attempted'] for r in limits[4:]] == [False,False,True,False,False]
+run('amd-pbo-limit-set','--cpu',str(cpu),'--limit','ppt','--value','350','--expect-caps','6',code=2)
+run('amd-pbo-limit-set','--cpu',str(cpu),'--limit','temperature','--value','101','--expect-caps','6','--apply',code=2)
 fmax = [r for r in reports if r['command'] == 'amd-pbo-fmax-set' and 'requested_mhz' in r['data']]
 assert len(fmax) == 5 and [r['ok'] for r in fmax] == [True,False,False,False,False]
 assert all(not r['data']['verified'] and r['data']['current_fmax_mhz'] is None and not r['data']['readback_supported'] for r in fmax)

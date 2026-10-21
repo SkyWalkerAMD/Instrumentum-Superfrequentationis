@@ -3511,6 +3511,90 @@ private slots:
         read->click(); panel.findChild<QLineEdit *>("smuCpu")->setText("131"); QTRY_VERIFY(panel.isEnabled());
         QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0);
     }
+    void pboLimitsAcknowledgementOnly() {
+        auto *device = new AmdPboFixture; device->capsRaw = 6; device->discardChange = true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
+        panel.resize(1200,1100); panel.show(); QApplication::processEvents();
+        auto *apply = panel.findChild<QPushButton *>("pboLimitApply");
+        auto *kind = panel.findChild<QComboBox *>("pboLimit");
+        auto *input = panel.findChild<QLineEdit *>("pboLimitValue");
+        apply->click(); QCOMPARE(device->calls,0u);
+        const unsigned values[] = {350,280,500,90};
+        for (unsigned i = 0; i < 4; ++i) {
+            kind->setCurrentIndex(int(i)); input->setText(QString::number(values[i]));
+            panel.findChild<QPushButton *>("pboCapsRead")->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->item(4,1)->text(),QString("Yes"));
+            QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+            apply->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(device->settings,i+1); QCOMPARE(device->messages.back(),std::uint32_t(0x56+i));
+            QCOMPARE(device->commandArgs.back()[0],i == 3 ? 90u : values[i]*1000);
+            QCOMPARE(device->limitArguments[i],0u);
+            auto *table = panel.findChild<QTableWidget *>("smuTable");
+            QCOMPARE(table->item(1,1)->text(),QString("Firmware accepted"));
+            QCOMPARE(table->item(3,1)->text(),QString("Unavailable / not verified"));
+            QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("effective limit remains unverified"));
+            if (i == 0 || i == 3) {
+                QApplication::processEvents();
+                const auto shot=qEnvironmentVariable(i == 0 ? "OCTOOL_PBO_LIMIT_PPT_TEST_SCREENSHOT" : "OCTOOL_PBO_LIMIT_TEMP_TEST_SCREENSHOT");
+                if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+            }
+            const auto calls = device->calls; apply->click(); QCOMPARE(device->calls,calls);
+        }
+        QCOMPARE(device->wrongCpu,0u);
+    }
+    void pboLimitsRejectInvalidInputsAndCapabilities() {
+        auto *device = new AmdPboFixture; device->capsRaw = 6;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
+        auto *read=panel.findChild<QPushButton *>("pboCapsRead"), *apply=panel.findChild<QPushButton *>("pboLimitApply");
+        auto *input=panel.findChild<QLineEdit *>("pboLimitValue");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); const auto calls=device->calls;
+        for (const QString text : {QString(""),QString("0"),QString("2001"),QString("-1"),QString("350.5"),QString("0x15e")}) {
+            input->setText(text); apply->click(); QCOMPARE(device->calls,calls);
+        }
+        panel.findChild<QComboBox *>("pboLimit")->setCurrentIndex(3); input->setText("101"); apply->click(); QCOMPARE(device->calls,calls);
+        device->capsRaw=4; read->click(); QTRY_VERIFY(panel.isEnabled()); const auto unavailable=device->calls;
+        input->setText("90"); apply->click(); QCOMPARE(device->calls,unavailable); QCOMPARE(device->settings,0u);
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("power limits available"));
+    }
+    void pboLimitsRejectConfirmationChanges() {
+        auto *device = new AmdPboFixture; device->capsRaw = 6;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
+        auto *read=panel.findChild<QPushButton *>("pboCapsRead"), *apply=panel.findChild<QPushButton *>("pboLimitApply");
+        auto *input=panel.findChild<QLineEdit *>("pboLimitValue"); auto *kind=panel.findChild<QComboBox *>("pboLimit");
+        for (unsigned mode = 0; mode < 4; ++mode) {
+            panel.findChild<QLineEdit *>("smuCpu")->setText("130"); kind->setCurrentIndex(0); input->setText("350");
+            read->click(); QTRY_VERIFY(panel.isEnabled()); const auto calls=device->calls;
+            QTimer::singleShot(0, [&] {
+                auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(!box) return;
+                if (mode == 0) input->setText("351");
+                if (mode == 1) { kind->setCurrentIndex(1); input->setText("350"); }
+                if (mode == 2) panel.findChild<QLineEdit *>("smuCpu")->setText("131");
+                box->button(mode == 3 ? QMessageBox::Cancel : QMessageBox::Yes)->click();
+            });
+            apply->click(); QCOMPARE(device->calls,calls); QCOMPARE(device->settings,0u);
+        }
+    }
+    void pboLimitsRejectStaleCapabilitiesAndFirmware() {
+        auto *device = new AmdPboFixture; device->capsRaw = 6;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
+        panel.resize(1200,1100); panel.show(); QApplication::processEvents();
+        auto *read=panel.findChild<QPushButton *>("pboCapsRead"), *apply=panel.findChild<QPushButton *>("pboLimitApply");
+        panel.findChild<QLineEdit *>("pboLimitValue")->setText("350");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); device->capsRaw=2;
+        QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settings,0u);
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("No setting sent"));
+        read->click(); QTRY_VERIFY(panel.isEnabled()); device->writeCompletion=0xfd;
+        QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settings,1u);
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->item(1,1)->text(),QString("Attempted; not confirmed"));
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("may have changed"));
+        QApplication::processEvents();
+        const auto shot=qEnvironmentVariable("OCTOOL_PBO_LIMIT_FAILURE_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        read->click(); panel.findChild<QLineEdit *>("smuCpu")->setText("131"); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0);
+        const auto calls=device->calls; apply->click(); QCOMPARE(device->calls,calls);
+    }
     void pboRailsEncodingIsOffline() {
         auto *device = new AmdPboFixture;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);

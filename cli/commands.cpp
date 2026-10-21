@@ -109,6 +109,8 @@ struct Command {
     AmdCurveSnapshot curve;
     unsigned pboScalar = 0, pboFmax = 0, rail0 = 0, rail1 = 0;
     std::uint32_t pboExpected = 0;
+    AmdPboLimit pboLimit = AmdPboLimit::Ppt;
+    unsigned pboLimitValue = 0;
     int margin = 0;
     bool multipleCores = false;
     SmuTarget smu; SmuCommand message; UmcTarget umc;
@@ -126,12 +128,12 @@ Command parse(const std::vector<std::string> &args) {
     const bool clockOffline = c.name == "intel-clock-decode";
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
     const bool pm = c.name == "amd-pm-read" || c.name == "amd-pm-decode";
-    const bool pboFmax = c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-fmax-set";
+    const bool pboCapabilityCommand = c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-fmax-set" || c.name == "amd-pbo-limit-set";
     const bool rails = c.name == "amd-pbo-rails-encode";
     const bool layoutAudit = c.name == "amd-pm-layout-audit";
-    require(hardware.count(c.name) || pboFmax || rails || layoutAudit || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || memoryOffline || clockOffline || pm, "Unknown command: " + c.name);
+    require(hardware.count(c.name) || pboCapabilityCommand || rails || layoutAudit || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || memoryOffline || clockOffline || pm, "Unknown command: " + c.name);
     std::set<std::string> keys = {"--json"};
-    if (hardware.count(c.name) || pboFmax) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
+    if (hardware.count(c.name) || pboCapabilityCommand) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
     const bool writing = c.name == "amd-pbo-scalar-set" || c.name == "amd-curve-set" || c.name == "intel-iccmax-set" || c.name == "intel-bclk-voltage-set" || c.name == "intel-limits-clear" || c.name == "intel-thermal-set" || c.name == "intel-avx-set" || c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set" || c.name == "intel-energy-set" || c.name == "intel-uncore-set" || c.name == "amd-smu-send" || c.name == "register-write";
     if (c.name == "intel-iccmax-set") keys.insert("--amps");
@@ -153,6 +155,7 @@ Command parse(const std::vector<std::string> &args) {
     }
     if (writing) keys.insert("--apply");
     if (c.name == "amd-pbo-fmax-set") { keys.insert("--mhz"); keys.insert("--expect-caps"); keys.insert("--apply"); }
+    if (c.name == "amd-pbo-limit-set") { keys.insert("--limit"); keys.insert("--value"); keys.insert("--expect-caps"); keys.insert("--apply"); }
     if (rails) { keys.insert("--rail0-mv"); keys.insert("--rail1-mv"); }
     if (layoutAudit) { keys.insert("--version"); keys.insert("--bytes"); keys.insert("--fused-ccds"); }
     if (c.name == "intel-set" || c.name == "intel-oc-set") { keys.insert("--field"); keys.insert("--value"); }
@@ -203,7 +206,7 @@ Command parse(const std::vector<std::string> &args) {
         }
         require(validateRequest(c.reg) == ValidationError::None, "Invalid register width, alignment, address range or value width");
     }
-    if (hardware.count(c.name) || pboFmax) {
+    if (hardware.count(c.name) || pboCapabilityCommand) {
         if (!rawRegister || c.reg.space == Space::Msr) c.cpu = uintOption(options, "--cpu", 1048575);
         else require(!options.count("--cpu"), "--cpu is only used with MSR registers; select an address or PCI target instead");
         c.reg.cpu = c.cpu;
@@ -364,8 +367,20 @@ Command parse(const std::vector<std::string> &args) {
             require(decodeAmdPboScalar(c.pboExpected, decoded), "--expect-raw must be the exact nonnegative finite binary32 query word in 0..10");
         }
     }
-    if (pboFmax) {
+    if (pboCapabilityCommand) {
         c.smu.profile = SmuProfile::Shimada;
+        if (c.name == "amd-pbo-limit-set") {
+            require(options.count("--apply"), "Setting a PBO limit requires --apply; acknowledgement does not verify the effective limit");
+            const auto kind = get(options, "--limit");
+            require(kind == "ppt" || kind == "tdc" || kind == "edc" || kind == "temperature", "--limit must be ppt, tdc, edc or temperature");
+            c.pboLimit = kind == "ppt" ? AmdPboLimit::Ppt : kind == "tdc" ? AmdPboLimit::Tdc : kind == "edc" ? AmdPboLimit::Edc : AmdPboLimit::Temperature;
+            const auto value = get(options, "--value");
+            require(!value.empty() && value.find_first_not_of("0123456789") == std::string::npos, "--value requires an unsigned decimal integer");
+            c.pboLimitValue = uintOption(options, "--value", amdPboLimitMaximum(c.pboLimit));
+            require(c.pboLimitValue != 0, "PPT/TDC/EDC require 1..2000 W/A; temperature requires 1..100 C. These are application bounds, not operating recommendations");
+            c.pboExpected = uintOption(options, "--expect-caps", UINT32_MAX);
+            require(amdPboLimitsAvailable(c.pboExpected), "Expected capabilities must report power limits available and manual OC disabled");
+        }
         if (c.name == "amd-pbo-fmax-set") {
             require(options.count("--apply"), "Setting Fmax requires --apply; acknowledgement does not verify the actual limit");
             c.pboFmax = uintOption(options, "--mhz", 0xfffff);
@@ -939,8 +954,20 @@ Result hardware(const Command &c, HardwareSession &s) {
         out.data = {{"capabilities_raw", r.valid ? hex(r.raw) : "null"}, {"valid", boolean(r.valid)},
             {"pbo_available", r.valid ? boolean(r.raw & 4u) : "null"},
             {"manual_oc_enabled", r.valid ? boolean(r.raw & 1u) : "null"},
+            {"power_limits_available", r.valid ? boolean(r.raw & 2u) : "null"},
+            {"limit_commands_available", boolean(r.valid && amdPboLimitsAvailable(r.raw))},
             {"fmax_command_available", boolean(r.valid && amdPboFmaxAvailable(r.raw))},
             {"current_fmax_mhz", "null"}, {"readback_supported", "false"}, {"response", hex(r.response)}};
+    } else if (c.name == "amd-pbo-limit-set") {
+        const auto r = setShimadaPboLimit(s, c.smu, c.pboExpected, c.pboLimit, c.pboLimitValue); out.error = r.error;
+        out.data = {{"limit", quote(amdPboLimitName(c.pboLimit))}, {"unit", quote(amdPboLimitUnit(c.pboLimit))},
+            {"requested_value", number(c.pboLimitValue)}, {"expected_capabilities", hex(c.pboExpected)},
+            {"capabilities_raw", r.before.valid ? hex(r.before.raw) : "null"},
+            {"command", hex(r.command)}, {"argument", hex(r.argument)}, {"phase", quote(amdPboPhaseName(r.phase))},
+            {"write_attempted", boolean(r.writeAttempted)}, {"accepted", boolean(r.accepted)}, {"verified", "false"},
+            {"current_limit", "null"}, {"readback_supported", "false"}, {"hardware_effect_measured", "false"}, {"response", hex(r.response)},
+            {"scope", quote("Shimada shared package limit via selected CPU and domain 0 / BDF 0")},
+            {"detail", quote("Firmware acknowledgement only; effective limit is unverified. One limit per operation; no automatic mode change, retry or rollback.")}};
     } else if (c.name == "amd-pbo-fmax-set") {
         const auto r = setShimadaPboFmax(s, c.smu, c.pboExpected, c.pboFmax); out.error = r.error;
         out.data = {{"expected_capabilities", hex(c.pboExpected)}, {"capabilities_raw", r.before.valid ? hex(r.before.raw) : "null"},
@@ -1314,6 +1341,12 @@ Usage: octool-cli COMMAND [OPTIONS]
   amd-pbo-capabilities --cpu N      Read Shimada PBO/manual OC capability flags
   amd-pbo-fmax-set --cpu N --mhz N --expect-caps RAW --apply
                                    Firmware acknowledgement only; no Fmax readback
+  amd-pbo-limit-set --cpu N --limit ppt|tdc|edc|temperature --value N --expect-caps RAW --apply
+                                   One shared limit; firmware acknowledgement only
+    Shimada 1Ah/08h at domain 0 / BDF 0 only. Read capabilities first: power limits
+    must be available and manual OC disabled. PPT uses W, TDC/EDC use A; integer
+    1..2000. Temperature uses integer 1..100 C. These are application input bounds,
+    not operating recommendations. Current limit and actual effect are unverified.
   amd-pbo-rails-encode --rail0-mv N --rail1-mv N
                                    Offline encoding preview; no hardware access
   amd-curve-read --cpu N --ccd N --core N

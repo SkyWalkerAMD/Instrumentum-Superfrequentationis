@@ -1999,6 +1999,50 @@ void pboFmaxCommands() {
         assert(!opened); if (emit) std::cout << output.str();
     }
 }
+void pboLimitCommands() {
+    const char *names[] = {"ppt","tdc","edc","temperature"};
+    const unsigned values[] = {350,280,500,90}, arguments[] = {350000,280000,500000,90};
+    for (unsigned i = 0; i < 4; ++i) {
+        AmdPboFixture d; d.capsRaw = 6; d.discardChange = true;
+        const auto result = command(d,{"amd-pbo-limit-set","--cpu","130","--limit",names[i],"--value",std::to_string(values[i]),"--expect-caps","6","--apply"},0);
+        assert(result.find("\"accepted\":true") != std::string::npos && result.find("\"verified\":false") != std::string::npos);
+        assert(result.find("\"current_limit\":null") != std::string::npos);
+        assert((d.messages == std::vector<std::uint32_t>{0x6f,0x56+i}));
+        assert(d.commandArgs.back()[0] == arguments[i] && !d.limitArguments[i] && d.settings == 1 && !d.wrongCpu);
+    }
+    for (unsigned mode = 0; mode < 5; ++mode) {
+        AmdPboFixture d; d.capsRaw = 6;
+        if (mode == 0) d.capsRaw = 2; // A still-eligible change must also abort.
+        if (mode == 1) d.model = 0x18;
+        if (mode == 2) d.writeCompletion = 0xfd;
+        if (mode == 3) d.failAt = 0;
+        if (mode == 4) d.completion = 0xfe;
+        const auto result = command(d,{"amd-pbo-limit-set","--cpu","130","--limit","ppt","--value","350","--expect-caps","6","--apply"},3);
+        assert(result.find("\"verified\":false") != std::string::npos && d.settings == (mode == 2 ? 1u : 0u));
+    }
+    AmdPboFixture caps; caps.capsRaw = 2;
+    const auto result = command(caps,{"amd-pbo-capabilities","--cpu","130"},0);
+    assert(result.find("\"power_limits_available\":true") != std::string::npos && result.find("\"limit_commands_available\":true") != std::string::npos);
+    assert(result.find("\"fmax_command_available\":false") != std::string::npos);
+}
+void pboLimitInvalidBeforeOpen() {
+    const std::vector<std::string> base = {"amd-pbo-limit-set","--cpu","130","--limit","ppt","--value","350","--expect-caps","6","--apply"};
+    std::vector<std::vector<std::string>> invalid;
+    auto missingApply = base; missingApply.pop_back(); invalid.push_back(missingApply);
+    auto missingCpu = base; missingCpu.erase(missingCpu.begin()+1,missingCpu.begin()+3); invalid.push_back(missingCpu);
+    for (const char *value : {"0","-1","2001","4294968","4294967295","350.0","0x15e","1e2","+350"}) {
+        auto args = base; args[6] = value; invalid.push_back(args);
+    }
+    for (const char *name : {"soc-tdc","all","PPT"}) { auto args = base; args[4] = name; invalid.push_back(args); }
+    for (const char *caps : {"0","4","7","0xffffffff"}) { auto args = base; args[8] = caps; invalid.push_back(args); }
+    auto tooHot = base; tooHot[4] = "temperature"; tooHot[6] = "101"; invalid.push_back(tooHot);
+    auto duplicate = base; duplicate.push_back("--limit"); duplicate.push_back("tdc"); invalid.push_back(duplicate);
+    for (const auto &args : invalid) {
+        unsigned opened = 0; std::ostringstream output;
+        assert(run(args,output,[&] { ++opened; return std::unique_ptr<HardwareBackend>(new AmdPboFixture); }) == 2 && !opened);
+        if (emit) std::cout << output.str();
+    }
+}
 void pboOfflineCommands() {
     unsigned opened = 0;
     const auto factory = [&] { ++opened; return std::unique_ptr<HardwareBackend>(new AmdPboFixture); };
@@ -2050,7 +2094,7 @@ int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--inventory-fixture") { inventory(argv[2]); return 0; }
     if (argc == 3 && std::string(argv[1]) == "--pm-fixture") { pmFilesystem(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
-    curveSettingCommands(); pboScalarCommands(); pboFmaxCommands(); pboOfflineCommands();
+    curveSettingCommands(); pboScalarCommands(); pboFmaxCommands(); pboOfflineCommands(); pboLimitCommands(); pboLimitInvalidBeforeOpen();
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); intelMemoryOdtCaptures(); intelMemoryOdtLive(); intelMemoryTemperatureCaptures(); intelMemoryTemperatureLive(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
@@ -2059,5 +2103,5 @@ int main(int argc, char **argv) {
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "55 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "57 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

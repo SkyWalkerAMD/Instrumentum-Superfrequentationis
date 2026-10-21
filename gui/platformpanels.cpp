@@ -221,6 +221,22 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     form->addRow("Shimada Fmax · command acknowledgement only", fmax);
     connect(caps, &QPushButton::clicked, this, [this] { readPboCapabilities(); });
     connect(applyFmax, &QPushButton::clicked, this, [this] { applyPboFmax(); });
+    auto *limits = new QHBoxLayout;
+    pboLimit_ = new QComboBox(this); pboLimit_->setObjectName("pboLimit");
+    pboLimit_->addItem("PPT (W)", int(octool::core::AmdPboLimit::Ppt));
+    pboLimit_->addItem("TDC (A)", int(octool::core::AmdPboLimit::Tdc));
+    pboLimit_->addItem("EDC (A)", int(octool::core::AmdPboLimit::Edc));
+    pboLimit_->addItem("Temperature (°C)", int(octool::core::AmdPboLimit::Temperature));
+    limits->addWidget(pboLimit_);
+    pboLimitValue_ = edit("pboLimitValue", "", this); pboLimitValue_->setPlaceholderText("Integer 1..2000 W"); limits->addWidget(pboLimitValue_);
+    auto *applyLimit = new QPushButton("Apply limit…", this); applyLimit->setObjectName("pboLimitApply"); limits->addWidget(applyLimit);
+    form->addRow("Shimada PBO limits · read capability first", limits);
+    connect(pboLimit_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this] {
+        const auto kind = octool::core::AmdPboLimit(pboLimit_->currentData().toInt());
+        pboLimitValue_->clear();
+        pboLimitValue_->setPlaceholderText(QString("Integer 1..%1 %2").arg(octool::core::amdPboLimitMaximum(kind)).arg(octool::core::amdPboLimitUnit(kind)));
+    });
+    connect(applyLimit, &QPushButton::clicked, this, [this] { applyPboLimit(); });
     auto *rails = new QHBoxLayout;
     auto *rail0 = edit("pboRail0", "", this); rail0->setPlaceholderText("Rail 0 mV"); rails->addWidget(rail0);
     auto *rail1 = edit("pboRail1", "", this); rail1->setPlaceholderText("Rail 1 mV"); rails->addWidget(rail1);
@@ -293,9 +309,12 @@ void AmdTuningPanel::readPboCapabilities() {
             append(table_, {"PBO available", r.raw & 4u ? "Yes" : "No"});
             append(table_, {"Manual OC enabled", r.raw & 1u ? "Yes" : "No"});
             append(table_, {"Current Fmax", "Unavailable: no verified readback"});
-            status_->setText(amdPboFmaxAvailable(r.raw) ?
+            append(table_, {"Power limits available", r.raw & 2u ? "Yes" : "No"});
+            append(table_, {"PPT / TDC / EDC / temperature commands", amdPboLimitsAvailable(r.raw) ? "Available; effective limits unverified" : "Unavailable"});
+            status_->setText((amdPboFmaxAvailable(r.raw) ?
                 "Fmax command available. Enter a MHz ceiling. Firmware acceptance does not verify the effective limit or operating frequency." :
-                "Fmax unavailable: PBO must be available and manual OC disabled. No mode change was requested.");
+                "Fmax unavailable: PBO must be available and manual OC disabled. No mode change was requested.") +
+                QString(amdPboLimitsAvailable(r.raw) ? " PBO limit commands available; select one limit to change." : " PBO limit commands unavailable."));
         }
         setEnabled(true); watcher->deleteLater();
     });
@@ -342,6 +361,53 @@ void AmdTuningPanel::applyPboFmax() {
     watcher->setFuture(QtConcurrent::run([access, cancelled, target, before, mhz] {
         AmdPboFmaxUpdate out;
         const int error = access->transaction([&](HardwareSession &s) { out = setShimadaPboFmax(s, target, before.raw, unsigned(mhz)); return out.error; }, 10000, cancelled.get());
+        if (error) out.error = error;
+        return out;
+    }));
+}
+void AmdTuningPanel::applyPboLimit() {
+    using namespace octool::core;
+    if (!pboCaps_.valid || pboCaps_.error || !amdPboLimitsAvailable(pboCaps_.raw)) {
+        status_->setText("Read PBO capability first. Limits require power limits available and manual OC disabled."); return;
+    }
+    const auto kind = AmdPboLimit(pboLimit_->currentData().toInt());
+    quint64 value = 0;
+    if (!parseNumber(pboLimitValue_->text(), 10, amdPboLimitMaximum(kind), value) || !value) {
+        status_->setText(QString("Enter integer %1 in 1..%2 %3. These are application bounds, not recommended operating limits.")
+            .arg(amdPboLimitName(kind)).arg(amdPboLimitMaximum(kind)).arg(amdPboLimitUnit(kind))); return;
+    }
+    const auto target = pboTarget_; const auto before = pboCaps_; const auto prepared = curveRevision_;
+    const auto input = pboLimitValue_->text();
+    if (QMessageBox::question(this, "Apply AMD PBO limit",
+        QString("CPU %1 · shared %2 limit: %3 %4\n"
+                "This changes a package power, current or temperature limit and can affect stability. "
+                "Firmware acceptance can be checked; the effective limit cannot be read back. "
+                "No automatic mode change, retry or rollback. Apply this one limit?")
+            .arg(target.cpu).arg(amdPboLimitName(kind)).arg(value).arg(amdPboLimitUnit(kind)),
+        QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Yes) return;
+    if (prepared != curveRevision_ || input != pboLimitValue_->text() || int(kind) != pboLimit_->currentData().toInt()) {
+        invalidateCurve(); status_->setText("Inputs changed. Read PBO capability again."); return;
+    }
+    invalidateCurve(); const auto revision = curveRevision_; setEnabled(false); status_->setText("Checking capability and submitting PBO limit…");
+    auto *watcher = new QFutureWatcher<AmdPboLimitUpdate>(this);
+    connect(watcher, &QFutureWatcher<AmdPboLimitUpdate>::finished, this, [this, watcher, revision, target] {
+        const auto r = watcher->result();
+        if (revision == curveRevision_) {
+            append(table_, {QString("Requested %1 (%2)").arg(amdPboLimitName(r.limit)).arg(amdPboLimitUnit(r.limit)), QString::number(r.requested)});
+            append(table_, {"Setting command", r.accepted ? "Firmware accepted" : r.writeAttempted ? "Attempted; not confirmed" : "Not sent"});
+            append(table_, {"Firmware response", hexValue(r.response, 4)});
+            append(table_, {"Effective limit readback", "Unavailable / not verified"});
+        }
+        status_->setText((r.error ? failure(r.error) + (r.writeAttempted ? " The limit may have changed. No automatic retry." : " No setting sent.") :
+            QString("Firmware accepted %1 = %2 %3. The effective limit remains unverified.")
+                .arg(amdPboLimitName(r.limit)).arg(r.requested).arg(amdPboLimitUnit(r.limit))) +
+            (revision == curveRevision_ ? " Read capability again before another edit." : QString(" Inputs changed; result belongs to CPU %1.").arg(target.cpu)));
+        setEnabled(true); watcher->deleteLater();
+    });
+    const auto access = access_; const auto cancelled = cancelled_;
+    watcher->setFuture(QtConcurrent::run([access, cancelled, target, before, kind, value] {
+        AmdPboLimitUpdate out;
+        const int error = access->transaction([&](HardwareSession &s) { out = setShimadaPboLimit(s, target, before.raw, kind, unsigned(value)); return out.error; }, 10000, cancelled.get());
         if (error) out.error = error;
         return out;
     }));

@@ -51,6 +51,28 @@ bool amdPboFmaxAvailable(std::uint32_t capabilities);
 // Requires PBO available and manual OC disabled; never enables OC or retries.
 AmdPboFmaxUpdate setShimadaPboFmax(HardwareSession &session, const SmuTarget &target,
                                  std::uint32_t expectedCapabilities, unsigned mhz);
+enum class AmdPboLimit { Ppt, Tdc, Edc, Temperature };
+const char *amdPboLimitName(AmdPboLimit limit);
+const char *amdPboLimitUnit(AmdPboLimit limit);
+// Application bounds: integer 1..2000 W/A, 1..100 degrees C. These are input
+// guards, not validated operating recommendations or the CPU's fused limits.
+unsigned amdPboLimitMaximum(AmdPboLimit limit);
+int encodeAmdPboLimit(AmdPboLimit limit, unsigned value, std::uint32_t &command, std::uint32_t &argument);
+bool amdPboLimitsAvailable(std::uint32_t capabilities);
+struct AmdPboLimitUpdate {
+    int error = 0;
+    AmdPboPhase phase = AmdPboPhase::Validate;
+    AmdPboCapabilities before;
+    AmdPboLimit limit = AmdPboLimit::Ppt;
+    unsigned requested = 0;
+    std::uint32_t command = 0, argument = 0, response = 0;
+    bool writeAttempted = false, accepted = false, verified = false;
+};
+// One shared limit per operation, RSMU 56/57/58/59 only. Compare full capability
+// word, then revalidate identity. Never enable OC, retry on MP1, or claim a
+// current-limit readback from an unverified PM field or echoed argument.
+AmdPboLimitUpdate setShimadaPboLimit(HardwareSession &session, const SmuTarget &target,
+                                    std::uint32_t expectedCapabilities, AmdPboLimit limit, unsigned value);
 struct AmdPboRailsEncoding {
     int error = 0;
     unsigned rail0Millivolts = 0, rail1Millivolts = 0;

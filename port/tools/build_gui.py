@@ -140,6 +140,9 @@ def main():
                    OCTOOL_PBO_SCALAR_FAILURE_TEST_SCREENSHOT=str((tests / "pbo-scalar-failure-fixture.png").resolve()),
                    OCTOOL_PBO_FMAX_TEST_SCREENSHOT=str((tests / "pbo-fmax-fixture.png").resolve()),
                    OCTOOL_PBO_RAILS_TEST_SCREENSHOT=str((tests / "pbo-rails-fixture.png").resolve()),
+                   OCTOOL_PBO_LIMIT_PPT_TEST_SCREENSHOT=str((tests / "pbo-limit-ppt-fixture.png").resolve()),
+                   OCTOOL_PBO_LIMIT_TEMP_TEST_SCREENSHOT=str((tests / "pbo-limit-temperature-fixture.png").resolve()),
+                   OCTOOL_PBO_LIMIT_FAILURE_TEST_SCREENSHOT=str((tests / "pbo-limit-failure-fixture.png").resolve()),
                    OCTOOL_PM_LAYOUT_TEST_SCREENSHOT=str((tests / "pm-layout-fixture.png").resolve()),
                    OCTOOL_PM_ERROR_TEST_SCREENSHOT=str((tests / "pm-error-fixture.png").resolve()))
         try:

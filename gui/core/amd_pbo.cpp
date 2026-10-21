@@ -108,6 +108,63 @@ AmdPboFmaxUpdate setShimadaPboFmax(HardwareSession &s, const SmuTarget &target,
     // readback, fused-limit substitute, guessed PM offset or rollback.
     out.phase = AmdPboPhase::Complete; return out;
 }
+const char *amdPboLimitName(AmdPboLimit limit) {
+    switch (limit) {
+    case AmdPboLimit::Ppt: return "ppt";
+    case AmdPboLimit::Tdc: return "tdc";
+    case AmdPboLimit::Edc: return "edc";
+    case AmdPboLimit::Temperature: return "temperature";
+    }
+    return "invalid";
+}
+const char *amdPboLimitUnit(AmdPboLimit limit) {
+    switch (limit) {
+    case AmdPboLimit::Ppt: return "W";
+    case AmdPboLimit::Tdc: case AmdPboLimit::Edc: return "A";
+    case AmdPboLimit::Temperature: return "C";
+    }
+    return "";
+}
+unsigned amdPboLimitMaximum(AmdPboLimit limit) {
+    switch (limit) {
+    case AmdPboLimit::Ppt: case AmdPboLimit::Tdc: case AmdPboLimit::Edc: return 2000;
+    case AmdPboLimit::Temperature: return 100;
+    }
+    return 0;
+}
+int encodeAmdPboLimit(AmdPboLimit limit, unsigned value, std::uint32_t &command, std::uint32_t &argument) {
+    command = argument = 0;
+    if (!amdPboLimitMaximum(limit)) return -EINVAL;
+    if (!value || value > amdPboLimitMaximum(limit)) return -ERANGE;
+    switch (limit) {
+    case AmdPboLimit::Ppt: command = 0x56; break;
+    case AmdPboLimit::Tdc: command = 0x57; break;
+    case AmdPboLimit::Edc: command = 0x58; break;
+    case AmdPboLimit::Temperature: command = 0x59; break;
+    }
+    argument = limit == AmdPboLimit::Temperature ? value : value * 1000u;
+    return 0;
+}
+bool amdPboLimitsAvailable(std::uint32_t caps) { return (caps & 2u) && !(caps & 1u); }
+AmdPboLimitUpdate setShimadaPboLimit(HardwareSession &s, const SmuTarget &target,
+                                    std::uint32_t expectedCapabilities, AmdPboLimit limit, unsigned value) {
+    AmdPboLimitUpdate out; out.limit = limit; out.requested = value;
+    if ((out.error = encodeAmdPboLimit(limit, value, out.command, out.argument))) return out;
+    if (!amdPboLimitsAvailable(expectedCapabilities)) { out.error = -ENOTSUP; return out; }
+    out.phase = AmdPboPhase::Compare;
+    out.before = readShimadaPboCapabilities(s, target);
+    if ((out.error = out.before.error)) return out;
+    if (out.before.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
+    if ((out.error = checkTarget(s, target))) return out;
+    out.phase = AmdPboPhase::Write;
+    const auto reply = detail::exchangeShimadaRsmu(s, out.command, out.argument, false, true);
+    out.writeAttempted = reply.messageAttempted; out.response = reply.response;
+    out.accepted = reply.response == 1;
+    if ((out.error = reply.error)) return out;
+    // Acknowledged only. Neither command completion nor a successful capability
+    // comparison establishes the current setting or its effect on the package.
+    out.phase = AmdPboPhase::Complete; return out;
+}
 AmdPboRailsEncoding encodeLegacyAmdPboRails(unsigned a, unsigned b) {
     AmdPboRailsEncoding out;
     const auto valid = [](unsigned v) { return !v || (v >= 250 && v <= 2800 && v % 5 == 0); };
