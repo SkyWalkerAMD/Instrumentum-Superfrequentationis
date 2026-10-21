@@ -43,6 +43,14 @@ PERCORE_PROCEDURES = (('0x239100', 'get_percore_power_offset'),
                      ('0x236890', 'get_mem_address64bit'),
                      ('0x2365c0', 'start_monitor'),
                      ('0x750b70', 'on_per_ccx_oc_apply_5_clicked'))
+PBO_LAYOUT_PROCEDURES = (('0x21f700', 'MP1_C2PMSG'),
+                         ('0x239150', 'AMD_PBO'),
+                         ('0x2397b0', 'set_fmax'), ('0x239990', 'set_core01_rails'),
+                         ('0x74f720', 'on_per_ccx_oc_apply_2_clicked'),
+                         ('0x752270', 'on_per_ccx_oc_apply_clicked'),
+                         ('0x7217c0', '~amdvf'), ('0x6fec20', 'tr5_get_both'),
+                         ('0x761670', 'cpufunctions'),
+                         ('0x2eca70', 'get_pm'), ('0x236820', 'refresh_monitor'))
 
 
 def selected_address(reply, offset):
@@ -63,7 +71,7 @@ def main():
     parser.add_argument('--binary', type=Path, required=True)
     parser.add_argument('--rea', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore'), default='baseline')
+    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout'), default='baseline')
     args = parser.parse_args()
     binary, rea, output = args.binary.resolve(), args.rea.resolve(), args.output.resolve()
     if hashlib.sha256(binary.read_bytes()).hexdigest() != SOURCE_SHA:
@@ -161,7 +169,8 @@ def main():
                 opened = True
                 resolved = []
                 procedures = {'baseline': PROCEDURES, 'arrays': ARRAY_PROCEDURES,
-                              'monitors': MONITOR_PROCEDURES, 'percore': PERCORE_PROCEDURES}[args.study]
+                              'monitors': MONITOR_PROCEDURES, 'percore': PERCORE_PROCEDURES,
+                              'pbo_layout': PBO_LAYOUT_PROCEDURES}[args.study]
                 for offset, name in procedures:
                     pseudo = call('procedure_pseudo_code',
                         dict(procedure='file-offset:' + offset), 'pseudo-' + offset)
