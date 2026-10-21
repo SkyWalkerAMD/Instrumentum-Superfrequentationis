@@ -113,7 +113,7 @@ struct Command {
     unsigned pboLimitValue = 0;
     bool ocEnabled = false;
     AmdOcFrequencyScope ocFrequencyScope = AmdOcFrequencyScope::AllCores;
-    unsigned ocMHz = 0;
+    unsigned ocMHz = 0, ocCoreMask = 0;
     int margin = 0;
     bool multipleCores = false;
     SmuTarget smu; SmuCommand message; UmcTarget umc;
@@ -161,7 +161,7 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "amd-pbo-fmax-set") { keys.insert("--mhz"); keys.insert("--expect-caps"); keys.insert("--apply"); }
     if (c.name == "amd-pbo-limit-set") { keys.insert("--limit"); keys.insert("--value"); keys.insert("--expect-caps"); keys.insert("--apply"); }
     if (c.name == "amd-oc-mode-set") for (const char *key : {"--enabled","--expect-caps","--apply"}) keys.insert(key);
-    if (c.name == "amd-oc-frequency-set") for (const char *key : {"--scope","--ccd","--core","--mhz","--expect-caps","--apply"}) keys.insert(key);
+    if (c.name == "amd-oc-frequency-set") for (const char *key : {"--scope","--ccd","--core","--cores","--mhz","--expect-caps","--apply"}) keys.insert(key);
     if (rails) { keys.insert("--rail0-mv"); keys.insert("--rail1-mv"); }
     if (layoutAudit) { keys.insert("--version"); keys.insert("--bytes"); keys.insert("--fused-ccds"); }
     if (c.name == "intel-set" || c.name == "intel-oc-set") { keys.insert("--field"); keys.insert("--value"); }
@@ -386,11 +386,16 @@ Command parse(const std::vector<std::string> &args) {
         }
         if (c.name == "amd-oc-frequency-set") {
             const auto scope = get(options,"--scope");
-            require(scope == "all-cores" || scope == "core", "--scope must be all-cores or core");
-            c.ocFrequencyScope = scope == "core" ? AmdOcFrequencyScope::Core : AmdOcFrequencyScope::AllCores;
+            require(scope == "all-cores" || scope == "core" || scope == "cores", "--scope must be all-cores, core or cores");
+            c.ocFrequencyScope = scope == "core" ? AmdOcFrequencyScope::Core : scope == "cores" ? AmdOcFrequencyScope::Cores : AmdOcFrequencyScope::AllCores;
             if (c.ocFrequencyScope == AmdOcFrequencyScope::Core) {
+                require(!options.count("--cores"), "Single-core scope does not accept --cores");
                 c.ccd = uintOption(options,"--ccd",15); c.core = uintOption(options,"--core",7);
-            } else require(!options.count("--ccd") && !options.count("--core"), "All-core scope does not accept individual CCD/core selectors");
+            } else if (c.ocFrequencyScope == AmdOcFrequencyScope::Cores) {
+                require(!options.count("--core"), "Selected-core scope does not accept --core");
+                c.ccd = uintOption(options,"--ccd",15);
+                require(parseAmdCurveCores(get(options,"--cores"),c.ocCoreMask), "--cores requires an explicit ascending list of firmware indices 0..7, e.g. 0,2,7");
+            } else require(!options.count("--ccd") && !options.count("--core") && !options.count("--cores"), "All-core scope does not accept individual CCD/core selectors");
             const auto mhz = get(options,"--mhz");
             require(!mhz.empty() && mhz.find_first_not_of("0123456789") == std::string::npos, "--mhz requires an unsigned decimal integer");
             c.ocMHz = uintOption(options,"--mhz",0xfffff);
@@ -999,6 +1004,27 @@ Result hardware(const Command &c, HardwareSession &s) {
             {"accepted",boolean(r.accepted)},{"verified",boolean(r.verified && !r.error)},{"unchanged",boolean(r.unchanged)},
             {"response",hex(r.response)},{"hardware_effect_measured","false"},{"scalar_reset_requested","false"},
             {"detail",quote("Verification covers the firmware manual-OC mode bit only. No frequency, voltage or scalar command is sent; disabling does not guarantee all defaults have been restored.")}};
+    } else if (c.name == "amd-oc-frequency-set" && c.ocFrequencyScope == AmdOcFrequencyScope::Cores) {
+        const auto r = setShimadaOcCoreFrequencies(s,c.smu,c.pboExpected,c.ccd,c.ocCoreMask,c.ocMHz); out.error = r.error;
+        std::vector<std::string> rows;
+        for (unsigned core = 0; core < 8; ++core) if (c.ocCoreMask & (1u << core)) {
+            const auto &v = r.cores[core]; const bool visited = (r.visitedMask & (1u << core)) != 0;
+            rows.push_back(object({{"firmware_core",number(core)},{"visited",boolean(visited)},
+                {"error",visited?number(v.error):"null"},{"phase",visited?quote(amdPboPhaseName(v.phase)):"null"},
+                {"capabilities_raw",visited && v.before.valid?hex(v.before.raw):"null"},
+                {"argument",visited?hex(v.argument):"null"},{"response",visited?hex(v.response):"null"},
+                {"write_attempted",boolean(v.writeAttempted)},{"accepted",boolean(v.accepted)},
+                {"verified","false"},{"current_frequency_mhz","null"}}));
+        }
+        out.data = {{"scope",quote("cores")},{"firmware_ccd",number(c.ccd)},{"core_mask",hex(c.ocCoreMask)},
+            {"requested_mhz",number(c.ocMHz)},{"expected_capabilities",hex(c.pboExpected)},
+            {"visited_mask",hex(r.visitedMask)},{"attempted_mask",hex(r.attemptedMask)},{"accepted_mask",hex(r.acceptedMask)},
+            {"failed_core",r.failedCore<8?number(r.failedCore):"null"},{"phase",quote(amdPboPhaseName(r.phase))},
+            {"write_attempted",boolean(r.attemptedMask!=0)},{"accepted",boolean(r.acceptedMask==c.ocCoreMask)},
+            {"completed",boolean(!r.error && r.phase==AmdPboPhase::Complete)},{"verified","false"},
+            {"readback_supported","false"},{"physical_mapping_verified","false"},{"hardware_effect_measured","false"},
+            {"cores",array(rows)},
+            {"detail",quote("Explicit firmware indices within one CCD, processed in ascending order. Full capability and identity checks before every core. Stop on first failure; partial changes remain. Acknowledgement only; no mode, VID or scalar command, automatic retry or rollback.")}};
     } else if (c.name == "amd-oc-frequency-set") {
         const auto r = setShimadaOcFrequency(s,c.smu,c.pboExpected,c.ocFrequencyScope,c.ccd,c.core,c.ocMHz); out.error = r.error;
         const bool single = c.ocFrequencyScope == AmdOcFrequencyScope::Core;
@@ -1395,6 +1421,7 @@ Usage: octool-cli COMMAND [OPTIONS]
                                    Change mode explicitly; re-read the mode bit
   amd-oc-frequency-set --cpu N --scope all-cores --mhz N --expect-caps RAW --apply
   amd-oc-frequency-set --cpu N --scope core --ccd N --core N --mhz N --expect-caps RAW --apply
+  amd-oc-frequency-set --cpu N --scope cores --ccd N --cores 0,2,7 --mhz N --expect-caps RAW --apply
     Shimada 1Ah/08h only. Manual OC must already be enabled for frequency commands.
     CCD 0..15/core 0..7 are firmware indices, not Linux CPU IDs or verified physical
     targets. MHz 1..1048575 is an encoding range, not an operating recommendation.

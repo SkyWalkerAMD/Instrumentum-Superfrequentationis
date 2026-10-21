@@ -248,16 +248,19 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     auto *ocFrequency = new QHBoxLayout;
     ocFrequencyScope_ = new QComboBox(this); ocFrequencyScope_->setObjectName("ocFrequencyScope");
     ocFrequencyScope_->addItem("One firmware core",int(octool::core::AmdOcFrequencyScope::Core));
-    ocFrequencyScope_->addItem("All cores",int(octool::core::AmdOcFrequencyScope::AllCores)); ocFrequency->addWidget(ocFrequencyScope_);
+    ocFrequencyScope_->addItem("All cores",int(octool::core::AmdOcFrequencyScope::AllCores));
+    ocFrequencyScope_->addItem("Selected cores in CCD",int(octool::core::AmdOcFrequencyScope::Cores)); ocFrequency->addWidget(ocFrequencyScope_);
     ocCcd_=edit("ocCcd","",this); ocCcd_->setPlaceholderText("CCD 0..15"); ocFrequency->addWidget(ocCcd_);
     ocCore_=edit("ocCore","",this); ocCore_->setPlaceholderText("Core 0..7"); ocFrequency->addWidget(ocCore_);
     ocMHz_=edit("ocMHz","",this); ocMHz_->setPlaceholderText("MHz"); ocFrequency->addWidget(ocMHz_);
     auto *ocFrequencyApply=new QPushButton("Apply frequency…",this); ocFrequencyApply->setObjectName("ocFrequencyApply"); ocFrequency->addWidget(ocFrequencyApply);
     form->addRow("Manual OC frequency · mode must be enabled",ocFrequency);
     connect(ocFrequencyScope_,QOverload<int>::of(&QComboBox::currentIndexChanged),this,[this]{
-        const bool single=ocFrequencyScope_->currentData().toInt()==int(octool::core::AmdOcFrequencyScope::Core);
-        if(!single){ocCcd_->clear();ocCore_->clear();}
-        ocCcd_->setEnabled(single);ocCore_->setEnabled(single);
+        const auto scope=octool::core::AmdOcFrequencyScope(ocFrequencyScope_->currentData().toInt());
+        const bool indexed=scope!=octool::core::AmdOcFrequencyScope::AllCores;
+        ocCore_->clear();if(!indexed)ocCcd_->clear();
+        ocCore_->setPlaceholderText(scope==octool::core::AmdOcFrequencyScope::Cores?"Cores: 0,2,7":"Core 0..7");
+        ocCcd_->setEnabled(indexed);ocCore_->setEnabled(indexed);
     });
     connect(ocFrequencyApply,&QPushButton::clicked,this,[this]{applyOcFrequency();});
     auto *rails = new QHBoxLayout;
@@ -482,18 +485,22 @@ void AmdTuningPanel::applyOcFrequency() {
         status_->setText("Read OC capability first. Manual OC must already be enabled; no mode change was requested.");return;
     }
     const auto scope=AmdOcFrequencyScope(ocFrequencyScope_->currentData().toInt());
-    quint64 ccd=0,core=0,mhz=0;std::uint32_t command=0,argument=0;
+    quint64 ccd=0,core=0,mhz=0;std::uint32_t command=0,argument=0;unsigned coreMask=0;
     if(ocFrequencyScope_->currentIndex()<0 ||
-       (scope==AmdOcFrequencyScope::Core && (!parseNumber(ocCcd_->text(),10,15,ccd) || !parseNumber(ocCore_->text(),10,7,core))) ||
-       !parseNumber(ocMHz_->text(),10,0xfffff,mhz) || encodeShimadaOcFrequency(scope,unsigned(ccd),unsigned(core),unsigned(mhz),command,argument)) {
-        status_->setText("Enter an explicit scope, firmware CCD 0..15/core 0..7 for one core, and integer MHz 1..1048575. Encoding limits only; no command sent.");return;
+       (scope!=AmdOcFrequencyScope::AllCores && !parseNumber(ocCcd_->text(),10,15,ccd)) ||
+       (scope==AmdOcFrequencyScope::Core && !parseNumber(ocCore_->text(),10,7,core)) ||
+       (scope==AmdOcFrequencyScope::Cores && !parseAmdCurveCores(ocCore_->text().toStdString(),coreMask)) ||
+       !parseNumber(ocMHz_->text(),10,0xfffff,mhz) || encodeShimadaOcFrequency(scope==AmdOcFrequencyScope::Cores?AmdOcFrequencyScope::Core:scope,unsigned(ccd),unsigned(core),unsigned(mhz),command,argument)) {
+        status_->setText("Enter firmware CCD 0..15 and core 0..7, or an ascending core list such as 0,2,7. MHz must be 1..1048575 (encoding bounds). No command sent.");return;
     }
     const auto target=pboTarget_;const auto before=pboCaps_;const auto prepared=curveRevision_;
     const auto ccdText=ocCcd_->text(),coreText=ocCore_->text(),mhzText=ocMHz_->text();
-    const auto scopeText=scope==AmdOcFrequencyScope::AllCores?QString("All cores"):QString("Firmware CCD %1 / core %2 (physical mapping unverified)").arg(ccd).arg(core);
+    const auto scopeText=scope==AmdOcFrequencyScope::AllCores?QString("All cores"):
+        QString("Firmware CCD %1 / %2 %3 (physical mapping unverified)").arg(ccd).arg(scope==AmdOcFrequencyScope::Cores?"cores":"core").arg(coreText);
     if(QMessageBox::question(this,"Set AMD manual OC frequency",
         QString("CPU %1 · %2 · requested %3 MHz\n"
                 "This can affect voltage, heat, power and stability. Firmware acceptance can be checked; current frequency cannot be read back. "
+                "Selected cores are processed in order; a failure stops further commands and earlier changes remain. "
                 "No mode or VID command, automatic retry or rollback. Apply this frequency?").arg(target.cpu).arg(scopeText).arg(mhz),
         QMessageBox::Yes|QMessageBox::Cancel,QMessageBox::Cancel)!=QMessageBox::Yes)return;
     if(prepared!=curveRevision_ || int(scope)!=ocFrequencyScope_->currentData().toInt() || ocFrequencyScope_->currentIndex()<0 ||
@@ -501,6 +508,38 @@ void AmdTuningPanel::applyOcFrequency() {
         invalidateCurve();status_->setText("Inputs changed. Read OC capability again.");return;
     }
     invalidateCurve();const auto revision=curveRevision_;setEnabled(false);status_->setText("Checking capability and submitting manual OC frequency…");
+    if(scope==AmdOcFrequencyScope::Cores) {
+        auto *watcher=new QFutureWatcher<AmdOcCoreFrequenciesUpdate>(this);
+        connect(watcher,&QFutureWatcher<AmdOcCoreFrequenciesUpdate>::finished,this,[this,watcher,revision,target,scopeText,mhz,ccd,coreMask]{
+            const auto r=watcher->result();
+            if(revision==curveRevision_) {
+                append(table_,{"Requested target",scopeText});
+                append(table_,{"Requested frequency (MHz)",QString::number(mhz)});
+                append(table_,{"Attempted core mask",hexValue(r.attemptedMask,1)});
+                append(table_,{"Accepted core mask",hexValue(r.acceptedMask,1)});
+                append(table_,{"Stopped at core",r.failedCore<8?QString::number(r.failedCore):"None"});
+                for(unsigned n=0;n<8;++n)if(coreMask & (1u<<n)) {
+                    const auto &v=r.cores[n];
+                    const QString state=v.accepted?"Firmware accepted":v.writeAttempted?"Attempted; not confirmed":"Not sent";
+                    append(table_,{QString("CCD %1 / core %2").arg(ccd).arg(n),state+
+                        ((r.visitedMask & (1u<<n))?QString(" · response %1 · %2").arg(hexValue(v.response,4)).arg(amdPboPhaseName(v.phase)):QString())});
+                }
+                append(table_,{"Current frequency readback","Unavailable / not verified"});
+            }
+            status_->setText((r.error?failure(r.error)+(r.attemptedMask?". Partial changes may remain; no automatic retry.":". No frequency setting sent."):
+                QString("Firmware accepted selected cores at %1 MHz. Current frequencies and physical mapping remain unverified.").arg(mhz))+
+                (revision==curveRevision_?" Read capability again before another edit.":QString(" Inputs changed; result belongs to CPU %1.").arg(target.cpu)));
+            setEnabled(true);watcher->deleteLater();
+        });
+        const auto access=access_;const auto cancelled=cancelled_;
+        watcher->setFuture(QtConcurrent::run([access,cancelled,target,before,ccd,coreMask,mhz]{
+            AmdOcCoreFrequenciesUpdate out;
+            const int e=access->transaction([&](HardwareSession &s){out=setShimadaOcCoreFrequencies(s,target,before.raw,unsigned(ccd),coreMask,unsigned(mhz));return out.error;},10000,cancelled.get());
+            if(e)out.error=e;
+            return out;
+        }));
+        return;
+    }
     auto *watcher=new QFutureWatcher<AmdOcFrequencyUpdate>(this);
     connect(watcher,&QFutureWatcher<AmdOcFrequencyUpdate>::finished,this,[this,watcher,revision,target,scopeText,mhz]{
         const auto r=watcher->result();

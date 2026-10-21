@@ -33,9 +33,9 @@ assert limited["data"]["allowed_cpus"] == [cpu]
 run("intel-set", "--cpu", str(cpu), "--field", "pl1", "--value", "100", code=2)
 run("cpu", "--cpu", "999999999999999999999999", code=2)
 
-lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
+lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=60).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 1315, len(reports)
+assert len(reports) == 1359, len(reports)
 oc_modes = [r for r in reports if r['command'] == 'amd-oc-mode-set' and 'requested_enabled' in r['data']]
 assert len(oc_modes) == 9 and [r['ok'] for r in oc_modes] == [True]*3 + [False]*6
 for r in oc_modes:
@@ -47,7 +47,7 @@ assert oc_modes[2]['data']['unchanged'] and not oc_modes[2]['data']['write_attem
 assert [r['data']['accepted'] for r in oc_modes] == [True,True,False,False,False,False,True,False,True]
 assert oc_modes[6]['data']['after']['manual_oc_enabled'] is False
 assert oc_modes[8]['data']['after']['manual_oc_enabled'] is None
-oc_freq = [r for r in reports if r['command'] == 'amd-oc-frequency-set' and 'requested_mhz' in r['data']]
+oc_freq = [r for r in reports if r['command'] == 'amd-oc-frequency-set' and 'requested_mhz' in r['data'] and r['data']['scope'] != 'cores']
 assert len(oc_freq) == 9 and [r['ok'] for r in oc_freq] == [True]*4 + [False]*5
 for r in oc_freq:
     d = r['data']
@@ -59,6 +59,33 @@ for r in oc_freq[:4]:
     assert d['firmware_ccd'] == (15 if single else None) and d['firmware_core'] == (7 if single else None)
     assert int(d['command'],16) == (0x60 if single else 0x5f)
     assert int(d['argument'],16) == (0xf0701388 if single else 5000)
+oc_selected = [r for r in reports if r['command'] == 'amd-oc-frequency-set' and r['data'].get('scope') == 'cores']
+assert len(oc_selected) == 16 and [r['ok'] for r in oc_selected] == [True]*4 + [False]*12
+for i,r in enumerate(oc_selected):
+    d = r['data']; mask = int(d['core_mask'],16)
+    assert d['firmware_ccd'] == 15 and d['requested_mhz'] == 5000 and d['completed'] == r['ok']
+    assert not d['verified'] and not d['readback_supported'] and not d['physical_mapping_verified'] and not d['hardware_effect_measured']
+    assert [v['firmware_core'] for v in d['cores']] == [n for n in range(8) if mask & (1<<n)]
+    for v in d['cores']:
+        bit = 1 << v['firmware_core']
+        assert v['visited'] == bool(int(d['visited_mask'],16) & bit)
+        assert v['write_attempted'] == bool(int(d['attempted_mask'],16) & bit)
+        assert v['accepted'] == bool(int(d['accepted_mask'],16) & bit)
+        assert not v['verified'] and v['current_frequency_mhz'] is None
+        if not v['visited']:
+            assert all(v[k] is None for k in ('error','phase','capabilities_raw','argument','response'))
+        else:
+            assert int(v['argument'],16) == (15<<28) | (v['firmware_core']<<20) | 5000
+    if i < 4:
+        assert mask == (1,128,133,255)[i] and d['failed_core'] is None and d['accepted']
+        assert int(d['accepted_mask'],16) == mask and int(d['attempted_mask'],16) == mask
+    else:
+        fault,position = divmod(i-4,3); before = (0,1,5)[position]; bit = 1 << (0,2,7)[position]
+        assert int(d['accepted_mask'],16) == before and not d['accepted']
+        assert int(d['attempted_mask'],16) == before | (bit if fault == 0 else 0)
+        assert int(d['visited_mask'],16) == before | bit and d['failed_core'] == (0,2,7)[position]
+for cores in ('','0,0','2,0','0,8','0, 2','0-7'):
+    run('amd-oc-frequency-set','--cpu',str(cpu),'--scope','cores','--ccd','0','--cores',cores,'--mhz','5000','--expect-caps','7','--apply',code=2)
 run('amd-oc-mode-set','--cpu',str(cpu),'--enabled','1','--expect-caps','6',code=2)
 run('amd-oc-mode-set','--cpu',str(cpu),'--enabled','true','--expect-caps','6','--apply',code=2)
 run('amd-oc-frequency-set','--cpu',str(cpu),'--scope','all-cores','--mhz','5000','--expect-caps','7',code=2)

@@ -196,6 +196,7 @@ const char *amdOcFrequencyScopeName(AmdOcFrequencyScope scope) {
     switch (scope) {
     case AmdOcFrequencyScope::AllCores: return "all-cores";
     case AmdOcFrequencyScope::Core: return "core";
+    case AmdOcFrequencyScope::Cores: return "cores";
     }
     return "invalid";
 }
@@ -225,6 +226,26 @@ AmdOcFrequencyUpdate setShimadaOcFrequency(HardwareSession &s, const SmuTarget &
     out.writeAttempted = reply.messageAttempted; out.response = reply.response;
     out.accepted = reply.response == 1;
     if ((out.error = reply.error)) return out;
+    out.phase = AmdPboPhase::Complete; return out;
+}
+AmdOcCoreFrequenciesUpdate setShimadaOcCoreFrequencies(HardwareSession &s, const SmuTarget &target,
+    std::uint32_t expectedCapabilities, unsigned ccd, unsigned coreMask, unsigned mhz) {
+    AmdOcCoreFrequenciesUpdate out; out.ccd = ccd; out.coreMask = coreMask; out.requestedMHz = mhz;
+    if (!coreMask || (coreMask & ~0xffu)) { out.error = -EINVAL; return out; }
+    std::uint32_t command = 0, argument = 0;
+    if ((out.error = encodeShimadaOcFrequency(AmdOcFrequencyScope::Core, ccd, 0, mhz, command, argument))) return out;
+    if (!(expectedCapabilities & 1u)) { out.error = -ENOTSUP; return out; }
+    for (unsigned core = 0; core < 8; ++core) {
+        const unsigned bit = 1u << core;
+        if (!(coreMask & bit)) continue;
+        out.visitedMask |= bit;
+        auto &result = out.cores[core];
+        result = setShimadaOcFrequency(s, target, expectedCapabilities, AmdOcFrequencyScope::Core, ccd, core, mhz);
+        out.phase = result.phase;
+        if (result.writeAttempted) out.attemptedMask |= bit;
+        if (result.accepted) out.acceptedMask |= bit;
+        if ((out.error = result.error)) { out.failedCore = core; return out; }
+    }
     out.phase = AmdPboPhase::Complete; return out;
 }
 AmdPboRailsEncoding encodeLegacyAmdPboRails(unsigned a, unsigned b) {

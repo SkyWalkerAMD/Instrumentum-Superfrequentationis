@@ -85,7 +85,7 @@ struct AmdOcModeUpdate {
 };
 AmdOcModeUpdate setShimadaOcMode(HardwareSession &session, const SmuTarget &target,
                                  std::uint32_t expectedCapabilities, bool enabled);
-enum class AmdOcFrequencyScope { AllCores, Core };
+enum class AmdOcFrequencyScope { AllCores, Core, Cores };
 const char *amdOcFrequencyScopeName(AmdOcFrequencyScope scope);
 int encodeShimadaOcFrequency(AmdOcFrequencyScope scope, unsigned ccd, unsigned core, unsigned mhz,
                             std::uint32_t &command, std::uint32_t &argument);
@@ -103,6 +103,20 @@ struct AmdOcFrequencyUpdate {
 // readback. 1..1048575 MHz is the encoding range, not an operating range.
 AmdOcFrequencyUpdate setShimadaOcFrequency(HardwareSession &session, const SmuTarget &target,
     std::uint32_t expectedCapabilities, AmdOcFrequencyScope scope, unsigned ccd, unsigned core, unsigned mhz);
+struct AmdOcCoreFrequenciesUpdate {
+    int error = 0;
+    AmdPboPhase phase = AmdPboPhase::Validate;
+    unsigned ccd = 0, coreMask = 0, requestedMHz = 0;
+    unsigned visitedMask = 0, attemptedMask = 0, acceptedMask = 0;
+    unsigned failedCore = 8; // 8 means no individual core failed.
+    std::array<AmdOcFrequencyUpdate, 8> cores{};
+};
+// Explicit nonempty subset of firmware cores 0..7 in one CCD 0..15. Process
+// in ascending order, comparing the complete capability word and identity
+// before EACH setting. Stop on the first error, retain partial acknowledgements,
+// and never infer active cores, retry, roll back, or claim measured frequencies.
+AmdOcCoreFrequenciesUpdate setShimadaOcCoreFrequencies(HardwareSession &session, const SmuTarget &target,
+    std::uint32_t expectedCapabilities, unsigned ccd, unsigned coreMask, unsigned mhz);
 struct AmdPboRailsEncoding {
     int error = 0;
     unsigned rail0Millivolts = 0, rail1Millivolts = 0;

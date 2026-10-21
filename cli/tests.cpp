@@ -2086,6 +2086,56 @@ void ocFrequencyCommands() {
         assert(result.find("\"verified\":false")!=std::string::npos && d.settings==(mode==2?1u:0u));
     }
 }
+void ocSelectedCoreCommands() {
+    for(const char *cores:{"0","7","0,2,7","0,1,2,3,4,5,6,7"}) {
+        AmdPboFixture d;d.allowManualOc=true;d.capsRaw=7;d.discardChange=true;
+        unsigned mask=0;assert(parseAmdCurveCores(cores,mask));
+        const auto result=command(d,{"amd-oc-frequency-set","--cpu","130","--scope","cores","--ccd","15","--cores",cores,"--mhz","5000","--expect-caps","7","--apply"},0);
+        assert(result.find("\"completed\":true")!=std::string::npos && result.find("\"verified\":false")!=std::string::npos);
+        unsigned count=0;
+        for(unsigned core=0;core<8;++core)if(mask & (1u<<core)) {
+            assert(d.messages[count*2]==0x6f && d.messages[count*2+1]==0x60);
+            assert(d.commandArgs[count*2+1][0]==((15u<<28)|(core<<20)|5000));++count;
+        }
+        assert(d.settings==count && !d.wrongCpu && !d.ocAllMHz && !d.ocCoreArgument);
+    }
+}
+void ocSelectedCoreFailures() {
+    for(unsigned fault=0;fault<4;++fault)for(unsigned position=0;position<3;++position) {
+        AmdPboFixture d;d.allowManualOc=true;d.capsRaw=7;
+        const auto change=[&]{
+            if(fault==0)d.writeCompletion=0xfd;
+            if(fault==1)d.capsRaw=0x80000007;
+            if(fault==2)d.model=0x18;
+            if(fault==3)d.completion=0xfe;
+        };
+        if(!position)change();else d.afterRequest=[&]{if(d.settings==position)change();};
+        const auto result=command(d,{"amd-oc-frequency-set","--cpu","130","--scope","cores","--ccd","15","--cores","0,2,7","--mhz","5000","--expect-caps","7","--apply"},3);
+        assert(result.find("\"completed\":false")!=std::string::npos && result.find("\"verified\":true")==std::string::npos);
+        assert(d.settings==position+(fault==0?1u:0u) && !d.wrongCpu);
+    }
+}
+void ocSelectedCoreInvalidBeforeOpen() {
+    const std::vector<std::string> base={"amd-oc-frequency-set","--cpu","130","--scope","cores","--ccd","15","--cores","0,2,7","--mhz","5000","--expect-caps","7","--apply"};
+    std::vector<std::vector<std::string>> invalid;
+    auto args=base;args.pop_back();invalid.push_back(args);
+    for(std::size_t i=1;i+1<base.size();i+=2){args=base;args.erase(args.begin()+i,args.begin()+i+2);invalid.push_back(args);}
+    for(const char *cores:{"","0,0","2,0","0,8","0,","0,,2"," 0","0, 2","00","0-7","all","0x1","-1","0,2,7,"}) {
+        args=base;args[8]=cores;invalid.push_back(args);
+    }
+    args=base;args.insert(args.end(),{"--core","0"});invalid.push_back(args);
+    for(const char *scope:{"core","all-cores"}){args=base;args[4]=scope;invalid.push_back(args);}
+    args=base;args[6]="16";invalid.push_back(args);
+    args=base;args.insert(args.end(),{"--cores","1"});invalid.push_back(args);
+    args=base;args[12]="6";invalid.push_back(args);
+    args=base;args[10]="0";invalid.push_back(args);
+    assert(invalid.size()==28);
+    for(const auto &values:invalid) {
+        unsigned opened=0;std::ostringstream output;
+        assert(run(values,output,[&]{++opened;return std::unique_ptr<HardwareBackend>(new AmdPboFixture);})==2 && !opened);
+        if(emit)std::cout<<output.str();
+    }
+}
 void ocInvalidBeforeOpen() {
     const std::vector<std::string> mode={"amd-oc-mode-set","--cpu","130","--enabled","1","--expect-caps","6","--apply"};
     const std::vector<std::string> freq={"amd-oc-frequency-set","--cpu","130","--scope","core","--ccd","3","--core","7","--mhz","5000","--expect-caps","7","--apply"};
@@ -2166,6 +2216,7 @@ int main(int argc, char **argv) {
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     curveSettingCommands(); pboScalarCommands(); pboFmaxCommands(); pboOfflineCommands(); pboLimitCommands(); pboLimitInvalidBeforeOpen();
     ocModeCommands(); ocFrequencyCommands(); ocInvalidBeforeOpen();
+    ocSelectedCoreCommands(); ocSelectedCoreFailures(); ocSelectedCoreInvalidBeforeOpen();
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); intelMemoryOdtCaptures(); intelMemoryOdtLive(); intelMemoryTemperatureCaptures(); intelMemoryTemperatureLive(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
@@ -2174,5 +2225,5 @@ int main(int argc, char **argv) {
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "60 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "63 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }
