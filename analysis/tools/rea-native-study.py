@@ -51,6 +51,18 @@ PBO_LAYOUT_PROCEDURES = (('0x21f700', 'MP1_C2PMSG'),
                          ('0x7217c0', '~amdvf'), ('0x6fec20', 'tr5_get_both'),
                          ('0x761670', 'cpufunctions'),
                          ('0x2eca70', 'get_pm'), ('0x236820', 'refresh_monitor'))
+PBO_SEMANTICS_PROCEDURES = (('0x21e350', 'get_fused_fmax'),
+                            ('0x21dc20', 'get_fmax_from_model'),
+                            ('0x257550', 'AMD_PM_LOG'),
+                            ('0x2df0e0', 'AMD_PM_LOG'),
+                            ('0x2eca80', 'stream_vftf'),
+                            ('0x236670', 'refresh_monitor_fast'),
+                            ('0x2366d0', 'refresh_monitor_2nd'),
+                            ('0x750170', 'on_per_ccx_oc_apply_3_clicked'),
+                            ('0x7502d0', 'on_per_ccx_oc_apply_4_clicked'),
+                            ('0x751470', 'on_per_ccx_oc_apply_7_clicked'),
+                            ('0x7517d0', 'on_per_ccx_oc_apply_8_clicked'),
+                            ('0x751d70', 'on_per_ccx_oc_apply_9_clicked'))
 
 
 def selected_address(reply, offset):
@@ -71,7 +83,7 @@ def main():
     parser.add_argument('--binary', type=Path, required=True)
     parser.add_argument('--rea', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout'), default='baseline')
+    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout', 'pbo_semantics'), default='baseline')
     args = parser.parse_args()
     binary, rea, output = args.binary.resolve(), args.rea.resolve(), args.output.resolve()
     if hashlib.sha256(binary.read_bytes()).hexdigest() != SOURCE_SHA:
@@ -170,7 +182,8 @@ def main():
                 resolved = []
                 procedures = {'baseline': PROCEDURES, 'arrays': ARRAY_PROCEDURES,
                               'monitors': MONITOR_PROCEDURES, 'percore': PERCORE_PROCEDURES,
-                              'pbo_layout': PBO_LAYOUT_PROCEDURES}[args.study]
+                              'pbo_layout': PBO_LAYOUT_PROCEDURES,
+                              'pbo_semantics': PBO_SEMANTICS_PROCEDURES}[args.study]
                 for offset, name in procedures:
                     pseudo = call('procedure_pseudo_code',
                         dict(procedure='file-offset:' + offset), 'pseudo-' + offset)
