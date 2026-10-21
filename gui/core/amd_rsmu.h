@@ -39,8 +39,8 @@ inline AmdRsmuReply exchangeShimadaRsmu(HardwareSession &s, std::uint32_t comman
                                        std::uint32_t argument, bool readArgument, bool sixArguments = false) {
     AmdRsmuReply out;
     // Keep the internal entry point closed to arbitrary message IDs as well.
-    if ((command != 6 && command != 0xa3 && command != 0x5b && command != 0x6d) ||
-        ((command == 0x5b || command == 0x6d) != sixArguments)) { out.error = -EINVAL; return out; }
+    if ((command != 6 && command != 0xa3 && command != 0x5b && command != 0x6d && command != 0x6f && command != 0x70) ||
+        ((command != 6 && command != 0xa3) != sixArguments)) { out.error = -EINVAL; return out; }
     auto reply = rsmuWait(s); if ((out.error = reply.error)) return out;
     reply = rsmuIndirect(s, 0x3b10970, true, 0); if ((out.error = reply.error)) return out;
     for (unsigned i = 0; i < (sixArguments ? 6u : 1u); ++i) {

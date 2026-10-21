@@ -3,10 +3,11 @@
 #include "amd_curve_fixture.h"
 #include <cstring>
 
-// The fixture accepts only the independently checked scalar commands. BIOS,
+// The fixture accepts only checked scalar/capability/Fmax commands. BIOS,
 // MP1, OC-enable and other writes fail even if they would look similar.
 struct AmdPboFixture : AmdCurveFixture {
     std::uint32_t scalarRaw = 0x3f800000;
+    std::uint32_t capsRaw = 4, fmaxMHz = 0;
     std::array<std::uint32_t, 6> scalarArgs{{11,22,33,44,55,66}};
     std::vector<std::array<std::uint32_t, 6>> commandArgs;
     octool::core::Reply execute(const octool::core::Request &r) override {
@@ -23,18 +24,21 @@ struct AmdPboFixture : AmdCurveFixture {
         else if (r.write) {
             if (index == 0x3b10970 && !r.value) response = 0;
             else if (index >= 0x3b10a40 && index <= 0x3b10a54) scalarArgs[(index-0x3b10a40)/4] = std::uint32_t(r.value);
-            else if (index == 0x3b10924 && (r.value == 0x6d || r.value == 0x5b)) {
-                for (unsigned i = r.value == 0x6d ? 0 : 1; i < 6; ++i) if (scalarArgs[i]) out.error = -EINVAL;
+            else if (index == 0x3b10924 && (r.value == 0x6d || r.value == 0x5b || r.value == 0x6f || r.value == 0x70)) {
+                const bool query = r.value == 0x6d || r.value == 0x6f;
+                for (unsigned i = query ? 0 : 1; i < 6; ++i) if (scalarArgs[i]) out.error = -EINVAL;
                 if (r.value == 0x5b && (scalarArgs[0] < 100 || scalarArgs[0] > 1000 || scalarArgs[0] % 100)) out.error = -EINVAL;
+                if (r.value == 0x70 && (!scalarArgs[0] || scalarArgs[0] > 0xfffff)) out.error = -EINVAL;
                 if (!out.error) {
                     ++commands; polls = 0; messages.push_back(std::uint32_t(r.value)); commandArgs.push_back(scalarArgs);
-                    response = r.value == 0x6d ? completion : writeCompletion;
-                    if (r.value == 0x5b) {
+                    response = query ? completion : writeCompletion;
+                    if (!query) {
                         ++settings;
                         if (writeCompletion == 1 && !discardChange) {
-                            const float value = float(scalarArgs[0]/100); std::memcpy(&scalarRaw, &value, 4);
+                            if (r.value == 0x70) fmaxMHz = scalarArgs[0];
+                            else { const float value = float(scalarArgs[0]/100); std::memcpy(&scalarRaw, &value, 4); }
                         }
-                    } else if (completion == 1) scalarArgs[0] = scalarRaw;
+                    } else if (completion == 1) scalarArgs[0] = r.value == 0x6d ? scalarRaw : capsRaw;
                 }
             } else out.error = -EINVAL;
         } else if (index == 0x3b10970) {

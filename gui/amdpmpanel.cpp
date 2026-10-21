@@ -51,6 +51,15 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader) : QWidget(parent), r
     scale_ = new QCheckBox("Scale clocks with supplied BCLK", controls_); scale_->setObjectName("pmScale"); inputs->addWidget(scale_);
     bclk_ = new QLineEdit(controls_); bclk_->setObjectName("pmBclk"); bclk_->setPlaceholderText("MHz"); bclk_->setMaximumWidth(140); inputs->addWidget(bclk_);
     controls->addLayout(inputs); layout->addWidget(controls_);
+    auto *audit = new QHBoxLayout;
+    audit->addWidget(new QLabel("Original fused CCD input (1..16)", controls_));
+    layoutCcds_ = new QLineEdit(controls_); layoutCcds_->setObjectName("pmLayoutCcds"); layoutCcds_->setMaximumWidth(60); audit->addWidget(layoutCcds_);
+    auto *auditButton = new QPushButton("Audit core/CCD layout", controls_); auditButton->setObjectName("pmLayoutAudit"); audit->addWidget(auditButton);
+    copyAudit_ = new QPushButton("Copy layout diagnostic", controls_); copyAudit_->setObjectName("pmLayoutCopy"); audit->addWidget(copyAudit_);
+    controls->addLayout(audit);
+    connect(auditButton, &QPushButton::clicked, this, [this] { auditLayout(); });
+    connect(copyAudit_, &QPushButton::clicked, this, [this] { QApplication::clipboard()->setText(QString::fromStdString(layoutAuditJson_)); });
+    connect(layoutCcds_, &QLineEdit::textChanged, this, [this] { layoutAuditJson_.clear(); copyAudit_->setEnabled(false); showFields(); });
     auto *viewRow = new QHBoxLayout;
     viewRow->addWidget(new QLabel("Display", this));
     view_ = new QComboBox(this); view_->setObjectName("pmView");
@@ -86,8 +95,32 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader) : QWidget(parent), r
 }
 void AmdPmPanel::clear() {
     snapshot_ = AmdPmSnapshot(); table_->setRowCount(0); metadata_->clear(); copy_->setEnabled(false);
+    layoutAuditJson_.clear(); copyAudit_->setEnabled(false);
     table_->resizeColumnsToContents();
     status_->setText("Ready. No PM data has been read.");
+}
+void AmdPmPanel::auditLayout() {
+    layoutAuditJson_.clear(); copyAudit_->setEnabled(false);
+    bool ok = false; const auto text = layoutCcds_->text(); const auto ccds = text.toUInt(&ok, 10);
+    if (!ok || text.isEmpty() || text.trimmed() != text || ccds < 1 || ccds > 16 || text.startsWith('+')) {
+        status_->setText("Enter explicit original fused CCD input 1..16. It is not inferred from the table version or Linux CPU count."); return;
+    }
+    if (!snapshot_.version) { status_->setText("Read or open a PM table before auditing its layout."); return; }
+    const auto r = auditLegacyAmdPmLayout(snapshot_.version, snapshot_.capturedBytes, ccds);
+    table_->setRowCount(0);
+    table_->setHorizontalHeaderLabels({"Original row", "First byte", "End byte (exclusive)", "Storage slots", "Outside table (words)", "Core/CCD aliases", "Public-field aliases"});
+    for (const auto &range : r.ranges) {
+        const int row = table_->rowCount(); table_->insertRow(row);
+        const QStringList cells{QString::fromStdString(range.group + " / " + range.label), hex(range.first), hex(range.end),
+            QString::number(range.slots), QString::number(range.outsideWords), QString::number(range.overlapWords), QString::number(range.publicFieldConflicts)};
+        for (int col = 0; col < cells.size(); ++col) table_->setItem(row, col, new QTableWidgetItem(cells[col]));
+    }
+    table_->resizeColumnsToContents(); layoutAuditJson_ = amdPmLayoutAuditJson(r); copyAudit_->setEnabled(true);
+    status_->setText(QString("Layout diagnostic: %1 core slots / %2 CCD slots; %3 words outside capture, %4 core/CCD aliases, %5 public-field aliases. %6%7"
+        "No core/CCD values decoded. In-bounds ranges do not prove a valid firmware layout or physical mapping.")
+        .arg(r.coreSlots).arg(r.ccdSlots).arg(r.outsideWords).arg(r.overlappingWords).arg(r.publicFieldConflicts)
+        .arg(r.constructorFallback ? "Original constructor fell back to 16/2. " : "")
+        .arg(r.error ? QString("Metadata error %1. ").arg(r.error) : ""));
 }
 bool AmdPmPanel::options(AmdPmOptions &out) {
     out.hasBclk = scale_->isChecked();
@@ -146,6 +179,8 @@ void AmdPmPanel::present(const AmdPmSnapshot &s, const QString &source) {
     status_->setText(status);
 }
 void AmdPmPanel::showFields() {
+    layoutAuditJson_.clear(); copyAudit_->setEnabled(false);
+    table_->setHorizontalHeaderLabels({"Field", "Stored value", "Unit", "Scaled clock (MHz)", "Raw word", "Offset", "Status"});
     const auto &s = snapshot_;
     const int index = view_->currentIndex();
     const bool original = index != 0;

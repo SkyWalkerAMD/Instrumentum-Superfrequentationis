@@ -3471,6 +3471,76 @@ private slots:
         panel.findChild<QLineEdit *>("pboScalar")->setText("5"); panel.findChild<QPushButton *>("pboScalarApply")->click();
         QCOMPARE(device->calls,calls); QCOMPARE(device->settings,0u);
     }
+    void pboFmaxAcknowledgementOnly() {
+        auto *device = new AmdPboFixture; device->discardChange = true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
+        panel.resize(1150,1000); panel.show();
+        auto *apply = panel.findChild<QPushButton *>("pboFmaxApply");
+        auto *input = panel.findChild<QLineEdit *>("pboFmax"); input->setText("5000");
+        apply->click(); QCOMPARE(device->calls,0u);
+        panel.findChild<QPushButton *>("pboCapsRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->item(3,1)->text(),QString("Unavailable: no verified readback"));
+        QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(device->settings,1u); QCOMPARE(device->fmaxMHz,0u);
+        auto *table = panel.findChild<QTableWidget *>("smuTable");
+        QCOMPARE(table->item(1,1)->text(),QString("Firmware accepted"));
+        QCOMPARE(table->item(3,1)->text(),QString("Unavailable / not verified"));
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("remain unverified"));
+        const auto calls = device->calls; apply->click(); QCOMPARE(device->calls,calls);
+        const auto shot=qEnvironmentVariable("OCTOOL_PBO_FMAX_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+    }
+    void pboFmaxRejectsChangedAndInvalidInputs() {
+        auto *device = new AmdPboFixture;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
+        auto *read=panel.findChild<QPushButton *>("pboCapsRead"), *apply=panel.findChild<QPushButton *>("pboFmaxApply");
+        auto *input=panel.findChild<QLineEdit *>("pboFmax");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); const auto calls=device->calls;
+        for (const QString text : {QString(""),QString("0"),QString("1048576"),QString("-1"),QString("5000.5")}) {
+            input->setText(text); apply->click(); QCOMPARE(device->calls,calls);
+        }
+        input->setText("5000");
+        QTimer::singleShot(0, [&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) { input->setText("5100"); box->button(QMessageBox::Yes)->click(); }});
+        apply->click(); QCOMPARE(device->calls,calls); QCOMPARE(device->settings,0u);
+        read->click(); QTRY_VERIFY(panel.isEnabled()); device->capsRaw=5;
+        QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settings,0u);
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("No setting sent"));
+        read->click(); panel.findChild<QLineEdit *>("smuCpu")->setText("131"); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0);
+    }
+    void pboRailsEncodingIsOffline() {
+        auto *device = new AmdPboFixture;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
+        panel.resize(1150,1000); panel.show();
+        auto *a=panel.findChild<QLineEdit *>("pboRail0"), *b=panel.findChild<QLineEdit *>("pboRail1");
+        a->setText("700"); b->setText("1250"); panel.findChild<QPushButton *>("pboRailsEncode")->click();
+        QCOMPARE(device->calls,0u);
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->item(0,1)->text(),hexValue(91u | (201u << 17),4));
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("sending is unavailable"));
+        const auto shot=qEnvironmentVariable("OCTOOL_PBO_RAILS_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        a->setText("701"); panel.findChild<QPushButton *>("pboRailsEncode")->click();
+        QCOMPARE(device->calls,0u); QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("Invalid rail encoding"));
+    }
+    void pmCoreCcdLayoutAudit() {
+        QTemporaryDir directory; QVERIFY(directory.isValid()); const auto raw=directory.filePath("pm.bin");
+        AmdPmPanel panel; panel.resize(1400,1000); panel.show();
+        auto *input=panel.findChild<QLineEdit *>("pmLayoutCcds");
+        auto *audit=panel.findChild<QPushButton *>("pmLayoutAudit"), *copy=panel.findChild<QPushButton *>("pmLayoutCopy");
+        auto *table=panel.findChild<QTableWidget *>("pmTable");
+        QVERIFY(savePmFile(raw,pm_fixture::bytes(11636))); QVERIFY(panel.loadRawFile(raw,0x731004));
+        audit->click(); QVERIFY(!copy->isEnabled());
+        input->setText("16"); audit->click(); QCOMPARE(table->rowCount(),26); QVERIFY(copy->isEnabled());
+        copy->click(); const auto json=QJsonDocument::fromJson(QApplication::clipboard()->text().toUtf8()).object();
+        QCOMPARE(json.value("overlapping_words").toInt(),176); QVERIFY(!json.value("decoder_enabled").toBool());
+        QCOMPARE(json.value("outside_words").toInt(),0);
+        const auto shot=qEnvironmentVariable("OCTOOL_PM_LAYOUT_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        input->setText("6"); QVERIFY(!copy->isEnabled()); audit->click(); copy->click();
+        QVERIFY(QJsonDocument::fromJson(QApplication::clipboard()->text().toUtf8()).object().value("constructor_fallback").toBool());
+        panel.findChild<QComboBox *>("pmView")->setCurrentIndex(1); QVERIFY(!copy->isEnabled());
+        QCOMPARE(table->horizontalHeaderItem(0)->text(),QString("Field"));
+        QVERIFY(!panel.loadSnapshotFile(directory.filePath("missing"))); QVERIFY(!copy->isEnabled());
+    }
     void pboScalarRejectsInvalidFirmwareValue() {
         auto *device = new AmdPboFixture; device->scalarRaw=0x7fc00000;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);

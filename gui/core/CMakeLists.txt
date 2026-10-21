@@ -18,7 +18,7 @@ endif()
 
 include(CTest)
 if(BUILD_TESTING)
-    foreach(component pstates hardware helper_protocol platform memory intel_oc intel_turbo intel_uncore intel_energy intel_thermal intel_limits intel_avx intel_bclk_voltage intel_iccmax intel_pl4 intel_vf intel_tvb intel_tvb_table intel_tvb_table_edit amd_curve amd_pbo amd_pm umc_capture spd intel_memory intel_clock)
+    foreach(component pstates hardware helper_protocol platform memory intel_oc intel_turbo intel_uncore intel_energy intel_thermal intel_limits intel_avx intel_bclk_voltage intel_iccmax intel_pl4 intel_vf intel_tvb intel_tvb_table intel_tvb_table_edit amd_curve amd_pbo amd_pbo_fmax amd_pm umc_capture spd intel_memory intel_clock)
         add_executable(${component}_core_test ../tests/${component}_core_test.cpp)
         target_link_libraries(${component}_core_test PRIVATE octool_core)
         # These regressions use assertions. Release builds must test too.
@@ -38,6 +38,7 @@ if(BUILD_TESTING)
     # real transport delays; Windows/macOS timer granularity makes this much
     # slower than Linux. This changes only the whole test executable deadline.
     set_tests_properties(amd_pbo_core PROPERTIES TIMEOUT 240)
+    set_tests_properties(amd_pbo_fmax_core PROPERTIES TIMEOUT 240)
     # Keep every-byte JSON truncation coverage as the monitor fields grow.
     # Address/undefined-behavior sanitizers make this parser exercise slower.
     set_tests_properties(amd_pm_core PROPERTIES TIMEOUT 240)

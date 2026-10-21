@@ -80,4 +80,44 @@ AmdPboScalarUpdate setShimadaPboScalar(HardwareSession &s, const SmuTarget &targ
     if ((out.error = s.checkpoint())) return out;
     out.verified = true; out.phase = AmdPboPhase::Complete; return out;
 }
+AmdPboCapabilities readShimadaPboCapabilities(HardwareSession &s, const SmuTarget &target) {
+    AmdPboCapabilities out;
+    if ((out.error = checkTarget(s, target))) return out;
+    const auto reply = detail::exchangeShimadaRsmu(s, 0x6f, 0, true, true);
+    out.error = reply.error; out.response = reply.response; out.messageAttempted = reply.messageAttempted;
+    if (out.error) return out;
+    out.raw = reply.raw; out.valid = true; return out;
+}
+bool amdPboFmaxAvailable(std::uint32_t caps) { return (caps & 4u) && !(caps & 1u); }
+AmdPboFmaxUpdate setShimadaPboFmax(HardwareSession &s, const SmuTarget &target,
+                                 std::uint32_t expectedCapabilities, unsigned mhz) {
+    AmdPboFmaxUpdate out; out.requestedMHz = mhz;
+    if (!mhz || mhz > 0xfffffu) { out.error = -ERANGE; return out; }
+    if (!amdPboFmaxAvailable(expectedCapabilities)) { out.error = -ENOTSUP; return out; }
+    out.phase = AmdPboPhase::Compare;
+    out.before = readShimadaPboCapabilities(s, target);
+    if ((out.error = out.before.error)) return out;
+    if (out.before.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
+    if ((out.error = checkTarget(s, target))) return out;
+    out.phase = AmdPboPhase::Write;
+    const auto reply = detail::exchangeShimadaRsmu(s, 0x70, mhz, false, true);
+    out.writeAttempted = reply.messageAttempted; out.response = reply.response;
+    out.accepted = reply.response == 1;
+    if ((out.error = reply.error)) return out;
+    // Complete refers only to the acknowledged command. No current Fmax
+    // readback, fused-limit substitute, guessed PM offset or rollback.
+    out.phase = AmdPboPhase::Complete; return out;
+}
+AmdPboRailsEncoding encodeLegacyAmdPboRails(unsigned a, unsigned b) {
+    AmdPboRailsEncoding out;
+    const auto valid = [](unsigned v) { return !v || (v >= 250 && v <= 2800 && v % 5 == 0); };
+    if (!valid(a) || !valid(b)) { out.error = -ERANGE; return out; }
+    if (!a && !b) { out.empty = true; return out; }
+    out.mirrored = !a || !b;
+    if (!a) a = b;
+    if (!b) b = a;
+    out.rail0Millivolts = a; out.rail1Millivolts = b;
+    out.argument = ((a - 245) / 5) | (((b - 245) / 5) << 17);
+    return out;
+}
 } }

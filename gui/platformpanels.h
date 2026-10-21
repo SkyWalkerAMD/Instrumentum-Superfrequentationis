@@ -40,12 +40,15 @@ private:
     void invalidateCurve();
     void readPboScalar();
     void applyPboScalar();
+    void readPboCapabilities();
+    void applyPboFmax();
     std::shared_ptr<HardwareAccess> access_;
     std::shared_ptr<std::atomic<bool>> cancelled_;
     QLineEdit *cpu_, *bus_, *device_, *function_, *args_[6];
     QLineEdit *curveCcd_, *curveCore_, *curveMargin_;
-    QLineEdit *pboScalar_;
+    QLineEdit *pboScalar_, *pboFmax_;
     octool::core::AmdPboScalar pboSnapshot_;
+    octool::core::AmdPboCapabilities pboCaps_;
     octool::core::SmuTarget pboTarget_;
     octool::core::AmdCurveSnapshot curveSnapshot_;
     octool::core::SmuTarget curveTarget_;

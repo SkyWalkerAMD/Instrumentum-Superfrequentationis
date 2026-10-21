@@ -13,6 +13,24 @@ constexpr std::size_t amdPmCaptureMaximumBytes = 131072;
 struct AmdPmLayout { std::uint32_t version; std::size_t bytes; };
 const std::vector<AmdPmLayout> &amdPmLayouts();
 std::size_t amdPmTableSize(std::uint32_t version);
+struct AmdPmLayoutRange {
+    std::string group, label;
+    unsigned first = 0, end = 0, slots = 0, outsideWords = 0, overlapWords = 0, publicFieldConflicts = 0;
+};
+struct AmdPmLayoutAudit {
+    int error = 0;
+    std::uint32_t version = 0;
+    std::size_t capturedBytes = 0, expectedBytes = 0;
+    unsigned fusedCcdInput = 0, coreSlots = 0, ccdSlots = 0;
+    unsigned outsideWords = 0, overlappingWords = 0, publicFieldConflicts = 0;
+    bool constructorFallback = false;
+    std::vector<AmdPmLayoutRange> ranges;
+};
+// Offline replay of the original DEFAULT constructor's range decisions.
+// Input is explicit: never infer physical topology from table version/length.
+// No bytes are read and no telemetry decoder is enabled, even if ranges fit.
+AmdPmLayoutAudit auditLegacyAmdPmLayout(std::uint32_t version, std::size_t capturedBytes, unsigned fusedCcdInput);
+std::string amdPmLayoutAuditJson(const AmdPmLayoutAudit &audit);
 struct AmdPmOptions { bool hasBclk = false; double bclkMHz = 0; };
 struct AmdPmField {
     std::string name, unit, group;

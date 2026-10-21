@@ -104,9 +104,10 @@ struct Command {
     double value = 0;
     bool forEdit = false;
     std::uint32_t pmVersion = 0;
+    unsigned pmCaptured = 0, pmFusedCcds = 0;
     AmdPmOptions pmOptions;
     AmdCurveSnapshot curve;
-    unsigned pboScalar = 0;
+    unsigned pboScalar = 0, pboFmax = 0, rail0 = 0, rail1 = 0;
     std::uint32_t pboExpected = 0;
     int margin = 0;
     bool multipleCores = false;
@@ -125,9 +126,12 @@ Command parse(const std::vector<std::string> &args) {
     const bool clockOffline = c.name == "intel-clock-decode";
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
     const bool pm = c.name == "amd-pm-read" || c.name == "amd-pm-decode";
-    require(hardware.count(c.name) || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || memoryOffline || clockOffline || pm, "Unknown command: " + c.name);
+    const bool pboFmax = c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-fmax-set";
+    const bool rails = c.name == "amd-pbo-rails-encode";
+    const bool layoutAudit = c.name == "amd-pm-layout-audit";
+    require(hardware.count(c.name) || pboFmax || rails || layoutAudit || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || memoryOffline || clockOffline || pm, "Unknown command: " + c.name);
     std::set<std::string> keys = {"--json"};
-    if (hardware.count(c.name)) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
+    if (hardware.count(c.name) || pboFmax) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
     const bool writing = c.name == "amd-pbo-scalar-set" || c.name == "amd-curve-set" || c.name == "intel-iccmax-set" || c.name == "intel-bclk-voltage-set" || c.name == "intel-limits-clear" || c.name == "intel-thermal-set" || c.name == "intel-avx-set" || c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set" || c.name == "intel-energy-set" || c.name == "intel-uncore-set" || c.name == "amd-smu-send" || c.name == "register-write";
     if (c.name == "intel-iccmax-set") keys.insert("--amps");
@@ -148,6 +152,9 @@ Command parse(const std::vector<std::string> &args) {
         if (writing) keys.insert("--value");
     }
     if (writing) keys.insert("--apply");
+    if (c.name == "amd-pbo-fmax-set") { keys.insert("--mhz"); keys.insert("--expect-caps"); keys.insert("--apply"); }
+    if (rails) { keys.insert("--rail0-mv"); keys.insert("--rail1-mv"); }
+    if (layoutAudit) { keys.insert("--version"); keys.insert("--bytes"); keys.insert("--fused-ccds"); }
     if (c.name == "intel-set" || c.name == "intel-oc-set") { keys.insert("--field"); keys.insert("--value"); }
     if (c.name == "intel-oc-read" || c.name == "intel-oc-set" || vf) keys.insert("--domain");
     if (c.name == "intel-oc-set") keys.insert("--mode");
@@ -196,7 +203,7 @@ Command parse(const std::vector<std::string> &args) {
         }
         require(validateRequest(c.reg) == ValidationError::None, "Invalid register width, alignment, address range or value width");
     }
-    if (hardware.count(c.name)) {
+    if (hardware.count(c.name) || pboFmax) {
         if (!rawRegister || c.reg.space == Space::Msr) c.cpu = uintOption(options, "--cpu", 1048575);
         else require(!options.count("--cpu"), "--cpu is only used with MSR registers; select an address or PCI target instead");
         c.reg.cpu = c.cpu;
@@ -356,6 +363,26 @@ Command parse(const std::vector<std::string> &args) {
             double decoded = 0;
             require(decodeAmdPboScalar(c.pboExpected, decoded), "--expect-raw must be the exact nonnegative finite binary32 query word in 0..10");
         }
+    }
+    if (pboFmax) {
+        c.smu.profile = SmuProfile::Shimada;
+        if (c.name == "amd-pbo-fmax-set") {
+            require(options.count("--apply"), "Setting Fmax requires --apply; acknowledgement does not verify the actual limit");
+            c.pboFmax = uintOption(options, "--mhz", 0xfffff);
+            require(c.pboFmax != 0, "--mhz must be 1..1048575 (encoding range, not an operating recommendation)");
+            c.pboExpected = uintOption(options, "--expect-caps", UINT32_MAX);
+            require(amdPboFmaxAvailable(c.pboExpected), "Expected capabilities must report PBO available and manual OC disabled");
+        }
+    }
+    if (rails) {
+        c.rail0 = uintOption(options, "--rail0-mv", 2800); c.rail1 = uintOption(options, "--rail1-mv", 2800);
+        require(!encodeLegacyAmdPboRails(c.rail0, c.rail1).error, "Nonzero rails must be 250..2800 mV in exact 5 mV steps (encoding only)");
+    }
+    if (layoutAudit) {
+        c.pmVersion = uintOption(options, "--version", UINT32_MAX);
+        c.pmCaptured = uintOption(options, "--bytes", UINT32_MAX);
+        c.pmFusedCcds = uintOption(options, "--fused-ccds", 16);
+        require(c.pmFusedCcds > 0, "--fused-ccds requires explicit original-constructor input 1..16; physical topology is not inferred");
     }
     if (c.name == "amd-umc-read") { c.umc.bank = uintOption(options, "--bank", 22); c.umc.refreshSlot = uintOption(options, "--refresh-slot", 15); }
     if (c.name == "spd-decode") { c.path = get(options, "--file"); require(!c.path.empty(), "Empty SPD path"); }
@@ -907,6 +934,20 @@ Result hardware(const Command &c, HardwareSession &s) {
             if (!r.error) for (auto v : r.args) values.push_back(hex(v));
             out.data.push_back({"args", r.error ? "null" : array(values)});
         }
+    } else if (c.name == "amd-pbo-capabilities") {
+        const auto r = readShimadaPboCapabilities(s, c.smu); out.error = r.error;
+        out.data = {{"capabilities_raw", r.valid ? hex(r.raw) : "null"}, {"valid", boolean(r.valid)},
+            {"pbo_available", r.valid ? boolean(r.raw & 4u) : "null"},
+            {"manual_oc_enabled", r.valid ? boolean(r.raw & 1u) : "null"},
+            {"fmax_command_available", boolean(r.valid && amdPboFmaxAvailable(r.raw))},
+            {"current_fmax_mhz", "null"}, {"readback_supported", "false"}, {"response", hex(r.response)}};
+    } else if (c.name == "amd-pbo-fmax-set") {
+        const auto r = setShimadaPboFmax(s, c.smu, c.pboExpected, c.pboFmax); out.error = r.error;
+        out.data = {{"expected_capabilities", hex(c.pboExpected)}, {"capabilities_raw", r.before.valid ? hex(r.before.raw) : "null"},
+            {"requested_mhz", number(c.pboFmax)}, {"phase", quote(amdPboPhaseName(r.phase))},
+            {"write_attempted", boolean(r.writeAttempted)}, {"accepted", boolean(r.accepted)},
+            {"verified", "false"}, {"current_fmax_mhz", "null"}, {"readback_supported", "false"},
+            {"response", hex(r.response)}, {"detail", quote("Firmware acknowledgement only; actual Fmax and resulting clocks are unverified. No automatic retry or rollback.")}};
     } else if (c.name == "amd-pbo-scalar-read" || c.name == "amd-pbo-scalar-set") {
         const auto scalar = [](const AmdPboScalar &r) {
             return object({{"valid", boolean(r.valid && !r.error)}, {"error", number(r.error)},
@@ -1180,6 +1221,17 @@ Result execute(const Command &c, const BackendFactory &factory) {
         }
         for (const auto &r : native.spd) { int error = r.error; devices.push_back(spd(r.path, r.bytes, error)); if (error && !out.error) out.error = error; }
         out.data = {{"rows", array(rows)}, {"spd", array(devices)}, {"partial", boolean(out.error != 0)}};
+    } else if (c.name == "amd-pm-layout-audit") {
+        const auto r = auditLegacyAmdPmLayout(c.pmVersion, c.pmCaptured, c.pmFusedCcds); out.error = r.error;
+        out.data = {{"offline", "true"}, {"hardware_accessed", "false"}, {"layout_audit", amdPmLayoutAuditJson(r)},
+            {"detail", quote("Original default-constructor range diagnostic only. Matching lengths or non-overlapping ranges do not establish firmware layout or enable telemetry decoding.")}};
+    } else if (c.name == "amd-pbo-rails-encode") {
+        const auto r = encodeLegacyAmdPboRails(c.rail0, c.rail1); out.error = r.error;
+        out.data = {{"offline", "true"}, {"hardware_accessed", "false"}, {"write_supported", "false"},
+            {"physical_rail_mapping_verified", "false"}, {"rail0_mv", number(r.rail0Millivolts)},
+            {"rail1_mv", number(r.rail1Millivolts)}, {"argument", r.empty ? "null" : hex(r.argument)},
+            {"mirrored", boolean(r.mirrored)}, {"empty", boolean(r.empty)},
+            {"detail", quote("Original SVI3 encoding preview only. Dual-rail firmware semantics and operating limits are unverified.")}};
     } else if (c.name == "spd-decode") {
         std::vector<std::uint8_t> bytes; out.error = platform::readBoundedFile(c.path, bytes);
         out.data.push_back({"spd", spd(c.path, bytes, out.error)});
@@ -1259,6 +1311,11 @@ Usage: octool-cli COMMAND [OPTIONS]
   amd-smu-send --cpu N --profile P --message M --arg0 A [--arg1 A ... --arg5 A] [PCI] --apply
   amd-pbo-scalar-read --cpu N
   amd-pbo-scalar-set --cpu N --scalar 1..10 --expect-raw RAW --apply
+  amd-pbo-capabilities --cpu N      Read Shimada PBO/manual OC capability flags
+  amd-pbo-fmax-set --cpu N --mhz N --expect-caps RAW --apply
+                                   Firmware acknowledgement only; no Fmax readback
+  amd-pbo-rails-encode --rail0-mv N --rail1-mv N
+                                   Offline encoding preview; no hardware access
   amd-curve-read --cpu N --ccd N --core N
   amd-curve-read --cpu N --ccd N --cores 0,2,7
   amd-curve-set --cpu N --ccd N (--core N | --cores 0,2,7)
@@ -1268,6 +1325,8 @@ Usage: octool-cli COMMAND [OPTIONS]
     stop on first failure, report partial completion, no retry or rollback.
   amd-topology --cpu N
   amd-pm-read [--bclk-mhz N]        Read an already installed ryzen_smu driver
+  amd-pm-layout-audit --version V --bytes N --fused-ccds N
+                                   Offline core/CCD range and conflict diagnostic
   amd-pm-decode --file SNAPSHOT     Decode GUI/CLI PM JSON offline
   amd-pm-decode --file RAW --version V [--bclk-mhz N]  Decode a raw PM table
   amd-umc-read --cpu N --bank N --refresh-slot N [PCI]

@@ -1969,6 +1969,54 @@ void tvbTableEditingCommands() {
         assert(d.tableSettingsAttempts() == (mode == 4 || mode == 7 ? 1u : 0u));
     }
 }
+void pboFmaxCommands() {
+    AmdPboFixture d;
+    auto result = command(d,{"amd-pbo-capabilities","--cpu","130"},0);
+    assert(result.find("\"fmax_command_available\":true") != std::string::npos && !d.settings && !d.wrongCpu);
+    result = command(d,{"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-caps","4","--apply"},0);
+    assert(result.find("\"accepted\":true") != std::string::npos && result.find("\"verified\":false") != std::string::npos);
+    assert(d.fmaxMHz == 5000 && d.settings == 1 && !d.wrongCpu);
+    for (unsigned mode = 0; mode < 4; ++mode) {
+        AmdPboFixture failed;
+        if (mode == 0) failed.capsRaw = 5;
+        if (mode == 1) failed.model = 0x18;
+        if (mode == 2) failed.writeCompletion = 0xfe;
+        if (mode == 3) failed.failAt = 0;
+        result = command(failed,{"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-caps","4","--apply"},3);
+        assert(result.find("\"verified\":false") != std::string::npos && failed.settings == (mode == 2 ? 1u : 0u));
+    }
+    for (const std::vector<std::string> &args : {
+        std::vector<std::string>{"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-caps","4"},
+        {"amd-pbo-fmax-set","--cpu","130","--mhz","0","--expect-caps","4","--apply"},
+        {"amd-pbo-fmax-set","--cpu","130","--mhz","1048576","--expect-caps","4","--apply"},
+        {"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-caps","5","--apply"},
+        {"amd-pbo-fmax-set","--mhz","5000","--expect-caps","4","--apply"},
+        {"amd-pbo-rails-encode","--rail0-mv","1001","--rail1-mv","0"},
+        {"amd-pbo-rails-encode","--rail0-mv","1000","--rail1-mv","0","--apply"},
+        {"amd-pm-layout-audit","--version","0x731004","--bytes","11636","--fused-ccds","0"}}) {
+        unsigned opened = 0; std::ostringstream output;
+        assert(run(args,output,[&] { ++opened; return std::unique_ptr<HardwareBackend>(new AmdPboFixture); }) == 2);
+        assert(!opened); if (emit) std::cout << output.str();
+    }
+}
+void pboOfflineCommands() {
+    unsigned opened = 0;
+    const auto factory = [&] { ++opened; return std::unique_ptr<HardwareBackend>(new AmdPboFixture); };
+    for (const std::vector<std::string> &args : {
+        std::vector<std::string>{"amd-pbo-rails-encode","--rail0-mv","700","--rail1-mv","1250"},
+        {"amd-pbo-rails-encode","--rail0-mv","0","--rail1-mv","1000"},
+        {"amd-pbo-rails-encode","--rail0-mv","0","--rail1-mv","0"},
+        {"amd-pm-layout-audit","--version","0x731004","--bytes","11636","--fused-ccds","16"},
+        {"amd-pm-layout-audit","--version","0x730204","--bytes","2844","--fused-ccds","2"}}) {
+        std::ostringstream output; assert(run(args,output,factory) == 0 && !opened);
+        assert(output.str().find("\"hardware_accessed\":false") != std::string::npos);
+        if (emit) std::cout << output.str();
+    }
+    AmdPboFixture d;
+    command(d,{"amd-pm-layout-audit","--version","0x730205","--bytes","2844","--fused-ccds","2"},3);
+    command(d,{"amd-pm-layout-audit","--version","0x730204","--bytes","2843","--fused-ccds","2"},3);
+    assert(!d.calls);
+}
 void pmFilesystem(const std::string &root) {
     const auto reader = octool::platform::linuxAmdPmReader(root);
     const auto good = readAmdPmDriver(reader); assert(!good.snapshot.error && good.snapshot.fields[0].value == 2000);
@@ -2002,7 +2050,7 @@ int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--inventory-fixture") { inventory(argv[2]); return 0; }
     if (argc == 3 && std::string(argv[1]) == "--pm-fixture") { pmFilesystem(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
-    curveSettingCommands(); pboScalarCommands();
+    curveSettingCommands(); pboScalarCommands(); pboFmaxCommands(); pboOfflineCommands();
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); intelMemoryOdtCaptures(); intelMemoryOdtLive(); intelMemoryTemperatureCaptures(); intelMemoryTemperatureLive(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
@@ -2011,5 +2059,5 @@ int main(int argc, char **argv) {
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "53 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "55 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

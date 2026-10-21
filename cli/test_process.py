@@ -35,7 +35,18 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 1200, len(reports)
+assert len(reports) == 1221, len(reports)
+fmax = [r for r in reports if r['command'] == 'amd-pbo-fmax-set' and 'requested_mhz' in r['data']]
+assert len(fmax) == 5 and [r['ok'] for r in fmax] == [True,False,False,False,False]
+assert all(not r['data']['verified'] and r['data']['current_fmax_mhz'] is None and not r['data']['readback_supported'] for r in fmax)
+assert fmax[0]['data']['accepted'] and fmax[0]['data']['requested_mhz'] == 5000
+for a,b,word in ((700,1250,91 | (201 << 17)),(0,1000,151 | (151 << 17))):
+    r = run('amd-pbo-rails-encode','--rail0-mv',str(a),'--rail1-mv',str(b))['data']
+    assert not r['hardware_accessed'] and not r['write_supported'] and int(r['argument'],16) == word
+small = run('amd-pm-layout-audit','--version','0x730204','--bytes','2844','--fused-ccds','2')['data']['layout_audit']
+large = run('amd-pm-layout-audit','--version','0x731004','--bytes','11636','--fused-ccds','16')['data']['layout_audit']
+assert small['outside_words'] == 22 and large['overlapping_words'] == 176
+assert not large['decoder_enabled'] and not large['physical_mapping_verified']
 pbo_settings = [r for r in reports if r['command'] == 'amd-pbo-scalar-set' and 'requested_multiplier' in r['data']]
 assert len(pbo_settings) == 8
 assert [r['ok'] for r in pbo_settings] == [True,True,False,False,False,False,False,False]

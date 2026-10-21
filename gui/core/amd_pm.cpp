@@ -64,6 +64,63 @@ std::size_t amdPmTableSize(std::uint32_t version) {
     for (const auto &layout : amdPmLayouts()) if (layout.version == version) return layout.bytes;
     return 0;
 }
+AmdPmLayoutAudit auditLegacyAmdPmLayout(std::uint32_t version, std::size_t captured, unsigned fused) {
+    AmdPmLayoutAudit out; out.version = version; out.capturedBytes = captured;
+    out.expectedBytes = amdPmTableSize(version); out.fusedCcdInput = fused;
+    if (!out.expectedBytes) { out.error = -ENOTSUP; return out; }
+    if (fused < 1 || fused > 16) { out.error = -EINVAL; return out; }
+    if (captured != out.expectedBytes) out.error = -EMSGSIZE;
+    switch (fused) {
+    case 1: case 2: case 4: case 8: case 10: case 12: case 14: case 16: out.ccdSlots = fused; break;
+    default: out.ccdSlots = 2; out.constructorFallback = true; break;
+    }
+    out.coreSlots = out.ccdSlots * 8;
+    const unsigned coreStart = (version < 0x730404 ? 0x5f4 : 0x634) + (fused <= 2 ? 0x40 : 0);
+    const unsigned ccdStart = (version < 0x730404 ? 0x1f74 : 0x2134) + (fused <= 2 ? 0x40 : 0);
+    const unsigned coreEnd = coreStart + 15 * out.coreSlots * 4, ccdEnd = ccdStart + 11 * out.ccdSlots * 4;
+    const char *cores[] = {"Power", "Voltage", "Temp", "Freq Ghz", "Eff Freq", "C0 Residency", "CC1 Residency", "CC6 Residency",
+        "OS PState", "CPPC Max Freq", "CPPC Min Freq", "EDC CAC", "UOPs", "Mem Band", "Core Bound"};
+    const char *ccds[] = {"Logic Power", "VDDM Power", "VDDM Voltage", "Temp", "Freq Ghz", "Eff Freq", "CCA Limit", "CCA CAC", "CCA Residency", "EDC CAC", "FLL BTC"};
+    for (unsigned group = 0; group < 2; ++group) {
+        const unsigned count = group ? 11 : 15, slots = group ? out.ccdSlots : out.coreSlots;
+        const unsigned start = group ? ccdStart : coreStart, otherFirst = group ? coreStart : ccdStart, otherEnd = group ? coreEnd : ccdEnd;
+        for (unsigned i = 0; i < count; ++i) {
+            AmdPmLayoutRange r; r.group = group ? "ccd" : "core"; r.label = group ? ccds[i] : cores[i];
+            r.first = start + i * slots * 4; r.end = r.first + slots * 4; r.slots = slots;
+            for (unsigned off = r.first; off < r.end; off += 4) {
+                if (std::size_t(off) + 4 > captured) ++r.outsideWords;
+                if (off >= otherFirst && off < otherEnd) ++r.overlapWords;
+                // All other public offsets precede the earliest original core
+                // start. These are the exact common-field collisions.
+                if (off == 0x714 || off == 0x71c) ++r.publicFieldConflicts;
+            }
+            out.outsideWords += r.outsideWords;
+            if (!group) out.overlappingWords += r.overlapWords;
+            out.publicFieldConflicts += r.publicFieldConflicts;
+            out.ranges.push_back(r);
+        }
+    }
+    return out;
+}
+std::string amdPmLayoutAuditJson(const AmdPmLayoutAudit &s) {
+    std::string out = "{\"format\":\"octool-amd-pm-layout-audit\",\"schema\":1,\"version\":" + word(s.version) +
+        ",\"captured_bytes\":" + std::to_string(s.capturedBytes) + ",\"expected_bytes\":" + std::to_string(s.expectedBytes) +
+        ",\"fused_ccd_input\":" + std::to_string(s.fusedCcdInput) + ",\"core_slots\":" + std::to_string(s.coreSlots) +
+        ",\"ccd_slots\":" + std::to_string(s.ccdSlots) + ",\"constructor_fallback\":" + (s.constructorFallback ? "true" : "false") +
+        ",\"outside_words\":" + std::to_string(s.outsideWords) + ",\"overlapping_words\":" + std::to_string(s.overlappingWords) +
+        ",\"public_field_conflicts\":" + std::to_string(s.publicFieldConflicts) + ",\"error\":" + std::to_string(s.error) +
+        ",\"decoder_enabled\":false,\"physical_mapping_verified\":false,\"hardware_accessed\":false,\"ranges\":[";
+    bool first = true;
+    for (const auto &r : s.ranges) {
+        if (!first) out += ',';
+        first = false;
+        out += "{\"group\":" + quote(r.group) + ",\"label\":" + quote(r.label) + ",\"first_byte\":" + word(r.first) +
+            ",\"end_byte_exclusive\":" + word(r.end) + ",\"slots\":" + std::to_string(r.slots) +
+            ",\"outside_words\":" + std::to_string(r.outsideWords) + ",\"overlap_words\":" + std::to_string(r.overlapWords) +
+            ",\"public_field_conflicts\":" + std::to_string(r.publicFieldConflicts) + '}';
+    }
+    return out + "]}";
+}
 AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t version, const AmdPmOptions &options) {
     AmdPmSnapshot out; out.version = version; out.options = options;
     out.capturedBytes = bytes.size(); out.expectedBytes = amdPmTableSize(version);

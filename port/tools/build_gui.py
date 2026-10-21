@@ -138,6 +138,9 @@ def main():
                    OCTOOL_PBO_SCALAR_READ_TEST_SCREENSHOT=str((tests / "pbo-scalar-read-fixture.png").resolve()),
                    OCTOOL_PBO_SCALAR_WRITE_TEST_SCREENSHOT=str((tests / "pbo-scalar-write-fixture.png").resolve()),
                    OCTOOL_PBO_SCALAR_FAILURE_TEST_SCREENSHOT=str((tests / "pbo-scalar-failure-fixture.png").resolve()),
+                   OCTOOL_PBO_FMAX_TEST_SCREENSHOT=str((tests / "pbo-fmax-fixture.png").resolve()),
+                   OCTOOL_PBO_RAILS_TEST_SCREENSHOT=str((tests / "pbo-rails-fixture.png").resolve()),
+                   OCTOOL_PM_LAYOUT_TEST_SCREENSHOT=str((tests / "pm-layout-fixture.png").resolve()),
                    OCTOOL_PM_ERROR_TEST_SCREENSHOT=str((tests / "pm-error-fixture.png").resolve()))
         try:
             subprocess.run([str((tests / "gui-regression").resolve()), "-o", "gui-tests.txt,txt"],
