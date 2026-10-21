@@ -1,5 +1,11 @@
 # REA：逐核/CCD 功耗表与 PBO 事务
 
+后续进展：新的 [12 函数 REA 研究与 GUI/CLI 实现](amd-pbo-fmax-layout.md) 已增加
+Fmax 命令确认、rails 离线编码和逐核/CCD 布局诊断。三类构造入口跨八个版本的 128 个原指令实验
+确认其初始化方式不同；Windows 候选函数仍有相同固定起点。
+偏移与长度冲突已可直接在 GUI/CLI 列出，真实逐核/CCD 遥测映射仍未确定。
+以下保留前一批研究记录，其中“Fmax 未开放”描述的是当时状态。
+
 2026-10-21：实际运行 [REA 云端任务 39529351417](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/39529351417)，
 使用 REA 6.7.0、Ghidra 12.1.4 分析 11 个函数。
 原版 ELF SHA256 为 `44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10`。

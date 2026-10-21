@@ -75,3 +75,39 @@ octool-cli amd-pm-layout-audit --version 0x730204 --bytes 2844 --fused-ccds 2
 原 ELF SHA256 为 `44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10`。
 Windows `Tool.exe` 的静态候选函数也使用同样的固定起点，尚不能解决固件布局冲突。
 反编译、原指令合成回放、软件回归均不替代真机验收。
+
+### 原指令补查
+
+新增实验运行原版函数指令，外部 PCI、MMIO、C++ 容器和等待函数为合成边界：
+
+| 实验 | 覆盖与结果 | 对运行时的约束 |
+|---|---|---|
+| Fmax 熔丝 | 256 个字段值 × 两种无关位模式；F8/FC、SMN `5D584h`，bits 26:19 × 25 MHz | 熔丝上限不是当前设置 |
+| 熔丝访问失败 | 两个访问位置；原版把失败读取的 `FFFFFFFFh` 换算为 6375 MHz，未可靠处理索引写失败 | 不用该函数证明 Fmax 设置成功 |
+| Rails 输入 | 1025 组合：双零、511 种单零镜像各两个方向、两个不对称输入 | 只证明原编码，不能证明物理轨映射或 `61h → 5Dh` 设置协议 |
+| 三类 PM 构造 | 八个已知版本 × 16 个入口/参数/合成 CCD 组合，共 128 例；默认入口写版本字段 `+CF0h`，测试的三参数和单参数入口保留显式哨兵 | 构造路径不能互换；结果受调用者初始化和对象生命周期影响 |
+| 单参数构造读取 | 参数 0/2 分别立即执行 63/320 次合成 MMIO 读取；数量来自原循环 | 不是实际 core/CCD 数目，也不是新解码范围 |
+
+完整身份、工具结果、源文件哈希与实验摘要见
+[本轮 REA 研究记录](validation/amd-pbo-fmax-rea-research.json)。
+REA 报告的 procedure 长度可能不含冷分支；原指令实验按 ELF 符号完整长度取码。
+单参数与三参数实验只覆盖已记录的参数，不据此推断其它调用入口。
+上述初始化关系在八个已知版本中一致；仅切换版本输入没有消除构造路径差异。
+
+另核对 Windows `Tool.exe`（SHA256
+`04a6a6043b9b653737a3e7030ded0cd3f67289575f6959ef8096b0b1a2a1c609`）的
+`14020ADF0h` 静态候选函数：仍含 `5F4h/634h`、`1F74h/2134h` 和小 CCD 输入加 `40h` 的分支。
+它没有符号身份或真机布局证明。公开 Linux 项目
+[TuxZenTimings 的固定版本](https://github.com/Marc-Pierre-Barbier/TuxZenTimings/blob/fd70d608da87366802ecc4033d158642fcad033e/src/pm_table.py)
+明确由 ZenStates 表翻译而来，其八个 Shimada 表的逐核偏移也均为 `-1`；不将它算作第二份独立硬件证据。
+
+可重放的新实验：
+
+```sh
+python analysis/tools/legacy-amd-pbo-inputs.py --output build/legacy-amd-pbo-inputs.json
+python analysis/tools/legacy-amd-pm-constructors.py --binary /path/to/original/octool --output build/pm-alternative-constructors.json
+python -m unittest discover -s analysis/tests -p 'test_amd_pbo_inputs.py' -v
+```
+
+需要 Python、Unicorn、Capstone 和 pyelftools。构造实验要求原 ELF 的固定 SHA256；不会在宿主运行原程序。
+仍需带固件版本、实际返回长度及独立物理标签的只读样本，才能确定可用的逐核/CCD 布局。

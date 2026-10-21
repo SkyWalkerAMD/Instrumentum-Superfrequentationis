@@ -1,5 +1,19 @@
 # 安装包与源码归档
 
+<!-- amd-pbo-fmax-layout-0d360d7 -->
+2026-10-21：最新生产验证提交 `0d360d7`，GUI / CLI 同步新增
+**Shimada Fmax 能力读取与命令确认、rails 离线编码、逐核/CCD PM 布局诊断**。
+
+- [用法与 REA 研究](amd-pbo-fmax-layout.md)、[整批验证](amd-pbo-fmax-layout-validation.md)：43/43 主矩阵及 2/2 截图补充任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1221 JSON、GUI 各 199 项、核心 398 场景组；12 次内核 VM。
+- `dist/gui-cli-amd-pbo-fmax-layout-0d360d7/`：33 个包、精确云端源码、更新用户源码和校验表。
+- REA 分析 12 个函数；原指令覆盖 512 个熔丝输入、2 个访问故障、1025 个 rails 输入与 128 个跨版本构造组合。
+- Fmax 仅确认命令，未验证实际频率；rails 写入和逐核/CCD 遥测解码尚未完成，真机验收未执行。
+
+以下保留历史记录。
+<!-- /amd-pbo-fmax-layout-0d360d7 -->
+
+
 <!-- amd-pbo-scalar-7467c96 -->
 2026-10-21：最新验证提交 `7467c96`，GUI / CLI 同步新增
 **Shimada 1Ah/08h PBO Scalar 读取与设置**，包含旧值检查、六参数传输和精确回读。

@@ -1,5 +1,10 @@
 # REA 后续：Fmax 与 core01 rails 设置入口
 
+最新实现见 [Fmax、rails 与 PM 布局诊断](amd-pbo-fmax-layout.md)：GUI/CLI 已开放
+Shimada Fmax 能力读取与 `70h` 命令提交，明确报告 `accepted` 与 `verified=false`。
+未提供当前 Fmax 回读；rails 只开放编码预览。512 个熔丝输入、两个访问故障位置和
+1025 个 rails 输入的原指令实验已完成。下文未开放 Fmax 的表述是历史记录。
+
 2026-10-21 后续：新的 [11 函数 REA 分析与完整事务回放](amd-pm-percore-layout-research.md)
 确认 Shimada Fmax 走 `70h`，并揭示名为 `MP1_C2PMSG` 的函数在该分支实际访问 RSMU。
 本轮已独立完成 [PBO Scalar 读取与设置](amd-pbo-scalar.md)，以下 Fmax/rails 写入仍未开放。
