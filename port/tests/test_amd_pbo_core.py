@@ -24,6 +24,6 @@ class AmdPboCore(unittest.TestCase):
             command += [str(ROOT / 'gui/tests/amd_pbo_core_test.cpp'), '-o', str(binary)]
             result = subprocess.run(command, capture_output=True, text=True, timeout=90)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            result = subprocess.run([str(binary)], capture_output=True, text=True, timeout=90)
+            result = subprocess.run([str(binary)], capture_output=True, text=True, timeout=240)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertEqual(result.stdout.strip(), '10 AMD PBO scalar scenario groups passed')

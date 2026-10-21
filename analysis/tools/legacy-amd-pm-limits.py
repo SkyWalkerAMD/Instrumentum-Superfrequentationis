@@ -47,6 +47,7 @@ class Machine:
         self.uc = Uc(UC_ARCH_X86, UC_MODE_64)
         self.pages, self.instructions, self.calls = set(), {}, set()
         self.heap, self.steps, self.phase = HEAP, 0, 'constructor'
+        self.max_steps = 30000
         self.version, self.ccds, self.pattern = version, ccds, pattern
         self.reads, self.events = [], []
         for fn in fixture['functions']:
@@ -110,7 +111,7 @@ class Machine:
                 0xbf800000,1,0x7f7fffff)[(offset//4)%9]
 
     def hook(self,uc,address,size,context):
-        self.steps += 1; assert self.steps < 30000
+        self.steps += 1; assert self.steps < self.max_steps
         if address == STOP or self.phase == 'decode' and address == 0x2e7b8e:
             uc.emu_stop(); return
         if address in self.instructions:

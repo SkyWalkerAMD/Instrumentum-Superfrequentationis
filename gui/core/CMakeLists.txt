@@ -33,7 +33,11 @@ if(BUILD_TESTING)
     # Exhaustive fault positions preserve the original 4 ms UMC index delay.
     # Windows timer granularity can make this synthetic test take longer.
     set_tests_properties(memory_core PROPERTIES TIMEOUT 120)
-    set_tests_properties(amd_curve_core amd_pbo_core PROPERTIES TIMEOUT 90)
+    set_tests_properties(amd_curve_core PROPERTIES TIMEOUT 90)
+    # PBO faults/cancellations traverse all six mailbox arguments. Preserve the
+    # real transport delays; Windows/macOS timer granularity makes this much
+    # slower than Linux. This changes only the whole test executable deadline.
+    set_tests_properties(amd_pbo_core PROPERTIES TIMEOUT 240)
     # Keep every-byte JSON truncation coverage as the monitor fields grow.
     # Address/undefined-behavior sanitizers make this parser exercise slower.
     set_tests_properties(amd_pm_core PROPERTIES TIMEOUT 240)

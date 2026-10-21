@@ -123,9 +123,9 @@ void cancellation() {
 void deadlineAndLateRead() {
     Test t; t.fake->busyBefore = true; assert(t.read(1).error == -ETIMEDOUT && !t.fake->commands);
     Test late; late.fake->afterRequest = [&] {
-        if (late.fake->argumentReads == 2) std::this_thread::sleep_for(std::chrono::milliseconds(1100));
+        if (late.fake->argumentReads == 2) std::this_thread::sleep_for(std::chrono::milliseconds(5100));
     };
-    const auto r = late.set(5,0x3f800000,nullptr,1000);
+    const auto r = late.set(5,0x3f800000,nullptr,5000);
     assert(r.error == -ETIMEDOUT && r.accepted && !r.verified && !r.after.valid && !r.after.rawValid);
 }
 }
