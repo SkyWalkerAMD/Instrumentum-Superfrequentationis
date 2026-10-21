@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "date": "2026-10-21",
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "fixture_sha256": "90e9741891fa9c315bb14081758e1b1abf168d92365e76d17b9118a0dcc85d98",
+  "full_report_sha256": "97648a32911d99814b6bb8fc60de490cde231380f78c963ee5d88ecfe3d9d371",
+  "full_report_path": "build/legacy-amd-curve-set.json",
+  "hardware_execution": false,
+  "cases": {
+    "setter_cases": 80,
+    "fault_cases": 12,
+    "offset_query_cases": 9
+  },
+  "scope": "Original instruction execution with synthetic object, PCI, delay, mutex and MP1 boundaries; no constructor port scan or hardware run.",
+  "observations": [
+    "Original setter sends D5 then 06/07, writes the argument three times, and reads after unlocking.",
+    "Negative original per-core inputs retain reserved/CCX bits; new low-16-bit encoding follows the pinned public command contract.",
+    "Original calls ignore injected PCI write failures and do not wait for response completion.",
+    "The A8 offset wrapper returns the output word regardless of MP1 status; no runtime query is enabled from this finding."
+  ],
+  "sources": [
+    {
+      "repo": "irusanov/ZenStates-Core",
+      "commit": "869b7e82572337e5a673e92230edc92bddf0e44b",
+      "path": "Hardware/SMU.cs",
+      "local_file": "ZenStates-Core-Hardware_SMU.cs",
+      "git_blob_sha": "b4345a5a372bff69b490220f37c3e05519935b6b",
+      "sha256": "08f883b89f1185d553e4e218584743924edf75ccb274568716030cfd695eb1aa",
+      "url": "https://github.com/irusanov/ZenStates-Core/blob/869b7e82572337e5a673e92230edc92bddf0e44b/Hardware/SMU.cs"
+    },
+    {
+      "repo": "irusanov/ZenStates-Core",
+      "commit": "869b7e82572337e5a673e92230edc92bddf0e44b",
+      "path": "Hardware/Smu/Commands/GetPsmMarginSingleCore.cs",
+      "local_file": "ZenStates-Core-Hardware_Smu_Commands_GetPsmMarginSingleCore.cs",
+      "git_blob_sha": "ce2266962a4bb9f754bdd1383fc4ea2e8f7bb7c1",
+      "sha256": "ccfda2288bf65397e216f166db0e0f219cff5a1121d38fba4ca996cb9d7b6ad6",
+      "url": "https://github.com/irusanov/ZenStates-Core/blob/869b7e82572337e5a673e92230edc92bddf0e44b/Hardware/Smu/Commands/GetPsmMarginSingleCore.cs"
+    },
+    {
+      "repo": "irusanov/ZenStates-Core",
+      "commit": "869b7e82572337e5a673e92230edc92bddf0e44b",
+      "path": "Hardware/Smu/Commands/SetPsmMarginSingleCore.cs",
+      "local_file": "ZenStates-Core-Hardware_Smu_Commands_SetPsmMarginSingleCore.cs",
+      "git_blob_sha": "ad75db84c20b626d282430f3d2367be73dc86a5f",
+      "sha256": "831ba79b995daa4d75666b244bc774e0b1899ab5c1666b434164c76acd66fb04",
+      "url": "https://github.com/irusanov/ZenStates-Core/blob/869b7e82572337e5a673e92230edc92bddf0e44b/Hardware/Smu/Commands/SetPsmMarginSingleCore.cs"
+    },
+    {
+      "repo": "irusanov/ZenStates-Core",
+      "commit": "869b7e82572337e5a673e92230edc92bddf0e44b",
+      "path": "Hardware/Smu/Settings/Zen5Settings_ShimadaPeak.cs",
+      "git_blob_sha": "c9bca93059805ff7c49374458afb28201c1b4f81",
+      "sha256": "d88f8168175dea121d0561248cc61c71b56123eb98ff9ac47f9bdedf15c272f0",
+      "url": "https://github.com/irusanov/ZenStates-Core/blob/869b7e82572337e5a673e92230edc92bddf0e44b/Hardware/Smu/Settings/Zen5Settings_ShimadaPeak.cs"
+    }
+  ],
+  "local_tests": {
+    "count": 3,
+    "passed": 3,
+    "log_sha256": "727a7c64d951ca108cb7e7973ec47abb7b3661484f9bb23ea4f3fcfd444011b4",
+    "timing": "Added after runtime commit 8c5424b; these three evidence tests ran locally, not in its 108-test cloud analysis suite."
+  }
+}

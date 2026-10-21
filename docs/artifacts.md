@@ -1,5 +1,18 @@
 # 安装包与源码归档
 
+<!-- amd-curve-settings-8c5424b -->
+2026-10-21：最新验证提交 `8c5424b`，GUI / CLI 同步新增
+**Shimada 1Ah/08h 逐核及同 CCD 选核曲线设置**，包含旧值检查、逐核回读和部分完成报告。
+
+- [实现与用法](amd-curve-settings.md)、[整批验证](amd-curve-settings-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1177 JSON，GUI 各 190 项，核心 381 场景组，12 次内核 VM。
+- `dist/gui-cli-amd-curve-settings-8c5424b/`：33 个包、精确云端源码、更新用户源码及校验表。
+- REA 完成 12 个函数分析；逐核/CCD PM 布局、自动物理映射、其它调参及真机验收仍未全部完成。
+
+以下保留历史记录。
+<!-- /amd-curve-settings-8c5424b -->
+
+
 <!-- amd-pm-arrays-52f823d -->
 2026-10-20：最新验证提交 `52f823d`，GUI / CLI 同步增加 **92 个 AMD PM GMI/DIMM/PCIe 数组值**，
 PM 共 220 个显示字段、12 个视图。槽位表示原始存储顺序，物理目标、实际数量和单位未认证。

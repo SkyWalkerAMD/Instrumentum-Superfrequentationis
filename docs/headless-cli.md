@@ -1,5 +1,18 @@
 # 无桌面版 OCTool
 
+<!-- amd-curve-settings-8c5424b -->
+2026-10-21：最新验证提交 `8c5424b`，GUI / CLI 同步新增
+**Shimada 1Ah/08h 逐核及同 CCD 选核曲线设置**，包含旧值检查、逐核回读和部分完成报告。
+
+- [实现与用法](amd-curve-settings.md)、[整批验证](amd-curve-settings-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1177 JSON，GUI 各 190 项，核心 381 场景组，12 次内核 VM。
+- `dist/gui-cli-amd-curve-settings-8c5424b/`：33 个包、精确云端源码、更新用户源码及校验表。
+- REA 完成 12 个函数分析；逐核/CCD PM 布局、自动物理映射、其它调参及真机验收仍未全部完成。
+
+以下保留历史记录。
+<!-- /amd-curve-settings-8c5424b -->
+
+
 <!-- amd-pm-arrays-52f823d -->
 2026-10-20：最新验证提交 `52f823d`，GUI / CLI 同步增加 **92 个 AMD PM GMI/DIMM/PCIe 数组值**，
 PM 共 220 个显示字段、12 个视图。槽位表示原始存储顺序，物理目标、实际数量和单位未认证。
@@ -282,6 +295,9 @@ sudo octool-cli amd-umc-read --cpu 0 --bank 0 --refresh-slot 0 > umc.json
 曲线的 CCD/core 是手动确认的固件索引，不由 Linux CPU 号或 CPUID 拓扑推导。
 UMC bank 是地址索引，不能直接当作内存通道/DIMM 标签。输出原始编码，不假设物理单位。
 曲线及 UMC 查询会写入查询邮箱或地址索引，没有修改曲线或内存设置。
+曲线读取新增 `--cores 0,2,7`；Shimada `1Ah/08h` 的 `amd-curve-set` 支持
+单核或同一 CCD 内选核设置，使用 `--margin`、逐核 `--expect-raw` 与 `--apply`。
+先核对旧值，再逐核设置与回读，失败时报告部分完成情况；完整用法见[曲线设置](amd-curve-settings.md)。
 CLI 的 UMC JSON 使用下述统一命令格式。成功且完整的 `amd-umc-read` 报告可以直接在
 GUI 的 AMD UMC → Open snapshot 中打开；GUI 重新解码原始寄存器，忽略报告中的预解码数值。
 失败、不完整、重复寄存器、越界或未知格式会被拒绝，导入不访问硬件。
@@ -363,7 +379,7 @@ octool-cli amd-smu-send --cpu N --profile shimada|phoenix|gpt \
 Shimada 的已恢复调参消息在当前核心白名单内；Phoenix/GPT 仅开放查询。
 固件返回成功仅表示命令获接收，`hardware_effect_measured:false`。
 失败后不自动重试或回滚，结果中的 `write_attempted` / `message_attempted` 用于判断是否曾提交。
-尚不提供 PStates 设置、曲线设置、完整 PBO 高层参数、Intel server VF/fabric 或板级专用写入。
+尚不提供 PStates 设置、其它 AMD 平台的高层曲线设置、完整 PBO 高层参数、Intel server VF/fabric 或板级专用写入。
 
 PCI 目标选项 `--bus`/`--device`/`--function` 默认全为 0，域固定为 0；曲线查询固定 0000:00:00.0。
 目标索引等无符号整数使用十进制或 `0x` 前缀十六进制；设置的 `--value` 使用十进制，

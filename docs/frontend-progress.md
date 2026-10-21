@@ -1,5 +1,18 @@
 # GUI / CLI 同步进度
 
+<!-- amd-curve-settings-8c5424b -->
+2026-10-21：最新验证提交 `8c5424b`，GUI / CLI 同步新增
+**Shimada 1Ah/08h 逐核及同 CCD 选核曲线设置**，包含旧值检查、逐核回读和部分完成报告。
+
+- [实现与用法](amd-curve-settings.md)、[整批验证](amd-curve-settings-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；CLI 各 1177 JSON，GUI 各 190 项，核心 381 场景组，12 次内核 VM。
+- `dist/gui-cli-amd-curve-settings-8c5424b/`：33 个包、精确云端源码、更新用户源码及校验表。
+- REA 完成 12 个函数分析；逐核/CCD PM 布局、自动物理映射、其它调参及真机验收仍未全部完成。
+
+以下保留历史记录。
+<!-- /amd-curve-settings-8c5424b -->
+
+
 <!-- amd-pm-arrays-52f823d -->
 2026-10-20：最新验证提交 `52f823d`，GUI / CLI 同步增加 **92 个 AMD PM GMI/DIMM/PCIe 数组值**，
 PM 共 220 个显示字段、12 个视图。槽位表示原始存储顺序，物理目标、实际数量和单位未认证。
@@ -208,6 +221,7 @@ GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-
 | Intel TVB 分档 | TVB thresholds 查询 / 准备 / 编辑 | `intel-tvb-table` / `intel-tvb-table-set` | 06_B7 裸机；两组温度 / 降倍率查询与保守范围的单字段设置，旧值 / 锁核对及完整读回；逐物理核心表未恢复 |
 | AMD SMU | AMD tuning | `amd-smu-probe/read/send` | 现有身份/命令白名单与原始参数 |
 | AMD 曲线读取 | AMD tuning 曲线查询 | `amd-curve-read` | Shimada；显式固件 CCD/core；不推导 mV |
+| AMD 逐核 / CCD 选核曲线设置 | AMD tuning → Read curve / Apply curve to selected cores | `amd-curve-set --core/--cores --margin --expect-raw --apply` | 1Ah/08h；旧值检查、逐核回读、部分完成报告；CO count，不是 mV；真机及物理映射未验收 |
 | AMD 拓扑 | AMD tuning | `amd-topology` | CPUID 拓扑，不作为固件目标映射 |
 | AMD PM 原版功耗与策略监控 | PM telemetry → Display 五组 | `amd-pm-read/decode` 的 `original_package` | 53 项名称/偏移/浮点存储值；单位、策略状态和物理目标未认证；异常隔离与旧快照重算 |
 | AMD PM 原版链路与片内时钟监控 | PM telemetry → Display 两组 | `amd-pm-read/decode` 的 `original_fabric` | 27 项名称/偏移/浮点存储值；单位、策略状态和物理目标未认证；异常隔离与旧快照重算 |
@@ -228,6 +242,6 @@ SPD 两端还同步支持[基础 CAS 位图及 XMP 3.0 CAS / 命令率](spd-cas-
 另已接通[DDR4 XMP CAS/推荐 DIMM 数及堆叠组织](spd-profile-geometry.md)，修正 DDR5 四/八子通道容量，
 支持对称堆叠、DDR5 混合 rank 分项容量与 3DS 不同逻辑 rank 刷新下限；基础区和模块公共区分别检查修订版。
 
-双方共同未完成：AMD PStates 写入、曲线设置与物理目标映射、完整 PBO 高层限制、
+双方共同未完成：AMD PStates 写入、其它 AMD 平台曲线/Curve Shaper、物理目标映射、逐核/CCD PM 布局、完整 PBO 高层限制、
 Intel 其它型号的 VF 及 W790/W890 电压/逐核/fabric、其它 Intel 型号 RTL、剩余内存时序/IOL 与训练控制、板级 PMIC/VRM/EC/时钟写入。
 四台目标真机验收与 Secure Boot 实机签名部署也未完成。详见[还原状态](recovery-status.md)。
