@@ -16,7 +16,7 @@ VOLTAGE = '_ZN17AMD_Configuration16cal_vid_from_rawEi'
 VID = '_ZN17AMD_Configuration16cal_raw_from_vidEi'
 FUNCTIONS = (START, BASE32, BASE64, VOLTAGE, VID)
 FIXTURE = oc.ROOT / 'analysis/fixtures/legacy-amd-pm-native.json'
-FIXTURE_SHA = '9a2036c641c10f38f5d196f11e3f410cbd947708572896601d353b9965a181d5'
+FIXTURE_SHA = 'a4013f7ded45a892a3e24ccde1a9198497add06240d0180ce923aa63ed76f60a'
 
 
 def extract(path):
@@ -89,7 +89,7 @@ def investigate(fixture):
 if __name__ == '__main__':
     p=argparse.ArgumentParser(); p.add_argument('--extract',type=Path); p.add_argument('--output',type=Path,required=True); a=p.parse_args()
     if a.extract:
-        fixture=extract(a.extract); FIXTURE.write_text(json.dumps(fixture,indent=2)+'\n',encoding='utf-8')
+        fixture=extract(a.extract); FIXTURE.write_bytes((json.dumps(fixture,indent=2)+'\n').encode('utf-8'))
     else: fixture=load_fixture()
     report=investigate(fixture); report['fixture_sha256']=hashlib.sha256(FIXTURE.read_bytes()).hexdigest()
     a.output.write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
