@@ -63,6 +63,16 @@ PBO_SEMANTICS_PROCEDURES = (('0x21e350', 'get_fused_fmax'),
                             ('0x751470', 'on_per_ccx_oc_apply_7_clicked'),
                             ('0x7517d0', 'on_per_ccx_oc_apply_8_clicked'),
                             ('0x751d70', 'on_per_ccx_oc_apply_9_clicked'))
+PBO_LIMITS_PROCEDURES = (('0x7502d0', 'on_per_ccx_oc_apply_4_clicked'),
+                         ('0x223d50', 'TEST_SMC_MSG_sus_pwrlimit'),
+                         ('0x224500', 'TEST_SMC_MSG_vdd_current_limit'),
+                         ('0x224920', 'TEST_SMC_MSG_soc_current_limit'),
+                         ('0x7dbe90', 'dyn_edc::refreshit'),
+                         ('0x7dc660', 'dyn_edc::update'),
+                         ('0x7df630', 'dyn_edc::apply_clicked'),
+                         ('0x2395b0', 'toggle_dynamic_mem'),
+                         ('0x238cf0', 'get_THM'),
+                         ('0x21d380', 'set_to_shimada'))
 
 
 def selected_address(reply, offset):
@@ -83,7 +93,7 @@ def main():
     parser.add_argument('--binary', type=Path, required=True)
     parser.add_argument('--rea', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout', 'pbo_semantics'), default='baseline')
+    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout', 'pbo_semantics', 'pbo_limits'), default='baseline')
     args = parser.parse_args()
     binary, rea, output = args.binary.resolve(), args.rea.resolve(), args.output.resolve()
     if hashlib.sha256(binary.read_bytes()).hexdigest() != SOURCE_SHA:
@@ -183,7 +193,8 @@ def main():
                 procedures = {'baseline': PROCEDURES, 'arrays': ARRAY_PROCEDURES,
                               'monitors': MONITOR_PROCEDURES, 'percore': PERCORE_PROCEDURES,
                               'pbo_layout': PBO_LAYOUT_PROCEDURES,
-                              'pbo_semantics': PBO_SEMANTICS_PROCEDURES}[args.study]
+                              'pbo_semantics': PBO_SEMANTICS_PROCEDURES,
+                              'pbo_limits': PBO_LIMITS_PROCEDURES}[args.study]
                 for offset, name in procedures:
                     pseudo = call('procedure_pseudo_code',
                         dict(procedure='file-offset:' + offset), 'pseudo-' + offset)
