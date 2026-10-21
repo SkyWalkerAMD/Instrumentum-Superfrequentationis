@@ -424,7 +424,7 @@ GUI 与 CLI 共用硬件核心和无 Qt 清单读取；驱动/HAL/ABI 未变。C
 2026-10-10：新增 AMD UMC 212 字段 / 12 分组、显式地址组和刷新槽、离线 JSON 快照，
 以及 AMD 扩展 CPUID 拓扑读取；验证源码为 `728671d`。
 原构造的通道搜索和同名字段问题已从原指令复现，重构版不会沿用错误地址或以名称覆盖字段。
-功能说明见 [UMC](amd-umc-implementation.md)、[CPU 拓扑 / PStates 剩余问题](amd-topology-recovery.md)。
+功能说明见 [UMC](amd-umc-recovery.md)、[CPU 拓扑 / PStates 剩余问题](amd-topology-recovery.md)。
 
 - [Linux 验证](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38007763354) 23/23；十目标各 24 Qt / 30 Python，11 套目标内核 VM 启动。
 - [核心验证](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/38007763396) 四环境通过，各 5 CTest / 35 场景组。
@@ -482,7 +482,7 @@ EL8 容器以本地账户测试，移除只在系统启动后可用的 NSS syste
 Linux HAL 与 CPUID 亲和性处理进入[系统适配器](../gui/platform/linux_hwio.cpp)，Qt 界面复用核心。
 云端四环境核心测试及 23/23 Linux 矩阵通过，见[实际结果与源码哈希](validation/refactor-hardware-ci-beb10b7.json)。
 这仍是功能重构增量，Windows/macOS 的硬件后端及完整 GUI 尚未实现。
-最新[组件输入清单](validation/component-porting-inputs-20261009.json)来自本地原Linux ZIP与Windows目录的只读核对。
+历史本机组件输入清单 `validation/component-porting-inputs-20261009.json` 来自原 Linux ZIP 与 Windows 目录的只读核对，未随此仓库发布。
 
 本轮在用户提供的 `octool-linux-refactor.tar.gz` 上继续扩展。作者确认旧 GUI 源码丢失后，
 授权按 Windows/Linux 二进制证据重构，首批选择基础信息和 MSR/MMIO/PCI 原始读写。
@@ -490,7 +490,7 @@ Linux HAL 与 CPUID 亲和性处理进入[系统适配器](../gui/platform/linux
 公开 GitHub Actions 的十目标基础版矩阵已有全绿记录，包含 AMD PStates 只读页；
 这不代表旧 GUI 直接替换与硬件验收完成。最新复查和修正结果见下列报告。
 
-- [2026-10-09 项目调研与修复](project-research-2026-10-09.md)：架构/分支/基线CI，以及接续修复的Windows解包错误、源包敏感文件排除和本地验证。
+- 本机历史报告 `project-research-2026-10-09.md`（未随仓库发布）：架构/分支/基线 CI，以及 Windows 解包、源包文件排除和本地验证记录。
 - [2026-10-08 全面复查](review-2026-10-08.md)：基线证据、边界修正、未解决问题及后续研究顺序。
 - [PCI/EC 协调与线程权限](bus-coordination.md)：接续修复、公共内核API选择、离线负例和本轮验证。
 - [模块能力识别](module-capabilities.md)：只读查询、未知驱动拒绝扩展、旧模块MMIO对拍和升级检查。
@@ -520,7 +520,7 @@ Linux HAL 与 CPUID 亲和性处理进入[系统适配器](../gui/platform/linux
 - [原公共邮箱与FIVR/FCH](legacy-mmio-services.md)：耗尽返回0、一致性AND比较、位操作边界及260项原指令实验。
 - [原I2C与MMIO直接调用覆盖](legacy-mmio-i2c.md)：119项、错误返回/部分输出/无界等待，以及10函数28处CALL逐点请求核对。
 - [原NVL配置、时钟及拓扑来源](legacy-nvl-profile.md)：96项完整存取、125项9595、130项配置拓扑、134项完整CPU拓扑及45项末段表实验；错误CPU归属、空表重建、邻表/计数覆盖，以及前序存取缺陷。
-- [NVL字段契约（重构输入）](../analysis/contracts/nvl-components.json)：639项子对象原指令实验，125主描述/44辅助描述、CPU位运算及已知缺陷；源地址/哈希、未知单位和未绑定标签单独记录。
+- 本机历史契约 `analysis/contracts/nvl-components.json`（未随仓库发布）：639 项子对象原指令实验、125 主描述/44 辅助描述；公开分析见上方 NVL 配置报告。
 - [逆向覆盖台账](reverse-engineering-status.md)：清单、算法、模拟和真机证据的区别与尚未完成范围。
 - [原版模块重复加载握手](legacy-module-handoff.md)：同名 `.ko` 的真实 EEXIST 路径、runner 探针与 Secure Boot 边界。
 - [原版 MMIO 邮箱契约](legacy-mailbox-contract.md)：56 组原指令模拟、三份旧模块映射、错误完成字导致的兼容缺口。
