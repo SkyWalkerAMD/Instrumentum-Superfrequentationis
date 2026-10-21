@@ -22,7 +22,9 @@ jobs:
   core:
     name: core (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    # Native PM includes failures at every mailbox/CPUID access. Windows and
+    # macOS retain real transport delays in addition to the existing suites.
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:

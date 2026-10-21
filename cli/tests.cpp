@@ -5,6 +5,7 @@
 #include "platform/linux_inventory_native.h"
 #include "platform/linux_amd_pm.h"
 #include "tests/amd_pm_fixture.h"
+#include "tests/amd_pm_native_fixture.h"
 #include "tests/amd_curve_fixture.h"
 #include "tests/amd_pbo_fixture.h"
 #include "tests/intel_oc_fixture.h"
@@ -51,6 +52,45 @@ std::string command(HardwareBackend &device, const std::vector<std::string> &arg
     return out.str();
 }
 
+void nativePmCommands() {
+    for (const auto &layout : amdPmLayouts()) {
+        AmdPmNativeFixture d; d.version = layout.version; d.size = unsigned(layout.bytes); d.bytes = pm_fixture::bytes(layout.bytes);
+        const auto result = command(d,{"amd-pm-native-read","--cpu","130","--bclk-mhz","102.5"},0);
+        assert(result.find("\"metadata_rechecked\":true") != std::string::npos && !d.wrongCpu);
+        const auto capture = parseAmdPmCapture(result); assert(!capture.error && capture.raw == d.bytes);
+    }
+    AmdPmNativeFixture partial; pm_fixture::put(partial.bytes,0x20c,0x7f800001);
+    const auto result = command(partial,{"amd-pm-native-read","--cpu","130"},3);
+    const auto capture = parseAmdPmCapture(result); assert(capture.error == -EDOM && capture.raw == partial.bytes);
+}
+void nativePmFailures() {
+    for (unsigned mode = 0; mode < 8; ++mode) {
+        AmdPmNativeFixture d;
+        if (mode == 0) d.version = 0x730205;
+        if (mode == 1) d.size = 0;
+        if (mode == 2) d.base = 4;
+        if (mode == 3) d.model = 0x18;
+        if (mode == 4) d.completions[2] = 0xfd;
+        if (mode == 5) d.versionAfter = 0x730404;
+        if (mode == 6) d.afterRequest = [&] { if (d.memoryReads == 300) d.failAt = int(d.calls); };
+        if (mode == 7) d.baseAfter = 0x223456000ull;
+        const auto result = command(d,{"amd-pm-native-read","--cpu","130"},3);
+        assert(result.find("\"raw_hex\":\"\"") != std::string::npos);
+        assert(result.find("\"metadata_rechecked\":false") != std::string::npos);
+    }
+}
+void nativePmInvalidBeforeOpen() {
+    const std::vector<std::vector<std::string>> cases = {
+        {},{"--cpu","-1"},{"--cpu","1048576"},{"--cpu",""},
+        {"--cpu","130","--bclk-mhz","0"},{"--cpu","130","--bclk-mhz","nan"},
+        {"--cpu","130","--version","0x730204"},{"--cpu","130","--apply"},
+        {"--cpu","130","--address","0x100000"},{"--cpu","130","--cpu","0"}};
+    for (auto args : cases) {
+        args.insert(args.begin(),"amd-pm-native-read"); std::ostringstream out; unsigned opened = 0;
+        assert(run(args,out,[&] { ++opened; return std::unique_ptr<HardwareBackend>(); }) == 2 && !opened);
+        if (emit) std::cout << out.str();
+    }
+}
 void iccMaxCommands() {
     IntelIccMaxFixture d;
     auto result=command(d,{"intel-iccmax-read","--cpu","130"},0);
@@ -2218,6 +2258,7 @@ int main(int argc, char **argv) {
     curveSettingCommands(); pboScalarCommands(); pboFmaxCommands(); pboOfflineCommands(); pboLimitCommands(); pboLimitInvalidBeforeOpen();
     ocModeCommands(); ocFrequencyCommands(); ocInvalidBeforeOpen();
     ocSelectedCoreCommands(); ocSelectedCoreFailures(); ocSelectedCoreInvalidBeforeOpen();
+    nativePmCommands(); nativePmFailures(); nativePmInvalidBeforeOpen();
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); intelMemoryOdtCaptures(); intelMemoryOdtLive(); intelMemoryTemperatureCaptures(); intelMemoryTemperatureLive(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
@@ -2226,5 +2267,5 @@ int main(int argc, char **argv) {
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "63 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "66 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

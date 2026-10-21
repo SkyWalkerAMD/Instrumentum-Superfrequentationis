@@ -255,7 +255,7 @@ AmdPmSnapshot parseAmdPmCapture(const std::string &input) {
         if (root.has("schema_version")) {
             check(capture_json::uint(root.at("schema_version"), 1) == 1, "Unsupported CLI report version");
             const auto &command = root.at("command");
-            check(command.kind == Json::String && (command.text == "amd-pm-read" || command.text == "amd-pm-decode"), "Not an AMD PM report");
+            check(command.kind == Json::String && (command.text == "amd-pm-read" || command.text == "amd-pm-decode" || command.text == "amd-pm-native-read"), "Not an AMD PM report");
             record = &root.at("data").at("pm");
         }
         check(capture_json::equals(record->at("format"), Json::String, "octool-amd-pm"), "Not an AMD PM capture");

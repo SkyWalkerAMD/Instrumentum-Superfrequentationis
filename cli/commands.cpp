@@ -4,6 +4,7 @@
 #include "core/amd_curve.h"
 #include "core/amd_pbo.h"
 #include "core/amd_pm.h"
+#include "core/amd_pm_native.h"
 #include "core/amd_pstates.h"
 #include "core/amd_smu.h"
 #include "core/amd_topology.h"
@@ -125,7 +126,7 @@ struct Command {
 };
 Command parse(const std::vector<std::string> &args) {
     Command c; c.name = args.at(0);
-    const std::set<std::string> hardware = {"intel-iccmax-read", "intel-iccmax-set", "cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read", "intel-vf-set", "intel-turbo-read", "intel-turbo-set",
+    const std::set<std::string> hardware = {"amd-pm-native-read", "intel-iccmax-read", "intel-iccmax-set", "cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read", "intel-vf-set", "intel-turbo-read", "intel-turbo-set",
         "intel-memory-read", "intel-clock-read", "intel-tvb-read", "intel-tvb-set", "intel-tvb-table", "intel-tvb-table-set", "intel-energy-read", "intel-energy-set", "intel-avx-read", "intel-avx-set", "intel-bclk-voltage-read", "intel-bclk-voltage-set", "intel-thermal-read", "intel-thermal-set", "intel-limits-read", "intel-limits-clear", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-curve-set", "amd-pbo-scalar-read", "amd-pbo-scalar-set", "amd-topology", "amd-umc-read", "register-read", "register-write"};
     const bool memoryOffline = c.name == "intel-memory-decode";
     const bool clockOffline = c.name == "intel-clock-decode";
@@ -182,7 +183,7 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "amd-pbo-scalar-set") { keys.insert("--scalar"); keys.insert("--expect-raw"); }
     if (c.name == "amd-umc-read") { keys.insert("--bank"); keys.insert("--refresh-slot"); }
     if (c.name == "spd-decode") keys.insert("--file");
-    if (pm) keys.insert("--bclk-mhz");
+    if (pm || c.name == "amd-pm-native-read") keys.insert("--bclk-mhz");
     if (c.name == "amd-pm-decode") { keys.insert("--file"); keys.insert("--version"); }
     if (umcOffline || memoryOffline || clockOffline) keys.insert("--file");
     if (c.name == "intel-memory-read") { keys.insert("--controller"); keys.insert("--channel"); }
@@ -434,7 +435,7 @@ Command parse(const std::vector<std::string> &args) {
     }
     if (c.name == "amd-umc-read") { c.umc.bank = uintOption(options, "--bank", 22); c.umc.refreshSlot = uintOption(options, "--refresh-slot", 15); }
     if (c.name == "spd-decode") { c.path = get(options, "--file"); require(!c.path.empty(), "Empty SPD path"); }
-    if (pm && options.count("--bclk-mhz")) {
+    if ((pm || c.name == "amd-pm-native-read") && options.count("--bclk-mhz")) {
         c.pmOptions.hasBclk = true; c.pmOptions.bclkMHz = decimal(get(options, "--bclk-mhz"), "--bclk-mhz");
         require(c.pmOptions.bclkMHz > 0, "--bclk-mhz must be positive");
     }
@@ -608,7 +609,12 @@ Result hardware(const Command &c, HardwareSession &s) {
     Result out;
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
     if (!rawRegister || c.reg.space == Space::Msr) out.data.push_back({"cpu", number(c.cpu)});
-    if (rawRegister) {
+    if (c.name == "amd-pm-native-read") {
+        SmuTarget target; target.cpu = c.cpu; target.profile = SmuProfile::Shimada;
+        const auto r = readShimadaPmNative(s, target, c.pmOptions); out.error = r.error;
+        out.data.push_back({"native", amdPmNativeJson(r)});
+        out.data.push_back({"pm", amdPmJson(r.snapshot)});
+    } else if (rawRegister) {
         const auto &r = c.reg;
         out.data.push_back({"space", quote(r.space == Space::Msr ? "msr" : r.space == Space::Pci ? "pci" : "mmio")});
         out.data.push_back({"address", hex(r.address, r.space == Space::Memory ? 16 : 8)});
@@ -1374,6 +1380,7 @@ Usage: octool-cli COMMAND [OPTIONS]
   register-read --space mmio --address A --width 1|2|4|8
   register-read --space pci --address A --width 1|2|4 --bus B --device D --function F
   register-write [same target options] --value V --apply
+  amd-pm-native-read --cpu N [--bclk-mhz MHz]  Native Shimada PM capture
   amd-pstates --cpu N               Family 17h/19h/1Ah P0..P7 definitions (read only)
   intel-read --cpu N                RAPL, HWP, temperatures, package events and non-turbo ratio
   intel-set --cpu N --field F --value V --apply
@@ -1486,8 +1493,11 @@ Results are JSON (optional --json); raw registers are exact hexadecimal strings.
 Exit: 0 success, 2 invalid command/options, 3 failed operation or partial read.
 Run diagnose first; choose a CPU from allowed_cpus. Device access may need sudo.
 Firmware queries can write mailbox/index registers; settings require --apply.
-PM reads use the existing driver's binary sysfs interface, which can request a
-firmware table transfer. OCTool does not load that driver or open a register device.
+amd-pm-read uses the installed driver's sysfs ABI and does not open a register
+backend. amd-pm-native-read uses the OCTool backend, RSMU metadata/transfer and
+bounded physical reads on 1Ah/08h. Firmware must report an exact known version
+and matching nonzero byte count. Transfer acceptance does not prove freshness;
+metadata changes or read failures discard the buffer. No driver is auto-loaded.
 Eight exact Shimada PM versions are supported; files do not identify physical
 cores. PM captures have no checksum. BCLK is caller supplied, not measured here;
 raw clock values remain separate from scaled values. Non-finite fields are null.

@@ -115,7 +115,7 @@ int main(int argc, char **argv)
     tabs->addTab(intel, "Intel Controls");
     auto *amd = new QTabWidget(tabs);
     amd->addTab(new AmdTuningPanel(access, amd, initialCpu), "SMU / curves");
-    amd->addTab(new AmdPmPanel(amd), "PM telemetry");
+    amd->addTab(new AmdPmPanel(amd, octool::core::AmdPmReader(), access, initialCpu), "PM telemetry");
     tabs->addTab(amd, "AMD tuning");
     tabs->addTab(new MemoryBoardPanel(tabs), "Memory / Motherboard");
     tabs->addTab(new UmcPanel(access,tabs,initialCpu), "AMD UMC");

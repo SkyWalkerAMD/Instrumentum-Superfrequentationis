@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "amdpmpanel.h"
+#include "core/amd_pm_native.h"
 #include "platform/linux_amd_pm.h"
 #include "platform/linux_inventory_native.h"
 #include <QApplication>
@@ -28,7 +29,9 @@ namespace {
 QString hex(std::uint32_t n) { return QString("0x%1").arg(n, 8, 16, QChar('0')); }
 QString number(double n) { return QString::number(n, 'g', 10); }
 }
-AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader) : QWidget(parent), reader_(reader ? reader : octool::platform::linuxAmdPmReader()) {
+AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader, std::shared_ptr<HardwareAccess> access, unsigned cpu)
+    : QWidget(parent), reader_(reader ? reader : octool::platform::linuxAmdPmReader()), access_(access),
+      cancelled_(std::make_shared<std::atomic<bool>>(false)) {
     auto *layout = new QVBoxLayout(this);
     auto *intro = new QLabel("AMD PM telemetry: eight exact Shimada table versions. Read the installed ryzen_smu driver, "
         "or open a saved table. Driver reads may request a firmware transfer; no driver is loaded automatically. "
@@ -43,6 +46,14 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader) : QWidget(parent), r
     auto *raw = new QPushButton("Open raw table...", controls_); raw->setObjectName("pmOpenRaw"); buttons->addWidget(raw);
     copy_ = new QPushButton("Copy JSON snapshot", controls_); copy_->setObjectName("pmCopy"); buttons->addWidget(copy_);
     controls->addLayout(buttons);
+    auto *native = new QHBoxLayout;
+    native->addWidget(new QLabel("Native capture: logical CPU", controls_));
+    cpu_ = new QLineEdit(QString::number(cpu), controls_); cpu_->setObjectName("pmCpu"); cpu_->setMaximumWidth(100); native->addWidget(cpu_);
+    auto *readNativeButton = new QPushButton("Read native PM table", controls_); readNativeButton->setObjectName("pmNativeRead");
+    readNativeButton->setEnabled(bool(access_)); native->addWidget(readNativeButton);
+    auto *nativeScope = new QLabel("Shimada 1Ah/08h; firmware transfer, no tuning change requested", controls_);
+    nativeScope->setWordWrap(true); native->addWidget(nativeScope); controls->addLayout(native);
+    connect(readNativeButton, &QPushButton::clicked, this, &AmdPmPanel::readNative);
     auto *inputs = new QHBoxLayout;
     inputs->addWidget(new QLabel("Raw table version", controls_));
     version_ = new QComboBox(controls_); version_->setObjectName("pmVersion"); version_->addItem("Select exact version", 0u);
@@ -86,18 +97,48 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader) : QWidget(parent), r
         const auto path = QFileDialog::getOpenFileName(this, "Open raw PM table", {}, "PM data (*.bin *.dat);;All files (*)");
         if (!path.isEmpty()) loadRawFile(path, version_->currentData().toUInt());
     });
-    connect(copy_, &QPushButton::clicked, this, [this] { QApplication::clipboard()->setText(QString::fromStdString(amdPmJson(snapshot_))); });
+    connect(copy_, &QPushButton::clicked, this, [this] { QApplication::clipboard()->setText(QString::fromStdString(nativeCapture_.empty() ? amdPmJson(snapshot_) : nativeCapture_)); });
+    connect(cpu_, &QLineEdit::textChanged, this, [this] { clear(); });
     connect(version_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this] { clear(); });
     connect(scale_, &QCheckBox::toggled, this, [this] { clear(); });
     connect(bclk_, &QLineEdit::textChanged, this, [this] { clear(); });
     connect(view_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this] { showFields(); });
     clear();
 }
+AmdPmPanel::~AmdPmPanel() { cancelled_->store(true); }
 void AmdPmPanel::clear() {
+    ++revision_; nativeCapture_.clear();
     snapshot_ = AmdPmSnapshot(); table_->setRowCount(0); metadata_->clear(); copy_->setEnabled(false);
     layoutAuditJson_.clear(); copyAudit_->setEnabled(false);
     table_->resizeColumnsToContents();
     status_->setText("Ready. No PM data has been read.");
+}
+void AmdPmPanel::readNative() {
+    if (busy_ || !access_) return;
+    clear(); AmdPmOptions opt; if (!options(opt)) return;
+    quint64 cpu = 0;
+    if (!parseNumber(cpu_->text(), 10, 1048575, cpu)) { status_->setText("Enter a valid logical CPU for native capture."); return; }
+    SmuTarget target; target.cpu = unsigned(cpu); target.profile = SmuProfile::Shimada;
+    const auto revision = revision_;
+    busy_ = true; controls_->setEnabled(false); status_->setText("Reading native PM metadata and requesting one firmware transfer...");
+    auto *watcher = new QFutureWatcher<AmdPmNativeRead>(this);
+    connect(watcher, &QFutureWatcher<AmdPmNativeRead>::finished, this, [this, watcher, revision] {
+        const auto r = watcher->result(); watcher->deleteLater(); busy_ = false; controls_->setEnabled(true);
+        if (revision != revision_) { clear(); status_->setText("Inputs changed during capture; old native PM result discarded."); return; }
+        present(r.snapshot, QString("Native PM: phase %1, %2 bytes read, transfer %3, metadata rechecked %4. Freshness and atomicity are unverified.")
+            .arg(amdPmNativePhaseName(r.phase)).arg(qulonglong(r.bytesRead)).arg(r.transferAccepted ? "accepted" : "not confirmed")
+            .arg(r.metadataRechecked ? "yes" : "no"));
+        nativeCapture_ = "{\"schema_version\":1,\"command\":\"amd-pm-native-read\",\"data\":{\"native\":" + amdPmNativeJson(r) +
+            ",\"pm\":" + amdPmJson(r.snapshot) + "}}";
+        copy_->setEnabled(true); // Failures also carry useful transport diagnostics, with no raw buffer.
+    });
+    const auto access = access_; const auto cancelled = cancelled_;
+    watcher->setFuture(QtConcurrent::run([access, cancelled, target, opt] {
+        AmdPmNativeRead r; r.cpu = target.cpu;
+        const int error = access->transaction([&](HardwareSession &s) { r = readShimadaPmNative(s, target, opt); return r.error; }, 10000, cancelled.get());
+        if (error && !r.error) { r.error = error; r.snapshot.error = error; r.snapshot.detail = "Native PM transaction could not start"; }
+        return r;
+    }));
 }
 void AmdPmPanel::auditLayout() {
     layoutAuditJson_.clear(); copyAudit_->setEnabled(false);

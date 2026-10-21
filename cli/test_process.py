@@ -35,7 +35,19 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=60).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 1359, len(reports)
+assert len(reports) == 1386, len(reports)
+native_pm = [r for r in reports if r['command'] == 'amd-pm-native-read']
+assert len(native_pm) == 27 and [r['ok'] for r in native_pm] == [True]*8+[False]*19
+for i,r in enumerate(native_pm[:17]):
+    n = r['data']['native']; pm = r['data']['pm']
+    assert n['cpu'] == 130 and not n['origin_verified'] and not n['atomic_snapshot_guaranteed']
+    assert not n['freshness_verified'] and not n['physical_mapping_verified'] and not n['tuning_settings_requested']
+    if i < 9:
+        assert n['metadata_rechecked'] and n['transfer_attempted'] and n['transfer_accepted']
+        assert n['bytes_read'] == n['reported_bytes'] == pm['captured_bytes'] == len(bytes.fromhex(pm['raw_hex']))
+        assert int(n['address'],16) == 0x123456000 and n['phase'] == ('complete' if i < 8 else 'decode')
+    else:
+        assert not n['metadata_rechecked'] and pm['raw_hex'] == '' and pm['fields'] == []
 oc_modes = [r for r in reports if r['command'] == 'amd-oc-mode-set' and 'requested_enabled' in r['data']]
 assert len(oc_modes) == 9 and [r['ok'] for r in oc_modes] == [True]*3 + [False]*6
 for r in oc_modes:

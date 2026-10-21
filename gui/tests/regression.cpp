@@ -38,6 +38,7 @@
 #include "amd_pbo_fixture.h"
 #include "amdpmpanel.h"
 #include "amd_pm_fixture.h"
+#include "amd_pm_native_fixture.h"
 #include "platform/linux_inventory.h"
 #include "platform/linux_hwio.h"
 #include "platform/linux_cpu.h"
@@ -641,6 +642,85 @@ private slots:
         }
     }
 
+    void pmNativeRoundtripAndPartialFields() {
+        using namespace octool::core;
+        for (bool partial : {false,true}) {
+            auto *device = new AmdPmNativeFixture;
+            if (partial) pm_fixture::put(device->bytes,0x20c,0x7f800001);
+            auto access = std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device));
+            AmdPmPanel panel(nullptr,{},access,130); panel.resize(1250,1000); panel.show();
+            auto *read = panel.findChild<QPushButton *>("pmNativeRead");
+            auto *table = panel.findChild<QTableWidget *>("pmTable");
+            QCOMPARE(device->calls,0u); read->click(); QTRY_VERIFY(read->isEnabled());
+            QCOMPARE(table->rowCount(),24); QCOMPARE(device->memoryReads,711u); QCOMPARE(device->wrongCpu,0u);
+            QCOMPARE(table->item(0,1)->text(),partial ? QString("Unavailable") : QString("2000"));
+            panel.findChild<QPushButton *>("pmCopy")->click();
+            const auto json = QApplication::clipboard()->text().toUtf8();
+            const auto root = QJsonDocument::fromJson(json).object(); const auto data = root["data"].toObject();
+            QVERIFY(data["native"].toObject()["metadata_rechecked"].toBool());
+            const auto capture = parseAmdPmCapture(json.toStdString()); QCOMPARE(capture.error,partial ? -EDOM : 0);
+            QVERIFY(capture.raw == device->bytes);
+            QTemporaryDir dir; QFile file(dir.path()+"/native.json"); QVERIFY(file.open(QIODevice::WriteOnly)); file.write(json); file.close();
+            AmdPmPanel imported; QCOMPARE(imported.loadSnapshotFile(file.fileName()),!partial);
+            QCOMPARE(imported.findChild<QTableWidget *>("pmTable")->rowCount(),24);
+            panel.findChild<QComboBox *>("pmView")->setCurrentIndex(9); QCOMPARE(table->rowCount(),36);
+            panel.findChild<QComboBox *>("pmView")->setCurrentIndex(0); QCOMPARE(device->memoryReads,711u);
+            if (!partial) {
+                QApplication::processEvents(); const auto shot = qEnvironmentVariable("OCTOOL_PM_NATIVE_TEST_SCREENSHOT");
+                if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+            }
+        }
+    }
+    void pmNativeFailureDiscardsOldCapture() {
+        using namespace octool::core;
+        auto *device = new AmdPmNativeFixture; device->versionAfter = 0x730404;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device));
+        AmdPmPanel panel(nullptr,{},access,130); panel.resize(1250,1000); panel.show();
+        QTemporaryDir dir; QFile file(dir.path()+"/old.json"); QVERIFY(file.open(QIODevice::WriteOnly));
+        file.write(QByteArray::fromStdString(amdPmJson(decodeAmdPm(device->bytes,0x730204)))); file.close();
+        QVERIFY(panel.loadSnapshotFile(file.fileName())); QCOMPARE(panel.findChild<QTableWidget *>("pmTable")->rowCount(),24);
+        auto *read = panel.findChild<QPushButton *>("pmNativeRead"); read->click();
+        QCOMPARE(panel.findChild<QTableWidget *>("pmTable")->rowCount(),0); QTRY_VERIFY(read->isEnabled());
+        QCOMPARE(panel.findChild<QTableWidget *>("pmTable")->rowCount(),0);
+        QVERIFY(panel.findChild<QLabel *>("pmStatus")->text().contains("recheck"));
+        panel.findChild<QPushButton *>("pmCopy")->click();
+        const auto data = QJsonDocument::fromJson(QApplication::clipboard()->text().toUtf8()).object()["data"].toObject();
+        QCOMPARE(data["native"].toObject()["bytes_read"].toInt(),2844);
+        QVERIFY(!data["native"].toObject()["metadata_rechecked"].toBool());
+        QVERIFY(data["pm"].toObject()["raw_hex"].toString().isEmpty());
+        QApplication::processEvents(); const auto shot = qEnvironmentVariable("OCTOOL_PM_NATIVE_FAILURE_TEST_SCREENSHOT");
+        if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+    }
+    void pmNativeInputChangesAndClose() {
+        using namespace octool::core;
+        auto *device = new AmdPmNativeFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device));
+        AmdPmPanel panel(nullptr,{},access,130); panel.show();
+        auto *read = panel.findChild<QPushButton *>("pmNativeRead"); read->click();
+        auto *cpu = panel.findChild<QLineEdit *>("pmCpu"); cpu->setText("131"); cpu->setText("130");
+        QTRY_VERIFY(read->isEnabled()); QCOMPARE(panel.findChild<QTableWidget *>("pmTable")->rowCount(),0);
+        QVERIFY(panel.findChild<QLabel *>("pmStatus")->text().contains("discarded"));
+        QVERIFY(!panel.findChild<QPushButton *>("pmCopy")->isEnabled());
+        auto owner = std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(new AmdPmNativeFixture));
+        std::weak_ptr<HardwareAccess> lifetime = owner;
+        auto *closing = new AmdPmPanel(nullptr,{},owner,130); owner.reset();
+        closing->findChild<QPushButton *>("pmNativeRead")->click(); delete closing;
+        QTRY_VERIFY(lifetime.expired());
+    }
+    void pmNativeInvalidInputsBeforeAccess() {
+        using namespace octool::core;
+        auto *device = new AmdPmNativeFixture;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device));
+        AmdPmPanel panel(nullptr,{},access,130);
+        for (const char *value : {"","-1","1048576","bad"}) {
+            panel.findChild<QLineEdit *>("pmCpu")->setText(value);
+            panel.findChild<QPushButton *>("pmNativeRead")->click(); QCOMPARE(device->calls,0u);
+        }
+        panel.findChild<QLineEdit *>("pmCpu")->setText("130");
+        panel.findChild<QCheckBox *>("pmScale")->setChecked(true); panel.findChild<QLineEdit *>("pmBclk")->setText("0");
+        panel.findChild<QPushButton *>("pmNativeRead")->click(); QCOMPARE(device->calls,0u);
+        AmdPmPanel offline; QVERIFY(!offline.findChild<QPushButton *>("pmNativeRead")->isEnabled());
+    }
     void pmOfflineRoundtripAndUnits() {
         using namespace octool::core;
         QTemporaryDir directory; QVERIFY(directory.isValid());
