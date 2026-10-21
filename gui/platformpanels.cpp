@@ -206,6 +206,14 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     auto *applyCurveButton = new QPushButton("Apply curve to selected cores…", this); applyCurveButton->setObjectName("curveApply");
     curveEdit->addWidget(applyCurveButton); form->addRow("Read selected cores first · counts, not mV", curveEdit);
     connect(applyCurveButton, &QPushButton::clicked, this, [this] { applyCurve(); });
+    auto *scalar = new QHBoxLayout;
+    pboScalar_ = edit("pboScalar", "", this); pboScalar_->setPlaceholderText("Integer multiplier 1..10");
+    scalar->addWidget(pboScalar_);
+    auto *readScalar = new QPushButton("Read scalar", this); readScalar->setObjectName("pboScalarRead"); scalar->addWidget(readScalar);
+    auto *applyScalar = new QPushButton("Apply scalar…", this); applyScalar->setObjectName("pboScalarApply"); scalar->addWidget(applyScalar);
+    form->addRow("Shimada PBO scalar · read before applying", scalar);
+    connect(readScalar, &QPushButton::clicked, this, [this] { readPboScalar(); });
+    connect(applyScalar, &QPushButton::clicked, this, [this] { applyPboScalar(); });
     auto *args = new QHBoxLayout;
     for (unsigned i = 0; i < 6; ++i) { args_[i] = edit(qPrintable(QString("smuArg%1").arg(i)), "0", this); args_[i]->setPlaceholderText(QString("Arg%1").arg(i)); args->addWidget(args_[i]); }
     form->addRow("Arg0 … Arg5 (32-bit hex)", args); layout->addLayout(form);
@@ -237,7 +245,83 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     connect(profile_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, clear);
 }
 AmdTuningPanel::~AmdTuningPanel() { cancelled_->store(true); }
-void AmdTuningPanel::invalidateCurve() { ++curveRevision_; curveSnapshot_ = {}; table_->setRowCount(0); }
+void AmdTuningPanel::invalidateCurve() { ++curveRevision_; curveSnapshot_ = {}; pboSnapshot_ = {}; table_->setRowCount(0); }
+void AmdTuningPanel::readPboScalar() {
+    using namespace octool::core;
+    invalidateCurve();
+    quint64 cpu = 0, bus = 0, device = 0, function = 0;
+    if (profile_->currentData().toInt() != int(SmuProfile::Shimada) ||
+        !parseNumber(cpu_->text(), 10, UINT32_MAX, cpu) || !parseNumber(bus_->text(), 16, 0, bus) ||
+        !parseNumber(device_->text(), 16, 0, device) || !parseNumber(function_->text(), 16, 0, function)) {
+        status_->setText("PBO scalar requires Shimada at 0000:00:00.0 and a valid logical CPU. No query sent."); return;
+    }
+    SmuTarget target; target.cpu = unsigned(cpu); target.profile = SmuProfile::Shimada;
+    const auto revision = curveRevision_;
+    setEnabled(false); status_->setText("Reading PBO scalar…");
+    auto *watcher = new QFutureWatcher<AmdPboScalar>(this);
+    connect(watcher, &QFutureWatcher<AmdPboScalar>::finished, this, [this, watcher, target, revision] {
+        const auto r = watcher->result();
+        if (revision != curveRevision_) status_->setText("Inputs changed while reading. Read PBO scalar again.");
+        else {
+            append(table_, {"PBO scalar raw", r.rawValid ? hexValue(r.raw, 4) : "—"});
+            append(table_, {"PBO scalar multiplier", r.valid ? QString::number(r.multiplier, 'g', 9) : "Unavailable"});
+            append(table_, {"Firmware response", hexValue(r.response, 4)});
+            if (r.error || !r.valid) status_->setText(failure(r.error ? r.error : -EIO) + " PBO scalar unavailable. Read again before editing.");
+            else {
+                pboSnapshot_ = r; pboTarget_ = target;
+                status_->setText("PBO scalar read. This shared firmware setting is not a measured voltage or power value. Writes support integer multipliers 1..10; zero's policy meaning is unknown.");
+            }
+        }
+        setEnabled(true); watcher->deleteLater();
+    });
+    const auto access = access_; const auto cancelled = cancelled_;
+    watcher->setFuture(QtConcurrent::run([access, cancelled, target] {
+        AmdPboScalar out;
+        const int error = access->transaction([&](HardwareSession &s) { out = readShimadaPboScalar(s, target); return out.error; }, 10000, cancelled.get());
+        if (error) { out.error = error; out.valid = false; }
+        return out;
+    }));
+}
+void AmdTuningPanel::applyPboScalar() {
+    using namespace octool::core;
+    if (!pboSnapshot_.valid || pboSnapshot_.error) { status_->setText("Read PBO scalar before applying a change."); return; }
+    quint64 multiplier = 0;
+    if (!parseNumber(pboScalar_->text(), 10, 10, multiplier) || !multiplier) {
+        status_->setText("PBO scalar requires an integer multiplier 1..10."); return;
+    }
+    const auto target = pboTarget_; const auto before = pboSnapshot_; const auto prepared = curveRevision_;
+    if (QMessageBox::question(this, "Apply AMD PBO scalar",
+        QString("Shimada family 1Ah/model 08h · logical CPU %1\nSet shared PBO scalar from %2 to %3?\n"
+                "Changing this policy may increase voltage, power and heat. The old value will be checked and the result read back. No automatic OC enable, retry or rollback.")
+            .arg(target.cpu).arg(before.multiplier, 0, 'g', 9).arg(multiplier),
+        QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Yes) return;
+    if (prepared != curveRevision_) { status_->setText("Inputs changed. Read PBO scalar again."); return; }
+    invalidateCurve(); const auto revision = curveRevision_;
+    setEnabled(false); status_->setText("Comparing, updating and reading back PBO scalar…");
+    auto *watcher = new QFutureWatcher<AmdPboScalarUpdate>(this);
+    connect(watcher, &QFutureWatcher<AmdPboScalarUpdate>::finished, this, [this, watcher, revision, target] {
+        const auto r = watcher->result();
+        if (revision == curveRevision_) {
+            append(table_, {"PBO scalar previous raw", r.before.rawValid ? hexValue(r.before.raw, 4) : "—"});
+            append(table_, {"PBO scalar readback raw", r.after.rawValid ? hexValue(r.after.raw, 4) : "—"});
+            append(table_, {"PBO scalar multiplier", r.after.valid ? QString::number(r.after.multiplier, 'g', 9) : "Unavailable"});
+            append(table_, {"Setting command", r.unchanged ? "Unchanged; no setting sent" : r.accepted ? "Firmware accepted" : r.writeAttempted ? "Attempted; completion unknown" : "Not sent"});
+            append(table_, {"Readback", r.verified && !r.error ? "Matched" : "Not verified"});
+        }
+        status_->setText((r.error ? failure(r.error) + QString(" Stopped at %1. ").arg(amdPboPhaseName(r.phase)) +
+            (r.writeAttempted ? "The setting may have changed. No retry or rollback." : "No setting command sent.") :
+            QString("PBO scalar %1; firmware readback matched. Physical voltage, power and stability are not measured.").arg(r.unchanged ? "unchanged" : "updated")) +
+            (revision == curveRevision_ ? " Read again before another edit." : QString(" Inputs changed; result belongs to CPU %1. Read again.").arg(target.cpu)));
+        setEnabled(true); watcher->deleteLater();
+    });
+    const auto access = access_; const auto cancelled = cancelled_;
+    watcher->setFuture(QtConcurrent::run([access, cancelled, target, before, multiplier] {
+        AmdPboScalarUpdate out;
+        const int error = access->transaction([&](HardwareSession &s) { out = setShimadaPboScalar(s, target, before.raw, unsigned(multiplier)); return out.error; }, 10000, cancelled.get());
+        if (error) { out.error = error; out.verified = false; }
+        return out;
+    }));
+}
 void AmdTuningPanel::readCurve() {
     using namespace octool::core;
     invalidateCurve();

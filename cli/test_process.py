@@ -35,7 +35,24 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=30).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 1177, len(reports)
+assert len(reports) == 1200, len(reports)
+pbo_settings = [r for r in reports if r['command'] == 'amd-pbo-scalar-set' and 'requested_multiplier' in r['data']]
+assert len(pbo_settings) == 8
+assert [r['ok'] for r in pbo_settings] == [True,True,False,False,False,False,False,False]
+assert [r['data']['write_attempted'] for r in pbo_settings] == [True,False,False,True,True,False,False,True]
+assert [r['data']['accepted'] for r in pbo_settings] == [True,False,False,True,False,False,False,True]
+for r in pbo_settings:
+    d = r['data']
+    assert d['verified'] == r['ok'] and not d['hardware_effect_measured']
+    assert int(d['argument'],16) == d['requested_multiplier'] * 100
+    if r['ok']: assert d['after']['multiplier'] == d['requested_multiplier']
+assert pbo_settings[1]['data']['unchanged']
+assert pbo_settings[2]['error'] == -11 and pbo_settings[2]['data']['phase'] == 'compare'
+assert pbo_settings[3]['data']['after']['multiplier'] == 1 and pbo_settings[3]['data']['phase'] == 'verify'
+assert pbo_settings[7]['data']['after']['multiplier'] is None and int(pbo_settings[7]['data']['after']['raw'],16) == 0x7fc00000
+pbo_reads = [r for r in reports if r['command'] == 'amd-pbo-scalar-read']
+assert [r['data']['scalar']['multiplier'] for r in pbo_reads] == [0,2.5,None]
+assert [r['data']['scalar']['valid'] for r in pbo_reads] == [True,True,False]
 curve_settings = [r for r in reports if r['command'] == 'amd-curve-set' and r['error'] != -22]
 assert len(curve_settings) == 9
 assert [r['ok'] for r in curve_settings] == [True, False, False, False, False, False, False, True, True]

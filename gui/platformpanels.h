@@ -3,6 +3,7 @@
 #include "access.h"
 #include "core/intel_controls.h"
 #include "core/amd_curve.h"
+#include "core/amd_pbo.h"
 #include <QWidget>
 class QLabel;
 class QLineEdit;
@@ -37,10 +38,15 @@ private:
     void readCurve();
     void applyCurve();
     void invalidateCurve();
+    void readPboScalar();
+    void applyPboScalar();
     std::shared_ptr<HardwareAccess> access_;
     std::shared_ptr<std::atomic<bool>> cancelled_;
     QLineEdit *cpu_, *bus_, *device_, *function_, *args_[6];
     QLineEdit *curveCcd_, *curveCore_, *curveMargin_;
+    QLineEdit *pboScalar_;
+    octool::core::AmdPboScalar pboSnapshot_;
+    octool::core::SmuTarget pboTarget_;
     octool::core::AmdCurveSnapshot curveSnapshot_;
     octool::core::SmuTarget curveTarget_;
     unsigned curveRevision_ = 0;

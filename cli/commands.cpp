@@ -2,6 +2,7 @@
 #include "commands.h"
 #include "json.h"
 #include "core/amd_curve.h"
+#include "core/amd_pbo.h"
 #include "core/amd_pm.h"
 #include "core/amd_pstates.h"
 #include "core/amd_smu.h"
@@ -105,6 +106,8 @@ struct Command {
     std::uint32_t pmVersion = 0;
     AmdPmOptions pmOptions;
     AmdCurveSnapshot curve;
+    unsigned pboScalar = 0;
+    std::uint32_t pboExpected = 0;
     int margin = 0;
     bool multipleCores = false;
     SmuTarget smu; SmuCommand message; UmcTarget umc;
@@ -117,7 +120,7 @@ struct Command {
 Command parse(const std::vector<std::string> &args) {
     Command c; c.name = args.at(0);
     const std::set<std::string> hardware = {"intel-iccmax-read", "intel-iccmax-set", "cpu", "amd-pstates", "intel-read", "intel-set", "intel-oc-read", "intel-oc-set", "intel-vf-read", "intel-vf-set", "intel-turbo-read", "intel-turbo-set",
-        "intel-memory-read", "intel-clock-read", "intel-tvb-read", "intel-tvb-set", "intel-tvb-table", "intel-tvb-table-set", "intel-energy-read", "intel-energy-set", "intel-avx-read", "intel-avx-set", "intel-bclk-voltage-read", "intel-bclk-voltage-set", "intel-thermal-read", "intel-thermal-set", "intel-limits-read", "intel-limits-clear", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-curve-set", "amd-topology", "amd-umc-read", "register-read", "register-write"};
+        "intel-memory-read", "intel-clock-read", "intel-tvb-read", "intel-tvb-set", "intel-tvb-table", "intel-tvb-table-set", "intel-energy-read", "intel-energy-set", "intel-avx-read", "intel-avx-set", "intel-bclk-voltage-read", "intel-bclk-voltage-set", "intel-thermal-read", "intel-thermal-set", "intel-limits-read", "intel-limits-clear", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-curve-set", "amd-pbo-scalar-read", "amd-pbo-scalar-set", "amd-topology", "amd-umc-read", "register-read", "register-write"};
     const bool memoryOffline = c.name == "intel-memory-decode";
     const bool clockOffline = c.name == "intel-clock-decode";
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
@@ -126,7 +129,7 @@ Command parse(const std::vector<std::string> &args) {
     std::set<std::string> keys = {"--json"};
     if (hardware.count(c.name)) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
-    const bool writing = c.name == "amd-curve-set" || c.name == "intel-iccmax-set" || c.name == "intel-bclk-voltage-set" || c.name == "intel-limits-clear" || c.name == "intel-thermal-set" || c.name == "intel-avx-set" || c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set" || c.name == "intel-energy-set" || c.name == "intel-uncore-set" || c.name == "amd-smu-send" || c.name == "register-write";
+    const bool writing = c.name == "amd-pbo-scalar-set" || c.name == "amd-curve-set" || c.name == "intel-iccmax-set" || c.name == "intel-bclk-voltage-set" || c.name == "intel-limits-clear" || c.name == "intel-thermal-set" || c.name == "intel-avx-set" || c.name == "intel-set" || c.name == "intel-oc-set" || c.name == "intel-vf-set" || c.name == "intel-turbo-set" || c.name == "intel-tvb-set" || c.name == "intel-tvb-table-set" || c.name == "intel-energy-set" || c.name == "intel-uncore-set" || c.name == "amd-smu-send" || c.name == "register-write";
     if (c.name == "intel-iccmax-set") keys.insert("--amps");
     const bool vf = c.name == "intel-vf-read" || c.name == "intel-vf-set";
     const bool turbo = c.name == "intel-turbo-read" || c.name == "intel-turbo-set";
@@ -160,6 +163,7 @@ Command parse(const std::vector<std::string> &args) {
         keys.insert("--ccd"); keys.insert("--core"); keys.insert("--cores");
     }
     if (c.name == "amd-curve-set") { keys.insert("--margin"); keys.insert("--expect-raw"); }
+    if (c.name == "amd-pbo-scalar-set") { keys.insert("--scalar"); keys.insert("--expect-raw"); }
     if (c.name == "amd-umc-read") { keys.insert("--bank"); keys.insert("--refresh-slot"); }
     if (c.name == "spd-decode") keys.insert("--file");
     if (pm) keys.insert("--bclk-mhz");
@@ -341,6 +345,16 @@ Command parse(const std::vector<std::string> &args) {
             }
             require(begin == values.size()+1, "--expect-raw has extra values or a trailing separator");
             c.curve.valid = true;
+        }
+    }
+    if (c.name == "amd-pbo-scalar-read" || c.name == "amd-pbo-scalar-set") {
+        c.smu.profile = SmuProfile::Shimada;
+        if (c.name == "amd-pbo-scalar-set") {
+            c.pboScalar = uintOption(options, "--scalar", 10);
+            require(c.pboScalar >= 1, "--scalar requires an integer multiplier 1..10");
+            c.pboExpected = uintOption(options, "--expect-raw", UINT32_MAX);
+            double decoded = 0;
+            require(decodeAmdPboScalar(c.pboExpected, decoded), "--expect-raw must be the exact nonnegative finite binary32 query word in 0..10");
         }
     }
     if (c.name == "amd-umc-read") { c.umc.bank = uintOption(options, "--bank", 22); c.umc.refreshSlot = uintOption(options, "--refresh-slot", 15); }
@@ -893,6 +907,30 @@ Result hardware(const Command &c, HardwareSession &s) {
             if (!r.error) for (auto v : r.args) values.push_back(hex(v));
             out.data.push_back({"args", r.error ? "null" : array(values)});
         }
+    } else if (c.name == "amd-pbo-scalar-read" || c.name == "amd-pbo-scalar-set") {
+        const auto scalar = [](const AmdPboScalar &r) {
+            return object({{"valid", boolean(r.valid && !r.error)}, {"error", number(r.error)},
+                {"query_attempted", boolean(r.messageAttempted)}, {"response", hex(r.response)},
+                {"raw", r.rawValid ? hex(r.raw) : "null"}, {"multiplier", r.valid && !r.error ? number(r.multiplier) : "null"}});
+        };
+        out.data.push_back({"scope", quote("Shimada shared PBO scalar via selected CPU and domain 0 / BDF 0")});
+        out.data.push_back({"hardware_effect_measured", "false"});
+        if (c.name == "amd-pbo-scalar-read") {
+            const auto r = readShimadaPboScalar(s, c.smu); out.error = r.error;
+            out.data.push_back({"scalar", scalar(r)});
+        } else {
+            const auto r = setShimadaPboScalar(s, c.smu, c.pboExpected, c.pboScalar); out.error = r.error;
+            out.data.push_back({"expected_raw", hex(c.pboExpected)});
+            out.data.push_back({"requested_multiplier", number(c.pboScalar)});
+            out.data.push_back({"argument", hex(r.argument)});
+            out.data.push_back({"phase", quote(amdPboPhaseName(r.phase))});
+            out.data.push_back({"before", scalar(r.before)}); out.data.push_back({"after", scalar(r.after)});
+            out.data.push_back({"write_attempted", boolean(r.writeAttempted)});
+            out.data.push_back({"accepted", boolean(r.accepted)});
+            out.data.push_back({"verified", boolean(r.verified && !r.error)});
+            out.data.push_back({"unchanged", boolean(r.unchanged)});
+            out.data.push_back({"response", hex(r.response)});
+        }
     } else if (c.name == "amd-curve-set") {
         const auto r = setShimadaCurves(s, c.smu, c.curve, c.margin); out.error = r.error;
         out.data.push_back({"firmware_ccd", number(c.ccd)});
@@ -1219,6 +1257,8 @@ Usage: octool-cli COMMAND [OPTIONS]
   amd-smu-probe --cpu N --profile shimada|phoenix|gpt [PCI]
   amd-smu-read --cpu N --profile P --message 1|2 [PCI]
   amd-smu-send --cpu N --profile P --message M --arg0 A [--arg1 A ... --arg5 A] [PCI] --apply
+  amd-pbo-scalar-read --cpu N
+  amd-pbo-scalar-set --cpu N --scalar 1..10 --expect-raw RAW --apply
   amd-curve-read --cpu N --ccd N --core N
   amd-curve-read --cpu N --ccd N --cores 0,2,7
   amd-curve-set --cpu N --ccd N (--core N | --cores 0,2,7)

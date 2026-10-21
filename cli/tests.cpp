@@ -5,6 +5,7 @@
 #include "platform/linux_amd_pm.h"
 #include "tests/amd_pm_fixture.h"
 #include "tests/amd_curve_fixture.h"
+#include "tests/amd_pbo_fixture.h"
 #include "tests/intel_oc_fixture.h"
 #include "tests/intel_controls_fixture.h"
 #include "tests/intel_turbo_fixture.h"
@@ -536,6 +537,45 @@ void curveSettingCommands() {
     command(single,{"amd-curve-read","--cpu","130","--ccd","15","--cores","0,2,7"},0);
     single.completion = 0xfe;
     command(single,{"amd-curve-read","--cpu","130","--ccd","15","--cores","0,2,7"},3);
+}
+void pboScalarCommands() {
+    const std::vector<std::string> args = {"amd-pbo-scalar-set","--cpu","130","--scalar","5","--expect-raw","0x3f800000","--apply"};
+    for (unsigned mode = 0; mode < 12; ++mode) {
+        auto invalid = args;
+        if (mode == 0) invalid.pop_back();
+        if (mode == 1) invalid[4] = "0";
+        if (mode == 2) invalid[4] = "11";
+        if (mode == 3) invalid[4] = "1.5";
+        if (mode == 4) invalid[4] = "-1";
+        if (mode == 5) invalid[4] = "1e0";
+        if (mode == 6) invalid[6] = "0x80000000";
+        if (mode == 7) invalid[6] = "0x7f800001";
+        if (mode == 8) invalid[6] = "0x41200001";
+        if (mode == 9) invalid[6] = "4294967296";
+        if (mode == 10) { invalid.push_back("--profile"); invalid.push_back("phoenix"); }
+        if (mode == 11) invalid.erase(invalid.begin()+5,invalid.begin()+7);
+        std::ostringstream output; unsigned opened = 0;
+        assert(run(invalid,output,[&] { ++opened; return std::unique_ptr<HardwareBackend>(); }) == 2 && !opened);
+        if (emit) std::cout << output.str();
+    }
+    for (unsigned mode = 0; mode < 8; ++mode) {
+        AmdPboFixture device; auto requested = args;
+        if (mode == 1) requested[4] = "1";
+        if (mode == 2) device.scalarRaw = 0x40000000;
+        if (mode == 3) device.discardChange = true;
+        if (mode == 4) device.writeCompletion = 0xfe;
+        if (mode == 5) device.completion = 0xfe;
+        if (mode == 6) device.model = 0x18;
+        if (mode == 7) device.afterRequest = [&] { if (device.settings) device.scalarRaw = 0x7fc00000; };
+        command(device,requested,mode < 2 ? 0 : 3);
+        assert(device.settings == (mode == 0 || mode == 3 || mode == 4 || mode == 7 ? 1u : 0u));
+        assert(!device.wrongCpu);
+    }
+    for (std::uint32_t raw : {0u,0x40200000u,0x7fc00000u}) {
+        AmdPboFixture device; device.scalarRaw = raw;
+        command(device,{"amd-pbo-scalar-read","--cpu","130"},raw == 0x7fc00000u ? 3 : 0);
+        assert(device.settings == 0);
+    }
 }
 void verifiedControls() {
     IntelControlsFixture device; device.expectedCpu = 130;
@@ -1962,7 +2002,7 @@ int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--inventory-fixture") { inventory(argv[2]); return 0; }
     if (argc == 3 && std::string(argv[1]) == "--pm-fixture") { pmFilesystem(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
-    curveSettingCommands();
+    curveSettingCommands(); pboScalarCommands();
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); intelMemoryOdtCaptures(); intelMemoryOdtLive(); intelMemoryTemperatureCaptures(); intelMemoryTemperatureLive(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
@@ -1971,5 +2011,5 @@ int main(int argc, char **argv) {
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "52 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "53 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

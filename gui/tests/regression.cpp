@@ -35,6 +35,7 @@
 #include "intel_tvb_table_fixture.h"
 #include "spd_fixture.h"
 #include "amd_curve_fixture.h"
+#include "amd_pbo_fixture.h"
 #include "amdpmpanel.h"
 #include "amd_pm_fixture.h"
 #include "platform/linux_inventory.h"
@@ -3396,6 +3397,89 @@ private slots:
         QTimer::singleShot(0, [] { auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if (box) box->button(QMessageBox::Yes)->click(); });
         apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settings, 3u);
         QCOMPARE(table->item(1,1)->text(), QString("Unchanged; rechecked"));
+    }
+    void pboScalarReadApplyAndNoop() {
+        auto *device = new AmdPboFixture;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
+        panel.resize(1100,900); panel.show();
+        auto *read = panel.findChild<QPushButton *>("pboScalarRead"), *apply = panel.findChild<QPushButton *>("pboScalarApply");
+        auto *value = panel.findChild<QLineEdit *>("pboScalar"); value->setText("5");
+        auto *result = panel.findChild<QTableWidget *>("smuTable"); auto *status = panel.findChild<QLabel *>("smuStatus");
+        apply->click(); QCOMPARE(device->calls,0u); QVERIFY(status->text().contains("Read PBO scalar"));
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(result->rowCount(),3); QCOMPARE(result->item(1,1)->text(),QString("1"));
+        auto shot = qEnvironmentVariable("OCTOOL_PBO_SCALAR_READ_TEST_SCREENSHOT"); if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        const auto calls = device->calls;
+        QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Cancel)->click(); });
+        apply->click(); QCOMPARE(device->calls,calls);
+        bool described = false;
+        QTimer::singleShot(0, [&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) {
+            described=box->text().contains("CPU 130") && box->text().contains("from 1 to 5"); box->button(QMessageBox::Yes)->click(); }});
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(described); QCOMPARE(device->settings,1u);
+        QCOMPARE(result->rowCount(),5); QCOMPARE(result->item(2,1)->text(),QString("5")); QCOMPARE(result->item(4,1)->text(),QString("Matched"));
+        QVERIFY(status->text().contains("firmware readback matched"));
+        shot=qEnvironmentVariable("OCTOOL_PBO_SCALAR_WRITE_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        apply->click(); QCOMPARE(device->settings,1u); QVERIFY(status->text().contains("Read PBO scalar"));
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settings,1u);
+        QCOMPARE(result->item(3,1)->text(),QString("Unchanged; no setting sent"));
+    }
+    void pboScalarInvalidInputAndConfirmationTargetChange() {
+        auto *device = new AmdPboFixture;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
+        auto *read=panel.findChild<QPushButton *>("pboScalarRead"), *apply=panel.findChild<QPushButton *>("pboScalarApply");
+        auto *value=panel.findChild<QLineEdit *>("pboScalar");
+        panel.findChild<QLineEdit *>("smuBus")->setText("01"); read->click(); QCOMPARE(device->calls,0u);
+        panel.findChild<QLineEdit *>("smuBus")->setText("00");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); const auto calls=device->calls;
+        for (const QString text : {QString(""),QString("0"),QString("11"),QString("-1"),QString("1.5"),QString("1e0")}) {
+            value->setText(text); apply->click(); QCOMPARE(device->calls,calls);
+        }
+        value->setText("5");
+        QTimer::singleShot(0, [&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) {
+            panel.findChild<QLineEdit *>("smuCpu")->setText("131"); box->button(QMessageBox::Yes)->click(); }});
+        apply->click(); QCOMPARE(device->calls,calls); QCOMPARE(device->settings,0u);
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("Inputs changed"));
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0);
+    }
+    void pboScalarConflictAndUnverifiedWrite() {
+        auto *device = new AmdPboFixture;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
+        panel.resize(1100,900); panel.show();
+        auto *read=panel.findChild<QPushButton *>("pboScalarRead"), *apply=panel.findChild<QPushButton *>("pboScalarApply");
+        panel.findChild<QLineEdit *>("pboScalar")->setText("5");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); device->scalarRaw=0x40000000;
+        QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settings,0u);
+        auto *status=panel.findChild<QLabel *>("smuStatus"); QVERIFY(status->text().contains("Stopped at compare"));
+        read->click(); QTRY_VERIFY(panel.isEnabled()); device->discardChange=true;
+        QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settings,1u);
+        auto *result=panel.findChild<QTableWidget *>("smuTable");
+        QCOMPARE(result->item(3,1)->text(),QString("Firmware accepted")); QCOMPARE(result->item(4,1)->text(),QString("Not verified"));
+        QVERIFY(status->text().contains("Stopped at verify")); QVERIFY(status->text().contains("may have changed"));
+        const auto shot=qEnvironmentVariable("OCTOOL_PBO_SCALAR_FAILURE_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+    }
+    void pboScalarDropsStaleRead() {
+        auto *device = new AmdPboFixture;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
+        panel.findChild<QPushButton *>("pboScalarRead")->click();
+        panel.findChild<QLineEdit *>("smuCpu")->setText("131");
+        QTRY_VERIFY(panel.isEnabled()); QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0);
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("Inputs changed while reading"));
+        const auto calls=device->calls;
+        panel.findChild<QLineEdit *>("pboScalar")->setText("5"); panel.findChild<QPushButton *>("pboScalarApply")->click();
+        QCOMPARE(device->calls,calls); QCOMPARE(device->settings,0u);
+    }
+    void pboScalarRejectsInvalidFirmwareValue() {
+        auto *device = new AmdPboFixture; device->scalarRaw=0x7fc00000;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
+        panel.findChild<QPushButton *>("pboScalarRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *result=panel.findChild<QTableWidget *>("smuTable");
+        QCOMPARE(result->item(0,1)->text(),hexValue(0x7fc00000,4)); QCOMPARE(result->item(1,1)->text(),QString("Unavailable"));
+        const auto calls=device->calls;
+        panel.findChild<QLineEdit *>("pboScalar")->setText("5"); panel.findChild<QPushButton *>("pboScalarApply")->click();
+        QCOMPARE(device->calls,calls); QCOMPARE(device->settings,0u);
     }
     void curvePartialUpdateReportsEachCore() {
         auto *device = new AmdCurveFixture; device->writable = true;
