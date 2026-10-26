@@ -18,7 +18,11 @@ independent integer-instruction evidence:
 
 Eligibility rejection returns `FDh`; an out-of-range argument returns `FFh`.
 Neither rejection stores the byte or calls the broadcast helper. The MP5
-handler stores the argument at `13110h` and notifies its consumer. Physical
+handler stores the argument at `13110h` and notifies its consumer. Caller
+`35DC0h` passes base `12FACh+30h` to `35D28h`; its `+134h` signed load
+reads that exact word, converts it to float and adds it to the `+4h` input.
+Decoding stops after `35D6Bh`, so this establishes consumption of the count,
+not a complete control algorithm. Physical
 units and downstream power-control effects remain unverified. This is a
 shared setting; neither command contains a CCD/core selector.
 

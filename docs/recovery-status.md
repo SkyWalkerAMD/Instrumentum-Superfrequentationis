@@ -1,5 +1,17 @@
 # 功能还原状态
 
+<!-- amd-power-adjustment-f479d1d -->
+2026-10-26：GUI / CLI 同步新增 **共享 power adjustment 读写与存储值回读**。
+
+- [协议与用法](amd-power-adjustment.md)：仅 SMU 115.46.0；A8 为有符号计数，A7 接受 −10…5。核对旧值、能力与身份，写后读回；不是功耗表偏移，物理单位尚未确认。
+- [本轮验证](amd-power-adjustment-validation.md)：应用 `f479d1d`；47/47 云端任务，11 Linux 目标含 EL7，各 229 Qt 测试、1504 CLI JSON；12 次内核 VM。
+- REA 重新核对原版 3 个函数；SMU 1385 / MP5 637 个函数，新增 1829 个原指令回放案例。MP5 已追至调节值的计算入口，后续解码与物理意义仍待确认。
+- 本轮源码与 33 个包：`dist/gui-cli-amd-power-adjustment-f479d1d/`，附 SHA256。逐核/CCD 字段意义、第二 rails 消费/读回和真机验收仍未完成。
+
+以下为此前阶段记录；旧功能数量以当前更新为准。
+<!-- /amd-power-adjustment-f479d1d -->
+
+
 <!-- amd-firmware-pm-472e785 -->
 2026-10-26：GUI / CLI 同步恢复 **八种 PM 表的逐核 / CCD 存储区**，修正 OC 模式状态位。
 
