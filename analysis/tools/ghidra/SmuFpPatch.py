@@ -29,7 +29,9 @@ def definitions():
         '# Exact CONST.S; all approximation/refinement results stay opaque.',
     ]
     for immediate, bits in enumerate((0, 0x3f800000, 0x40000000, 0x3f000000)):
-        lines.append(f':const.s fr, op_s is op2=15 & op1=10 & fr & op_s & op_s={immediate} & op_t=3 & op0=0 {{ fr = 0x{bits:08x}; }}')
+        # fs aliases the same encoded bits as op_s. Constrain the token alias,
+        # not the displayed operand (which SLEIGH treats as an operand symbol).
+        lines.append(f':const.s fr, op_s is op2=15 & op1=10 & fr & op_s & fs={immediate} & op_t=3 & op0=0 {{ fr = 0x{bits:08x}; }}')
     # Immediates 4..15 are reserved, deliberately left undecodable.
     for name, opcode, read_dest, flags in UNARY:
         op = 'octool_' + name + '_s'
