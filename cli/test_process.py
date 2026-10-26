@@ -58,7 +58,28 @@ for r in query_results:
         assert d['ln2_enabled'] is None and d['command'] == '0x0000005c'
         assert d['firmware_index'] in (0,1,7,127)
 assert sum(r['error'] == -22 for r in queries) == 20
-assert len(reports) == 1465, len(reports)
+assert len(reports) == 1504, len(reports)
+adjustments = [r for r in reports if r['command'].startswith('amd-power-adjustment-')]
+assert len(adjustments) == 39
+assert sum(r['error'] == -22 for r in adjustments) == 18
+for r in adjustments:
+    d = r['data']
+    if 'scope' not in d:
+        continue
+    assert d['scope'] == 'shared' and not d['physical_units_verified'] and not d['hardware_effect_measured']
+    states = [d['state']] if 'state' in d else [d['before'], d['after']]
+    for state in states:
+        if state['valid']:
+            assert state['firmware_version'] == '0x00732e00'
+            assert -128 <= state['counts'] <= 127
+            assert int(state['raw'],16) == state['counts'] & 0xffffffff
+        else:
+            assert state['counts'] is None
+    if 'verified' in d:
+        assert d['verified'] == r['ok']
+        if d['verified']:
+            assert d['after']['counts'] == d['requested_counts']
+        assert d['command'] == '0x000000a7'
 all_curve = [r for r in reports if r['command'] == 'amd-curve-all-set']
 assert len(all_curve) == 35 and [r['ok'] for r in all_curve] == [True]*8+[False]*27
 for i,r in enumerate(all_curve[:13]):

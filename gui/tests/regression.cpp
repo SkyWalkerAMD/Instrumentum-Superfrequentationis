@@ -3678,6 +3678,79 @@ private slots:
         QCOMPARE(d->settings,0u); QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("No decoded state"));
         QApplication::processEvents(); const auto shot=qEnvironmentVariable("OCTOOL_PBO_QUERY_FAILURE_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
     }
+    void powerAdjustmentReadAndVerifiedApply() {
+        auto *d=new AmdPboFixture; d->allowPowerAdjustment=true; d->powerAdjustmentRaw=0xffffffff;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        panel.resize(1400,1400); panel.show(); QApplication::processEvents();
+        auto *read=panel.findChild<QPushButton *>("powerAdjustmentRead"); auto *apply=panel.findChild<QPushButton *>("powerAdjustmentApply");
+        auto *input=panel.findChild<QLineEdit *>("powerAdjustmentCounts"); auto *table=panel.findChild<QTableWidget *>("smuTable");
+        input->setText("-10"); apply->click(); QCOMPARE(d->calls,0u);
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->item(2,1)->text(),QString("-1")); QCOMPARE(d->settings,0u);
+        for(unsigned round=0;round<2;++round) {
+            QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+            apply->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(table->item(2,1)->text(),QString("-10")); QCOMPARE(table->item(4,1)->text(),QString("Matched"));
+            QCOMPARE(d->settings,1u); QCOMPARE(d->powerAdjustmentRaw,0xfffffff6u);
+            const auto calls=d->calls; apply->click(); QCOMPARE(d->calls,calls);
+            if(!round) {
+                QApplication::processEvents(); const auto shot=qEnvironmentVariable("OCTOOL_POWER_ADJUSTMENT_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+                read->click(); QTRY_VERIFY(panel.isEnabled());
+            }
+        }
+        QCOMPARE(d->wrongCpu,0u);
+    }
+    void powerAdjustmentFailuresRemainUnverified() {
+        auto *d=new AmdPboFixture; d->allowPowerAdjustment=true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        panel.resize(1400,1400); panel.show(); QApplication::processEvents();
+        auto *read=panel.findChild<QPushButton *>("powerAdjustmentRead"); auto *apply=panel.findChild<QPushButton *>("powerAdjustmentApply");
+        auto *table=panel.findChild<QTableWidget *>("smuTable"); panel.findChild<QLineEdit *>("powerAdjustmentCounts")->setText("-10");
+        for(unsigned mode=0;mode<3;++mode) {
+            d->firmwareVersion=mode==0?0x00732e01:0x00732e00; d->powerAdjustmentRaw=mode==1?255:0;
+            read->click(); QTRY_VERIFY(panel.isEnabled());
+            if(mode<2) {
+                QCOMPARE(table->item(2,1)->text(),QString("Unavailable"));
+                const auto calls=d->calls; apply->click(); QCOMPARE(d->calls,calls);
+            } else {
+                d->discardChange=true;
+                QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+                apply->click(); QTRY_VERIFY(panel.isEnabled());
+                QCOMPARE(table->item(4,1)->text(),QString("Not verified")); QCOMPARE(d->settings,1u);
+                QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("may have changed"));
+            }
+        }
+        QApplication::processEvents(); const auto shot=qEnvironmentVariable("OCTOOL_POWER_ADJUSTMENT_FAILURE_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+    }
+    void powerAdjustmentInputAndSnapshotGuards() {
+        auto *d=new AmdPboFixture; d->allowPowerAdjustment=true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        auto *read=panel.findChild<QPushButton *>("powerAdjustmentRead"); auto *apply=panel.findChild<QPushButton *>("powerAdjustmentApply");
+        auto *input=panel.findChild<QLineEdit *>("powerAdjustmentCounts");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); const auto calls=d->calls;
+        for(const QString value : {QString(""),QString("-11"),QString("6"),QString("+1"),QString("1.5"),QString(" 1")}) {
+            input->setText(value); apply->click(); QCOMPARE(d->calls,calls);
+        }
+        input->setText("-1");
+        QTimer::singleShot(0,[input] { input->setText("5"); auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QCOMPARE(d->calls,calls); QCOMPARE(d->settings,0u);
+        read->click(); panel.findChild<QLineEdit *>("smuCpu")->setText("131"); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0);
+        const auto changedCalls=d->calls; apply->click(); QCOMPARE(d->calls,changedCalls);
+    }
+    void powerAdjustmentStaleCapabilityAndCancel() {
+        auto *d=new AmdPboFixture; d->allowPowerAdjustment=true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        auto *read=panel.findChild<QPushButton *>("powerAdjustmentRead"); auto *apply=panel.findChild<QPushButton *>("powerAdjustmentApply");
+        panel.findChild<QLineEdit *>("powerAdjustmentCounts")->setText("-1");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); const auto calls=d->calls;
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Cancel)->click(); });
+        apply->click(); QCOMPARE(d->calls,calls);
+        d->capsRaw=6;
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(d->settings,0u);
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->item(4,1)->text(),QString("Not verified"));
+    }
     void firmwareQueryDropsChangedInputs() {
         auto *d=new AmdPboFixture; d->allowStatusQueries=true;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);

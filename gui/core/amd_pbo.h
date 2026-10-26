@@ -50,6 +50,28 @@ AmdPboCapabilities readShimadaPboCapabilities(HardwareSession &session, const Sm
 // Keep these separate even when other bits change during a mode transition.
 bool amdManualOcAvailable(std::uint32_t capabilities);
 bool amdManualOcEnabled(std::uint32_t capabilities);
+// A7/A8 were recovered from SMU 115.46.0. A8 returns a sign-extended byte,
+// not a PM-table byte offset. Units and physical effects remain unverified.
+struct AmdPowerAdjustment {
+    int error = 0, counts = 0;
+    std::uint32_t firmwareVersion = 0, firmwareResponse = 0, raw = 0, response = 0;
+    AmdPboCapabilities capabilities;
+    bool firmwareValid = false, messageAttempted = false, rawValid = false, valid = false;
+};
+struct AmdPowerAdjustmentUpdate {
+    int error = 0, requestedCounts = 0;
+    AmdPboPhase phase = AmdPboPhase::Validate;
+    AmdPowerAdjustment before, after;
+    std::uint32_t argument = 0, response = 0;
+    bool writeAttempted = false, accepted = false, verified = false, unchanged = false;
+};
+bool decodeAmdPowerAdjustment(std::uint32_t raw, int &counts);
+AmdPowerAdjustment readShimadaPowerAdjustment(HardwareSession &session, const SmuTarget &target);
+// Version 0x00732e00 only, shared scope, -10..5 firmware counts. Compare the
+// complete capability word and raw value, require PBO/OC-off, then send A7 once.
+// Verification means A8 stored-value readback only; no retry or rollback.
+AmdPowerAdjustmentUpdate setShimadaPowerAdjustment(HardwareSession &session, const SmuTarget &target,
+    std::uint32_t expectedCapabilities, std::uint32_t expectedRaw, int counts);
 enum class AmdPboQuery { Ln2Mode, CorePerformance };
 struct AmdPboQueryResult {
     int error = 0;

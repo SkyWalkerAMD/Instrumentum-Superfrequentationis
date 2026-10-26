@@ -1,5 +1,9 @@
 # 无桌面版 OCTool
 
+新增 [共享 power adjustment 读写](amd-power-adjustment.md)：`amd-power-adjustment-read`
+和 `amd-power-adjustment-set`。仅放行已核对的 SMU 115.46.0；A8 返回有符号固件计数，
+A7 接受 −10…5，比较旧值和完整能力字后写入并读回。物理单位尚未确认，不作为瓦数或功耗表偏移。
+
 <!-- amd-firmware-pm-472e785 -->
 2026-10-26：GUI / CLI 同步恢复 **八种 PM 表的逐核 / CCD 存储区**，修正 OC 模式状态位。
 

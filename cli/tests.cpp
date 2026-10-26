@@ -2040,6 +2040,64 @@ void pboFmaxCommands() {
         assert(!opened); if (emit) std::cout << output.str();
     }
 }
+void powerAdjustmentCommands() {
+    for(int counts : {-128,-10,-1,0,5,127}) {
+        AmdPboFixture d; d.allowPowerAdjustment=true; d.powerAdjustmentRaw=std::uint32_t(counts);
+        const auto r=command(d,{"amd-power-adjustment-read","--cpu","130"},0);
+        assert(r.find("\"counts\":"+std::to_string(counts))!=std::string::npos && !d.settings && !d.wrongCpu);
+        assert((d.messages==std::vector<std::uint32_t>{2,0x6f,0xa8}));
+    }
+    for(auto raw : {128u,255u,0x80000000u}) {
+        AmdPboFixture d; d.allowPowerAdjustment=true; d.powerAdjustmentRaw=raw;
+        const auto r=command(d,{"amd-power-adjustment-read","--cpu","130"},3);
+        assert(r.find("\"counts\":null")!=std::string::npos && r.find("\"raw_valid\":true")!=std::string::npos && !d.settings);
+    }
+    for(auto version : {0u,0x00732e01u}) {
+        AmdPboFixture d; d.allowPowerAdjustment=true; d.firmwareVersion=version;
+        const auto r=command(d,{"amd-power-adjustment-read","--cpu","130"},3);
+        assert(r.find("\"counts\":null")!=std::string::npos && d.messages==std::vector<std::uint32_t>{2});
+    }
+    for(int counts : {-10,-1,0,5}) {
+        AmdPboFixture d; d.allowPowerAdjustment=true;
+        const auto r=command(d,{"amd-power-adjustment-set","--cpu","130","--counts",std::to_string(counts),"--expect-raw","0","--expect-caps","4","--apply"},0);
+        assert(r.find("\"verified\":true")!=std::string::npos && d.powerAdjustmentRaw==std::uint32_t(counts));
+        assert(d.settings==(counts?1u:0u) && !d.wrongCpu);
+    }
+    for(unsigned mode=0;mode<6;++mode) {
+        AmdPboFixture d; d.allowPowerAdjustment=true;
+        if(mode==0) d.discardChange=true;
+        if(mode==1) d.powerAdjustmentRaw=1;
+        if(mode==2) d.capsRaw=6;
+        if(mode==3) d.firmwareVersion=0x00732e01;
+        if(mode==4) d.writeCompletion=0xfd;
+        if(mode==5) d.afterRequest=[&] { if(d.settings) d.capsRaw=6; };
+        const auto r=command(d,{"amd-power-adjustment-set","--cpu","130","--counts","-10","--expect-raw","0","--expect-caps","4","--apply"},3);
+        assert(r.find("\"verified\":false")!=std::string::npos && d.settings==((mode==0 || mode>=4)?1u:0u));
+    }
+}
+void powerAdjustmentInvalidBeforeOpen() {
+    const std::vector<std::string> valid{"amd-power-adjustment-set","--cpu","130","--counts","-1","--expect-raw","0","--expect-caps","4","--apply"};
+    std::vector<std::vector<std::string>> cases{{"amd-power-adjustment-read"},
+        {"amd-power-adjustment-read","--cpu","130","--apply"},
+        {"amd-power-adjustment-read","--cpu","130","--core","0"}};
+    auto missingApply=valid; missingApply.pop_back(); cases.push_back(missingApply);
+    auto missingRaw=valid; missingRaw.erase(missingRaw.begin()+5,missingRaw.begin()+7); cases.push_back(missingRaw);
+    auto badRaw=valid; badRaw[6]="0xff"; cases.push_back(badRaw);
+    auto badCaps=valid; badCaps[8]="0"; cases.push_back(badCaps);
+    for(const char *value : {"-11","6","1.5","+1"," 1","-","4294967296"}) {
+        auto args=valid; args[4]=value; cases.push_back(args);
+    }
+    for(const char *key : {"--core","--ccd","--firmware-index"}) {
+        auto args=valid; args.insert(args.end(),{key,"0"}); cases.push_back(args);
+    }
+    auto duplicate=valid; duplicate.insert(duplicate.end(),{"--counts","0"}); cases.push_back(duplicate);
+    assert(cases.size()==18);
+    for(const auto &args : cases) {
+        unsigned opened=0; std::ostringstream out;
+        assert(run(args,out,[&] { ++opened; return std::unique_ptr<HardwareBackend>(new AmdPboFixture); })==2 && !opened);
+        if(emit) std::cout << out.str();
+    }
+}
 void pboQueryCommands() {
     for (std::uint32_t raw : {0u,1u,2u,UINT32_MAX}) {
         AmdPboFixture d; d.allowStatusQueries=true; d.ln2Raw=raw;
@@ -2345,6 +2403,7 @@ int main(int argc, char **argv) {
     curveSettingCommands(); pboScalarCommands(); pboFmaxCommands(); pboOfflineCommands(); pboLimitCommands(); pboLimitInvalidBeforeOpen();
     allCoreCurveCommands(); allCoreCurveInvalidBeforeOpen();
     pboQueryCommands(); pboQueryInvalidBeforeOpen();
+    powerAdjustmentCommands(); powerAdjustmentInvalidBeforeOpen();
     ocModeCommands(); ocFrequencyCommands(); ocInvalidBeforeOpen();
     ocSelectedCoreCommands(); ocSelectedCoreFailures(); ocSelectedCoreInvalidBeforeOpen();
     nativePmCommands(); nativePmFailures(); nativePmInvalidBeforeOpen();
@@ -2356,5 +2415,5 @@ int main(int argc, char **argv) {
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "70 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "72 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

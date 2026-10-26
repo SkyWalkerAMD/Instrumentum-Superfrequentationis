@@ -110,6 +110,7 @@ struct Command {
     AmdCurveSnapshot curve;
     unsigned pboScalar = 0, pboFmax = 0, rail0 = 0, rail1 = 0;
     std::uint32_t pboExpected = 0;
+    std::uint32_t powerExpectedRaw = 0;
     unsigned firmwareIndex = 0;
     AmdPboLimit pboLimit = AmdPboLimit::Ppt;
     unsigned pboLimitValue = 0;
@@ -135,7 +136,8 @@ Command parse(const std::vector<std::string> &args) {
     const bool pm = c.name == "amd-pm-read" || c.name == "amd-pm-decode";
     const bool pboCapabilityCommand = c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-fmax-set" || c.name == "amd-pbo-limit-set" ||
         c.name == "amd-oc-mode-set" || c.name == "amd-oc-frequency-set" || c.name == "amd-curve-all-set" ||
-        c.name == "amd-ln2-read" || c.name == "amd-core-performance-read";
+        c.name == "amd-ln2-read" || c.name == "amd-core-performance-read" ||
+        c.name == "amd-power-adjustment-read" || c.name == "amd-power-adjustment-set";
     const bool rails = c.name == "amd-pbo-rails-encode";
     const bool layoutAudit = c.name == "amd-pm-layout-audit";
     require(hardware.count(c.name) || pboCapabilityCommand || rails || layoutAudit || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || memoryOffline || clockOffline || pm, "Unknown command: " + c.name);
@@ -165,6 +167,7 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "amd-pbo-limit-set") { keys.insert("--limit"); keys.insert("--value"); keys.insert("--expect-caps"); keys.insert("--apply"); }
     if (c.name == "amd-curve-all-set") for (const char *key : {"--margin","--expect-caps","--apply"}) keys.insert(key);
     if (c.name == "amd-core-performance-read") keys.insert("--firmware-index");
+    if (c.name == "amd-power-adjustment-set") for (const char *key : {"--counts","--expect-raw","--expect-caps","--apply"}) keys.insert(key);
     if (c.name == "amd-oc-mode-set") for (const char *key : {"--enabled","--expect-caps","--apply"}) keys.insert(key);
     if (c.name == "amd-oc-frequency-set") for (const char *key : {"--scope","--ccd","--core","--cores","--mhz","--expect-caps","--apply"}) keys.insert(key);
     if (rails) { keys.insert("--rail0-mv"); keys.insert("--rail1-mv"); }
@@ -380,6 +383,20 @@ Command parse(const std::vector<std::string> &args) {
     }
     if (pboCapabilityCommand) {
         c.smu.profile = SmuProfile::Shimada;
+        if (c.name == "amd-power-adjustment-set") {
+            require(options.count("--apply"), "Power adjustment requires --apply");
+            const auto text = get(options,"--counts");
+            const auto start = !text.empty() && text[0] == '-' ? 1u : 0u;
+            require(start < text.size() && text.find_first_not_of("0123456789",start) == std::string::npos,
+                    "--counts requires a decimal integer -10..5; physical units are unverified");
+            const auto magnitude = wideInteger(text.substr(start),start ? 10 : 5,"--counts");
+            c.margin = start ? -int(magnitude) : int(magnitude);
+            c.powerExpectedRaw = uintOption(options,"--expect-raw",UINT32_MAX);
+            int previous = 0;
+            require(decodeAmdPowerAdjustment(c.powerExpectedRaw,previous), "--expect-raw must be a sign-extended 8-bit query word");
+            c.pboExpected = uintOption(options,"--expect-caps",UINT32_MAX);
+            require(amdPboFmaxAvailable(c.pboExpected), "Power adjustment requires PBO available and manual OC disabled");
+        }
         if (c.name == "amd-core-performance-read") c.firmwareIndex = uintOption(options,"--firmware-index",127);
         if (c.name == "amd-oc-mode-set" || c.name == "amd-oc-frequency-set") {
             require(options.count("--apply"), "Manual OC settings require --apply");
@@ -1004,6 +1021,32 @@ Result hardware(const Command &c, HardwareSession &s) {
             if (!r.error) for (auto v : r.args) values.push_back(hex(v));
             out.data.push_back({"args", r.error ? "null" : array(values)});
         }
+    } else if (c.name == "amd-power-adjustment-read" || c.name == "amd-power-adjustment-set") {
+        const auto snapshot = [](const AmdPowerAdjustment &v) {
+            return object({{"error",number(v.error)},{"valid",boolean(v.valid && !v.error)},
+                {"firmware_version",v.firmwareValid ? hex(v.firmwareVersion) : "null"},
+                {"capabilities_raw",v.capabilities.valid ? hex(v.capabilities.raw) : "null"},
+                {"raw_valid",boolean(v.rawValid)},{"raw",v.rawValid ? hex(v.raw) : "null"},
+                {"counts",v.valid && !v.error ? number(v.counts) : "null"},
+                {"query_attempted",boolean(v.messageAttempted)},{"response",hex(v.response)},
+                {"write_available",boolean(v.valid && !v.error && amdPboFmaxAvailable(v.capabilities.raw))}});
+        };
+        out.data = {{"scope",quote("shared")},{"physical_units_verified","false"},
+            {"hardware_effect_measured","false"},{"query_command",hex(0xa8)},
+            {"detail",quote("Signed firmware adjustment, not a PM buffer offset or measured watts. Only SMU 115.46.0 is supported; verification covers the stored value.")}};
+        if (c.name == "amd-power-adjustment-read") {
+            const auto r = readShimadaPowerAdjustment(s,c.smu); out.error = r.error;
+            out.data.push_back({"state",snapshot(r)});
+            out.data.push_back({"setting_commands_sent","false"});
+        } else {
+            const auto r = setShimadaPowerAdjustment(s,c.smu,c.pboExpected,c.powerExpectedRaw,c.margin); out.error = r.error;
+            const Fields update = {{"requested_counts",number(c.margin)},{"expected_raw",hex(c.powerExpectedRaw)},
+                {"expected_capabilities",hex(c.pboExpected)},{"before",snapshot(r.before)},{"after",snapshot(r.after)},
+                {"command",hex(0xa7)},{"argument",hex(r.argument)},{"response",hex(r.response)},
+                {"phase",quote(amdPboPhaseName(r.phase))},{"write_attempted",boolean(r.writeAttempted)},
+                {"accepted",boolean(r.accepted)},{"verified",boolean(r.verified && !r.error)},{"unchanged",boolean(r.unchanged)}};
+            out.data.insert(out.data.end(),update.begin(),update.end());
+        }
     } else if (c.name == "amd-ln2-read" || c.name == "amd-core-performance-read") {
         const bool ln2 = c.name == "amd-ln2-read";
         const auto r = readShimadaPboQuery(s,c.smu,ln2 ? AmdPboQuery::Ln2Mode : AmdPboQuery::CorePerformance,c.firmwareIndex);
@@ -1484,6 +1527,9 @@ Usage: octool-cli COMMAND [OPTIONS]
     1..2000. Temperature uses integer 1..100 C. These are application input bounds,
     not operating recommendations. Current limit and actual effect are unverified.
   amd-ln2-read --cpu N                Read firmware LN2 state (0/1 only)
+  amd-power-adjustment-read --cpu N   Read signed shared adjustment (SMU 115.46.0)
+  amd-power-adjustment-set --cpu N --counts -10..5 --expect-raw U32 --expect-caps U32 --apply
+                                     Compare and read back firmware counts; units unverified
   amd-core-performance-read --cpu N --firmware-index 0..127
                                     Read opaque performance word; no physical mapping
   amd-pbo-rails-encode --rail0-mv N --rail1-mv N

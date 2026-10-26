@@ -227,6 +227,14 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
         pboQueryIndex_->setEnabled(pboQuery_->currentData().toInt()==int(octool::core::AmdPboQuery::CorePerformance));
         invalidateCurve(); status_->setText("Query changed. Read firmware state again.");
     });
+    auto *power = new QHBoxLayout;
+    powerAdjustment_ = edit("powerAdjustmentCounts","",this);
+    powerAdjustment_->setPlaceholderText("Firmware counts -10..5; units unverified"); power->addWidget(powerAdjustment_);
+    auto *readPower = new QPushButton("Read adjustment",this); readPower->setObjectName("powerAdjustmentRead"); power->addWidget(readPower);
+    auto *applyPower = new QPushButton("Apply adjustment…",this); applyPower->setObjectName("powerAdjustmentApply"); power->addWidget(applyPower);
+    form->addRow("Shared power adjustment · SMU 115.46.0",power);
+    connect(readPower,&QPushButton::clicked,this,[this] { readPowerAdjustment(); });
+    connect(applyPower,&QPushButton::clicked,this,[this] { applyPowerAdjustment(); });
     auto *scalar = new QHBoxLayout;
     pboScalar_ = edit("pboScalar", "", this); pboScalar_->setPlaceholderText("Integer multiplier 1..10");
     scalar->addWidget(pboScalar_);
@@ -333,7 +341,87 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     connect(profile_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, clear);
 }
 AmdTuningPanel::~AmdTuningPanel() { cancelled_->store(true); }
-void AmdTuningPanel::invalidateCurve() { ++curveRevision_; curveSnapshot_ = {}; pboSnapshot_ = {}; pboCaps_ = {}; table_->setRowCount(0); }
+void AmdTuningPanel::invalidateCurve() { ++curveRevision_; curveSnapshot_ = {}; pboSnapshot_ = {}; pboCaps_ = {}; powerSnapshot_ = {}; table_->setRowCount(0); }
+void AmdTuningPanel::readPowerAdjustment() {
+    using namespace octool::core;
+    invalidateCurve();
+    quint64 cpu=0,bus=0,device=0,function=0;
+    if (profile_->currentData().toInt()!=int(SmuProfile::Shimada) ||
+        !parseNumber(cpu_->text(),10,UINT32_MAX,cpu) || !parseNumber(bus_->text(),16,0,bus) ||
+        !parseNumber(device_->text(),16,0,device) || !parseNumber(function_->text(),16,0,function)) {
+        status_->setText("Use Shimada at 0000:00:00.0 and a valid logical CPU. No query sent."); return;
+    }
+    SmuTarget target; target.cpu=unsigned(cpu); target.profile=SmuProfile::Shimada;
+    const auto revision=curveRevision_; setEnabled(false); status_->setText("Reading firmware version and adjustment…");
+    auto *watcher=new QFutureWatcher<AmdPowerAdjustment>(this);
+    connect(watcher,&QFutureWatcher<AmdPowerAdjustment>::finished,this,[this,watcher,revision,target] {
+        const auto r=watcher->result();
+        if (revision!=curveRevision_) status_->setText("Inputs changed. Read adjustment again.");
+        else {
+            append(table_,{"SMU version",r.firmwareValid?hexValue(r.firmwareVersion,4):"Unavailable"});
+            append(table_,{"Raw adjustment",r.rawValid?hexValue(r.raw,4):"Unavailable"});
+            append(table_,{"Signed firmware counts",r.valid?QString::number(r.counts):"Unavailable"});
+            append(table_,{"Physical units","Unverified"});
+            append(table_,{"Scope","Shared; no core/CCD selector"});
+            append(table_,{"Write available",r.valid && amdPboFmaxAvailable(r.capabilities.raw)?"Yes":"No"});
+            if (r.error || !r.valid) status_->setText(failure(r.error?r.error:-EIO)+" Adjustment unavailable. Only SMU 115.46.0 is supported.");
+            else {
+                powerSnapshot_=r; pboTarget_=target;
+                status_->setText("Signed adjustment read. This is a firmware count, not a PM table offset or measured power. Physical units remain unverified.");
+            }
+        }
+        setEnabled(true); watcher->deleteLater();
+    });
+    const auto access=access_; const auto cancelled=cancelled_;
+    watcher->setFuture(QtConcurrent::run([access,cancelled,target] {
+        AmdPowerAdjustment out;
+        const int error=access->transaction([&](HardwareSession &s) { out=readShimadaPowerAdjustment(s,target); return out.error; },10000,cancelled.get());
+        if (error) { out.error=error; out.valid=false; }
+        return out;
+    }));
+}
+void AmdTuningPanel::applyPowerAdjustment() {
+    using namespace octool::core;
+    if (!powerSnapshot_.valid || powerSnapshot_.error) { status_->setText("Read adjustment before applying a change."); return; }
+    if (!amdPboFmaxAvailable(powerSnapshot_.capabilities.raw)) { status_->setText("PBO must be available and manual OC disabled."); return; }
+    const auto input=powerAdjustment_->text(); const auto text=input.toStdString();
+    const auto start=!text.empty() && text[0]=='-' ? 1u : 0u;
+    bool ok=false; const int counts=input.toInt(&ok,10);
+    if (!ok || start>=text.size() || text.find_first_not_of("0123456789",start)!=std::string::npos || counts < -10 || counts > 5) {
+        status_->setText("Adjustment requires an integer -10..5 in firmware counts. Physical units are unverified."); return;
+    }
+    const auto target=pboTarget_; const auto before=powerSnapshot_; const auto prepared=curveRevision_;
+    if (QMessageBox::question(this,"Apply shared power adjustment",
+        QString("Logical CPU %1 · SMU 115.46.0\nChange shared firmware adjustment from %2 to %3 counts?\n"
+                "Physical units and effects on power are unverified. The stored value will be read back.")
+            .arg(target.cpu).arg(before.counts).arg(counts),QMessageBox::Yes|QMessageBox::Cancel,QMessageBox::Cancel)!=QMessageBox::Yes) return;
+    if (prepared!=curveRevision_ || input!=powerAdjustment_->text()) { invalidateCurve(); status_->setText("Inputs changed. Read adjustment again."); return; }
+    invalidateCurve(); const auto revision=curveRevision_; setEnabled(false); status_->setText("Comparing and reading back adjustment…");
+    auto *watcher=new QFutureWatcher<AmdPowerAdjustmentUpdate>(this);
+    connect(watcher,&QFutureWatcher<AmdPowerAdjustmentUpdate>::finished,this,[this,watcher,revision,target] {
+        const auto r=watcher->result();
+        if (revision==curveRevision_) {
+            append(table_,{"Previous raw",r.before.rawValid?hexValue(r.before.raw,4):"Unavailable"});
+            append(table_,{"Readback raw",r.after.rawValid?hexValue(r.after.raw,4):"Unavailable"});
+            append(table_,{"Readback counts",r.after.valid?QString::number(r.after.counts):"Unavailable"});
+            append(table_,{"Setting command",r.unchanged?"Unchanged; no setting sent":r.accepted?"Firmware accepted":r.writeAttempted?"Attempted; completion unknown":"Not sent"});
+            append(table_,{"Stored-value readback",r.verified && !r.error?"Matched":"Not verified"});
+            append(table_,{"Physical units / power effect","Unverified / not measured"});
+        }
+        status_->setText((r.error?failure(r.error)+QString(" Stopped at %1. ").arg(amdPboPhaseName(r.phase))+
+            (r.writeAttempted?"The setting may have changed. No retry or rollback.":"No setting command sent."):
+            "Stored adjustment readback matched. Physical power effects are not measured.")+
+            (revision==curveRevision_?QString(" Read again before another edit."):QString(" Inputs changed; result belongs to CPU %1. Read again.").arg(target.cpu)));
+        setEnabled(true); watcher->deleteLater();
+    });
+    const auto access=access_; const auto cancelled=cancelled_;
+    watcher->setFuture(QtConcurrent::run([access,cancelled,target,before,counts] {
+        AmdPowerAdjustmentUpdate out;
+        const int error=access->transaction([&](HardwareSession &s) { out=setShimadaPowerAdjustment(s,target,before.capabilities.raw,before.raw,counts); return out.error; },10000,cancelled.get());
+        if (error) { out.error=error; out.verified=false; }
+        return out;
+    }));
+}
 void AmdTuningPanel::readPboQuery() {
     using namespace octool::core;
     invalidateCurve();

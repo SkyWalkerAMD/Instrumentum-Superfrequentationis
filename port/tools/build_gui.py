@@ -142,6 +142,8 @@ def main():
                    OCTOOL_PBO_LN2_TEST_SCREENSHOT=str((tests / "pbo-ln2-fixture.png").resolve()),
                    OCTOOL_PBO_PERFORMANCE_TEST_SCREENSHOT=str((tests / "pbo-performance-fixture.png").resolve()),
                    OCTOOL_PBO_QUERY_FAILURE_TEST_SCREENSHOT=str((tests / "pbo-query-failure-fixture.png").resolve()),
+                   OCTOOL_POWER_ADJUSTMENT_TEST_SCREENSHOT=str((tests / "power-adjustment-fixture.png").resolve()),
+                   OCTOOL_POWER_ADJUSTMENT_FAILURE_TEST_SCREENSHOT=str((tests / "power-adjustment-failure-fixture.png").resolve()),
                    OCTOOL_PBO_SCALAR_READ_TEST_SCREENSHOT=str((tests / "pbo-scalar-read-fixture.png").resolve()),
                    OCTOOL_PBO_SCALAR_WRITE_TEST_SCREENSHOT=str((tests / "pbo-scalar-write-fixture.png").resolve()),
                    OCTOOL_PBO_SCALAR_FAILURE_TEST_SCREENSHOT=str((tests / "pbo-scalar-failure-fixture.png").resolve()),

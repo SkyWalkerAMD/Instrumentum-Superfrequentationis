@@ -108,6 +108,69 @@ AmdPboQueryResult readShimadaPboQuery(HardwareSession &s, const SmuTarget &targe
 bool amdManualOcAvailable(std::uint32_t caps) { return (caps & 1u) != 0; }
 bool amdManualOcEnabled(std::uint32_t caps) { return (caps & 0x10000u) != 0; }
 bool amdPboFmaxAvailable(std::uint32_t caps) { return (caps & 4u) && !amdManualOcEnabled(caps); }
+bool decodeAmdPowerAdjustment(std::uint32_t raw, int &counts) {
+    counts = 0;
+    if (raw <= 127) { counts = int(raw); return true; }
+    if (raw >= 0xffffff80u) { counts = -int(~raw + 1u); return true; }
+    return false;
+}
+AmdPowerAdjustment readShimadaPowerAdjustment(HardwareSession &s, const SmuTarget &target) {
+    AmdPowerAdjustment out;
+    if ((out.error = checkTarget(s, target))) return out;
+    const auto version = detail::exchangeShimadaRsmu(s, 2, 0, true, true);
+    out.firmwareResponse = version.response;
+    if ((out.error = version.error)) return out;
+    if ((out.error = checkTarget(s, target))) return out;
+    out.firmwareVersion = version.raw; out.firmwareValid = true;
+    if (version.raw != 0x00732e00u) { out.error = -ENOTSUP; return out; }
+    out.capabilities = readShimadaPboCapabilities(s, target);
+    if ((out.error = out.capabilities.error)) return out;
+    if ((out.error = checkTarget(s, target))) return out;
+    const auto reply = detail::exchangeShimadaRsmu(s, 0xa8, 0, true, true);
+    out.response = reply.response; out.messageAttempted = reply.messageAttempted;
+    if ((out.error = reply.error)) return out;
+    if ((out.error = checkTarget(s, target))) return out;
+    if ((out.error = s.checkpoint())) return out;
+    out.raw = reply.raw; out.rawValid = true;
+    if (!decodeAmdPowerAdjustment(out.raw, out.counts)) { out.error = -ERANGE; return out; }
+    out.valid = true; return out;
+}
+AmdPowerAdjustmentUpdate setShimadaPowerAdjustment(HardwareSession &s, const SmuTarget &target,
+    std::uint32_t expectedCapabilities, std::uint32_t expectedRaw, int counts) {
+    AmdPowerAdjustmentUpdate out; out.requestedCounts = counts; int previous = 0;
+    if (counts < -10 || counts > 5 || !decodeAmdPowerAdjustment(expectedRaw, previous)) {
+        out.error = -ERANGE; return out;
+    }
+    if (!amdPboFmaxAvailable(expectedCapabilities)) { out.error = -ENOTSUP; return out; }
+    out.argument = std::uint32_t(counts);
+    out.phase = AmdPboPhase::Compare;
+    out.before = readShimadaPowerAdjustment(s, target);
+    if ((out.error = out.before.error)) return out;
+    if (out.before.raw != expectedRaw || out.before.capabilities.raw != expectedCapabilities) {
+        out.error = -EAGAIN; return out;
+    }
+    if (out.before.raw == out.argument) {
+        if ((out.error = s.checkpoint())) return out;
+        out.after = out.before; out.verified = out.unchanged = true;
+        out.phase = AmdPboPhase::Complete; return out;
+    }
+    const auto caps = readShimadaPboCapabilities(s, target);
+    if ((out.error = caps.error)) return out;
+    if (caps.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
+    if ((out.error = checkTarget(s, target))) return out;
+    out.phase = AmdPboPhase::Write;
+    const auto reply = detail::exchangeShimadaRsmu(s, 0xa7, out.argument, false, true);
+    out.writeAttempted = reply.messageAttempted; out.response = reply.response;
+    out.accepted = reply.response == 1;
+    if ((out.error = reply.error)) return out;
+    out.phase = AmdPboPhase::Verify;
+    out.after = readShimadaPowerAdjustment(s, target);
+    if ((out.error = out.after.error)) return out;
+    if (out.after.capabilities.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
+    if (out.after.raw != out.argument) { out.error = -EIO; return out; }
+    if ((out.error = s.checkpoint())) return out;
+    out.verified = true; out.phase = AmdPboPhase::Complete; return out;
+}
 AmdPboFmaxUpdate setShimadaPboFmax(HardwareSession &s, const SmuTarget &target,
                                  std::uint32_t expectedCapabilities, unsigned mhz) {
     AmdPboFmaxUpdate out; out.requestedMHz = mhz;

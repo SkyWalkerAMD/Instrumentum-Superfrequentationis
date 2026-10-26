@@ -6,6 +6,7 @@ on:
       - 'analysis/tools/firmware-smu-input.py'
       - 'analysis/tools/firmware-pm-copy.py'
       - 'analysis/tools/firmware-rails-replay.py'
+      - 'analysis/tools/firmware-adjustment-replay.py'
       - 'analysis/tools/ghidra/Smu*.java'
   workflow_dispatch:
 permissions:
@@ -65,6 +66,8 @@ jobs:
           test -s build/firmware-evidence/smu/smu-study.json
           python3 analysis/tools/firmware-rails-replay.py --smu build/firmware-input/smu-73-2e-body.bin \
             --study build/firmware-evidence/smu/smu-study.json --output build/firmware-evidence/rails-replay-proof.json
+          python3 analysis/tools/firmware-adjustment-replay.py --smu build/firmware-input/smu-73-2e-body.bin \
+            --study build/firmware-evidence/smu/smu-study.json --output build/firmware-evidence/adjustment-replay-proof.json
       - name: Static MP5 data producers and OC consumers
         run: |
           mkdir -p build/firmware-evidence/mp5
