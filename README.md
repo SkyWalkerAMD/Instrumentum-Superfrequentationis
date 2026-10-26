@@ -1,10 +1,16 @@
 # Instrumentum Superfrequentationis
 
-<!-- amd-fmax-readback-current -->
-新增 [Fmax 固件设置回读](docs/amd-fmax-readback.md)：GUI / CLI 同步支持 SMU 115.46.0 的 `6Eh` 查询与 `70h` 写后校验。
-设置前比较旧 MHz 和完整能力字；CLI 现在要求 `--expect-mhz`。固件裁剪或回读不符会保留实际值并报告错误。
-读回的是保存的共享上限，运行频率尚未实测。下文原先“Fmax 仅命令确认”的描述属于历史阶段。
-<!-- /amd-fmax-readback-current -->
+<!-- amd-fmax-readback-fca0725 -->
+2026-10-26：GUI / CLI 同步恢复 **Fmax 固件设置回读与写后校验**，限定 SMU 115.46.0。
+
+- [协议与用法](docs/amd-fmax-readback.md)：`6Eh` 读取，`70h` 写入；比较旧 MHz 和能力字，报告实际回读及是否匹配。CLI 设置现在要求 `--expect-mhz`。
+- [本轮验证](docs/amd-fmax-readback-validation.md)：44/44 云端任务；11 Linux 目标含 EL7，各 231 Qt 测试、1521 CLI JSON；12 次内核 VM。
+- REA / Ghidra 继续静态研究：11472 个合成指令编码、510 个 Fmax 设置案例及 420 次回读。近似浮点仍保留未知语义；逐核/CCD 物理标签和第二 rails 协议尚未闭合。
+- 源码与 33 个包：`dist/gui-cli-amd-fmax-readback-fca0725/`，附 SHA256。读回的是共享上限，真实硬件频率和功耗未验收。
+
+下文为此前阶段记录，旧 Fmax 仅命令确认的状态以本次更新为准。
+<!-- /amd-fmax-readback-fca0725 -->
+
 
 <!-- amd-power-adjustment-f479d1d -->
 2026-10-26：GUI / CLI 同步新增 **共享 power adjustment 读写与存储值回读**。

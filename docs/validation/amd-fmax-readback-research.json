@@ -1,0 +1,2421 @@
+{
+  "schema": 1,
+  "date": "2026-10-26",
+  "source_commit": "ab172a8f37d8325c2d7dbae69ea4c5add4980322",
+  "hardware_execution": false,
+  "run": {
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/40314248220",
+    "source_commit": "ab172a8f37d8325c2d7dbae69ea4c5add4980322",
+    "jobs": [
+      {
+        "completedAt": "2026-10-26T11:22:00Z",
+        "conclusion": "success",
+        "databaseId": 121542745137,
+        "name": "firmware",
+        "startedAt": "2026-10-26T11:19:52Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-26T11:19:54Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-26T11:19:53Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-26T11:19:55Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-26T11:19:54Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-26T11:20:00Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v4",
+            "number": 3,
+            "startedAt": "2026-10-26T11:19:55Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-26T11:20:00Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-java@v4",
+            "number": 4,
+            "startedAt": "2026-10-26T11:20:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-26T11:20:17Z",
+            "conclusion": "success",
+            "name": "Install pinned analysis tools",
+            "number": 5,
+            "startedAt": "2026-10-26T11:20:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-26T11:20:22Z",
+            "conclusion": "success",
+            "name": "Extend and compile the isolated static Xtensa decoder",
+            "number": 6,
+            "startedAt": "2026-10-26T11:20:17Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-26T11:20:27Z",
+            "conclusion": "success",
+            "name": "Verify public vendor firmware and extract selected inputs",
+            "number": 7,
+            "startedAt": "2026-10-26T11:20:22Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-26T11:20:59Z",
+            "conclusion": "success",
+            "name": "Static Xtensa SMU handlers and PM version references",
+            "number": 8,
+            "startedAt": "2026-10-26T11:20:27Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-26T11:21:16Z",
+            "conclusion": "success",
+            "name": "Static MP5 data producers and OC consumers",
+            "number": 9,
+            "startedAt": "2026-10-26T11:20:59Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-26T11:21:55Z",
+            "conclusion": "success",
+            "name": "REA static UEFI transport and dual current-limit functions",
+            "number": 10,
+            "startedAt": "2026-10-26T11:21:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-26T11:21:58Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@v4",
+            "number": 11,
+            "startedAt": "2026-10-26T11:21:55Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-26T11:21:58Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-java@v4",
+            "number": 20,
+            "startedAt": "2026-10-26T11:21:58Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-26T11:21:58Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@v4",
+            "number": 21,
+            "startedAt": "2026-10-26T11:21:58Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-26T11:21:58Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 22,
+            "startedAt": "2026-10-26T11:21:58Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-26T11:21:59Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 23,
+            "startedAt": "2026-10-26T11:21:58Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/40314248220/job/121542745137"
+      }
+    ],
+    "artifact_id": 12645294787,
+    "archive": {
+      "path": "build/amd-fmax-study-40314248220/artifact.zip",
+      "bytes": 2088619,
+      "sha256": "0d2459c865fb7bcfa735a6a2e0acd032071a49acaf3744598e49c91912131159"
+    },
+    "run_log": {
+      "path": "build/amd-fmax-study-40314248220/run.log",
+      "bytes": 90208,
+      "sha256": "0d9980f53dcde4122c3bfc8129b95ccf5c3525ec7aaa855c2cd1d54c3ec92653"
+    }
+  },
+  "inputs": {
+    "schema": 1,
+    "archive_sha256": "5a06390b1f9e47baa0868e2949855516cddbba5ebe6dd32fa7141c5e4b404b70",
+    "capsule_sha256": "ec6e197963c11b44f36b11592c8d097e09aed508980d2d0be2276e244ed2dbe4",
+    "smu_packed_sha256": "3b4a6ba4ed71770e016351c2ca3c14e481107c5f9a98b94a8f34e0d37efd49b5",
+    "smu_body_sha256": "a2f3724ccaef1d67db04afb553816f111dc86207480b28d7998cc15fa92ea7d7",
+    "smu_body_bytes": 262144,
+    "source_url": "https://dlcdnets.asus.com/pub/ASUS/mb/BIOS/Pro-WS-TRX50-SAGE-WIFI-ASUS-1317.zip",
+    "support_url": "https://www.asus.com/motherboards-components/motherboards/workstation/pro-ws-trx50-sage-wifi/helpdesk_bios/",
+    "mp5_body_sha256": "b5e9c94ef3a27d55a95c1a0d703cc7041b734f9475d44b8eecd49a15794cdeaf",
+    "mp5_packed_sha256": "6ad1fb04040fd0fadd3f9b34db6e7ed599072e538143bfbceafdd0667ee9e07b",
+    "mp5_body_bytes": 262144,
+    "hardware_execution": false,
+    "modules": [
+      {
+        "guid": "062913EF-0152-4B5A-B9BB-0BF21A09D1D3",
+        "name": "transport",
+        "sha256": "16dc54fefb3ac983d3752adbe32db3f38259e239fc89ecec78b18a0912796e60",
+        "bytes": 15872,
+        "analysis_sha256": "7b5302929acb73d0a6a56842af62850b1b017e5c8d1fe1ccbc22a25551d06e67",
+        "entry_field_offset": 232,
+        "original_entry_rva": 1172,
+        "analysis_entry_rva": 5220,
+        "instruction_bytes_changed": false
+      },
+      {
+        "guid": "31B03837-0853-4B17-A6BB-E0BC2405F901",
+        "name": "limits",
+        "sha256": "04f224cf28739fad16b68bb82d0761d2f6ac5e247ad7377ad6e0051cf9405b43",
+        "bytes": 185856,
+        "analysis_sha256": "7da8e70b76a41f065bfa645b04bdcb58a1cdab3f02bcae111c3c8581467e9f4d",
+        "entry_field_offset": 232,
+        "original_entry_rva": 1312,
+        "analysis_entry_rva": 18512,
+        "instruction_bytes_changed": false
+      }
+    ]
+  },
+  "studies": {
+    "smu": {
+      "exported_count": 1385,
+      "bad_instruction_truncations": 7,
+      "previous_bad_instruction_truncations": 79,
+      "source_sha256": "a2f3724ccaef1d67db04afb553816f111dc86207480b28d7998cc15fa92ea7d7",
+      "evidence": {
+        "path": "build/amd-fmax-study-40314248220/smu/smu-study.json",
+        "bytes": 7614057,
+        "sha256": "2495e9af6db40773486ecbdd94058b644501f7bd61e36a03d4cc53cb12549cac"
+      },
+      "numeric_fp_emulation": false,
+      "functions_with_opaque_fp": 83
+    },
+    "mp5": {
+      "exported_count": 634,
+      "bad_instruction_truncations": 7,
+      "previous_bad_instruction_truncations": 71,
+      "source_sha256": "b5e9c94ef3a27d55a95c1a0d703cc7041b734f9475d44b8eecd49a15794cdeaf",
+      "evidence": {
+        "path": "build/amd-fmax-study-40314248220/mp5/smu-study.json",
+        "bytes": 3692304,
+        "sha256": "f5e5c2b1af4812341aa49aedbd5f5aa146e349be45e3e1595bb77a3be780443d"
+      },
+      "numeric_fp_emulation": false,
+      "functions_with_opaque_fp": 52
+    },
+    "rea-transport": {
+      "source_sha256": "7b5302929acb73d0a6a56842af62850b1b017e5c8d1fe1ccbc22a25551d06e67",
+      "evidence": [
+        {
+          "path": "build/amd-fmax-study-40314248220/rea-transport/study.json",
+          "bytes": 1669,
+          "sha256": "2ad0e8e717b968a3e36ce5f9269c12faf90a353b155b42bf24d5f2e09d250b90"
+        },
+        {
+          "path": "build/amd-fmax-study-40314248220/rea-transport/resolved-functions.json",
+          "bytes": 2603,
+          "sha256": "31b97ac863dbc70e6c3e1d1df20b5a9289f195815535f7822f0598aa88738b9d"
+        },
+        {
+          "path": "build/amd-fmax-study-40314248220/rea-transport/evidence.json",
+          "bytes": 19242,
+          "sha256": "9bf2dcd01e9f0c78932ad6d26d7a85d2aabcc0515d73628d3d95a8fe137314b8"
+        }
+      ]
+    },
+    "rea-limits": {
+      "source_sha256": "7da8e70b76a41f065bfa645b04bdcb58a1cdab3f02bcae111c3c8581467e9f4d",
+      "evidence": [
+        {
+          "path": "build/amd-fmax-study-40314248220/rea-limits/study.json",
+          "bytes": 1660,
+          "sha256": "78bf6b7a7dbe5a38594848db20cb32b165e3f82870963c4ecffb32076c91d1c2"
+        },
+        {
+          "path": "build/amd-fmax-study-40314248220/rea-limits/resolved-functions.json",
+          "bytes": 3378,
+          "sha256": "4bdd7844ca7ebd3e98e70c0296e77daf4cd68aa934a19fa396e045a620ae6ca4"
+        },
+        {
+          "path": "build/amd-fmax-study-40314248220/rea-limits/evidence.json",
+          "bytes": 24326,
+          "sha256": "08f0598e1b46bed7d9d9459ee5ddc912f9e2ca37eadf5ae080425c93df156ea0"
+        }
+      ]
+    }
+  },
+  "decoder_extension": {
+    "schema": 1,
+    "hardware_execution": false,
+    "firmware_modified": false,
+    "ghidra_version": "12.1.4",
+    "qemu_revision": "d73149283205645625bfa9fe029cfb68e4c4a9ae",
+    "encoding_source": "https://github.com/qemu/qemu/blob/d73149283205645625bfa9fe029cfb68e4c4a9ae/target/xtensa/core-de233_fpu/xtensa-modules.c.inc",
+    "constant_semantics_source": "https://github.com/qemu/qemu/blob/d73149283205645625bfa9fe029cfb68e4c4a9ae/target/xtensa/translate.c",
+    "reference_sha256": {
+      "xtensa-modules.c.inc": "70717c4060f356ad038def74241c4de76cbd57758edd19616ad449222a04d0a7",
+      "translate.c": "f06ea79f7c3332fb8910d1e5829978324cf1e04843161bbadb47b6fbb256f810"
+    },
+    "original_spec_sha256": "e480837a5e3004401c9904ee486f9cf42b24cd13eefa47a7f141e995be6e1959",
+    "patched_spec_sha256": "c5523cdeb375f23c40e242cfc4d9aefe674d3e9e1c797735e6e714c3140fc3b7",
+    "extension_sha256": "e4924d0bc3a46004c68df91e991f9c8b8f3212eec0b645f919a93b78bae73ab5",
+    "original_instructions_sha256": "d7fcfdc28dd216ba02e5b202c1c4fd61d35885c7b525e6ded7c3ab2dfa40196d",
+    "patched_instructions_sha256": "1a81d35b375badbf1afeaaf28dce53dfbeade3f3b4e4ad64fc809e3198435f44",
+    "exact_operations": [
+      "const.s"
+    ],
+    "opaque_operations": [
+      "div0.s",
+      "recip0.s",
+      "sqrt0.s",
+      "rsqrt0.s",
+      "nexp01.s",
+      "mksadj.s",
+      "mkdadj.s",
+      "addexp.s",
+      "addexpm.s",
+      "maddn.s",
+      "divn.s",
+      "round.s",
+      "trunc.s",
+      "floor.s",
+      "ceil.s",
+      "utrunc.s"
+    ],
+    "limitations": [
+      "Reserved CONST.S immediates remain undecodable",
+      "Approximation/refinement numeric results and status flags are opaque",
+      "Coprocessor exceptions are not modeled; static research only"
+    ]
+  },
+  "decoder_tests": {
+    "schema": 1,
+    "hardware_execution": false,
+    "firmware_modified": false,
+    "synthetic_cases": 11472,
+    "passed": true
+  },
+  "fmax_replay": {
+    "schema": 1,
+    "source_sha256": "a2f3724ccaef1d67db04afb553816f111dc86207480b28d7998cc15fa92ea7d7",
+    "hardware_execution": false,
+    "firmware_version": "0x00732e00",
+    "handlers": {
+      "0x70": "0x30054",
+      "0x6e": "0x30924"
+    },
+    "setter_storage": "0xe170 + 0x8c",
+    "getter_storage": "0xe040 + 0x1bc",
+    "shared_address": "0xe1fc",
+    "setter_cases": 510,
+    "accepted": 420,
+    "rejected": 90,
+    "readbacks": 420,
+    "readbacks_different_from_request": 215,
+    "covered_instructions": 160,
+    "total_handler_instructions": 169,
+    "uncovered": [
+      "0x300e2",
+      "0x3010f",
+      "0x3019a",
+      "0x3019c",
+      "0x3019f",
+      "0x301a2",
+      "0x301a5",
+      "0x301a8",
+      "0x301cd"
+    ],
+    "helpers": "synthetic fuse reads, eligibility, mailbox replies; policy update and MP5 broadcast recorded only",
+    "arithmetic": "finite binary32 round-to-nearest-even fixtures; ROUND.S scale 0 nearest-even integer",
+    "fp_update_variant": {
+      "resolved": false,
+      "base_encoding": "0xc003",
+      "instruction": "0x3018c",
+      "compared_setter_cases": 510,
+      "policy_array_address_differences": 420,
+      "pre_addresses": "0xe160..0xe1dc, 32 words",
+      "post_addresses": "0xe15c..0xe1d8, 32 words",
+      "stored_ceiling_and_response_identical": true,
+      "post_result_trace_sha256": "7c5e6ed361bb9665b9390e7422b6e74413dd616a860ec2266dc43904e7ad40dc",
+      "limitation": "Both address interpretations are tested; downstream policy helper and MP5 effects remain unmodeled."
+    },
+    "limits": "No MP5 consumption, physical clock measurement, exceptional floating-point cases, or resolved FP update-store variant",
+    "examples": [
+      {
+        "requested_mhz": 1,
+        "readback_mhz": 4500
+      },
+      {
+        "requested_mhz": 5000,
+        "readback_mhz": 5000
+      },
+      {
+        "requested_mhz": 5500,
+        "readback_mhz": 5500
+      },
+      {
+        "requested_mhz": 6000,
+        "readback_mhz": 6000
+      },
+      {
+        "requested_mhz": 1048575,
+        "readback_mhz": 6000
+      }
+    ],
+    "result_trace_sha256": "b97bdff7a91ac8ed8ba28db4210643f1d0dfcc4a0459b9afc116beef3083a672"
+  },
+  "pm_copy": {
+    "schema": 1,
+    "hardware_execution": false,
+    "mp5_sha256": "b5e9c94ef3a27d55a95c1a0d703cc7041b734f9475d44b8eecd49a15794cdeaf",
+    "smu_sha256": "a2f3724ccaef1d67db04afb553816f111dc86207480b28d7998cc15fa92ea7d7",
+    "function": "0x37d40",
+    "slice_start": "0x37da5",
+    "slice_end_exclusive": "0x37e52",
+    "float_normalization_executed": false,
+    "units_verified": false,
+    "physical_mapping_verified": false,
+    "core_rows": 18,
+    "cores_per_storage_slot": 8,
+    "ccd_rows": 13,
+    "common_bytes": 1588,
+    "mode_flag_mask": "0x10000",
+    "rails_guard_alias": "0xe13c",
+    "cases": [
+      {
+        "storage_slots": 2,
+        "ordinal": 0,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1588,
+        "last": 2836,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 2,
+        "ordinal": 1,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1620,
+        "last": 2840,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 4,
+        "ordinal": 0,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1588,
+        "last": 4084,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 4,
+        "ordinal": 1,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1620,
+        "last": 4088,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 4,
+        "ordinal": 2,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1652,
+        "last": 4092,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 4,
+        "ordinal": 3,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1684,
+        "last": 4096,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 6,
+        "ordinal": 0,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1588,
+        "last": 5332,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 6,
+        "ordinal": 1,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1620,
+        "last": 5336,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 6,
+        "ordinal": 2,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1652,
+        "last": 5340,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 6,
+        "ordinal": 3,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1684,
+        "last": 5344,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 6,
+        "ordinal": 4,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1716,
+        "last": 5348,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 6,
+        "ordinal": 5,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1748,
+        "last": 5352,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 8,
+        "ordinal": 0,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1588,
+        "last": 6580,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 8,
+        "ordinal": 1,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1620,
+        "last": 6584,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 8,
+        "ordinal": 2,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1652,
+        "last": 6588,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 8,
+        "ordinal": 3,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1684,
+        "last": 6592,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 8,
+        "ordinal": 4,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1716,
+        "last": 6596,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 8,
+        "ordinal": 5,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1748,
+        "last": 6600,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 8,
+        "ordinal": 6,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1780,
+        "last": 6604,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 8,
+        "ordinal": 7,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1812,
+        "last": 6608,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 0,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1588,
+        "last": 7828,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 1,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1620,
+        "last": 7832,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 2,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1652,
+        "last": 7836,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 3,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1684,
+        "last": 7840,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 4,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1716,
+        "last": 7844,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 5,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1748,
+        "last": 7848,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 6,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1780,
+        "last": 7852,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 7,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1812,
+        "last": 7856,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 8,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1844,
+        "last": 7860,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 9,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1876,
+        "last": 7864,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 0,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1588,
+        "last": 9076,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 1,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1620,
+        "last": 9080,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 2,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1652,
+        "last": 9084,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 3,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1684,
+        "last": 9088,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 4,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1716,
+        "last": 9092,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 5,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1748,
+        "last": 9096,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 6,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1780,
+        "last": 9100,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 7,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1812,
+        "last": 9104,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 8,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1844,
+        "last": 9108,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 9,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1876,
+        "last": 9112,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 10,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1908,
+        "last": 9116,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 11,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1940,
+        "last": 9120,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 0,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1588,
+        "last": 10324,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 1,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1620,
+        "last": 10328,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 2,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1652,
+        "last": 10332,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 3,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1684,
+        "last": 10336,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 4,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1716,
+        "last": 10340,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 5,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1748,
+        "last": 10344,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 6,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1780,
+        "last": 10348,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 7,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1812,
+        "last": 10352,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 8,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1844,
+        "last": 10356,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 9,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1876,
+        "last": 10360,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 10,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1908,
+        "last": 10364,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 11,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1940,
+        "last": 10368,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 12,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1972,
+        "last": 10372,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 13,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 2004,
+        "last": 10376,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 0,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1588,
+        "last": 11572,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 1,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1620,
+        "last": 11576,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 2,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1652,
+        "last": 11580,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 3,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1684,
+        "last": 11584,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 4,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1716,
+        "last": 11588,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 5,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1748,
+        "last": 11592,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 6,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1780,
+        "last": 11596,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 7,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1812,
+        "last": 11600,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 8,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1844,
+        "last": 11604,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 9,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1876,
+        "last": 11608,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 10,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1908,
+        "last": 11612,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 11,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1940,
+        "last": 11616,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 12,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1972,
+        "last": 11620,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 13,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 2004,
+        "last": 11624,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 14,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 2036,
+        "last": 11628,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 15,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 2068,
+        "last": 11632,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      }
+    ]
+  },
+  "rails_replay": {
+    "schema": 1,
+    "source_sha256": "a2f3724ccaef1d67db04afb553816f111dc86207480b28d7998cc15fa92ea7d7",
+    "function": "0x307a8",
+    "command": "0x61",
+    "hardware_execution": false,
+    "mailbox_helpers": "synthetic argument and response only",
+    "physical_rails_verified": false,
+    "voltage_units_verified": false,
+    "downstream_consumption_verified": false,
+    "active_values": [
+      0,
+      1
+    ],
+    "state_counts": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      255
+    ],
+    "rail_word_values": [
+      0,
+      1,
+      191,
+      255,
+      256,
+      511
+    ],
+    "clamp_values": [
+      0,
+      1,
+      191,
+      255
+    ],
+    "ignored_high_bits": [
+      0,
+      4227858432
+    ],
+    "cases": 20160,
+    "accepted": 2880,
+    "rejected_without_writes": 17280,
+    "covered_instruction_count": 31,
+    "result_trace_sha256": "1a095ba58203e82fbc8d64455b650c49c5f0de0336cc6e30e7336f0180451b53",
+    "active_address": "0xe13c",
+    "count_address": "0xe13b",
+    "clamp_address": "0x917b",
+    "first_array": "0xe248",
+    "second_array": "0xe250",
+    "runtime_write_enabled": false
+  },
+  "adjustment_replay": {
+    "schema": 1,
+    "source_sha256": "a2f3724ccaef1d67db04afb553816f111dc86207480b28d7998cc15fa92ea7d7",
+    "hardware_execution": false,
+    "handlers": {
+      "0x2": "0x23a0c",
+      "0xa7": "0x2c2a4",
+      "0xa8": "0x2c2e0"
+    },
+    "firmware_version": "0x00732e00",
+    "storage": "0xb395",
+    "shared_scope": true,
+    "getter_signed_bits": 8,
+    "accepted_counts": [
+      -10,
+      5
+    ],
+    "version_cases": 1,
+    "getter_cases": 256,
+    "setter_cases": 1572,
+    "accepted": 48,
+    "rejected_without_writes": 1524,
+    "covered_instruction_count": 41,
+    "helpers": "synthetic mailbox argument/reply, eligibility boolean and MP5 broadcast recorder",
+    "guard_implementation_emulated": false,
+    "mp5_consumption_emulated": false,
+    "physical_units_verified": false,
+    "hardware_effect_measured": false,
+    "result_trace_sha256": "f0dfeb8e25afce91e3d670afba0cd9f9ecbcd6a07698d9e6835ac85a360475a1"
+  },
+  "research_sources": {
+    ".github/workflows/rea-firmware-study.yml": "4f7c3f60751dcb0317aba5ac648d1e31bdf413ca299021a877c8587807cc6683",
+    "analysis/tools/rea-native-study.py": "ce1416b41cd0b7e5f7eea375d1d58fa5839af7a3417a06043e09f7f1a8d3c733",
+    "analysis/tools/firmware-smu-input.py": "87b218b12f7b4793137f5d9398f1692dada74d7f14e0e73c8249536cdc3e022a",
+    "analysis/tools/firmware-pm-copy.py": "53cd805ea2546917f2c6083decbfc7e71a8e4a47b1d247a865838ff8d4c290e2",
+    "analysis/tools/firmware-rails-replay.py": "3e4756d4a989c3b6a46bc140b4388ae0fd811086928b3006a8e800a1ae69229b",
+    "analysis/tools/firmware-adjustment-replay.py": "7340effda3ff1274ab2bc66ef3ccd0e5f2ca7c088c362f479925e56696294a0f",
+    "analysis/tools/firmware-fmax-replay.py": "94f571179ebef9fe09135a8c848ac2a4d2a216fc8ddadf8b54398455905daa2b",
+    "analysis/tools/ghidra/SmuSeed.java": "9a5458dd692f5c764e971be15bcb7733ec7c6e93f7d078036f914e863f89a1e2",
+    "analysis/tools/ghidra/SmuStudy.java": "9c42d1305f2069393ff51be6791432ac8df54f712bbc5343a028c954f34d1617",
+    "analysis/tools/ghidra/SmuFpPatch.py": "7baf4559fe7a9928b354d8471dee272b621d5de7305732c5e45089a735ce7e0d",
+    "analysis/tools/ghidra/SmuFpSelfTest.java": "4390af1de0d77a62390500ddcc1915c07b12f425c4b25e90ed9733a331b9e2ad"
+  },
+  "mp5_adjustment_consumer": {
+    "caller": "0x35dc0",
+    "callee": "0x35d28",
+    "signed_storage": "0x13110",
+    "instruction_truncation_removed": true,
+    "opaque_operations": [
+      "recip0.s",
+      "utrunc.s"
+    ],
+    "physical_units_verified": false,
+    "evidence_method": "Local byte-checked static trace from the successful cloud MP5 export; no firmware execution or numerical replay of these consumers.",
+    "input_sha256": "b5e9c94ef3a27d55a95c1a0d703cc7041b734f9475d44b8eecd49a15794cdeaf",
+    "global_base": "0x12fac",
+    "context": "0x12fdc",
+    "loop_slots": 8,
+    "computed_words": "G+0x44+4*i",
+    "copied_words": "G+0x8+4*i",
+    "selected_slot_mmio": "0x018ffe00+0x314+0x20000*i",
+    "physical_core_mapping_verified": false,
+    "algorithm_numeric_emulation": false,
+    "instructions": [
+      {
+        "entry": "00036130",
+        "instructions": [
+          {
+            "address": "00036130",
+            "text": "entry a1,0x20",
+            "bytes": "364100"
+          },
+          {
+            "address": "00036133",
+            "text": "movi.n a10,0x40",
+            "bytes": "4c0a"
+          },
+          {
+            "address": "00036135",
+            "text": "call8 0x0003a40c",
+            "bytes": "652d04"
+          },
+          {
+            "address": "00036138",
+            "text": "mov.n a10,a2",
+            "bytes": "ad02"
+          },
+          {
+            "address": "0003613a",
+            "text": "call8 0x000011d8",
+            "bytes": "e509cb"
+          },
+          {
+            "address": "0003613d",
+            "text": "l32r a8,0x00018960",
+            "bytes": "81088a"
+          },
+          {
+            "address": "00036140",
+            "text": "s32i a10,a8,0x164",
+            "bytes": "a26859"
+          },
+          {
+            "address": "00036143",
+            "text": "call8 0x00036c74",
+            "bytes": "25b300"
+          },
+          {
+            "address": "00036146",
+            "text": "movi.n a10,0x40",
+            "bytes": "4c0a"
+          },
+          {
+            "address": "00036148",
+            "text": "call8 0x0003a51c",
+            "bytes": "253d04"
+          },
+          {
+            "address": "0003614b",
+            "text": "retw.n",
+            "bytes": "1df0"
+          }
+        ],
+        "opaque_fp_operations": []
+      },
+      {
+        "entry": "00035d28",
+        "instructions": [
+          {
+            "address": "00035d28",
+            "text": "entry a1,0x40",
+            "bytes": "368100"
+          },
+          {
+            "address": "00035d2b",
+            "text": "mov.n a10,a2",
+            "bytes": "ad02"
+          },
+          {
+            "address": "00035d2d",
+            "text": "lsi f4,a3,0x4",
+            "bytes": "430301"
+          },
+          {
+            "address": "00035d30",
+            "text": "l32i a9,a3,0x40",
+            "bytes": "922310"
+          },
+          {
+            "address": "00035d33",
+            "text": "l32i a8,a3,0x134",
+            "bytes": "82234d"
+          },
+          {
+            "address": "00035d36",
+            "text": "lsi f0,a3,0xc",
+            "bytes": "030303"
+          },
+          {
+            "address": "00035d39",
+            "text": "lsi f1,a3,0xc0",
+            "bytes": "130330"
+          },
+          {
+            "address": "00035d3c",
+            "text": "ssi f1,a1,0x4",
+            "bytes": "134101"
+          },
+          {
+            "address": "00035d3f",
+            "text": "ssi f0,a1,0x0",
+            "bytes": "034100"
+          },
+          {
+            "address": "00035d42",
+            "text": "float.s f3,a8,0x0",
+            "bytes": "0038ca"
+          },
+          {
+            "address": "00035d45",
+            "text": "lsi f5,a9,0x4",
+            "bytes": "530901"
+          },
+          {
+            "address": "00035d48",
+            "text": "add.s f2,f3,f4",
+            "bytes": "40230a"
+          },
+          {
+            "address": "00035d4b",
+            "text": "lsi f6,a9,0x0",
+            "bytes": "630900"
+          },
+          {
+            "address": "00035d4e",
+            "text": "ssi f6,a1,0xc",
+            "bytes": "634103"
+          },
+          {
+            "address": "00035d51",
+            "text": "ssi f5,a1,0x10",
+            "bytes": "534104"
+          },
+          {
+            "address": "00035d54",
+            "text": "ssi f2,a1,0x8",
+            "bytes": "234102"
+          },
+          {
+            "address": "00035d57",
+            "text": "call8 0x0002e7a0",
+            "bytes": "a5a4f8"
+          },
+          {
+            "address": "00035d5a",
+            "text": "lsi f0,a1,0x10",
+            "bytes": "030104"
+          },
+          {
+            "address": "00035d5d",
+            "text": "lsi f1,a1,0xc",
+            "bytes": "130103"
+          },
+          {
+            "address": "00035d60",
+            "text": "lsi f2,a1,0x8",
+            "bytes": "230102"
+          },
+          {
+            "address": "00035d63",
+            "text": "lsi f3,a1,0x4",
+            "bytes": "330101"
+          },
+          {
+            "address": "00035d66",
+            "text": "lsi f4,a1,0x0",
+            "bytes": "430100"
+          },
+          {
+            "address": "00035d69",
+            "text": "movi.n a9,0x0",
+            "bytes": "0c09"
+          },
+          {
+            "address": "00035d6b",
+            "text": "l32r a11,0x000188e8",
+            "bytes": "b1df8a"
+          },
+          {
+            "address": "00035d6e",
+            "text": "const.s f6,0x0",
+            "bytes": "3060fa"
+          },
+          {
+            "address": "00035d71",
+            "text": "movi.n a12,0x8",
+            "bytes": "0c8c"
+          },
+          {
+            "address": "00035d73",
+            "text": "loopgtz a12,0x00035dbb",
+            "bytes": "76ac44"
+          },
+          {
+            "address": "00035d76",
+            "text": "add.n a13,a10,a9",
+            "bytes": "9ada"
+          },
+          {
+            "address": "00035d78",
+            "text": "l8ui a13,a13,0xd",
+            "bytes": "d20d0d"
+          },
+          {
+            "address": "00035d7b",
+            "text": "addi.n a9,a9,0x1",
+            "bytes": "1b99"
+          },
+          {
+            "address": "00035d7d",
+            "text": "beqz.n a13,0x00035db9",
+            "bytes": "bc8d"
+          },
+          {
+            "address": "00035d7f",
+            "text": "l8ui a14,a11,0x9",
+            "bytes": "e20b09"
+          },
+          {
+            "address": "00035d82",
+            "text": "mov.s f13,f0",
+            "bytes": "00d0fa"
+          },
+          {
+            "address": "00035d85",
+            "text": "mov.s f11,f6",
+            "bytes": "00b6fa"
+          },
+          {
+            "address": "00035d88",
+            "text": "bnez.n a14,0x00035d93",
+            "bytes": "cc7e"
+          },
+          {
+            "address": "00035d8a",
+            "text": "l32i a15,a3,0x6c",
+            "bytes": "f2231b"
+          },
+          {
+            "address": "00035d8d",
+            "text": "lsi f5,a15,0x0",
+            "bytes": "530f00"
+          },
+          {
+            "address": "00035d90",
+            "text": "j 0x00035d96",
+            "bytes": "860000"
+          },
+          {
+            "address": "00035d93",
+            "text": "mov.s f5,f4",
+            "bytes": "0054fa"
+          },
+          {
+            "address": "00035d96",
+            "text": "mul.s f14,f5,f5",
+            "bytes": "50e52a"
+          },
+          {
+            "address": "00035d99",
+            "text": "madd.s f13,f1,f5",
+            "bytes": "50d14a"
+          },
+          {
+            "address": "00035d9c",
+            "text": "lsi f15,a3,0xc4",
+            "bytes": "f30331"
+          },
+          {
+            "address": "00035d9f",
+            "text": "sub.s f12,f2,f15",
+            "bytes": "f0c21a"
+          },
+          {
+            "address": "00035da2",
+            "text": "mul.s f10,f13,f14",
+            "bytes": "e0ad2a"
+          },
+          {
+            "address": "00035da5",
+            "text": "olt.s b0,f6,f12",
+            "bytes": "c0064b"
+          },
+          {
+            "address": "00035da8",
+            "text": "movt.s f11,f12,b0",
+            "bytes": "00bcdb"
+          },
+          {
+            "address": "00035dab",
+            "text": "mul.s f9,f3,f11",
+            "bytes": "b0932a"
+          },
+          {
+            "address": "00035dae",
+            "text": "recip0.s f8,f10",
+            "bytes": "808afa"
+          },
+          {
+            "address": "00035db1",
+            "text": "mul.s f7,f8,f9",
+            "bytes": "90782a"
+          },
+          {
+            "address": "00035db4",
+            "text": "utrunc.s a8,f7,0x0",
+            "bytes": "0087ea"
+          },
+          {
+            "address": "00035db7",
+            "text": "s32i.n a8,a3,0x14",
+            "bytes": "8953"
+          },
+          {
+            "address": "00035db9",
+            "text": "addi.n a3,a3,0x4",
+            "bytes": "4b33"
+          },
+          {
+            "address": "00035dbb",
+            "text": "retw.n",
+            "bytes": "1df0"
+          }
+        ],
+        "opaque_fp_operations": [
+          "recip0.s",
+          "utrunc.s"
+        ]
+      },
+      {
+        "entry": "00035dc0",
+        "instructions": [
+          {
+            "address": "00035dc0",
+            "text": "entry a1,0x20",
+            "bytes": "364100"
+          },
+          {
+            "address": "00035dc3",
+            "text": "l32r a2,0x00018960",
+            "bytes": "21e78a"
+          },
+          {
+            "address": "00035dc6",
+            "text": "l8ui a8,a2,0x0",
+            "bytes": "820200"
+          },
+          {
+            "address": "00035dc9",
+            "text": "beqz a8,0x00035e26",
+            "bytes": "169805"
+          },
+          {
+            "address": "00035dcc",
+            "text": "l8ui a9,a2,0x1",
+            "bytes": "920201"
+          },
+          {
+            "address": "00035dcf",
+            "text": "l32r a10,0x000188d0",
+            "bytes": "a1c08a"
+          },
+          {
+            "address": "00035dd2",
+            "text": "bnez a9,0x00035e26",
+            "bytes": "560905"
+          },
+          {
+            "address": "00035dd5",
+            "text": "l8ui a10,a10,0x0",
+            "bytes": "a20a00"
+          },
+          {
+            "address": "00035dd8",
+            "text": "l32r a11,0x000188c8",
+            "bytes": "b1bc8a"
+          },
+          {
+            "address": "00035ddb",
+            "text": "bnez a10,0x00035e26",
+            "bytes": "567a04"
+          },
+          {
+            "address": "00035dde",
+            "text": "l8ui a11,a11,0xc7",
+            "bytes": "b20bc7"
+          },
+          {
+            "address": "00035de1",
+            "text": "bnez a11,0x00035e26",
+            "bytes": "561b04"
+          },
+          {
+            "address": "00035de4",
+            "text": "addi a3,a2,0x30",
+            "bytes": "32c230"
+          },
+          {
+            "address": "00035de7",
+            "text": "mov.n a10,a3",
+            "bytes": "ad03"
+          },
+          {
+            "address": "00035de9",
+            "text": "call8 0x00035cf8",
+            "bytes": "e5f0ff"
+          },
+          {
+            "address": "00035dec",
+            "text": "l8ui a12,a2,0x2",
+            "bytes": "c20202"
+          },
+          {
+            "address": "00035def",
+            "text": "l32i a13,a2,0x40",
+            "bytes": "d22210"
+          },
+          {
+            "address": "00035df2",
+            "text": "s32i.n a13,a2,0x4",
+            "bytes": "d912"
+          },
+          {
+            "address": "00035df4",
+            "text": "beqz.n a12,0x00035e0b",
+            "bytes": "9c3c"
+          },
+          {
+            "address": "00035df6",
+            "text": "mov.n a11,a3",
+            "bytes": "bd03"
+          },
+          {
+            "address": "00035df8",
+            "text": "movi.n a10,0x0",
+            "bytes": "0c0a"
+          },
+          {
+            "address": "00035dfa",
+            "text": "call8 0x00035d28",
+            "bytes": "e5f2ff"
+          },
+          {
+            "address": "00035dfd",
+            "text": "mov.n a9,a2",
+            "bytes": "9d02"
+          },
+          {
+            "address": "00035dff",
+            "text": "movi.n a14,0x8",
+            "bytes": "0c8e"
+          },
+          {
+            "address": "00035e01",
+            "text": "loopgtz a14,0x00035e0b",
+            "bytes": "76ae06"
+          },
+          {
+            "address": "00035e04",
+            "text": "l32i a15,a9,0x44",
+            "bytes": "f22911"
+          },
+          {
+            "address": "00035e07",
+            "text": "s32i.n a15,a9,0x8",
+            "bytes": "f929"
+          },
+          {
+            "address": "00035e09",
+            "text": "addi.n a9,a9,0x4",
+            "bytes": "4b99"
+          },
+          {
+            "address": "00035e0b",
+            "text": "l32r a8,0x00018eac",
+            "bytes": "81288c"
+          },
+          {
+            "address": "00035e0e",
+            "text": "l8ui a8,a8,0x9d",
+            "bytes": "82089d"
+          },
+          {
+            "address": "00035e11",
+            "text": "bnei a8,0x1,0x00035e26",
+            "bytes": "661811"
+          },
+          {
+            "address": "00035e14",
+            "text": "l32r a10,0x00018e90",
+            "bytes": "a11f8c"
+          },
+          {
+            "address": "00035e17",
+            "text": "call8 0x00035cf8",
+            "bytes": "25eeff"
+          },
+          {
+            "address": "00035e1a",
+            "text": "l32i a10,a2,0x178",
+            "bytes": "a2225e"
+          },
+          {
+            "address": "00035e1d",
+            "text": "l32i.n a9,a2,0x4",
+            "bytes": "9812"
+          },
+          {
+            "address": "00035e1f",
+            "text": "minu a9,a9,a10",
+            "bytes": "a09963"
+          },
+          {
+            "address": "00035e22",
+            "text": "s32i.n a9,a2,0x4",
+            "bytes": "9912"
+          },
+          {
+            "address": "00035e24",
+            "text": "retw.n",
+            "bytes": "1df0"
+          },
+          {
+            "address": "00035e26",
+            "text": "retw.n",
+            "bytes": "1df0"
+          }
+        ],
+        "opaque_fp_operations": []
+      },
+      {
+        "entry": "00035994",
+        "instructions": [
+          {
+            "address": "00035994",
+            "text": "entry a1,0x20",
+            "bytes": "364100"
+          },
+          {
+            "address": "00035997",
+            "text": "mov.n a10,a2",
+            "bytes": "ad02"
+          },
+          {
+            "address": "00035999",
+            "text": "call8 0x0002e7a0",
+            "bytes": "65e0f8"
+          },
+          {
+            "address": "0003599c",
+            "text": "l32r a12,0x0001873c",
+            "bytes": "c1688b"
+          },
+          {
+            "address": "0003599f",
+            "text": "movi.n a14,0x0",
+            "bytes": "0c0e"
+          },
+          {
+            "address": "000359a1",
+            "text": "l32r a2,0x00018738",
+            "bytes": "21658b"
+          },
+          {
+            "address": "000359a4",
+            "text": "l32r a13,0x00018e98",
+            "bytes": "d13d8d"
+          },
+          {
+            "address": "000359a7",
+            "text": "movi.n a8,0x8",
+            "bytes": "0c88"
+          },
+          {
+            "address": "000359a9",
+            "text": "l32i.n a9,a10,0x20",
+            "bytes": "988a"
+          },
+          {
+            "address": "000359ab",
+            "text": "l32r a4,0x00018960",
+            "bytes": "41ed8b"
+          },
+          {
+            "address": "000359ae",
+            "text": "addmi a10,a10,0x200",
+            "bytes": "a2da02"
+          },
+          {
+            "address": "000359b1",
+            "text": "addi a15,a10,0x60",
+            "bytes": "f2ca60"
+          },
+          {
+            "address": "000359b4",
+            "text": "mov a11,a4",
+            "bytes": "40b420"
+          },
+          {
+            "address": "000359b7",
+            "text": "addi a10,a10,0x38",
+            "bytes": "a2ca38"
+          },
+          {
+            "address": "000359ba",
+            "text": "and a3,a9,a3",
+            "bytes": "303910"
+          },
+          {
+            "address": "000359bd",
+            "text": "loopgtz a8,0x00035a09",
+            "bytes": "76a848"
+          },
+          {
+            "address": "000359c0",
+            "text": "bbc a3,a14,0x00035a01",
+            "bytes": "e7533d"
+          },
+          {
+            "address": "000359c3",
+            "text": "l32i a8,a15,0x200",
+            "bytes": "822f80"
+          },
+          {
+            "address": "000359c6",
+            "text": "memw",
+            "bytes": "c02000"
+          },
+          {
+            "address": "000359c9",
+            "text": "s32i a8,a12,0x30c",
+            "bytes": "826cc3"
+          },
+          {
+            "address": "000359cc",
+            "text": "l32i a9,a15,0x204",
+            "bytes": "922f81"
+          },
+          {
+            "address": "000359cf",
+            "text": "memw",
+            "bytes": "c02000"
+          },
+          {
+            "address": "000359d2",
+            "text": "s32i a9,a12,0x310",
+            "bytes": "926cc4"
+          },
+          {
+            "address": "000359d5",
+            "text": "l32i.n a8,a11,0x8",
+            "bytes": "882b"
+          },
+          {
+            "address": "000359d7",
+            "text": "memw",
+            "bytes": "c02000"
+          },
+          {
+            "address": "000359da",
+            "text": "s32i a8,a12,0x314",
+            "bytes": "826cc5"
+          },
+          {
+            "address": "000359dd",
+            "text": "l32i a9,a15,0x1f4",
+            "bytes": "922f7d"
+          },
+          {
+            "address": "000359e0",
+            "text": "memw",
+            "bytes": "c02000"
+          },
+          {
+            "address": "000359e3",
+            "text": "s32i a9,a12,0x318",
+            "bytes": "926cc6"
+          },
+          {
+            "address": "000359e6",
+            "text": "l32i.n a8,a4,0x28",
+            "bytes": "88a4"
+          },
+          {
+            "address": "000359e8",
+            "text": "memw",
+            "bytes": "c02000"
+          },
+          {
+            "address": "000359eb",
+            "text": "s32i a8,a12,0x31c",
+            "bytes": "826cc7"
+          },
+          {
+            "address": "000359ee",
+            "text": "l32i.n a9,a4,0x2c",
+            "bytes": "98b4"
+          },
+          {
+            "address": "000359f0",
+            "text": "memw",
+            "bytes": "c02000"
+          },
+          {
+            "address": "000359f3",
+            "text": "s32i a9,a12,0x320",
+            "bytes": "926cc8"
+          },
+          {
+            "address": "000359f6",
+            "text": "memw",
+            "bytes": "c02000"
+          },
+          {
+            "address": "000359f9",
+            "text": "s32i a13,a12,0x300",
+            "bytes": "d26cc0"
+          },
+          {
+            "address": "000359fc",
+            "text": "l32i.n a8,a11,0x8",
+            "bytes": "882b"
+          },
+          {
+            "address": "000359fe",
+            "text": "s32i a8,a10,0x1fc",
+            "bytes": "826a7f"
+          },
+          {
+            "address": "00035a01",
+            "text": "addi.n a14,a14,0x1",
+            "bytes": "1bee"
+          },
+          {
+            "address": "00035a03",
+            "text": "addi.n a10,a10,0x4",
+            "bytes": "4baa"
+          },
+          {
+            "address": "00035a05",
+            "text": "addi.n a11,a11,0x4",
+            "bytes": "4bbb"
+          },
+          {
+            "address": "00035a07",
+            "text": "add.n a12,a12,a2",
+            "bytes": "2acc"
+          },
+          {
+            "address": "00035a09",
+            "text": "movi.n a13,0x0",
+            "bytes": "0c0d"
+          },
+          {
+            "address": "00035a0b",
+            "text": "l32r a10,0x00018854",
+            "bytes": "a1928b"
+          },
+          {
+            "address": "00035a0e",
+            "text": "movi.n a14,0x0",
+            "bytes": "0c0e"
+          },
+          {
+            "address": "00035a10",
+            "text": "l32r a11,0x00018750",
+            "bytes": "b1508b"
+          },
+          {
+            "address": "00035a13",
+            "text": "movi.n a15,0x0",
+            "bytes": "0c0f"
+          },
+          {
+            "address": "00035a15",
+            "text": "bbc a3,a14,0x00035a3a",
+            "bytes": "e75321"
+          },
+          {
+            "address": "00035a18",
+            "text": "memw",
+            "bytes": "c02000"
+          },
+          {
+            "address": "00035a1b",
+            "text": "l32i a9,a10,0x300",
+            "bytes": "922ac0"
+          },
+          {
+            "address": "00035a1e",
+            "text": "bbsi a9,0x1f,0x00035a18",
+            "bytes": "f7f9f6"
+          },
+          {
+            "address": "00035a21",
+            "text": "l32r a9,0x00018e9c",
+            "bytes": "911e8d"
+          },
+          {
+            "address": "00035a24",
+            "text": "movi.n a12,0x6",
+            "bytes": "0c6c"
+          },
+          {
+            "address": "00035a26",
+            "text": "loopgtz a12,0x00035a3a",
+            "bytes": "76ac10"
+          },
+          {
+            "address": "00035a29",
+            "text": "l32r a12,0x00018758",
+            "bytes": "c14b8b"
+          },
+          {
+            "address": "00035a2c",
+            "text": "and a8,a9,a11",
+            "bytes": "b08910"
+          },
+          {
+            "address": "00035a2f",
+            "text": "add.n a8,a13,a8",
+            "bytes": "8a8d"
+          },
+          {
+            "address": "00035a31",
+            "text": "add.n a8,a8,a12",
+            "bytes": "ca88"
+          },
+          {
+            "address": "00035a33",
+            "text": "memw",
+            "bytes": "c02000"
+          },
+          {
+            "address": "00035a36",
+            "text": "s32i.n a15,a8,0x0",
+            "bytes": "f908"
+          },
+          {
+            "address": "00035a38",
+            "text": "addi.n a9,a9,0x4",
+            "bytes": "4b99"
+          },
+          {
+            "address": "00035a3a",
+            "text": "add.n a13,a13,a2",
+            "bytes": "2add"
+          },
+          {
+            "address": "00035a3c",
+            "text": "add.n a10,a10,a2",
+            "bytes": "2aaa"
+          },
+          {
+            "address": "00035a3e",
+            "text": "addi.n a14,a14,0x1",
+            "bytes": "1bee"
+          },
+          {
+            "address": "00035a40",
+            "text": "bnei a14,0x8,0x00035a15",
+            "bytes": "668ed1"
+          },
+          {
+            "address": "00035a43",
+            "text": "retw.n",
+            "bytes": "1df0"
+          }
+        ],
+        "opaque_fp_operations": []
+      },
+      {
+        "entry": "000358a8",
+        "instructions": [
+          {
+            "address": "000358a8",
+            "text": "entry a1,0x20",
+            "bytes": "364100"
+          },
+          {
+            "address": "000358ab",
+            "text": "l32r a8,0x00018638",
+            "bytes": "81638b"
+          },
+          {
+            "address": "000358ae",
+            "text": "l8ui a8,a8,0x0",
+            "bytes": "820800"
+          },
+          {
+            "address": "000358b1",
+            "text": "l32r a2,0x00018960",
+            "bytes": "212b8c"
+          },
+          {
+            "address": "000358b4",
+            "text": "beqz a8,0x00035906",
+            "bytes": "16e804"
+          },
+          {
+            "address": "000358b7",
+            "text": "l32r a3,0x00018e80",
+            "bytes": "31728d"
+          },
+          {
+            "address": "000358ba",
+            "text": "movi.n a4,0x40",
+            "bytes": "4c04"
+          },
+          {
+            "address": "000358bc",
+            "text": "l32r a10,0x00018e84",
+            "bytes": "a1728d"
+          },
+          {
+            "address": "000358bf",
+            "text": "l32i a9,a3,0x1e4",
+            "bytes": "922379"
+          },
+          {
+            "address": "000358c2",
+            "text": "s32i.n a10,a2,0x34",
+            "bytes": "a9d2"
+          },
+          {
+            "address": "000358c4",
+            "text": "movi.n a10,0x0",
+            "bytes": "0c0a"
+          },
+          {
+            "address": "000358c6",
+            "text": "or a9,a9,a4",
+            "bytes": "409920"
+          },
+          {
+            "address": "000358c9",
+            "text": "s32i a9,a3,0x1e4",
+            "bytes": "926379"
+          },
+          {
+            "address": "000358cc",
+            "text": "call8 0x000309f4",
+            "bytes": "6512fb"
+          },
+          {
+            "address": "000358cf",
+            "text": "movi.n a10,0x0",
+            "bytes": "0c0a"
+          },
+          {
+            "address": "000358d1",
+            "text": "call8 0x00036114",
+            "bytes": "258400"
+          },
+          {
+            "address": "000358d4",
+            "text": "movi.n a8,0x5f",
+            "bytes": "5cf8"
+          },
+          {
+            "address": "000358d6",
+            "text": "l32r a13,0x00018650",
+            "bytes": "d15e8b"
+          },
+          {
+            "address": "000358d9",
+            "text": "memw",
+            "bytes": "c02000"
+          },
+          {
+            "address": "000358dc",
+            "text": "l32r a9,0x00018e88",
+            "bytes": "916b8d"
+          },
+          {
+            "address": "000358df",
+            "text": "s32i a8,a13,0x32c",
+            "bytes": "826dcb"
+          },
+          {
+            "address": "000358e2",
+            "text": "l32i a15,a3,0x214",
+            "bytes": "f22385"
+          },
+          {
+            "address": "000358e5",
+            "text": "s32i a8,a9,0x1fc",
+            "bytes": "82697f"
+          },
+          {
+            "address": "000358e8",
+            "text": "or a15,a15,a4",
+            "bytes": "40ff20"
+          },
+          {
+            "address": "000358eb",
+            "text": "s32i a15,a3,0x214",
+            "bytes": "f26385"
+          },
+          {
+            "address": "000358ee",
+            "text": "rsil a11,0x2",
+            "bytes": "b06200"
+          },
+          {
+            "address": "000358f1",
+            "text": "l32i a14,a3,0x214",
+            "bytes": "e22385"
+          },
+          {
+            "address": "000358f4",
+            "text": "memw",
+            "bytes": "c02000"
+          },
+          {
+            "address": "000358f7",
+            "text": "s32i a14,a13,0x388",
+            "bytes": "e26de2"
+          },
+          {
+            "address": "000358fa",
+            "text": "l32i a12,a3,0x218",
+            "bytes": "c22386"
+          },
+          {
+            "address": "000358fd",
+            "text": "memw",
+            "bytes": "c02000"
+          },
+          {
+            "address": "00035900",
+            "text": "s32i a12,a13,0x38c",
+            "bytes": "c26de3"
+          },
+          {
+            "address": "00035903",
+            "text": "wsr a11,PS",
+            "bytes": "b0e613"
+          },
+          {
+            "address": "00035906",
+            "text": "movi.n a10,0x0",
+            "bytes": "0c0a"
+          },
+          {
+            "address": "00035908",
+            "text": "l32r a11,0x00018e8c",
+            "bytes": "b1618d"
+          },
+          {
+            "address": "0003590b",
+            "text": "call8 0x00035888",
+            "bytes": "e5f7ff"
+          },
+          {
+            "address": "0003590e",
+            "text": "movi.n a10,0x0",
+            "bytes": "0c0a"
+          },
+          {
+            "address": "00035910",
+            "text": "l32r a11,0x00018e90",
+            "bytes": "b1608d"
+          },
+          {
+            "address": "00035913",
+            "text": "call8 0x00035888",
+            "bytes": "65f7ff"
+          },
+          {
+            "address": "00035916",
+            "text": "l32r a13,0x000185cc",
+            "bytes": "d12d8b"
+          },
+          {
+            "address": "00035919",
+            "text": "l32r a11,0x00018630",
+            "bytes": "b1458b"
+          },
+          {
+            "address": "0003591c",
+            "text": "l32r a12,0x00018e94",
+            "bytes": "c15e8d"
+          },
+          {
+            "address": "0003591f",
+            "text": "l32r a14,0x00018558",
+            "bytes": "e10e8b"
+          },
+          {
+            "address": "00035922",
+            "text": "l32i.n a11,a11,0x28",
+            "bytes": "b8ab"
+          },
+          {
+            "address": "00035924",
+            "text": "or a12,a12,a13",
+            "bytes": "d0cc20"
+          },
+          {
+            "address": "00035927",
+            "text": "l32r a13,0x00018b64",
+            "bytes": "d18f8c"
+          },
+          {
+            "address": "0003592a",
+            "text": "movi.n a10,0x1",
+            "bytes": "0c1a"
+          },
+          {
+            "address": "0003592c",
+            "text": "and a11,a11,a14",
+            "bytes": "e0bb10"
+          },
+          {
+            "address": "0003592f",
+            "text": "add.n a11,a11,a13",
+            "bytes": "dabb"
+          },
+          {
+            "address": "00035931",
+            "text": "s32i.n a11,a12,0xc",
+            "bytes": "b93c"
+          },
+          {
+            "address": "00035933",
+            "text": "s8i a10,a2,0x0",
+            "bytes": "a24200"
+          },
+          {
+            "address": "00035936",
+            "text": "call8 0x00036c74",
+            "bytes": "e53301"
+          },
+          {
+            "address": "00035939",
+            "text": "retw.n",
+            "bytes": "1df0"
+          }
+        ],
+        "opaque_fp_operations": []
+      }
+    ],
+    "literals": [
+      {
+        "address": "0x18960",
+        "value": "0x12fac",
+        "bytes": "ac2f0100"
+      },
+      {
+        "address": "0x1873c",
+        "value": "0x18ffe00",
+        "bytes": "00fe8f01"
+      },
+      {
+        "address": "0x18738",
+        "value": "0x20000",
+        "bytes": "00000200"
+      },
+      {
+        "address": "0x18e84",
+        "value": "0x41a00000",
+        "bytes": "0000a041"
+      }
+    ],
+    "limitations": [
+      "Hardware loop iterations must be established from instructions, not the decompiled pseudocode.",
+      "RECIP0.S and UTRUNC.S are opaque in the decompiler; no exact numerical result is asserted.",
+      "Slots in one MP5 context are not established OS CPU IDs or CCD IDs.",
+      "Neither the voltage-dependent expression nor the 20.0 initializer establishes physical units."
+    ]
+  },
+  "superseded_research": [
+    {
+      "run": 40306293444,
+      "reason": "SLEIGH operand binding compile failure; not accepted"
+    },
+    {
+      "run": 40306605391,
+      "reason": "SLEIGH operand binding compile failure; not accepted"
+    },
+    {
+      "run": 40306879693,
+      "reason": "Headless workflow completed but synthetic ProgramDB creation failed; not counted as validated"
+    }
+  ],
+  "limits": [
+    "Stored ceiling is not a measured frequency. Firmware clamping and concurrent writers can produce a mismatch.",
+    "REA analyses the original UEFI modules; Ghidra with the isolated decoder extension analyses Xtensa bodies.",
+    "Approximate FP operations and conversions stay opaque in decompilation; finite replay does not execute firmware.",
+    "Per-core/CCD labels, units, active masks, physical mapping and second rail consumption/readback remain unresolved; runtime 61h stays denied.",
+    "FP update-store variant remains unresolved. Fmax replay compares both interpretations; shared ceiling and response agree, policy-array addresses differ. PM numerical normalization remains unverified."
+  ],
+  "fp_update_variant_conflict": {
+    "evidence_method": "Local source-hash and raw-byte comparison; firmware ISA variant unresolved.",
+    "instructions": [
+      {
+        "component": "mp5",
+        "input_sha256": "b5e9c94ef3a27d55a95c1a0d703cc7041b734f9475d44b8eecd49a15794cdeaf",
+        "function": "00037d40",
+        "instruction": {
+          "address": "00037d72",
+          "text": "ssiu f1,a9,0x4",
+          "bytes": "13c901"
+        }
+      },
+      {
+        "component": "smu",
+        "input_sha256": "a2f3724ccaef1d67db04afb553816f111dc86207480b28d7998cc15fa92ea7d7",
+        "function": "00030054",
+        "instruction": {
+          "address": "0003018c",
+          "text": "ssiu f0,a9,0x4",
+          "bytes": "03c901"
+        }
+      }
+    ],
+    "base_encoding": "0xc003",
+    "stock_source": "https://github.com/NationalSecurityAgency/ghidra/blob/Ghidra_12.1.4_build/Ghidra/Processors/Xtensa/data/languages/xtensaInstructions.sinc",
+    "stock_source_sha256": "d7fcfdc28dd216ba02e5b202c1c4fd61d35885c7b525e6ded7c3ab2dfa40196d",
+    "stock_constructor": ":ssiu ft, as, ri8_i8_sh2 is ri8_i8_sh2 & ar = 0b1100 & as & ft & op0 = 0b0011 {\n\tlocal addr:4 = as + ri8_i8_sh2;\n\t*:4 addr = ft;\n\tas = addr;\n}",
+    "qemu_encoding_source": "https://github.com/qemu/qemu/blob/d73149283205645625bfa9fe029cfb68e4c4a9ae/target/xtensa/core-de233_fpu/xtensa-modules.c.inc",
+    "qemu_translation_source": "https://github.com/qemu/qemu/blob/d73149283205645625bfa9fe029cfb68e4c4a9ae/target/xtensa/translate.c",
+    "qemu_encoder": "Opcode_ssip_Slot_inst_encode (xtensa_insnbuf slotbuf)\n{\n  slotbuf[0] = 0xc003;\n}",
+    "qemu_operation": "SSIP uses the old base for the memory store, then increments the base by the immediate; translate_ldsti_s parameters {true,false,true}.",
+    "stock_operation": "SSIU increments the base before the memory store.",
+    "structural_inference": "Post-increment is consistent with independent per-word normalization in the 157-iteration MP5 loop; this does not independently establish the configured ISA.",
+    "numerical_pm_normalization_verified": false,
+    "validated_copy_slice_excludes_instruction": true,
+    "fmax_variant_comparison": {
+      "resolved": false,
+      "base_encoding": "0xc003",
+      "instruction": "0x3018c",
+      "compared_setter_cases": 510,
+      "policy_array_address_differences": 420,
+      "pre_addresses": "0xe160..0xe1dc, 32 words",
+      "post_addresses": "0xe15c..0xe1d8, 32 words",
+      "stored_ceiling_and_response_identical": true,
+      "post_result_trace_sha256": "7c5e6ed361bb9665b9390e7422b6e74413dd616a860ec2266dc43904e7ad40dc",
+      "limitation": "Both address interpretations are tested; downstream policy helper and MP5 effects remain unmodeled."
+    },
+    "no_runtime_changes": true
+  }
+}
