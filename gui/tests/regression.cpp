@@ -3562,7 +3562,7 @@ private slots:
         auto *input = panel.findChild<QLineEdit *>("pboFmax"); input->setText("5000");
         apply->click(); QCOMPARE(device->calls,0u);
         panel.findChild<QPushButton *>("pboCapsRead")->click(); QTRY_VERIFY(panel.isEnabled());
-        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->item(3,1)->text(),QString("Unavailable: no verified readback"));
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->item(4,1)->text(),QString("Unavailable: no verified readback"));
         QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
         apply->click(); QTRY_VERIFY(panel.isEnabled());
         QCOMPARE(device->settings,1u); QCOMPARE(device->fmaxMHz,0u);
@@ -3737,7 +3737,7 @@ private slots:
         for (unsigned i = 0; i < 4; ++i) {
             kind->setCurrentIndex(int(i)); input->setText(QString::number(values[i]));
             panel.findChild<QPushButton *>("pboCapsRead")->click(); QTRY_VERIFY(panel.isEnabled());
-            QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->item(4,1)->text(),QString("Yes"));
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->item(5,1)->text(),QString("Yes"));
             QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
             apply->click(); QTRY_VERIFY(panel.isEnabled());
             QCOMPARE(device->settings,i+1); QCOMPARE(device->messages.back(),std::uint32_t(0x56+i));
