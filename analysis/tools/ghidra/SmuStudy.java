@@ -49,6 +49,21 @@ public class SmuStudy extends GhidraScript {
                 if (fn!=null) selected.put(fn.getEntryPoint(),0);
             }
         }
+        // Trace uses of independently observed data bases as well as the literal
+        // pools. This discovers initialization and writers without treating a
+        // pointer's presence as proof of a field's meaning.
+        Set<Long> dataBases = Set.of(0xe108L,0xe040L,0xb318L,0x8894L,0x1abc0L,
+            0x1d300L,0x1ab80L,0x9124L,0x8748L);
+        for(long offset=0;offset<0x20000;offset+=4) {
+            long value=Integer.toUnsignedLong(getInt(toAddr(offset)));
+            if(!dataBases.contains(value)) continue;
+            for(Reference ref:getReferencesTo(toAddr(offset))) {
+                Function fn=getFunctionContaining(ref.getFromAddress());
+                literalRefs.add(record("literal",Long.toHexString(offset),"value",Long.toHexString(value),
+                    "from",ref.getFromAddress().toString(),"function",fn==null?null:fn.getEntryPoint().toString()));
+                if(fn!=null) selected.put(fn.getEntryPoint(),0);
+            }
+        }
         DecompInterface decompiler = new DecompInterface();
         decompiler.openProgram(currentProgram);
         List<Object> functions = new ArrayList<>();

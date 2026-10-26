@@ -67,7 +67,7 @@ jobs:
           GHIDRA_INSTALL_DIR: ${{ github.workspace }}/build/firmware-tools/ghidra_12.1.4_PUBLIC
           GHIDRA_HEADLESS_MAXMEM: 4G
           REA_GHIDRA_STARTUP_TIMEOUT_MS: '900000'
-          REA_GHIDRA_DISABLED_ANALYZERS: 'GCC Exception Handlers,Decompiler Switch Analysis,Call Convention ID'
+          REA_GHIDRA_DISABLED_ANALYZERS: ''
         run: |
           python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-transport.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-transport --study firmware_transport
           python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-limits.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-limits --study firmware_limits
