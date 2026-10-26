@@ -4,6 +4,8 @@
 Binary32 arithmetic uses round-to-nearest-even for these finite fixtures.
 No hardware/firmware is executed. Broadcast and policy helpers are recorded,
 not emulated; readback proves a stored ceiling, never an operating frequency.
+The firmware's FP update-store variant is unresolved. Replay both pre- and
+post-increment interpretations and compare the shared ceiling independently.
 """
 import argparse
 import hashlib
@@ -20,12 +22,14 @@ bits = lambda x: struct.unpack('<I', struct.pack('<f', x))[0]
 floating = lambda x: struct.unpack('<f', struct.pack('<I', x))[0]
 
 
-def replay(body, instructions, command, argument=0, fuse=1100, profile=0, guard=True, stored=5.5):
+def replay(body, instructions, command, argument=0, fuse=1100, profile=0, guard=True, stored=5.5,
+           fp_update_mode='pre'):
+    assert fp_update_mode in ('pre', 'post')
     reg = {f'a{i}': 0 for i in range(16)}
     fp = {f'f{i}': 0.0 for i in range(16)}
     boolean = {f'b{i}': False for i in range(16)}
     reg['a1'], reg['a2'] = 0x100000, 0x1234
-    ram, writes, calls, trace = {}, [], [], []
+    ram, writes, calls, trace, update_stores = {}, [], [], [], []
     def put(address, value, size=4):
         for i, byte in enumerate(value.to_bytes(size, 'little')): ram[address+i] = byte
     def get(address, size=4):
@@ -62,9 +66,15 @@ def replay(body, instructions, command, argument=0, fuse=1100, profile=0, guard=
         elif op == 'const.s': fp[a[0]] = (0.0, 1.0, 2.0, 0.5)[value(a[1])]
         elif op == 'lsi': fp[a[0]] = floating(get(value(a[1])+value(a[2])))
         elif op in ('ssi', 'ssiu'):
-            address = value(a[1])+value(a[2]); put(address, bits(fp[a[0]]))
+            updated = value(a[1])+value(a[2])
+            # 0xc003 is SSIU (pre-update) in the generic Ghidra language,
+            # but SSIP (post-update) in QEMU's core-de233_fpu definition.
+            address = value(a[1]) if op == 'ssiu' and fp_update_mode == 'post' else updated
+            put(address, bits(fp[a[0]]))
             writes.append((address, bits(fp[a[0]])))
-            if op == 'ssiu': reg[a[1]] = address
+            if op == 'ssiu':
+                reg[a[1]] = updated
+                update_stores.append((address, bits(fp[a[0]])))
         elif op in ('add.s', 'sub.s', 'mul.s', 'madd.s'):
             x,y = fp[a[1]],fp[a[2]]
             v = x+y if op == 'add.s' else x-y if op == 'sub.s' else x*y
@@ -108,7 +118,8 @@ def replay(body, instructions, command, argument=0, fuse=1100, profile=0, guard=
             else: assert destination == 0x30e88  # downstream policy update; not emulated
         elif op == 'retw.n':
             assert response is not None
-            return dict(response=response, result=result, stored=get(STORAGE), writes=writes, calls=calls, trace=trace)
+            return dict(response=response, result=result, stored=get(STORAGE), writes=writes, calls=calls, trace=trace,
+                        fp_update_mode=fp_update_mode, fp_update_stores=update_stores)
         else: raise ValueError('Unsupported instruction: '+ins['text'])
         if loop and next_pc == loop[1]:
             loop[2] -= 1
@@ -136,6 +147,9 @@ def main():
     assert struct.unpack_from('<I', body, 0x17d48)[0]+0x8c == STORAGE
     assert struct.unpack_from('<I', body, 0x16e98)[0]+0x1bc == STORAGE
     covered = set(); digest = hashlib.sha256(); accepted = rejected = clamped = 0
+    variant_digest = hashlib.sha256(); variant_cases = variant_differences = 0
+    policy_base = struct.unpack_from('<I', body, 0x17d88)[0]-0x28
+    assert policy_base == 0xe15c and not policy_base <= STORAGE <= policy_base+32*4
     examples=[]
     for fuse,profile,guard in itertools.product((0,1,100,1000,1100,2047),range(3),(False,True)):
         base=f32(f32(fuse)*f32(0.005))
@@ -144,6 +158,16 @@ def main():
             requests.add(max(0,round(base*1000)+delta))
         for requested in sorted(requests):
             r=replay(body,instructions,0x70,requested,fuse,profile,guard)
+            post=replay(body,instructions,0x70,requested,fuse,profile,guard,fp_update_mode='post')
+            for key in ('response', 'result', 'stored', 'calls', 'trace'):
+                assert r[key] == post[key], ('FP update variant changed ceiling/control flow', key)
+            for model, start in ((r,policy_base+4),(post,policy_base)):
+                expected_addresses=list(range(start,start+32*4,4)) if model['response']==1 else []
+                assert [a for a,_ in model['fp_update_stores']] == expected_addresses
+                assert all(not a <= STORAGE < a+4 for a,_ in model['fp_update_stores'])
+            variant_cases += 1
+            variant_differences += r['fp_update_stores'] != post['fp_update_stores']
+            variant_digest.update(json.dumps([requested,fuse,profile,guard,post],sort_keys=True).encode())
             desired=f32(f32(requested)*f32(0.001))
             bounded=max(f32(base-1),min(desired,f32(base+0.5)))
             reject=not requested or (profile==2 and not guard and (bounded==0 or f32(bounded-base)>=0))
@@ -171,7 +195,13 @@ def main():
         total_handler_instructions=len(instructions),uncovered=[hex(x) for x in sorted(set(instructions)-covered)],
         helpers='synthetic fuse reads, eligibility, mailbox replies; policy update and MP5 broadcast recorded only',
         arithmetic='finite binary32 round-to-nearest-even fixtures; ROUND.S scale 0 nearest-even integer',
-        limits='No MP5 consumption, physical clock measurement, or exceptional floating-point cases',
+        fp_update_variant=dict(resolved=False,base_encoding='0xc003',instruction='0x3018c',
+            compared_setter_cases=variant_cases,policy_array_address_differences=variant_differences,
+            pre_addresses='0xe160..0xe1dc, 32 words',post_addresses='0xe15c..0xe1d8, 32 words',
+            stored_ceiling_and_response_identical=True,
+            post_result_trace_sha256=variant_digest.hexdigest(),
+            limitation='Both address interpretations are tested; downstream policy helper and MP5 effects remain unmodeled.'),
+        limits='No MP5 consumption, physical clock measurement, exceptional floating-point cases, or resolved FP update-store variant',
         examples=examples,result_trace_sha256=digest.hexdigest())
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
