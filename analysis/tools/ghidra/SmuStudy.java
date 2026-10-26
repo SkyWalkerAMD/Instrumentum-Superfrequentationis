@@ -78,10 +78,10 @@ public class SmuStudy extends GhidraScript {
                 if(fn!=null) selected.put(fn.getEntryPoint(),0);
             }
         }
-        if(mp5) {
-            // Data producers use pointers received at startup, not the IOD's
-            // absolute addresses. Retain all discovered MP5 functions so those
-            // pointer chains can be traced without guessing a shared address.
+        {
+            // Consumers can receive aliases through startup data or helper
+            // arguments. Retain every discovered function in both components;
+            // absence from a selected-function study is not absence of a use.
             var iterator=currentProgram.getFunctionManager().getFunctions(true);
             while(iterator.hasNext()) selected.putIfAbsent(iterator.next().getEntryPoint(),0);
         }
@@ -89,7 +89,7 @@ public class SmuStudy extends GhidraScript {
         decompiler.openProgram(currentProgram);
         List<Object> functions = new ArrayList<>();
         Set<Address> done = new HashSet<>();
-        while (done.size()<selected.size() && done.size()<(mp5?900:280)) {
+        while (done.size()<selected.size() && done.size()<1800) {
             Address address = selected.keySet().stream().filter(a -> !done.contains(a)).findFirst().get();
             done.add(address);
             Function fn = getFunctionAt(address);
@@ -101,7 +101,9 @@ public class SmuStudy extends GhidraScript {
             String pseudo = dc.getDecompiledFunction()==null ? "" : dc.getDecompiledFunction().getC();
             List<Object> calls = new ArrayList<>();
             int depth=selected.get(address);
-            for (Function callee : fn.getCalledFunctions(monitor)) {
+            List<Function> callees = new ArrayList<>(fn.getCalledFunctions(monitor));
+            callees.sort(Comparator.comparing(f -> f.getEntryPoint().getOffset()));
+            for (Function callee : callees) {
                 calls.add(callee.getEntryPoint().toString());
                 if(depth<2) selected.putIfAbsent(callee.getEntryPoint(),depth+1);
             }
@@ -114,13 +116,15 @@ public class SmuStudy extends GhidraScript {
             }
             functions.add(record("entry",address.toString(),"name",fn.getName(),"depth",depth,
                 "decompile_completed",dc.decompileCompleted(),"error",dc.getErrorMessage(),
-                "pseudocode",pseudo,"calls",calls,"instructions",instructions));
+                "pseudocode",pseudo,"calls",calls,"instructions",instructions,
+                "instructions_truncated",iterator.hasNext()));
             Files.writeString(output.resolve("function-"+address.toString()+".txt"),pseudo);
         }
         decompiler.dispose();
         result.put("targets",targets); result.put("literal_references",literalRefs);
         result.put("functions",functions); result.put("selection_count",selected.size());
         result.put("exported_count",done.size());
+        result.put("function_selection_truncated",done.size()<selected.size());
         Files.writeString(output.resolve("smu-study.json"),new GsonBuilder().setPrettyPrinting().create().toJson(result));
         println("Exported selected static functions: "+done.size());
     }
