@@ -39,7 +39,7 @@ inline AmdRsmuReply exchangeShimadaRsmu(HardwareSession &s, std::uint32_t comman
                                        std::uint32_t argument, bool readArgument, bool sixArguments = false) {
     AmdRsmuReply out;
     // Keep the internal entry point closed to arbitrary message IDs as well.
-    if ((command != 6 && command != 0xa3 && command != 0x5b && command != 0x6d && command != 0x6f && command != 0x70 &&
+    if ((command != 6 && command != 7 && command != 0xa3 && command != 0x5b && command != 0x6d && command != 0x6f && command != 0x70 &&
          command != 0x56 && command != 0x57 && command != 0x58 && command != 0x59 &&
          command != 0x5d && command != 0x5e && command != 0x5f && command != 0x60) ||
         ((command != 6 && command != 0xa3) != sixArguments)) { out.error = -EINVAL; return out; }

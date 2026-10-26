@@ -35,7 +35,16 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=60).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 1386, len(reports)
+assert len(reports) == 1421, len(reports)
+all_curve = [r for r in reports if r['command'] == 'amd-curve-all-set']
+assert len(all_curve) == 35 and [r['ok'] for r in all_curve] == [True]*8+[False]*27
+for i,r in enumerate(all_curve[:13]):
+    d = r['data']
+    assert d['scope'] == 'all-cores' and int(d['command'],16) == 7
+    assert int(d['argument'],16) == (d['margin_counts'] & 0xffff)
+    assert not d['verified'] and not d['physical_mapping_verified']
+    assert d['current_margin_counts'] is None and d['affected_core_count'] is None
+    assert d['accepted'] == (i < 8) and d['write_attempted'] == (i < 8 or i == 10)
 native_pm = [r for r in reports if r['command'] == 'amd-pm-native-read']
 assert len(native_pm) == 27 and [r['ok'] for r in native_pm] == [True]*8+[False]*19
 for i,r in enumerate(native_pm[:17]):

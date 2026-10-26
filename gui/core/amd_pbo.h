@@ -117,6 +117,21 @@ struct AmdOcCoreFrequenciesUpdate {
 // and never infer active cores, retry, roll back, or claim measured frequencies.
 AmdOcCoreFrequenciesUpdate setShimadaOcCoreFrequencies(HardwareSession &session, const SmuTarget &target,
     std::uint32_t expectedCapabilities, unsigned ccd, unsigned coreMask, unsigned mhz);
+struct AmdCurveAllUpdate {
+    int error = 0, requestedMargin = 0;
+    AmdPboPhase phase = AmdPboPhase::Validate;
+    AmdPboCapabilities before;
+    std::uint32_t argument = 0, response = 0;
+    bool writeAttempted = false, accepted = false, verified = false;
+};
+bool amdAllCoreCurveAvailable(std::uint32_t capabilities);
+int encodeShimadaAllCoreCurve(int margin, std::uint32_t &argument);
+// Explicit firmware all-core scope, signed CO counts -50..50 (not mV).
+// Compare the complete capability word; require PBO available/manual OC off as
+// an application guard. RSMU 07 with six initialized arguments, exactly once.
+// No inferred core list or all-core readback; acknowledgement is not verification.
+AmdCurveAllUpdate setShimadaAllCoreCurve(HardwareSession &session, const SmuTarget &target,
+    std::uint32_t expectedCapabilities, int margin);
 struct AmdPboRailsEncoding {
     int error = 0;
     unsigned rail0Millivolts = 0, rail1Millivolts = 0;

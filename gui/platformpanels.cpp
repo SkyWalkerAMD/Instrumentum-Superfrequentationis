@@ -206,6 +206,14 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     auto *applyCurveButton = new QPushButton("Apply curve to selected cores…", this); applyCurveButton->setObjectName("curveApply");
     curveEdit->addWidget(applyCurveButton); form->addRow("Read selected cores first · counts, not mV", curveEdit);
     connect(applyCurveButton, &QPushButton::clicked, this, [this] { applyCurve(); });
+    auto *allCurve = new QHBoxLayout;
+    allCurveMargin_ = edit("allCurveMargin", "", this); allCurveMargin_->setPlaceholderText("CO count -50..50");
+    allCurve->addWidget(allCurveMargin_);
+    auto *readAllCurveCaps = new QPushButton("Read capability", this); readAllCurveCaps->setObjectName("allCurveCapsRead"); allCurve->addWidget(readAllCurveCaps);
+    auto *applyAllCurve = new QPushButton("Apply curve to all cores…", this); applyAllCurve->setObjectName("allCurveApply"); allCurve->addWidget(applyAllCurve);
+    form->addRow("Shimada all-core curve · acknowledgement only", allCurve);
+    connect(readAllCurveCaps, &QPushButton::clicked, this, [this] { readPboCapabilities(); });
+    connect(applyAllCurve, &QPushButton::clicked, this, [this] { applyAllCoreCurve(); });
     auto *scalar = new QHBoxLayout;
     pboScalar_ = edit("pboScalar", "", this); pboScalar_->setPlaceholderText("Integer multiplier 1..10");
     scalar->addWidget(pboScalar_);
@@ -338,6 +346,7 @@ void AmdTuningPanel::readPboCapabilities() {
             append(table_, {"Power limits available", r.raw & 2u ? "Yes" : "No"});
             append(table_, {"PPT / TDC / EDC / temperature commands", amdPboLimitsAvailable(r.raw) ? "Available; effective limits unverified" : "Unavailable"});
             append(table_, {"Manual OC frequency commands", r.raw & 1u ? "Mode enabled; frequency readback unavailable" : "Mode disabled; explicit mode change required"});
+            append(table_, {"All-core curve command", amdAllCoreCurveAvailable(r.raw) ? "Available; per-core readback unverified" : "Unavailable"});
             status_->setText((amdPboFmaxAvailable(r.raw) ?
                 "Fmax command available. Enter a MHz ceiling. Firmware acceptance does not verify the effective limit or operating frequency." :
                 "Fmax unavailable: PBO must be available and manual OC disabled. No mode change was requested.") +
@@ -351,6 +360,52 @@ void AmdTuningPanel::readPboCapabilities() {
         AmdPboCapabilities out;
         const int error = access->transaction([&](HardwareSession &s) { out = readShimadaPboCapabilities(s, target); return out.error; }, 10000, cancelled.get());
         if (error) { out.error = error; out.valid = false; } return out;
+    }));
+}
+void AmdTuningPanel::applyAllCoreCurve() {
+    using namespace octool::core;
+    if (!pboCaps_.valid || pboCaps_.error || !amdAllCoreCurveAvailable(pboCaps_.raw)) {
+        status_->setText("Read capability first. All-core curve requires PBO available and manual OC disabled."); return;
+    }
+    const auto input = allCurveMargin_->text(); bool ok = false;
+    const int margin = input.toInt(&ok, 10); std::uint32_t argument = 0;
+    if (!ok || encodeShimadaAllCoreCurve(margin, argument)) {
+        status_->setText("All-core curve requires an integer CO count -50..50, not mV."); return;
+    }
+    const auto target = pboTarget_; const auto before = pboCaps_; const auto prepared = curveRevision_;
+    if (QMessageBox::question(this, "Apply AMD all-core curve",
+        QString("CPU %1 · firmware all-core scope\nNew CO count: %2 (not mV)\n"
+                "This overwrites individual core curve settings and can affect stability. "
+                "Only firmware acceptance is checked; the affected physical cores and their final values are unverified. "
+                "No automatic mode change, retry or rollback. Apply to all cores?").arg(target.cpu).arg(margin),
+        QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Yes) return;
+    if (prepared != curveRevision_ || input != allCurveMargin_->text()) {
+        invalidateCurve(); status_->setText("Inputs changed. Read capability again."); return;
+    }
+    invalidateCurve(); const auto revision = curveRevision_; setEnabled(false);
+    status_->setText("Checking capability and submitting all-core curve count…");
+    auto *watcher = new QFutureWatcher<AmdCurveAllUpdate>(this);
+    connect(watcher, &QFutureWatcher<AmdCurveAllUpdate>::finished, this, [this, watcher, revision, target] {
+        const auto r = watcher->result();
+        if (revision == curveRevision_) {
+            append(table_, {"Scope", "Firmware all cores"});
+            append(table_, {"Requested CO count", QString::number(r.requestedMargin)});
+            append(table_, {"Setting command", r.accepted ? "Firmware accepted" : r.writeAttempted ? "Attempted; not confirmed" : "Not sent"});
+            append(table_, {"Firmware response", hexValue(r.response, 4)});
+            append(table_, {"Per-core readback", "Unavailable / not verified"});
+            append(table_, {"Affected physical core count", "Unknown"});
+        }
+        status_->setText((r.error ? failure(r.error) + (r.writeAttempted ? " Curve settings may have changed. No automatic retry." : " No setting sent.") :
+            QString("Firmware accepted all-core CO count %1. Per-core values remain unverified.").arg(r.requestedMargin)) +
+            (revision == curveRevision_ ? " Read capability again before another edit." : QString(" Inputs changed; result belongs to CPU %1.").arg(target.cpu)));
+        setEnabled(true); watcher->deleteLater();
+    });
+    const auto access = access_; const auto cancelled = cancelled_;
+    watcher->setFuture(QtConcurrent::run([access, cancelled, target, before, margin] {
+        AmdCurveAllUpdate out;
+        const int error = access->transaction([&](HardwareSession &s) { out = setShimadaAllCoreCurve(s,target,before.raw,margin); return out.error; },10000,cancelled.get());
+        if (error) out.error = error;
+        return out;
     }));
 }
 void AmdTuningPanel::applyPboFmax() {

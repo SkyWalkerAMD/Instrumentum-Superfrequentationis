@@ -37,6 +37,7 @@ private:
     void readTopology();
     void readCurve();
     void applyCurve();
+    void applyAllCoreCurve();
     void invalidateCurve();
     void readPboScalar();
     void applyPboScalar();
@@ -48,7 +49,7 @@ private:
     std::shared_ptr<HardwareAccess> access_;
     std::shared_ptr<std::atomic<bool>> cancelled_;
     QLineEdit *cpu_, *bus_, *device_, *function_, *args_[6];
-    QLineEdit *curveCcd_, *curveCore_, *curveMargin_;
+    QLineEdit *curveCcd_, *curveCore_, *curveMargin_, *allCurveMargin_;
     QLineEdit *pboScalar_, *pboFmax_, *pboLimitValue_;
     QComboBox *pboLimit_;
     QComboBox *ocMode_, *ocFrequencyScope_;

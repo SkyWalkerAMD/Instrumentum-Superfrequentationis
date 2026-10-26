@@ -248,6 +248,30 @@ AmdOcCoreFrequenciesUpdate setShimadaOcCoreFrequencies(HardwareSession &s, const
     }
     out.phase = AmdPboPhase::Complete; return out;
 }
+bool amdAllCoreCurveAvailable(std::uint32_t caps) { return (caps & 4u) && !(caps & 1u); }
+int encodeShimadaAllCoreCurve(int margin, std::uint32_t &argument) {
+    argument = 0;
+    if (margin < -50 || margin > 50) return -ERANGE;
+    argument = std::uint32_t(margin) & 0xffffu;
+    return 0;
+}
+AmdCurveAllUpdate setShimadaAllCoreCurve(HardwareSession &s, const SmuTarget &target,
+    std::uint32_t expectedCapabilities, int margin) {
+    AmdCurveAllUpdate out; out.requestedMargin = margin;
+    if ((out.error = encodeShimadaAllCoreCurve(margin, out.argument))) return out;
+    if (!amdAllCoreCurveAvailable(expectedCapabilities)) { out.error = -ENOTSUP; return out; }
+    out.phase = AmdPboPhase::Compare;
+    out.before = readShimadaPboCapabilities(s, target);
+    if ((out.error = out.before.error)) return out;
+    if (out.before.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
+    if ((out.error = checkTarget(s, target))) return out;
+    out.phase = AmdPboPhase::Write;
+    const auto reply = detail::exchangeShimadaRsmu(s, 7, out.argument, false, true);
+    out.writeAttempted = reply.messageAttempted; out.response = reply.response;
+    out.accepted = reply.response == 1;
+    if ((out.error = reply.error)) return out;
+    out.phase = AmdPboPhase::Complete; return out;
+}
 AmdPboRailsEncoding encodeLegacyAmdPboRails(unsigned a, unsigned b) {
     AmdPboRailsEncoding out;
     const auto valid = [](unsigned v) { return !v || (v >= 250 && v <= 2800 && v % 5 == 0); };

@@ -133,7 +133,7 @@ Command parse(const std::vector<std::string> &args) {
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
     const bool pm = c.name == "amd-pm-read" || c.name == "amd-pm-decode";
     const bool pboCapabilityCommand = c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-fmax-set" || c.name == "amd-pbo-limit-set" ||
-        c.name == "amd-oc-mode-set" || c.name == "amd-oc-frequency-set";
+        c.name == "amd-oc-mode-set" || c.name == "amd-oc-frequency-set" || c.name == "amd-curve-all-set";
     const bool rails = c.name == "amd-pbo-rails-encode";
     const bool layoutAudit = c.name == "amd-pm-layout-audit";
     require(hardware.count(c.name) || pboCapabilityCommand || rails || layoutAudit || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || memoryOffline || clockOffline || pm, "Unknown command: " + c.name);
@@ -161,6 +161,7 @@ Command parse(const std::vector<std::string> &args) {
     if (writing) keys.insert("--apply");
     if (c.name == "amd-pbo-fmax-set") { keys.insert("--mhz"); keys.insert("--expect-caps"); keys.insert("--apply"); }
     if (c.name == "amd-pbo-limit-set") { keys.insert("--limit"); keys.insert("--value"); keys.insert("--expect-caps"); keys.insert("--apply"); }
+    if (c.name == "amd-curve-all-set") for (const char *key : {"--margin","--expect-caps","--apply"}) keys.insert(key);
     if (c.name == "amd-oc-mode-set") for (const char *key : {"--enabled","--expect-caps","--apply"}) keys.insert(key);
     if (c.name == "amd-oc-frequency-set") for (const char *key : {"--scope","--ccd","--core","--cores","--mhz","--expect-caps","--apply"}) keys.insert(key);
     if (rails) { keys.insert("--rail0-mv"); keys.insert("--rail1-mv"); }
@@ -414,6 +415,17 @@ Command parse(const std::vector<std::string> &args) {
             require(c.pboLimitValue != 0, "PPT/TDC/EDC require 1..2000 W/A; temperature requires 1..100 C. These are application bounds, not operating recommendations");
             c.pboExpected = uintOption(options, "--expect-caps", UINT32_MAX);
             require(amdPboLimitsAvailable(c.pboExpected), "Expected capabilities must report power limits available and manual OC disabled");
+        }
+        if (c.name == "amd-curve-all-set") {
+            require(options.count("--apply"), "All-core curve settings require --apply");
+            const auto text = get(options,"--margin");
+            const auto start = !text.empty() && text[0] == '-' ? 1u : 0u;
+            require(start < text.size() && text.find_first_not_of("0123456789",start) == std::string::npos,
+                    "--margin requires an integer CO count -50..50, not mV");
+            const auto magnitude = wideInteger(text.substr(start),50,"--margin");
+            c.margin = start ? -int(magnitude) : int(magnitude);
+            c.pboExpected = uintOption(options,"--expect-caps",UINT32_MAX);
+            require(amdAllCoreCurveAvailable(c.pboExpected), "All-core curve requires PBO available and manual OC disabled");
         }
         if (c.name == "amd-pbo-fmax-set") {
             require(options.count("--apply"), "Setting Fmax requires --apply; acknowledgement does not verify the actual limit");
@@ -996,6 +1008,7 @@ Result hardware(const Command &c, HardwareSession &s) {
             {"power_limits_available", r.valid ? boolean(r.raw & 2u) : "null"},
             {"limit_commands_available", boolean(r.valid && amdPboLimitsAvailable(r.raw))},
             {"fmax_command_available", boolean(r.valid && amdPboFmaxAvailable(r.raw))},
+            {"all_core_curve_command_available", boolean(r.valid && amdAllCoreCurveAvailable(r.raw))},
             {"current_fmax_mhz", "null"}, {"readback_supported", "false"}, {"response", hex(r.response)}};
     } else if (c.name == "amd-oc-mode-set") {
         const auto r = setShimadaOcMode(s,c.smu,c.pboExpected,c.ocEnabled); out.error = r.error;
@@ -1042,6 +1055,14 @@ Result hardware(const Command &c, HardwareSession &s) {
             {"current_frequency_mhz","null"},{"readback_supported","false"},{"physical_mapping_verified","false"},
             {"hardware_effect_measured","false"},{"response",hex(r.response)},
             {"detail",quote("Firmware acknowledgement only. Explicit firmware indices are not Linux CPU IDs. No mode, VID or scalar command, automatic retry or rollback.")}};
+    } else if (c.name == "amd-curve-all-set") {
+        const auto r = setShimadaAllCoreCurve(s,c.smu,c.pboExpected,c.margin); out.error = r.error;
+        out.data = {{"scope",quote("all-cores")},{"margin_counts",number(c.margin)},
+            {"expected_capabilities",hex(c.pboExpected)},{"capabilities_raw",r.before.valid?hex(r.before.raw):"null"},
+            {"command",hex(7)},{"argument",hex(r.argument)},{"phase",quote(amdPboPhaseName(r.phase))},
+            {"write_attempted",boolean(r.writeAttempted)},{"accepted",boolean(r.accepted)},
+            {"response",hex(r.response)},{"verified","false"},{"physical_mapping_verified","false"},
+            {"current_margin_counts","null"},{"affected_core_count","null"}};
     } else if (c.name == "amd-pbo-limit-set") {
         const auto r = setShimadaPboLimit(s, c.smu, c.pboExpected, c.pboLimit, c.pboLimitValue); out.error = r.error;
         out.data = {{"limit", quote(amdPboLimitName(c.pboLimit))}, {"unit", quote(amdPboLimitUnit(c.pboLimit))},
@@ -1446,6 +1467,8 @@ Usage: octool-cli COMMAND [OPTIONS]
   amd-pbo-rails-encode --rail0-mv N --rail1-mv N
                                    Offline encoding preview; no hardware access
   amd-curve-read --cpu N --ccd N --core N
+  amd-curve-all-set --cpu N --margin -50..50 --expect-caps RAW --apply
+                                    All-core CO counts; firmware acknowledgement only
   amd-curve-read --cpu N --ccd N --cores 0,2,7
   amd-curve-set --cpu N --ccd N (--core N | --cores 0,2,7)
     --margin -50..50 --expect-raw RAW[,RAW...] --apply

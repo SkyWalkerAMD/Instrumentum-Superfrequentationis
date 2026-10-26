@@ -2040,6 +2040,45 @@ void pboFmaxCommands() {
         assert(!opened); if (emit) std::cout << output.str();
     }
 }
+void allCoreCurveCommands() {
+    for (int margin : {-50,-25,0,50}) for (bool drop : {false,true}) {
+        AmdPboFixture d; d.capsRaw = 6; d.allowAllCoreCurve = true; d.discardChange = drop;
+        const auto result = command(d,{"amd-curve-all-set","--cpu","130","--margin",std::to_string(margin),"--expect-caps","6","--apply"},0);
+        assert(result.find("\"accepted\":true") != std::string::npos && result.find("\"verified\":false") != std::string::npos);
+        assert(result.find("\"current_margin_counts\":null") != std::string::npos && result.find("\"affected_core_count\":null") != std::string::npos);
+        assert((d.messages == std::vector<std::uint32_t>{0x6f,7}));
+        const unsigned arg = unsigned(margin < 0 ? 65536+margin : margin);
+        assert(d.commandArgs.back()[0] == arg && d.allCurveArgument == (drop ? UINT32_MAX : arg));
+        assert(d.settings == 1 && !d.wrongCpu && d.capsRaw == 6 && !d.ocAllMHz);
+    }
+    for (unsigned mode = 0; mode < 5; ++mode) {
+        AmdPboFixture d; d.capsRaw = 6; d.allowAllCoreCurve = true;
+        if (mode == 0) d.capsRaw = 4;
+        if (mode == 1) d.model = 0x18;
+        if (mode == 2) d.writeCompletion = 0xfd;
+        if (mode == 3) d.failAt = 0;
+        if (mode == 4) d.completion = 0xfe;
+        const auto result = command(d,{"amd-curve-all-set","--cpu","130","--margin","-25","--expect-caps","6","--apply"},3);
+        assert(result.find("\"verified\":false") != std::string::npos && d.settings == (mode == 2 ? 1u : 0u));
+    }
+}
+void allCoreCurveInvalidBeforeOpen() {
+    const std::vector<std::string> base = {"amd-curve-all-set","--cpu","130","--margin","-25","--expect-caps","6","--apply"};
+    std::vector<std::vector<std::string>> invalid;
+    auto noApply = base; noApply.pop_back(); invalid.push_back(noApply);
+    for (unsigned pos : {1u,3u,5u}) { auto a=base; a.erase(a.begin()+pos,a.begin()+pos+2); invalid.push_back(a); }
+    for (const char *value : {"","-","-51","51","-1.5","0x10","+1","1e1","2147483648"," -1"}) {
+        auto a=base; a[4]=value; invalid.push_back(a);
+    }
+    for (const char *caps : {"0","2","5","0xffffffff"}) { auto a=base; a[6]=caps; invalid.push_back(a); }
+    for (const char *selector : {"--ccd","--core","--cores"}) { auto a=base; a.push_back(selector); a.push_back("0"); invalid.push_back(a); }
+    auto duplicate=base; duplicate.push_back("--margin"); duplicate.push_back("0"); invalid.push_back(duplicate);
+    for (const auto &args : invalid) {
+        unsigned opened=0; std::ostringstream output;
+        assert(run(args,output,[&] { ++opened; return std::unique_ptr<HardwareBackend>(new AmdPboFixture); }) == 2 && !opened);
+        if (emit) std::cout << output.str();
+    }
+}
 void pboLimitCommands() {
     const char *names[] = {"ppt","tdc","edc","temperature"};
     const unsigned values[] = {350,280,500,90}, arguments[] = {350000,280000,500000,90};
@@ -2256,6 +2295,7 @@ int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--pm-fixture") { pmFilesystem(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     curveSettingCommands(); pboScalarCommands(); pboFmaxCommands(); pboOfflineCommands(); pboLimitCommands(); pboLimitInvalidBeforeOpen();
+    allCoreCurveCommands(); allCoreCurveInvalidBeforeOpen();
     ocModeCommands(); ocFrequencyCommands(); ocInvalidBeforeOpen();
     ocSelectedCoreCommands(); ocSelectedCoreFailures(); ocSelectedCoreInvalidBeforeOpen();
     nativePmCommands(); nativePmFailures(); nativePmInvalidBeforeOpen();
@@ -2267,5 +2307,5 @@ int main(int argc, char **argv) {
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "66 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "68 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

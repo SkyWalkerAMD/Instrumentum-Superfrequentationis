@@ -9,6 +9,8 @@ struct AmdPboFixture : AmdCurveFixture {
     std::uint32_t scalarRaw = 0x3f800000;
     std::uint32_t capsRaw = 4, fmaxMHz = 0;
     bool allowManualOc = false, overrideModeCaps = false;
+    bool allowAllCoreCurve = false;
+    std::uint32_t allCurveArgument = UINT32_MAX;
     std::uint32_t modeCapsAfter = 0, ocAllMHz = 0, ocCoreArgument = 0;
     std::array<std::uint32_t, 4> limitArguments{{0,0,0,0}};
     std::array<std::uint32_t, 6> scalarArgs{{11,22,33,44,55,66}};
@@ -28,7 +30,7 @@ struct AmdPboFixture : AmdCurveFixture {
             if (index == 0x3b10970 && !r.value) response = 0;
             else if (index >= 0x3b10a40 && index <= 0x3b10a54) scalarArgs[(index-0x3b10a40)/4] = std::uint32_t(r.value);
             else if (index == 0x3b10924 && (r.value == 0x6d || r.value == 0x5b || r.value == 0x6f || r.value == 0x70 || (r.value >= 0x56 && r.value <= 0x59) ||
-                     (allowManualOc && r.value >= 0x5d && r.value <= 0x60))) {
+                     (allowManualOc && r.value >= 0x5d && r.value <= 0x60) || (allowAllCoreCurve && r.value == 7))) {
                 const bool query = r.value == 0x6d || r.value == 0x6f;
                 for (unsigned i = query ? 0 : 1; i < 6; ++i) if (scalarArgs[i]) out.error = -EINVAL;
                 if (r.value == 0x5b && (scalarArgs[0] < 100 || scalarArgs[0] > 1000 || scalarArgs[0] % 100)) out.error = -EINVAL;
@@ -38,13 +40,15 @@ struct AmdPboFixture : AmdCurveFixture {
                 if ((r.value == 0x5d || r.value == 0x5e) && scalarArgs[0]) out.error = -EINVAL;
                 if (r.value == 0x5f && (!scalarArgs[0] || scalarArgs[0] > 0xfffff)) out.error = -EINVAL;
                 if (r.value == 0x60 && (!(scalarArgs[0] & 0xfffff) || (scalarArgs[0] & 0x0f800000u))) out.error = -EINVAL;
+                if (r.value == 7 && !(scalarArgs[0] <= 50 || (scalarArgs[0] >= 0xffce && scalarArgs[0] <= 0xffff))) out.error = -EINVAL;
                 if (!out.error) {
                     ++commands; polls = 0; messages.push_back(std::uint32_t(r.value)); commandArgs.push_back(scalarArgs);
                     response = query ? completion : writeCompletion;
                     if (!query) {
                         ++settings;
                         if (writeCompletion == 1 && !discardChange) {
-                            if (r.value == 0x70) fmaxMHz = scalarArgs[0];
+                            if (r.value == 7) allCurveArgument = scalarArgs[0];
+                            else if (r.value == 0x70) fmaxMHz = scalarArgs[0];
                             else if (r.value == 0x5d || r.value == 0x5e) capsRaw = overrideModeCaps ? modeCapsAfter : r.value == 0x5d ? capsRaw | 1u : capsRaw & ~1u;
                             else if (r.value == 0x5f) ocAllMHz = scalarArgs[0];
                             else if (r.value == 0x60) ocCoreArgument = scalarArgs[0];

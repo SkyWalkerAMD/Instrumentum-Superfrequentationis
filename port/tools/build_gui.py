@@ -135,6 +135,8 @@ def main():
                    OCTOOL_CURVE_SELECTION_TEST_SCREENSHOT=str((tests / "curve-selection-fixture.png").resolve()),
                    OCTOOL_CURVE_WRITE_TEST_SCREENSHOT=str((tests / "curve-write-fixture.png").resolve()),
                    OCTOOL_CURVE_PARTIAL_TEST_SCREENSHOT=str((tests / "curve-partial-fixture.png").resolve()),
+                   OCTOOL_CURVE_ALL_TEST_SCREENSHOT=str((tests / "curve-all-fixture.png").resolve()),
+                   OCTOOL_CURVE_ALL_FAILURE_TEST_SCREENSHOT=str((tests / "curve-all-failure-fixture.png").resolve()),
                    OCTOOL_PBO_SCALAR_READ_TEST_SCREENSHOT=str((tests / "pbo-scalar-read-fixture.png").resolve()),
                    OCTOOL_PBO_SCALAR_WRITE_TEST_SCREENSHOT=str((tests / "pbo-scalar-write-fixture.png").resolve()),
                    OCTOOL_PBO_SCALAR_FAILURE_TEST_SCREENSHOT=str((tests / "pbo-scalar-failure-fixture.png").resolve()),

@@ -3593,6 +3593,80 @@ private slots:
         read->click(); panel.findChild<QLineEdit *>("smuCpu")->setText("131"); QTRY_VERIFY(panel.isEnabled());
         QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0);
     }
+    void allCoreCurveAcknowledgementOnly() {
+        auto *device = new AmdPboFixture; device->capsRaw=6; device->allowAllCoreCurve=true; device->discardChange=true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        panel.resize(1200,1200); panel.show(); QApplication::processEvents();
+        auto *read=panel.findChild<QPushButton *>("allCurveCapsRead"), *apply=panel.findChild<QPushButton *>("allCurveApply");
+        auto *input=panel.findChild<QLineEdit *>("allCurveMargin"); input->setText("-25");
+        apply->click(); QCOMPARE(device->calls,0u);
+        for (int margin : {-25,0,50}) {
+            input->setText(QString::number(margin)); read->click(); QTRY_VERIFY(panel.isEnabled());
+            QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+            apply->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(device->messages.back(),std::uint32_t(7)); QCOMPARE(device->commandArgs.back()[0],unsigned(margin < 0 ? 65536+margin : margin));
+            QCOMPARE(device->allCurveArgument,UINT32_MAX);
+            auto *table=panel.findChild<QTableWidget *>("smuTable");
+            QCOMPARE(table->item(2,1)->text(),QString("Firmware accepted"));
+            QCOMPARE(table->item(4,1)->text(),QString("Unavailable / not verified"));
+            QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("Per-core values remain unverified"));
+            if (margin == -25) { QApplication::processEvents(); const auto shot=qEnvironmentVariable("OCTOOL_CURVE_ALL_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot)); }
+            const auto calls=device->calls; apply->click(); QCOMPARE(device->calls,calls);
+        }
+        QCOMPARE(device->settings,3u); QCOMPARE(device->wrongCpu,0u);
+    }
+    void allCoreCurveRejectsInvalidAndChangedInputs() {
+        auto *device=new AmdPboFixture; device->capsRaw=6; device->allowAllCoreCurve=true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        auto *read=panel.findChild<QPushButton *>("allCurveCapsRead"), *apply=panel.findChild<QPushButton *>("allCurveApply");
+        auto *input=panel.findChild<QLineEdit *>("allCurveMargin");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); const auto calls=device->calls;
+        for (const QString text : {QString(""),QString("-51"),QString("51"),QString("-1.5"),QString("0x10")}) {
+            input->setText(text); apply->click(); QCOMPARE(device->calls,calls);
+        }
+        for (unsigned mode=0; mode<3; ++mode) {
+            panel.findChild<QLineEdit *>("smuCpu")->setText("130"); input->setText("-25");
+            read->click(); QTRY_VERIFY(panel.isEnabled()); const auto previous=device->calls;
+            QTimer::singleShot(0, [&] {
+                auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(!box) return;
+                if(mode==0) input->setText("-24");
+                if(mode==1) panel.findChild<QLineEdit *>("smuCpu")->setText("131");
+                box->button(mode==2?QMessageBox::Cancel:QMessageBox::Yes)->click();
+            });
+            apply->click(); QCOMPARE(device->calls,previous); QCOMPARE(device->settings,0u);
+        }
+        device->capsRaw=7; read->click(); QTRY_VERIFY(panel.isEnabled()); const auto unavailable=device->calls;
+        apply->click(); QCOMPARE(device->calls,unavailable);
+    }
+    void allCoreCurveRejectsStaleCapsAndFirmware() {
+        auto *device=new AmdPboFixture; device->capsRaw=6; device->allowAllCoreCurve=true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        panel.resize(1200,1200); panel.show(); QApplication::processEvents();
+        auto *read=panel.findChild<QPushButton *>("allCurveCapsRead"), *apply=panel.findChild<QPushButton *>("allCurveApply");
+        panel.findChild<QLineEdit *>("allCurveMargin")->setText("-25");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); device->capsRaw=4;
+        QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settings,0u);
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("No setting sent"));
+        read->click(); QTRY_VERIFY(panel.isEnabled()); device->writeCompletion=0xfd;
+        QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settings,1u);
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->item(2,1)->text(),QString("Attempted; not confirmed"));
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("may have changed"));
+        QApplication::processEvents(); const auto shot=qEnvironmentVariable("OCTOOL_CURVE_ALL_FAILURE_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+    }
+    void allCoreCurveDropsStaleCompletion() {
+        auto *device=new AmdPboFixture; device->capsRaw=6; device->allowAllCoreCurve=true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        auto *read=panel.findChild<QPushButton *>("allCurveCapsRead"), *apply=panel.findChild<QPushButton *>("allCurveApply");
+        panel.findChild<QLineEdit *>("allCurveMargin")->setText("-25");
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); panel.findChild<QLineEdit *>("smuCpu")->setText("131"); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0);
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("result belongs to CPU 130"));
+        const auto calls=device->calls; apply->click(); QCOMPARE(device->calls,calls);
+    }
     void pboLimitsAcknowledgementOnly() {
         auto *device = new AmdPboFixture; device->capsRaw = 6; device->discardChange = true;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
