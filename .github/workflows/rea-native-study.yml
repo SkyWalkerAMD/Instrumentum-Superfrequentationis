@@ -9,7 +9,7 @@ on:
       study:
         description: Selected, hash-verified original functions
         type: choice
-        options: [baseline, arrays, monitors, percore, pbo_layout, pbo_semantics, pbo_limits, oc_frequency, oc_cores, pm_transport]
+        options: [baseline, arrays, monitors, percore, pbo_layout, pbo_semantics, pbo_limits, oc_frequency, oc_cores, pm_transport, curve_all]
         default: baseline
       startup_timeout_ms:
         description: Ghidra startup deadline in milliseconds

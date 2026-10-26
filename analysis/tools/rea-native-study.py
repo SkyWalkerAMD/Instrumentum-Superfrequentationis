@@ -101,6 +101,14 @@ PM_TRANSPORT_PROCEDURES = (('0x236730', 'AMD_PM_LOG::get_mem_address'),
                            ('0x21f470', 'cal_raw_from_vid'),
                            ('0x220db0', 'TEST_SMC_MSG_ForceCpuVid'),
                            ('0x239990', 'set_core01_rails'))
+CURVE_ALL_PROCEDURES = (('0x238d90', 'AMD_PM_LOG::set_curve_opt'),
+                        ('0x239400', 'AMD_PBO::set_curve_opt'),
+                        ('0x750b70', 'on_per_ccx_oc_apply_5_clicked'),
+                        ('0x220600', 'TEST_SMC_MSG_ForceAllDLDOPsm'),
+                        ('0x2209e0', 'TEST_SMC_MSG_UnForceAllDLDOPsm'),
+                        ('0x221240', 'TEST_SMC_MSG_UnForceCpuVid'),
+                        ('0x21fd00', 'Wr_ocvid'),
+                        ('0x239990', 'set_core01_rails'))
 
 
 def selected_address(reply, offset):
@@ -121,7 +129,7 @@ def main():
     parser.add_argument('--binary', type=Path, required=True)
     parser.add_argument('--rea', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout', 'pbo_semantics', 'pbo_limits', 'oc_frequency', 'oc_cores', 'pm_transport'), default='baseline')
+    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout', 'pbo_semantics', 'pbo_limits', 'oc_frequency', 'oc_cores', 'pm_transport', 'curve_all'), default='baseline')
     args = parser.parse_args()
     binary, rea, output = args.binary.resolve(), args.rea.resolve(), args.output.resolve()
     if hashlib.sha256(binary.read_bytes()).hexdigest() != SOURCE_SHA:
@@ -225,7 +233,8 @@ def main():
                               'pbo_limits': PBO_LIMITS_PROCEDURES,
                               'oc_frequency': OC_FREQUENCY_PROCEDURES,
                               'oc_cores': OC_CORES_PROCEDURES,
-                              'pm_transport': PM_TRANSPORT_PROCEDURES}[args.study]
+                              'pm_transport': PM_TRANSPORT_PROCEDURES,
+                              'curve_all': CURVE_ALL_PROCEDURES}[args.study]
                 for offset, name in procedures:
                     pseudo = call('procedure_pseudo_code',
                         dict(procedure='file-offset:' + offset), 'pseudo-' + offset)
