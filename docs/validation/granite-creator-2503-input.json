@@ -1,0 +1,108 @@
+{
+  "schema": 1,
+  "board": "ASUS ProArt X870E-CREATOR WIFI",
+  "bios": "2503",
+  "release_date": "2026-09-22",
+  "agesa": "ComboAM5 PI 1.3.0.1d",
+  "support_url": "https://www.asus.com/de/supportonly/proart%20x870e-creator%20wifi/helpdesk_bios/",
+  "download_url": "https://dlcdnets.asus.com/pub/ASUS/mb/BIOS/ProArt-X870E-CREATOR-WIFI-ASUS-2503.ZIP",
+  "archive_sha256": "fc7211637882a09ccf01059d4ee1681c0a9876e2aff58d57949d903664012d9d",
+  "archive_bytes": 18609115,
+  "archive_entries": [
+    {
+      "name": "BIOSRenamer.exe",
+      "bytes": 128088
+    },
+    {
+      "name": "ProArt-X870E-CREATOR-WIFI-ASUS-2503.CAP",
+      "bytes": 33558528
+    },
+    {
+      "name": "ProArt-X870E-CREATOR-WIFI-ASUS-2503.CFG",
+      "bytes": 168
+    }
+  ],
+  "capsule": "ProArt-X870E-CREATOR-WIFI-ASUS-2503.CAP",
+  "capsule_bytes": 33558528,
+  "capsule_sha256": "f34be92fa4577c976b299495d29f66e437839165cfecf2856d030487880b20a9",
+  "installed_bios_known": false,
+  "hardware_execution": false,
+  "date": "2026-10-26",
+  "scope": "Offline public reference only; not the installed BIOS or a validated hardware profile.",
+  "parser": "PSPTool 3.7 directory inventory plus independent bounded PSP header/zlib extraction",
+  "parser_warnings": [
+    "Warning: Input  file is 0x2001000, will assume ROM size of 32M",
+    "Warning: Skipping FET at 0x2000 due to unknown ROM alignment",
+    "Warning: Unknown zen_generation_id=b'\\x0b\\x0e\\xbc'",
+    "Warning: Unknown zen_generation_id=b'\\x10\\x0e\\xbc'",
+    "Warning: Unknown zen_generation_id=b'\\x0b\\x0e\\xbc'",
+    "Warning: Unknown zen_generation_id=b'\\x10\\x0e\\xbc'",
+    "Warning: FET entry 0x1ffffff not found or invalid, skipping ..."
+  ],
+  "psp_entries_sha256": "66061ba0f25018cda99fb8c4a5a0c5e0578a17d6f60c3f37a43d622b869b3773",
+  "selected_firmware_entries": [
+    {
+      "directory": 1,
+      "entry": 6,
+      "type": "SMU_OFFCHIP_FW~0x8",
+      "capsule_offset": "0x5d0200",
+      "packed_bytes": 137472,
+      "compressed_bytes": 136953,
+      "body_bytes": 262144,
+      "header_version_word": "0x00625400",
+      "header_version_decimal": "98.84.0",
+      "packed_sha256": "200a11e739ef49d29b7f58e728ec6b30e66f43da5672b4bf23e2e1ccce543413",
+      "body_sha256": "5d7951d30fefea6c5f435ac219fe4879adb0d8f66727211e32af1ff89d6b7596"
+    },
+    {
+      "directory": 1,
+      "entry": 17,
+      "type": "MP5_FW~0x2a",
+      "capsule_offset": "0x654700",
+      "packed_bytes": 64144,
+      "compressed_bytes": 63621,
+      "body_bytes": 262144,
+      "header_version_word": "0x00625400",
+      "header_version_decimal": "98.84.0",
+      "packed_sha256": "332ab181f66b72203fe797e6119bab9215a11690cfe9b20aa214c3d4c09607ce",
+      "body_sha256": "fb5d96c17b909cc4f681523ccc931796e27c7457ba5ad637a3d4fce1c78ce556"
+    },
+    {
+      "directory": 7,
+      "entry": 6,
+      "type": "SMU_OFFCHIP_FW~0x8",
+      "capsule_offset": "0x100200",
+      "packed_bytes": 137472,
+      "compressed_bytes": 136953,
+      "body_bytes": 262144,
+      "header_version_word": "0x00625400",
+      "header_version_decimal": "98.84.0",
+      "packed_sha256": "200a11e739ef49d29b7f58e728ec6b30e66f43da5672b4bf23e2e1ccce543413",
+      "body_sha256": "5d7951d30fefea6c5f435ac219fe4879adb0d8f66727211e32af1ff89d6b7596"
+    },
+    {
+      "directory": 7,
+      "entry": 17,
+      "type": "MP5_FW~0x2a",
+      "capsule_offset": "0x184700",
+      "packed_bytes": 64144,
+      "compressed_bytes": 63621,
+      "body_bytes": 262144,
+      "header_version_word": "0x00625400",
+      "header_version_decimal": "98.84.0",
+      "packed_sha256": "332ab181f66b72203fe797e6119bab9215a11690cfe9b20aa214c3d4c09607ce",
+      "body_sha256": "fb5d96c17b909cc4f681523ccc931796e27c7457ba5ad637a3d4fce1c78ce556"
+    }
+  ],
+  "duplicate_entries_byte_identical": true,
+  "runtime_smu_version_read": false,
+  "pm_table_version_verified": false,
+  "rails_protocol_verified": false,
+  "field_units_verified": false,
+  "scope_limits": [
+    "The capsule contains several processor firmware families; the 0x00625400 pair is a Granite Ridge analysis candidate, not proof of firmware selected on this machine.",
+    "The firmware header version is distinct from a PM table version. No 0x620205 PM table was acquired here.",
+    "PSPTool reports generation/alignment warnings; directory typing plus bounded extraction is not a complete authenticity or BIOS compatibility audit.",
+    "No capsule, BIOSRenamer, firmware body or hardware setting was executed."
+  ]
+}

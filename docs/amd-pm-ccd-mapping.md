@@ -79,3 +79,44 @@ MP5 累加函数 `37B60h` 已定位到逐核结构 `11998h`、步长 `1C0h`。
 GUI/CLI 继续提供离线 rails 编码预览，运行时 `61h` 写入仍关闭。
 
 此项静态研究、模拟后端测试和跨系统构建均不能替代真机验收。
+
+## 用户验收目标：Ryzen 9 9950X3D
+
+2026-10-26 用户指定 9950X3D，主板为“ASUS X870E Creator”，按
+ASUS ProArt X870E-CREATOR WIFI 匹配。该目标应走 Granite Ridge 协议，**本页新增的
+Shimada 映射不能直接用于 9950X3D**。现有身份检查会拒绝不匹配的平台。
+
+已核对的独立实现
+[ryzen_smu](https://github.com/amkillam/ryzen_smu/blob/d2983668300dd2a598e5a7dc40e71ce0678cc270/smu.c)
+把 family `1Ah` / model `44h` 识别为 Granite Ridge，使用 RSMU
+`3B10524h/3B10570h/3B10A40h`；本轮 Shimada 使用的命令/响应地址是
+`3B10924h/3B10970h`。同名命令或相似参数不足以证明两者可互换。
+
+[9950X3D 实测研究记录](https://github.com/Kyworn/gnr-smu/blob/def79d66d5431dfc4b6fc773f0b99fb99c8e378d/docs/architectures/granite_ridge/9950X3D.md)
+报告了 `620205h`、2452 字节的 PM 表，与本项目已有 `73xx04h` 表不同。
+该作者用绑核负载对照 `k10temp` 检查了温度槽位，但也否定了若干旧“CCD 功耗”标签。
+这些记录是后续交叉验证的来源，不能替代本项目对用户主板/BIOS 的验证，
+也不能据此把另一种表的偏移、X3D CCD 顺序或 rails 写入直接开放。
+
+后续需补齐 Granite Ridge 独立身份/版本门禁、原始表采集与专用解码，
+用用户机器的主板/BIOS 和实际 PM 版本核对，再对照绑核负载验证物理顺序。
+当前尚未获得已安装的 BIOS 版本或真实采样；不得将本轮测试记作 9950X3D 硬件验收。
+官方公开 BIOS 只作为离线分析参考，不能代表用户机器正在运行的固件。
+
+### ProArt X870E-CREATOR WIFI 公开固件样本
+
+已从[华硕官方支持页](https://www.asus.com/de/supportonly/proart%20x870e-creator%20wifi/helpdesk_bios/)
+取得 BIOS `2503`（2026-09-22，AGESA ComboAM5 PI 1.3.0.1d），
+ZIP 的 SHA-256 与官网公布的 `fc7211637882a09ccf01059d4ee1681c0a9876e2aff58d57949d903664012d9d` 一致。
+仅解析 CAP，没有执行 BIOSRenamer、固件或刷写操作。
+
+PSPTool 3.7 将目录 `(1,6)/(7,6)` 标为 `SMU_OFFCHIP_FW`，
+`(1,17)/(7,17)` 标为 `MP5_FW`；各自两份压缩条目逐字节相同。
+独立检查 PSP 头及有界 zlib 解压后，两种固件正文均为 262144 字节，
+头部版本字段为 `00625400h`（98.84.0）。正文 SHA-256 和 CAP 偏移见
+[输入清单](validation/granite-creator-2503-input.json)。
+
+这是下一步 Granite Ridge 分析候选。CAP 还包含其它处理器系列的固件，
+PSPTool 也报告了代际/对齐警告；此项清点不能证明用户机器会选择该正文。
+固件版本与 PM 表版本是两个概念，本次并未从真机取得 `620205h` 表，
+也未验证这些正文的消息表、字段单位、CCD 物理顺序或双 rails 协议。

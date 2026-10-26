@@ -1,5 +1,9 @@
 # 功能还原状态
 
+<!-- amd-pm-ccd-168a618 -->
+2026-10-26：[PM 固件 CCD 映射验证](amd-pm-ccd-validation.md)已通过 44/44 云端任务；GUI/CLI 同步提供 `--map-ccd`。适用 Shimada SMU 115.46.0，9950X3D 的 Granite Ridge 路径、字段单位和第二 rails 回读仍待恢复。源码与包：`dist/gui-cli-amd-pm-ccd-168a618/`。
+<!-- /amd-pm-ccd-168a618 -->
+
 <!-- amd-pm-ccd-mapping-current -->
 新增 [PM 固件 CCD 槽位映射](amd-pm-ccd-mapping.md)：GUI 与 CLI `--map-ccd` 同步支持精确 SMU 115.46.0 的存在掩码查询、稀疏编号映射和前后复核。OS CPU/APIC 对应、逐核/CCD 物理单位及第二 rails 回读仍未完成。
 <!-- /amd-pm-ccd-mapping-current -->

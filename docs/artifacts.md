@@ -1,5 +1,9 @@
 # 安装包与源码归档
 
+<!-- amd-pm-ccd-168a618 -->
+2026-10-26：[PM 固件 CCD 映射验证](amd-pm-ccd-validation.md)已通过 44/44 云端任务；GUI/CLI 同步提供 `--map-ccd`。适用 Shimada SMU 115.46.0，9950X3D 的 Granite Ridge 路径、字段单位和第二 rails 回读仍待恢复。源码与包：`dist/gui-cli-amd-pm-ccd-168a618/`。
+<!-- /amd-pm-ccd-168a618 -->
+
 <!-- amd-fmax-readback-fca0725 -->
 2026-10-26：GUI / CLI 同步恢复 **Fmax 固件设置回读与写后校验**，限定 SMU 115.46.0。
 
