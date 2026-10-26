@@ -24,7 +24,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     # Native PM includes failures at every mailbox/CPUID access. Windows and
     # macOS retain real transport delays in addition to the existing suites.
-    timeout-minutes: 25
+    timeout-minutes: 35
     strategy:
       fail-fast: false
       matrix:
@@ -38,7 +38,7 @@ jobs:
       - name: Compile with warnings as errors
         run: cmake --build build/portable-core --config Release --parallel 2
       - name: Test synthetic reads, validation, errors, lifetime and concurrency
-        run: ctest --test-dir build/portable-core -C Release --output-on-failure --output-junit results.xml
+        run: ctest --test-dir build/portable-core -C Release --parallel 2 --output-on-failure --output-junit results.xml
       - name: Check offline snapshot parsing with memory and undefined-behavior sanitizers
         if: matrix.os == 'ubuntu-24.04'
         run: |

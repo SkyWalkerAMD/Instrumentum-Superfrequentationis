@@ -2,6 +2,7 @@
 #include "amd_pm_native.h"
 #include "amd_pm_native_fixture.h"
 #include <cassert>
+#include <chrono>
 #include <iostream>
 #include <limits>
 using namespace octool::core;
@@ -123,7 +124,10 @@ void ccdMapping() {
         Test t; t.fake->version = layout.version; t.fake->size = unsigned(layout.bytes); t.fake->bytes = pm_fixture::bytes(layout.bytes);
         const unsigned n = unsigned((layout.bytes-0x634)/0x274);
         t.fake->presentMask = (1u << (n-1))-1u + (1u << 15);
-        const auto r = t.run({},nullptr,10000,true);
+        const auto start = std::chrono::steady_clock::now();
+        const auto r = t.run({},nullptr,30000,true);
+        const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-start).count();
+        std::cout << "Mapped " << n << " CCD slots in " << elapsed << " ms; error " << r.error << "; phase " << amdPmNativePhaseName(r.phase) << std::endl;
         assert(!r.error && r.mappingValid && r.mappingRechecked && r.mappingRequested);
         assert(r.firmwareCcdIds.size() == n && r.firmwareCcdIds.front() == 0 && r.firmwareCcdIds.back() == 15);
         assert(r.presentMaskBefore == t.fake->presentMask && r.presentMaskAfter == r.presentMaskBefore);
@@ -148,7 +152,7 @@ void ccdMappingRejected() {
         if (mode == 6) { t.fake->presenceFailAt = 23; t.fake->presenceFailure = 0xff; }
         if (mode == 7) { t.fake->presenceFailAt = 16; t.fake->presenceFailure = 0; }
         if (mode == 8) t.fake->afterRequest = [&] { if (t.fake->presenceQueries == 32) t.fake->physicalBits = 47; };
-        const auto r = t.run({},nullptr,10000,true);
+        const auto r = t.run({},nullptr,30000,true);
         assert(r.error && !r.mappingValid && !r.mappingRechecked && r.firmwareCcdIds.empty() && r.snapshot.raw.empty());
         if (mode < 3) assert(!t.fake->memoryReads && !r.transferAttempted);
         if (mode == 0) assert(!t.fake->presenceQueries && r.error == -ENOTSUP);
@@ -156,7 +160,7 @@ void ccdMappingRejected() {
     }
 }
 void ccdMappingFaultsAndCancel() {
-    Test good; assert(!good.run({},nullptr,10000,true).error);
+    Test good; assert(!good.run({},nullptr,30000,true).error);
     // Every queried target in both passes: a failed command write must never
     // become an absent target. Also cover reply and argument-read failures.
     auto positions = good.fake->presenceCalls;
@@ -164,14 +168,14 @@ void ccdMappingFaultsAndCancel() {
     positions.push_back(good.fake->calls-1);
     for (auto pos : positions) {
         Test t; t.fake->failAt = int(pos);
-        const auto r = t.run({},nullptr,10000,true);
+        const auto r = t.run({},nullptr,30000,true);
         assert(r.error == -EACCES && !r.mappingValid && r.firmwareCcdIds.empty() && r.snapshot.raw.empty());
         assert(t.fake->calls == pos+1);
     }
     for (unsigned queries : {1u,2u,16u,17u,32u}) {
         Test t; std::atomic<bool> stop{false};
         t.fake->afterRequest = [&] { if (t.fake->presenceQueries == queries) stop.store(true); };
-        const auto r = t.run({},&stop,10000,true);
+        const auto r = t.run({},&stop,30000,true);
         assert(r.error == -ECANCELED && !r.mappingValid && r.firmwareCcdIds.empty() && r.snapshot.raw.empty());
     }
 }

@@ -45,7 +45,9 @@ if(BUILD_TESTING)
     set_tests_properties(amd_power_adjustment_core PROPERTIES TIMEOUT 360)
     set_tests_properties(amd_oc_core PROPERTIES TIMEOUT 360)
     set_tests_properties(amd_oc_cores_core PROPERTIES TIMEOUT 360)
-    set_tests_properties(amd_pm_native_core PROPERTIES TIMEOUT 600)
+    # Optional CCD mapping issues 32 presence queries per capture. Tests retain
+    # transport sleeps; coarse Windows/macOS timers need a larger suite budget.
+    set_tests_properties(amd_pm_native_core PROPERTIES TIMEOUT 900)
     # Keep every-byte JSON truncation coverage as the monitor fields grow.
     # Address/undefined-behavior sanitizers make this parser exercise slower.
     set_tests_properties(amd_pm_core PROPERTIES TIMEOUT 240)
