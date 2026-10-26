@@ -1,5 +1,20 @@
 # GUI / CLI 同步进度
 
+<!-- amd-pm-native-1ad6db9 -->
+2026-10-26：最新交付源码提交 `1ad6db9`，GUI / CLI 同步新增 **Shimada 原生 PM 表采集**。
+要求固件返回长度与精确版本一致，读取后复查元数据；错误时不发布部分缓冲区。
+
+- [用法](amd-pm-native.md)、[整批验证](amd-pm-native-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；核心 429 场景组，CLI 各 1386 JSON，GUI 各 216 项；12 次内核 VM。
+- `dist/gui-cli-amd-pm-native-1ad6db9/`：33 个包、精确云端源码、更新用户源码及校验表。
+- [REA 研究](amd-pm-native-research.md)：10 个函数、1433 次传输/VID 实验及 12 次校准实验，确认旧 PM 完成检查缺失、VID 编码分歧和校准后的布局冲突。
+- 核心/CLI 验证提交为 `65a370f`，Linux 为 `1ad6db9`；291 个运行/构建路径逐文件一致。
+- 逐核/CCD 布局、rails 写入与真机验收仍未完成；采集不证明采样新鲜度、原子性或物理映射。
+
+以下保留历史记录。
+<!-- /amd-pm-native-1ad6db9 -->
+
+
 <!-- amd-oc-cores-8c85a28 -->
 2026-10-21：最新生产验证提交 `8c85a28`，GUI / CLI 同步新增
 **同一 CCD 内显式核心列表的频率设置**。每核重查能力与身份，首错停止并报告部分完成状态。
@@ -300,6 +315,7 @@ GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-
 | AMD PM 原版功耗与策略监控 | PM telemetry → Display 五组 | `amd-pm-read/decode` 的 `original_package` | 53 项名称/偏移/浮点存储值；单位、策略状态和物理目标未认证；异常隔离与旧快照重算 |
 | AMD PM 原版链路与片内时钟监控 | PM telemetry → Display 两组 | `amd-pm-read/decode` 的 `original_fabric` | 27 项名称/偏移/浮点存储值；单位、策略状态和物理目标未认证；异常隔离与旧快照重算 |
 | AMD PM 原始数组 | PM telemetry → Display 三组 | `amd-pm-read/decode` 的 `original_arrays` | 92 存储字；槽号和数量不代表物理目标；128 KiB 快照、旧格式重算和错误隔离 |
+| AMD PM 原生采集 | PM telemetry → Read native PM table | `amd-pm-native-read --cpu N` | Shimada 1Ah/08h；固件返回长度、64 位范围、传输确认与读后元数据校验；快照互通；原子性、采样时间、物理映射未验证 |
 | AMD PM 遥测 | AMD tuning → PM telemetry | `amd-pm-read/decode` | 八个精确 Shimada 版本、24 项公共字段；已有驱动读取、原始文件解码与 JSON 双向导入；BCLK 修正需外部值，未完成整表与物理目标认证 |
 | AMD UMC | AMD UMC，打开/比较快照与差异筛选 | `amd-umc-read/decode/diff` | 212 字段、56 原始寄存器；GUI/CLI 双向离线导入与共用比较；无时序写入 |
 | DMI / 传感器 / SPD | Memory / Motherboard | `inventory` / `spd-decode` | 读取现有系统节点与离线 SPD；[DDR4 XMP 2.0](ddr4-xmp-recovery.md) 两组档案、电压/时序/独立时间基准（无扩展 CRC）；[DDR5 XMP 3.0](ddr5-xmp-recovery.md) 三个厂家档案含 8 项次级时序和独立周期下限（ps / nCK）；[EXPO 1.0](ddr5-expo-recovery.md) 两组基础档案、电压/时序和逐区 CRC；[XMP 用户槽读取与 EXPO 增强时序存储字](spd-user-enhanced.md)，启用状态未知 |

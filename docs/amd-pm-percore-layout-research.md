@@ -1,5 +1,7 @@
 # REA：逐核/CCD 功耗表与 PBO 事务
 
+2026-10-21 最新：[PM 传输与原始校准回放](amd-pm-native-research.md)补跑 12 个校准实验。已完成的校准路径未改变逐核/CCD 读取组，已知越界与重叠仍存在；GUI/CLI 新增[受约束的原生 PM 采集](amd-pm-native.md)，用于取得完整原始样本，不据此开放未确认的逐核/CCD 解码。
+
 后续进展：新的 [12 函数 REA 研究与 GUI/CLI 实现](amd-pbo-fmax-layout.md) 已增加
 Fmax 命令确认、rails 离线编码和逐核/CCD 布局诊断。三类构造入口跨八个版本的 128 个原指令实验
 确认其初始化方式不同；Windows 候选函数仍有相同固定起点。

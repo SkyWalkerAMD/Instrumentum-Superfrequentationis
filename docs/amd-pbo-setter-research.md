@@ -1,5 +1,7 @@
 # REA 后续：Fmax 与 core01 rails 设置入口
 
+2026-10-21 最新：[REA VID 换算回放](amd-pm-native-research.md)确认原通用帮助函数在 Shimada 标志下使用 SVI2，而原 rails setter 使用 245 mV / 5 mV 编码。两条路径不能混作已验证的 rails 协议；Fmax 已有命令确认，rails 仍只有离线编码预览。
+
 最新实现见 [Fmax、rails 与 PM 布局诊断](amd-pbo-fmax-layout.md)：GUI/CLI 已开放
 Shimada Fmax 能力读取与 `70h` 命令提交，明确报告 `accepted` 与 `verified=false`。
 未提供当前 Fmax 回读；rails 只开放编码预览。512 个熔丝输入、两个访问故障位置和

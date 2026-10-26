@@ -1,5 +1,7 @@
 # AMD PM 遥测、离线解码与 GUI / CLI 快照互通
 
+2026-10-21：[原生 PM 采集](amd-pm-native.md)新增独立 GUI/CLI 入口，要求固件返回精确长度。下文驱动入口与离线解码保持原合同。
+
 2026-10-20：新增 [92 个原始 GMI/DIMM/PCIe 数组值](amd-pm-arrays.md)，在 `original_arrays` 中保留槽号和原字；PM 共 220 个显示字段，物理目标与单位仍未认证。
 
 2026-10-20：新增 [27 项原版链路/片内时钟监控](amd-pm-fabric.md)，在 `original_fabric` 中分组保留存储值；单位、策略状态和物理目标未核实。
