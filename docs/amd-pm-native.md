@@ -1,5 +1,7 @@
 # 原生 AMD PM 表采集
 
+2026-10-26 更新：[逐核 / CCD 存储区](amd-pm-core-ccd.md)已由 MP5 原指令闭合边界并接入两端；PM 快照上限 1 MiB，公共显示字段由 24 项改为 22 项，撤回 VDDG 两项误映射。标签/单位/物理映射和双 rails 硬件写入仍待完成。以下保留此前阶段记录。
+
 GUI 的 **AMD tuning → PM telemetry → Read native PM table** 与 CLI
 `amd-pm-native-read --cpu N` 共用原生采集核心。它通过 OCTool 后端读取固件提供的缓冲区，
 不依赖 `ryzen_smu` 的 sysfs 节点；原有驱动读取和离线导入仍可独立使用。

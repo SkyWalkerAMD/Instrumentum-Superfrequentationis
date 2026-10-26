@@ -1,5 +1,18 @@
 # 项目知识入口
 
+<!-- amd-firmware-pm-472e785 -->
+2026-10-26：GUI / CLI 同步恢复 **八种 PM 表的逐核 / CCD 存储区**，修正 OC 模式状态位。
+
+- [数组用法与真实边界](amd-pm-core-ccd.md)：18 行 core、13 行 CCD；最多新增 2512 个值。旧 VDDG 两项误映射已撤回；当前共 532–2730 个存储字段、14 个视图。
+- [固件与 REA 研究](amd-smu-firmware-research.md)：72 个复制案例、20160 个 rails 原指令案例。rails 需要先启用 OC，索引是状态槽；第二物理轨和回读尚未证实，运行时写入仍未开放。
+- [整批验证](amd-firmware-pm-validation.md)：应用 `472e785`，43/43 云端任务；独立研究 1/1。11 Linux 目标含 EL7，各 225 项 GUI、1465 CLI JSON；12 次内核 VM。
+- OC 可用性是 bit 0，运行状态是 bit 16；PM 快照上限 1 MiB，GUI / CLI 导入互通。
+- `dist/gui-cli-amd-firmware-pm-472e785/` 含 33 个包及源码。单位、物理映射与真机验收仍待完成。
+
+以下保留历史记录，旧字段数量、状态位和未启用数组的结论以上述更新为准。
+<!-- /amd-firmware-pm-472e785 -->
+
+
 <!-- amd-pbo-query-5f41602 -->
 2026-10-26：GUI / CLI 同步新增 **Shimada LN2 状态与逐核性能原始字查询**。
 应用实现 `5f41602`，GUI/Linux 测试修正与研究提交 `e7cb847`；性能字不解释为瓦特或物理核心。

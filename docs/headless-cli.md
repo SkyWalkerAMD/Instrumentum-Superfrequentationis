@@ -1,5 +1,18 @@
 # 无桌面版 OCTool
 
+<!-- amd-firmware-pm-472e785 -->
+2026-10-26：GUI / CLI 同步恢复 **八种 PM 表的逐核 / CCD 存储区**，修正 OC 模式状态位。
+
+- [数组用法与真实边界](amd-pm-core-ccd.md)：18 行 core、13 行 CCD；最多新增 2512 个值。旧 VDDG 两项误映射已撤回；当前共 532–2730 个存储字段、14 个视图。
+- [固件与 REA 研究](amd-smu-firmware-research.md)：72 个复制案例、20160 个 rails 原指令案例。rails 需要先启用 OC，索引是状态槽；第二物理轨和回读尚未证实，运行时写入仍未开放。
+- [整批验证](amd-firmware-pm-validation.md)：应用 `472e785`，43/43 云端任务；独立研究 1/1。11 Linux 目标含 EL7，各 225 项 GUI、1465 CLI JSON；12 次内核 VM。
+- OC 可用性是 bit 0，运行状态是 bit 16；PM 快照上限 1 MiB，GUI / CLI 导入互通。
+- `dist/gui-cli-amd-firmware-pm-472e785/` 含 33 个包及源码。单位、物理映射与真机验收仍待完成。
+
+以下保留历史记录，旧字段数量、状态位和未启用数组的结论以上述更新为准。
+<!-- /amd-firmware-pm-472e785 -->
+
+
 <!-- amd-pbo-query-5f41602 -->
 2026-10-26：GUI / CLI 同步新增 **Shimada LN2 状态与逐核性能原始字查询**。
 应用实现 `5f41602`，GUI/Linux 测试修正与研究提交 `e7cb847`；性能字不解释为瓦特或物理核心。
@@ -380,7 +393,7 @@ octool-cli amd-pm-decode --file pm.bin --version 0x730204 --bclk-mhz 102.5
 另有 `original_package` 的 53 项[公共功耗与策略监控](amd-pm-package.md)，按五个 `group` 分组；单位、策略状态和目标仍未核实。
 另有 `original_fabric` 的 27 项[链路与片内时钟监控](amd-pm-fabric.md)，按两个 `group` 分组；单位、实际链路/时钟状态和目标仍未核实。
 另有 `original_arrays` 的 92 个 [GMI/DIMM/PCIe 数组存储值](amd-pm-arrays.md)，每项含 `slot`、`slot_count`；它们不是物理目标编号或已安装设备数量。
-GUI 的 Display 现有十二组字段；旧 schema-1 快照无需转换即可导入。PM JSON 文件上限为 128 KiB，包含 CLI 报告外层；其它格式保持原限制。
+另有 `firmware_core_arrays` / `firmware_ccd_arrays`，提供[已核实边界的逐核 / CCD 存储字](amd-pm-core-ccd.md)；单位和物理映射未认证。GUI 的 Display 现有十四组；旧 schema-1 快照会重算派生字段，撤回两项 VDDG 解释。PM JSON 上限为 1 MiB / 65536 个值，包含 CLI 外层；其它格式保持原限制。
 
 CPU 硬件命令必须明确指定 `--cpu`，从 `diagnose` 的 `data.allowed_cpus` 选择。
 原始 MMIO/PCI 命令分别指定物理地址或 BDF，不使用 `--cpu`。

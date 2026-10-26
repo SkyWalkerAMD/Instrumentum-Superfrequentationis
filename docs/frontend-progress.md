@@ -1,5 +1,18 @@
 # GUI / CLI 同步进度
 
+<!-- amd-firmware-pm-472e785 -->
+2026-10-26：GUI / CLI 同步恢复 **八种 PM 表的逐核 / CCD 存储区**，修正 OC 模式状态位。
+
+- [数组用法与真实边界](amd-pm-core-ccd.md)：18 行 core、13 行 CCD；最多新增 2512 个值。旧 VDDG 两项误映射已撤回；当前共 532–2730 个存储字段、14 个视图。
+- [固件与 REA 研究](amd-smu-firmware-research.md)：72 个复制案例、20160 个 rails 原指令案例。rails 需要先启用 OC，索引是状态槽；第二物理轨和回读尚未证实，运行时写入仍未开放。
+- [整批验证](amd-firmware-pm-validation.md)：应用 `472e785`，43/43 云端任务；独立研究 1/1。11 Linux 目标含 EL7，各 225 项 GUI、1465 CLI JSON；12 次内核 VM。
+- OC 可用性是 bit 0，运行状态是 bit 16；PM 快照上限 1 MiB，GUI / CLI 导入互通。
+- `dist/gui-cli-amd-firmware-pm-472e785/` 含 33 个包及源码。单位、物理映射与真机验收仍待完成。
+
+以下保留历史记录，旧字段数量、状态位和未启用数组的结论以上述更新为准。
+<!-- /amd-firmware-pm-472e785 -->
+
+
 <!-- amd-pbo-query-5f41602 -->
 2026-10-26：GUI / CLI 同步新增 **Shimada LN2 状态与逐核性能原始字查询**。
 应用实现 `5f41602`，GUI/Linux 测试修正与研究提交 `e7cb847`；性能字不解释为瓦特或物理核心。
@@ -342,9 +355,10 @@ GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-
 | AMD 拓扑 | AMD tuning | `amd-topology` | CPUID 拓扑，不作为固件目标映射 |
 | AMD PM 原版功耗与策略监控 | PM telemetry → Display 五组 | `amd-pm-read/decode` 的 `original_package` | 53 项名称/偏移/浮点存储值；单位、策略状态和物理目标未认证；异常隔离与旧快照重算 |
 | AMD PM 原版链路与片内时钟监控 | PM telemetry → Display 两组 | `amd-pm-read/decode` 的 `original_fabric` | 27 项名称/偏移/浮点存储值；单位、策略状态和物理目标未认证；异常隔离与旧快照重算 |
-| AMD PM 原始数组 | PM telemetry → Display 三组 | `amd-pm-read/decode` 的 `original_arrays` | 92 存储字；槽号和数量不代表物理目标；128 KiB 快照、旧格式重算和错误隔离 |
+| AMD PM 原始数组 | PM telemetry → Display 三组 | `amd-pm-read/decode` 的 `original_arrays` | 92 存储字；槽号和数量不代表物理目标；1 MiB PM 快照、旧格式重算和错误隔离 |
+| AMD PM 逐核 / CCD 存储区 | PM telemetry → Core / CCD stored arrays | `amd-pm-read/decode/native-read` 的 `firmware_core_arrays` / `firmware_ccd_arrays` | 18 × 8N 个 core 字、13N 个 CCD 字；N 来自精确版本，非 CPU 数；标签、单位与物理映射未认证 |
 | AMD PM 原生采集 | PM telemetry → Read native PM table | `amd-pm-native-read --cpu N` | Shimada 1Ah/08h；固件返回长度、64 位范围、传输确认与读后元数据校验；快照互通；原子性、采样时间、物理映射未验证 |
-| AMD PM 遥测 | AMD tuning → PM telemetry | `amd-pm-read/decode` | 八个精确 Shimada 版本、24 项公共字段；已有驱动读取、原始文件解码与 JSON 双向导入；BCLK 修正需外部值，未完成整表与物理目标认证 |
+| AMD PM 遥测 | AMD tuning → PM telemetry | `amd-pm-read/decode` | 八个精确 Shimada 版本、22 项公共字段（撤回 VDDG 误映射）；已有驱动读取、原始文件解码与 JSON 双向导入；BCLK 修正需外部值，未完成整表与物理目标认证 |
 | AMD UMC | AMD UMC，打开/比较快照与差异筛选 | `amd-umc-read/decode/diff` | 212 字段、56 原始寄存器；GUI/CLI 双向离线导入与共用比较；无时序写入 |
 | DMI / 传感器 / SPD | Memory / Motherboard | `inventory` / `spd-decode` | 读取现有系统节点与离线 SPD；[DDR4 XMP 2.0](ddr4-xmp-recovery.md) 两组档案、电压/时序/独立时间基准（无扩展 CRC）；[DDR5 XMP 3.0](ddr5-xmp-recovery.md) 三个厂家档案含 8 项次级时序和独立周期下限（ps / nCK）；[EXPO 1.0](ddr5-expo-recovery.md) 两组基础档案、电压/时序和逐区 CRC；[XMP 用户槽读取与 EXPO 增强时序存储字](spd-user-enhanced.md)，启用状态未知 |
 | 原始 MSR / MMIO / PCI | Register 编辑页 | `register-read` / `register-write` | 相同宽度、范围与对齐校验；明确目标，写入不自动回读 |

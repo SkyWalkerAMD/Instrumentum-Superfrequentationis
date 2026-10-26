@@ -1,0 +1,989 @@
+{
+  "schema": 1,
+  "date": "2026-10-26",
+  "source_commit": "64a2b00d4986b883c49d248bafc98775165b85cd",
+  "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/40288469478",
+  "jobs": [
+    {
+      "completedAt": "2026-10-26T07:54:13Z",
+      "conclusion": "success",
+      "databaseId": 121457675851,
+      "name": "firmware",
+      "startedAt": "2026-10-26T07:52:30Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-26T07:52:33Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-26T07:52:31Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-26T07:52:35Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 2,
+          "startedAt": "2026-10-26T07:52:33Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-26T07:52:41Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@v4",
+          "number": 3,
+          "startedAt": "2026-10-26T07:52:35Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-26T07:52:41Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-java@v4",
+          "number": 4,
+          "startedAt": "2026-10-26T07:52:41Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-26T07:52:56Z",
+          "conclusion": "success",
+          "name": "Install pinned analysis tools",
+          "number": 5,
+          "startedAt": "2026-10-26T07:52:41Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-26T07:53:01Z",
+          "conclusion": "success",
+          "name": "Verify public vendor firmware and extract selected inputs",
+          "number": 6,
+          "startedAt": "2026-10-26T07:52:56Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-26T07:53:25Z",
+          "conclusion": "success",
+          "name": "Static Xtensa SMU handlers and PM version references",
+          "number": 7,
+          "startedAt": "2026-10-26T07:53:01Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-26T07:53:37Z",
+          "conclusion": "success",
+          "name": "Static MP5 data producers and OC consumers",
+          "number": 8,
+          "startedAt": "2026-10-26T07:53:25Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-26T07:54:08Z",
+          "conclusion": "success",
+          "name": "REA static UEFI transport and dual current-limit functions",
+          "number": 9,
+          "startedAt": "2026-10-26T07:53:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-26T07:54:10Z",
+          "conclusion": "success",
+          "name": "Run actions/upload-artifact@v4",
+          "number": 10,
+          "startedAt": "2026-10-26T07:54:08Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-26T07:54:10Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-java@v4",
+          "number": 18,
+          "startedAt": "2026-10-26T07:54:10Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-26T07:54:10Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@v4",
+          "number": 19,
+          "startedAt": "2026-10-26T07:54:10Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-26T07:54:10Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 20,
+          "startedAt": "2026-10-26T07:54:10Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-26T07:54:10Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 21,
+          "startedAt": "2026-10-26T07:54:10Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/40288469478/job/121457675851"
+    }
+  ],
+  "hardware_execution": false,
+  "artifact_id": 12634734273,
+  "archive": {
+    "path": "build/amd-firmware-study-40288469478/artifact.zip",
+    "bytes": 1074205,
+    "sha256": "2c5ff72c0afc2f4b592d502dde9d8d34c4f343678f121a4d19cd8cac2d59315c"
+  },
+  "run_log": {
+    "path": "build/amd-firmware-study-40288469478/run.log",
+    "bytes": 100284,
+    "sha256": "b49b7b7de2ddd4d8319983bacea819e10c0bc355ea30a225ac4cc9b597860610"
+  },
+  "inputs": {
+    "schema": 1,
+    "archive_sha256": "5a06390b1f9e47baa0868e2949855516cddbba5ebe6dd32fa7141c5e4b404b70",
+    "capsule_sha256": "ec6e197963c11b44f36b11592c8d097e09aed508980d2d0be2276e244ed2dbe4",
+    "smu_packed_sha256": "3b4a6ba4ed71770e016351c2ca3c14e481107c5f9a98b94a8f34e0d37efd49b5",
+    "smu_body_sha256": "a2f3724ccaef1d67db04afb553816f111dc86207480b28d7998cc15fa92ea7d7",
+    "smu_body_bytes": 262144,
+    "source_url": "https://dlcdnets.asus.com/pub/ASUS/mb/BIOS/Pro-WS-TRX50-SAGE-WIFI-ASUS-1317.zip",
+    "support_url": "https://www.asus.com/motherboards-components/motherboards/workstation/pro-ws-trx50-sage-wifi/helpdesk_bios/",
+    "mp5_body_sha256": "b5e9c94ef3a27d55a95c1a0d703cc7041b734f9475d44b8eecd49a15794cdeaf",
+    "mp5_packed_sha256": "6ad1fb04040fd0fadd3f9b34db6e7ed599072e538143bfbceafdd0667ee9e07b",
+    "mp5_body_bytes": 262144,
+    "hardware_execution": false,
+    "modules": [
+      {
+        "guid": "062913EF-0152-4B5A-B9BB-0BF21A09D1D3",
+        "name": "transport",
+        "sha256": "16dc54fefb3ac983d3752adbe32db3f38259e239fc89ecec78b18a0912796e60",
+        "bytes": 15872,
+        "analysis_sha256": "7b5302929acb73d0a6a56842af62850b1b017e5c8d1fe1ccbc22a25551d06e67",
+        "entry_field_offset": 232,
+        "original_entry_rva": 1172,
+        "analysis_entry_rva": 5220,
+        "instruction_bytes_changed": false
+      },
+      {
+        "guid": "31B03837-0853-4B17-A6BB-E0BC2405F901",
+        "name": "limits",
+        "sha256": "04f224cf28739fad16b68bb82d0761d2f6ac5e247ad7377ad6e0051cf9405b43",
+        "bytes": 185856,
+        "analysis_sha256": "7da8e70b76a41f065bfa645b04bdcb58a1cdab3f02bcae111c3c8581467e9f4d",
+        "entry_field_offset": 232,
+        "original_entry_rva": 1312,
+        "analysis_entry_rva": 18512,
+        "instruction_bytes_changed": false
+      }
+    ]
+  },
+  "studies": {
+    "smu": {
+      "source_sha256": "a2f3724ccaef1d67db04afb553816f111dc86207480b28d7998cc15fa92ea7d7",
+      "exported_count": 280,
+      "language": "Xtensa:LE:32:default",
+      "evidence": {
+        "path": "build/amd-firmware-study-40288469478/smu/smu-study.json",
+        "bytes": 2292702,
+        "sha256": "837bc237c727fc3ec3e1f226562b0bed8337e250c36d5520a57985c77fbb096b"
+      }
+    },
+    "mp5": {
+      "source_sha256": "b5e9c94ef3a27d55a95c1a0d703cc7041b734f9475d44b8eecd49a15794cdeaf",
+      "exported_count": 637,
+      "language": "Xtensa:LE:32:default",
+      "evidence": {
+        "path": "build/amd-firmware-study-40288469478/mp5/smu-study.json",
+        "bytes": 3111260,
+        "sha256": "00d579b7abd8427cd281b6d3e18b58b41ff9e215a45843128048b1fa9f80e832"
+      }
+    },
+    "rea-transport": {
+      "source_sha256": "7b5302929acb73d0a6a56842af62850b1b017e5c8d1fe1ccbc22a25551d06e67",
+      "rea_version": "6.7.0",
+      "ghidra_version": "12.1.4",
+      "evidence": [
+        {
+          "path": "build/amd-firmware-study-40288469478/rea-transport/study.json",
+          "bytes": 1669,
+          "sha256": "ae3b969e50a19d4d8015b9b94af2bb1a9b5642b2ecbe36421d82451fae11b9b5"
+        },
+        {
+          "path": "build/amd-firmware-study-40288469478/rea-transport/resolved-functions.json",
+          "bytes": 2603,
+          "sha256": "31b97ac863dbc70e6c3e1d1df20b5a9289f195815535f7822f0598aa88738b9d"
+        },
+        {
+          "path": "build/amd-firmware-study-40288469478/rea-transport/evidence.json",
+          "bytes": 19242,
+          "sha256": "9bf2dcd01e9f0c78932ad6d26d7a85d2aabcc0515d73628d3d95a8fe137314b8"
+        }
+      ]
+    },
+    "rea-limits": {
+      "source_sha256": "7da8e70b76a41f065bfa645b04bdcb58a1cdab3f02bcae111c3c8581467e9f4d",
+      "rea_version": "6.7.0",
+      "ghidra_version": "12.1.4",
+      "evidence": [
+        {
+          "path": "build/amd-firmware-study-40288469478/rea-limits/study.json",
+          "bytes": 1661,
+          "sha256": "fe0a7a51a242e549db64f42624979fe8ee5dccb5bb965e8083f0b0cf4c8c340e"
+        },
+        {
+          "path": "build/amd-firmware-study-40288469478/rea-limits/resolved-functions.json",
+          "bytes": 3378,
+          "sha256": "4bdd7844ca7ebd3e98e70c0296e77daf4cd68aa934a19fa396e045a620ae6ca4"
+        },
+        {
+          "path": "build/amd-firmware-study-40288469478/rea-limits/evidence.json",
+          "bytes": 24326,
+          "sha256": "08f0598e1b46bed7d9d9459ee5ddc912f9e2ca37eadf5ae080425c93df156ea0"
+        }
+      ]
+    }
+  },
+  "pm_copy": {
+    "schema": 1,
+    "hardware_execution": false,
+    "mp5_sha256": "b5e9c94ef3a27d55a95c1a0d703cc7041b734f9475d44b8eecd49a15794cdeaf",
+    "smu_sha256": "a2f3724ccaef1d67db04afb553816f111dc86207480b28d7998cc15fa92ea7d7",
+    "function": "0x37d40",
+    "slice_start": "0x37da5",
+    "slice_end_exclusive": "0x37e52",
+    "float_normalization_executed": false,
+    "units_verified": false,
+    "physical_mapping_verified": false,
+    "core_rows": 18,
+    "cores_per_storage_slot": 8,
+    "ccd_rows": 13,
+    "common_bytes": 1588,
+    "mode_flag_mask": "0x10000",
+    "rails_guard_alias": "0xe13c",
+    "cases": [
+      {
+        "storage_slots": 2,
+        "ordinal": 0,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1588,
+        "last": 2836,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 2,
+        "ordinal": 1,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1620,
+        "last": 2840,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 4,
+        "ordinal": 0,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1588,
+        "last": 4084,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 4,
+        "ordinal": 1,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1620,
+        "last": 4088,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 4,
+        "ordinal": 2,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1652,
+        "last": 4092,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 4,
+        "ordinal": 3,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1684,
+        "last": 4096,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 6,
+        "ordinal": 0,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1588,
+        "last": 5332,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 6,
+        "ordinal": 1,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1620,
+        "last": 5336,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 6,
+        "ordinal": 2,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1652,
+        "last": 5340,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 6,
+        "ordinal": 3,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1684,
+        "last": 5344,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 6,
+        "ordinal": 4,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1716,
+        "last": 5348,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 6,
+        "ordinal": 5,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1748,
+        "last": 5352,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 8,
+        "ordinal": 0,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1588,
+        "last": 6580,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 8,
+        "ordinal": 1,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1620,
+        "last": 6584,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 8,
+        "ordinal": 2,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1652,
+        "last": 6588,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 8,
+        "ordinal": 3,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1684,
+        "last": 6592,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 8,
+        "ordinal": 4,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1716,
+        "last": 6596,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 8,
+        "ordinal": 5,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1748,
+        "last": 6600,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 8,
+        "ordinal": 6,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1780,
+        "last": 6604,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 8,
+        "ordinal": 7,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1812,
+        "last": 6608,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 0,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1588,
+        "last": 7828,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 1,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1620,
+        "last": 7832,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 2,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1652,
+        "last": 7836,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 3,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1684,
+        "last": 7840,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 4,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1716,
+        "last": 7844,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 5,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1748,
+        "last": 7848,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 6,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1780,
+        "last": 7852,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 7,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1812,
+        "last": 7856,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 8,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1844,
+        "last": 7860,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 10,
+        "ordinal": 9,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1876,
+        "last": 7864,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 0,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1588,
+        "last": 9076,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 1,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1620,
+        "last": 9080,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 2,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1652,
+        "last": 9084,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 3,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1684,
+        "last": 9088,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 4,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1716,
+        "last": 9092,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 5,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1748,
+        "last": 9096,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 6,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1780,
+        "last": 9100,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 7,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1812,
+        "last": 9104,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 8,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1844,
+        "last": 9108,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 9,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1876,
+        "last": 9112,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 10,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1908,
+        "last": 9116,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 12,
+        "ordinal": 11,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1940,
+        "last": 9120,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 0,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1588,
+        "last": 10324,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 1,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1620,
+        "last": 10328,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 2,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1652,
+        "last": 10332,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 3,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1684,
+        "last": 10336,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 4,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1716,
+        "last": 10340,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 5,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1748,
+        "last": 10344,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 6,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1780,
+        "last": 10348,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 7,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1812,
+        "last": 10352,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 8,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1844,
+        "last": 10356,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 9,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1876,
+        "last": 10360,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 10,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1908,
+        "last": 10364,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 11,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1940,
+        "last": 10368,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 12,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1972,
+        "last": 10372,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 14,
+        "ordinal": 13,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 2004,
+        "last": 10376,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 0,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1588,
+        "last": 11572,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 1,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1620,
+        "last": 11576,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 2,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1652,
+        "last": 11580,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 3,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1684,
+        "last": 11584,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 4,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1716,
+        "last": 11588,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 5,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1748,
+        "last": 11592,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 6,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1780,
+        "last": 11596,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 7,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1812,
+        "last": 11600,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 8,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1844,
+        "last": 11604,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 9,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1876,
+        "last": 11608,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 10,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1908,
+        "last": 11612,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 11,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1940,
+        "last": 11616,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 12,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 1972,
+        "last": 11620,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 13,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 2004,
+        "last": 11624,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 14,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 2036,
+        "last": 11628,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      },
+      {
+        "storage_slots": 16,
+        "ordinal": 15,
+        "writes": 157,
+        "instructions": 1299,
+        "first": 2068,
+        "last": 11632,
+        "trace_sha256": "def3b5a00db3047487a92bfe66f683b5a0129c04cd3a4c72eeda821475857d33"
+      }
+    ]
+  },
+  "rails_replay": {
+    "schema": 1,
+    "source_sha256": "a2f3724ccaef1d67db04afb553816f111dc86207480b28d7998cc15fa92ea7d7",
+    "function": "0x307a8",
+    "command": "0x61",
+    "hardware_execution": false,
+    "mailbox_helpers": "synthetic argument and response only",
+    "physical_rails_verified": false,
+    "voltage_units_verified": false,
+    "downstream_consumption_verified": false,
+    "active_values": [
+      0,
+      1
+    ],
+    "state_counts": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      255
+    ],
+    "rail_word_values": [
+      0,
+      1,
+      191,
+      255,
+      256,
+      511
+    ],
+    "clamp_values": [
+      0,
+      1,
+      191,
+      255
+    ],
+    "ignored_high_bits": [
+      0,
+      4227858432
+    ],
+    "cases": 20160,
+    "accepted": 2880,
+    "rejected_without_writes": 17280,
+    "covered_instruction_count": 31,
+    "result_trace_sha256": "1a095ba58203e82fbc8d64455b650c49c5f0de0336cc6e30e7336f0180451b53",
+    "active_address": "0xe13c",
+    "count_address": "0xe13b",
+    "clamp_address": "0x917b",
+    "first_array": "0xe248",
+    "second_array": "0xe250",
+    "runtime_write_enabled": false
+  },
+  "research_sources": {
+    ".github/workflows/rea-firmware-study.yml": "edb4afa0b2fe05cc1368685ba2e6be62fa0f9062ac98bde95241113090353cf3",
+    "analysis/tools/firmware-pm-copy.py": "53cd805ea2546917f2c6083decbfc7e71a8e4a47b1d247a865838ff8d4c290e2",
+    "analysis/tools/firmware-rails-replay.py": "3e4756d4a989c3b6a46bc140b4388ae0fd811086928b3006a8e800a1ae69229b",
+    "analysis/tools/firmware-smu-input.py": "87b218b12f7b4793137f5d9398f1692dada74d7f14e0e73c8249536cdc3e022a",
+    "analysis/tools/ghidra/SmuSeed.java": "9a5458dd692f5c764e971be15bcb7733ec7c6e93f7d078036f914e863f89a1e2",
+    "analysis/tools/ghidra/SmuStudy.java": "e681e8652dd90b02c685afd93e878f088891818e774c1a178cc7996e36cf503e",
+    "analysis/tools/rea-native-study.py": "97545e57fc7fb6c9081d5133757c6654cccaf770f9c98ebb38520bdf913e0d1c"
+  },
+  "limits": [
+    "Storage layout is verified; labels, units, active masks and physical mapping are not.",
+    "The 61h handler stores two words but the second physical rail and downstream/readback contract remain unresolved. Runtime 61h stays denied.",
+    "UEFI analysis copies change only PE entry-point headers; firmware is never executed or flashed."
+  ]
+}
