@@ -3593,6 +3593,64 @@ private slots:
         read->click(); panel.findChild<QLineEdit *>("smuCpu")->setText("131"); QTRY_VERIFY(panel.isEnabled());
         QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0);
     }
+    void firmwareLn2Readback() {
+        auto *d=new AmdPboFixture; d->allowStatusQueries=true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        panel.resize(1400,1250); panel.show(); QApplication::processEvents();
+        auto *read=panel.findChild<QPushButton *>("pboQueryRead");
+        QVERIFY(!panel.findChild<QLineEdit *>("pboQueryIndex")->isEnabled());
+        for (unsigned n : {0u,1u}) {
+            d->ln2Raw=n; read->click(); QTRY_VERIFY(panel.isEnabled());
+            auto *table=panel.findChild<QTableWidget *>("smuTable");
+            QCOMPARE(table->rowCount(),6); QCOMPARE(table->item(3,1)->text(),n?QString("Enabled"):QString("Disabled"));
+            QCOMPARE(d->messages.back(),std::uint32_t(0xa6)); QCOMPARE(d->settings,0u);
+        }
+        QApplication::processEvents(); const auto shot=qEnvironmentVariable("OCTOOL_PBO_LN2_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+    }
+    void firmwarePerformanceRawReadback() {
+        auto *d=new AmdPboFixture; d->allowStatusQueries=true; d->performanceRaw=0xdeadbeef;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        panel.resize(1400,1250); panel.show(); QApplication::processEvents();
+        panel.findChild<QComboBox *>("pboQuery")->setCurrentIndex(1);
+        auto *index=panel.findChild<QLineEdit *>("pboQueryIndex"); QVERIFY(index->isEnabled()); index->setText("127");
+        panel.findChild<QPushButton *>("pboQueryRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *table=panel.findChild<QTableWidget *>("smuTable");
+        QCOMPARE(table->item(1,1)->text(),QString("127")); QCOMPARE(table->item(2,1)->text(),QString("0xdeadbeef"));
+        QVERIFY(table->item(3,1)->text().contains("Opaque")); QCOMPARE(table->item(4,1)->text(),QString("Not verified"));
+        QCOMPARE(d->commandArgs.back()[0],std::uint32_t(127)); QCOMPARE(d->messages.back(),std::uint32_t(0x5c)); QCOMPARE(d->settings,0u);
+        QApplication::processEvents(); const auto shot=qEnvironmentVariable("OCTOOL_PBO_PERFORMANCE_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+    }
+    void firmwareQueryRejectsInvalidAndFailedReads() {
+        auto *d=new AmdPboFixture; d->allowStatusQueries=true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        panel.resize(1400,1250); panel.show(); QApplication::processEvents();
+        auto *kind=panel.findChild<QComboBox *>("pboQuery"); auto *index=panel.findChild<QLineEdit *>("pboQueryIndex");
+        auto *read=panel.findChild<QPushButton *>("pboQueryRead"); kind->setCurrentIndex(1);
+        for (const QString value : {QString(""),QString("-1"),QString("128"),QString("1.5")}) {
+            index->setText(value); read->click(); QCOMPARE(d->calls,0u);
+        }
+        kind->setCurrentIndex(0); d->completion=0xfe;
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *table=panel.findChild<QTableWidget *>("smuTable");
+        QCOMPARE(table->item(2,1)->text(),QString("Unavailable")); QCOMPARE(table->item(3,1)->text(),QString("Unknown / not decoded"));
+        d->completion=1; d->ln2Raw=2; read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->item(2,1)->text(),QString("0x00000002")); QCOMPARE(table->item(3,1)->text(),QString("Unknown / not decoded"));
+        QCOMPARE(d->settings,0u); QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("No decoded state"));
+        QApplication::processEvents(); const auto shot=qEnvironmentVariable("OCTOOL_PBO_QUERY_FAILURE_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+    }
+    void firmwareQueryDropsChangedInputs() {
+        auto *d=new AmdPboFixture; d->allowStatusQueries=true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        auto *kind=panel.findChild<QComboBox *>("pboQuery"); auto *read=panel.findChild<QPushButton *>("pboQueryRead");
+        auto *index=panel.findChild<QLineEdit *>("pboQueryIndex");
+        read->click(); kind->setCurrentIndex(1); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0);
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("Inputs changed"));
+        index->setText("1"); read->click(); index->setText("2"); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0);
+        read->click(); panel.findChild<QLineEdit *>("smuCpu")->setText("131"); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0); QCOMPARE(d->settings,0u);
+    }
     void allCoreCurveAcknowledgementOnly() {
         auto *device = new AmdPboFixture; device->capsRaw=6; device->allowAllCoreCurve=true; device->discardChange=true;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);

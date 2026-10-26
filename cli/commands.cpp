@@ -110,6 +110,7 @@ struct Command {
     AmdCurveSnapshot curve;
     unsigned pboScalar = 0, pboFmax = 0, rail0 = 0, rail1 = 0;
     std::uint32_t pboExpected = 0;
+    unsigned firmwareIndex = 0;
     AmdPboLimit pboLimit = AmdPboLimit::Ppt;
     unsigned pboLimitValue = 0;
     bool ocEnabled = false;
@@ -133,7 +134,8 @@ Command parse(const std::vector<std::string> &args) {
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
     const bool pm = c.name == "amd-pm-read" || c.name == "amd-pm-decode";
     const bool pboCapabilityCommand = c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-fmax-set" || c.name == "amd-pbo-limit-set" ||
-        c.name == "amd-oc-mode-set" || c.name == "amd-oc-frequency-set" || c.name == "amd-curve-all-set";
+        c.name == "amd-oc-mode-set" || c.name == "amd-oc-frequency-set" || c.name == "amd-curve-all-set" ||
+        c.name == "amd-ln2-read" || c.name == "amd-core-performance-read";
     const bool rails = c.name == "amd-pbo-rails-encode";
     const bool layoutAudit = c.name == "amd-pm-layout-audit";
     require(hardware.count(c.name) || pboCapabilityCommand || rails || layoutAudit || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || memoryOffline || clockOffline || pm, "Unknown command: " + c.name);
@@ -162,6 +164,7 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "amd-pbo-fmax-set") { keys.insert("--mhz"); keys.insert("--expect-caps"); keys.insert("--apply"); }
     if (c.name == "amd-pbo-limit-set") { keys.insert("--limit"); keys.insert("--value"); keys.insert("--expect-caps"); keys.insert("--apply"); }
     if (c.name == "amd-curve-all-set") for (const char *key : {"--margin","--expect-caps","--apply"}) keys.insert(key);
+    if (c.name == "amd-core-performance-read") keys.insert("--firmware-index");
     if (c.name == "amd-oc-mode-set") for (const char *key : {"--enabled","--expect-caps","--apply"}) keys.insert(key);
     if (c.name == "amd-oc-frequency-set") for (const char *key : {"--scope","--ccd","--core","--cores","--mhz","--expect-caps","--apply"}) keys.insert(key);
     if (rails) { keys.insert("--rail0-mv"); keys.insert("--rail1-mv"); }
@@ -377,6 +380,7 @@ Command parse(const std::vector<std::string> &args) {
     }
     if (pboCapabilityCommand) {
         c.smu.profile = SmuProfile::Shimada;
+        if (c.name == "amd-core-performance-read") c.firmwareIndex = uintOption(options,"--firmware-index",127);
         if (c.name == "amd-oc-mode-set" || c.name == "amd-oc-frequency-set") {
             require(options.count("--apply"), "Manual OC settings require --apply");
             c.pboExpected = uintOption(options, "--expect-caps", UINT32_MAX);
@@ -1000,6 +1004,18 @@ Result hardware(const Command &c, HardwareSession &s) {
             if (!r.error) for (auto v : r.args) values.push_back(hex(v));
             out.data.push_back({"args", r.error ? "null" : array(values)});
         }
+    } else if (c.name == "amd-ln2-read" || c.name == "amd-core-performance-read") {
+        const bool ln2 = c.name == "amd-ln2-read";
+        const auto r = readShimadaPboQuery(s,c.smu,ln2 ? AmdPboQuery::Ln2Mode : AmdPboQuery::CorePerformance,c.firmwareIndex);
+        out.error = r.error;
+        out.data = {{"query",quote(ln2 ? "ln2-mode" : "core-performance")},
+            {"firmware_index",ln2 ? "null" : number(c.firmwareIndex)},{"command",hex(r.command)},
+            {"message_attempted",boolean(r.messageAttempted)},{"response",hex(r.response)},
+            {"raw_valid",boolean(r.rawValid)},{"raw",r.rawValid ? hex(r.raw) : "null"},{"valid",boolean(r.valid)},
+            {"ln2_enabled",ln2 && r.valid ? boolean(r.ln2Enabled) : "null"},
+            {"physical_mapping_verified","false"},{"setting_commands_sent","false"},
+            {"detail",quote(ln2 ? "Firmware LN2 state only; no EC access or LN2 setting." :
+                "Opaque firmware performance word. Index is not a Linux CPU ID; no power, ranking or physical core mapping is inferred.")}};
     } else if (c.name == "amd-pbo-capabilities") {
         const auto r = readShimadaPboCapabilities(s, c.smu); out.error = r.error;
         out.data = {{"capabilities_raw", r.valid ? hex(r.raw) : "null"}, {"valid", boolean(r.valid)},
@@ -1464,6 +1480,9 @@ Usage: octool-cli COMMAND [OPTIONS]
     must be available and manual OC disabled. PPT uses W, TDC/EDC use A; integer
     1..2000. Temperature uses integer 1..100 C. These are application input bounds,
     not operating recommendations. Current limit and actual effect are unverified.
+  amd-ln2-read --cpu N                Read firmware LN2 state (0/1 only)
+  amd-core-performance-read --cpu N --firmware-index 0..127
+                                    Read opaque performance word; no physical mapping
   amd-pbo-rails-encode --rail0-mv N --rail1-mv N
                                    Offline encoding preview; no hardware access
   amd-curve-read --cpu N --ccd N --core N

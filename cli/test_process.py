@@ -35,7 +35,30 @@ run("cpu", "--cpu", "999999999999999999999999", code=2)
 
 lines = subprocess.check_output([fixture, "--emit"], text=True, env=env, timeout=60).splitlines()
 reports = [json.loads(line) for line in lines]
-assert len(reports) == 1421, len(reports)
+queries = [r for r in reports if r['command'] in ('amd-ln2-read','amd-core-performance-read')]
+assert len(queries) == 44
+query_results = [r for r in queries if 'query' in r['data']]
+assert len(query_results) == 24
+assert sum(r['ok'] for r in query_results) == 14
+for r in query_results:
+    d = r['data']
+    assert not d['physical_mapping_verified'] and not d['setting_commands_sent']
+    assert d['valid'] == r['ok']
+    if d['raw_valid']:
+        assert isinstance(d['raw'], str) and 0 <= int(d['raw'], 16) <= 0xffffffff
+    else:
+        assert d['raw'] is None and d['ln2_enabled'] is None
+    if d['query'] == 'ln2-mode':
+        assert d['firmware_index'] is None and d['command'] == '0x000000a6'
+        if r['ok']:
+            assert d['ln2_enabled'] == (int(d['raw'],16) == 1)
+        else:
+            assert d['ln2_enabled'] is None
+    else:
+        assert d['ln2_enabled'] is None and d['command'] == '0x0000005c'
+        assert d['firmware_index'] in (0,1,7,127)
+assert sum(r['error'] == -22 for r in queries) == 20
+assert len(reports) == 1465, len(reports)
 all_curve = [r for r in reports if r['command'] == 'amd-curve-all-set']
 assert len(all_curve) == 35 and [r['ok'] for r in all_curve] == [True]*8+[False]*27
 for i,r in enumerate(all_curve[:13]):

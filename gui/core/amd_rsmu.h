@@ -40,9 +40,12 @@ inline AmdRsmuReply exchangeShimadaRsmu(HardwareSession &s, std::uint32_t comman
     AmdRsmuReply out;
     // Keep the internal entry point closed to arbitrary message IDs as well.
     if ((command != 6 && command != 7 && command != 0xa3 && command != 0x5b && command != 0x6d && command != 0x6f && command != 0x70 &&
-         command != 0x56 && command != 0x57 && command != 0x58 && command != 0x59 &&
+         command != 0x56 && command != 0x57 && command != 0x58 && command != 0x59 && command != 0x5c && command != 0xa6 &&
          command != 0x5d && command != 0x5e && command != 0x5f && command != 0x60) ||
-        ((command != 6 && command != 0xa3) != sixArguments)) { out.error = -EINVAL; return out; }
+        ((command != 6 && command != 0xa3) != sixArguments) ||
+        ((command == 0x5c || command == 0xa6) && (!readArgument || (command == 0xa6 ? argument != 0 : argument > 127)))) {
+        out.error = -EINVAL; return out;
+    }
     auto reply = rsmuWait(s); if ((out.error = reply.error)) return out;
     reply = rsmuIndirect(s, 0x3b10970, true, 0); if ((out.error = reply.error)) return out;
     for (unsigned i = 0; i < (sixArguments ? 6u : 1u); ++i) {

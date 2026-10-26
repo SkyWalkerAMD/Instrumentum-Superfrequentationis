@@ -10,6 +10,8 @@ struct AmdPboFixture : AmdCurveFixture {
     std::uint32_t capsRaw = 4, fmaxMHz = 0;
     bool allowManualOc = false, overrideModeCaps = false;
     bool allowAllCoreCurve = false;
+    bool allowStatusQueries = false;
+    std::uint32_t ln2Raw = 0, performanceRaw = 0;
     std::uint32_t allCurveArgument = UINT32_MAX;
     std::uint32_t modeCapsAfter = 0, ocAllMHz = 0, ocCoreArgument = 0;
     std::array<std::uint32_t, 4> limitArguments{{0,0,0,0}};
@@ -30,9 +32,11 @@ struct AmdPboFixture : AmdCurveFixture {
             if (index == 0x3b10970 && !r.value) response = 0;
             else if (index >= 0x3b10a40 && index <= 0x3b10a54) scalarArgs[(index-0x3b10a40)/4] = std::uint32_t(r.value);
             else if (index == 0x3b10924 && (r.value == 0x6d || r.value == 0x5b || r.value == 0x6f || r.value == 0x70 || (r.value >= 0x56 && r.value <= 0x59) ||
-                     (allowManualOc && r.value >= 0x5d && r.value <= 0x60) || (allowAllCoreCurve && r.value == 7))) {
-                const bool query = r.value == 0x6d || r.value == 0x6f;
-                for (unsigned i = query ? 0 : 1; i < 6; ++i) if (scalarArgs[i]) out.error = -EINVAL;
+                     (allowManualOc && r.value >= 0x5d && r.value <= 0x60) || (allowAllCoreCurve && r.value == 7) ||
+                     (allowStatusQueries && (r.value == 0xa6 || r.value == 0x5c)))) {
+                const bool query = r.value == 0x6d || r.value == 0x6f || r.value == 0xa6 || r.value == 0x5c;
+                for (unsigned i = query && r.value != 0x5c ? 0 : 1; i < 6; ++i) if (scalarArgs[i]) out.error = -EINVAL;
+                if (r.value == 0x5c && scalarArgs[0] > 127) out.error = -EINVAL;
                 if (r.value == 0x5b && (scalarArgs[0] < 100 || scalarArgs[0] > 1000 || scalarArgs[0] % 100)) out.error = -EINVAL;
                 if (r.value == 0x70 && (!scalarArgs[0] || scalarArgs[0] > 0xfffff)) out.error = -EINVAL;
                 if (r.value >= 0x56 && r.value <= 0x58 && (!scalarArgs[0] || scalarArgs[0] > 2000000 || scalarArgs[0] % 1000)) out.error = -EINVAL;
@@ -55,7 +59,7 @@ struct AmdPboFixture : AmdCurveFixture {
                             else if (r.value >= 0x56 && r.value <= 0x59) limitArguments[std::size_t(r.value-0x56)] = scalarArgs[0];
                             else { const float value = float(scalarArgs[0]/100); std::memcpy(&scalarRaw, &value, 4); }
                         }
-                    } else if (completion == 1) scalarArgs[0] = r.value == 0x6d ? scalarRaw : capsRaw;
+                    } else if (completion == 1) scalarArgs[0] = r.value == 0x6d ? scalarRaw : r.value == 0x6f ? capsRaw : r.value == 0xa6 ? ln2Raw : performanceRaw;
                 }
             } else out.error = -EINVAL;
         } else if (index == 0x3b10970) {

@@ -88,6 +88,23 @@ AmdPboCapabilities readShimadaPboCapabilities(HardwareSession &s, const SmuTarge
     if (out.error) return out;
     out.raw = reply.raw; out.valid = true; return out;
 }
+AmdPboQueryResult readShimadaPboQuery(HardwareSession &s, const SmuTarget &target,
+                                     AmdPboQuery query, unsigned firmwareIndex) {
+    AmdPboQueryResult out; out.query = query; out.firmwareIndex = firmwareIndex;
+    if (query != AmdPboQuery::Ln2Mode && query != AmdPboQuery::CorePerformance) { out.error = -EINVAL; return out; }
+    if (firmwareIndex > 127 || (query == AmdPboQuery::Ln2Mode && firmwareIndex)) { out.error = -ERANGE; return out; }
+    out.command = query == AmdPboQuery::Ln2Mode ? 0xa6 : 0x5c;
+    if ((out.error = checkTarget(s, target))) return out;
+    const auto reply = detail::exchangeShimadaRsmu(s, out.command, firmwareIndex, true, true);
+    out.response = reply.response; out.messageAttempted = reply.messageAttempted;
+    if ((out.error = reply.error)) return out;
+    if ((out.error = checkTarget(s, target))) return out;
+    if ((out.error = s.checkpoint())) return out;
+    out.raw = reply.raw; out.rawValid = true;
+    if (query == AmdPboQuery::Ln2Mode && out.raw > 1) { out.error = -ERANGE; return out; }
+    out.ln2Enabled = query == AmdPboQuery::Ln2Mode && out.raw == 1;
+    out.valid = true; return out;
+}
 bool amdPboFmaxAvailable(std::uint32_t caps) { return (caps & 4u) && !(caps & 1u); }
 AmdPboFmaxUpdate setShimadaPboFmax(HardwareSession &s, const SmuTarget &target,
                                  std::uint32_t expectedCapabilities, unsigned mhz) {

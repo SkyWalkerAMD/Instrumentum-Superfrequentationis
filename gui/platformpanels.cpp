@@ -214,6 +214,19 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     form->addRow("Shimada all-core curve · acknowledgement only", allCurve);
     connect(readAllCurveCaps, &QPushButton::clicked, this, [this] { readPboCapabilities(); });
     connect(applyAllCurve, &QPushButton::clicked, this, [this] { applyAllCoreCurve(); });
+    auto *query = new QHBoxLayout;
+    pboQuery_ = new QComboBox(this); pboQuery_->setObjectName("pboQuery");
+    pboQuery_->addItem("LN2 mode",int(octool::core::AmdPboQuery::Ln2Mode));
+    pboQuery_->addItem("Per-core performance word",int(octool::core::AmdPboQuery::CorePerformance)); query->addWidget(pboQuery_);
+    pboQueryIndex_ = edit("pboQueryIndex","",this); pboQueryIndex_->setPlaceholderText("Firmware index 0..127");
+    pboQueryIndex_->setEnabled(false); query->addWidget(pboQueryIndex_);
+    auto *readQuery = new QPushButton("Read firmware state",this); readQuery->setObjectName("pboQueryRead"); query->addWidget(readQuery);
+    form->addRow("Shimada firmware query",query);
+    connect(readQuery,&QPushButton::clicked,this,[this] { readPboQuery(); });
+    connect(pboQuery_,QOverload<int>::of(&QComboBox::currentIndexChanged),this,[this] {
+        pboQueryIndex_->setEnabled(pboQuery_->currentData().toInt()==int(octool::core::AmdPboQuery::CorePerformance));
+        invalidateCurve(); status_->setText("Query changed. Read firmware state again.");
+    });
     auto *scalar = new QHBoxLayout;
     pboScalar_ = edit("pboScalar", "", this); pboScalar_->setPlaceholderText("Integer multiplier 1..10");
     scalar->addWidget(pboScalar_);
@@ -316,11 +329,50 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     });
     connect(probe, &QPushButton::clicked, this, [this] { submit(true); }); connect(send, &QPushButton::clicked, this, [this] { submit(false); });
     auto clear = [this] { invalidateCurve(); status_->setText("Inputs changed. Previous results cleared."); };
-    for (auto *e : {cpu_, bus_, device_, function_, curveCcd_, curveCore_}) connect(e, &QLineEdit::textChanged, this, clear);
+    for (auto *e : {cpu_, bus_, device_, function_, curveCcd_, curveCore_, pboQueryIndex_}) connect(e, &QLineEdit::textChanged, this, clear);
     connect(profile_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, clear);
 }
 AmdTuningPanel::~AmdTuningPanel() { cancelled_->store(true); }
 void AmdTuningPanel::invalidateCurve() { ++curveRevision_; curveSnapshot_ = {}; pboSnapshot_ = {}; pboCaps_ = {}; table_->setRowCount(0); }
+void AmdTuningPanel::readPboQuery() {
+    using namespace octool::core;
+    invalidateCurve();
+    quint64 cpu=0,bus=0,device=0,function=0,index=0;
+    const auto kind = AmdPboQuery(pboQuery_->currentData().toInt());
+    if (pboQuery_->currentIndex()<0 || (kind!=AmdPboQuery::Ln2Mode && kind!=AmdPboQuery::CorePerformance) ||
+        profile_->currentData().toInt()!=int(SmuProfile::Shimada) ||
+        !parseNumber(cpu_->text(),10,UINT32_MAX,cpu) || !parseNumber(bus_->text(),16,0,bus) ||
+        !parseNumber(device_->text(),16,0,device) || !parseNumber(function_->text(),16,0,function) ||
+        (kind==AmdPboQuery::CorePerformance && !parseNumber(pboQueryIndex_->text(),10,127,index))) {
+        status_->setText("Use Shimada at 0000:00:00.0, a logical CPU and explicit firmware index 0..127 for the performance query. No query sent."); return;
+    }
+    SmuTarget target; target.cpu=unsigned(cpu); target.profile=SmuProfile::Shimada;
+    const auto revision=curveRevision_; setEnabled(false); status_->setText("Reading firmware state…");
+    auto *watcher=new QFutureWatcher<AmdPboQueryResult>(this);
+    connect(watcher,&QFutureWatcher<AmdPboQueryResult>::finished,this,[this,watcher,revision] {
+        const auto r=watcher->result();
+        if (revision!=curveRevision_) status_->setText("Inputs changed while reading. Read firmware state again.");
+        else {
+            const bool ln2=r.query==AmdPboQuery::Ln2Mode;
+            append(table_,{"Query",ln2?"LN2 mode":"Per-core performance word"});
+            append(table_,{"Firmware index",ln2?QString("Not used"):QString::number(r.firmwareIndex)});
+            append(table_,{"Raw firmware word",r.rawValid?hexValue(r.raw,4):QString("Unavailable")});
+            append(table_,{"Interpretation",ln2?(r.valid?(r.ln2Enabled?"Enabled":"Disabled"):"Unknown / not decoded"):"Opaque word; no power or ranking inferred"});
+            append(table_,{"Physical core mapping",ln2?"Not applicable":"Not verified"});
+            append(table_,{"Firmware response",hexValue(r.response,4)});
+            status_->setText(r.error?failure(r.error)+" No decoded state published. No setting command sent.":
+                ln2?"Firmware LN2 state read. No mode or voltage setting sent.":"Raw performance word read. Firmware index is not a Linux CPU ID; no physical core mapping or power value is inferred.");
+        }
+        setEnabled(true); watcher->deleteLater();
+    });
+    const auto access=access_; const auto cancelled=cancelled_;
+    watcher->setFuture(QtConcurrent::run([access,cancelled,target,kind,index] {
+        AmdPboQueryResult out; out.query=kind; out.firmwareIndex=unsigned(index);
+        const int error=access->transaction([&](HardwareSession &s) { out=readShimadaPboQuery(s,target,kind,unsigned(index)); return out.error; },10000,cancelled.get());
+        if (error) { out.error=error; out.valid=false; if (error!=-ERANGE) { out.rawValid=false; out.raw=0; } }
+        return out;
+    }));
+}
 void AmdTuningPanel::readPboCapabilities() {
     using namespace octool::core;
     invalidateCurve();

@@ -2040,6 +2040,54 @@ void pboFmaxCommands() {
         assert(!opened); if (emit) std::cout << output.str();
     }
 }
+void pboQueryCommands() {
+    for (std::uint32_t raw : {0u,1u,2u,UINT32_MAX}) {
+        AmdPboFixture d; d.allowStatusQueries=true; d.ln2Raw=raw;
+        const auto r=command(d,{"amd-ln2-read","--cpu","130"},raw<=1?0:3);
+        assert(r.find("\"raw_valid\":true")!=std::string::npos && !d.settings && !d.wrongCpu);
+        assert(d.messages==std::vector<std::uint32_t>{0xa6});
+    }
+    for (unsigned index : {0u,7u,127u}) for (std::uint32_t raw : {0u,0x80000000u,0xdeadbeefu,UINT32_MAX}) {
+        AmdPboFixture d; d.allowStatusQueries=true; d.performanceRaw=raw;
+        const auto r=command(d,{"amd-core-performance-read","--cpu","130","--firmware-index",std::to_string(index)},0);
+        assert(r.find("\"valid\":true")!=std::string::npos && r.find("\"physical_mapping_verified\":false")!=std::string::npos);
+        assert(!d.settings && !d.wrongCpu && d.commandArgs[0][0]==index);
+        assert(d.messages==std::vector<std::uint32_t>{0x5c});
+    }
+    for (bool ln2 : {false,true}) for (unsigned mode=0; mode<4; ++mode) {
+        AmdPboFixture d; d.allowStatusQueries=true;
+        if (mode==0) d.completion=0xfe;
+        if (mode==1) d.model=0x18;
+        if (mode==2) d.failAt=0;
+        if (mode==3) d.afterRequest=[&] { if (d.argumentReads) d.model=0x18; };
+        std::vector<std::string> args{ln2?"amd-ln2-read":"amd-core-performance-read","--cpu","130"};
+        if (!ln2) args.insert(args.end(),{"--firmware-index","1"});
+        const auto r=command(d,args,3);
+        assert(r.find("\"raw\":null")!=std::string::npos && r.find("\"valid\":false")!=std::string::npos && !d.settings);
+    }
+}
+void pboQueryInvalidBeforeOpen() {
+    std::vector<std::vector<std::string>> cases{
+        {"amd-ln2-read"},{"amd-ln2-read","--cpu","-1"},
+        {"amd-ln2-read","--cpu","130","--firmware-index","0"},
+        {"amd-ln2-read","--cpu","130","--apply"},
+        {"amd-ln2-read","--cpu","130","--profile","phoenix"},
+        {"amd-ln2-read","--cpu","130","--bus","0"},
+        {"amd-core-performance-read","--firmware-index","0"},
+        {"amd-core-performance-read","--cpu","130"},
+        {"amd-core-performance-read","--cpu","130","--firmware-index","0","--firmware-index","1"},
+        {"amd-core-performance-read","--cpu","130","--firmware-index","0","--cpu","130"}};
+    for (const char *index : {"-1","128","4294967296","1.5","+1"," 1"})
+        cases.push_back({"amd-core-performance-read","--cpu","130","--firmware-index",index});
+    for (const char *key : {"--core","--ccd","--expect-caps"})
+        cases.push_back({"amd-core-performance-read","--cpu","130","--firmware-index","0",key,"0"});
+    cases.push_back({"amd-core-performance-read","--cpu","130","--firmware-index","0","--apply"});
+    for (const auto &args : cases) {
+        unsigned opened=0; std::ostringstream out;
+        assert(run(args,out,[&] { ++opened; return std::unique_ptr<HardwareBackend>(new AmdPboFixture); })==2 && !opened);
+        if (emit) std::cout << out.str();
+    }
+}
 void allCoreCurveCommands() {
     for (int margin : {-50,-25,0,50}) for (bool drop : {false,true}) {
         AmdPboFixture d; d.capsRaw = 6; d.allowAllCoreCurve = true; d.discardChange = drop;
@@ -2296,6 +2344,7 @@ int main(int argc, char **argv) {
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     curveSettingCommands(); pboScalarCommands(); pboFmaxCommands(); pboOfflineCommands(); pboLimitCommands(); pboLimitInvalidBeforeOpen();
     allCoreCurveCommands(); allCoreCurveInvalidBeforeOpen();
+    pboQueryCommands(); pboQueryInvalidBeforeOpen();
     ocModeCommands(); ocFrequencyCommands(); ocInvalidBeforeOpen();
     ocSelectedCoreCommands(); ocSelectedCoreFailures(); ocSelectedCoreInvalidBeforeOpen();
     nativePmCommands(); nativePmFailures(); nativePmInvalidBeforeOpen();
@@ -2307,5 +2356,5 @@ int main(int argc, char **argv) {
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "68 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "70 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

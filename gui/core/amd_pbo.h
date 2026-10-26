@@ -46,6 +46,20 @@ struct AmdPboFmaxUpdate {
     bool verified = false;
 };
 AmdPboCapabilities readShimadaPboCapabilities(HardwareSession &session, const SmuTarget &target);
+enum class AmdPboQuery { Ln2Mode, CorePerformance };
+struct AmdPboQueryResult {
+    int error = 0;
+    AmdPboQuery query = AmdPboQuery::Ln2Mode;
+    unsigned firmwareIndex = 0;
+    std::uint32_t command = 0, raw = 0, response = 0;
+    bool messageAttempted = false, rawValid = false, valid = false, ln2Enabled = false;
+};
+// Read-only SMU queries (mailbox transport writes are still required).
+// A6: zero input, only 0/1 is decoded. 5C: explicit firmware index 0..127;
+// preserve its opaque u32, without claiming watts, ranking or physical mapping.
+// Six initialized arguments and identity checks before/after; no setting sent.
+AmdPboQueryResult readShimadaPboQuery(HardwareSession &session, const SmuTarget &target,
+                                    AmdPboQuery query, unsigned firmwareIndex = 0);
 bool amdPboFmaxAvailable(std::uint32_t capabilities);
 // 1..1048575 is the verified 20-bit encoding range, not a safe operating range.
 // Requires PBO available and manual OC disabled; never enables OC or retries.
