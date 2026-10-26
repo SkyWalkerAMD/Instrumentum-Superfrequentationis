@@ -8,6 +8,7 @@ This is not an Xtensa emulator and does not model coprocessor exceptions.
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 
 QEMU_REV = 'd73149283205645625bfa9fe029cfb68e4c4a9ae'
@@ -28,7 +29,7 @@ def definitions():
         '# Exact CONST.S; all approximation/refinement results stay opaque.',
     ]
     for immediate, bits in enumerate((0, 0x3f800000, 0x40000000, 0x3f000000)):
-        lines.append(f':const.s fr, op_s is op2=15 & op1=10 & fr & op_s={immediate} & op_t=3 & op0=0 {{ fr = 0x{bits:08x}; }}')
+        lines.append(f':const.s fr, op_s is op2=15 & op1=10 & fr & op_s & op_s={immediate} & op_t=3 & op0=0 {{ fr = 0x{bits:08x}; }}')
     # Immediates 4..15 are reserved, deliberately left undecodable.
     for name, opcode, read_dest, flags in UNARY:
         op = 'octool_' + name + '_s'
@@ -52,6 +53,26 @@ def definitions():
                      + body + f'fr = {op}(fr, fs, ft' + (', FCR' if flags else '') + '); '
                      + ('FSR = nextFlags; ' if flags else '') + '}')
     return '\n'.join(lines) + '\n'
+
+
+def conversions(source):
+    # Upstream ROUND/TRUNC multiply a float by integer scale bits, FLOOR/CEIL
+    # retain float result bits in an integer register, and UTRUNC's overflow
+    # check shifts by 16. Do not let these stock semantics invent data values.
+    # Keep the ISA conversion opaque (including rounding, saturation and flags).
+    for name, opcode in (('round', 8), ('trunc', 9), ('floor', 10), ('ceil', 11), ('utrunc', 14)):
+        op = 'octool_' + name + '_s'
+        replacement = f'''define pcodeop {op};
+define pcodeop {op}_flags;
+:{name}.s ar, fs, op_t is op2={opcode} & op1=10 & ar & fs & op_t & op0=0 {{
+    local nextFlags:4 = {op}_flags(FSR, FCR, fs, op_t:4);
+    ar = {op}(fs, op_t:4, FCR);
+    FSR = nextFlags;
+}}'''
+        source, count = re.subn(r':'+name+r'\.s [^\n]+\{[^}]+\}', lambda _: replacement, source)
+        if count != 1:
+            raise SystemExit('Unexpected stock conversion constructor: ' + name)
+    return source
 
 
 def main():
@@ -80,8 +101,11 @@ def main():
     if extension.exists():
         raise SystemExit('Refusing to replace an existing extension')
     content = definitions().encode()
+    stock_instructions = language / 'xtensaInstructions.sinc'
+    patched_instructions = conversions(stock_instructions.read_text()).encode()
     extension.write_bytes(content)
     spec.write_bytes(original.replace(marker, marker + b'@include "octool-fp.sinc"\n'))
+    stock_instructions.write_bytes(patched_instructions)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps({
         'schema': 1, 'hardware_execution': False, 'firmware_modified': False,
@@ -95,8 +119,11 @@ def main():
         'original_spec_sha256': hashlib.sha256(original).hexdigest(),
         'patched_spec_sha256': hashlib.sha256(spec.read_bytes()).hexdigest(),
         'extension_sha256': hashlib.sha256(content).hexdigest(),
+        'original_instructions_sha256': expected['xtensaInstructions.sinc'],
+        'patched_instructions_sha256': hashlib.sha256(patched_instructions).hexdigest(),
         'exact_operations': ['const.s'],
-        'opaque_operations': [n + '.s' for n, *_ in UNARY] + ['maddn.s', 'divn.s'],
+        'opaque_operations': [n + '.s' for n, *_ in UNARY] +
+                             ['maddn.s', 'divn.s', 'round.s', 'trunc.s', 'floor.s', 'ceil.s', 'utrunc.s'],
         'limitations': ['Reserved CONST.S immediates remain undecodable',
                        'Approximation/refinement numeric results and status flags are opaque',
                        'Coprocessor exceptions are not modeled; static research only'],

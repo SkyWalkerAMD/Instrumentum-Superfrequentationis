@@ -72,6 +72,24 @@ public class SmuFpSelfTest extends GhidraScript {
                 require(opaque,"Refinement must remain opaque");
                 checks++;
             }
+            String[] conversions={"round","trunc","floor","ceil","utrunc"};
+            int[] codes={8,9,10,11,14};
+            for(int kind=0;kind<codes.length;kind++) for(int r:new int[]{0,7,15}) for(int s:new int[]{0,7,15}) for(int t=0;t<16;t++) {
+                Instruction ins=decode(codes[kind]<<20 | 0xa0000 | r<<12 | s<<8 | t<<4);
+                require(ins!=null && ins.getMnemonicString().equals(conversions[kind]+".s"),"Missing integer conversion");
+                Object[] objects=ins.getOpObjects(0);
+                require(objects.length==1 && objects[0] instanceof Register &&
+                    ((Register)objects[0]).getName().equals("a"+r), "Wrong integer destination");
+                reg(ins,1,s);
+                require(ins.getScalar(2).getUnsignedValue()==t,"Wrong conversion scale");
+                boolean opaque=false;
+                for(PcodeOp op:ins.getPcode()) {
+                    if(op.getOpcode()==PcodeOp.CALLOTHER) opaque=true;
+                    require(op.getOpcode()!=PcodeOp.FLOAT_MULT,"Stock integer-as-float scale survived");
+                }
+                require(opaque,"Conversion rounding/overflow must stay explicit");
+                checks++;
+            }
             Path output=Path.of(getScriptArgs()[0]);
             Files.writeString(output,"{\"schema\":1,\"hardware_execution\":false,\"firmware_modified\":false,\"synthetic_cases\":"+checks+",\"passed\":true}\n");
             println("Synthetic FP decoding checks passed: "+checks);
