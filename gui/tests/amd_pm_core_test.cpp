@@ -456,8 +456,8 @@ int main() {
         for (const auto &f : s.fields) assert(f.offset<0x634 && f.name.find("VDDG")==std::string::npos);
         assert(seen.size()==(lengths[i]-0x634)/4);
         auto text=amdPmJson(s);
-        auto forged=text; replace(forged,"\"firmware_arrays_labels_verified\":false","\"firmware_arrays_labels_verified\":true");
-        assert(amdPmJson(parseAmdPmCapture(forged))==text);
+        auto firmwareForged=text; replace(firmwareForged,"\"firmware_arrays_labels_verified\":false","\"firmware_arrays_labels_verified\":true");
+        assert(amdPmJson(parseAmdPmCapture(firmwareForged))==text);
     } ++groups;
     for (unsigned off : {0x634u,0x714u,0x71cu,0x2a30u,0x2a34u,0x2d70u}) {
         auto b=pm_fixture::bytes(11636); pm_fixture::put(b,off,0x7f800001);

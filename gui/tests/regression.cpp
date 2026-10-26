@@ -883,7 +883,7 @@ private slots:
         panel.resize(1150,650); panel.show();
         auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
         auto *copy=panel.findChild<QPushButton *>("pmCopy"); auto *status=panel.findChild<QLabel *>("pmStatus");
-        QCOMPARE(view->count(),12);
+        QCOMPARE(view->count(),14);
         const int counts[]={7,8,4,10,24}; const char *names[]={"CPU Power","PPT_WC","VDDCR_CPU_DYN_POWER_WC","FIT PID0","PPT0"};
         const char *values[]={"10","11.75","13.75","14.75","17.25"};
         for (const auto &layout : amdPmLayouts()) {
@@ -965,7 +965,7 @@ private slots:
         panel.resize(1150,650); panel.show();
         auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
         auto *copy=panel.findChild<QPushButton *>("pmCopy"); auto *status=panel.findChild<QLabel *>("pmStatus");
-        QCOMPARE(view->count(),12);
+        QCOMPARE(view->count(),14);
         for (const auto &layout : amdPmLayouts()) {
             QVERIFY(savePmFile(raw,pm_fixture::bytes(layout.bytes))); QVERIFY(panel.loadRawFile(raw,layout.version));
             view->setCurrentIndex(7); QCOMPARE(table->rowCount(),9);
@@ -1056,7 +1056,7 @@ private slots:
         panel.resize(1150,940); panel.show();
         auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
         auto *copy=panel.findChild<QPushButton *>("pmCopy"); auto *status=panel.findChild<QLabel *>("pmStatus");
-        QCOMPARE(view->count(),12);
+        QCOMPARE(view->count(),14);
         const int counts[]={36,48,8}, first[]={0,36,84};
         for (const auto &layout : amdPmLayouts()) {
             QVERIFY(savePmFile(raw,pm_fixture::bytes(layout.bytes))); QVERIFY(panel.loadRawFile(raw,layout.version));
@@ -1122,7 +1122,7 @@ private slots:
         if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
         driver->calls.clear(); driver->mutateAfter=4;
         read->click(); QTRY_VERIFY(read->isEnabled()); QVERIFY(!copy->isEnabled());
-        for (int i=0; i<12; ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
+        for (int i=0; i<view->count(); ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
     }
     void pmOriginalArraysInvalidation() {
         QTemporaryDir directory; QVERIFY(directory.isValid()); const auto raw=directory.filePath("arrays.bin");
@@ -1133,14 +1133,14 @@ private slots:
         for (int group=9; group<12; ++group) {
             view->setCurrentIndex(group); QVERIFY(panel.loadRawFile(raw,0x730204)); QVERIFY(copy->isEnabled());
             QVERIFY(!panel.loadRawFile(raw,0x730205)); QVERIFY(!copy->isEnabled());
-            for (int i=0; i<12; ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
+            for (int i=0; i<view->count(); ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
             QVERIFY(panel.loadRawFile(raw,0x730204));
             QVERIFY(!panel.loadSnapshotFile(directory.filePath("missing"))); QVERIFY(!copy->isEnabled());
-            for (int i=0; i<12; ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
+            for (int i=0; i<view->count(); ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
             QVERIFY(panel.loadRawFile(raw,0x730204));
             panel.findChild<QLineEdit *>("pmBclk")->setText(QString::number(100+group));
             QVERIFY(!copy->isEnabled());
-            for (int i=0; i<12; ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
+            for (int i=0; i<view->count(); ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
         }
         QVERIFY(driver->calls.empty());
     }
@@ -1161,7 +1161,7 @@ private slots:
         QCOMPARE(QApplication::clipboard()->text().toStdString(),capture);
         view->setCurrentIndex(10); QCOMPARE(table->rowCount(),48);
         QVERIFY(savePmJson(json,padded+" ")); QVERIFY(!panel.loadSnapshotFile(json)); QVERIFY(!copy->isEnabled());
-        for (int i=0; i<12; ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
+        for (int i=0; i<view->count(); ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
         QVERIFY(driver->calls.empty());
     }
     void pmPartialErrorsAndFailedImportClearOldData() {

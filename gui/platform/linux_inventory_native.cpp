@@ -18,7 +18,7 @@
 namespace octool { namespace platform {
 int readBoundedFile(const std::string &path, std::vector<std::uint8_t> &bytes, std::size_t maximum) {
     bytes.clear();
-    if (!maximum || maximum > 131072 || path.find('\0') != std::string::npos) return -EINVAL;
+    if (!maximum || maximum > 1048576 || path.find('\0') != std::string::npos) return -EINVAL;
     const int fd = open(path.c_str(), O_RDONLY | O_CLOEXEC | O_NONBLOCK);
     if (fd < 0) return -errno;
     struct Close { int fd; ~Close() { close(fd); } } closeFile{fd};
