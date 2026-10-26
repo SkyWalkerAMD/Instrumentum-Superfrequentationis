@@ -3615,7 +3615,7 @@ private slots:
         auto *index=panel.findChild<QLineEdit *>("pboQueryIndex"); QVERIFY(index->isEnabled()); index->setText("127");
         panel.findChild<QPushButton *>("pboQueryRead")->click(); QTRY_VERIFY(panel.isEnabled());
         auto *table=panel.findChild<QTableWidget *>("smuTable");
-        QCOMPARE(table->item(1,1)->text(),QString("127")); QCOMPARE(table->item(2,1)->text(),QString("0xdeadbeef"));
+        QCOMPARE(table->item(1,1)->text(),QString("127")); QCOMPARE(table->item(2,1)->text(),QString("0xDEADBEEF"));
         QVERIFY(table->item(3,1)->text().contains("Opaque")); QCOMPARE(table->item(4,1)->text(),QString("Not verified"));
         QCOMPARE(d->commandArgs.back()[0],std::uint32_t(127)); QCOMPARE(d->messages.back(),std::uint32_t(0x5c)); QCOMPARE(d->settings,0u);
         QApplication::processEvents(); const auto shot=qEnvironmentVariable("OCTOOL_PBO_PERFORMANCE_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
