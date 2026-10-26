@@ -11,9 +11,9 @@ struct Test {
     HardwareService service{std::unique_ptr<HardwareBackend>(fake)};
     SmuTarget target;
     Test() { target.cpu = 130; target.profile = SmuProfile::Shimada; }
-    AmdPmNativeRead run(const AmdPmOptions &options = {}, const std::atomic<bool> *cancel = nullptr, int timeout = 10000) {
+    AmdPmNativeRead run(const AmdPmOptions &options = {}, const std::atomic<bool> *cancel = nullptr, int timeout = 10000, bool map = false) {
         AmdPmNativeRead r;
-        const int e = service.transaction([&](HardwareSession &s) { r = readShimadaPmNative(s,target,options); return r.error; },timeout,cancel);
+        const int e = service.transaction([&](HardwareSession &s) { r = readShimadaPmNative(s,target,options,map); return r.error; },timeout,cancel);
         if (e) r.error = e;
         return r;
     }
@@ -118,8 +118,66 @@ void partialDecode() {
     assert(r.error == -EDOM && r.phase == AmdPmNativePhase::Decode && r.metadataRechecked && r.snapshot.raw == t.fake->bytes);
     assert(r.snapshot.fields[0].error == -EDOM && r.snapshot.fields[1].value == 1800);
 }
+void ccdMapping() {
+    for (const auto &layout : amdPmLayouts()) {
+        Test t; t.fake->version = layout.version; t.fake->size = unsigned(layout.bytes); t.fake->bytes = pm_fixture::bytes(layout.bytes);
+        const unsigned n = unsigned((layout.bytes-0x634)/0x274);
+        t.fake->presentMask = (1u << (n-1))-1u + (1u << 15);
+        const auto r = t.run({},nullptr,10000,true);
+        assert(!r.error && r.mappingValid && r.mappingRechecked && r.mappingRequested);
+        assert(r.firmwareCcdIds.size() == n && r.firmwareCcdIds.front() == 0 && r.firmwareCcdIds.back() == 15);
+        assert(r.presentMaskBefore == t.fake->presentMask && r.presentMaskAfter == r.presentMaskBefore);
+        assert(r.queriedBefore == 16 && r.queriedAfter == 16 && t.fake->presenceQueries == 32 && t.fake->smuQueries == 3);
+        assert(t.fake->commands == 40 && r.snapshot.raw == t.fake->bytes);
+        for (auto command : t.fake->messages) assert(command == 2 || command == 3 || command == 4 || command == 5 || command == 0xa5);
+        for (const auto &request : t.fake->requests) if (request.space == Space::Memory) assert(!request.write);
+        const auto json = amdPmNativeJson(r);
+        assert(json.find("\"os_cpu_mapping_verified\":false") != std::string::npos);
+    }
+    Test old; const auto r = old.run(); assert(!r.mappingRequested && r.firmwareCcdIds.empty() && old.fake->commands == 5);
+}
+void ccdMappingRejected() {
+    for (unsigned mode = 0; mode < 9; ++mode) {
+        Test t;
+        if (mode == 0) t.fake->smuVersion = 0x732e01;
+        if (mode == 1) t.fake->presentMask = 1;
+        if (mode == 2) t.fake->presentMask = 0;
+        if (mode == 3) t.fake->presentMaskAfter = 0x4001;
+        if (mode == 4) t.fake->smuVersionAfter = 0x732e01;
+        if (mode == 5) { t.fake->presenceFailAt = 7; t.fake->presenceFailure = 0xfd; }
+        if (mode == 6) { t.fake->presenceFailAt = 23; t.fake->presenceFailure = 0xff; }
+        if (mode == 7) { t.fake->presenceFailAt = 16; t.fake->presenceFailure = 0; }
+        if (mode == 8) t.fake->afterRequest = [&] { if (t.fake->presenceQueries == 32) t.fake->physicalBits = 47; };
+        const auto r = t.run({},nullptr,10000,true);
+        assert(r.error && !r.mappingValid && !r.mappingRechecked && r.firmwareCcdIds.empty() && r.snapshot.raw.empty());
+        if (mode < 3) assert(!t.fake->memoryReads && !r.transferAttempted);
+        if (mode == 0) assert(!t.fake->presenceQueries && r.error == -ENOTSUP);
+        if (mode == 3 || mode == 4 || mode == 8) assert(r.error == -EAGAIN);
+    }
+}
+void ccdMappingFaultsAndCancel() {
+    Test good; assert(!good.run({},nullptr,10000,true).error);
+    // Every queried target in both passes: a failed command write must never
+    // become an absent target. Also cover reply and argument-read failures.
+    auto positions = good.fake->presenceCalls;
+    positions.push_back(positions.front()+2); positions.push_back(positions.front()+4);
+    positions.push_back(good.fake->calls-1);
+    for (auto pos : positions) {
+        Test t; t.fake->failAt = int(pos);
+        const auto r = t.run({},nullptr,10000,true);
+        assert(r.error == -EACCES && !r.mappingValid && r.firmwareCcdIds.empty() && r.snapshot.raw.empty());
+        assert(t.fake->calls == pos+1);
+    }
+    for (unsigned queries : {1u,2u,16u,17u,32u}) {
+        Test t; std::atomic<bool> stop{false};
+        t.fake->afterRequest = [&] { if (t.fake->presenceQueries == queries) stop.store(true); };
+        const auto r = t.run({},&stop,10000,true);
+        assert(r.error == -ECANCELED && !r.mappingValid && r.firmwareCcdIds.empty() && r.snapshot.raw.empty());
+    }
+}
 }
 int main() {
     layoutsAndPackets(); validation(); metadataAndBounds(); accessFaults(); rejectedAndChanged(); cancellation(); partialDecode();
-    std::cout << "7 AMD native PM scenario groups passed\n";
+    ccdMapping(); ccdMappingRejected(); ccdMappingFaultsAndCancel();
+    std::cout << "10 AMD native PM scenario groups passed\n";
 }

@@ -51,6 +51,9 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader, std::shared_ptr<Hard
     cpu_ = new QLineEdit(QString::number(cpu), controls_); cpu_->setObjectName("pmCpu"); cpu_->setMaximumWidth(100); native->addWidget(cpu_);
     auto *readNativeButton = new QPushButton("Read native PM table", controls_); readNativeButton->setObjectName("pmNativeRead");
     readNativeButton->setEnabled(bool(access_)); native->addWidget(readNativeButton);
+    mapCcds_ = new QCheckBox("Map firmware CCD slots", controls_); mapCcds_->setObjectName("pmMapCcds");
+    mapCcds_->setToolTip("SMU 115.46.0 only. Query the CCD presence mask before and after capture. Firmware IDs are not OS CPU/APIC IDs.");
+    native->addWidget(mapCcds_);
     auto *nativeScope = new QLabel("Shimada 1Ah/08h; firmware transfer, no tuning change requested", controls_);
     nativeScope->setWordWrap(true); native->addWidget(nativeScope); controls->addLayout(native);
     connect(readNativeButton, &QPushButton::clicked, this, &AmdPmPanel::readNative);
@@ -100,6 +103,7 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader, std::shared_ptr<Hard
     });
     connect(copy_, &QPushButton::clicked, this, [this] { QApplication::clipboard()->setText(QString::fromStdString(nativeCapture_.empty() ? amdPmJson(snapshot_) : nativeCapture_)); });
     connect(cpu_, &QLineEdit::textChanged, this, [this] { clear(); });
+    connect(mapCcds_, &QCheckBox::toggled, this, [this] { clear(); });
     connect(version_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this] { clear(); });
     connect(scale_, &QCheckBox::toggled, this, [this] { clear(); });
     connect(bclk_, &QLineEdit::textChanged, this, [this] { clear(); });
@@ -108,7 +112,7 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader, std::shared_ptr<Hard
 }
 AmdPmPanel::~AmdPmPanel() { cancelled_->store(true); }
 void AmdPmPanel::clear() {
-    ++revision_; nativeCapture_.clear();
+    ++revision_; nativeCapture_.clear(); firmwareCcdIds_.clear();
     snapshot_ = AmdPmSnapshot(); table_->setRowCount(0); metadata_->clear(); copy_->setEnabled(false);
     layoutAuditJson_.clear(); copyAudit_->setEnabled(false);
     table_->resizeColumnsToContents();
@@ -120,23 +124,28 @@ void AmdPmPanel::readNative() {
     quint64 cpu = 0;
     if (!parseNumber(cpu_->text(), 10, 1048575, cpu)) { status_->setText("Enter a valid logical CPU for native capture."); return; }
     SmuTarget target; target.cpu = unsigned(cpu); target.profile = SmuProfile::Shimada;
+    const bool mapCcds = mapCcds_->isChecked();
     const auto revision = revision_;
     busy_ = true; controls_->setEnabled(false); status_->setText("Reading native PM metadata and requesting one firmware transfer...");
     auto *watcher = new QFutureWatcher<AmdPmNativeRead>(this);
     connect(watcher, &QFutureWatcher<AmdPmNativeRead>::finished, this, [this, watcher, revision] {
         const auto r = watcher->result(); watcher->deleteLater(); busy_ = false; controls_->setEnabled(true);
         if (revision != revision_) { clear(); status_->setText("Inputs changed during capture; old native PM result discarded."); return; }
-        present(r.snapshot, QString("Native PM: phase %1, %2 bytes read, transfer %3, metadata rechecked %4. Freshness and atomicity are unverified.")
+        firmwareCcdIds_ = r.mappingValid ? r.firmwareCcdIds : std::vector<unsigned>();
+        QString source = QString("Native PM: phase %1, %2 bytes read, transfer %3, metadata rechecked %4. Freshness and atomicity are unverified.")
             .arg(amdPmNativePhaseName(r.phase)).arg(qulonglong(r.bytesRead)).arg(r.transferAccepted ? "accepted" : "not confirmed")
-            .arg(r.metadataRechecked ? "yes" : "no"));
+            .arg(r.metadataRechecked ? "yes" : "no");
+        if (r.mappingRequested) source += r.mappingValid ? "\nCCD slots mapped to firmware targets; active cores and OS CPU/APIC mapping remain unverified." :
+            "\nCCD mapping failed; no mapping or PM buffer published.";
+        present(r.snapshot, source);
         nativeCapture_ = "{\"schema_version\":1,\"command\":\"amd-pm-native-read\",\"data\":{\"native\":" + amdPmNativeJson(r) +
             ",\"pm\":" + amdPmJson(r.snapshot) + "}}";
         copy_->setEnabled(true); // Failures also carry useful transport diagnostics, with no raw buffer.
     });
     const auto access = access_; const auto cancelled = cancelled_;
-    watcher->setFuture(QtConcurrent::run([access, cancelled, target, opt] {
+    watcher->setFuture(QtConcurrent::run([access, cancelled, target, opt, mapCcds] {
         AmdPmNativeRead r; r.cpu = target.cpu;
-        const int error = access->transaction([&](HardwareSession &s) { r = readShimadaPmNative(s, target, opt); return r.error; }, 10000, cancelled.get());
+        const int error = access->transaction([&](HardwareSession &s) { r = readShimadaPmNative(s, target, opt, mapCcds); return r.error; }, 10000, cancelled.get());
         if (error && !r.error) { r.error = error; r.snapshot.error = error; r.snapshot.detail = "Native PM transaction could not start"; }
         return r;
     }));
@@ -237,8 +246,16 @@ void AmdPmPanel::showFields() {
         const int row = table_->rowCount(); table_->insertRow(row);
         const QString state = f.error ? "Non-finite stored value" : f.scaleError ? "Clock scaling out of range" :
             original ? "Units unverified" : f.clock && !s.options.hasBclk ? "BCLK not supplied" : "Decoded";
-        const QString label = QString::fromStdString(f.name) +
+        QString label = QString::fromStdString(f.name) +
             (f.slotCount > 1 ? QString(" [slot %1]").arg(f.slot) : QString());
+        if (index >= 12 && index <= 13) {
+            const unsigned ccdSlot = index == 12 ? f.slot / 8 : f.slot;
+            if (ccdSlot < firmwareCcdIds_.size()) {
+                label += QString(" [FW CCD %1").arg(firmwareCcdIds_[ccdSlot]);
+                if (index == 12) label += QString(", core slot %1").arg(f.slot % 8);
+                label += "]";
+            }
+        }
         const QStringList values{label, f.error ? "Unavailable" : number(f.value), original ? QString("Unverified") : QString::fromStdString(f.unit),
             f.scaled ? number(f.scaledValue) : QString("—"), hex(f.raw), hex(f.offset), state};
         for (int col = 0; col < values.size(); ++col) table_->setItem(row, col, new QTableWidgetItem(values[col]));

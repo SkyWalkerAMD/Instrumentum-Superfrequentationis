@@ -671,6 +671,41 @@ private slots:
             }
         }
     }
+    void pmNativeCcdMapping() {
+        using namespace octool::core;
+        for (bool changed : {false,true}) {
+            auto *device = new AmdPmNativeFixture;
+            if (changed) device->presentMaskAfter = 0x4001;
+            auto access = std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device));
+            AmdPmPanel panel(nullptr,{},access,130); panel.resize(1500,1000); panel.show();
+            auto *map = panel.findChild<QCheckBox *>("pmMapCcds"); map->setChecked(true);
+            auto *read = panel.findChild<QPushButton *>("pmNativeRead"); read->click(); QTRY_VERIFY(read->isEnabled());
+            auto *table = panel.findChild<QTableWidget *>("pmTable");
+            panel.findChild<QComboBox *>("pmView")->setCurrentIndex(12);
+            QCOMPARE(table->rowCount(),changed ? 0 : 288);
+            if (!changed) {
+                QVERIFY(table->item(0,0)->text().contains("FW CCD 0, core slot 0"));
+                QVERIFY(table->item(8,0)->text().contains("FW CCD 15, core slot 0"));
+                panel.findChild<QComboBox *>("pmView")->setCurrentIndex(13);
+                QVERIFY(table->item(1,0)->text().contains("FW CCD 15"));
+            }
+            panel.findChild<QPushButton *>("pmCopy")->click();
+            const auto json = QApplication::clipboard()->text().toUtf8();
+            const auto native = QJsonDocument::fromJson(json).object()["data"].toObject()["native"].toObject();
+            const auto mapping = native["ccd_mapping"].toObject();
+            QCOMPARE(mapping["valid"].toBool(),!changed); QCOMPARE(mapping["rechecked"].toBool(),!changed);
+            QVERIFY(!mapping["os_cpu_mapping_verified"].toBool());
+            if (!changed) {
+                QTemporaryDir dir; QFile file(dir.path()+"/mapped.json"); QVERIFY(file.open(QIODevice::WriteOnly)); file.write(json); file.close();
+                AmdPmPanel imported; QVERIFY(imported.loadSnapshotFile(file.fileName()));
+                imported.findChild<QComboBox *>("pmView")->setCurrentIndex(13);
+                QVERIFY(!imported.findChild<QTableWidget *>("pmTable")->item(1,0)->text().contains("FW CCD"));
+                QApplication::processEvents(); const auto shot = qEnvironmentVariable("OCTOOL_PM_CCD_MAPPING_TEST_SCREENSHOT");
+                if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+                map->setChecked(false); QCOMPARE(table->rowCount(),0);
+            } else QVERIFY(panel.findChild<QLabel *>("pmStatus")->text().contains("mapping failed"));
+        }
+    }
     void pmNativeFailureDiscardsOldCapture() {
         using namespace octool::core;
         auto *device = new AmdPmNativeFixture; device->versionAfter = 0x730404;

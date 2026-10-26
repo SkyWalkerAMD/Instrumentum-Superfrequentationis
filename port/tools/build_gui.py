@@ -158,6 +158,7 @@ def main():
                    OCTOOL_OC_CORE_TEST_SCREENSHOT=str((tests / "oc-frequency-core-fixture.png").resolve()),
                    OCTOOL_OC_ALL_TEST_SCREENSHOT=str((tests / "oc-frequency-all-fixture.png").resolve()),
                     OCTOOL_PM_NATIVE_TEST_SCREENSHOT=str((tests / "pm-native-fixture.png").resolve()),
+                    OCTOOL_PM_CCD_MAPPING_TEST_SCREENSHOT=str((tests / "pm-ccd-mapping-fixture.png").resolve()),
                     OCTOOL_PM_NATIVE_FAILURE_TEST_SCREENSHOT=str((tests / "pm-native-failure-fixture.png").resolve()),
                     OCTOOL_OC_CORES_TEST_SCREENSHOT=str((tests / "oc-frequency-cores-fixture.png").resolve()),
                     OCTOOL_OC_CORES_FAILURE_TEST_SCREENSHOT=str((tests / "oc-frequency-cores-failure-fixture.png").resolve()),

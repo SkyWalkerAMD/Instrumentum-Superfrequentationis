@@ -90,7 +90,7 @@ for i,r in enumerate(all_curve[:13]):
     assert d['current_margin_counts'] is None and d['affected_core_count'] is None
     assert d['accepted'] == (i < 8) and d['write_attempted'] == (i < 8 or i == 10)
 native_pm = [r for r in reports if r['command'] == 'amd-pm-native-read']
-assert len(native_pm) == 27 and [r['ok'] for r in native_pm] == [True]*8+[False]*19
+assert len(native_pm) == 33 and [r['ok'] for r in native_pm] == [True]*8+[False]*21+[True,False,False,False]
 for i,r in enumerate(native_pm[:17]):
     n = r['data']['native']; pm = r['data']['pm']
     assert n['cpu'] == 130 and not n['origin_verified'] and not n['atomic_snapshot_guaranteed']
@@ -101,6 +101,19 @@ for i,r in enumerate(native_pm[:17]):
         assert int(n['address'],16) == 0x123456000 and n['phase'] == ('complete' if i < 8 else 'decode')
     else:
         assert not n['metadata_rechecked'] and pm['raw_hex'] == '' and pm['fields'] == []
+    assert not n['ccd_mapping']['requested'] and not n['ccd_mapping']['valid']
+for i,r in enumerate(native_pm[29:]):
+    n = r['data']['native']; m = n['ccd_mapping']; pm = r['data']['pm']
+    assert m['requested'] and m['valid'] == m['rechecked'] == (i == 0)
+    assert m['firmware_ccd_ids_by_slot'] == ([0,15] if i == 0 else [])
+    assert not m['os_cpu_mapping_verified'] and not m['active_core_mask_verified']
+    assert not n['physical_mapping_verified'] and not n['tuning_settings_requested']
+    if i == 0:
+        assert m['queried_before'] == m['queried_after'] == 16
+        assert int(m['present_mask_before'],16) == int(m['present_mask_after'],16) == 0x8001
+        assert pm['raw_hex'] and int(m['smu_version'],16) == 0x732e00
+    else:
+        assert not pm['raw_hex'] and not n['metadata_rechecked']
 oc_modes = [r for r in reports if r['command'] == 'amd-oc-mode-set' and 'requested_enabled' in r['data']]
 assert len(oc_modes) == 9 and [r['ok'] for r in oc_modes] == [True]*3 + [False]*6
 for r in oc_modes:

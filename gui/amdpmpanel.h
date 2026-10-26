@@ -30,8 +30,9 @@ private:
     std::shared_ptr<std::atomic<bool>> cancelled_;
     unsigned revision_ = 0;
     std::string nativeCapture_;
+    std::vector<unsigned> firmwareCcdIds_;
     QComboBox *version_, *view_;
-    QCheckBox *scale_;
+    QCheckBox *scale_, *mapCcds_;
     QLineEdit *bclk_, *layoutCcds_, *cpu_;
     QWidget *controls_;
     QPushButton *read_, *copy_, *copyAudit_;

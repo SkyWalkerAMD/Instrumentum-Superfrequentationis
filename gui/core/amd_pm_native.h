@@ -4,7 +4,7 @@
 #include "amd_smu.h"
 
 namespace octool { namespace core {
-enum class AmdPmNativePhase { Validate, Version, Address, Transfer, Read, Recheck, Decode, Complete };
+enum class AmdPmNativePhase { Validate, Version, Topology, Address, Transfer, Read, Recheck, TopologyRecheck, Decode, Complete };
 const char *amdPmNativePhaseName(AmdPmNativePhase phase);
 struct AmdPmNativeRead {
     int error = 0;
@@ -14,6 +14,12 @@ struct AmdPmNativeRead {
     std::uint64_t address = 0;
     bool metadataValid = false, addressValid = false;
     bool transferAttempted = false, transferAccepted = false, metadataRechecked = false;
+    bool mappingRequested = false, mappingValid = false, mappingRechecked = false;
+    std::uint32_t smuVersion = 0;
+    unsigned presentMaskBefore = 0, presentMaskAfter = 0, queriedBefore = 0, queriedAfter = 0;
+    // Ascending present-mask bits: firmware MP5 target IDs, not OS CPUs/APICs.
+    // Populated only when both complete masks and the PM width agree.
+    std::vector<unsigned> firmwareCcdIds;
     std::size_t bytesRead = 0;
     AmdPmSnapshot snapshot;
 };
@@ -23,7 +29,10 @@ struct AmdPmNativeRead {
 // A complete buffer is published only after all reads and metadata rechecks.
 // Firmware acknowledgement/unchanged metadata do not prove sample atomicity,
 // freshness, physical topology or authenticity. Never changes tuning settings.
+// Optional mapping requires SMU 115.46.0, and uses A5 presence acknowledgements.
+// A5 also refreshes firmware clock telemetry. It does not request tuning writes.
+// No active-core mask or mapping from firmware core slots to OS CPUs is inferred.
 AmdPmNativeRead readShimadaPmNative(HardwareSession &session, const SmuTarget &target,
-                                  const AmdPmOptions &options = AmdPmOptions());
+                                  const AmdPmOptions &options = AmdPmOptions(), bool mapCcds = false);
 std::string amdPmNativeJson(const AmdPmNativeRead &result);
 } }

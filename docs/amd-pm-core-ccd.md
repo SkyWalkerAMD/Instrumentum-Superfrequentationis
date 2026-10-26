@@ -1,5 +1,9 @@
 # 逐核 / CCD 功耗表存储区
 
+<!-- amd-pm-ccd-mapping-current -->
+新增 [PM 固件 CCD 槽位映射](amd-pm-ccd-mapping.md)：GUI 与 CLI `--map-ccd` 同步支持精确 SMU 115.46.0 的存在掩码查询、稀疏编号映射和前后复核。OS CPU/APIC 对应、逐核/CCD 物理单位及第二 rails 回读仍未完成。
+<!-- /amd-pm-ccd-mapping-current -->
+
 GUI 和 CLI 现在共用 SMU/MP5 固件证据支持的数组解码，覆盖八个精确 `73xx04h` 版本。
 恢复的是原始字、浮点存储值、行号和槽号；槽号不等于 Linux CPU 号，活动核心、物理 CCD
 映射和真实功耗单位仍未验收。沿用的原版标签加 `Legacy` 前缀，其语义尚未独立认证。

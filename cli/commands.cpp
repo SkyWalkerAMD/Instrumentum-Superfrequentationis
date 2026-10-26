@@ -103,7 +103,7 @@ struct Command {
     unsigned cpu = 0, timeout = 10000, ccd = 0, core = 0, point = 0, group = 0;
     unsigned minimumRatio = 0, maximumRatio = 0;
     double value = 0;
-    bool forEdit = false;
+    bool forEdit = false, pmMapCcds = false;
     std::uint32_t pmVersion = 0;
     unsigned pmCaptured = 0, pmFusedCcds = 0;
     AmdPmOptions pmOptions;
@@ -191,6 +191,7 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "amd-umc-read") { keys.insert("--bank"); keys.insert("--refresh-slot"); }
     if (c.name == "spd-decode") keys.insert("--file");
     if (pm || c.name == "amd-pm-native-read") keys.insert("--bclk-mhz");
+    if (c.name == "amd-pm-native-read") keys.insert("--map-ccd");
     if (c.name == "amd-pm-decode") { keys.insert("--file"); keys.insert("--version"); }
     if (umcOffline || memoryOffline || clockOffline) keys.insert("--file");
     if (c.name == "intel-memory-read") { keys.insert("--controller"); keys.insert("--channel"); }
@@ -200,7 +201,7 @@ Command parse(const std::vector<std::string> &args) {
         const auto key = args[i];
         require(keys.count(key) != 0, "Unknown option for " + c.name + ": " + key);
         require(!options.count(key), "Duplicate option: " + key);
-        const bool flag = key == "--json" || key == "--apply" || key == "--for-edit";
+        const bool flag = key == "--json" || key == "--apply" || key == "--for-edit" || key == "--map-ccd";
         if (!flag) require(i + 1 < args.size() && args[i + 1].compare(0, 2, "--") != 0, "Missing value: " + key);
         options[key] = flag ? "true" : args[++i];
     }
@@ -469,6 +470,7 @@ Command parse(const std::vector<std::string> &args) {
     }
     if (c.name == "amd-umc-read") { c.umc.bank = uintOption(options, "--bank", 22); c.umc.refreshSlot = uintOption(options, "--refresh-slot", 15); }
     if (c.name == "spd-decode") { c.path = get(options, "--file"); require(!c.path.empty(), "Empty SPD path"); }
+    c.pmMapCcds = options.count("--map-ccd") != 0;
     if ((pm || c.name == "amd-pm-native-read") && options.count("--bclk-mhz")) {
         c.pmOptions.hasBclk = true; c.pmOptions.bclkMHz = decimal(get(options, "--bclk-mhz"), "--bclk-mhz");
         require(c.pmOptions.bclkMHz > 0, "--bclk-mhz must be positive");
@@ -645,7 +647,7 @@ Result hardware(const Command &c, HardwareSession &s) {
     if (!rawRegister || c.reg.space == Space::Msr) out.data.push_back({"cpu", number(c.cpu)});
     if (c.name == "amd-pm-native-read") {
         SmuTarget target; target.cpu = c.cpu; target.profile = SmuProfile::Shimada;
-        const auto r = readShimadaPmNative(s, target, c.pmOptions); out.error = r.error;
+        const auto r = readShimadaPmNative(s, target, c.pmOptions, c.pmMapCcds); out.error = r.error;
         out.data.push_back({"native", amdPmNativeJson(r)});
         out.data.push_back({"pm", amdPmJson(r.snapshot)});
     } else if (rawRegister) {
@@ -1489,7 +1491,7 @@ Usage: octool-cli COMMAND [OPTIONS]
   register-read --space mmio --address A --width 1|2|4|8
   register-read --space pci --address A --width 1|2|4 --bus B --device D --function F
   register-write [same target options] --value V --apply
-  amd-pm-native-read --cpu N [--bclk-mhz MHz]  Native Shimada PM capture
+  amd-pm-native-read --cpu N [--bclk-mhz MHz] [--map-ccd]  Native Shimada PM capture
   amd-pstates --cpu N               Family 17h/19h/1Ah P0..P7 definitions (read only)
   intel-read --cpu N                RAPL, HWP, temperatures, package events and non-turbo ratio
   intel-set --cpu N --field F --value V --apply
@@ -1616,6 +1618,11 @@ backend. amd-pm-native-read uses the OCTool backend, RSMU metadata/transfer and
 bounded physical reads on 1Ah/08h. Firmware must report an exact known version
 and matching nonzero byte count. Transfer acceptance does not prove freshness;
 metadata changes or read failures discard the buffer. No driver is auto-loaded.
+--map-ccd additionally requires SMU 115.46.0 and queries all 16 CCD targets
+before and after capture. Present-mask order maps table slots to firmware IDs;
+it does not establish active cores or OS CPU/APIC IDs. A changing mask, unknown
+firmware or count mismatch discards the buffer. Imported captures do not certify
+these mapping claims. A5 clock query payloads are not decoded as rail readback.
 Eight exact Shimada PM versions are supported; files do not identify physical
 cores. PM captures have no checksum. BCLK is caller supplied, not measured here;
 raw clock values remain separate from scaled values. Non-finite fields are null.

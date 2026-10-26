@@ -1,5 +1,9 @@
 # 原生 AMD PM 表采集
 
+<!-- amd-pm-ccd-mapping-current -->
+新增 [PM 固件 CCD 槽位映射](amd-pm-ccd-mapping.md)：GUI 与 CLI `--map-ccd` 同步支持精确 SMU 115.46.0 的存在掩码查询、稀疏编号映射和前后复核。OS CPU/APIC 对应、逐核/CCD 物理单位及第二 rails 回读仍未完成。
+<!-- /amd-pm-ccd-mapping-current -->
+
 2026-10-26 更新：[逐核 / CCD 存储区](amd-pm-core-ccd.md)已由 MP5 原指令闭合边界并接入两端；PM 快照上限 1 MiB，公共显示字段由 24 项改为 22 项，撤回 VDDG 两项误映射。标签/单位/物理映射和双 rails 硬件写入仍待完成。以下保留此前阶段记录。
 
 GUI 的 **AMD tuning → PM telemetry → Read native PM table** 与 CLI

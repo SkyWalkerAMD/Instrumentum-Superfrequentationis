@@ -1,5 +1,9 @@
 # 无桌面版 OCTool
 
+<!-- amd-pm-ccd-mapping-current -->
+新增 [PM 固件 CCD 槽位映射](amd-pm-ccd-mapping.md)：GUI 与 CLI `--map-ccd` 同步支持精确 SMU 115.46.0 的存在掩码查询、稀疏编号映射和前后复核。OS CPU/APIC 对应、逐核/CCD 物理单位及第二 rails 回读仍未完成。
+<!-- /amd-pm-ccd-mapping-current -->
+
 <!-- amd-fmax-readback-current -->
 新增 [Fmax 固件设置回读](amd-fmax-readback.md)：GUI / CLI 同步支持 SMU 115.46.0 的 `6Eh` 查询与 `70h` 写后校验。
 设置前比较旧 MHz 和完整能力字；CLI 现在要求 `--expect-mhz`。固件裁剪或回读不符会保留实际值并报告错误。

@@ -84,11 +84,25 @@ void nativePmInvalidBeforeOpen() {
         {},{"--cpu","-1"},{"--cpu","1048576"},{"--cpu",""},
         {"--cpu","130","--bclk-mhz","0"},{"--cpu","130","--bclk-mhz","nan"},
         {"--cpu","130","--version","0x730204"},{"--cpu","130","--apply"},
-        {"--cpu","130","--address","0x100000"},{"--cpu","130","--cpu","0"}};
+        {"--cpu","130","--address","0x100000"},{"--cpu","130","--cpu","0"},
+        {"--cpu","130","--map-ccd","--map-ccd"},{"--cpu","130","--map-ccd","false"}};
     for (auto args : cases) {
         args.insert(args.begin(),"amd-pm-native-read"); std::ostringstream out; unsigned opened = 0;
         assert(run(args,out,[&] { ++opened; return std::unique_ptr<HardwareBackend>(); }) == 2 && !opened);
         if (emit) std::cout << out.str();
+    }
+}
+void nativePmCcdMapping() {
+    for (unsigned mode = 0; mode < 4; ++mode) {
+        AmdPmNativeFixture d;
+        if (mode == 1) d.presentMaskAfter = 0x4001;
+        if (mode == 2) d.smuVersion = 0x732e01;
+        if (mode == 3) { d.presenceFailAt = 20; d.presenceFailure = 0xfd; }
+        const auto result = command(d,{"amd-pm-native-read","--cpu","130","--map-ccd"},mode ? 3 : 0);
+        assert(result.find("\"ccd_mapping\":{\"requested\":true") != std::string::npos);
+        assert(result.find(mode ? "\"firmware_ccd_ids_by_slot\":[]" : "\"firmware_ccd_ids_by_slot\":[0,15]") != std::string::npos);
+        if (mode) assert(result.find("\"raw_hex\":\"\"") != std::string::npos);
+        else assert(parseAmdPmCapture(result).raw == d.bytes);
     }
 }
 void iccMaxCommands() {
@@ -2429,7 +2443,7 @@ int main(int argc, char **argv) {
     powerAdjustmentCommands(); powerAdjustmentInvalidBeforeOpen();
     ocModeCommands(); ocFrequencyCommands(); ocInvalidBeforeOpen();
     ocSelectedCoreCommands(); ocSelectedCoreFailures(); ocSelectedCoreInvalidBeforeOpen();
-    nativePmCommands(); nativePmFailures(); nativePmInvalidBeforeOpen();
+    nativePmCommands(); nativePmFailures(); nativePmInvalidBeforeOpen(); nativePmCcdMapping();
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); intelMemoryOdtCaptures(); intelMemoryOdtLive(); intelMemoryTemperatureCaptures(); intelMemoryTemperatureLive(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
@@ -2438,5 +2452,5 @@ int main(int argc, char **argv) {
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "72 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "73 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }
