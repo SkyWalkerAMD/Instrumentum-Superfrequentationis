@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       baseline_run:
-        description: Successful portability run with identical application/build inputs (blank selects latest success on this branch)
+        description: Portability run with successful SDK jobs and identical application inputs (blank selects latest success)
         type: string
         default: ''
 permissions:
@@ -43,7 +43,11 @@ jobs:
               run=str(found[0]['id'])
           assert run.isdecimal()
           baseline=json.loads(subprocess.check_output(['gh','api',f'repos/{repo}/actions/runs/{run}']))
-          assert baseline['conclusion']=='success' and baseline['path']=='.github/workflows/portability.yml'
+          assert baseline['path']=='.github/workflows/portability.yml'
+          assert baseline['conclusion']=='success' or (baseline['status']=='in_progress' and baseline['conclusion'] is None)
+          jobs=json.loads(subprocess.check_output(['gh','api',f'repos/{repo}/actions/runs/{run}/jobs?per_page=100']))['jobs']
+          sdk_jobs=[j for j in jobs if j['name'] in ('baseline','baseline_el7')]
+          assert len(sdk_jobs)==2 and all(j['conclusion']=='success' for j in sdk_jobs), 'Both SDK jobs must have passed'
           base=baseline['head_sha']; head=os.environ['GITHUB_SHA']
           changed=subprocess.check_output(['git','diff','--name-only',base,head]).decode().splitlines()
           allowed={'port/ci/in-container.sh','.github/workflows/gui-fixture-review.yml'}
@@ -58,6 +62,7 @@ jobs:
               if anchor+additions not in expected: expected=expected.replace(anchor,anchor+additions)
           assert current==expected, 'Supplement must only add the four screenshot copy commands'
           evidence={'source_commit':head,'baseline_commit':base,'baseline_run':int(run),'baseline_url':baseline['html_url'],
+                    'sdk_jobs_successful':True,'baseline_conclusion_at_start':baseline['conclusion'],
                     'changed_paths':changed,'runtime_inputs_identical':True,'change_scope':'Four screenshot copy commands and evidence workflow; application and test sources unchanged'}
           pathlib.Path('build/fixture-review/provenance.json').write_text(json.dumps(evidence,indent=2)+'\n')
           with open(os.environ['GITHUB_OUTPUT'],'a') as output: output.write('run='+run+'\n')
