@@ -715,6 +715,34 @@ with tempfile.TemporaryDirectory(prefix="octool-intel-memory-") as directory:
     assert run("intel-memory-decode","--file",str(Path(directory)/"fifo"),code=3)["data"]["memory"] is None
 pm_reports = [r for r in reports if r["command"] == "amd-pm-decode" and "pm" in r["data"]]
 assert len(pm_reports) == 94
+for report in reports:
+    pm = report.get('data',{}).get('pm')
+    if not pm or pm.get('format') != 'octool-amd-pm':
+        continue
+    assert not pm['firmware_arrays_units_verified'] and not pm['firmware_arrays_targets_verified']
+    assert not pm['firmware_arrays_labels_verified']
+    assert not any('VDDG' in f['name'] for f in pm['fields'])
+    if not pm['fields']:
+        assert not pm['firmware_core_arrays'] and not pm['firmware_ccd_arrays']
+        assert pm['firmware_ccd_storage_slots'] == 0
+        continue
+    n,start = {2844:(2,0xab4),4100:(4,0xf34),5356:(6,0x13b4),6612:(8,0x1834),
+               7868:(10,0x1cb4),9124:(12,0x2134),10380:(14,0x25b4),11636:(16,0x2a34)}[pm['captured_bytes']]
+    assert pm['firmware_ccd_storage_slots'] == n
+    raw = bytes.fromhex(pm['raw_hex']); seen=set()
+    for key,count,slots,first in (('firmware_core_arrays',18,8*n,0x634),('firmware_ccd_arrays',13,n,start)):
+        rows=pm[key]; assert len(rows)==count*slots and int(rows[0]['offset'],16)==first
+        for j,f in enumerate(rows):
+            off=int(f['offset'],16); bits=int(f['raw'],16)
+            assert off not in seen and 0x634<=off and off+4<=len(raw); seen.add(off)
+            assert bits==struct.unpack_from('<I',raw,off)[0]
+            assert f['row']==j//slots and f['slot']==j%slots and f['slot_count']==slots
+            assert f['unit']=='unverified' and not f['clock'] and f['scaled_clock_mhz'] is None
+            if (bits & 0x7f800000)==0x7f800000:
+                assert f['stored_value'] is None and f['error']==-33
+            else:
+                assert f['stored_value']==struct.unpack_from('<f',raw,off)[0] and not f['error']
+    assert len(seen)==(len(raw)-0x634)//4
 array_reports = pm_reports[72:]
 fabric_reports, package_reports, limit_reports, pm_reports = pm_reports[56:72], pm_reports[38:56], pm_reports[20:38], pm_reports[:20]
 assert [r["ok"] for r in pm_reports] == [True] * 9 + [False, True, True, False, False, False, False, True, True, False, False]
@@ -722,7 +750,7 @@ for i, r in enumerate(pm_reports):
     assert r["data"]["offline"] and not r["data"]["table_read_attempted"] and not r["data"]["direct_register_access"]
     pm = r["data"]["pm"]
     if r["ok"]:
-        assert len(pm["fields"]) == 24 and len(pm["raw_hex"]) == pm["expected_bytes"] * 2
+        assert len(pm["fields"]) == 22 and len(pm["raw_hex"]) == pm["expected_bytes"] * 2
         fields = {v["name"]: v for v in pm["fields"]}
         assert fields["FCLK"]["stored_value"] == 2000 and fields["FCLK"]["raw"] == "0x44fa0000"
         assert fields["VDD current"]["stored_value"] == 100 and fields["VDD current"]["unit"] == "A"
@@ -751,7 +779,7 @@ for i, report in enumerate(limit_reports):
         assert pm['original_limits'] == [] and pm['fields'] == []
         continue
     fields = pm['original_limits']
-    assert len(fields) == len(pm['fields']) == 24 and all(f['error'] == 0 for f in pm['fields'])
+    assert len(fields) == 24 and len(pm['fields']) == 22 and all(f['error'] == 0 for f in pm['fields'])
     assert [f['name'] for f in fields] == limit_names
     assert [int(f['offset'],16) for f in fields] == limit_offsets
     for n, field in enumerate(fields):
@@ -866,8 +894,8 @@ with tempfile.TemporaryDirectory(prefix="octool-pm-") as directory:
         decoded = run('amd-pm-decode','--file',str(path),code=0 if source['ok'] else 3)
         assert decoded['data']['pm'] == source['data']['pm']
     complete=json.dumps(array_reports[18]).encode('utf-8')
-    assert 65536<len(complete)<131072
-    path.write_bytes(complete+b' '*(131072-len(complete)))
+    assert 65536<len(complete)<1048576
+    path.write_bytes(complete+b' '*(1048576-len(complete)))
     assert run('amd-pm-decode','--file',str(path))['data']['pm']==array_reports[18]['data']['pm']
     path.write_bytes(path.read_bytes()+b' ')
     assert run('amd-pm-decode','--file',str(path),code=3)['error']==-27

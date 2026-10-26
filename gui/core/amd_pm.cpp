@@ -135,8 +135,8 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
     field(out, out.fields, "MCLK", "MHz", 0x22c, true);
     field(out, out.fields, "VDDCR_SOC", "V", 0x1a4);
     field(out, out.fields, "CLDO_VDDP", "V", 0x5cc);
-    field(out, out.fields, "CLDO_VDDG_IOD", "V", 0x714);
-    field(out, out.fields, "CLDO_VDDG_CCD", "V", 0x71c);
+    // 714/71c belong to the MP5 core arrays. Earlier public mappings mislabeled
+    // these as VDDG voltages; do not preserve that interpretation in captures.
     field(out, out.fields, "VDD_MISC", "V", 0x1b8);
     const char *rails[] = {"VDD", "VDD1", "SoC", "Misc"};
     const char *names[] = {"requested voltage (VID)", "measured voltage", "current", "VRM temperature"};
@@ -210,6 +210,27 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
     array("pcie_storage", "PCIE_UP_THRESHOLD", 0x3ec, 1);
     array("pcie_storage", "PCIE_DOWN_THRESHOLD", 0x3f0, 1);
     array("pcie_storage", "PCIE_IOHC_BANDWIDTH[4]", 0x3f4, 4);
+    // Exact version/size validation above is mandatory. SMU 05 reports N and
+    // 634h + N*274h bytes; MP5 37dd2..37e52 independently scatters 18*8 core
+    // words followed by 13 CCD words. See amd-smu-firmware-research.md.
+    out.firmwareCcdSlots = unsigned((out.expectedBytes - 0x634) / 0x274);
+    const unsigned coreSlots = out.firmwareCcdSlots * 8;
+    const char *coreRows[] = {"Legacy Power", "Legacy Voltage", "Legacy Temp", "Legacy Freq Ghz",
+        "Legacy Eff Freq", "Legacy C0 Residency", "Legacy CC1 Residency", "Legacy CC6 Residency",
+        "Legacy OS PState", "Legacy CPPC Max Freq", "Legacy CPPC Min Freq", "Legacy EDC CAC",
+        "Legacy UOPs", "Legacy Mem Band", "Legacy Core Bound", "Core row 15", "Core row 16", "Core row 17"};
+    const char *ccdRows[] = {"Legacy Logic Power", "Legacy VDDM Power", "Legacy VDDM Voltage", "Legacy Temp",
+        "Legacy Freq Ghz", "Legacy Eff Freq", "Legacy CCA Limit", "Legacy CCA CAC", "Legacy CCA Residency",
+        "Legacy EDC CAC", "Legacy FLL BTC", "CCD row 11", "CCD row 12"};
+    const auto firmwareRows = [&](std::vector<AmdPmField> &target, const char *group, const char *const *names,
+                                  unsigned count, unsigned slots, unsigned start) {
+        for (unsigned row = 0; row < count; ++row) for (unsigned slot = 0; slot < slots; ++slot) {
+            field(out, target, names[row], "unverified", start + 4*(row*slots+slot), false, group);
+            target.back().slot = slot; target.back().slotCount = slots; target.back().row = row;
+        }
+    };
+    firmwareRows(out.firmwareCores, "core_storage", coreRows, 18, coreSlots, 0x634);
+    firmwareRows(out.firmwareCcds, "ccd_storage", ccdRows, 13, out.firmwareCcdSlots, 0x634 + 18*coreSlots*4);
     if (out.error) out.detail = "Some fields are non-finite or clock scaling is out of range; valid stored fields are retained";
     return out;
 }
@@ -232,6 +253,7 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
             (v.scaled ? number(v.scaledValue) : "null");
         if (!v.group.empty()) out += ",\"group\":" + quote(v.group);
         if (v.slotCount) out += ",\"slot\":" + std::to_string(v.slot) + ",\"slot_count\":" + std::to_string(v.slotCount);
+        if (v.group == "core_storage" || v.group == "ccd_storage") out += ",\"row\":" + std::to_string(v.row);
         out += '}';
       }
     };
@@ -244,13 +266,19 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
     appendFields(s.originalFabric);
     out += "],\"original_arrays_units_verified\":false,\"original_arrays_targets_verified\":false,\"original_arrays\":[";
     appendFields(s.originalArrays);
+    out += "],\"firmware_arrays_layout\":\"shimada-18-core-13-ccd-rows\",\"firmware_ccd_storage_slots\":" +
+        std::to_string(s.firmwareCcdSlots) + ",\"firmware_arrays_units_verified\":false,\"firmware_arrays_targets_verified\":false," +
+        "\"firmware_arrays_labels_verified\":false,\"firmware_core_arrays\":[";
+    appendFields(s.firmwareCores);
+    out += "],\"firmware_ccd_arrays\":[";
+    appendFields(s.firmwareCcds);
     return out + "]}";
 }
 AmdPmSnapshot parseAmdPmCapture(const std::string &input) {
     using capture_json::Json; using capture_json::check;
     AmdPmSnapshot out;
     try {
-        const auto root = capture_json::Parser(input, amdPmCaptureMaximumBytes).parse();
+        const auto root = capture_json::Parser(input, amdPmCaptureMaximumBytes, 65536).parse();
         const Json *record = &root;
         if (root.has("schema_version")) {
             check(capture_json::uint(root.at("schema_version"), 1) == 1, "Unsupported CLI report version");

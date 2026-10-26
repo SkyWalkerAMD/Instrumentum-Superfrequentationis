@@ -652,7 +652,7 @@ private slots:
             auto *read = panel.findChild<QPushButton *>("pmNativeRead");
             auto *table = panel.findChild<QTableWidget *>("pmTable");
             QCOMPARE(device->calls,0u); read->click(); QTRY_VERIFY(read->isEnabled());
-            QCOMPARE(table->rowCount(),24); QCOMPARE(device->memoryReads,711u); QCOMPARE(device->wrongCpu,0u);
+            QCOMPARE(table->rowCount(),22); QCOMPARE(device->memoryReads,711u); QCOMPARE(device->wrongCpu,0u);
             QCOMPARE(table->item(0,1)->text(),partial ? QString("Unavailable") : QString("2000"));
             panel.findChild<QPushButton *>("pmCopy")->click();
             const auto json = QApplication::clipboard()->text().toUtf8();
@@ -662,7 +662,7 @@ private slots:
             QVERIFY(capture.raw == device->bytes);
             QTemporaryDir dir; QFile file(dir.path()+"/native.json"); QVERIFY(file.open(QIODevice::WriteOnly)); file.write(json); file.close();
             AmdPmPanel imported; QCOMPARE(imported.loadSnapshotFile(file.fileName()),!partial);
-            QCOMPARE(imported.findChild<QTableWidget *>("pmTable")->rowCount(),24);
+            QCOMPARE(imported.findChild<QTableWidget *>("pmTable")->rowCount(),22);
             panel.findChild<QComboBox *>("pmView")->setCurrentIndex(9); QCOMPARE(table->rowCount(),36);
             panel.findChild<QComboBox *>("pmView")->setCurrentIndex(0); QCOMPARE(device->memoryReads,711u);
             if (!partial) {
@@ -678,7 +678,7 @@ private slots:
         AmdPmPanel panel(nullptr,{},access,130); panel.resize(1250,1000); panel.show();
         QTemporaryDir dir; QFile file(dir.path()+"/old.json"); QVERIFY(file.open(QIODevice::WriteOnly));
         file.write(QByteArray::fromStdString(amdPmJson(decodeAmdPm(device->bytes,0x730204)))); file.close();
-        QVERIFY(panel.loadSnapshotFile(file.fileName())); QCOMPARE(panel.findChild<QTableWidget *>("pmTable")->rowCount(),24);
+        QVERIFY(panel.loadSnapshotFile(file.fileName())); QCOMPARE(panel.findChild<QTableWidget *>("pmTable")->rowCount(),22);
         auto *read = panel.findChild<QPushButton *>("pmNativeRead"); read->click();
         QCOMPARE(panel.findChild<QTableWidget *>("pmTable")->rowCount(),0); QTRY_VERIFY(read->isEnabled());
         QCOMPARE(panel.findChild<QTableWidget *>("pmTable")->rowCount(),0);
@@ -733,11 +733,11 @@ private slots:
         panel.findChild<QLineEdit *>("pmBclk")->setText("102.5");
         for (const auto &layout : amdPmLayouts()) {
             QVERIFY(savePmFile(raw, pm_fixture::bytes(layout.bytes))); QVERIFY(panel.loadRawFile(raw, layout.version));
-            QCOMPARE(table->rowCount(), 24); QCOMPARE(table->item(0, 1)->text(), QString("2000"));
+            QCOMPARE(table->rowCount(), 22); QCOMPARE(table->item(0, 1)->text(), QString("2000"));
             QCOMPARE(table->item(0, 3)->text(), QString("2050")); QCOMPARE(table->item(0, 4)->text(), QString("0x44fa0000"));
             QCOMPARE(table->item(3, 1)->text(), QString("1.0625")); QCOMPARE(table->item(3, 2)->text(), QString("V"));
-            QCOMPARE(table->item(10, 1)->text(), QString("100")); QCOMPARE(table->item(10, 2)->text(), QString("A"));
-            QCOMPARE(table->item(11, 1)->text(), QString("70")); QCOMPARE(table->item(11, 2)->text(), QString("C"));
+            QCOMPARE(table->item(8, 1)->text(), QString("100")); QCOMPARE(table->item(8, 2)->text(), QString("A"));
+            QCOMPARE(table->item(9, 1)->text(), QString("70")); QCOMPARE(table->item(9, 2)->text(), QString("C"));
             QVERIFY(copy->isEnabled()); copy->click();
             const auto captured = QApplication::clipboard()->text().toStdString();
             const auto decoded = parseAmdPmCapture(captured); QVERIFY(!decoded.error);
@@ -755,6 +755,46 @@ private slots:
         QVERIFY(status->geometry().bottom() < panel.height());
         const auto shot = qEnvironmentVariable("OCTOOL_PM_TEST_SCREENSHOT");
         if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+    }
+    void pmFirmwareCoreAndCcdArrays() {
+        using namespace octool::core;
+        QTemporaryDir dir; const auto raw=dir.filePath("firmware-arrays.bin"), json=dir.filePath("firmware-arrays.json");
+        auto driver=std::make_shared<pm_fixture::Driver>(); AmdPmPanel panel(nullptr,pmReader(driver));
+        panel.resize(1400,1100); panel.show();
+        auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
+        for (unsigned n : {2u,16u}) {
+            const unsigned length=n==2?2844:11636, start=n==2?0xab4:0x2a34;
+            const std::uint32_t version=n==2?0x730204:0x731004;
+            auto bytes=pm_fixture::bytes(length);
+            for(unsigned off=0x634;off<length;off+=4)pm_fixture::put(bytes,off,0x3f000000);
+            pm_fixture::put(bytes,length-4,0xbf800000);
+            QVERIFY(savePmFile(raw,bytes)); QVERIFY(panel.loadRawFile(raw,version));
+            view->setCurrentIndex(12); QCOMPARE(table->rowCount(),int(144*n));
+            QCOMPARE(table->item(0,0)->text(),QString("Legacy Power [slot 0]"));
+            QCOMPARE(table->item(0,1)->text(),QString("0.5")); QCOMPARE(table->item(0,2)->text(),QString("Unverified"));
+            QCOMPARE(table->item(0,5)->text(),QString("0x00000634"));
+            if(n==16) {
+                QApplication::processEvents(); const auto shot=qEnvironmentVariable("OCTOOL_PM_CORES_TEST_SCREENSHOT");
+                if(!shot.isEmpty())QVERIFY(panel.grab().save(shot));
+            }
+            view->setCurrentIndex(13); QCOMPARE(table->rowCount(),int(13*n));
+            QCOMPARE(table->item(0,5)->text(),QString("0x%1").arg(start,8,16,QChar('0')));
+            QCOMPARE(table->item(table->rowCount()-1,1)->text(),QString("-1"));
+            panel.findChild<QPushButton *>("pmCopy")->click(); const auto capture=QApplication::clipboard()->text().toStdString();
+            QVERIFY(savePmJson(json,capture)); QVERIFY(panel.loadSnapshotFile(json));
+            QCOMPARE(table->rowCount(),int(13*n));
+            if(n==16) {
+                QApplication::processEvents(); const auto shot=qEnvironmentVariable("OCTOOL_PM_CCDS_TEST_SCREENSHOT");
+                if(!shot.isEmpty())QVERIFY(panel.grab().save(shot));
+            }
+            pm_fixture::put(bytes,length-4,0x7f800001);
+            QVERIFY(savePmFile(raw,bytes)); QVERIFY(!panel.loadRawFile(raw,version));
+            QCOMPARE(table->item(table->rowCount()-1,1)->text(),QString("Unavailable"));
+            QCOMPARE(table->item(table->rowCount()-1,4)->text(),QString("0x7f800001"));
+        }
+        QVERIFY(savePmJson(json,"{}")); QVERIFY(!panel.loadSnapshotFile(json));
+        for(int index:{12,13}) { view->setCurrentIndex(index); QCOMPARE(table->rowCount(),0); }
+        QVERIFY(driver->calls.empty());
     }
     void pmOriginalLimitMonitorRoundtrip() {
         using namespace octool::core;
@@ -1131,12 +1171,12 @@ private slots:
         auto *table = panel.findChild<QTableWidget *>("pmTable"); auto *copy = panel.findChild<QPushButton *>("pmCopy");
         auto bytes = pm_fixture::bytes(); pm_fixture::put(bytes, 0x20c, 0x7f800001);
         QVERIFY(savePmFile(raw, bytes)); QVERIFY(!panel.loadRawFile(raw, 0x730204));
-        QCOMPARE(table->rowCount(), 24); QCOMPARE(table->item(0, 1)->text(), QString("Unavailable"));
+        QCOMPARE(table->rowCount(), 22); QCOMPARE(table->item(0, 1)->text(), QString("Unavailable"));
         QCOMPARE(table->item(0, 4)->text(), QString("0x7f800001")); QCOMPARE(table->item(1, 1)->text(), QString("1800"));
         QVERIFY(copy->isEnabled()); copy->click();
         const auto json = directory.filePath("synthetic-partial.json");
         QVERIFY(savePmJson(json, QApplication::clipboard()->text().toStdString())); QVERIFY(!panel.loadSnapshotFile(json));
-        QCOMPARE(table->rowCount(), 24); QVERIFY(copy->isEnabled());
+        QCOMPARE(table->rowCount(), 22); QVERIFY(copy->isEnabled());
         auto *status = panel.findChild<QLabel *>("pmStatus");
         QTRY_VERIFY(status->height() >= status->heightForWidth(status->width()));
         QVERIFY(status->geometry().bottom() < panel.height());
@@ -1177,7 +1217,7 @@ private slots:
         auto *copy = panel.findChild<QPushButton *>("pmCopy");
         for (unsigned stage = 0; stage < 7; ++stage) {
             *driver = pm_fixture::Driver(); read->click(); QTRY_VERIFY(read->isEnabled());
-            QCOMPARE(table->rowCount(), 24); QVERIFY(copy->isEnabled());
+            QCOMPARE(table->rowCount(), 22); QVERIFY(copy->isEnabled());
             *driver = pm_fixture::Driver();
             if (stage < 5) driver->failCall = stage + 1;
             else if (stage == 5) driver->mutateAfter = 4;

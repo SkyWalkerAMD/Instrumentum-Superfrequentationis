@@ -25,7 +25,7 @@ void layoutsAndPackets() {
         const auto r = t.run(o);
         assert(!r.error && r.phase == AmdPmNativePhase::Complete && r.metadataRechecked);
         assert(r.transferAttempted && r.transferAccepted && r.address == 0x123456000ull && r.bytesRead == layout.bytes);
-        assert(r.snapshot.raw == t.fake->bytes && r.snapshot.fields.size() == 24 && r.snapshot.originalArrays.size() == 92);
+        assert(r.snapshot.raw == t.fake->bytes && r.snapshot.fields.size() == 22 && r.snapshot.originalArrays.size() == 92);
         assert(t.fake->messages == std::vector<std::uint32_t>({5,4,3,5,4}) && !t.fake->wrongCpu);
         assert(t.fake->memoryReads == layout.bytes/4 && t.fake->packets.size() == 5);
         for (std::size_t i = 0; i < 5; ++i) for (unsigned j = 0; j < 6; ++j)

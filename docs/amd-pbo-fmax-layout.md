@@ -1,7 +1,8 @@
 # Fmax 命令、rails 编码与逐核/CCD 布局诊断
 
 本轮 GUI/CLI 共用 `amd_pbo` 和 `amd_pm` 核心。Fmax 恢复的是固件命令提交及完成状态检查，
-**没有当前 Fmax 回读**。Rails 只有离线编码预览；逐核/CCD 只有布局诊断，尚未启用真实遥测解码。
+**没有当前 Fmax 回读**。Rails 只有离线编码预览；逐核/CCD 已增加
+[固件存储区解码](amd-pm-core-ccd.md)，物理映射和单位仍待认证。下文诊断仅复现旧构造函数。
 
 ## Fmax
 

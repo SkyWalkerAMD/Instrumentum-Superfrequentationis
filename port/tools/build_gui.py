@@ -120,6 +120,8 @@ def main():
                    OCTOOL_VF_EDIT_TEST_SCREENSHOT=str((tests / "vf-edit-fixture.png").resolve()),
                    OCTOOL_UMC_DIFF_TEST_SCREENSHOT=str((tests / "umc-diff-fixture.png").resolve()),
                    OCTOOL_PM_TEST_SCREENSHOT=str((tests / "pm-fixture.png").resolve()),
+                   OCTOOL_PM_CORES_TEST_SCREENSHOT=str((tests / "pm-cores-fixture.png").resolve()),
+                   OCTOOL_PM_CCDS_TEST_SCREENSHOT=str((tests / "pm-ccds-fixture.png").resolve()),
                    OCTOOL_PM_LIMITS_TEST_SCREENSHOT=str((tests / "pm-limits-fixture.png").resolve()),
                    OCTOOL_PM_LIMITS_ERROR_TEST_SCREENSHOT=str((tests / "pm-limits-error-fixture.png").resolve()),
                    OCTOOL_PM_PACKAGE_TEST_SCREENSHOT=str((tests / "pm-package-fixture.png").resolve()),

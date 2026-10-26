@@ -8,8 +8,9 @@
 
 namespace octool { namespace core {
 // PM captures include the full table and derived arrays. Other capture formats
-// retain their existing 64 KiB bound; JSON depth/node limits are unchanged.
-constexpr std::size_t amdPmCaptureMaximumBytes = 131072;
+// retain their existing bounds. PM alone allows up to 65536 JSON values for
+// the largest 2512-word firmware arrays; nesting depth remains bounded at 16.
+constexpr std::size_t amdPmCaptureMaximumBytes = 1048576;
 struct AmdPmLayout { std::uint32_t version; std::size_t bytes; };
 const std::vector<AmdPmLayout> &amdPmLayouts();
 std::size_t amdPmTableSize(std::uint32_t version);
@@ -36,7 +37,7 @@ struct AmdPmField {
     std::string name, unit, group;
     unsigned offset = 0;
     // Nonzero only for original array storage. Never a physical target ID.
-    unsigned slot = 0, slotCount = 0;
+    unsigned slot = 0, slotCount = 0, row = 0;
     std::uint32_t raw = 0;
     bool clock = false, scaled = false;
     int error = 0, scaleError = 0;
@@ -62,6 +63,11 @@ struct AmdPmSnapshot {
     // GMI/DIMM/PCIe stored arrays. Counts describe storage, not installed or
     // active devices. No unit, topology, enable mask or physical ID inferred.
     std::vector<AmdPmField> originalArrays;
+    // MP5 producer: 18 rows of 8*N core slots, then 13 rows of N CCD slots.
+    // N is an exact version-specific storage width, never installed topology.
+    // Legacy row labels remain provisional; new rows have numeric names.
+    unsigned firmwareCcdSlots = 0;
+    std::vector<AmdPmField> firmwareCores, firmwareCcds;
 };
 // Exact version and length; no prefix fallback or inferred CPU/core identity.
 // IEEE binary32 little endian. Invalid fields retain their bits, not a fake 0.

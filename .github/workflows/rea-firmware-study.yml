@@ -4,6 +4,7 @@ on:
     paths:
       - '.github/workflows/rea-firmware-study.yml'
       - 'analysis/tools/firmware-smu-input.py'
+      - 'analysis/tools/firmware-pm-copy.py'
       - 'analysis/tools/ghidra/Smu*.java'
   workflow_dispatch:
 permissions:
@@ -75,6 +76,9 @@ jobs:
             -log "$PWD/build/firmware-evidence/ghidra-mp5.log" \
             -scriptlog "$PWD/build/firmware-evidence/script-mp5.log"
           test -s build/firmware-evidence/mp5/smu-study.json
+          python3 analysis/tools/firmware-pm-copy.py --mp5 build/firmware-input/mp5-73-2e-body.bin \
+            --smu build/firmware-input/smu-73-2e-body.bin --study build/firmware-evidence/mp5/smu-study.json \
+            --output build/firmware-evidence/pm-copy-proof.json
       - name: REA static UEFI transport and dual current-limit functions
         if: (success() || failure()) && steps.inputs.outcome == 'success'
         env:

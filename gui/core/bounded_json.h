@@ -40,7 +40,7 @@ inline void utf8(std::string &out, unsigned cp) {
 }
 class Parser {
     const std::string &input;
-    const std::size_t maximumBytes;
+    const std::size_t maximumBytes, maximumNodes;
     std::size_t pos = 0, nodes = 0;
     char peek() const { return pos < input.size() ? input[pos] : '\0'; }
     char take() { check(pos < input.size(), "Truncated JSON"); return input[pos++]; }
@@ -91,7 +91,7 @@ class Parser {
         }
     }
     Json value(unsigned depth) {
-        check(depth <= 16 && ++nodes <= 8192, "JSON nesting or value limit exceeded"); space(); Json v;
+        check(depth <= 16 && ++nodes <= maximumNodes, "JSON nesting or value limit exceeded"); space(); Json v;
         const char c = peek();
         if (c == '{' || c == '[') {
             ++pos; v.kind = c == '{' ? Json::Object : Json::Array;
@@ -130,8 +130,8 @@ class Parser {
         check(false, "Invalid JSON value"); return v;
     }
 public:
-    explicit Parser(const std::string &text, std::size_t byteLimit = 65536)
-        : input(text), maximumBytes(byteLimit) {}
+    explicit Parser(const std::string &text, std::size_t byteLimit = 65536, std::size_t nodeLimit = 8192)
+        : input(text), maximumBytes(byteLimit), maximumNodes(nodeLimit) {}
     Json parse() {
         check(!input.empty() && input.size() <= maximumBytes, "Snapshot is empty or exceeds its byte limit");
         if (input.compare(0, 3, "\xef\xbb\xbf") == 0) pos = 3;
