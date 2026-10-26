@@ -27,6 +27,8 @@ public class SmuStudy extends GhidraScript {
             "source_sha256", mp5?"b5e9c94ef3a27d55a95c1a0d703cc7041b734f9475d44b8eecd49a15794cdeaf":
                 "a2f3724ccaef1d67db04afb553816f111dc86207480b28d7998cc15fa92ea7d7",
             "component",mp5?"MP5":"SMU",
+            "decoder_extension", "OCTool static Xtensa FP; see xtensa-fp-extension.json",
+            "numeric_fp_emulation", false,
             "language", currentProgram.getLanguageID().toString());
         String actual=HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(
             Files.readAllBytes(Path.of(currentProgram.getExecutablePath()))));
@@ -108,15 +110,22 @@ public class SmuStudy extends GhidraScript {
                 if(depth<2) selected.putIfAbsent(callee.getEntryPoint(),depth+1);
             }
             List<Object> instructions=new ArrayList<>();
+            Set<String> opaqueFpOperations=new TreeSet<>();
+            Set<String> opaqueMnemonics=Set.of("div0.s","recip0.s","sqrt0.s","rsqrt0.s",
+                "nexp01.s","mksadj.s","mkdadj.s","addexp.s","addexpm.s","maddn.s","divn.s",
+                "round.s","trunc.s","floor.s","ceil.s","utrunc.s");
             var iterator=currentProgram.getListing().getInstructions(fn.getBody(),true);
             while(iterator.hasNext() && instructions.size()<4096) {
                 Instruction ins=iterator.next();
                 instructions.add(record("address",ins.getAddress().toString(),"text",ins.toString(),
                     "bytes",HexFormat.of().formatHex(ins.getBytes())));
+                if(opaqueMnemonics.contains(ins.getMnemonicString())) opaqueFpOperations.add(ins.getMnemonicString());
             }
             functions.add(record("entry",address.toString(),"name",fn.getName(),"depth",depth,
                 "decompile_completed",dc.decompileCompleted(),"error",dc.getErrorMessage(),
                 "pseudocode",pseudo,"calls",calls,"instructions",instructions,
+                "bad_instruction_truncation",pseudo.contains("halt_baddata"),
+                "opaque_fp_operations",opaqueFpOperations,
                 "instructions_truncated",iterator.hasNext()));
             Files.writeString(output.resolve("function-"+address.toString()+".txt"),pseudo);
         }

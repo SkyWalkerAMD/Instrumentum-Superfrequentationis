@@ -73,6 +73,11 @@ jobs:
             -log "$PWD/build/firmware-evidence/ghidra.log" \
             -scriptlog "$PWD/build/firmware-evidence/script.log"
           test -s build/firmware-evidence/smu/smu-study.json
+          python3 - <<'PY'
+          import json
+          p = json.load(open('build/firmware-evidence/xtensa-fp-selftest.json'))
+          assert p['passed'] and p['synthetic_cases'] == 11472
+          PY
           python3 analysis/tools/firmware-rails-replay.py --smu build/firmware-input/smu-73-2e-body.bin \
             --study build/firmware-evidence/smu/smu-study.json --output build/firmware-evidence/rails-replay-proof.json
           python3 analysis/tools/firmware-adjustment-replay.py --smu build/firmware-input/smu-73-2e-body.bin \

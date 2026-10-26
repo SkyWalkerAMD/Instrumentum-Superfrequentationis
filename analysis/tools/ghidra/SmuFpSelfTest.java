@@ -32,7 +32,7 @@ public class SmuFpSelfTest extends GhidraScript {
     }
     public void run() throws Exception {
         probe=new ProgramDB("OCTool synthetic FP decoder checks", currentProgram.getLanguage(),
-            currentProgram.getCompilerSpec(), this);
+            currentProgram.getLanguage().getCompilerSpecByID(currentProgram.getCompilerSpec().getCompilerSpecID()), this);
         int tx=probe.startTransaction("synthetic opcode checks");
         try {
             cursor=probe.getAddressFactory().getDefaultAddressSpace().getAddress(0x1000);
