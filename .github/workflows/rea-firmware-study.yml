@@ -62,6 +62,8 @@ jobs:
             -log "$PWD/build/firmware-evidence/ghidra.log" \
             -scriptlog "$PWD/build/firmware-evidence/script.log"
           test -s build/firmware-evidence/smu/smu-study.json
+          python3 analysis/tools/firmware-rails-replay.py --smu build/firmware-input/smu-73-2e-body.bin \
+            --study build/firmware-evidence/smu/smu-study.json --output build/firmware-evidence/rails-replay-proof.json
       - name: Static MP5 data producers and OC consumers
         run: |
           mkdir -p build/firmware-evidence/mp5
