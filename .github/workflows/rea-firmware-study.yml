@@ -40,11 +40,12 @@ jobs:
           curl --fail --location --retry 3 https://github.com/LongSoft/UEFITool/releases/download/A76/UEFIExtract_NE_A76_x64_linux.zip -o build/firmware-tools/uefi.zip
           echo '1bee0a3556d47288a0cfbfb8f08ca791a35826686cf8fb998b5f2cefdc860619  build/firmware-tools/uefi.zip' | sha256sum -c -
           unzip -q build/firmware-tools/uefi.zip -d build/firmware-tools/uefi
-          chmod +x build/firmware-tools/uefi/UEFIExtract
+          chmod +x build/firmware-tools/uefi/uefiextract
       - name: Verify public vendor firmware and extract selected inputs
+        id: inputs
         run: |
           curl --fail --location --retry 3 https://dlcdnets.asus.com/pub/ASUS/mb/BIOS/Pro-WS-TRX50-SAGE-WIFI-ASUS-1317.zip -o build/firmware-input/asus-1317.zip
-          python3 analysis/tools/firmware-smu-input.py --archive build/firmware-input/asus-1317.zip --output build/firmware-input --uefi-extract build/firmware-tools/uefi/UEFIExtract
+          python3 analysis/tools/firmware-smu-input.py --archive build/firmware-input/asus-1317.zip --output build/firmware-input --uefi-extract build/firmware-tools/uefi/uefiextract
           cp build/firmware-input/input-manifest.json build/firmware-evidence/
       - name: Static Xtensa SMU handlers and PM version references
         run: |
@@ -61,7 +62,7 @@ jobs:
             -scriptlog "$PWD/build/firmware-evidence/script.log"
           test -s build/firmware-evidence/smu/smu-study.json
       - name: REA static UEFI transport and dual current-limit functions
-        if: success() || failure()
+        if: (success() || failure()) && steps.inputs.outcome == 'success'
         env:
           GHIDRA_INSTALL_DIR: ${{ github.workspace }}/build/firmware-tools/ghidra_12.1.4_PUBLIC
           GHIDRA_HEADLESS_MAXMEM: 4G
