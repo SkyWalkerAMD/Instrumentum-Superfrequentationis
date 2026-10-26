@@ -1,0 +1,154 @@
+{
+  "schema": 1,
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "fixture_sha256": "9936d25c9a2ffb61def0035529223cea0710a04ffeb2a067c9356897880f3475",
+  "hardware_execution": false,
+  "production_decoder_enabled": false,
+  "cases": [
+    {
+      "version": "0x730204",
+      "version_middle_byte": 2,
+      "public_bytes": 2844,
+      "formula_bytes": 2844,
+      "synthetic_fused_input": 2,
+      "original_core_slots": 16,
+      "original_ccd_slots": 2,
+      "original_read_words": 262,
+      "outside_words": 22,
+      "overlapping_words": 0,
+      "public_field_conflicts": [
+        1812,
+        1820
+      ],
+      "hypothetical_words_if_8k_cores_k_ccds": 262,
+      "remaining_bytes_after_hypothetical_contiguous_arrays": 208
+    },
+    {
+      "version": "0x730404",
+      "version_middle_byte": 4,
+      "public_bytes": 4100,
+      "formula_bytes": 4100,
+      "synthetic_fused_input": 4,
+      "original_core_slots": 32,
+      "original_ccd_slots": 4,
+      "original_read_words": 524,
+      "outside_words": 44,
+      "overlapping_words": 0,
+      "public_field_conflicts": [
+        1812,
+        1820
+      ],
+      "hypothetical_words_if_8k_cores_k_ccds": 524,
+      "remaining_bytes_after_hypothetical_contiguous_arrays": 416
+    },
+    {
+      "version": "0x730604",
+      "version_middle_byte": 6,
+      "public_bytes": 5356,
+      "formula_bytes": 5356,
+      "synthetic_fused_input": 6,
+      "original_core_slots": 16,
+      "original_ccd_slots": 2,
+      "original_read_words": 262,
+      "outside_words": 22,
+      "overlapping_words": 0,
+      "public_field_conflicts": [
+        1812,
+        1820
+      ],
+      "hypothetical_words_if_8k_cores_k_ccds": 786,
+      "remaining_bytes_after_hypothetical_contiguous_arrays": 624
+    },
+    {
+      "version": "0x730804",
+      "version_middle_byte": 8,
+      "public_bytes": 6612,
+      "formula_bytes": 6612,
+      "synthetic_fused_input": 8,
+      "original_core_slots": 64,
+      "original_ccd_slots": 8,
+      "original_read_words": 1048,
+      "outside_words": 88,
+      "overlapping_words": 0,
+      "public_field_conflicts": [
+        1812,
+        1820
+      ],
+      "hypothetical_words_if_8k_cores_k_ccds": 1048,
+      "remaining_bytes_after_hypothetical_contiguous_arrays": 832
+    },
+    {
+      "version": "0x730a04",
+      "version_middle_byte": 10,
+      "public_bytes": 7868,
+      "formula_bytes": 7868,
+      "synthetic_fused_input": 10,
+      "original_core_slots": 80,
+      "original_ccd_slots": 10,
+      "original_read_words": 1310,
+      "outside_words": 110,
+      "overlapping_words": 0,
+      "public_field_conflicts": [
+        1812,
+        1820
+      ],
+      "hypothetical_words_if_8k_cores_k_ccds": 1310,
+      "remaining_bytes_after_hypothetical_contiguous_arrays": 1040
+    },
+    {
+      "version": "0x730c04",
+      "version_middle_byte": 12,
+      "public_bytes": 9124,
+      "formula_bytes": 9124,
+      "synthetic_fused_input": 12,
+      "original_core_slots": 96,
+      "original_ccd_slots": 12,
+      "original_read_words": 1572,
+      "outside_words": 0,
+      "overlapping_words": 0,
+      "public_field_conflicts": [
+        1812,
+        1820
+      ],
+      "hypothetical_words_if_8k_cores_k_ccds": 1572,
+      "remaining_bytes_after_hypothetical_contiguous_arrays": 1248
+    },
+    {
+      "version": "0x730e04",
+      "version_middle_byte": 14,
+      "public_bytes": 10380,
+      "formula_bytes": 10380,
+      "synthetic_fused_input": 14,
+      "original_core_slots": 112,
+      "original_ccd_slots": 14,
+      "original_read_words": 1834,
+      "outside_words": 0,
+      "overlapping_words": 0,
+      "public_field_conflicts": [
+        1812,
+        1820
+      ],
+      "hypothetical_words_if_8k_cores_k_ccds": 1834,
+      "remaining_bytes_after_hypothetical_contiguous_arrays": 1456
+    },
+    {
+      "version": "0x731004",
+      "version_middle_byte": 16,
+      "public_bytes": 11636,
+      "formula_bytes": 11636,
+      "synthetic_fused_input": 16,
+      "original_core_slots": 128,
+      "original_ccd_slots": 16,
+      "original_read_words": 2096,
+      "outside_words": 0,
+      "overlapping_words": 176,
+      "public_field_conflicts": [
+        1812,
+        1820
+      ],
+      "hypothetical_words_if_8k_cores_k_ccds": 2096,
+      "remaining_bytes_after_hypothetical_contiguous_arrays": 1664
+    }
+  ],
+  "interpretation": "k is a byte of the version identifier, not a certified CCD count. Exact size relation 0x634+0x274*k is arithmetic only. Under an explicit hypothetical 8*k cores, k CCDs and 15/11 original rows, even a contiguous relocation after 0x634 leaves 0x68*k bytes unexplained. The original constructor falls back to 16 cores/2 CCDs for k=6. No new offset, unit, stride, ordering or physical mapping is established."
+}

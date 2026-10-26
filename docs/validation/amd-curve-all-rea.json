@@ -1,0 +1,308 @@
+{
+  "schema": 1,
+  "date": "2026-10-26",
+  "run_url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/40253093159",
+  "source_commit": "be9af02b344c990626d1a008c673df22fde09410",
+  "source_elf_sha256": "44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10",
+  "rea_version": "6.7.0",
+  "ghidra_version": "12.1.4",
+  "hardware_execution": false,
+  "functions": [
+    {
+      "file_offset": "0x238d90",
+      "analysis_address": "0x338d90",
+      "name": "AMD_PM_LOG::set_curve_opt",
+      "original_symbols": [
+        "_ZN10AMD_PM_LOG13set_curve_optEi"
+      ],
+      "original_size": 428,
+      "code_sha256": "f0c066260ca5228a40d7800879a03c622e08f13d60e05c40a42881ba1492b078",
+      "ghidra_body_bytes": 428,
+      "evidence_id": "ev_68777a781a03fe502f85613cfd1fb15dd9a3c26f5faa0346489acf4cabcab226"
+    },
+    {
+      "file_offset": "0x239400",
+      "analysis_address": "0x339400",
+      "name": "AMD_PBO::set_curve_opt",
+      "original_symbols": [
+        "_ZN7AMD_PBO13set_curve_optEi"
+      ],
+      "original_size": 431,
+      "code_sha256": "44e4be32bd1e8091db9f86a3af9079ed4b7f01313ad0b09f6f791446d8a1e0b2",
+      "ghidra_body_bytes": 431,
+      "evidence_id": "ev_517259c8697e5008e3d44c2a065cb846b7282436b317c54b2d5eeaf6528e3ae8"
+    },
+    {
+      "file_offset": "0x750b70",
+      "analysis_address": "0x850b70",
+      "name": "cpufunctions::on_per_ccx_oc_apply_5_clicked",
+      "original_symbols": [
+        "_ZN12cpufunctions29on_per_ccx_oc_apply_5_clickedEv"
+      ],
+      "original_size": 1588,
+      "code_sha256": "1029870605967372529b3ef2d36ee9d0d1f3eee7e9d68081ab0d2530a0c578a9",
+      "ghidra_body_bytes": 1421,
+      "evidence_id": "ev_8040402cb1e2ccabeeaafd9ee870efaab6e4d325a5e72d55e9b63d4259a38f4e"
+    },
+    {
+      "file_offset": "0x220600",
+      "analysis_address": "0x320600",
+      "name": "TEST_SMC_MSG_ForceAllDLDOPsm",
+      "original_symbols": [
+        "_Z28TEST_SMC_MSG_ForceAllDLDOPsmjRj"
+      ],
+      "original_size": 979,
+      "code_sha256": "359ef02bb9b01e76c49162f684594b795b1e5a839fcde3bf3589c1b7557e821d",
+      "ghidra_body_bytes": 976,
+      "evidence_id": "ev_07cfe2655fc31e8eb2e8594e5f78ea1ee96e27fbc3ddd622265d6bb7b990bdd2"
+    },
+    {
+      "file_offset": "0x2209e0",
+      "analysis_address": "0x3209e0",
+      "name": "TEST_SMC_MSG_UnForceAllDLDOPsm",
+      "original_symbols": [
+        "_Z30TEST_SMC_MSG_UnForceAllDLDOPsmRj"
+      ],
+      "original_size": 964,
+      "code_sha256": "6d9e0c5afd11d4cc7f4c35c4dfb3604b395dece59c88bfca246ebd46194472cb",
+      "ghidra_body_bytes": 961,
+      "evidence_id": "ev_a826d344d2616bff27d01576af6b9759f736984e5b59b509ac54fc7522061162"
+    },
+    {
+      "file_offset": "0x221240",
+      "analysis_address": "0x321240",
+      "name": "TEST_SMC_MSG_UnForceCpuVid",
+      "original_symbols": [
+        "_Z26TEST_SMC_MSG_UnForceCpuVidRj"
+      ],
+      "original_size": 964,
+      "code_sha256": "669122e641b8379c9721db90b9defb6fb7299ab45711b48cac57b888bc4d6149",
+      "ghidra_body_bytes": 961,
+      "evidence_id": "ev_ca4d80d4aadae69124c962aa436d89ddef8314720d724b8e72d0f71ea3514b1e"
+    },
+    {
+      "file_offset": "0x21fd00",
+      "analysis_address": "0x31fd00",
+      "name": "Wr_ocvid",
+      "original_symbols": [
+        "_Z8Wr_ocvidi"
+      ],
+      "original_size": 428,
+      "code_sha256": "d2eb8ca9e47903dc59cd5ca73a850cfc059140f1fa8f522d93fcaf87f5459633",
+      "ghidra_body_bytes": 419,
+      "evidence_id": "ev_8c99327fdc1b889cfea0bd002fe94678672212b2ef0fbfb29e7484357c4768ff"
+    },
+    {
+      "file_offset": "0x239990",
+      "analysis_address": "0x339990",
+      "name": "AMD_PBO::set_core01_rails",
+      "original_symbols": [
+        "_ZN7AMD_PBO16set_core01_railsEii"
+      ],
+      "original_size": 552,
+      "code_sha256": "10988802321f5fc077c400ba51ab6a25d455683abcce1fed0d4524f29fcddfd7",
+      "ghidra_body_bytes": 550,
+      "evidence_id": "ev_8c02d5f555c059e3fe9ab117adcb214c3c30c047d09f85a889f07a865b56d96a"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "build/rea-curve-all-40253093159/close.json",
+      "bytes": 251,
+      "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/evidence.json",
+      "bytes": 119756,
+      "sha256": "4fb859ba2db755c5b10493ff5e5ba4180130a56f1b5b9627166b39369e74384a"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/export.json",
+      "bytes": 519,
+      "sha256": "da5f1d2ca2056785ee2b75a85f1b10efaeb9935119a2d60c0c921b11e92b4d64"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/info-0x21fd00.json",
+      "bytes": 13394,
+      "sha256": "53ba638842826957dbf10ea3a0938784345351289ea856d9751c94c1e30316ce"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/info-0x220600.json",
+      "bytes": 10113,
+      "sha256": "e0a32025bcec383ce949e912b5a04df27169f6a5105791a2242c1be3bad72a5a"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/info-0x2209e0.json",
+      "bytes": 10073,
+      "sha256": "e55602b7711a2bc170d45ffeba7825aaa29211ee1c0817fded61179072c4ed26"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/info-0x221240.json",
+      "bytes": 10041,
+      "sha256": "9409ebd4d1948821fdd77f568cae10fe0e4a46dfcfc638d6a2f6168a42337e12"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/info-0x238d90.json",
+      "bytes": 9697,
+      "sha256": "a4d7adb41b9557c333c46a2a093a500c457d786a9bbf6fe943189222c94df2dc"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/info-0x239400.json",
+      "bytes": 9685,
+      "sha256": "1418052a6d8af6cc9008d1eb56bc43575194ba44b8a4ec75356a97f7ac2cfe43"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/info-0x239990.json",
+      "bytes": 11074,
+      "sha256": "8f095fbc5b2b28cb69733635056d153fd885f54b2fc08045b5afc18bf0f1c037"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/info-0x750b70.json",
+      "bytes": 22534,
+      "sha256": "9894cfddf52b3c3d5d99f8a5ce9d1c7c948844b1e4f6a4bf60e41467e08a47e5"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/initialize.json",
+      "bytes": 1222,
+      "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/open.json",
+      "bytes": 816,
+      "sha256": "a7a7b8c88ab3de82162c7b84e62e67872ae01c8f16e44f9b04a42e3e2db4248c"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/package-lock.json",
+      "bytes": 78636,
+      "sha256": "14249e51ef20cd5314fc6a84da710978bb80d31ffcc9661fd19701984aabfb1a"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/pm-callers.json",
+      "bytes": 8225,
+      "sha256": "cb270274047a427b2ed3d5d3dafd80a8d630b1758dce205b8bdd5c693b362e2c"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/pseudo-0x21fd00.json",
+      "bytes": 17022,
+      "sha256": "d4cfb28db86bf6b10a7a5af519b86a5dfa246d83f0453025d1a7a1d3dd6bc7a0"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/pseudo-0x220600.json",
+      "bytes": 21067,
+      "sha256": "3ff3cc1465757b16658f28acb6501a358da4455aa21603fb216df9cae949c136"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/pseudo-0x2209e0.json",
+      "bytes": 20975,
+      "sha256": "cfb8aca6defe5c3a9f1471a9683abfb1f730644a3b338f5291f6e22f5519e9b0"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/pseudo-0x221240.json",
+      "bytes": 20943,
+      "sha256": "db068303bb3b73afc68041de03a5984841e2fae23a798553735761315fda2b07"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/pseudo-0x238d90.json",
+      "bytes": 14385,
+      "sha256": "e1a496e3af97bf7c64706a95ab8a22543ae4990709e0edca02bd52d35278c0bc"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/pseudo-0x239400.json",
+      "bytes": 12959,
+      "sha256": "0af1bfaeb83fdc62e180a743c56ade248c16a99e930b2c05e7bd5d3f92e57ef2"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/pseudo-0x239990.json",
+      "bytes": 14786,
+      "sha256": "9a459337a943db928b94f6f67561e9a183ae54c3bcce3f8847d91b9b1d428ec9"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/pseudo-0x750b70.json",
+      "bytes": 43140,
+      "sha256": "01ac6562be0cb8686665c0e24fcb29c39ae52d1afe449a5d4f0e3d1aad3334b2"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/resolved-functions.json",
+      "bytes": 10456,
+      "sha256": "7296c2396dfcf8ec061d4cd5517a7deb1a10879fa0a0f78af8670f4ecd3ac6b7"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/run.json",
+      "bytes": 2503,
+      "sha256": "89f95d3c8fb93274ddd9cd9b47e78e9cca0395ed097002af0cbc1bfe79e4db71"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/selected-tool-schemas.json",
+      "bytes": 80370,
+      "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
+    },
+    {
+      "path": "build/rea-curve-all-40253093159/study.json",
+      "bytes": 4458,
+      "sha256": "2f2f0aabf76fdc5bb16bbaa321e437064085528b862a22877c4529a917dfbfec"
+    }
+  ],
+  "static_instructions": {
+    "path": "build/curve-all-original-static.json",
+    "bytes": 170151,
+    "sha256": "d78798cbeb637cab880cf91981d8ab05c3d6325cda19f6c94935d6d1d537420f"
+  },
+  "replay": {
+    "counts": {
+      "settings": 12,
+      "releases": 48,
+      "faults": 60
+    },
+    "evidence": {
+      "path": "build/curve-all-replay.json",
+      "bytes": 468278,
+      "sha256": "a529c427f0e6fb247bbf5e3c14c229ed0d2a499dbbcf3b5a287503d65b3be213"
+    },
+    "fixture": {
+      "path": "analysis/fixtures/legacy-amd-curve-all.json",
+      "bytes": 41047,
+      "sha256": "f42f4a992721765853aaf7cbf221414075906369877b00b38797e3fadf4ab93f"
+    },
+    "new_local_analysis_tests": 3
+  },
+  "fixed_public_sources": [
+    {
+      "repository": "irusanov/ZenStates-Core",
+      "commit": "869b7e82572337e5a673e92230edc92bddf0e44b",
+      "path": "Hardware/Smu/Commands/SetPsmMarginAllCores.cs",
+      "blob": "a753cf1a5dac3a8215f4dd5ba05ab2758a112c06",
+      "sha256": "ac0425a94c479c4ddc2c74cfbf77fa78af95222a7ec1fafdb7a14c72d14200b4",
+      "url": "https://github.com/irusanov/ZenStates-Core/blob/869b7e82572337e5a673e92230edc92bddf0e44b/Hardware/Smu/Commands/SetPsmMarginAllCores.cs"
+    },
+    {
+      "repository": "irusanov/ZenStates-Core",
+      "commit": "869b7e82572337e5a673e92230edc92bddf0e44b",
+      "path": "Hardware/Smu/Settings/Zen5Settings_ShimadaPeak.cs",
+      "blob": "c9bca93059805ff7c49374458afb28201c1b4f81",
+      "sha256": "d88f8168175dea121d0561248cc61c71b56123eb98ff9ac47f9bdedf15c272f0",
+      "url": "https://github.com/irusanov/ZenStates-Core/blob/869b7e82572337e5a673e92230edc92bddf0e44b/Hardware/Smu/Settings/Zen5Settings_ShimadaPeak.cs"
+    },
+    {
+      "repository": "irusanov/ZenStates-Core",
+      "commit": "869b7e82572337e5a673e92230edc92bddf0e44b",
+      "path": "Utils.cs",
+      "blob": "c93240128ed1c0e3c98dfb724e40975bbcb0a511",
+      "sha256": "93bb45fd83ee2d14284f358137070332f7ccaa249c728a01de7dd187781c4ab8",
+      "url": "https://github.com/irusanov/ZenStates-Core/blob/869b7e82572337e5a673e92230edc92bddf0e44b/Utils.cs"
+    }
+  ],
+  "capacity_review": {
+    "path": "docs/validation/amd-pm-capacity-review.json",
+    "bytes": 4809,
+    "sha256": "a7dfc05f5917af05926e0e7319d92b704ab49b7504eefee1dbe79e4c6626e7e6"
+  },
+  "findings": [
+    "The original UI selects AMD_PM_LOG::set_curve_opt for all cores, then displays Applied before its later per-core queries; this is not transactional success.",
+    "The independently replayed AMD_PBO setter after its original Shimada constructor writes full 32-bit margin on F8/FC, sends A3 then 07, repeats the argument and reads response after releasing its mutex. No input clamp or completion poll is implemented.",
+    "ForceAllDLDOPsm, UnForceAllDLDOPsm and UnForceCpuVid send FD followed by 0E, 0F and 13 respectively, overwrite response registers and publish the argument before reading response. They are not a verified reset for CO 07 or rails 61.",
+    "All 60 synthetic PCI failure positions continue through each original tail. Device-search and register reads are explicit synthetic boundaries, not firmware behavior.",
+    "New GUI/CLI uses independently corroborated Shimada RSMU 07 and low-16-bit signed CO counts only, six initialized arguments, capability comparison, identity recheck and one acknowledged command. No all-core readback or hardware effect is claimed.",
+    "Eight PM version sizes obey an arithmetic relation, but still do not provide field order or physical topology. Known default-constructor bounds/aliasing conflicts remain.",
+    "Dual rails writes, per-core/CCD telemetry layout, dynamic memory/EC and other-platform settings remain unresolved."
+  ]
+}

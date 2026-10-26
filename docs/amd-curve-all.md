@@ -33,6 +33,7 @@ GUI 在 AMD tuning 的全核曲线行输入计数，点击 Read capability 后�
 [全核命令](https://github.com/irusanov/ZenStates-Core/blob/869b7e82572337e5a673e92230edc92bddf0e44b/Hardware/Smu/Commands/SetPsmMarginAllCores.cs)、
 [参数转换](https://github.com/irusanov/ZenStates-Core/blob/869b7e82572337e5a673e92230edc92bddf0e44b/Utils.cs)。
 只采用该型号的现代 RSMU 路由，不沿用其它型号的 VID 替代或 MP1 路由。
+本批八个 REA 函数、120 次原指令实验及 PM 长度约束见[研究记录](amd-curve-all-research.md)。
 
 逐核/CCD PM 布局、双 rails 硬件写入、动态内存/EC、其它平台和真机验收仍未完成。
 本功能不能用来证明上述功能已恢复。
