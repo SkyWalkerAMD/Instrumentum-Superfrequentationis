@@ -1,0 +1,79 @@
+name: REA and SMU firmware study
+on:
+  push:
+    paths:
+      - '.github/workflows/rea-firmware-study.yml'
+      - 'analysis/tools/firmware-smu-input.py'
+      - 'analysis/tools/ghidra/Smu*.java'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  firmware:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.11.1'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install pinned analysis tools
+        run: |
+          mkdir -p build/firmware-tools build/firmware-evidence build/firmware-input
+          curl --fail --location --retry 3 https://registry.npmjs.org/rea-agents/-/rea-agents-6.7.0.tgz -o build/firmware-tools/rea.tgz
+          python3 - <<'PY'
+          import base64, hashlib
+          from pathlib import Path
+          assert base64.b64encode(hashlib.sha512(Path('build/firmware-tools/rea.tgz').read_bytes()).digest()).decode() == 'yhIx2ioJYYT1C/tONfYeitC6LhnKmCh+ZwRUOgYuhSc733lGhkkt73zhug9WmLgxoMdKuqIYGCoBfD4fXkOhFw=='
+          PY
+          npm install --prefix build/firmware-tools --ignore-scripts --no-audit --no-fund ./build/firmware-tools/rea.tgz
+          cp build/firmware-tools/package-lock.json build/firmware-evidence/
+          curl --fail --location --retry 3 https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.1.4_build/ghidra_12.1.4_PUBLIC_20260921.zip -o build/firmware-tools/ghidra.zip
+          echo 'ddac49f903da9d5bac833e5cc79395098b9c33cfd3279be5f31bd00387d2d4db  build/firmware-tools/ghidra.zip' | sha256sum -c -
+          unzip -q build/firmware-tools/ghidra.zip -d build/firmware-tools
+          curl --fail --location --retry 3 https://github.com/LongSoft/UEFITool/releases/download/A76/UEFIExtract_NE_A76_x64_linux.zip -o build/firmware-tools/uefi.zip
+          echo '1bee0a3556d47288a0cfbfb8f08ca791a35826686cf8fb998b5f2cefdc860619  build/firmware-tools/uefi.zip' | sha256sum -c -
+          unzip -q build/firmware-tools/uefi.zip -d build/firmware-tools/uefi
+          chmod +x build/firmware-tools/uefi/UEFIExtract
+      - name: Verify public vendor firmware and extract selected inputs
+        run: |
+          curl --fail --location --retry 3 https://dlcdnets.asus.com/pub/ASUS/mb/BIOS/Pro-WS-TRX50-SAGE-WIFI-ASUS-1317.zip -o build/firmware-input/asus-1317.zip
+          python3 analysis/tools/firmware-smu-input.py --archive build/firmware-input/asus-1317.zip --output build/firmware-input --uefi-extract build/firmware-tools/uefi/UEFIExtract
+          cp build/firmware-input/input-manifest.json build/firmware-evidence/
+      - name: Static Xtensa SMU handlers and PM version references
+        run: |
+          mkdir -p build/firmware-project build/firmware-evidence/smu build/firmware-home
+          env -i PATH="$PATH" JAVA_HOME="$JAVA_HOME" HOME="$PWD/build/firmware-home" LANG=C.UTF-8 \
+            build/firmware-tools/ghidra_12.1.4_PUBLIC/support/analyzeHeadless \
+            "$PWD/build/firmware-project" smu-study \
+            -import "$PWD/build/firmware-input/smu-73-2e-body.bin" -loader BinaryLoader \
+            -processor Xtensa:LE:32:default -cspec default \
+            -scriptPath "$PWD/analysis/tools/ghidra" -preScript SmuSeed.java \
+            -postScript SmuStudy.java "$PWD/build/firmware-evidence/smu" \
+            -analysisTimeoutPerFile 1200 -max-cpu 2 \
+            -log "$PWD/build/firmware-evidence/ghidra.log" \
+            -scriptlog "$PWD/build/firmware-evidence/script.log"
+          test -s build/firmware-evidence/smu/smu-study.json
+      - name: REA static UEFI transport and dual current-limit functions
+        if: success() || failure()
+        env:
+          GHIDRA_INSTALL_DIR: ${{ github.workspace }}/build/firmware-tools/ghidra_12.1.4_PUBLIC
+          GHIDRA_HEADLESS_MAXMEM: 4G
+          REA_GHIDRA_STARTUP_TIMEOUT_MS: '900000'
+          REA_GHIDRA_DISABLED_ANALYZERS: 'GCC Exception Handlers,Decompiler Switch Analysis,Call Convention ID'
+        run: |
+          python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-transport.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-transport --study firmware_transport
+          python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-limits.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-limits --study firmware_limits
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rea-firmware-study
+          path: build/firmware-evidence/
+          retention-days: 14
+          if-no-files-found: error

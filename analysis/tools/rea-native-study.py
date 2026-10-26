@@ -18,6 +18,14 @@ import threading
 import time
 
 SOURCE_SHA = '44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10'
+# Separately pinned UEFI modules from the vendor's public ASUS 1317 capsule.
+# These profiles do not relax the original ELF identity check.
+FIRMWARE_STUDIES = {
+    'firmware_transport': ('16dc54fefb3ac983d3752adbe32db3f38259e239fc89ecec78b18a0912796e60',
+                           (('0x1464', 'FUN_'),)),
+    'firmware_limits': ('04f224cf28739fad16b68bb82d0761d2f6ac5e247ad7377ad6e0051cf9405b43',
+                        (('0x4850', 'FUN_'),)),
+}
 # Exact file offsets in the executable PT_LOAD of the hash-verified ELF.
 # These happen to equal ELF virtual addresses. Ghidra may relocate this PIE;
 # unqualified hexadecimal queries could select an unrelated function.
@@ -139,10 +147,11 @@ def main():
     parser.add_argument('--binary', type=Path, required=True)
     parser.add_argument('--rea', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout', 'pbo_semantics', 'pbo_limits', 'oc_frequency', 'oc_cores', 'pm_transport', 'curve_all', 'vf_sources'), default='baseline')
+    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout', 'pbo_semantics', 'pbo_limits', 'oc_frequency', 'oc_cores', 'pm_transport', 'curve_all', 'vf_sources', *FIRMWARE_STUDIES), default='baseline')
     args = parser.parse_args()
     binary, rea, output = args.binary.resolve(), args.rea.resolve(), args.output.resolve()
-    if hashlib.sha256(binary.read_bytes()).hexdigest() != SOURCE_SHA:
+    source_sha = FIRMWARE_STUDIES[args.study][0] if args.study in FIRMWARE_STUDIES else SOURCE_SHA
+    if hashlib.sha256(binary.read_bytes()).hexdigest() != source_sha:
         raise ValueError('Unexpected reference binary')
     output.mkdir(parents=True, exist_ok=True)
     node = shutil.which('node')
@@ -245,7 +254,8 @@ def main():
                               'oc_cores': OC_CORES_PROCEDURES,
                               'pm_transport': PM_TRANSPORT_PROCEDURES,
                               'curve_all': CURVE_ALL_PROCEDURES,
-                              'vf_sources': VF_SOURCES_PROCEDURES}[args.study]
+                              'vf_sources': VF_SOURCES_PROCEDURES,
+                              **{key: value[1] for key, value in FIRMWARE_STUDIES.items()}}[args.study]
                 for offset, name in procedures:
                     pseudo = call('procedure_pseudo_code',
                         dict(procedure='file-offset:' + offset), 'pseudo-' + offset)
@@ -253,7 +263,7 @@ def main():
                     info = call('procedure_info', dict(procedure=address), 'info-' + offset)
                     function = info['structuredContent']['normalized_result']
                     if function['entrypoint'] != address or name not in function['name']:
-                        raise ValueError('Resolved function does not match the original ELF symbol')
+                        raise ValueError('Resolved function does not match the pinned study identity')
                     resolved.append(dict(file_offset=offset, analysis_address=address,
                         expected_name=name, function=function, evidence_id=pseudo['structuredContent']['evidence_id']))
                     save('resolved-functions', resolved)
@@ -277,7 +287,7 @@ def main():
                         save('close-error', dict(error=str(error)))
                         if failure is None:
                             failure = error
-                save('study', dict(schema=1, source_sha256=SOURCE_SHA, hardware_execution=False,
+                save('study', dict(schema=1, source_sha256=source_sha, hardware_execution=False,
                     rea_version='6.7.0', ghidra_version='12.1.4', records=records,
                     startup_timeout_ms=startup_ms,
                     disabled_analyzers=env.get('REA_GHIDRA_DISABLED_ANALYZERS', ''),
@@ -293,7 +303,7 @@ def main():
                     except subprocess.TimeoutExpired:
                         os.killpg(proc.pid, signal.SIGKILL)
                         proc.wait(timeout=10)
-    if hashlib.sha256(binary.read_bytes()).hexdigest() != SOURCE_SHA:
+    if hashlib.sha256(binary.read_bytes()).hexdigest() != source_sha:
         raise ValueError('Reference changed during analysis')
     if failure is not None:
         raise failure
