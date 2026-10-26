@@ -117,6 +117,9 @@ CURVE_ALL_PROCEDURES = (('0x238d90', 'AMD_PM_LOG::set_curve_opt'),
                         ('0x221240', 'TEST_SMC_MSG_UnForceCpuVid'),
                         ('0x21fd00', 'Wr_ocvid'),
                         ('0x239990', 'set_core01_rails'))
+POWER_ADJUSTMENT_PROCEDURES = (('0x239100', 'get_percore_power_offset'),
+                               ('0x21f700', 'MP1_C2PMSG'),
+                               ('0x239990', 'set_core01_rails'))
 VF_SOURCES_PROCEDURES = (('0x6ece40', 'get_amd_freq_vid'),
                          ('0x6eebf0', 'tr5_loop_boost_curve'),
                          ('0x6fd190', 'tr5_get_boost_curve'),
@@ -147,7 +150,7 @@ def main():
     parser.add_argument('--binary', type=Path, required=True)
     parser.add_argument('--rea', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout', 'pbo_semantics', 'pbo_limits', 'oc_frequency', 'oc_cores', 'pm_transport', 'curve_all', 'vf_sources', *FIRMWARE_STUDIES), default='baseline')
+    parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout', 'pbo_semantics', 'pbo_limits', 'oc_frequency', 'oc_cores', 'pm_transport', 'curve_all', 'vf_sources', 'power_adjustment', *FIRMWARE_STUDIES), default='baseline')
     args = parser.parse_args()
     binary, rea, output = args.binary.resolve(), args.rea.resolve(), args.output.resolve()
     source_sha = FIRMWARE_STUDIES[args.study][0] if args.study in FIRMWARE_STUDIES else SOURCE_SHA
@@ -255,6 +258,7 @@ def main():
                               'pm_transport': PM_TRANSPORT_PROCEDURES,
                               'curve_all': CURVE_ALL_PROCEDURES,
                               'vf_sources': VF_SOURCES_PROCEDURES,
+                              'power_adjustment': POWER_ADJUSTMENT_PROCEDURES,
                               **{key: value[1] for key, value in FIRMWARE_STUDIES.items()}}[args.study]
                 for offset, name in procedures:
                     pseudo = call('procedure_pseudo_code',
