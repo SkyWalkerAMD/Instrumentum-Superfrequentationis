@@ -2011,7 +2011,7 @@ void tvbTableEditingCommands() {
     }
 }
 void pboFmaxCommands() {
-    AmdPboFixture d; d.allowFmaxReadback=true;
+    AmdPboFixture d; d.allowFmaxReadback=true; d.fmaxMHz=5500;
     auto result = command(d,{"amd-pbo-capabilities","--cpu","130"},0);
     assert(result.find("\"fmax_command_available\":true") != std::string::npos && !d.settings && !d.wrongCpu);
     result = command(d,{"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-mhz","5500","--expect-caps","4","--apply"},0);
@@ -2020,7 +2020,7 @@ void pboFmaxCommands() {
     result=command(d,{"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-mhz","5000","--expect-caps","4","--apply"},0);
     assert(result.find("\"unchanged\":true")!=std::string::npos && d.settings==1);
     for (unsigned mode = 0; mode < 8; ++mode) {
-        AmdPboFixture failed; failed.allowFmaxReadback=true;
+        AmdPboFixture failed; failed.allowFmaxReadback=true; failed.fmaxMHz=5500; d.fmaxMHz=5500;
         if (mode == 0) failed.capsRaw = 5;
         if (mode == 1) failed.model = 0x18;
         if (mode == 2) failed.writeCompletion = 0xfe;
@@ -2033,14 +2033,14 @@ void pboFmaxCommands() {
         assert(result.find("\"verified\":false") != std::string::npos && failed.settings == (mode == 2 || mode == 4 || mode == 5 ? 1u : 0u));
     }
     for(auto mhz : {0u,5500u,0xfffffu,0x100000u,0x7fffffffu}) {
-        AmdPboFixture query; query.allowFmaxReadback=true; query.fmaxMHz=mhz;
+        AmdPboFixture query; query.allowFmaxReadback=true; query.fmaxMHz=5500; query.fmaxMHz=mhz;
         result=command(query,{"amd-pbo-fmax-read","--cpu","130"},mhz<=0xfffff?0:3);
         assert(!query.settings && !query.wrongCpu && query.messages.back()==0x6e);
         if(mhz<=0xfffff) assert(result.find("\"current_fmax_mhz\":"+std::to_string(mhz))!=std::string::npos);
         else assert(result.find("\"current_fmax_mhz\":null")!=std::string::npos);
     }
     for(auto version : {0u,0x00732e01u}) {
-        AmdPboFixture query; query.allowFmaxReadback=true; query.firmwareVersion=version;
+        AmdPboFixture query; query.allowFmaxReadback=true; query.fmaxMHz=5500; query.firmwareVersion=version;
         result=command(query,{"amd-pbo-fmax-read","--cpu","130"},3);
         assert(result.find("\"current_fmax_mhz\":null")!=std::string::npos && query.messages==std::vector<std::uint32_t>{2});
     }

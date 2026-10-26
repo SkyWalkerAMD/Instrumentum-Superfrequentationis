@@ -7,7 +7,7 @@
 // separately opted in; existing PBO tests still reject implicit OC changes.
 struct AmdPboFixture : AmdCurveFixture {
     std::uint32_t scalarRaw = 0x3f800000;
-    std::uint32_t capsRaw = 4, fmaxMHz = 5500;
+    std::uint32_t capsRaw = 4, fmaxMHz = 0;
     bool allowFmaxReadback = false, clampFmax = false;
     std::uint32_t fmaxClampedMHz = 6000;
     bool allowManualOc = false, overrideModeCaps = false;

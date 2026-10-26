@@ -3594,7 +3594,7 @@ private slots:
         QCOMPARE(device->calls,calls); QCOMPARE(device->settings,0u);
     }
     void pboFmaxReportsReadbackMismatch() {
-        auto *device = new AmdPboFixture; device->allowFmaxReadback=true; device->clampFmax = true;
+        auto *device = new AmdPboFixture; device->allowFmaxReadback=true; device->fmaxMHz=5500; device->clampFmax = true;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
         panel.resize(1400,1250); panel.show();
         QApplication::processEvents(); // Settle PBO/PM fixture layout.
@@ -3616,7 +3616,7 @@ private slots:
         const auto shot=qEnvironmentVariable("OCTOOL_PBO_FMAX_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
     }
     void pboFmaxRejectsChangedAndInvalidInputs() {
-        auto *device = new AmdPboFixture; device->allowFmaxReadback=true;
+        auto *device = new AmdPboFixture; device->allowFmaxReadback=true; device->fmaxMHz=5500;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
         auto *read=panel.findChild<QPushButton *>("pboFmaxRead"), *apply=panel.findChild<QPushButton *>("pboFmaxApply");
         auto *input=panel.findChild<QLineEdit *>("pboFmax");
@@ -3635,7 +3635,7 @@ private slots:
         QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0);
     }
     void pboFmaxVerifiedAndUnchanged() {
-        auto *device=new AmdPboFixture; device->allowFmaxReadback=true;
+        auto *device=new AmdPboFixture; device->allowFmaxReadback=true; device->fmaxMHz=5500;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
         panel.resize(1400,1250); panel.show(); QApplication::processEvents();
         auto *read=panel.findChild<QPushButton *>("pboFmaxRead"), *apply=panel.findChild<QPushButton *>("pboFmaxApply");
@@ -3655,7 +3655,7 @@ private slots:
         }
     }
     void pboFmaxVersionAndStaleValue() {
-        auto *device=new AmdPboFixture; device->allowFmaxReadback=true; device->firmwareVersion=0x00732e01;
+        auto *device=new AmdPboFixture; device->allowFmaxReadback=true; device->fmaxMHz=5500; device->firmwareVersion=0x00732e01;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
         auto *read=panel.findChild<QPushButton *>("pboFmaxRead"), *apply=panel.findChild<QPushButton *>("pboFmaxApply");
         read->click(); QTRY_VERIFY(panel.isEnabled());

@@ -58,7 +58,7 @@ for r in query_results:
         assert d['ln2_enabled'] is None and d['command'] == '0x0000005c'
         assert d['firmware_index'] in (0,1,7,127)
 assert sum(r['error'] == -22 for r in queries) == 20
-assert len(reports) == 1504, len(reports)
+assert len(reports) == 1521, len(reports)
 adjustments = [r for r in reports if r['command'].startswith('amd-power-adjustment-')]
 assert len(adjustments) == 39
 assert sum(r['error'] == -22 for r in adjustments) == 18

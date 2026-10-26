@@ -11,7 +11,7 @@ struct Test {
     AmdPboFixture *fake = new AmdPboFixture;
     HardwareService service{std::unique_ptr<HardwareBackend>(fake)};
     SmuTarget target;
-    Test() { target.cpu=130; target.profile=SmuProfile::Shimada; fake->allowFmaxReadback=true; }
+    Test() { target.cpu=130; target.profile=SmuProfile::Shimada; fake->allowFmaxReadback=true; fake->fmaxMHz=5500; }
     AmdPboFmax read(const std::atomic<bool> *cancel=nullptr) {
         AmdPboFmax out;
         const int e=service.transaction([&](HardwareSession &s) { out=readShimadaPboFmax(s,target); return out.error; },10000,cancel);
