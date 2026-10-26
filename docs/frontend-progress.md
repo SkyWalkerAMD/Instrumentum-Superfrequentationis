@@ -1,5 +1,18 @@
 # GUI / CLI 同步进度
 
+<!-- amd-pbo-query-5f41602 -->
+2026-10-26：GUI / CLI 同步新增 **Shimada LN2 状态与逐核性能原始字查询**。
+应用实现 `5f41602`，GUI/Linux 测试修正与研究提交 `e7cb847`；性能字不解释为瓦特或物理核心。
+
+- [功能用法](amd-pbo-queries.md)、[整批验证](amd-pbo-query-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；核心 443 场景组，CLI 各 1465 JSON，GUI 各 224 项，12 次内核 VM。
+- [REA 研究](amd-pbo-query-research.md)：10 函数、848 次原指令实验；VF 数据源及 SoC helper 仍不能证明逐核/CCD 布局或 rails 写入。
+- `dist/gui-cli-amd-pbo-query-5f41602/` 含 33 个包与源码；尚未进行真机验收。
+
+以下保留历史记录。
+<!-- /amd-pbo-query-5f41602 -->
+
+
 <!-- amd-curve-all-40d723a -->
 2026-10-26：GUI / CLI 同步新增 **Shimada 全核 Curve Optimizer**，应用验证提交 `40d723a`。
 完整能力字比较后单次发送 `07`；CO 为 `-50..50` 计数，只有固件确认，没有全核回读。
@@ -318,6 +331,7 @@ GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-
 | Intel TVB / Ring DownBin | TVB & Ring DownBin | `intel-tvb-read/set` | 06_B7 裸机；高温倍频裁剪、电压优化及 Ring DownBin 三项独立开关，锁/旧值检查、保留其它位、完整回读；分档见下行 |
 | Intel TVB 分档 | TVB thresholds 查询 / 准备 / 编辑 | `intel-tvb-table` / `intel-tvb-table-set` | 06_B7 裸机；两组温度 / 降倍率查询与保守范围的单字段设置，旧值 / 锁核对及完整读回；逐物理核心表未恢复 |
 | AMD SMU | AMD tuning | `amd-smu-probe/read/send` | 现有身份/命令白名单与原始参数 |
+| AMD LN2 / 逐核性能原始字 | AMD tuning → Shimada firmware query | `amd-ln2-read` / `amd-core-performance-read --firmware-index` | 1Ah/08h；LN2 仅 0/1；性能字不透明、无物理映射；身份复查与未知/失败状态隔离；不发送设置命令 |
 | AMD PBO Scalar | AMD tuning → Read / Apply scalar | `amd-pbo-scalar-read/set` | Shimada 1Ah/08h；旧值比较及精确回读，1..10 整数倍；不是物理电压或功率测量 |
 | AMD Fmax 与 PPT/TDC/EDC/温度限制 | AMD tuning → Read PBO capability / Apply | `amd-pbo-capabilities` / `amd-pbo-fmax-set` / `amd-pbo-limit-set` | Shimada 1Ah/08h；完整能力字比较及单项设置，只有命令确认，当前限制未验证 |
 | AMD 手动 OC 模式 | AMD tuning → Read OC capability / Apply mode | `amd-oc-mode-set` | Shimada 1Ah/08h；显式开启/关闭、旧能力核对及模式位回读；不隐含重置 Scalar 或写 VID |

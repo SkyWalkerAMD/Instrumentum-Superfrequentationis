@@ -1,5 +1,18 @@
 # 安装包与源码归档
 
+<!-- amd-pbo-query-5f41602 -->
+2026-10-26：GUI / CLI 同步新增 **Shimada LN2 状态与逐核性能原始字查询**。
+应用实现 `5f41602`，GUI/Linux 测试修正与研究提交 `e7cb847`；性能字不解释为瓦特或物理核心。
+
+- [功能用法](amd-pbo-queries.md)、[整批验证](amd-pbo-query-validation.md)：43/43 云端任务通过。
+- 11 个 Linux 目标含 EL7；核心 443 场景组，CLI 各 1465 JSON，GUI 各 224 项，12 次内核 VM。
+- [REA 研究](amd-pbo-query-research.md)：10 函数、848 次原指令实验；VF 数据源及 SoC helper 仍不能证明逐核/CCD 布局或 rails 写入。
+- `dist/gui-cli-amd-pbo-query-5f41602/` 含 33 个包与源码；尚未进行真机验收。
+
+以下保留历史记录。
+<!-- /amd-pbo-query-5f41602 -->
+
+
 <!-- amd-curve-all-40d723a -->
 2026-10-26：GUI / CLI 同步新增 **Shimada 全核 Curve Optimizer**，应用验证提交 `40d723a`。
 完整能力字比较后单次发送 `07`；CO 为 `-50..50` 计数，只有固件确认，没有全核回读。

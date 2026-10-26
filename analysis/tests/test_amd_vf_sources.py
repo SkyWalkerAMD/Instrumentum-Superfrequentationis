@@ -38,7 +38,7 @@ class OriginalVfSources(unittest.TestCase):
         expected=[[4000,4500],[50,52],[1000,1250],[3500,4000]]
         self.assertEqual(base['label_indices'],[0,1,2,3])
         self.assertEqual(base['vectors'],expected)
-        self.assertEqual(failed['vectors'],expected)  # synthetic failed refresh ignored
+        self.assertEqual(failed['vectors'],expected)  # changing boundary RAX does not replace existing rows
         self.assertEqual([e['mode'] for e in base['events']],[0,4])
         self.assertEqual(empty['vectors'],[[],[],[],[]])
         self.assertEqual(short['outcome'],'range-error-boundary')
