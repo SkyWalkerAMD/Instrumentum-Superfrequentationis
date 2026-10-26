@@ -46,23 +46,19 @@ jobs:
           assert baseline['conclusion']=='success' and baseline['path']=='.github/workflows/portability.yml'
           base=baseline['head_sha']; head=os.environ['GITHUB_SHA']
           changed=subprocess.check_output(['git','diff','--name-only',base,head]).decode().splitlines()
-          allowed={'port/ci/in-container.sh','.github/workflows/gui-fixture-review.yml','gui/tests/regression.cpp'}
+          allowed={'port/ci/in-container.sh','.github/workflows/gui-fixture-review.yml'}
           assert all(p in allowed or p.startswith(('docs/','analysis/')) or p=='README.md' for p in changed), changed
           path='port/ci/in-container.sh'; old=subprocess.check_output(['git','show',base+':'+path]).decode()
           current=pathlib.Path(path).read_text(); expected=old
-          names=('pbo-fmax-fixture.png','pbo-rails-fixture.png','pm-layout-fixture.png')
+          names=('curve-all-fixture.png','curve-all-failure-fixture.png')
           for prefix in ('build/gui/regression','build/gui-$target/regression'):
-              anchor=f'        cp "{prefix}/pbo-scalar-failure-fixture.png" "$out/pbo-scalar-failure-fixture.png"'
+              anchor=f'        cp "{prefix}/curve-partial-fixture.png" "$out/curve-partial-fixture.png"'
               assert expected.count(anchor)==1
               additions=''.join(f'\n        cp "{prefix}/{name}" "$out/{name}"' for name in names)
               if anchor+additions not in expected: expected=expected.replace(anchor,anchor+additions)
-          assert current==expected, 'Supplement must only add the six screenshot copy commands'
-          path='gui/tests/regression.cpp'; old_tests=subprocess.check_output(['git','show',base+':'+path]).decode()
-          tests=pathlib.Path(path).read_text(); settle='        QApplication::processEvents(); // Settle PBO/PM fixture layout.\n'
-          if tests!=old_tests:
-              assert tests.count(settle)==6 and tests.replace(settle,'')==old_tests, 'Only fixture layout settling may differ'
+          assert current==expected, 'Supplement must only add the four screenshot copy commands'
           evidence={'source_commit':head,'baseline_commit':base,'baseline_run':int(run),'baseline_url':baseline['html_url'],
-                    'changed_paths':changed,'runtime_inputs_identical':True,'change_scope':'Six screenshot copy commands, six fixture event-loop flushes and evidence workflow'}
+                    'changed_paths':changed,'runtime_inputs_identical':True,'change_scope':'Four screenshot copy commands and evidence workflow; application and test sources unchanged'}
           pathlib.Path('build/fixture-review/provenance.json').write_text(json.dumps(evidence,indent=2)+'\n')
           with open(os.environ['GITHUB_OUTPUT'],'a') as output: output.write('run='+run+'\n')
           PY
@@ -82,7 +78,7 @@ jobs:
           docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -e JOBS=4 \
             -v "$PWD:/src" -v "$PWD/build/inputs:/inputs:ro" -v "$PWD/build/fixture-review:/out" \
             -w /src "$IMAGE" bash port/ci/in-container.sh desktop "$TARGET"
-          for page in pbo-fmax-fixture pbo-rails-fixture pm-layout-fixture; do
+          for page in curve-all-fixture curve-all-failure-fixture; do
             test -s "build/fixture-review/$page.png"
           done
       - uses: actions/upload-artifact@v4
@@ -93,8 +89,7 @@ jobs:
             build/fixture-review/provenance.json
             build/fixture-review/container-image.json
             build/fixture-review/gui-tests.txt
-            build/fixture-review/pbo-fmax-fixture.png
-            build/fixture-review/pbo-rails-fixture.png
-            build/fixture-review/pm-layout-fixture.png
+            build/fixture-review/curve-all-fixture.png
+            build/fixture-review/curve-all-failure-fixture.png
           if-no-files-found: error
           retention-days: 14
