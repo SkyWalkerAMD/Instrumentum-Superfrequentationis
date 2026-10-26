@@ -1,0 +1,83 @@
+// Exercise the actual compiled decoder on a separate synthetic program.
+// @category OCTool
+import ghidra.app.script.GhidraScript;
+import ghidra.app.cmd.disassemble.DisassembleCommand;
+import ghidra.program.database.ProgramDB;
+import ghidra.program.model.address.Address;
+import ghidra.program.model.lang.Register;
+import ghidra.program.model.listing.Instruction;
+import ghidra.program.model.pcode.PcodeOp;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+public class SmuFpSelfTest extends GhidraScript {
+    private int checks;
+    private ProgramDB probe;
+    private Address cursor;
+
+    private Instruction decode(int word) throws Exception {
+        Address at = cursor;
+        cursor = cursor.add(8);
+        probe.getMemory().setBytes(at, new byte[]{(byte)word, (byte)(word>>8), (byte)(word>>16)});
+        new DisassembleCommand(at, null, false).applyTo(probe, monitor);
+        return probe.getListing().getInstructionAt(at);
+    }
+    private void require(boolean condition, String message) {
+        if(!condition) throw new IllegalStateException(message);
+    }
+    private void reg(Instruction ins, int operand, int number) {
+        Object[] objects=ins.getOpObjects(operand);
+        require(objects.length==1 && objects[0] instanceof Register &&
+            ((Register)objects[0]).getName().equals("f"+number), "Wrong FP operand: "+ins);
+    }
+    public void run() throws Exception {
+        probe=new ProgramDB("OCTool synthetic FP decoder checks", currentProgram.getLanguage(),
+            currentProgram.getCompilerSpec(), this);
+        int tx=probe.startTransaction("synthetic opcode checks");
+        try {
+            cursor=probe.getAddressFactory().getDefaultAddressSpace().getAddress(0x1000);
+            probe.getMemory().createInitializedBlock("synthetic",cursor,0x20000,(byte)0,monitor,false);
+            long[] constants={0,0x3f800000L,0x40000000L,0x3f000000L};
+            for(int r=0;r<16;r++) for(int s=0;s<16;s++) {
+                Instruction ins=decode(0xfa0030 | r<<12 | s<<8);
+                if(s>=4) require(ins==null,"Reserved CONST.S decoded");
+                else {
+                    require(ins!=null && ins.getMnemonicString().equals("const.s"),"Missing CONST.S");
+                    reg(ins,0,r);
+                    require(ins.getScalar(1).getUnsignedValue()==s,"Wrong constant selector");
+                    boolean copy=false;
+                    for(PcodeOp op:ins.getPcode()) if(op.getOpcode()==PcodeOp.COPY &&
+                        op.getOutput().isRegister() && op.getOutput().getOffset()==0x100+4*r &&
+                        op.getInput(0).isConstant() && op.getInput(0).getOffset()==constants[s]) copy=true;
+                    require(copy,"Wrong CONST.S p-code value");
+                }
+                checks++;
+            }
+            String[] names={"div0","recip0","sqrt0","rsqrt0","nexp01","mksadj","mkdadj","addexp","addexpm"};
+            for(int kind=0;kind<names.length;kind++) for(int r=0;r<16;r++) for(int s=0;s<16;s++) {
+                Instruction ins=decode(0xfa0000 | (kind+7)<<4 | r<<12 | s<<8);
+                require(ins!=null && ins.getMnemonicString().equals(names[kind]+".s"),"Missing opaque unary operation");
+                reg(ins,0,r); reg(ins,1,s);
+                boolean opaque=false;
+                for(PcodeOp op:ins.getPcode()) if(op.getOpcode()==PcodeOp.CALLOTHER) opaque=true;
+                require(opaque,"Approximation must not become numeric arithmetic");
+                checks++;
+            }
+            for(int kind=0;kind<2;kind++) for(int r=0;r<16;r++) for(int s=0;s<16;s++) for(int t=0;t<16;t++) {
+                Instruction ins=decode((kind+6)<<20 | 0xa0000 | r<<12 | s<<8 | t<<4);
+                require(ins!=null && ins.getMnemonicString().equals((kind==0?"maddn":"divn")+".s"),"Missing opaque ternary operation");
+                reg(ins,0,r); reg(ins,1,s); reg(ins,2,t);
+                boolean opaque=false;
+                for(PcodeOp op:ins.getPcode()) if(op.getOpcode()==PcodeOp.CALLOTHER) opaque=true;
+                require(opaque,"Refinement must remain opaque");
+                checks++;
+            }
+            Path output=Path.of(getScriptArgs()[0]);
+            Files.writeString(output,"{\"schema\":1,\"hardware_execution\":false,\"firmware_modified\":false,\"synthetic_cases\":"+checks+",\"passed\":true}\n");
+            println("Synthetic FP decoding checks passed: "+checks);
+        } finally {
+            probe.endTransaction(tx,false);
+            probe.release(this);
+        }
+    }
+}

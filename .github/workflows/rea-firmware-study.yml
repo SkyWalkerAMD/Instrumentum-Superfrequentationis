@@ -8,6 +8,7 @@ on:
       - 'analysis/tools/firmware-rails-replay.py'
       - 'analysis/tools/firmware-adjustment-replay.py'
       - 'analysis/tools/ghidra/Smu*.java'
+      - 'analysis/tools/ghidra/SmuFpPatch.py'
   workflow_dispatch:
 permissions:
   contents: read
@@ -44,6 +45,12 @@ jobs:
           echo '1bee0a3556d47288a0cfbfb8f08ca791a35826686cf8fb998b5f2cefdc860619  build/firmware-tools/uefi.zip' | sha256sum -c -
           unzip -q build/firmware-tools/uefi.zip -d build/firmware-tools/uefi
           chmod +x build/firmware-tools/uefi/uefiextract
+      - name: Extend and compile the isolated static Xtensa decoder
+        run: |
+          python3 analysis/tools/ghidra/SmuFpPatch.py --ghidra build/firmware-tools/ghidra_12.1.4_PUBLIC \
+            --output build/firmware-evidence/xtensa-fp-extension.json
+          build/firmware-tools/ghidra_12.1.4_PUBLIC/support/sleigh \
+            build/firmware-tools/ghidra_12.1.4_PUBLIC/Ghidra/Processors/Xtensa/data/languages/xtensa_le.slaspec
       - name: Verify public vendor firmware and extract selected inputs
         id: inputs
         run: |
@@ -58,7 +65,9 @@ jobs:
             "$PWD/build/firmware-project" smu-study \
             -import "$PWD/build/firmware-input/smu-73-2e-body.bin" -loader BinaryLoader \
             -processor Xtensa:LE:32:default -cspec default \
-            -scriptPath "$PWD/analysis/tools/ghidra" -preScript SmuSeed.java \
+            -scriptPath "$PWD/analysis/tools/ghidra" \
+            -preScript SmuFpSelfTest.java "$PWD/build/firmware-evidence/xtensa-fp-selftest.json" \
+            -preScript SmuSeed.java \
             -postScript SmuStudy.java "$PWD/build/firmware-evidence/smu" \
             -analysisTimeoutPerFile 1200 -max-cpu 2 \
             -log "$PWD/build/firmware-evidence/ghidra.log" \
