@@ -1,5 +1,7 @@
 # REA：逐核/CCD 功耗表与 PBO 事务
 
+2026-10-26：[长度与容量约束研究](amd-curve-all-research.md)补跑八个精确版本。版本字节不能直接认定为真实 CCD 数；连续排列假设仍有每份 0x68 字节无法解释，未启用逐核/CCD 解码。
+
 2026-10-21 最新：[PM 传输与原始校准回放](amd-pm-native-research.md)补跑 12 个校准实验。已完成的校准路径未改变逐核/CCD 读取组，已知越界与重叠仍存在；GUI/CLI 新增[受约束的原生 PM 采集](amd-pm-native.md)，用于取得完整原始样本，不据此开放未确认的逐核/CCD 解码。
 
 后续进展：新的 [12 函数 REA 研究与 GUI/CLI 实现](amd-pbo-fmax-layout.md) 已增加

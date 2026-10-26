@@ -1,5 +1,18 @@
 # 安装包与源码归档
 
+<!-- amd-curve-all-40d723a -->
+2026-10-26：GUI / CLI 同步新增 **Shimada 全核 Curve Optimizer**，应用验证提交 `40d723a`。
+完整能力字比较后单次发送 `07`；CO 为 `-50..50` 计数，只有固件确认，没有全核回读。
+
+- [功能用法](amd-curve-all.md)、[整批验证](amd-curve-all-validation.md)：43 个主要任务及 2 个补充视觉任务通过。
+- 11 个 Linux 目标含 EL7；核心 436 场景组，CLI 各 1421 JSON，GUI 各 220 项，12 次内核 VM。
+- [REA 研究](amd-curve-all-research.md)：8 个函数、120 次原指令实验，新增 PM 长度约束；逐核/CCD 布局与 rails 写入仍未完成。
+- `dist/gui-cli-amd-curve-all-40d723a/` 含 33 个包及源码；未进行真机调参验收。
+
+以下保留历史记录。
+<!-- /amd-curve-all-40d723a -->
+
+
 <!-- amd-pm-native-1ad6db9 -->
 2026-10-26：最新交付源码提交 `1ad6db9`，GUI / CLI 同步新增 **Shimada 原生 PM 表采集**。
 要求固件返回长度与精确版本一致，读取后复查元数据；错误时不发布部分缓冲区。

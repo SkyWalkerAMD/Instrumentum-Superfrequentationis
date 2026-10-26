@@ -1,5 +1,7 @@
 # AMD 逐核与 CCD 选核曲线设置
 
+2026-10-26：[全核 CO 设置](amd-curve-all.md)提供独立 GUI/CLI 入口，使用 RSMU 07，仅报告固件确认。下文逐核设置继续保留旧值比较与明确核心回读。
+
 2026-10-21：GUI 和 CLI 共用 `gui/core/amd_curve.cpp`，新增单核及同一 CCD 内明确选核的
 CO count 设置。限定 AMD family `1Ah` / model `08h`、PCI `1022:153a`、
 domain 0 / BDF `00:00.0`。本实现尚未在真实 Shimada 硬件上验收。

@@ -1,5 +1,18 @@
 # GUI / CLI 同步进度
 
+<!-- amd-curve-all-40d723a -->
+2026-10-26：GUI / CLI 同步新增 **Shimada 全核 Curve Optimizer**，应用验证提交 `40d723a`。
+完整能力字比较后单次发送 `07`；CO 为 `-50..50` 计数，只有固件确认，没有全核回读。
+
+- [功能用法](amd-curve-all.md)、[整批验证](amd-curve-all-validation.md)：43 个主要任务及 2 个补充视觉任务通过。
+- 11 个 Linux 目标含 EL7；核心 436 场景组，CLI 各 1421 JSON，GUI 各 220 项，12 次内核 VM。
+- [REA 研究](amd-curve-all-research.md)：8 个函数、120 次原指令实验，新增 PM 长度约束；逐核/CCD 布局与 rails 写入仍未完成。
+- `dist/gui-cli-amd-curve-all-40d723a/` 含 33 个包及源码；未进行真机调参验收。
+
+以下保留历史记录。
+<!-- /amd-curve-all-40d723a -->
+
+
 <!-- amd-pm-native-1ad6db9 -->
 2026-10-26：最新交付源码提交 `1ad6db9`，GUI / CLI 同步新增 **Shimada 原生 PM 表采集**。
 要求固件返回长度与精确版本一致，读取后复查元数据；错误时不发布部分缓冲区。
@@ -310,6 +323,7 @@ GUI Intel Controls / Memory timings 与 CLI `intel-memory-read`、`intel-memory-
 | AMD 手动 OC 模式 | AMD tuning → Read OC capability / Apply mode | `amd-oc-mode-set` | Shimada 1Ah/08h；显式开启/关闭、旧能力核对及模式位回读；不隐含重置 Scalar 或写 VID |
 | AMD 全核 / 单核 / CCD 选定核心频率 | AMD tuning → Manual OC frequency / Selected cores in CCD | `amd-oc-frequency-set --scope all-cores/core/cores` | Shimada 1Ah/08h；显式核心列表、逐核能力检查、首错停止与部分完成报告；只有命令确认，物理映射与实际频率未验证 |
 | AMD 曲线读取 | AMD tuning 曲线查询 | `amd-curve-read` | Shimada；显式固件 CCD/core；不推导 mV |
+| AMD 全核曲线设置 | AMD tuning → Read capability / Apply curve to all cores | `amd-curve-all-set --margin --expect-caps --apply` | 1Ah/08h；显式固件全核范围，CO count；完整能力比较，单次 07，仅确认，当前曲线/物理核心数未验证 |
 | AMD 逐核 / CCD 选核曲线设置 | AMD tuning → Read curve / Apply curve to selected cores | `amd-curve-set --core/--cores --margin --expect-raw --apply` | 1Ah/08h；旧值检查、逐核回读、部分完成报告；CO count，不是 mV；真机及物理映射未验收 |
 | AMD 拓扑 | AMD tuning | `amd-topology` | CPUID 拓扑，不作为固件目标映射 |
 | AMD PM 原版功耗与策略监控 | PM telemetry → Display 五组 | `amd-pm-read/decode` 的 `original_package` | 53 项名称/偏移/浮点存储值；单位、策略状态和物理目标未认证；异常隔离与旧快照重算 |

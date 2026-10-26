@@ -1,5 +1,7 @@
 # REA 后续：Fmax 与 core01 rails 设置入口
 
+2026-10-26：[REA 全核与 Force/UnForce 研究](amd-curve-all-research.md)确认原释放函数先发布未验证输出再读取 response；不能作为双 rails 恢复或 CO 清零合同。新增的是独立核对的全核 CO 命令，rails 继续只有离线编码。
+
 2026-10-21 最新：[REA VID 换算回放](amd-pm-native-research.md)确认原通用帮助函数在 Shimada 标志下使用 SVI2，而原 rails setter 使用 245 mV / 5 mV 编码。两条路径不能混作已验证的 rails 协议；Fmax 已有命令确认，rails 仍只有离线编码预览。
 
 最新实现见 [Fmax、rails 与 PM 布局诊断](amd-pbo-fmax-layout.md)：GUI/CLI 已开放
