@@ -53,7 +53,7 @@ struct AmdPboFixture : AmdCurveFixture {
                         if (writeCompletion == 1 && !discardChange) {
                             if (r.value == 7) allCurveArgument = scalarArgs[0];
                             else if (r.value == 0x70) fmaxMHz = scalarArgs[0];
-                            else if (r.value == 0x5d || r.value == 0x5e) capsRaw = overrideModeCaps ? modeCapsAfter : r.value == 0x5d ? capsRaw | 1u : capsRaw & ~1u;
+                            else if (r.value == 0x5d || r.value == 0x5e) capsRaw = overrideModeCaps ? modeCapsAfter : r.value == 0x5d ? capsRaw | 0x10000u : capsRaw & ~0x10000u;
                             else if (r.value == 0x5f) ocAllMHz = scalarArgs[0];
                             else if (r.value == 0x60) ocCoreArgument = scalarArgs[0];
                             else if (r.value >= 0x56 && r.value <= 0x59) limitArguments[std::size_t(r.value-0x56)] = scalarArgs[0];

@@ -105,7 +105,9 @@ AmdPboQueryResult readShimadaPboQuery(HardwareSession &s, const SmuTarget &targe
     out.ln2Enabled = query == AmdPboQuery::Ln2Mode && out.raw == 1;
     out.valid = true; return out;
 }
-bool amdPboFmaxAvailable(std::uint32_t caps) { return (caps & 4u) && !(caps & 1u); }
+bool amdManualOcAvailable(std::uint32_t caps) { return (caps & 1u) != 0; }
+bool amdManualOcEnabled(std::uint32_t caps) { return (caps & 0x10000u) != 0; }
+bool amdPboFmaxAvailable(std::uint32_t caps) { return (caps & 4u) && !amdManualOcEnabled(caps); }
 AmdPboFmaxUpdate setShimadaPboFmax(HardwareSession &s, const SmuTarget &target,
                                  std::uint32_t expectedCapabilities, unsigned mhz) {
     AmdPboFmaxUpdate out; out.requestedMHz = mhz;
@@ -162,7 +164,7 @@ int encodeAmdPboLimit(AmdPboLimit limit, unsigned value, std::uint32_t &command,
     argument = limit == AmdPboLimit::Temperature ? value : value * 1000u;
     return 0;
 }
-bool amdPboLimitsAvailable(std::uint32_t caps) { return (caps & 2u) && !(caps & 1u); }
+bool amdPboLimitsAvailable(std::uint32_t caps) { return (caps & 2u) && !amdManualOcEnabled(caps); }
 AmdPboLimitUpdate setShimadaPboLimit(HardwareSession &s, const SmuTarget &target,
                                     std::uint32_t expectedCapabilities, AmdPboLimit limit, unsigned value) {
     AmdPboLimitUpdate out; out.limit = limit; out.requested = value;
@@ -189,11 +191,12 @@ AmdOcModeUpdate setShimadaOcMode(HardwareSession &s, const SmuTarget &target,
     out.before = readShimadaPboCapabilities(s, target);
     if ((out.error = out.before.error)) return out;
     if (out.before.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
-    if (bool(out.before.raw & 1u) == enabled) {
+    if (amdManualOcEnabled(out.before.raw) == enabled) {
         if ((out.error = s.checkpoint())) return out;
         out.after = out.before; out.verified = out.unchanged = true;
         out.phase = AmdPboPhase::Complete; return out;
     }
+    if (enabled && !amdManualOcAvailable(out.before.raw)) { out.error = -ENOTSUP; return out; }
     if ((out.error = checkTarget(s, target))) return out;
     out.phase = AmdPboPhase::Write;
     const auto reply = detail::exchangeShimadaRsmu(s, out.command, 0, false, true);
@@ -205,7 +208,7 @@ AmdOcModeUpdate setShimadaOcMode(HardwareSession &s, const SmuTarget &target,
     if ((out.error = out.after.error)) return out;
     // Other capability bits may legitimately change when switching OC mode.
     // Keep both complete words; verify only the requested mode bit.
-    if (bool(out.after.raw & 1u) != enabled) { out.error = -EIO; return out; }
+    if (amdManualOcEnabled(out.after.raw) != enabled) { out.error = -EIO; return out; }
     if ((out.error = s.checkpoint())) return out;
     out.verified = true; out.phase = AmdPboPhase::Complete; return out;
 }
@@ -232,7 +235,7 @@ AmdOcFrequencyUpdate setShimadaOcFrequency(HardwareSession &s, const SmuTarget &
     std::uint32_t expectedCapabilities, AmdOcFrequencyScope scope, unsigned ccd, unsigned core, unsigned mhz) {
     AmdOcFrequencyUpdate out; out.scope = scope; out.ccd = ccd; out.core = core; out.requestedMHz = mhz;
     if ((out.error = encodeShimadaOcFrequency(scope, ccd, core, mhz, out.command, out.argument))) return out;
-    if (!(expectedCapabilities & 1u)) { out.error = -ENOTSUP; return out; }
+    if (!amdManualOcEnabled(expectedCapabilities)) { out.error = -ENOTSUP; return out; }
     out.phase = AmdPboPhase::Compare;
     out.before = readShimadaPboCapabilities(s, target);
     if ((out.error = out.before.error)) return out;
@@ -251,7 +254,7 @@ AmdOcCoreFrequenciesUpdate setShimadaOcCoreFrequencies(HardwareSession &s, const
     if (!coreMask || (coreMask & ~0xffu)) { out.error = -EINVAL; return out; }
     std::uint32_t command = 0, argument = 0;
     if ((out.error = encodeShimadaOcFrequency(AmdOcFrequencyScope::Core, ccd, 0, mhz, command, argument))) return out;
-    if (!(expectedCapabilities & 1u)) { out.error = -ENOTSUP; return out; }
+    if (!amdManualOcEnabled(expectedCapabilities)) { out.error = -ENOTSUP; return out; }
     for (unsigned core = 0; core < 8; ++core) {
         const unsigned bit = 1u << core;
         if (!(coreMask & bit)) continue;
@@ -265,7 +268,7 @@ AmdOcCoreFrequenciesUpdate setShimadaOcCoreFrequencies(HardwareSession &s, const
     }
     out.phase = AmdPboPhase::Complete; return out;
 }
-bool amdAllCoreCurveAvailable(std::uint32_t caps) { return (caps & 4u) && !(caps & 1u); }
+bool amdAllCoreCurveAvailable(std::uint32_t caps) { return (caps & 4u) && !amdManualOcEnabled(caps); }
 int encodeShimadaAllCoreCurve(int margin, std::uint32_t &argument) {
     argument = 0;
     if (margin < -50 || margin > 50) return -ERANGE;

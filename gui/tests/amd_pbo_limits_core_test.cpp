@@ -49,7 +49,7 @@ void eligibility() {
         if (mode == 7) t.fake->pciId ^= 0x10000;
         assert(t.set().error && !t.fake->commands && !t.fake->settings);
     }
-    for (unsigned caps : {0u,1u,3u,4u,5u,7u,UINT32_MAX}) {
+    for (unsigned caps : {0u,1u,4u,5u,0x10002u,0x10003u,0x10007u,UINT32_MAX}) {
         Test t; assert(t.set(AmdPboLimit::Ppt,350,caps).error == -ENOTSUP && !t.fake->calls);
     }
 }
@@ -74,7 +74,7 @@ void capabilityChanges() {
         Test t; t.fake->capsRaw = caps; const auto r = t.set();
         assert(r.error == -EAGAIN && r.before.raw == caps && !r.writeAttempted && !t.fake->settings);
     }
-    for (std::uint32_t caps : {2u,6u,0x80000002u}) {
+    for (std::uint32_t caps : {2u,3u,6u,7u,0x80000002u}) {
         Test t; t.fake->capsRaw = caps;
         assert(t.set(AmdPboLimit::Edc,100,caps).accepted);
     }

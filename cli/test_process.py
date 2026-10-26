@@ -87,6 +87,14 @@ for r in oc_modes:
     assert d['verified'] == r['ok'] and not d['hardware_effect_measured'] and not d['scalar_reset_requested']
     assert int(d['command'],16) == (0x5d if d['requested_enabled'] else 0x5e)
     if r['ok']: assert d['after']['manual_oc_enabled'] == d['requested_enabled']
+    for state in ('before', 'after'):
+        s = d[state]
+        if s['valid']:
+            raw = int(s['capabilities_raw'], 16)
+            assert s['manual_oc_available'] == bool(raw & 1)
+            assert s['manual_oc_enabled'] == bool(raw & 0x10000)
+        else:
+            assert s['manual_oc_available'] is None and s['manual_oc_enabled'] is None
 assert oc_modes[2]['data']['unchanged'] and not oc_modes[2]['data']['write_attempted']
 assert [r['data']['accepted'] for r in oc_modes] == [True,True,False,False,False,False,True,False,True]
 assert oc_modes[6]['data']['after']['manual_oc_enabled'] is False
@@ -129,11 +137,11 @@ for i,r in enumerate(oc_selected):
         assert int(d['attempted_mask'],16) == before | (bit if fault == 0 else 0)
         assert int(d['visited_mask'],16) == before | bit and d['failed_core'] == (0,2,7)[position]
 for cores in ('','0,0','2,0','0,8','0, 2','0-7'):
-    run('amd-oc-frequency-set','--cpu',str(cpu),'--scope','cores','--ccd','0','--cores',cores,'--mhz','5000','--expect-caps','7','--apply',code=2)
+    run('amd-oc-frequency-set','--cpu',str(cpu),'--scope','cores','--ccd','0','--cores',cores,'--mhz','5000','--expect-caps','0x10007','--apply',code=2)
 run('amd-oc-mode-set','--cpu',str(cpu),'--enabled','1','--expect-caps','6',code=2)
 run('amd-oc-mode-set','--cpu',str(cpu),'--enabled','true','--expect-caps','6','--apply',code=2)
-run('amd-oc-frequency-set','--cpu',str(cpu),'--scope','all-cores','--mhz','5000','--expect-caps','7',code=2)
-run('amd-oc-frequency-set','--cpu',str(cpu),'--scope','core','--ccd','0','--core','0','--mhz','5000','--expect-caps','6','--apply',code=2)
+run('amd-oc-frequency-set','--cpu',str(cpu),'--scope','all-cores','--mhz','5000','--expect-caps','0x10007',code=2)
+run('amd-oc-frequency-set','--cpu',str(cpu),'--scope','core','--ccd','0','--core','0','--mhz','5000','--expect-caps','7','--apply',code=2)
 limits = [r for r in reports if r['command'] == 'amd-pbo-limit-set' and 'requested_value' in r['data']]
 assert len(limits) == 9 and [r['ok'] for r in limits] == [True]*4 + [False]*5
 for r,kind,unit,value,arg,cmd in zip(limits[:4],('ppt','tdc','edc','temperature'),('W','A','A','C'),(350,280,500,90),(350000,280000,500000,90),(0x56,0x57,0x58,0x59)):

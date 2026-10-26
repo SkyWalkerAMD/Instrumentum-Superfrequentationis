@@ -2,7 +2,9 @@
 
 2026-10-21，生产验证提交 `f4332b78223c4de91fd1a76bc7ed955da68a09d1`。
 GUI / CLI 共用核心新增 Shimada 手动 OC 模式切换、全核及明确单个固件核心的频率设置。
-模式验证仅覆盖能力 bit 0；频率仅确认固件接受，未验证实际频率或物理核心映射。
+历史批次曾将能力 bit 0 当成模式状态，此判断已被 [ASUS 固件研究](amd-smu-firmware-research.md)推翻。
+当前实现改为回读 bit 16；本页旧批次仅记录当时的合成测试，不构成模式位的有效证明。
+频率仅确认固件接受，未验证实际频率或物理核心映射。
 见[用法](amd-manual-oc.md)、[REA 与原指令研究](amd-manual-oc-research.md)、
 [完整机器记录](validation/amd-manual-oc-ci-f4332b7.json)。
 

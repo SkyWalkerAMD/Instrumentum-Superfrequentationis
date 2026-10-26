@@ -30,7 +30,7 @@ public class SmuStudy extends GhidraScript {
         // descriptor references are checked. Keep numeric provenance explicit.
         for (long base : new long[]{0x7980, 0x7c38}) {
             int[] ids = base == 0x7980 ? new int[]{1,2,0x3c,0x3d,0x3e,0x56} :
-                new int[]{1,2,3,4,5,0x5c,0x5d,0x5e,0x61,0x6f,0x70,0xa3,0xa6,0xa8};
+                new int[]{1,2,3,4,5,0x5c,0x5d,0x5e,0x61,0x6f,0x70,0xa3,0xa6,0xa7,0xa8};
             for (int id : ids) {
                 long entry = base + 8L*id;
                 Address function = toAddr(Integer.toUnsignedLong(getInt(toAddr(entry))));
@@ -40,6 +40,10 @@ public class SmuStudy extends GhidraScript {
                 selected.put(function, 0);
             }
         }
+        // Prioritize PM materialization and OC application before expanding
+        // generic callers. Addresses belong only to the pinned SMU body.
+        for(long entry:new long[]{0x2f750,0x30594,0x3026c,0x2f918,0x323d8})
+            selected.put(toAddr(entry),0);
         List<Object> literalRefs = new ArrayList<>();
         for (long offset : new long[]{0x17f20,0x17f24,0x17f28,0x17f2c,0x17f30,0x17f34,0x8748,0x87ac,0x7880}) {
             for (Reference ref : getReferencesTo(toAddr(offset))) {
@@ -56,7 +60,8 @@ public class SmuStudy extends GhidraScript {
             0x1d300L,0x1ab80L,0x9124L,0x8748L);
         for(long offset=0;offset<0x20000;offset+=4) {
             long value=Integer.toUnsignedLong(getInt(toAddr(offset)));
-            if(!dataBases.contains(value)) continue;
+            if(!dataBases.contains(value) && !(value>=0xe100 && value<0xe290) &&
+               !(value>=0x1abc0 && value<0x1d940)) continue;
             for(Reference ref:getReferencesTo(toAddr(offset))) {
                 Function fn=getFunctionContaining(ref.getFromAddress());
                 literalRefs.add(record("literal",Long.toHexString(offset),"value",Long.toHexString(value),
@@ -68,7 +73,7 @@ public class SmuStudy extends GhidraScript {
         decompiler.openProgram(currentProgram);
         List<Object> functions = new ArrayList<>();
         Set<Address> done = new HashSet<>();
-        while (done.size()<selected.size() && done.size()<160) {
+        while (done.size()<selected.size() && done.size()<280) {
             Address address = selected.keySet().stream().filter(a -> !done.contains(a)).findFirst().get();
             done.add(address);
             Function fn = getFunctionAt(address);

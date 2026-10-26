@@ -29,7 +29,8 @@ GUI：AMD tuning → Read PBO capability → 选择 PPT/TDC/EDC/Temperature → 
 每次应用后需重新读取能力。确认窗口期间改变目标、项目或数值时终止提交；
 异步查询期间改变目标时丢弃旧结果。命令结果列出请求值、固件响应及回读不可用状态。
 
-能力消息 `6Fh` 的 bit 1 必须置位（PowerLimitsAvailable），bit 0 必须清零（manual OC disabled）。
+能力消息 `6Fh` 的 bit 1 必须置位（PowerLimitsAvailable），bit 16 必须清零（manual OC disabled）。
+bit 0 表示手动 OC 可用，不影响此处的关闭状态判断；依据见[固件研究](amd-smu-firmware-research.md)。
 bit 2 是 PBO/Fmax 能力，单独置位不表示上述限制可用。
 提交前重新查询并比较整个能力字，包括未知位，再重新验证 CPU/PCI 身份。
 六个邮箱参数均初始化，argument 0 之外全部写零；仅发送所选的一条设置消息。

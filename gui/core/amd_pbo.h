@@ -46,6 +46,10 @@ struct AmdPboFmaxUpdate {
     bool verified = false;
 };
 AmdPboCapabilities readShimadaPboCapabilities(HardwareSession &session, const SmuTarget &target);
+// Firmware 115.46.0 (0x00732e00): bit 0 is availability; bit 16 is live OC state.
+// Keep these separate even when other bits change during a mode transition.
+bool amdManualOcAvailable(std::uint32_t capabilities);
+bool amdManualOcEnabled(std::uint32_t capabilities);
 enum class AmdPboQuery { Ln2Mode, CorePerformance };
 struct AmdPboQueryResult {
     int error = 0;
@@ -88,7 +92,7 @@ struct AmdPboLimitUpdate {
 AmdPboLimitUpdate setShimadaPboLimit(HardwareSession &session, const SmuTarget &target,
                                     std::uint32_t expectedCapabilities, AmdPboLimit limit, unsigned value);
 // Manual OC mode is a separate, explicit action. Verification below means only
-// that bit 0 of a fresh 6F reply matches; it is not voltage/frequency telemetry.
+// that bit 16 of a fresh 6F reply matches; it is not voltage/frequency telemetry.
 struct AmdOcModeUpdate {
     int error = 0;
     AmdPboPhase phase = AmdPboPhase::Validate;

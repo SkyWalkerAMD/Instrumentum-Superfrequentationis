@@ -393,17 +393,18 @@ void AmdTuningPanel::readPboCapabilities() {
             pboCaps_ = r; pboTarget_ = target;
             append(table_, {"PBO capability raw", hexValue(r.raw, 4)});
             append(table_, {"PBO available", r.raw & 4u ? "Yes" : "No"});
-            append(table_, {"Manual OC enabled", r.raw & 1u ? "Yes" : "No"});
+            append(table_, {"Manual OC available", amdManualOcAvailable(r.raw) ? "Yes" : "No"});
+            append(table_, {"Manual OC enabled", amdManualOcEnabled(r.raw) ? "Yes" : "No"});
             append(table_, {"Current Fmax", "Unavailable: no verified readback"});
             append(table_, {"Power limits available", r.raw & 2u ? "Yes" : "No"});
             append(table_, {"PPT / TDC / EDC / temperature commands", amdPboLimitsAvailable(r.raw) ? "Available; effective limits unverified" : "Unavailable"});
-            append(table_, {"Manual OC frequency commands", r.raw & 1u ? "Mode enabled; frequency readback unavailable" : "Mode disabled; explicit mode change required"});
+            append(table_, {"Manual OC frequency commands", amdManualOcEnabled(r.raw) ? "Mode enabled; frequency readback unavailable" : "Mode disabled; explicit mode change required"});
             append(table_, {"All-core curve command", amdAllCoreCurveAvailable(r.raw) ? "Available; per-core readback unverified" : "Unavailable"});
             status_->setText((amdPboFmaxAvailable(r.raw) ?
                 "Fmax command available. Enter a MHz ceiling. Firmware acceptance does not verify the effective limit or operating frequency." :
                 "Fmax unavailable: PBO must be available and manual OC disabled. No mode change was requested.") +
                 QString(amdPboLimitsAvailable(r.raw) ? " PBO limit commands available; select one limit to change." : " PBO limit commands unavailable.") +
-                QString(r.raw & 1u ? " Manual OC is enabled." : " Manual OC is disabled."));
+                QString(amdManualOcEnabled(r.raw) ? " Manual OC is enabled." : " Manual OC is disabled."));
         }
         setEnabled(true); watcher->deleteLater();
     });
@@ -569,7 +570,7 @@ void AmdTuningPanel::applyOcMode() {
         if(revision==curveRevision_) {
             append(table_,{"Requested manual OC mode",enabled?"Enabled":"Disabled"});
             append(table_,{"Setting command",r.unchanged?"Not sent; already requested mode":r.accepted?"Firmware accepted":r.writeAttempted?"Attempted; not confirmed":"Not sent"});
-            append(table_,{"Mode flag readback",r.after.valid && !r.after.error?(r.after.raw & 1u?"Enabled":"Disabled"):"Unavailable"});
+            append(table_,{"Mode flag readback",r.after.valid && !r.after.error?(amdManualOcEnabled(r.after.raw)?"Enabled":"Disabled"):"Unavailable"});
             append(table_,{"Mode verification",r.verified && !r.error?"Mode bit matches":"Not verified"});
             append(table_,{"Capability before / after",QString("%1 / %2").arg(r.before.valid?hexValue(r.before.raw,4):"Unavailable").arg(r.after.valid?hexValue(r.after.raw,4):"Unavailable")});
         }
@@ -588,7 +589,7 @@ void AmdTuningPanel::applyOcMode() {
 }
 void AmdTuningPanel::applyOcFrequency() {
     using namespace octool::core;
-    if(!pboCaps_.valid || pboCaps_.error || !(pboCaps_.raw & 1u)) {
+    if(!pboCaps_.valid || pboCaps_.error || !amdManualOcEnabled(pboCaps_.raw)) {
         status_->setText("Read OC capability first. Manual OC must already be enabled; no mode change was requested.");return;
     }
     const auto scope=AmdOcFrequencyScope(ocFrequencyScope_->currentData().toInt());

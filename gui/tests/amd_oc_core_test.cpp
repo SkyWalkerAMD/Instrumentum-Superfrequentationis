@@ -10,8 +10,8 @@ struct Test {
     AmdPboFixture *fake = new AmdPboFixture;
     HardwareService service{std::unique_ptr<HardwareBackend>(fake)};
     SmuTarget target;
-    Test() { target.cpu = 130; target.profile = SmuProfile::Shimada; fake->capsRaw = 6; fake->allowManualOc = true; }
-    AmdOcModeUpdate mode(bool enabled = true, std::uint32_t expected = 6,
+    Test() { target.cpu = 130; target.profile = SmuProfile::Shimada; fake->capsRaw = 7; fake->allowManualOc = true; }
+    AmdOcModeUpdate mode(bool enabled = true, std::uint32_t expected = 7,
                          const std::atomic<bool> *cancel = nullptr, int timeout = 10000) {
         AmdOcModeUpdate out;
         const int e = service.transaction([&](HardwareSession &s) { out = setShimadaOcMode(s,target,expected,enabled); return out.error; },timeout,cancel);
@@ -20,7 +20,7 @@ struct Test {
     }
     AmdOcFrequencyUpdate frequency(AmdOcFrequencyScope scope = AmdOcFrequencyScope::Core,
                                    unsigned ccd = 3, unsigned core = 7, unsigned mhz = 5000,
-                                   std::uint32_t expected = 7, const std::atomic<bool> *cancel = nullptr, int timeout = 10000) {
+                                   std::uint32_t expected = 0x10007, const std::atomic<bool> *cancel = nullptr, int timeout = 10000) {
         AmdOcFrequencyUpdate out;
         const int e = service.transaction([&](HardwareSession &s) { out = setShimadaOcFrequency(s,target,expected,scope,ccd,core,mhz); return out.error; },timeout,cancel);
         if(e) out.error=e;
@@ -47,7 +47,7 @@ void encoding() {
 }
 void identities() {
     for(unsigned mode=0;mode<8;++mode) for(bool frequency : {false,true}) {
-        Test t;t.fake->capsRaw=7;
+        Test t;t.fake->capsRaw=0x10007;
         if(mode==0)t.target.profile=SmuProfile::Phoenix;
         if(mode==1)t.target.bus=1;
         if(mode==2)t.target.device=1;
@@ -56,39 +56,45 @@ void identities() {
         if(mode==5)t.fake->model=0x18;
         if(mode==6)t.fake->family=0x19;
         if(mode==7)t.fake->pciId^=0x10000;
-        const int e=frequency?t.frequency().error:t.mode(false,7).error;
+        const int e=frequency?t.frequency().error:t.mode(false,0x10007).error;
         assert(e && !t.fake->commands && !t.fake->settings);
     }
 }
 void modeChanges() {
+    // The firmware returns bit 0 before enabling and preserves it afterwards.
+    // An availability-only reply must not satisfy an enabled-state readback.
+    assert(amdManualOcAvailable(1) && !amdManualOcEnabled(1));
+    assert(!amdManualOcAvailable(0x10000) && amdManualOcEnabled(0x10000));
+    assert(amdPboFmaxAvailable(7) && amdPboLimitsAvailable(7) && amdAllCoreCurveAvailable(7));
+    assert(!amdPboFmaxAvailable(0x10007) && !amdPboLimitsAvailable(0x10007) && !amdAllCoreCurveAvailable(0x10007));
     for(bool enabled : {false,true}) for(std::uint32_t extra : {0u,2u,6u,0x80000006u}) {
-        Test t;const auto before=extra|unsigned(!enabled);t.fake->capsRaw=before;
+        Test t;const auto before=extra|1u|(unsigned(!enabled)<<16);t.fake->capsRaw=before;
         const auto r=t.mode(enabled,before);
         assert(!r.error && r.verified && r.accepted && r.writeAttempted && !r.unchanged);
-        assert(r.before.raw==before && bool(r.after.raw&1u)==enabled && r.phase==AmdPboPhase::Complete);
+        assert(r.before.raw==before && amdManualOcEnabled(r.after.raw)==enabled && r.phase==AmdPboPhase::Complete);
         assert((t.fake->messages==std::vector<std::uint32_t>{0x6f,enabled?0x5du:0x5eu,0x6f}));
         assert(t.fake->settings==1 && t.fake->scalarRaw==0x3f800000 && !t.fake->wrongCpu);
         for(const auto &args:t.fake->commandArgs)for(auto v:args)assert(!v);
     }
-    Test changed;changed.fake->overrideModeCaps=true;changed.fake->modeCapsAfter=0x80000001;
-    const auto r=changed.mode();assert(r.verified && r.after.raw==0x80000001 && r.before.raw==6);
+    Test changed;changed.fake->overrideModeCaps=true;changed.fake->modeCapsAfter=0x80010001;
+    const auto r=changed.mode();assert(r.verified && r.after.raw==0x80010001 && r.before.raw==7);
 }
 void unchanged() {
     for(bool enabled : {false,true}) {
-        Test t;t.fake->capsRaw=6u|unsigned(enabled);
+        Test t;t.fake->capsRaw=7u|(unsigned(enabled)<<16);
         const auto r=t.mode(enabled,t.fake->capsRaw);
         assert(r.verified && r.unchanged && !r.accepted && !r.writeAttempted && !t.fake->settings);
         assert((t.fake->messages==std::vector<std::uint32_t>{0x6f}));
     }
 }
 void staleContexts() {
-    for(bool frequency : {false,true}) for(std::uint32_t caps : {0u,1u,2u,4u,0x80000007u}) {
+    for(bool frequency : {false,true}) for(std::uint32_t caps : {0u,1u,2u,4u,0x80010007u}) {
         Test t;t.fake->capsRaw=caps;
-        const int e=frequency?t.frequency().error:t.mode(false,7).error;
+        const int e=frequency?t.frequency().error:t.mode(false,0x10007).error;
         assert(e==-EAGAIN && !t.fake->settings && t.fake->commands==1);
     }
     for(bool frequency : {false,true}) {
-        Test t;t.fake->capsRaw=frequency?7:6;
+        Test t;t.fake->capsRaw=frequency?0x10007:7;
         t.fake->afterRequest=[&] {if(t.fake->argumentReads)t.fake->model=0x18;};
         const int e=frequency?t.frequency().error:t.mode().error;
         assert(e==-ENOTSUP && !t.fake->settings);
@@ -96,21 +102,25 @@ void staleContexts() {
 }
 void frequencyAcknowledgement() {
     for(bool all : {false,true})for(bool drop : {false,true}) {
-        Test t;t.fake->capsRaw=0x80000007;t.fake->discardChange=drop;
-        const auto r=t.frequency(all?AmdOcFrequencyScope::AllCores:AmdOcFrequencyScope::Core,all?0:15,all?0:7,5000,0x80000007);
+        Test t;t.fake->capsRaw=0x80010007;t.fake->discardChange=drop;
+        const auto r=t.frequency(all?AmdOcFrequencyScope::AllCores:AmdOcFrequencyScope::Core,all?0:15,all?0:7,5000,0x80010007);
         assert(!r.error && r.accepted && !r.verified && r.writeAttempted && r.requestedMHz==5000);
         assert((t.fake->messages==std::vector<std::uint32_t>{0x6f,all?0x5fu:0x60u}));
         assert(r.argument==(all?5000u:0xf0701388u) && t.fake->commandArgs.back()[0]==r.argument);
-        assert(t.fake->capsRaw==0x80000007 && t.fake->scalarRaw==0x3f800000 && t.fake->settings==1);
+        assert(t.fake->capsRaw==0x80010007 && t.fake->scalarRaw==0x3f800000 && t.fake->settings==1);
         assert(t.fake->ocAllMHz==((all && !drop)?5000u:0u));
         assert(t.fake->ocCoreArgument==((!all && !drop)?0xf0701388u:0u));
         for(unsigned i=1;i<6;++i)assert(!t.fake->commandArgs.back()[i]);
     }
-    for(std::uint32_t caps : {0u,2u,4u,6u,0xfffffffeu}) {
+    for(std::uint32_t caps : {0u,1u,2u,4u,6u,7u,0xfffeffffu}) {
         Test t;assert(t.frequency(AmdOcFrequencyScope::Core,0,0,5000,caps).error==-ENOTSUP && !t.fake->calls);
     }
 }
 void modeReadbackFailure() {
+    Test unavailable; unavailable.fake->capsRaw=6;
+    assert(unavailable.mode(true,6).error==-ENOTSUP && unavailable.fake->settings==0);
+    Test availableOnly; availableOnly.fake->overrideModeCaps=true; availableOnly.fake->modeCapsAfter=7;
+    assert(availableOnly.mode().error==-EIO && availableOnly.fake->settings==1);
     Test drop;drop.fake->discardChange=true;const auto r=drop.mode();
     assert(r.error==-EIO && r.accepted && !r.verified && r.after.valid && r.phase==AmdPboPhase::Verify);
     for(unsigned mode=0;mode<2;++mode) {
@@ -121,7 +131,7 @@ void modeReadbackFailure() {
 }
 void firmwareRejections() {
     for(bool frequency : {false,true})for(std::uint32_t response:{0u,2u,0xfcu,0xfdu,0xfeu,0xffu,UINT32_MAX}) {
-        Test t;t.fake->capsRaw=frequency?7:6;t.fake->writeCompletion=response;
+        Test t;t.fake->capsRaw=frequency?0x10007:7;t.fake->writeCompletion=response;
         const int e=frequency?t.frequency().error:t.mode().error;
         assert(e==(response?-EIO:-ETIMEDOUT) && t.fake->settings==1 && t.fake->commands==2);
     }
@@ -130,21 +140,21 @@ void firmwareRejections() {
 }
 void faultsAndCancellation() {
     for(bool frequency:{false,true}) {
-        Test base;base.fake->capsRaw=frequency?7:6;assert(!(frequency?base.frequency().error:base.mode().error));
+        Test base;base.fake->capsRaw=frequency?0x10007:7;assert(!(frequency?base.frequency().error:base.mode().error));
         for(unsigned n=0;n<base.fake->calls;++n) {
-            Test t;t.fake->capsRaw=frequency?7:6;t.fake->failAt=int(n);
+            Test t;t.fake->capsRaw=frequency?0x10007:7;t.fake->failAt=int(n);
             const int e=frequency?t.frequency().error:t.mode().error;
             assert(e==-EACCES && t.fake->calls==n+1 && t.fake->settings<=1);
         }
         for(unsigned n=0;n<=base.fake->calls;++n) {
-            Test t;t.fake->capsRaw=frequency?7:6;std::atomic<bool> cancel{n==0};
+            Test t;t.fake->capsRaw=frequency?0x10007:7;std::atomic<bool> cancel{n==0};
             t.fake->afterRequest=[&] {if(t.fake->calls==n)cancel.store(true);};
-            const int e=frequency?t.frequency(AmdOcFrequencyScope::Core,3,7,5000,7,&cancel).error:t.mode(true,6,&cancel).error;
+            const int e=frequency?t.frequency(AmdOcFrequencyScope::Core,3,7,5000,0x10007,&cancel).error:t.mode(true,7,&cancel).error;
             assert(e==-ECANCELED && t.fake->calls==n && t.fake->settings<=1);
         }
     }
     Test deadline;deadline.fake->busyBefore=true;
-    assert(deadline.mode(true,6,nullptr,1).error==-ETIMEDOUT && !deadline.fake->settings);
+    assert(deadline.mode(true,7,nullptr,1).error==-ETIMEDOUT && !deadline.fake->settings);
 }
 void transportAllowlist() {
     for(std::uint32_t command:{0x53u,0x61u,0x92u,0xa8u,0x26u,0x27u}) {

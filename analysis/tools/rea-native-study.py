@@ -21,10 +21,10 @@ SOURCE_SHA = '44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10'
 # Separately pinned UEFI modules from the vendor's public ASUS 1317 capsule.
 # These profiles do not relax the original ELF identity check.
 FIRMWARE_STUDIES = {
-    'firmware_transport': ('16dc54fefb3ac983d3752adbe32db3f38259e239fc89ecec78b18a0912796e60',
-                           (('0x1464', 'FUN_'),)),
-    'firmware_limits': ('04f224cf28739fad16b68bb82d0761d2f6ac5e247ad7377ad6e0051cf9405b43',
-                        (('0x4850', 'FUN_'),)),
+    'firmware_transport': ('7b5302929acb73d0a6a56842af62850b1b017e5c8d1fe1ccbc22a25551d06e67',
+                           (('0x1464', 'entry'),)),
+    'firmware_limits': ('7da8e70b76a41f065bfa645b04bdcb58a1cdab3f02bcae111c3c8581467e9f4d',
+                        (('0x4850', 'entry'),)),
 }
 # Exact file offsets in the executable PT_LOAD of the hash-verified ELF.
 # These happen to equal ELF virtual addresses. Ghidra may relocate this PIE;

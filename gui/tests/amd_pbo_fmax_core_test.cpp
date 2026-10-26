@@ -37,7 +37,7 @@ void eligibility() {
         assert(t.set().error && !t.fake->commands && !t.fake->settings);
     }
     for (unsigned value : {0u,0x100000u,UINT32_MAX}) { Test t; assert(t.set(value).error == -ERANGE && !t.fake->calls); }
-    for (unsigned value : {0u,1u,2u,3u,5u,UINT32_MAX}) { Test t; assert(t.set(5000,value).error == -ENOTSUP && !t.fake->calls); }
+    for (unsigned value : {0u,1u,2u,3u,0x10004u,0x10005u,UINT32_MAX}) { Test t; assert(t.set(5000,value).error == -ENOTSUP && !t.fake->calls); }
 }
 void acknowledgementOnly() {
     for (unsigned mhz : {1u,4999u,5000u,0xfffffu}) {
@@ -52,6 +52,10 @@ void acknowledgementOnly() {
     }
     Test unknown; unknown.fake->capsRaw = 0x80000004;
     const auto caps = unknown.read(); assert(caps.valid && caps.raw == 0x80000004 && amdPboFmaxAvailable(caps.raw));
+    for (std::uint32_t available : {5u,7u}) {
+        Test t; t.fake->capsRaw = available;
+        assert(t.set(5000,available).accepted && t.fake->settings == 1);
+    }
 }
 void changedCapabilityAndIdentity() {
     for (std::uint32_t raw : {0u,5u,6u,0x80000004u}) {

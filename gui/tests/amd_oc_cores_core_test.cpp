@@ -10,9 +10,9 @@ struct Test {
     AmdPboFixture *fake = new AmdPboFixture;
     HardwareService service{std::unique_ptr<HardwareBackend>(fake)};
     SmuTarget target;
-    Test() { target.cpu=130;target.profile=SmuProfile::Shimada;fake->capsRaw=7;fake->allowManualOc=true; }
+    Test() { target.cpu=130;target.profile=SmuProfile::Shimada;fake->capsRaw=0x10007;fake->allowManualOc=true; }
     AmdOcCoreFrequenciesUpdate run(unsigned mask=0x85, unsigned ccd=15, unsigned mhz=5000,
-                                  std::uint32_t caps=7, const std::atomic<bool> *cancel=nullptr, int timeout=10000) {
+                                  std::uint32_t caps=0x10007, const std::atomic<bool> *cancel=nullptr, int timeout=10000) {
         AmdOcCoreFrequenciesUpdate out;
         const int e=service.transaction([&](HardwareSession &s){out=setShimadaOcCoreFrequencies(s,target,caps,ccd,mask,mhz);return out.error;},timeout,cancel);
         if(e)out.error=e;
@@ -37,7 +37,7 @@ void explicitMasks() {
         unsigned count=0;
         for(unsigned core=0;core<8;++core)if(mask & (1u<<core)) {
             const auto &v=r.cores[core];
-            assert(v.accepted && v.writeAttempted && !v.verified && v.before.valid && v.before.raw==7);
+            assert(v.accepted && v.writeAttempted && !v.verified && v.before.valid && v.before.raw==0x10007);
             assert(v.argument==((15u<<28)|(core<<20)|5000) && v.command==0x60);
             assert(t.fake->messages[count*2]==0x6f && t.fake->messages[count*2+1]==0x60);
             const auto &args=t.fake->commandArgs[count*2+1];assert(args[0]==v.argument);
@@ -45,15 +45,15 @@ void explicitMasks() {
             ++count;
         } else assert(!r.cores[core].writeAttempted && !r.cores[core].accepted);
         assert(t.fake->settings==count && t.fake->messages.size()==count*2 && !t.fake->wrongCpu);
-        assert(!t.fake->ocCoreArgument && !t.fake->ocAllMHz && t.fake->capsRaw==7 && t.fake->scalarRaw==0x3f800000);
+        assert(!t.fake->ocCoreArgument && !t.fake->ocAllMHz && t.fake->capsRaw==0x10007 && t.fake->scalarRaw==0x3f800000);
     }
 }
 void invalidBeforeAccess() {
     for(unsigned mask:{0u,256u,0x101u,UINT32_MAX}) { Test t;assert(t.run(mask).error==-EINVAL && !t.fake->calls); }
     for(unsigned ccd:{16u,UINT32_MAX}) { Test t;assert(t.run(1,ccd).error==-ERANGE && !t.fake->calls); }
     for(unsigned mhz:{0u,0x100000u,UINT32_MAX}) { Test t;assert(t.run(1,0,mhz).error==-ERANGE && !t.fake->calls); }
-    for(unsigned caps:{0u,2u,6u,0xfffffffeu}) { Test t;assert(t.run(1,0,5000,caps).error==-ENOTSUP && !t.fake->calls); }
-    Test stale;stale.fake->capsRaw=0x80000007;
+    for(unsigned caps:{0u,2u,6u,0xfffeffffu}) { Test t;assert(t.run(1,0,5000,caps).error==-ENOTSUP && !t.fake->calls); }
+    Test stale;stale.fake->capsRaw=0x80010007;
     const auto r=stale.run();assert(r.error==-EAGAIN && !r.attemptedMask && !r.acceptedMask && r.visitedMask==1 && r.failedCore==0);
 }
 void identities() {
@@ -76,7 +76,7 @@ void stopOnFirstFailure() {
         Test t;
         const auto change=[&]{
             if(failure==0)t.fake->writeCompletion=0xfd;
-            if(failure==1)t.fake->capsRaw=0x80000007;
+            if(failure==1)t.fake->capsRaw=0x80010007;
             if(failure==2)t.fake->model=0x18;
             if(failure==3)t.fake->completion=0xfe;
         };
@@ -103,11 +103,11 @@ void cancellationAndDeadline() {
     for(unsigned n=count;n<=count*2;++n) {
         Test t;std::atomic<bool> cancel{false};
         t.fake->afterRequest=[&]{if(t.fake->calls==n)cancel.store(true);};
-        const auto r=t.run(0x85,15,5000,7,&cancel);
+        const auto r=t.run(0x85,15,5000,0x10007,&cancel);
         assert(r.error==-ECANCELED && t.fake->calls==n && (r.acceptedMask & 1u) && !(r.visitedMask & 0x80));
         assert(t.fake->settings<=2 && !r.cores[7].before.valid);
     }
-    Test expired;expired.fake->busyBefore=true;const auto r=expired.run(0x85,15,5000,7,nullptr,1);
+    Test expired;expired.fake->busyBefore=true;const auto r=expired.run(0x85,15,5000,0x10007,nullptr,1);
     assert(r.error==-ETIMEDOUT && !r.attemptedMask && !expired.fake->settings);
 }
 }

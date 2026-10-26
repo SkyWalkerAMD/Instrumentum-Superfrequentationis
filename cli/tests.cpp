@@ -2030,7 +2030,7 @@ void pboFmaxCommands() {
         std::vector<std::string>{"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-caps","4"},
         {"amd-pbo-fmax-set","--cpu","130","--mhz","0","--expect-caps","4","--apply"},
         {"amd-pbo-fmax-set","--cpu","130","--mhz","1048576","--expect-caps","4","--apply"},
-        {"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-caps","5","--apply"},
+        {"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-caps","0x10005","--apply"},
         {"amd-pbo-fmax-set","--mhz","5000","--expect-caps","4","--apply"},
         {"amd-pbo-rails-encode","--rail0-mv","1001","--rail1-mv","0"},
         {"amd-pbo-rails-encode","--rail0-mv","1000","--rail1-mv","0","--apply"},
@@ -2118,7 +2118,7 @@ void allCoreCurveInvalidBeforeOpen() {
     for (const char *value : {"","-","-51","51","-1.5","0x10","+1","1e1","2147483648"," -1"}) {
         auto a=base; a[4]=value; invalid.push_back(a);
     }
-    for (const char *caps : {"0","2","5","0xffffffff"}) { auto a=base; a[6]=caps; invalid.push_back(a); }
+    for (const char *caps : {"0","2","0x10005","0xffffffff"}) { auto a=base; a[6]=caps; invalid.push_back(a); }
     for (const char *selector : {"--ccd","--core","--cores"}) { auto a=base; a.push_back(selector); a.push_back("0"); invalid.push_back(a); }
     auto duplicate=base; duplicate.push_back("--margin"); duplicate.push_back("0"); invalid.push_back(duplicate);
     for (const auto &args : invalid) {
@@ -2162,7 +2162,7 @@ void pboLimitInvalidBeforeOpen() {
         auto args = base; args[6] = value; invalid.push_back(args);
     }
     for (const char *name : {"soc-tdc","all","PPT"}) { auto args = base; args[4] = name; invalid.push_back(args); }
-    for (const char *caps : {"0","4","7","0xffffffff"}) { auto args = base; args[8] = caps; invalid.push_back(args); }
+    for (const char *caps : {"0","4","0x10007","0xffffffff"}) { auto args = base; args[8] = caps; invalid.push_back(args); }
     auto tooHot = base; tooHot[4] = "temperature"; tooHot[6] = "101"; invalid.push_back(tooHot);
     auto duplicate = base; duplicate.push_back("--limit"); duplicate.push_back("tdc"); invalid.push_back(duplicate);
     for (const auto &args : invalid) {
@@ -2173,52 +2173,52 @@ void pboLimitInvalidBeforeOpen() {
 }
 void ocModeCommands() {
     for (unsigned mode=0;mode<3;++mode) {
-        AmdPboFixture d; d.allowManualOc=true; d.capsRaw=mode==0?6:7;
-        const auto result=command(d,{"amd-oc-mode-set","--cpu","130","--enabled",mode==1?"0":"1","--expect-caps",mode==0?"6":"7","--apply"},0);
+        AmdPboFixture d; d.allowManualOc=true; d.capsRaw=mode==0?7:0x10007;
+        const auto result=command(d,{"amd-oc-mode-set","--cpu","130","--enabled",mode==1?"0":"1","--expect-caps",mode==0?"7":"0x10007","--apply"},0);
         assert(result.find("\"verified\":true")!=std::string::npos && !d.wrongCpu);
-        assert(d.capsRaw==(mode==1?6u:7u) && d.settings==(mode==2?0u:1u));
+        assert(d.capsRaw==(mode==1?7u:0x10007u) && d.settings==(mode==2?0u:1u));
         assert(d.scalarRaw==0x3f800000 && !d.ocAllMHz && !d.ocCoreArgument);
     }
     for (unsigned mode=0;mode<6;++mode) {
-        AmdPboFixture d; d.allowManualOc=true; d.capsRaw=6;
+        AmdPboFixture d; d.allowManualOc=true; d.capsRaw=7;
         if(mode==0)d.capsRaw=4;
         if(mode==1)d.model=0x18;
         if(mode==2)d.writeCompletion=0xfd;
         if(mode==3)d.discardChange=true;
         if(mode==4)d.failAt=0;
         if(mode==5)d.afterRequest=[&]{if(d.settings)d.completion=0xfe;};
-        const auto result=command(d,{"amd-oc-mode-set","--cpu","130","--enabled","1","--expect-caps","6","--apply"},3);
+        const auto result=command(d,{"amd-oc-mode-set","--cpu","130","--enabled","1","--expect-caps","7","--apply"},3);
         assert(result.find("\"verified\":false")!=std::string::npos);
         assert(d.settings==((mode==2 || mode==3 || mode==5)?1u:0u));
     }
 }
 void ocFrequencyCommands() {
     for(bool all:{false,true})for(bool drop:{false,true}) {
-        AmdPboFixture d;d.allowManualOc=true;d.capsRaw=7;d.discardChange=drop;
-        std::vector<std::string> args={"amd-oc-frequency-set","--cpu","130","--scope",all?"all-cores":"core","--mhz","5000","--expect-caps","7","--apply"};
+        AmdPboFixture d;d.allowManualOc=true;d.capsRaw=0x10007;d.discardChange=drop;
+        std::vector<std::string> args={"amd-oc-frequency-set","--cpu","130","--scope",all?"all-cores":"core","--mhz","5000","--expect-caps","0x10007","--apply"};
         if(!all)args.insert(args.end(),{"--ccd","15","--core","7"});
         const auto result=command(d,args,0);
         assert(result.find("\"accepted\":true")!=std::string::npos && result.find("\"verified\":false")!=std::string::npos);
         assert((d.messages==std::vector<std::uint32_t>{0x6f,all?0x5fu:0x60u}) && !d.wrongCpu);
         assert(d.commandArgs.back()[0]==(all?5000u:0xf0701388u));
-        assert(d.scalarRaw==0x3f800000 && d.capsRaw==7 && d.settings==1);
+        assert(d.scalarRaw==0x3f800000 && d.capsRaw==0x10007 && d.settings==1);
     }
     for(unsigned mode=0;mode<5;++mode) {
-        AmdPboFixture d;d.allowManualOc=true;d.capsRaw=7;
+        AmdPboFixture d;d.allowManualOc=true;d.capsRaw=0x10007;
         if(mode==0)d.capsRaw=5;
         if(mode==1)d.model=0x18;
         if(mode==2)d.writeCompletion=0xfd;
         if(mode==3)d.failAt=0;
         if(mode==4)d.completion=0xfe;
-        const auto result=command(d,{"amd-oc-frequency-set","--cpu","130","--scope","core","--ccd","3","--core","7","--mhz","5000","--expect-caps","7","--apply"},3);
+        const auto result=command(d,{"amd-oc-frequency-set","--cpu","130","--scope","core","--ccd","3","--core","7","--mhz","5000","--expect-caps","0x10007","--apply"},3);
         assert(result.find("\"verified\":false")!=std::string::npos && d.settings==(mode==2?1u:0u));
     }
 }
 void ocSelectedCoreCommands() {
     for(const char *cores:{"0","7","0,2,7","0,1,2,3,4,5,6,7"}) {
-        AmdPboFixture d;d.allowManualOc=true;d.capsRaw=7;d.discardChange=true;
+        AmdPboFixture d;d.allowManualOc=true;d.capsRaw=0x10007;d.discardChange=true;
         unsigned mask=0;assert(parseAmdCurveCores(cores,mask));
-        const auto result=command(d,{"amd-oc-frequency-set","--cpu","130","--scope","cores","--ccd","15","--cores",cores,"--mhz","5000","--expect-caps","7","--apply"},0);
+        const auto result=command(d,{"amd-oc-frequency-set","--cpu","130","--scope","cores","--ccd","15","--cores",cores,"--mhz","5000","--expect-caps","0x10007","--apply"},0);
         assert(result.find("\"completed\":true")!=std::string::npos && result.find("\"verified\":false")!=std::string::npos);
         unsigned count=0;
         for(unsigned core=0;core<8;++core)if(mask & (1u<<core)) {
@@ -2230,21 +2230,21 @@ void ocSelectedCoreCommands() {
 }
 void ocSelectedCoreFailures() {
     for(unsigned fault=0;fault<4;++fault)for(unsigned position=0;position<3;++position) {
-        AmdPboFixture d;d.allowManualOc=true;d.capsRaw=7;
+        AmdPboFixture d;d.allowManualOc=true;d.capsRaw=0x10007;
         const auto change=[&]{
             if(fault==0)d.writeCompletion=0xfd;
-            if(fault==1)d.capsRaw=0x80000007;
+            if(fault==1)d.capsRaw=0x80010007;
             if(fault==2)d.model=0x18;
             if(fault==3)d.completion=0xfe;
         };
         if(!position)change();else d.afterRequest=[&]{if(d.settings==position)change();};
-        const auto result=command(d,{"amd-oc-frequency-set","--cpu","130","--scope","cores","--ccd","15","--cores","0,2,7","--mhz","5000","--expect-caps","7","--apply"},3);
+        const auto result=command(d,{"amd-oc-frequency-set","--cpu","130","--scope","cores","--ccd","15","--cores","0,2,7","--mhz","5000","--expect-caps","0x10007","--apply"},3);
         assert(result.find("\"completed\":false")!=std::string::npos && result.find("\"verified\":true")==std::string::npos);
         assert(d.settings==position+(fault==0?1u:0u) && !d.wrongCpu);
     }
 }
 void ocSelectedCoreInvalidBeforeOpen() {
-    const std::vector<std::string> base={"amd-oc-frequency-set","--cpu","130","--scope","cores","--ccd","15","--cores","0,2,7","--mhz","5000","--expect-caps","7","--apply"};
+    const std::vector<std::string> base={"amd-oc-frequency-set","--cpu","130","--scope","cores","--ccd","15","--cores","0,2,7","--mhz","5000","--expect-caps","0x10007","--apply"};
     std::vector<std::vector<std::string>> invalid;
     auto args=base;args.pop_back();invalid.push_back(args);
     for(std::size_t i=1;i+1<base.size();i+=2){args=base;args.erase(args.begin()+i,args.begin()+i+2);invalid.push_back(args);}
@@ -2265,8 +2265,8 @@ void ocSelectedCoreInvalidBeforeOpen() {
     }
 }
 void ocInvalidBeforeOpen() {
-    const std::vector<std::string> mode={"amd-oc-mode-set","--cpu","130","--enabled","1","--expect-caps","6","--apply"};
-    const std::vector<std::string> freq={"amd-oc-frequency-set","--cpu","130","--scope","core","--ccd","3","--core","7","--mhz","5000","--expect-caps","7","--apply"};
+    const std::vector<std::string> mode={"amd-oc-mode-set","--cpu","130","--enabled","1","--expect-caps","7","--apply"};
+    const std::vector<std::string> freq={"amd-oc-frequency-set","--cpu","130","--scope","core","--ccd","3","--core","7","--mhz","5000","--expect-caps","0x10007","--apply"};
     std::vector<std::vector<std::string>> invalid;
     for(const auto &base:{mode,freq}) {
         auto args=base;args.pop_back();invalid.push_back(args);
@@ -2278,7 +2278,7 @@ void ocInvalidBeforeOpen() {
     for(const char *v:{"-1","0x100000000","6.5"}){auto a=mode;a[6]=v;invalid.push_back(a);}
     for(const char *v:{"0","-1","1048576","4294967295","5000.0","0x1388","1e3","+5000",""}){auto a=freq;a[10]=v;invalid.push_back(a);}
     for(const char *v:{"all","ccd","CORE"}){auto a=freq;a[4]=v;invalid.push_back(a);}
-    for(const char *v:{"0","2","4","6","0xfffffffe"}){auto a=freq;a[12]=v;invalid.push_back(a);}
+    for(const char *v:{"0","2","7","6","0xfffeffff"}){auto a=freq;a[12]=v;invalid.push_back(a);}
     for(const char *v:{"16","-1","0x10"}){auto a=freq;a[6]=v;invalid.push_back(a);}
     for(const char *v:{"8","-1","0xffffffff"}){auto a=freq;a[8]=v;invalid.push_back(a);}
     auto all=freq;all[4]="all-cores";invalid.push_back(all);

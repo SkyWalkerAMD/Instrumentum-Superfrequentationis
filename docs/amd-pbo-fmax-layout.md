@@ -6,7 +6,7 @@
 ## Fmax
 
 限定 AMD family 1Ah / model 08h，PCI 1022:153a、0000:00:00.0。
-先用 RSMU `6Fh` 读取能力字：bit 2 表示 PBO 可用，bit 0 表示手动 OC 已启用。
+先用 RSMU `6Fh` 读取能力字：bit 2 表示 PBO 可用，bit 0 表示手动 OC 可用，bit 16 表示手动 OC 已启用。
 只有 PBO 可用且手动 OC 关闭时允许提交。完整能力字与用户提供的旧值比较，保留未知位；
 变化返回 `EAGAIN`，不发送设置。提交前再次核验 CPU 和 PCI 身份。
 
@@ -15,7 +15,7 @@ Fmax 用 RSMU `70h`，argument 0 为整数 MHz，argument 1–5 清零。
 独立的 [ZenStates 设置表](https://github.com/irusanov/ZenStates-Core/blob/869b7e82572337e5a673e92230edc92bddf0e44b/Hardware/Smu/Settings/Zen5Settings_ShimadaPeak.cs)
 与 [SetBoostLimitAllCore](https://github.com/irusanov/ZenStates-Core/blob/869b7e82572337e5a673e92230edc92bddf0e44b/Hardware/Smu/Commands/SetBoostLimitAllCore.cs)
 交叉支持命令和参数编码；原版 `set_fmax` 构造/调用证据见 [PBO 研究](amd-pbo-setter-research.md)。
-能力位依据固定版本 [Cpu.cs](https://github.com/irusanov/ZenStates-Core/blob/869b7e82572337e5a673e92230edc92bddf0e44b/Cpu.cs)。
+模式位依据 [ASUS SMU 固件指令](amd-smu-firmware-research.md)修正；公开枚举中 bit 0 的名字不足以证明运行状态。
 
 传输先等待邮箱空闲，清 response、写六个参数、提交并轮询完成。response 为 1 仅标记 `accepted=true`；
 `verified` 始终为 false，`current_fmax_mhz` 始终为 null。

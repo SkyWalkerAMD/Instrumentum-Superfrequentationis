@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Extract pinned research inputs; never launch or modify vendor firmware."""
+"""Extract pinned research inputs; never launch vendor firmware.
+
+Separate PE analysis copies change only AddressOfEntryPoint, so Ghidra/REA can
+discover an otherwise orphaned function. Original modules remain byte-identical.
+"""
 import argparse
 import hashlib
 import json
@@ -16,6 +20,10 @@ CAPSULE_NAME = 'Pro-WS-TRX50-SAGE-WIFI-ASUS-1317.CAP'
 MODULES = {
     '062913EF-0152-4B5A-B9BB-0BF21A09D1D3': ('transport', '16dc54fefb3ac983d3752adbe32db3f38259e239fc89ecec78b18a0912796e60'),
     '31B03837-0853-4B17-A6BB-E0BC2405F901': ('limits', '04f224cf28739fad16b68bb82d0761d2f6ac5e247ad7377ad6e0051cf9405b43'),
+}
+STUDY_ENTRIES = {
+    'transport': (0x494, 0x1464, '7b5302929acb73d0a6a56842af62850b1b017e5c8d1fe1ccbc22a25551d06e67'),
+    'limits': (0x520, 0x4850, '7da8e70b76a41f065bfa645b04bdcb58a1cdab3f02bcae111c3c8581467e9f4d'),
 }
 
 
@@ -81,7 +89,21 @@ def main():
             if digest(module) != expected:
                 raise ValueError('Unexpected UEFI module: ' + guid)
             (output / ('uefi-' + name + '.bin')).write_bytes(module)
-            manifest['modules'].append(dict(guid=guid, name=name, sha256=expected, bytes=len(module)))
+            original_entry, study_entry, study_sha = STUDY_ENTRIES[name]
+            pe = struct.unpack_from('<I', module, 0x3c)[0]
+            entry_field = pe + 24 + 16
+            if (module[pe:pe+4] != b'PE\0\0' or entry_field != 0xe8 or
+                    struct.unpack_from('<I', module, entry_field)[0] != original_entry):
+                raise ValueError('Unexpected PE entry point')
+            study = bytearray(module)
+            struct.pack_into('<I', study, entry_field, study_entry)
+            if digest(study) != study_sha:
+                raise ValueError('Unexpected analysis copy')
+            (output / ('uefi-' + name + '-study.bin')).write_bytes(study)
+            manifest['modules'].append(dict(guid=guid, name=name, sha256=expected, bytes=len(module),
+                analysis_sha256=study_sha, entry_field_offset=entry_field,
+                original_entry_rva=original_entry, analysis_entry_rva=study_entry,
+                instruction_bytes_changed=False))
     (output / 'input-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     print('Verified static inputs:', BODY_SHA, len(body))
 

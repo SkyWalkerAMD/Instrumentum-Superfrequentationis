@@ -3693,7 +3693,7 @@ private slots:
             });
             apply->click(); QCOMPARE(device->calls,previous); QCOMPARE(device->settings,0u);
         }
-        device->capsRaw=7; read->click(); QTRY_VERIFY(panel.isEnabled()); const auto unavailable=device->calls;
+        device->capsRaw=0x10007; read->click(); QTRY_VERIFY(panel.isEnabled()); const auto unavailable=device->calls;
         apply->click(); QCOMPARE(device->calls,unavailable);
     }
     void allCoreCurveRejectsStaleCapsAndFirmware() {
@@ -3810,7 +3810,7 @@ private slots:
         const auto calls=device->calls; apply->click(); QCOMPARE(device->calls,calls);
     }
     void ocModeChecksReadback() {
-        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=6;
+        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=7;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
         panel.resize(1300,1200);panel.show();QApplication::processEvents();
         auto *read=panel.findChild<QPushButton *>("ocCapsRead"),*apply=panel.findChild<QPushButton *>("ocModeApply");
@@ -3819,9 +3819,13 @@ private slots:
         for(unsigned i=0;i<3;++i) {
             mode->setCurrentIndex(i==0?1:0);
             read->click();QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(table->item(2,0)->text(),QString("Manual OC available"));
+            QCOMPARE(table->item(2,1)->text(),QString("Yes"));
+            QCOMPARE(table->item(3,0)->text(),QString("Manual OC enabled"));
+            QCOMPARE(table->item(3,1)->text(),i==1?QString("Yes"):QString("No"));
             QTimer::singleShot(0,[]{auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());if(box)box->button(QMessageBox::Yes)->click();});
             apply->click();QTRY_VERIFY(panel.isEnabled());
-            QCOMPARE(device->capsRaw,i==0?7u:6u);QCOMPARE(device->settings,i==0?1u:2u);
+            QCOMPARE(device->capsRaw,i==0?0x10007u:7u);QCOMPARE(device->settings,i==0?1u:2u);
             QCOMPARE(table->item(2,1)->text(),i==0?QString("Enabled"):QString("Disabled"));
             QCOMPARE(table->item(3,1)->text(),QString("Mode bit matches"));
             if(i==2)QCOMPARE(table->item(1,1)->text(),QString("Not sent; already requested mode"));
@@ -3834,7 +3838,7 @@ private slots:
         QCOMPARE(device->scalarRaw,0x3f800000u);QCOMPARE(device->ocAllMHz,0u);QCOMPARE(device->ocCoreArgument,0u);QCOMPARE(device->wrongCpu,0u);
     }
     void ocModeRejectsUnverifiedResult() {
-        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=6;device->discardChange=true;
+        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=7;device->discardChange=true;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
         panel.resize(1300,1200);panel.show();QApplication::processEvents();
         panel.findChild<QComboBox *>("ocMode")->setCurrentIndex(1);
@@ -3849,7 +3853,7 @@ private slots:
         if(!shot.isEmpty())QVERIFY(panel.grab().save(shot));
     }
     void ocFrequencyAcknowledgementOnly() {
-        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=7;device->discardChange=true;
+        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=0x10007;device->discardChange=true;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
         panel.resize(1300,1200);panel.show();QApplication::processEvents();
         auto *read=panel.findChild<QPushButton *>("ocCapsRead"),*apply=panel.findChild<QPushButton *>("ocFrequencyApply");
@@ -3873,11 +3877,11 @@ private slots:
             if(!shot.isEmpty())QVERIFY(panel.grab().save(shot));
             const auto calls=device->calls;apply->click();QCOMPARE(device->calls,calls);
         }
-        QCOMPARE(device->settings,2u);QCOMPARE(device->ocAllMHz,0u);QCOMPARE(device->ocCoreArgument,0u);QCOMPARE(device->capsRaw,7u);QCOMPARE(device->scalarRaw,0x3f800000u);
+        QCOMPARE(device->settings,2u);QCOMPARE(device->ocAllMHz,0u);QCOMPARE(device->ocCoreArgument,0u);QCOMPARE(device->capsRaw,0x10007u);QCOMPARE(device->scalarRaw,0x3f800000u);
         scope->setCurrentIndex(0);QVERIFY(ccd->isEnabled() && core->isEnabled() && ccd->text().isEmpty() && core->text().isEmpty());
     }
     void ocSelectedCoresAcknowledgementOnly() {
-        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=7;device->discardChange=true;
+        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=0x10007;device->discardChange=true;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
         panel.resize(1400,1300);panel.show();QApplication::processEvents();
         auto *scope=panel.findChild<QComboBox *>("ocFrequencyScope");scope->setCurrentIndex(2);
@@ -3905,13 +3909,13 @@ private slots:
     }
     void ocSelectedCoresShowPartialFailure() {
         for(unsigned fault=0;fault<3;++fault) {
-            auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=7;
+            auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=0x10007;
             AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
             panel.resize(1400,1300);panel.show();QApplication::processEvents();
             panel.findChild<QComboBox *>("ocFrequencyScope")->setCurrentIndex(2);
             panel.findChild<QLineEdit *>("ocCcd")->setText("15");panel.findChild<QLineEdit *>("ocCore")->setText("0,2,7");panel.findChild<QLineEdit *>("ocMHz")->setText("5000");
             panel.findChild<QPushButton *>("ocCapsRead")->click();QTRY_VERIFY(panel.isEnabled());
-            device->afterRequest=[&]{if(device->settings==1){if(fault==0)device->writeCompletion=0xfd;if(fault==1)device->capsRaw=0x80000007;if(fault==2)device->model=0x18;}};
+            device->afterRequest=[&]{if(device->settings==1){if(fault==0)device->writeCompletion=0xfd;if(fault==1)device->capsRaw=0x80010007;if(fault==2)device->model=0x18;}};
             QTimer::singleShot(0,[]{auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());if(box)box->button(QMessageBox::Yes)->click();});
             panel.findChild<QPushButton *>("ocFrequencyApply")->click();QTRY_VERIFY(panel.isEnabled());
             QCOMPARE(device->settings,fault==0?2u:1u);
@@ -3927,7 +3931,7 @@ private slots:
         }
     }
     void ocSelectedCoresRejectInvalidAndChangedInputs() {
-        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=7;
+        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=0x10007;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
         auto *scope=panel.findChild<QComboBox *>("ocFrequencyScope");scope->setCurrentIndex(2);
         auto *cores=panel.findChild<QLineEdit *>("ocCore"),*ccd=panel.findChild<QLineEdit *>("ocCcd");
@@ -3947,7 +3951,7 @@ private slots:
         }
     }
     void ocSelectedCoresDiscardStaleTargetResult() {
-        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=7;
+        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=0x10007;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
         panel.findChild<QComboBox *>("ocFrequencyScope")->setCurrentIndex(2);
         panel.findChild<QLineEdit *>("ocCcd")->setText("15");panel.findChild<QLineEdit *>("ocCore")->setText("0,2,7");panel.findChild<QLineEdit *>("ocMHz")->setText("5000");
@@ -3959,7 +3963,7 @@ private slots:
         QCOMPARE(device->settings,3u);QCOMPARE(device->wrongCpu,0u);
     }
     void ocRejectsInvalidAndChangedConfirmation() {
-        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=7;
+        auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=0x10007;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
         auto *read=panel.findChild<QPushButton *>("ocCapsRead"),*frequency=panel.findChild<QPushButton *>("ocFrequencyApply"),*modeApply=panel.findChild<QPushButton *>("ocModeApply");
         auto *scope=panel.findChild<QComboBox *>("ocFrequencyScope"),*mode=panel.findChild<QComboBox *>("ocMode");
@@ -3990,7 +3994,7 @@ private slots:
     }
     void ocRejectsStaleCapabilitiesAndTargets() {
         for(bool frequency:{false,true})for(unsigned fault=0;fault<3;++fault) {
-            auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=frequency?7:6;
+            auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=frequency?0x10007:7;
             AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
             auto *read=panel.findChild<QPushButton *>("ocCapsRead"),*apply=panel.findChild<QPushButton *>(frequency?"ocFrequencyApply":"ocModeApply");
             panel.findChild<QComboBox *>("ocMode")->setCurrentIndex(1);

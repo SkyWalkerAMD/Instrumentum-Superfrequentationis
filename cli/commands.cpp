@@ -406,7 +406,7 @@ Command parse(const std::vector<std::string> &args) {
             require(!mhz.empty() && mhz.find_first_not_of("0123456789") == std::string::npos, "--mhz requires an unsigned decimal integer");
             c.ocMHz = uintOption(options,"--mhz",0xfffff);
             require(c.ocMHz != 0, "--mhz must be 1..1048575 (encoding range, not operating recommendations)");
-            require(c.pboExpected & 1u, "Manual OC must already be enabled; the frequency command never changes mode");
+            require(amdManualOcEnabled(c.pboExpected), "Manual OC must already be enabled; the frequency command never changes mode");
         }
         if (c.name == "amd-pbo-limit-set") {
             require(options.count("--apply"), "Setting a PBO limit requires --apply; acknowledgement does not verify the effective limit");
@@ -1020,7 +1020,8 @@ Result hardware(const Command &c, HardwareSession &s) {
         const auto r = readShimadaPboCapabilities(s, c.smu); out.error = r.error;
         out.data = {{"capabilities_raw", r.valid ? hex(r.raw) : "null"}, {"valid", boolean(r.valid)},
             {"pbo_available", r.valid ? boolean(r.raw & 4u) : "null"},
-            {"manual_oc_enabled", r.valid ? boolean(r.raw & 1u) : "null"},
+            {"manual_oc_available", r.valid ? boolean(amdManualOcAvailable(r.raw)) : "null"},
+            {"manual_oc_enabled", r.valid ? boolean(amdManualOcEnabled(r.raw)) : "null"},
             {"power_limits_available", r.valid ? boolean(r.raw & 2u) : "null"},
             {"limit_commands_available", boolean(r.valid && amdPboLimitsAvailable(r.raw))},
             {"fmax_command_available", boolean(r.valid && amdPboFmaxAvailable(r.raw))},
@@ -1031,7 +1032,9 @@ Result hardware(const Command &c, HardwareSession &s) {
         const auto snapshot = [](const AmdPboCapabilities &v) {
             const bool valid = v.valid && !v.error;
             return object({{"valid",boolean(valid)},{"error",number(v.error)},
-                {"capabilities_raw",valid?hex(v.raw):"null"},{"manual_oc_enabled",valid?boolean(v.raw & 1u):"null"}});
+                {"capabilities_raw",valid?hex(v.raw):"null"},
+                {"manual_oc_available",valid?boolean(amdManualOcAvailable(v.raw)):"null"},
+                {"manual_oc_enabled",valid?boolean(amdManualOcEnabled(v.raw)):"null"}});
         };
         out.data = {{"requested_enabled",boolean(c.ocEnabled)},{"expected_capabilities",hex(c.pboExpected)},
             {"before",snapshot(r.before)},{"after",snapshot(r.after)},{"command",hex(r.command)},
