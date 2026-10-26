@@ -10,6 +10,7 @@ import ghidra.program.model.symbol.Reference;
 import com.google.gson.GsonBuilder;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
 import java.util.*;
 
 public class SmuStudy extends GhidraScript {
@@ -21,15 +22,23 @@ public class SmuStudy extends GhidraScript {
     public void run() throws Exception {
         Path output = Path.of(getScriptArgs()[0]);
         Files.createDirectories(output);
+        boolean mp5=getScriptArgs().length>1 && getScriptArgs()[1].equals("mp5");
         Map<String,Object> result = record("schema", 1, "hardware_execution", false,
-            "source_sha256", "a2f3724ccaef1d67db04afb553816f111dc86207480b28d7998cc15fa92ea7d7",
+            "source_sha256", mp5?"b5e9c94ef3a27d55a95c1a0d703cc7041b734f9475d44b8eecd49a15794cdeaf":
+                "a2f3724ccaef1d67db04afb553816f111dc86207480b28d7998cc15fa92ea7d7",
+            "component",mp5?"MP5":"SMU",
             "language", currentProgram.getLanguageID().toString());
+        String actual=HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(
+            Files.readAllBytes(Path.of(currentProgram.getExecutablePath()))));
+        if(!actual.equals(result.get("source_sha256")))
+            throw new IllegalArgumentException("Component hash does not match the requested study");
         LinkedHashMap<Address,Integer> selected = new LinkedHashMap<>();
         List<Object> targets = new ArrayList<>();
         // Queue identities are hypotheses until queue dispatch and mailbox
         // descriptor references are checked. Keep numeric provenance explicit.
-        for (long base : new long[]{0x7980, 0x7c38}) {
-            int[] ids = base == 0x7980 ? new int[]{1,2,0x3c,0x3d,0x3e,0x56} :
+        for (long base : mp5?new long[]{0x13320}:new long[]{0x7980, 0x7c38}) {
+            int[] ids = mp5 ? new int[]{1,2,0x26,0x27,0x2f,0x5d,0x5e,0x5f,0x60,0x61,0x97,0x99} :
+                base == 0x7980 ? new int[]{1,2,0x3c,0x3d,0x3e,0x56} :
                 new int[]{1,2,3,4,5,0x5c,0x5d,0x5e,0x61,0x6f,0x70,0xa3,0xa6,0xa7,0xa8};
             for (int id : ids) {
                 long entry = base + 8L*id;
@@ -42,10 +51,10 @@ public class SmuStudy extends GhidraScript {
         }
         // Prioritize PM materialization and OC application before expanding
         // generic callers. Addresses belong only to the pinned SMU body.
-        for(long entry:new long[]{0x2f750,0x30594,0x3026c,0x2f918,0x323d8})
+        for(long entry:mp5?new long[]{}:new long[]{0x2f750,0x30594,0x3026c,0x2f918,0x323d8})
             selected.put(toAddr(entry),0);
         List<Object> literalRefs = new ArrayList<>();
-        for (long offset : new long[]{0x17f20,0x17f24,0x17f28,0x17f2c,0x17f30,0x17f34,0x8748,0x87ac,0x7880}) {
+        for (long offset : mp5?new long[]{0x137f4}:new long[]{0x17f20,0x17f24,0x17f28,0x17f2c,0x17f30,0x17f34,0x8748,0x87ac,0x7880}) {
             for (Reference ref : getReferencesTo(toAddr(offset))) {
                 Function fn = getFunctionContaining(ref.getFromAddress());
                 literalRefs.add(record("literal",Long.toHexString(offset),"from",ref.getFromAddress().toString(),
@@ -58,7 +67,7 @@ public class SmuStudy extends GhidraScript {
         // pointer's presence as proof of a field's meaning.
         Set<Long> dataBases = Set.of(0xe108L,0xe040L,0xb318L,0x8894L,0x1abc0L,
             0x1d300L,0x1ab80L,0x9124L,0x8748L);
-        for(long offset=0;offset<0x20000;offset+=4) {
+        for(long offset=0;!mp5 && offset<0x20000;offset+=4) {
             long value=Integer.toUnsignedLong(getInt(toAddr(offset)));
             if(!dataBases.contains(value) && !(value>=0xe100 && value<0xe290) &&
                !(value>=0x1abc0 && value<0x1d940)) continue;
@@ -69,11 +78,18 @@ public class SmuStudy extends GhidraScript {
                 if(fn!=null) selected.put(fn.getEntryPoint(),0);
             }
         }
+        if(mp5) {
+            // Data producers use pointers received at startup, not the IOD's
+            // absolute addresses. Retain all discovered MP5 functions so those
+            // pointer chains can be traced without guessing a shared address.
+            var iterator=currentProgram.getFunctionManager().getFunctions(true);
+            while(iterator.hasNext()) selected.putIfAbsent(iterator.next().getEntryPoint(),0);
+        }
         DecompInterface decompiler = new DecompInterface();
         decompiler.openProgram(currentProgram);
         List<Object> functions = new ArrayList<>();
         Set<Address> done = new HashSet<>();
-        while (done.size()<selected.size() && done.size()<280) {
+        while (done.size()<selected.size() && done.size()<(mp5?900:280)) {
             Address address = selected.keySet().stream().filter(a -> !done.contains(a)).findFirst().get();
             done.add(address);
             Function fn = getFunctionAt(address);

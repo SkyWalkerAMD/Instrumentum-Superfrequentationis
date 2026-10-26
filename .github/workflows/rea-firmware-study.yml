@@ -61,6 +61,20 @@ jobs:
             -log "$PWD/build/firmware-evidence/ghidra.log" \
             -scriptlog "$PWD/build/firmware-evidence/script.log"
           test -s build/firmware-evidence/smu/smu-study.json
+      - name: Static MP5 data producers and OC consumers
+        run: |
+          mkdir -p build/firmware-evidence/mp5
+          env -i PATH="$PATH" JAVA_HOME="$JAVA_HOME" HOME="$PWD/build/firmware-home" LANG=C.UTF-8 \
+            build/firmware-tools/ghidra_12.1.4_PUBLIC/support/analyzeHeadless \
+            "$PWD/build/firmware-project" mp5-study \
+            -import "$PWD/build/firmware-input/mp5-73-2e-body.bin" -loader BinaryLoader \
+            -processor Xtensa:LE:32:default -cspec default \
+            -scriptPath "$PWD/analysis/tools/ghidra" -preScript SmuSeed.java \
+            -postScript SmuStudy.java "$PWD/build/firmware-evidence/mp5" mp5 \
+            -analysisTimeoutPerFile 1200 -max-cpu 2 \
+            -log "$PWD/build/firmware-evidence/ghidra-mp5.log" \
+            -scriptlog "$PWD/build/firmware-evidence/script-mp5.log"
+          test -s build/firmware-evidence/mp5/smu-study.json
       - name: REA static UEFI transport and dual current-limit functions
         if: (success() || failure()) && steps.inputs.outcome == 'success'
         env:
