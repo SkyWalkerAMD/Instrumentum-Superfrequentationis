@@ -50,9 +50,9 @@ jobs:
           assert all(p in allowed or p.startswith(('docs/','analysis/')) or p=='README.md' for p in changed), changed
           path='port/ci/in-container.sh'; old=subprocess.check_output(['git','show',base+':'+path]).decode()
           current=pathlib.Path(path).read_text(); expected=old
-          names=('curve-all-fixture.png','curve-all-failure-fixture.png')
+          names=('power-adjustment-fixture.png','power-adjustment-failure-fixture.png')
           for prefix in ('build/gui/regression','build/gui-$target/regression'):
-              anchor=f'        cp "{prefix}/curve-partial-fixture.png" "$out/curve-partial-fixture.png"'
+              anchor=f'        cp "{prefix}/pbo-query-failure-fixture.png" "$out/pbo-query-failure-fixture.png"'
               assert expected.count(anchor)==1
               additions=''.join(f'\n        cp "{prefix}/{name}" "$out/{name}"' for name in names)
               if anchor+additions not in expected: expected=expected.replace(anchor,anchor+additions)
@@ -78,7 +78,7 @@ jobs:
           docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -e JOBS=4 \
             -v "$PWD:/src" -v "$PWD/build/inputs:/inputs:ro" -v "$PWD/build/fixture-review:/out" \
             -w /src "$IMAGE" bash port/ci/in-container.sh desktop "$TARGET"
-          for page in curve-all-fixture curve-all-failure-fixture; do
+          for page in power-adjustment-fixture power-adjustment-failure-fixture; do
             test -s "build/fixture-review/$page.png"
           done
       - uses: actions/upload-artifact@v4
@@ -89,7 +89,7 @@ jobs:
             build/fixture-review/provenance.json
             build/fixture-review/container-image.json
             build/fixture-review/gui-tests.txt
-            build/fixture-review/curve-all-fixture.png
-            build/fixture-review/curve-all-failure-fixture.png
+            build/fixture-review/power-adjustment-fixture.png
+            build/fixture-review/power-adjustment-failure-fixture.png
           if-no-files-found: error
           retention-days: 14
