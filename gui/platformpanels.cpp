@@ -245,10 +245,10 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     connect(applyScalar, &QPushButton::clicked, this, [this] { applyPboScalar(); });
     auto *fmax = new QHBoxLayout;
     pboFmax_ = edit("pboFmax", "", this); pboFmax_->setPlaceholderText("Requested ceiling in MHz"); fmax->addWidget(pboFmax_);
-    auto *caps = new QPushButton("Read PBO capability", this); caps->setObjectName("pboCapsRead"); fmax->addWidget(caps);
+    auto *readFmax = new QPushButton("Read Fmax", this); readFmax->setObjectName("pboFmaxRead"); fmax->addWidget(readFmax);
     auto *applyFmax = new QPushButton("Apply Fmax…", this); applyFmax->setObjectName("pboFmaxApply"); fmax->addWidget(applyFmax);
-    form->addRow("Shimada Fmax · command acknowledgement only", fmax);
-    connect(caps, &QPushButton::clicked, this, [this] { readPboCapabilities(); });
+    form->addRow("Shimada Fmax · SMU 115.46.0", fmax);
+    connect(readFmax, &QPushButton::clicked, this, [this] { readPboFmax(); });
     connect(applyFmax, &QPushButton::clicked, this, [this] { applyPboFmax(); });
     auto *limits = new QHBoxLayout;
     pboLimit_ = new QComboBox(this); pboLimit_->setObjectName("pboLimit");
@@ -258,6 +258,8 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     pboLimit_->addItem("Temperature (°C)", int(octool::core::AmdPboLimit::Temperature));
     limits->addWidget(pboLimit_);
     pboLimitValue_ = edit("pboLimitValue", "", this); pboLimitValue_->setPlaceholderText("Integer 1..2000 W"); limits->addWidget(pboLimitValue_);
+    auto *caps = new QPushButton("Read PBO capability", this); caps->setObjectName("pboCapsRead"); limits->addWidget(caps);
+    connect(caps, &QPushButton::clicked, this, [this] { readPboCapabilities(); });
     auto *applyLimit = new QPushButton("Apply limit…", this); applyLimit->setObjectName("pboLimitApply"); limits->addWidget(applyLimit);
     form->addRow("Shimada PBO limits · read capability first", limits);
     connect(pboLimit_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this] {
@@ -341,7 +343,43 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     connect(profile_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, clear);
 }
 AmdTuningPanel::~AmdTuningPanel() { cancelled_->store(true); }
-void AmdTuningPanel::invalidateCurve() { ++curveRevision_; curveSnapshot_ = {}; pboSnapshot_ = {}; pboCaps_ = {}; powerSnapshot_ = {}; table_->setRowCount(0); }
+void AmdTuningPanel::invalidateCurve() { ++curveRevision_; curveSnapshot_ = {}; pboSnapshot_ = {}; pboCaps_ = {}; powerSnapshot_ = {}; fmaxSnapshot_ = {}; table_->setRowCount(0); }
+void AmdTuningPanel::readPboFmax() {
+    using namespace octool::core;
+    invalidateCurve();
+    quint64 cpu=0,bus=0,device=0,function=0;
+    if (profile_->currentData().toInt()!=int(SmuProfile::Shimada) ||
+        !parseNumber(cpu_->text(),10,UINT32_MAX,cpu) || !parseNumber(bus_->text(),16,0,bus) ||
+        !parseNumber(device_->text(),16,0,device) || !parseNumber(function_->text(),16,0,function)) {
+        status_->setText("Use Shimada at 0000:00:00.0 and a valid logical CPU. No query sent."); return;
+    }
+    SmuTarget target; target.cpu=unsigned(cpu); target.profile=SmuProfile::Shimada;
+    const auto revision=curveRevision_; setEnabled(false); status_->setText("Reading firmware version and Fmax ceiling…");
+    auto *watcher=new QFutureWatcher<AmdPboFmax>(this);
+    connect(watcher,&QFutureWatcher<AmdPboFmax>::finished,this,[this,watcher,revision,target] {
+        const auto r=watcher->result();
+        if (revision!=curveRevision_) status_->setText("Inputs changed. Read Fmax again.");
+        else {
+            append(table_,{"SMU version",r.firmwareValid?hexValue(r.firmwareVersion,4):"Unavailable"});
+            append(table_,{"Stored Fmax ceiling (MHz)",r.valid?QString::number(r.raw):"Unavailable"});
+            append(table_,{"Capability raw",r.capabilities.valid?hexValue(r.capabilities.raw,4):"Unavailable"});
+            append(table_,{"Operating frequency","Not measured"});
+            if (r.error || !r.valid) status_->setText(failure(r.error?r.error:-EIO)+" Fmax readback requires SMU 115.46.0.");
+            else {
+                fmaxSnapshot_=r; pboCaps_=r.capabilities; pboTarget_=target;
+                status_->setText("Stored shared ceiling read. Firmware can clamp requests; operating frequency is not measured.");
+            }
+        }
+        setEnabled(true); watcher->deleteLater();
+    });
+    const auto access=access_; const auto cancelled=cancelled_;
+    watcher->setFuture(QtConcurrent::run([access,cancelled,target] {
+        AmdPboFmax out;
+        const int error=access->transaction([&](HardwareSession &s) { out=readShimadaPboFmax(s,target); return out.error; },10000,cancelled.get());
+        if (error) { out.error=error; out.valid=false; }
+        return out;
+    }));
+}
 void AmdTuningPanel::readPowerAdjustment() {
     using namespace octool::core;
     invalidateCurve();
@@ -483,13 +521,13 @@ void AmdTuningPanel::readPboCapabilities() {
             append(table_, {"PBO available", r.raw & 4u ? "Yes" : "No"});
             append(table_, {"Manual OC available", amdManualOcAvailable(r.raw) ? "Yes" : "No"});
             append(table_, {"Manual OC enabled", amdManualOcEnabled(r.raw) ? "Yes" : "No"});
-            append(table_, {"Current Fmax", "Unavailable: no verified readback"});
+            append(table_, {"Current Fmax", "Use Read Fmax (SMU 115.46.0)"});
             append(table_, {"Power limits available", r.raw & 2u ? "Yes" : "No"});
             append(table_, {"PPT / TDC / EDC / temperature commands", amdPboLimitsAvailable(r.raw) ? "Available; effective limits unverified" : "Unavailable"});
             append(table_, {"Manual OC frequency commands", amdManualOcEnabled(r.raw) ? "Mode enabled; frequency readback unavailable" : "Mode disabled; explicit mode change required"});
             append(table_, {"All-core curve command", amdAllCoreCurveAvailable(r.raw) ? "Available; per-core readback unverified" : "Unavailable"});
             status_->setText((amdPboFmaxAvailable(r.raw) ?
-                "Fmax command available. Enter a MHz ceiling. Firmware acceptance does not verify the effective limit or operating frequency." :
+                "Fmax requires Read Fmax before applying. Stored ceiling readback supports SMU 115.46.0; operating frequency is not measured." :
                 "Fmax unavailable: PBO must be available and manual OC disabled. No mode change was requested.") +
                 QString(amdPboLimitsAvailable(r.raw) ? " PBO limit commands available; select one limit to change." : " PBO limit commands unavailable.") +
                 QString(amdManualOcEnabled(r.raw) ? " Manual OC is enabled." : " Manual OC is disabled."));
@@ -551,41 +589,44 @@ void AmdTuningPanel::applyAllCoreCurve() {
 }
 void AmdTuningPanel::applyPboFmax() {
     using namespace octool::core;
-    if (!pboCaps_.valid || pboCaps_.error || !amdPboFmaxAvailable(pboCaps_.raw)) {
-        status_->setText("Read PBO capability first. Fmax requires PBO available and manual OC disabled."); return;
+    if (!fmaxSnapshot_.valid || fmaxSnapshot_.error || !amdPboFmaxAvailable(fmaxSnapshot_.capabilities.raw)) {
+        status_->setText("Read Fmax first. SMU 115.46.0, PBO available and manual OC disabled are required."); return;
     }
     quint64 mhz = 0;
     if (!parseNumber(pboFmax_->text(), 10, 0xfffff, mhz) || !mhz) {
         status_->setText("Fmax requires integer MHz 1..1048575. This is the encoding range, not a recommended operating range."); return;
     }
-    const auto target = pboTarget_; const auto before = pboCaps_; const auto prepared = curveRevision_;
+    const auto target = pboTarget_; const auto before = fmaxSnapshot_; const auto prepared = curveRevision_;
     const auto input = pboFmax_->text();
     if (QMessageBox::question(this, "Apply AMD Fmax ceiling",
         QString("CPU %1 · Shimada shared Fmax ceiling: %2 MHz\n"
-                "Changing this limit can affect voltage, power, heat and stability. Firmware acceptance can be checked; actual Fmax cannot be read back. "
+                "Changing this limit can affect voltage, power, heat and stability. The stored ceiling will be compared and read back; firmware can clamp it. Operating frequency is not measured. "
                 "No automatic mode change, retry or rollback. Apply this ceiling?").arg(target.cpu).arg(mhz),
         QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Yes) return;
-    if (prepared != curveRevision_ || input != pboFmax_->text()) { invalidateCurve(); status_->setText("Inputs changed. Read PBO capability again."); return; }
+    if (prepared != curveRevision_ || input != pboFmax_->text()) { invalidateCurve(); status_->setText("Inputs changed. Read Fmax again."); return; }
     invalidateCurve(); const auto revision = curveRevision_; setEnabled(false); status_->setText("Checking capability and submitting Fmax ceiling…");
     auto *watcher = new QFutureWatcher<AmdPboFmaxUpdate>(this);
     connect(watcher, &QFutureWatcher<AmdPboFmaxUpdate>::finished, this, [this, watcher, revision, target] {
         const auto r = watcher->result();
         if (revision == curveRevision_) {
             append(table_, {"Requested Fmax ceiling (MHz)", QString::number(r.requestedMHz)});
-            append(table_, {"Setting command", r.accepted ? "Firmware accepted" : r.writeAttempted ? "Attempted; not confirmed" : "Not sent"});
+            append(table_, {"Setting command", r.unchanged ? "Already matches; not sent" : r.accepted ? "Firmware accepted" : r.writeAttempted ? "Attempted; not confirmed" : "Not sent"});
             append(table_, {"Firmware response", hexValue(r.response, 4)});
-            append(table_, {"Actual Fmax readback", "Unavailable / not verified"});
+            append(table_, {"Readback ceiling (MHz)", r.after.valid ? QString::number(r.after.raw) : "Unavailable"});
+            append(table_, {"Matches request", r.verified && !r.error ? "Yes" : "No / not verified"});
+            append(table_, {"Operating frequency", "Not measured"});
         }
         status_->setText((r.error ? failure(r.error) + (r.writeAttempted ? " The limit may have changed. No automatic retry." : " No setting sent.") :
-            QString("Firmware accepted %1 MHz. Actual Fmax and operating frequency remain unverified.").arg(r.requestedMHz)) +
-            (revision == curveRevision_ ? " Read capability again before another edit." : QString(" Inputs changed; result belongs to CPU %1.").arg(target.cpu)));
+            QString("Stored ceiling readback matches %1 MHz. Operating frequency is not measured.").arg(r.requestedMHz)) +
+            (r.after.valid && r.after.raw!=r.requestedMHz ? QString(" Readback is %1 MHz; firmware policy or another writer may change the ceiling.").arg(r.after.raw) : QString()) +
+            (revision == curveRevision_ ? " Read Fmax again before another edit." : QString(" Inputs changed; result belongs to CPU %1.").arg(target.cpu)));
         setEnabled(true); watcher->deleteLater();
     });
     const auto access = access_; const auto cancelled = cancelled_;
     watcher->setFuture(QtConcurrent::run([access, cancelled, target, before, mhz] {
         AmdPboFmaxUpdate out;
-        const int error = access->transaction([&](HardwareSession &s) { out = setShimadaPboFmax(s, target, before.raw, unsigned(mhz)); return out.error; }, 10000, cancelled.get());
-        if (error) out.error = error;
+        const int error = access->transaction([&](HardwareSession &s) { out = setShimadaPboFmax(s, target, before.capabilities.raw, unsigned(mhz), before.raw); return out.error; }, 10000, cancelled.get());
+        if (error) { out.error = error; out.verified = false; }
         return out;
     }));
 }

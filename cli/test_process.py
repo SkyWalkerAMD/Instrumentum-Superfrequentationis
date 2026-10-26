@@ -176,9 +176,15 @@ assert [r['data']['write_attempted'] for r in limits[4:]] == [False,False,True,F
 run('amd-pbo-limit-set','--cpu',str(cpu),'--limit','ppt','--value','350','--expect-caps','6',code=2)
 run('amd-pbo-limit-set','--cpu',str(cpu),'--limit','temperature','--value','101','--expect-caps','6','--apply',code=2)
 fmax = [r for r in reports if r['command'] == 'amd-pbo-fmax-set' and 'requested_mhz' in r['data']]
-assert len(fmax) == 5 and [r['ok'] for r in fmax] == [True,False,False,False,False]
-assert all(not r['data']['verified'] and r['data']['current_fmax_mhz'] is None and not r['data']['readback_supported'] for r in fmax)
+assert len(fmax) == 10 and [r['ok'] for r in fmax] == [True,True]+[False]*8
+assert [r['data']['verified'] for r in fmax] == [True,True]+[False]*8
+assert all(r['data']['readback_supported'] and r['data']['operating_frequency_mhz'] is None and not r['data']['hardware_effect_measured'] for r in fmax)
 assert fmax[0]['data']['accepted'] and fmax[0]['data']['requested_mhz'] == 5000
+assert fmax[0]['data']['current_fmax_mhz'] == 5000 and fmax[1]['data']['unchanged'] and not fmax[1]['data']['write_attempted']
+assert fmax[6]['data']['current_fmax_mhz'] == 6000 and fmax[7]['data']['current_fmax_mhz'] == 5500
+fmax_reads = [r for r in reports if r['command'] == 'amd-pbo-fmax-read' and 'fmax' in r['data']]
+assert [r['data']['current_fmax_mhz'] for r in fmax_reads] == [0,5500,0xfffff,None,None,None,None]
+assert all(r['data']['operating_frequency_mhz'] is None for r in fmax_reads)
 for a,b,word in ((700,1250,91 | (201 << 17)),(0,1000,151 | (151 << 17))):
     r = run('amd-pbo-rails-encode','--rail0-mv',str(a),'--rail1-mv',str(b))['data']
     assert not r['hardware_accessed'] and not r['write_supported'] and int(r['argument'],16) == word

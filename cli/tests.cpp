@@ -2011,27 +2011,50 @@ void tvbTableEditingCommands() {
     }
 }
 void pboFmaxCommands() {
-    AmdPboFixture d;
+    AmdPboFixture d; d.allowFmaxReadback=true;
     auto result = command(d,{"amd-pbo-capabilities","--cpu","130"},0);
     assert(result.find("\"fmax_command_available\":true") != std::string::npos && !d.settings && !d.wrongCpu);
-    result = command(d,{"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-caps","4","--apply"},0);
-    assert(result.find("\"accepted\":true") != std::string::npos && result.find("\"verified\":false") != std::string::npos);
+    result = command(d,{"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-mhz","5500","--expect-caps","4","--apply"},0);
+    assert(result.find("\"accepted\":true") != std::string::npos && result.find("\"verified\":true") != std::string::npos);
     assert(d.fmaxMHz == 5000 && d.settings == 1 && !d.wrongCpu);
-    for (unsigned mode = 0; mode < 4; ++mode) {
-        AmdPboFixture failed;
+    result=command(d,{"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-mhz","5000","--expect-caps","4","--apply"},0);
+    assert(result.find("\"unchanged\":true")!=std::string::npos && d.settings==1);
+    for (unsigned mode = 0; mode < 8; ++mode) {
+        AmdPboFixture failed; failed.allowFmaxReadback=true;
         if (mode == 0) failed.capsRaw = 5;
         if (mode == 1) failed.model = 0x18;
         if (mode == 2) failed.writeCompletion = 0xfe;
         if (mode == 3) failed.failAt = 0;
-        result = command(failed,{"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-caps","4","--apply"},3);
-        assert(result.find("\"verified\":false") != std::string::npos && failed.settings == (mode == 2 ? 1u : 0u));
+        if (mode == 4) failed.clampFmax=true;
+        if (mode == 5) failed.discardChange=true;
+        if (mode == 6) failed.fmaxMHz=5600;
+        if (mode == 7) failed.firmwareVersion=0x00732e01;
+        result = command(failed,{"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-mhz","5500","--expect-caps","4","--apply"},3);
+        assert(result.find("\"verified\":false") != std::string::npos && failed.settings == (mode == 2 || mode == 4 || mode == 5 ? 1u : 0u));
+    }
+    for(auto mhz : {0u,5500u,0xfffffu,0x100000u,0x7fffffffu}) {
+        AmdPboFixture query; query.allowFmaxReadback=true; query.fmaxMHz=mhz;
+        result=command(query,{"amd-pbo-fmax-read","--cpu","130"},mhz<=0xfffff?0:3);
+        assert(!query.settings && !query.wrongCpu && query.messages.back()==0x6e);
+        if(mhz<=0xfffff) assert(result.find("\"current_fmax_mhz\":"+std::to_string(mhz))!=std::string::npos);
+        else assert(result.find("\"current_fmax_mhz\":null")!=std::string::npos);
+    }
+    for(auto version : {0u,0x00732e01u}) {
+        AmdPboFixture query; query.allowFmaxReadback=true; query.firmwareVersion=version;
+        result=command(query,{"amd-pbo-fmax-read","--cpu","130"},3);
+        assert(result.find("\"current_fmax_mhz\":null")!=std::string::npos && query.messages==std::vector<std::uint32_t>{2});
     }
     for (const std::vector<std::string> &args : {
-        std::vector<std::string>{"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-caps","4"},
-        {"amd-pbo-fmax-set","--cpu","130","--mhz","0","--expect-caps","4","--apply"},
-        {"amd-pbo-fmax-set","--cpu","130","--mhz","1048576","--expect-caps","4","--apply"},
-        {"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-caps","0x10005","--apply"},
-        {"amd-pbo-fmax-set","--mhz","5000","--expect-caps","4","--apply"},
+        std::vector<std::string>{"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-mhz","5500","--expect-caps","4"},
+        {"amd-pbo-fmax-set","--cpu","130","--mhz","0","--expect-mhz","5500","--expect-caps","4","--apply"},
+        {"amd-pbo-fmax-set","--cpu","130","--mhz","1048576","--expect-mhz","5500","--expect-caps","4","--apply"},
+        {"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-mhz","5500","--expect-caps","0x10005","--apply"},
+        {"amd-pbo-fmax-set","--mhz","5000","--expect-mhz","5500","--expect-caps","4","--apply"},
+        {"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-caps","4","--apply"},
+        {"amd-pbo-fmax-set","--cpu","130","--mhz","5000","--expect-mhz","1048576","--expect-caps","4","--apply"},
+        {"amd-pbo-fmax-read","--cpu","130","--apply"},
+        {"amd-pbo-fmax-read","--cpu","130","--expect-mhz","5500"},
+        {"amd-pbo-fmax-read"},
         {"amd-pbo-rails-encode","--rail0-mv","1001","--rail1-mv","0"},
         {"amd-pbo-rails-encode","--rail0-mv","1000","--rail1-mv","0","--apply"},
         {"amd-pm-layout-audit","--version","0x731004","--bytes","11636","--fused-ccds","0"}}) {

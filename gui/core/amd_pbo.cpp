@@ -171,24 +171,60 @@ AmdPowerAdjustmentUpdate setShimadaPowerAdjustment(HardwareSession &s, const Smu
     if ((out.error = s.checkpoint())) return out;
     out.verified = true; out.phase = AmdPboPhase::Complete; return out;
 }
+AmdPboFmax readShimadaPboFmax(HardwareSession &s, const SmuTarget &target) {
+    AmdPboFmax out;
+    if ((out.error = checkTarget(s, target))) return out;
+    const auto version = detail::exchangeShimadaRsmu(s, 2, 0, true, true);
+    out.firmwareResponse = version.response;
+    if ((out.error = version.error)) return out;
+    if ((out.error = checkTarget(s, target))) return out;
+    out.firmwareVersion = version.raw; out.firmwareValid = true;
+    if (version.raw != 0x00732e00u) { out.error = -ENOTSUP; return out; }
+    out.capabilities = readShimadaPboCapabilities(s, target);
+    if ((out.error = out.capabilities.error)) return out;
+    if ((out.error = checkTarget(s, target))) return out;
+    const auto reply = detail::exchangeShimadaRsmu(s, 0x6e, 0, true, true);
+    out.response = reply.response; out.messageAttempted = reply.messageAttempted;
+    if ((out.error = reply.error)) return out;
+    if ((out.error = checkTarget(s, target))) return out;
+    if ((out.error = s.checkpoint())) return out;
+    out.raw = reply.raw; out.rawValid = true;
+    // Preserve zero, but reject negative/saturated conversion words and values
+    // outside the application's established 20-bit frequency encoding.
+    if (out.raw > 0xfffffu) { out.error = -ERANGE; return out; }
+    out.valid = true; return out;
+}
 AmdPboFmaxUpdate setShimadaPboFmax(HardwareSession &s, const SmuTarget &target,
-                                 std::uint32_t expectedCapabilities, unsigned mhz) {
+                                 std::uint32_t expectedCapabilities, unsigned mhz, unsigned expectedMHz) {
     AmdPboFmaxUpdate out; out.requestedMHz = mhz;
-    if (!mhz || mhz > 0xfffffu) { out.error = -ERANGE; return out; }
+    if (!mhz || mhz > 0xfffffu || expectedMHz > 0xfffffu) { out.error = -ERANGE; return out; }
     if (!amdPboFmaxAvailable(expectedCapabilities)) { out.error = -ENOTSUP; return out; }
     out.phase = AmdPboPhase::Compare;
-    out.before = readShimadaPboCapabilities(s, target);
-    if ((out.error = out.before.error)) return out;
-    if (out.before.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
+    out.previous = readShimadaPboFmax(s, target);
+    out.before = out.previous.capabilities;
+    if ((out.error = out.previous.error)) return out;
+    if (out.before.raw != expectedCapabilities || out.previous.raw != expectedMHz) { out.error = -EAGAIN; return out; }
+    if (out.previous.raw == mhz) {
+        if ((out.error = s.checkpoint())) return out;
+        out.after = out.previous; out.verified = out.unchanged = true;
+        out.phase = AmdPboPhase::Complete; return out;
+    }
+    const auto caps = readShimadaPboCapabilities(s, target);
+    if ((out.error = caps.error)) return out;
+    if (caps.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
     if ((out.error = checkTarget(s, target))) return out;
     out.phase = AmdPboPhase::Write;
     const auto reply = detail::exchangeShimadaRsmu(s, 0x70, mhz, false, true);
     out.writeAttempted = reply.messageAttempted; out.response = reply.response;
     out.accepted = reply.response == 1;
     if ((out.error = reply.error)) return out;
-    // Complete refers only to the acknowledged command. No current Fmax
-    // readback, fused-limit substitute, guessed PM offset or rollback.
-    out.phase = AmdPboPhase::Complete; return out;
+    out.phase = AmdPboPhase::Verify;
+    out.after = readShimadaPboFmax(s, target);
+    if ((out.error = out.after.error)) return out;
+    if (out.after.capabilities.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
+    if (out.after.raw != mhz) { out.error = -EIO; return out; }
+    if ((out.error = s.checkpoint())) return out;
+    out.verified = true; out.phase = AmdPboPhase::Complete; return out;
 }
 const char *amdPboLimitName(AmdPboLimit limit) {
     switch (limit) {

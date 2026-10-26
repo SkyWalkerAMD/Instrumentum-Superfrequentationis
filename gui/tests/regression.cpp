@@ -3593,31 +3593,32 @@ private slots:
         panel.findChild<QLineEdit *>("pboScalar")->setText("5"); panel.findChild<QPushButton *>("pboScalarApply")->click();
         QCOMPARE(device->calls,calls); QCOMPARE(device->settings,0u);
     }
-    void pboFmaxAcknowledgementOnly() {
-        auto *device = new AmdPboFixture; device->discardChange = true;
+    void pboFmaxReportsReadbackMismatch() {
+        auto *device = new AmdPboFixture; device->allowFmaxReadback=true; device->clampFmax = true;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
-        panel.resize(1150,1000); panel.show();
+        panel.resize(1400,1250); panel.show();
         QApplication::processEvents(); // Settle PBO/PM fixture layout.
         auto *apply = panel.findChild<QPushButton *>("pboFmaxApply");
         auto *input = panel.findChild<QLineEdit *>("pboFmax"); input->setText("5000");
         apply->click(); QCOMPARE(device->calls,0u);
-        panel.findChild<QPushButton *>("pboCapsRead")->click(); QTRY_VERIFY(panel.isEnabled());
-        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->item(4,1)->text(),QString("Unavailable: no verified readback"));
+        panel.findChild<QPushButton *>("pboFmaxRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->item(1,1)->text(),QString("5500"));
         QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
         apply->click(); QTRY_VERIFY(panel.isEnabled());
-        QCOMPARE(device->settings,1u); QCOMPARE(device->fmaxMHz,0u);
+        QCOMPARE(device->settings,1u); QCOMPARE(device->fmaxMHz,6000u);
         auto *table = panel.findChild<QTableWidget *>("smuTable");
         QCOMPARE(table->item(1,1)->text(),QString("Firmware accepted"));
-        QCOMPARE(table->item(3,1)->text(),QString("Unavailable / not verified"));
-        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("remain unverified"));
+        QCOMPARE(table->item(3,1)->text(),QString("6000"));
+        QCOMPARE(table->item(4,1)->text(),QString("No / not verified"));
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("Readback is 6000 MHz"));
         const auto calls = device->calls; apply->click(); QCOMPARE(device->calls,calls);
         QApplication::processEvents(); // Settle PBO/PM fixture layout.
         const auto shot=qEnvironmentVariable("OCTOOL_PBO_FMAX_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
     }
     void pboFmaxRejectsChangedAndInvalidInputs() {
-        auto *device = new AmdPboFixture;
+        auto *device = new AmdPboFixture; device->allowFmaxReadback=true;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
-        auto *read=panel.findChild<QPushButton *>("pboCapsRead"), *apply=panel.findChild<QPushButton *>("pboFmaxApply");
+        auto *read=panel.findChild<QPushButton *>("pboFmaxRead"), *apply=panel.findChild<QPushButton *>("pboFmaxApply");
         auto *input=panel.findChild<QLineEdit *>("pboFmax");
         read->click(); QTRY_VERIFY(panel.isEnabled()); const auto calls=device->calls;
         for (const QString text : {QString(""),QString("0"),QString("1048576"),QString("-1"),QString("5000.5")}) {
@@ -3632,6 +3633,40 @@ private slots:
         QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("No setting sent"));
         read->click(); panel.findChild<QLineEdit *>("smuCpu")->setText("131"); QTRY_VERIFY(panel.isEnabled());
         QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0);
+    }
+    void pboFmaxVerifiedAndUnchanged() {
+        auto *device=new AmdPboFixture; device->allowFmaxReadback=true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        panel.resize(1400,1250); panel.show(); QApplication::processEvents();
+        auto *read=panel.findChild<QPushButton *>("pboFmaxRead"), *apply=panel.findChild<QPushButton *>("pboFmaxApply");
+        panel.findChild<QLineEdit *>("pboFmax")->setText("5000");
+        for(unsigned n=0;n<2;++n) {
+            read->click(); QTRY_VERIFY(panel.isEnabled());
+            QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+            apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settings,1u);
+            auto *table=panel.findChild<QTableWidget *>("smuTable");
+            QCOMPARE(table->item(3,1)->text(),QString("5000")); QCOMPARE(table->item(4,1)->text(),QString("Yes"));
+            QCOMPARE(table->item(5,1)->text(),QString("Not measured"));
+            QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("readback matches 5000 MHz"));
+            if(n==0) {
+                QApplication::processEvents(); const auto shot=qEnvironmentVariable("OCTOOL_PBO_FMAX_VERIFIED_TEST_SCREENSHOT");
+                if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+            } else QCOMPARE(table->item(1,1)->text(),QString("Already matches; not sent"));
+        }
+    }
+    void pboFmaxVersionAndStaleValue() {
+        auto *device=new AmdPboFixture; device->allowFmaxReadback=true; device->firmwareVersion=0x00732e01;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)),nullptr,130);
+        auto *read=panel.findChild<QPushButton *>("pboFmaxRead"), *apply=panel.findChild<QPushButton *>("pboFmaxApply");
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("requires SMU 115.46.0"));
+        const auto calls=device->calls; apply->click(); QCOMPARE(device->calls,calls);
+        device->firmwareVersion=0x00732e00;
+        read->click(); QTRY_VERIFY(panel.isEnabled()); device->fmaxMHz=5600;
+        panel.findChild<QLineEdit *>("pboFmax")->setText("5000");
+        QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settings,0u);
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("No setting sent"));
     }
     void firmwareLn2Readback() {
         auto *d=new AmdPboFixture; d->allowStatusQueries=true;

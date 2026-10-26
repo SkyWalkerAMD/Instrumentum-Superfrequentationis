@@ -7,6 +7,7 @@ on:
       - 'analysis/tools/firmware-pm-copy.py'
       - 'analysis/tools/firmware-rails-replay.py'
       - 'analysis/tools/firmware-adjustment-replay.py'
+      - 'analysis/tools/firmware-fmax-replay.py'
       - 'analysis/tools/ghidra/Smu*.java'
       - 'analysis/tools/ghidra/SmuFpPatch.py'
   workflow_dispatch:
@@ -82,6 +83,8 @@ jobs:
             --study build/firmware-evidence/smu/smu-study.json --output build/firmware-evidence/rails-replay-proof.json
           python3 analysis/tools/firmware-adjustment-replay.py --smu build/firmware-input/smu-73-2e-body.bin \
             --study build/firmware-evidence/smu/smu-study.json --output build/firmware-evidence/adjustment-replay-proof.json
+          python3 analysis/tools/firmware-fmax-replay.py --smu build/firmware-input/smu-73-2e-body.bin \
+            --study build/firmware-evidence/smu/smu-study.json --output build/firmware-evidence/fmax-replay-proof.json
       - name: Static MP5 data producers and OC consumers
         run: |
           mkdir -p build/firmware-evidence/mp5

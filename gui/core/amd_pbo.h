@@ -34,16 +34,26 @@ struct AmdPboCapabilities {
     std::uint32_t raw = 0, response = 0;
     bool valid = false, messageAttempted = false;
 };
+// SMU 115.46.0 only. 6E reports the stored shared Fmax ceiling in integer
+// MHz after firmware policy/clamping; this is not a measured core clock.
+struct AmdPboFmax {
+    int error = 0;
+    std::uint32_t firmwareVersion = 0, firmwareResponse = 0, raw = 0, response = 0;
+    AmdPboCapabilities capabilities;
+    bool firmwareValid = false, messageAttempted = false, rawValid = false, valid = false;
+};
+AmdPboFmax readShimadaPboFmax(HardwareSession &session, const SmuTarget &target);
 struct AmdPboFmaxUpdate {
     int error = 0;
     AmdPboPhase phase = AmdPboPhase::Validate;
     AmdPboCapabilities before;
+    AmdPboFmax previous, after;
     unsigned requestedMHz = 0;
     std::uint32_t response = 0;
     bool writeAttempted = false, accepted = false;
-    // No verified current-limit query exists for this exact profile. A mailbox
-    // acknowledgement must never be presented as readback or measured clocks.
-    bool verified = false;
+    // Verification compares the integer MHz readback, not a physical clock.
+    // Firmware clamping/concurrent changes can produce a different value.
+    bool verified = false, unchanged = false;
 };
 AmdPboCapabilities readShimadaPboCapabilities(HardwareSession &session, const SmuTarget &target);
 // Firmware 115.46.0 (0x00732e00): bit 0 is availability; bit 16 is live OC state.
@@ -88,9 +98,10 @@ AmdPboQueryResult readShimadaPboQuery(HardwareSession &session, const SmuTarget 
                                     AmdPboQuery query, unsigned firmwareIndex = 0);
 bool amdPboFmaxAvailable(std::uint32_t capabilities);
 // 1..1048575 is the verified 20-bit encoding range, not a safe operating range.
-// Requires PBO available and manual OC disabled; never enables OC or retries.
+// Exact 115.46.0, PBO available/manual OC disabled, compare full capabilities
+// and the previously read MHz value. Read back once; never enable OC or retry.
 AmdPboFmaxUpdate setShimadaPboFmax(HardwareSession &session, const SmuTarget &target,
-                                 std::uint32_t expectedCapabilities, unsigned mhz);
+                                 std::uint32_t expectedCapabilities, unsigned mhz, unsigned expectedMHz);
 enum class AmdPboLimit { Ppt, Tdc, Edc, Temperature };
 const char *amdPboLimitName(AmdPboLimit limit);
 const char *amdPboLimitUnit(AmdPboLimit limit);

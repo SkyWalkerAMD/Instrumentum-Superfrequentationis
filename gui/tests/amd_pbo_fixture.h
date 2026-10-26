@@ -7,7 +7,9 @@
 // separately opted in; existing PBO tests still reject implicit OC changes.
 struct AmdPboFixture : AmdCurveFixture {
     std::uint32_t scalarRaw = 0x3f800000;
-    std::uint32_t capsRaw = 4, fmaxMHz = 0;
+    std::uint32_t capsRaw = 4, fmaxMHz = 5500;
+    bool allowFmaxReadback = false, clampFmax = false;
+    std::uint32_t fmaxClampedMHz = 6000;
     bool allowManualOc = false, overrideModeCaps = false;
     bool allowAllCoreCurve = false;
     bool allowStatusQueries = false;
@@ -36,8 +38,9 @@ struct AmdPboFixture : AmdCurveFixture {
             else if (index == 0x3b10924 && (r.value == 0x6d || r.value == 0x5b || r.value == 0x6f || r.value == 0x70 || (r.value >= 0x56 && r.value <= 0x59) ||
                      (allowManualOc && r.value >= 0x5d && r.value <= 0x60) || (allowAllCoreCurve && r.value == 7) ||
                      (allowStatusQueries && (r.value == 0xa6 || r.value == 0x5c)) ||
-                     (allowPowerAdjustment && (r.value == 2 || r.value == 0xa7 || r.value == 0xa8)))) {
-                const bool query = r.value == 0x6d || r.value == 0x6f || r.value == 0xa6 || r.value == 0x5c || r.value == 2 || r.value == 0xa8;
+                     (allowPowerAdjustment && (r.value == 2 || r.value == 0xa7 || r.value == 0xa8)) ||
+                     (allowFmaxReadback && (r.value == 2 || r.value == 0x6e)))) {
+                const bool query = r.value == 0x6d || r.value == 0x6e || r.value == 0x6f || r.value == 0xa6 || r.value == 0x5c || r.value == 2 || r.value == 0xa8;
                 for (unsigned i = query && r.value != 0x5c ? 0 : 1; i < 6; ++i) if (scalarArgs[i]) out.error = -EINVAL;
                 if (r.value == 0x5c && scalarArgs[0] > 127) out.error = -EINVAL;
                 if (r.value == 0x5b && (scalarArgs[0] < 100 || scalarArgs[0] > 1000 || scalarArgs[0] % 100)) out.error = -EINVAL;
@@ -57,14 +60,14 @@ struct AmdPboFixture : AmdCurveFixture {
                         if (writeCompletion == 1 && !discardChange) {
                             if (r.value == 0xa7) powerAdjustmentRaw = scalarArgs[0];
                             else if (r.value == 7) allCurveArgument = scalarArgs[0];
-                            else if (r.value == 0x70) fmaxMHz = scalarArgs[0];
+                            else if (r.value == 0x70) fmaxMHz = clampFmax ? fmaxClampedMHz : scalarArgs[0];
                             else if (r.value == 0x5d || r.value == 0x5e) capsRaw = overrideModeCaps ? modeCapsAfter : r.value == 0x5d ? capsRaw | 0x10000u : capsRaw & ~0x10000u;
                             else if (r.value == 0x5f) ocAllMHz = scalarArgs[0];
                             else if (r.value == 0x60) ocCoreArgument = scalarArgs[0];
                             else if (r.value >= 0x56 && r.value <= 0x59) limitArguments[std::size_t(r.value-0x56)] = scalarArgs[0];
                             else { const float value = float(scalarArgs[0]/100); std::memcpy(&scalarRaw, &value, 4); }
                         }
-                    } else if (completion == 1) scalarArgs[0] = r.value == 2 ? firmwareVersion : r.value == 0xa8 ? powerAdjustmentRaw : r.value == 0x6d ? scalarRaw : r.value == 0x6f ? capsRaw : r.value == 0xa6 ? ln2Raw : performanceRaw;
+                    } else if (completion == 1) scalarArgs[0] = r.value == 2 ? firmwareVersion : r.value == 0x6e ? fmaxMHz : r.value == 0xa8 ? powerAdjustmentRaw : r.value == 0x6d ? scalarRaw : r.value == 0x6f ? capsRaw : r.value == 0xa6 ? ln2Raw : performanceRaw;
                 }
             } else out.error = -EINVAL;
         } else if (index == 0x3b10970) {

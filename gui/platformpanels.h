@@ -42,6 +42,7 @@ private:
     void readPboScalar();
     void applyPboScalar();
     void readPboCapabilities();
+    void readPboFmax();
     void readPboQuery();
     void readPowerAdjustment();
     void applyPowerAdjustment();
@@ -59,6 +60,7 @@ private:
     QLineEdit *pboQueryIndex_;
     QLineEdit *powerAdjustment_;
     octool::core::AmdPowerAdjustment powerSnapshot_;
+    octool::core::AmdPboFmax fmaxSnapshot_;
     QComboBox *ocMode_, *ocFrequencyScope_;
     QLineEdit *ocCcd_, *ocCore_, *ocMHz_;
     octool::core::AmdPboScalar pboSnapshot_;

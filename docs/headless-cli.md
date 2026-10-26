@@ -1,5 +1,11 @@
 # 无桌面版 OCTool
 
+<!-- amd-fmax-readback-current -->
+新增 [Fmax 固件设置回读](amd-fmax-readback.md)：GUI / CLI 同步支持 SMU 115.46.0 的 `6Eh` 查询与 `70h` 写后校验。
+设置前比较旧 MHz 和完整能力字；CLI 现在要求 `--expect-mhz`。固件裁剪或回读不符会保留实际值并报告错误。
+读回的是保存的共享上限，运行频率尚未实测。下文原先“Fmax 仅命令确认”的描述属于历史阶段。
+<!-- /amd-fmax-readback-current -->
+
 新增 [共享 power adjustment 读写](amd-power-adjustment.md)：`amd-power-adjustment-read`
 和 `amd-power-adjustment-set`。仅放行已核对的 SMU 115.46.0；A8 返回有符号固件计数，
 A7 接受 −10…5，比较旧值和完整能力字后写入并读回。物理单位尚未确认，不作为瓦数或功耗表偏移。

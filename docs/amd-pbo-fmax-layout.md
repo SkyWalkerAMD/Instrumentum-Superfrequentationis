@@ -1,5 +1,11 @@
 # Fmax 命令、rails 编码与逐核/CCD 布局诊断
 
+<!-- amd-fmax-readback-current -->
+新增 [Fmax 固件设置回读](amd-fmax-readback.md)：GUI / CLI 同步支持 SMU 115.46.0 的 `6Eh` 查询与 `70h` 写后校验。
+设置前比较旧 MHz 和完整能力字；CLI 现在要求 `--expect-mhz`。固件裁剪或回读不符会保留实际值并报告错误。
+读回的是保存的共享上限，运行频率尚未实测。下文原先“Fmax 仅命令确认”的描述属于历史阶段。
+<!-- /amd-fmax-readback-current -->
+
 本轮 GUI/CLI 共用 `amd_pbo` 和 `amd_pm` 核心。Fmax 恢复的是固件命令提交及完成状态检查，
 **没有当前 Fmax 回读**。Rails 只有离线编码预览；逐核/CCD 已增加
 [固件存储区解码](amd-pm-core-ccd.md)，物理映射和单位仍待认证。下文诊断仅复现旧构造函数。

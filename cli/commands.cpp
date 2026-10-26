@@ -108,7 +108,7 @@ struct Command {
     unsigned pmCaptured = 0, pmFusedCcds = 0;
     AmdPmOptions pmOptions;
     AmdCurveSnapshot curve;
-    unsigned pboScalar = 0, pboFmax = 0, rail0 = 0, rail1 = 0;
+    unsigned pboScalar = 0, pboFmax = 0, pboExpectedMHz = 0, rail0 = 0, rail1 = 0;
     std::uint32_t pboExpected = 0;
     std::uint32_t powerExpectedRaw = 0;
     unsigned firmwareIndex = 0;
@@ -134,7 +134,7 @@ Command parse(const std::vector<std::string> &args) {
     const bool clockOffline = c.name == "intel-clock-decode";
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
     const bool pm = c.name == "amd-pm-read" || c.name == "amd-pm-decode";
-    const bool pboCapabilityCommand = c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-fmax-set" || c.name == "amd-pbo-limit-set" ||
+    const bool pboCapabilityCommand = c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-fmax-read" || c.name == "amd-pbo-fmax-set" || c.name == "amd-pbo-limit-set" ||
         c.name == "amd-oc-mode-set" || c.name == "amd-oc-frequency-set" || c.name == "amd-curve-all-set" ||
         c.name == "amd-ln2-read" || c.name == "amd-core-performance-read" ||
         c.name == "amd-power-adjustment-read" || c.name == "amd-power-adjustment-set";
@@ -163,7 +163,7 @@ Command parse(const std::vector<std::string> &args) {
         if (writing) keys.insert("--value");
     }
     if (writing) keys.insert("--apply");
-    if (c.name == "amd-pbo-fmax-set") { keys.insert("--mhz"); keys.insert("--expect-caps"); keys.insert("--apply"); }
+    if (c.name == "amd-pbo-fmax-set") { keys.insert("--mhz"); keys.insert("--expect-mhz"); keys.insert("--expect-caps"); keys.insert("--apply"); }
     if (c.name == "amd-pbo-limit-set") { keys.insert("--limit"); keys.insert("--value"); keys.insert("--expect-caps"); keys.insert("--apply"); }
     if (c.name == "amd-curve-all-set") for (const char *key : {"--margin","--expect-caps","--apply"}) keys.insert(key);
     if (c.name == "amd-core-performance-read") keys.insert("--firmware-index");
@@ -449,9 +449,10 @@ Command parse(const std::vector<std::string> &args) {
             require(amdAllCoreCurveAvailable(c.pboExpected), "All-core curve requires PBO available and manual OC disabled");
         }
         if (c.name == "amd-pbo-fmax-set") {
-            require(options.count("--apply"), "Setting Fmax requires --apply; acknowledgement does not verify the actual limit");
+            require(options.count("--apply"), "Setting Fmax requires --apply; only the stored ceiling is read back, not operating clocks");
             c.pboFmax = uintOption(options, "--mhz", 0xfffff);
             require(c.pboFmax != 0, "--mhz must be 1..1048575 (encoding range, not an operating recommendation)");
+            c.pboExpectedMHz = uintOption(options, "--expect-mhz", 0xfffff);
             c.pboExpected = uintOption(options, "--expect-caps", UINT32_MAX);
             require(amdPboFmaxAvailable(c.pboExpected), "Expected capabilities must report PBO available and manual OC disabled");
         }
@@ -1069,7 +1070,10 @@ Result hardware(const Command &c, HardwareSession &s) {
             {"limit_commands_available", boolean(r.valid && amdPboLimitsAvailable(r.raw))},
             {"fmax_command_available", boolean(r.valid && amdPboFmaxAvailable(r.raw))},
             {"all_core_curve_command_available", boolean(r.valid && amdAllCoreCurveAvailable(r.raw))},
-            {"current_fmax_mhz", "null"}, {"readback_supported", "false"}, {"response", hex(r.response)}};
+            {"current_fmax_mhz", "null"}, {"readback_supported", "null"},
+            {"fmax_readback_command",quote("amd-pbo-fmax-read")},
+            {"detail",quote("Capability bits only. Fmax readback requires a separate SMU 115.46.0 version check.")},
+            {"response", hex(r.response)}};
     } else if (c.name == "amd-oc-mode-set") {
         const auto r = setShimadaOcMode(s,c.smu,c.pboExpected,c.ocEnabled); out.error = r.error;
         const auto snapshot = [](const AmdPboCapabilities &v) {
@@ -1135,13 +1139,35 @@ Result hardware(const Command &c, HardwareSession &s) {
             {"current_limit", "null"}, {"readback_supported", "false"}, {"hardware_effect_measured", "false"}, {"response", hex(r.response)},
             {"scope", quote("Shimada shared package limit via selected CPU and domain 0 / BDF 0")},
             {"detail", quote("Firmware acknowledgement only; effective limit is unverified. One limit per operation; no automatic mode change, retry or rollback.")}};
-    } else if (c.name == "amd-pbo-fmax-set") {
-        const auto r = setShimadaPboFmax(s, c.smu, c.pboExpected, c.pboFmax); out.error = r.error;
-        out.data = {{"expected_capabilities", hex(c.pboExpected)}, {"capabilities_raw", r.before.valid ? hex(r.before.raw) : "null"},
-            {"requested_mhz", number(c.pboFmax)}, {"phase", quote(amdPboPhaseName(r.phase))},
-            {"write_attempted", boolean(r.writeAttempted)}, {"accepted", boolean(r.accepted)},
-            {"verified", "false"}, {"current_fmax_mhz", "null"}, {"readback_supported", "false"},
-            {"response", hex(r.response)}, {"detail", quote("Firmware acknowledgement only; actual Fmax and resulting clocks are unverified. No automatic retry or rollback.")}};
+    } else if (c.name == "amd-pbo-fmax-read" || c.name == "amd-pbo-fmax-set") {
+        const auto snapshot = [](const AmdPboFmax &r) {
+            return object({{"valid",boolean(r.valid && !r.error)},{"error",number(r.error)},
+                {"firmware_version",r.firmwareValid?hex(r.firmwareVersion):"null"},
+                {"capabilities_raw",r.capabilities.valid?hex(r.capabilities.raw):"null"},
+                {"raw",r.rawValid?hex(r.raw):"null"},{"ceiling_mhz",r.valid && !r.error?number(r.raw):"null"},
+                {"query_attempted",boolean(r.messageAttempted)},{"response",hex(r.response)}});
+        };
+        out.data={{"scope",quote("shared firmware ceiling")},{"hardware_effect_measured","false"},
+            {"operating_frequency_mhz","null"},{"readback_supported","true"},
+            {"supported_firmware_version",hex(0x00732e00)},
+            {"detail",quote("Stored ceiling in integer MHz; firmware may clamp requests. Operating clocks are not measured. No retry or rollback.")}};
+        if (c.name == "amd-pbo-fmax-read") {
+            const auto r=readShimadaPboFmax(s,c.smu); out.error=r.error;
+            out.data.push_back({"fmax",snapshot(r)});
+            out.data.push_back({"current_fmax_mhz",r.valid && !r.error?number(r.raw):"null"});
+        } else {
+            const auto r=setShimadaPboFmax(s,c.smu,c.pboExpected,c.pboFmax,c.pboExpectedMHz); out.error=r.error;
+            out.data.push_back({"expected_capabilities",hex(c.pboExpected)});
+            out.data.push_back({"capabilities_raw",r.before.valid?hex(r.before.raw):"null"});
+            out.data.push_back({"expected_mhz",number(c.pboExpectedMHz)});
+            out.data.push_back({"requested_mhz",number(c.pboFmax)});
+            out.data.push_back({"phase",quote(amdPboPhaseName(r.phase))});
+            out.data.push_back({"before",snapshot(r.previous)}); out.data.push_back({"after",snapshot(r.after)});
+            out.data.push_back({"write_attempted",boolean(r.writeAttempted)}); out.data.push_back({"accepted",boolean(r.accepted)});
+            out.data.push_back({"verified",boolean(r.verified && !r.error)}); out.data.push_back({"unchanged",boolean(r.unchanged)});
+            out.data.push_back({"current_fmax_mhz",r.after.valid?number(r.after.raw):"null"});
+            out.data.push_back({"response",hex(r.response)});
+        }
     } else if (c.name == "amd-pbo-scalar-read" || c.name == "amd-pbo-scalar-set") {
         const auto scalar = [](const AmdPboScalar &r) {
             return object({{"valid", boolean(r.valid && !r.error)}, {"error", number(r.error)},
@@ -1518,7 +1544,8 @@ Usage: octool-cli COMMAND [OPTIONS]
     Frequency has acknowledgement only, with no current-frequency readback.
     Mode changes do not send VID, frequency or scalar resets; disabling mode is
     not an assurance that all firmware settings have returned to defaults.
-  amd-pbo-fmax-set --cpu N --mhz N --expect-caps RAW --apply
+  amd-pbo-fmax-read --cpu N
+  amd-pbo-fmax-set --cpu N --mhz N --expect-mhz PREVIOUS --expect-caps RAW --apply
                                    Firmware acknowledgement only; no Fmax readback
   amd-pbo-limit-set --cpu N --limit ppt|tdc|edc|temperature --value N --expect-caps RAW --apply
                                    One shared limit; firmware acknowledgement only
