@@ -61,7 +61,7 @@ public class GraniteStudy extends GhidraScript {
         decompiler.openProgram(currentProgram);
         List<Object> functions = new ArrayList<>();
         Set<Address> done = new HashSet<>();
-        while (done.size()<selected.size() && done.size()<1800) {
+        while (done.size()<selected.size() && done.size()<4096) {
             Address address = selected.keySet().stream().filter(a -> !done.contains(a)).findFirst().get();
             done.add(address);
             Function fn = getFunctionAt(address);
