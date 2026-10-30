@@ -28,6 +28,7 @@ class Slice:
         self.b = {}
         self.ram = {}
         self.trace = []
+        self.shift = 0
 
     def put(self, address, value, size=4):
         for i in range(size):
@@ -71,6 +72,14 @@ class Slice:
                 self.r[a[0]] = (2*x+y if op=='addx2' else 4*x+y if op=='addx4' else x*y if op=='mull' else x//y if op=='quou' else x+y) & 0xffffffff
             elif op == 'moveqz':
                 if not val(a[2]): self.r[a[0]] = val(a[1])
+            elif op == 'and':
+                self.r[a[0]] = val(a[1]) & val(a[2])
+            elif op == 'ssl':
+                self.shift = val(a[0]) & 31
+            elif op == 'sll':
+                self.r[a[0]] = (val(a[1]) << self.shift) & 0xffffffff
+            elif op == 'slli':
+                self.r[a[0]] = (val(a[1]) << val(a[2])) & 0xffffffff
             elif op == 'extui':
                 self.r[a[0]] = (val(a[1]) >> val(a[2])) & ((1 << val(a[3]))-1)
             elif op in ('lsi', 'lsip', 'lsxp'):
@@ -103,6 +112,14 @@ class Slice:
                 if not (val(a[0]) & (1 << val(a[1]))): next_pc = val(a[2])
             elif op == 'beqz':
                 if not val(a[0]): next_pc = val(a[1])
+            elif op == 'bnez':
+                if val(a[0]): next_pc = val(a[1])
+            elif op in ('bany','bnone'):
+                # Ghidra renders these branch targets before their registers.
+                matches = bool(val(a[1]) & val(a[2]))
+                if matches == (op=='bany'): next_pc = val(a[0])
+            elif op == 'j':
+                next_pc = val(a[0])
             else:
                 raise ValueError(f'Unmodeled instruction at {pc:x}: {ins["text"]}')
             if loop and next_pc == loop[1]:
@@ -125,12 +142,38 @@ def temperature(body, code):
         for core in range(8):
             for j in range(3): vm.put(CORE+0x1bc*core+0x84+j, core*7+j, 1)
         vm.run(0x2c0e3, 0x2c15f)
+        for i in range(64): assert vm.getf(0x12c44+4*i) == (start+i)/8-49
         for core in range(8):
             expected = (start+core*7+2)/8-49
             assert vm.getf(CORE+0x1bc*core+0x28) == expected
             cases += 1
         assert vm.getf(0x12d44) == (start+63)/8-49
-    return cases
+    retained = 0
+    for valid_mask in (0,0x5555555555555555,0xaaaaaaaaaaaaaaaa):
+        vm = Slice(body,code)
+        expected = []
+        valid_values = []
+        for i in range(64):
+            valid = (valid_mask>>i)&1
+            vm.put(0x12b44+4*i,((392+i)<<11)|(valid<<10))
+            vm.putf(0x12c44+4*i,400+i/8)
+            expected.append(i/8 if valid else 400+i/8)
+            if valid: valid_values.append(i/8)
+            else: retained += 1
+        for core in range(8):
+            for j in range(3): vm.put(CORE+0x1bc*core+0x84+j,core*7+j,1)
+        vm.run(0x2c0e3,0x2c15f)
+        for i,value in enumerate(expected): assert vm.getf(0x12c44+4*i)==value
+        empty_max = struct.unpack_from('<f',body,0x1946c)[0]
+        assert vm.getf(0x12d44)==max(valid_values,default=empty_max)
+        # Per-core selection does not re-check validity: retained old values
+        # can participate in the maximum. Do not present it as a fresh sensor.
+        for core in range(8):
+            maximum=max(expected[core*7:core*7+3])
+            for off in (0x20,0x24,0x28): assert vm.getf(CORE+0x1bc*core+off)==maximum
+    return dict(core_max_cases=cases,raw_sensor_codes_checked=4096,
+        invalid_mask_cases=3,retained_invalid_sensor_values=retained,
+        invalid_sensor_behavior='previous converted value retained; per-core maximum may reuse it')
 
 
 def accumulation(body, code):
@@ -204,9 +247,11 @@ def main():
     assert code[0x2f565]['text']=='call8 0x000327b0'
     reciprocal=[i['text'].split(' ')[0] for i in functions[0x327b0]['instructions']]
     assert reciprocal.count('recip0.s')==1 and reciprocal.count('maddn.s')==2
-    report={'schema':1,'hardware_execution':False,'source_sha256':SHA,
+    temperature_report=temperature(body,code)
+    report={'schema':2,'hardware_execution':False,'source_sha256':SHA,
             'temperature_sensor_formula':'((raw >> 11) & 0xfff) / 8 - 49; validity bit 10',
-            'temperature_cases':temperature(body,code),'residency_cases':residency(body,code),
+            'temperature_cases':temperature_report['core_max_cases'],'temperature':temperature_report,
+            'residency_cases':residency(body,code),
             'accumulation':accumulation(body,code),
             'core_units':{'2':'deg C','5':'%','6':'%','7':'%'},
             'residency_labels':'C0/CC1/CC6 remain candidate names; fraction-to-percent scaling is traced',

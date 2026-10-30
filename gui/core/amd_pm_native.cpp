@@ -130,7 +130,7 @@ static AmdPmNativeRead capture(HardwareSession &s, const SmuTarget &t, const Amd
     };
     const auto packet = [&](unsigned command) { return exchange(s,command,0,granite); };
     if (opt.hasBclk && (!std::isfinite(opt.bclkMHz) || opt.bclkMHz <= 0)) return fail(-EINVAL);
-    if (granite && (opt.hasBclk || mapCcds)) return fail(-ENOTSUP);
+    if (granite && opt.hasBclk) return fail(-ENOTSUP);
     if (const int e = identity(s, t, out.physicalAddressBits, granite)) return fail(e);
     out.phase = AmdPmNativePhase::Version;
     Packet p;
@@ -147,7 +147,11 @@ static AmdPmNativeRead capture(HardwareSession &s, const SmuTarget &t, const Amd
     if (!size || granite != isGranitePm(out.version)) return fail(-ENOTSUP);
     if (out.reportedBytes != size) return fail(-EMSGSIZE);
     out.metadataValid = true;
-    if (mapCcds) {
+    if (granite && mapCcds && out.version != 0x620205) {
+        out.phase = AmdPmNativePhase::Topology;
+        return fail(-ENOTSUP); // Width one cannot distinguish target 0 from 1.
+    }
+    if (mapCcds && !granite) {
         out.phase = AmdPmNativePhase::Topology;
         p = packet(2); out.response = p.response;
         if (p.error) return fail(p.error);
@@ -190,7 +194,7 @@ static AmdPmNativeRead capture(HardwareSession &s, const SmuTarget &t, const Amd
     p = packet(4); out.response = p.response;
     if (p.error) return fail(p.error);
     if ((std::uint64_t(p.words[0]) | (std::uint64_t(p.words[1]) << 32)) != out.address) return fail(-EAGAIN);
-    if (mapCcds) {
+    if (mapCcds && !granite) {
         out.phase = AmdPmNativePhase::TopologyRecheck;
         p = packet(2); out.response = p.response;
         if (p.error) return fail(p.error);
@@ -212,7 +216,10 @@ static AmdPmNativeRead capture(HardwareSession &s, const SmuTarget &t, const Amd
     }
     if (const int e = s.checkpoint()) return fail(e);
     if (mapCcds) {
-        out.firmwareCcdIds = targetIds(out.presentMaskBefore);
+        // The pinned Granite startup packet assigns storage rank by ascending
+        // presence bits over exactly two targets. Width two is unambiguous;
+        // all version/size/address/identity rechecks above must still succeed.
+        out.firmwareCcdIds = granite ? std::vector<unsigned>{0,1} : targetIds(out.presentMaskBefore);
         out.mappingValid = out.mappingRechecked = true;
     }
     out.metadataRechecked = true; out.phase = AmdPmNativePhase::Decode;
@@ -224,9 +231,9 @@ static AmdPmNativeRead capture(HardwareSession &s, const SmuTarget &t, const Amd
 AmdPmNativeRead readShimadaPmNative(HardwareSession &s, const SmuTarget &t, const AmdPmOptions &o, bool map) {
     return capture(s,t,o,map,false);
 }
-AmdPmNativeRead readGranitePmNative(HardwareSession &s, unsigned cpu, const AmdPmOptions &o) {
+AmdPmNativeRead readGranitePmNative(HardwareSession &s, unsigned cpu, const AmdPmOptions &o, bool map) {
     SmuTarget t; t.cpu = cpu;
-    return capture(s,t,o,false,true);
+    return capture(s,t,o,map,true);
 }
 std::string amdPmNativeJson(const AmdPmNativeRead &r) {
     std::string ids = "[";
@@ -242,6 +249,9 @@ std::string amdPmNativeJson(const AmdPmNativeRead &r) {
         ",\"response\":" + word(r.response,8) + ",\"bytes_read\":" + std::to_string(r.bytesRead) +
         ",\"metadata_rechecked\":" + yes(r.metadataRechecked) + ",\"origin_verified\":false,\"atomic_snapshot_guaranteed\":false,"
         "\"ccd_mapping\":{\"requested\":" + yes(r.mappingRequested) + ",\"valid\":" + yes(r.mappingValid) +
+        ",\"source\":\"" + (r.mappingRequested ? (r.graniteRidge ? "granite-two-slot-initializer" : "shimada-presence-query") : "none") + "\"" +
+        ",\"presence_mask_queried\":" + yes(r.mappingRequested && !r.graniteRidge && r.queriedBefore != 0) +
+        ",\"inferred_present_mask\":" + (r.graniteRidge && r.mappingValid ? word(3,4) : "null") +
         ",\"rechecked\":" + yes(r.mappingRechecked) + ",\"smu_version\":" + word(r.smuVersion,8) +
         ",\"present_mask_before\":" + word(r.presentMaskBefore,4) + ",\"present_mask_after\":" + word(r.presentMaskAfter,4) +
         ",\"queried_before\":" + std::to_string(r.queriedBefore) + ",\"queried_after\":" + std::to_string(r.queriedAfter) +

@@ -9,9 +9,9 @@ namespace {
 struct Test {
     granite_pm_fixture::Device *d = new granite_pm_fixture::Device;
     HardwareService service{std::unique_ptr<HardwareBackend>(d)};
-    AmdPmNativeRead run(const AmdPmOptions &o = {}, const std::atomic<bool> *cancel = nullptr) {
+    AmdPmNativeRead run(const AmdPmOptions &o = {}, const std::atomic<bool> *cancel = nullptr, bool map = false) {
         AmdPmNativeRead r;
-        const int e = service.transaction([&](HardwareSession &s) { r = readGranitePmNative(s,130,o); return r.error; },10000,cancel);
+        const int e = service.transaction([&](HardwareSession &s) { r = readGranitePmNative(s,130,o,map); return r.error; },10000,cancel);
         if (e) r.error = e;
         return r;
     }
@@ -131,6 +131,32 @@ int main() {
     { Test t; pm_fixture::put(t.d->bytes,2448,0x7f800001); const auto r = t.run();
       assert(r.error == -EDOM && r.metadataRechecked && r.snapshot.raw == t.d->bytes); }
     ++groups;
-    assert(groups == 13);
+    for (unsigned partial=0;partial<2;++partial) {
+        Test t; if(partial) pm_fixture::put(t.d->bytes,2448,0x7f800001);
+        const auto r=t.run({},nullptr,true);
+        assert(r.error==(partial?-EDOM:0) && r.mappingRequested && r.mappingValid && r.mappingRechecked);
+        assert(r.firmwareCcdIds==std::vector<unsigned>({0,1}) && r.metadataRechecked);
+        assert(!r.queriedBefore && !r.queriedAfter && !t.d->presenceQueries);
+        assert(t.d->messages==std::vector<std::uint32_t>({2,5,4,3,5,4,2}));
+        const auto json=amdPmNativeJson(r);
+        assert(json.find("\"source\":\"granite-two-slot-initializer\"")!=std::string::npos);
+        assert(json.find("\"inferred_present_mask\":\"0x0003\"")!=std::string::npos);
+        assert(json.find("\"physical_mapping_verified\":false")!=std::string::npos);
+        assert(r.snapshot.raw==t.d->bytes);
+    } ++groups;
+    for(unsigned mode=0;mode<6;++mode) {
+        Test t; std::atomic<bool> cancel{false};
+        if(mode==0) { t.d->version=0x620105; t.d->size=1828; t.d->bytes=granite_pm_fixture::bytes(1828); }
+        if(mode==1) t.d->versionAfter=0x620105;
+        if(mode==2) t.d->smuVersionAfter=0x625300;
+        if(mode==3) t.d->sizeAfter=1828;
+        if(mode==4) t.d->failAt=int(good.d->calls-1);
+        if(mode==5) t.d->afterRequest=[&] { if(t.d->memoryReads==100) cancel.store(true); };
+        const auto r=t.run({},&cancel,true);
+        assert(r.error && r.mappingRequested && !r.mappingValid && !r.mappingRechecked && r.firmwareCcdIds.empty());
+        assert(r.snapshot.raw.empty() && !r.metadataRechecked && !t.d->presenceQueries);
+        if(!mode) assert(!r.transferAttempted && !t.d->memoryReads && r.phase==AmdPmNativePhase::Topology);
+    } ++groups;
+    assert(groups == 15);
     std::cout << groups << " AMD Granite Ridge PM scenario groups passed\n";
 }

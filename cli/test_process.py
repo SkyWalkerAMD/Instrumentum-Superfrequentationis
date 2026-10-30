@@ -58,7 +58,7 @@ for r in query_results:
         assert d['ln2_enabled'] is None and d['command'] == '0x0000005c'
         assert d['firmware_index'] in (0,1,7,127)
 assert sum(r['error'] == -22 for r in queries) == 20
-assert len(reports) == 1543, len(reports)
+assert len(reports) == 1547, len(reports)
 l3_reports=[r for r in reports if r['command']=='amd-topology' and r['data'].get('topology',{}).get('l3_requested')]
 assert len(l3_reports)==4 and [r['ok'] for r in l3_reports]==[True,True,False,False]
 for i,r in enumerate(l3_reports):
@@ -101,7 +101,7 @@ for i,r in enumerate(all_curve[:13]):
     assert d['current_margin_counts'] is None and d['affected_core_count'] is None
     assert d['accepted'] == (i < 8) and d['write_attempted'] == (i < 8 or i == 10)
 all_native_pm = [r for r in reports if r['command'] == 'amd-pm-native-read']
-assert len(all_native_pm) == 45
+assert len(all_native_pm) == 49
 native_pm = all_native_pm[:33]
 assert len(native_pm) == 33 and [r['ok'] for r in native_pm] == [True]*8+[False]*21+[True,False,False,False]
 for i,r in enumerate(native_pm[:17]):
@@ -129,7 +129,16 @@ for i,r in enumerate(native_pm[29:]):
         assert not pm['raw_hex'] and not n['metadata_rechecked']
 granite_pm = all_native_pm[33:41]
 assert [r['ok'] for r in granite_pm] == [True,True]+[False]*6
-assert all(r['error'] == -22 for r in all_native_pm[41:])
+assert all(r['error'] == -22 for r in all_native_pm[45:])
+for i,r in enumerate(all_native_pm[41:45]):
+    n,pm=r['data']['native'],r['data']['pm'];m=n['ccd_mapping']
+    assert r['ok']==(i==0) and m['requested'] and m['valid']==m['rechecked']==(i==0)
+    assert m['source']=='granite-two-slot-initializer' and not m['presence_mask_queried']
+    assert m['queried_before']==m['queried_after']==0
+    assert m['firmware_ccd_ids_by_slot']==([0,1] if i==0 else [])
+    assert m['inferred_present_mask']==('0x0003' if i==0 else None)
+    assert not n['physical_mapping_verified'] and not m['os_cpu_mapping_verified']
+    assert bool(pm['raw_hex'])==(i==0) and n['metadata_rechecked']==(i==0)
 for i, r in enumerate(granite_pm):
     n, pm = r['data']['native'], r['data']['pm']
     assert n['platform'] == 'granite-ridge' and not n['tuning_settings_requested']

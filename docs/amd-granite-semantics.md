@@ -36,6 +36,11 @@ It checks all 4096 raw sensor codes across 64 batches, 512 selected-core maxima,
 words. Reciprocal refinement is an explicit exact-factor fixture, not an
 emulation of floating-point exception behavior or error bounds.
 
+Three additional invalid-mask fixtures check 128 retained sensor values. An
+invalid sensor response leaves the previous converted float in place, and the
+per-core maximum can still use that retained value. The reported temperature
+unit therefore does not imply that a sample is fresh or currently valid.
+
 ## Decoder correction
 
 The pinned
@@ -75,8 +80,42 @@ faults, changed topology and changed cache geometry discard the L3 result.
 This path performs CPUID only and sends no SMU or register command. See
 [AMD topology references](amd-topology-recovery.md) for the CPUID contract.
 
-CPUID IDs do not yet establish the PM row-to-physical-core association. Native
-Granite `--map-ccd` remains unavailable. No tuning target is inferred from L3 size.
+CPUID IDs do not yet establish the PM row-to-physical-core association. No tuning
+target is inferred from L3 size.
+
+## Firmware storage slot to CCD target
+
+The corrected entry scanner also includes frames of 128 bytes and above.
+The formerly missed indirect target at SMU 0x1d7ec initializes the MP5 packet.
+Its byte at +0 is the firmware target, +0x18 is its storage rank among present
+targets, +0x11 is the number of present targets, and +0x3c is the PM destination.
+Byte +2 is a separate active-target rank. Disabling cores does not compact the
+storage rank. The instruction copy loops, not the incomplete decompiler output,
+establish these fields.
+
+[`firmware-granite-topology.py`](../analysis/tools/firmware-granite-topology.py)
+replays 75 synthetic presence/core-mask combinations, 100 complete 112-byte
+startup packets and 15,600 PM copy words. Within this firmware's two-target
+domain, width two necessarily means firmware IDs `[0, 1]`. Width one may mean
+either target; the runtime cannot choose between them without more evidence.
+
+```sh
+octool-cli amd-pm-native-read --cpu 0 --platform granite-ridge --map-ccd
+```
+
+GUI **Map firmware CCD slots** and CLI share this optional behavior. It accepts
+only the existing exact 1Ah/44h, PCI 1022:14d8, SMU 98.84.0 gates with table
+0x620205/2452. Identity, firmware, length and address rechecks must complete
+before IDs are published. A one-slot table is rejected before transfer when
+mapping is requested; ordinary one-slot capture remains available without it.
+No A5 query or tuning request is added. JSON distinguishes the inferred mask
+from queried presence masks with `source: granite-two-slot-initializer` and
+`presence_mask_queried: false`.
+
+These are firmware target IDs, not an established association with CPUID CCD
+IDs, physical core numbers or OS CPUs. GUI labels explicitly retain **core slot**.
+Imported snapshots do not authenticate this mapping. Actual installed BIOS and
+target-machine acceptance remain outstanding.
 
 ## Rails boundary
 

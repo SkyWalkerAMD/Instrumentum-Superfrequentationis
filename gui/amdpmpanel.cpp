@@ -54,7 +54,7 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader, std::shared_ptr<Hard
     auto *readNativeButton = new QPushButton("Read native PM table", controls_); readNativeButton->setObjectName("pmNativeRead");
     readNativeButton->setEnabled(bool(access_)); native->addWidget(readNativeButton);
     mapCcds_ = new QCheckBox("Map firmware CCD slots", controls_); mapCcds_->setObjectName("pmMapCcds");
-    mapCcds_->setToolTip("SMU 115.46.0 only. Query the CCD presence mask before and after capture. Firmware IDs are not OS CPU/APIC IDs.");
+    mapCcds_->setToolTip("Shimada 115.46.0 queries CCD presence. Granite 98.84.0 maps only the exact two-slot table to firmware IDs 0/1; one-slot tables are ambiguous. Firmware IDs are not OS CPU/APIC IDs.");
     native->addWidget(mapCcds_);
     auto *nativeScope = new QLabel("Firmware transfer; no tuning change requested", controls_);
     nativeScope->setWordWrap(true); native->addWidget(nativeScope); controls->addLayout(native);
@@ -107,7 +107,7 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader, std::shared_ptr<Hard
     connect(copy_, &QPushButton::clicked, this, [this] { QApplication::clipboard()->setText(QString::fromStdString(nativeCapture_.empty() ? amdPmJson(snapshot_) : nativeCapture_)); });
     connect(nativePlatform_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int index) {
         if (index == 1) { mapCcds_->setChecked(false); scale_->setChecked(false); }
-        mapCcds_->setEnabled(index == 0); clear();
+        clear();
     });
     connect(cpu_, &QLineEdit::textChanged, this, [this] { clear(); });
     connect(mapCcds_, &QCheckBox::toggled, this, [this] { clear(); });
@@ -145,6 +145,7 @@ void AmdPmPanel::readNative() {
         if (r.graniteRidge) source.prepend("Granite Ridge 98.84.0. ");
         if (r.mappingRequested) source += r.mappingValid ? "\nCCD slots mapped to firmware targets; active cores and OS CPU/APIC mapping remain unverified." :
             "\nCCD mapping failed; no mapping or PM buffer published.";
+        if (r.graniteRidge && r.mappingValid) source += "\nIDs 0/1 follow the two-slot firmware initializer; no presence query or CPUID association was used.";
         present(r.snapshot, source);
         nativeCapture_ = "{\"schema_version\":1,\"command\":\"amd-pm-native-read\",\"data\":{\"native\":" + amdPmNativeJson(r) +
             ",\"pm\":" + amdPmJson(r.snapshot) + "}}";
@@ -153,7 +154,7 @@ void AmdPmPanel::readNative() {
     const auto access = access_; const auto cancelled = cancelled_;
     watcher->setFuture(QtConcurrent::run([access, cancelled, target, opt, mapCcds, granite] {
         AmdPmNativeRead r; r.cpu = target.cpu; r.graniteRidge = granite;
-        const int error = access->transaction([&](HardwareSession &s) { r = granite ? readGranitePmNative(s,target.cpu,opt) : readShimadaPmNative(s, target, opt, mapCcds); return r.error; }, 10000, cancelled.get());
+        const int error = access->transaction([&](HardwareSession &s) { r = granite ? readGranitePmNative(s,target.cpu,opt,mapCcds) : readShimadaPmNative(s, target, opt, mapCcds); return r.error; }, 10000, cancelled.get());
         if (error && !r.error) { r.error = error; r.snapshot.error = error; r.snapshot.detail = "Native PM transaction could not start"; }
         return r;
     }));

@@ -98,6 +98,12 @@ jobs:
             --mp5 build/firmware-input/mp5-62-54-body.bin \
             --study build/firmware-evidence/mp5/smu-study.json \
             --output build/firmware-evidence/granite-semantics.json
+          python3 analysis/tools/firmware-granite-topology.py \
+            --smu build/firmware-input/smu-62-54-body.bin \
+            --mp5 build/firmware-input/mp5-62-54-body.bin \
+            --smu-study build/firmware-evidence/smu/smu-study.json \
+            --mp5-study build/firmware-evidence/mp5/smu-study.json \
+            --output build/firmware-evidence/granite-topology.json
       - name: REA static UEFI entry points and RSMU transport helpers
         if: (success() || failure()) && steps.inputs.outcome == 'success'
         env:

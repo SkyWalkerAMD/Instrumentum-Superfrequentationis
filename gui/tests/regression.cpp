@@ -656,7 +656,7 @@ private slots:
             panel.findChild<QCheckBox *>("pmMapCcds")->setChecked(true);
             panel.findChild<QComboBox *>("pmNativePlatform")->setCurrentIndex(1);
             QVERIFY(!panel.findChild<QCheckBox *>("pmMapCcds")->isChecked());
-            QVERIFY(!panel.findChild<QCheckBox *>("pmMapCcds")->isEnabled());
+            QVERIFY(panel.findChild<QCheckBox *>("pmMapCcds")->isEnabled());
             auto *read = panel.findChild<QPushButton *>("pmNativeRead");
             auto *table = panel.findChild<QTableWidget *>("pmTable");
             auto *view = panel.findChild<QComboBox *>("pmView");
@@ -694,6 +694,45 @@ private slots:
             panel.findChild<QComboBox *>("pmNativePlatform")->setCurrentIndex(0);
             QCOMPARE(table->rowCount(),0); QVERIFY(!panel.findChild<QPushButton *>("pmCopy")->isEnabled());
             QVERIFY(panel.findChild<QCheckBox *>("pmMapCcds")->isEnabled());
+        }
+    }
+    void pmGraniteTwoSlotMappingAndAmbiguousSingleSlot() {
+        using namespace octool::core;
+        for(unsigned mode=0;mode<3;++mode) {
+            auto *device=new granite_pm_fixture::Device;
+            if(mode==1) { device->version=0x620105;device->size=1828;device->bytes=granite_pm_fixture::bytes(1828); }
+            if(mode==2) device->smuVersionAfter=0x625300;
+            auto access=std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device));
+            AmdPmPanel panel(nullptr,{},access,130);panel.resize(1400,1000);panel.show();
+            panel.findChild<QComboBox *>("pmNativePlatform")->setCurrentIndex(1);
+            auto *mapping=panel.findChild<QCheckBox *>("pmMapCcds");mapping->setChecked(true);
+            auto *read=panel.findChild<QPushButton *>("pmNativeRead");
+            auto *view=panel.findChild<QComboBox *>("pmView");
+            auto *table=panel.findChild<QTableWidget *>("pmTable");
+            read->click();QTRY_VERIFY(read->isEnabled());
+            QCOMPARE(device->presenceQueries,0u);
+            view->setCurrentIndex(13);QCOMPARE(table->rowCount(),mode?0:24);
+            if(!mode) {
+                QVERIFY(table->item(0,0)->text().contains("FW CCD 0"));
+                QVERIFY(table->item(1,0)->text().contains("FW CCD 1"));
+                QApplication::processEvents();const auto shot=qEnvironmentVariable("OCTOOL_PM_GRANITE_TEST_SCREENSHOT");
+                if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+                view->setCurrentIndex(12);
+                QVERIFY(table->item(8,0)->text().contains("FW CCD 1, core slot 0"));
+            } else QVERIFY(panel.findChild<QLabel *>("pmStatus")->text().contains("mapping failed"));
+            panel.findChild<QPushButton *>("pmCopy")->click();const auto json=QApplication::clipboard()->text().toUtf8();
+            const auto n=QJsonDocument::fromJson(json).object()["data"].toObject()["native"].toObject();
+            const auto m=n["ccd_mapping"].toObject();
+            QCOMPARE(m["valid"].toBool(),!mode);QVERIFY(!m["presence_mask_queried"].toBool());
+            QCOMPARE(m["source"].toString(),QString("granite-two-slot-initializer"));
+            if(!mode) {
+                QTemporaryDir dir;QFile file(dir.path()+"/map.json");QVERIFY(file.open(QIODevice::WriteOnly));file.write(json);file.close();
+                AmdPmPanel imported;QVERIFY(imported.loadSnapshotFile(file.fileName()));
+                imported.findChild<QComboBox *>("pmView")->setCurrentIndex(13);
+                QVERIFY(!imported.findChild<QTableWidget *>("pmTable")->item(0,0)->text().contains("FW CCD"));
+            }
+            mapping->setChecked(false);QCOMPARE(table->rowCount(),0);
+            QVERIFY(!panel.findChild<QPushButton *>("pmCopy")->isEnabled());
         }
     }
     void pmGraniteFailuresClearOldValues() {

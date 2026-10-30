@@ -148,13 +148,30 @@ void granitePmCommands() {
 void granitePmInvalidBeforeOpen() {
     const std::vector<std::vector<std::string>> invalid = {
         {"--platform","granite"}, {"--platform",""},
-        {"--platform","granite-ridge","--map-ccd"},
+        {"--platform","granite-ridge","--map-ccd","--map-ccd"},
         {"--platform","granite-ridge","--bclk-mhz","100"}};
     for (auto args : invalid) {
         args.insert(args.begin(),{"amd-pm-native-read","--cpu","130"});
         std::ostringstream out; unsigned opened = 0;
         assert(run(args,out,[&] { ++opened; return std::unique_ptr<HardwareBackend>(); }) == 2 && !opened);
         if (emit) std::cout << out.str();
+    }
+}
+void granitePmMapping() {
+    for(unsigned mode=0;mode<4;++mode) {
+        granite_pm_fixture::Device d;
+        if(mode==1) { d.version=0x620105; d.size=1828; d.bytes=granite_pm_fixture::bytes(1828); }
+        if(mode==2) d.smuVersionAfter=0x625300;
+        if(mode==3) d.versionAfter=0x620105;
+        const auto result=command(d,{"amd-pm-native-read","--cpu","130","--platform","granite-ridge","--map-ccd"},mode?3:0);
+        assert(!d.presenceQueries && !d.wrongCpu);
+        if(mode) assert(result.find("\"raw_hex\":\"\"")!=std::string::npos);
+        else {
+            assert(result.find("\"firmware_ccd_ids_by_slot\":[0,1]")!=std::string::npos);
+            assert(result.find("\"source\":\"granite-two-slot-initializer\"")!=std::string::npos);
+            assert(d.messages==std::vector<std::uint32_t>({2,5,4,3,5,4,2}));
+            assert(parseAmdPmCapture(result).raw==d.bytes);
+        }
     }
 }
 void iccMaxCommands() {
@@ -2495,7 +2512,7 @@ int main(int argc, char **argv) {
     powerAdjustmentCommands(); powerAdjustmentInvalidBeforeOpen();
     ocModeCommands(); ocFrequencyCommands(); ocInvalidBeforeOpen();
     ocSelectedCoreCommands(); ocSelectedCoreFailures(); ocSelectedCoreInvalidBeforeOpen();
-    nativePmCommands(); nativePmFailures(); nativePmInvalidBeforeOpen(); nativePmCcdMapping(); granitePmCommands(); granitePmInvalidBeforeOpen();
+    nativePmCommands(); nativePmFailures(); nativePmInvalidBeforeOpen(); nativePmCcdMapping(); granitePmCommands(); granitePmMapping(); granitePmInvalidBeforeOpen();
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); intelMemoryOdtCaptures(); intelMemoryOdtLive(); intelMemoryTemperatureCaptures(); intelMemoryTemperatureLive(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
@@ -2505,5 +2522,5 @@ int main(int argc, char **argv) {
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
     l3TopologyCommands();
-    if (!emit) std::cout << "76 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "77 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

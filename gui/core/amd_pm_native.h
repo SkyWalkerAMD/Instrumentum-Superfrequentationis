@@ -19,7 +19,8 @@ struct AmdPmNativeRead {
     std::uint32_t smuVersion = 0;
     unsigned presentMaskBefore = 0, presentMaskAfter = 0, queriedBefore = 0, queriedAfter = 0;
     // Ascending present-mask bits: firmware MP5 target IDs, not OS CPUs/APICs.
-    // Populated only when both complete masks and the PM width agree.
+    // Shimada requires both complete masks to agree with PM width. Granite
+    // permits only its pinned two-slot initializer consequence, IDs [0,1].
     std::vector<unsigned> firmwareCcdIds;
     std::size_t bytesRead = 0;
     AmdPmSnapshot snapshot;
@@ -37,8 +38,10 @@ AmdPmNativeRead readShimadaPmNative(HardwareSession &session, const SmuTarget &t
                                   const AmdPmOptions &options = AmdPmOptions(), bool mapCcds = false);
 // Separate Granite Ridge 1Ah/44h, AMD 1022:14d8, BDF 0 profile. The pinned
 // 98.84.0 protocol supports exact 620105/620205 versions with reported lengths.
-// No A5 mapping or BCLK scaling; no tuning command is allowed by this path.
+// Optional mapping is restricted to 620205/2452: the two-target initializer
+// implies IDs [0,1]. One-slot tables are ambiguous; no A5 query is sent.
+// No BCLK scaling or tuning command is allowed by this path.
 AmdPmNativeRead readGranitePmNative(HardwareSession &session, unsigned cpu,
-                                  const AmdPmOptions &options = AmdPmOptions());
+                                  const AmdPmOptions &options = AmdPmOptions(), bool mapCcds = false);
 std::string amdPmNativeJson(const AmdPmNativeRead &result);
 } }
