@@ -33,7 +33,7 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader, std::shared_ptr<Hard
     : QWidget(parent), reader_(reader ? reader : octool::platform::linuxAmdPmReader()), access_(access),
       cancelled_(std::make_shared<std::atomic<bool>>(false)) {
     auto *layout = new QVBoxLayout(this);
-    auto *intro = new QLabel("AMD PM telemetry: eight exact Shimada table versions. Read the installed ryzen_smu driver, "
+    auto *intro = new QLabel("AMD PM telemetry: exact Shimada and Granite Ridge table versions. Read the installed ryzen_smu driver, "
         "or open a saved table. Driver reads may request a firmware transfer; no driver is loaded automatically. "
         "Clock storage values and clocks scaled with a supplied BCLK are shown separately. "
         "Original monitors show stored values; their units, active state and physical targets are unverified. "
@@ -47,20 +47,23 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader, std::shared_ptr<Hard
     copy_ = new QPushButton("Copy JSON snapshot", controls_); copy_->setObjectName("pmCopy"); buttons->addWidget(copy_);
     controls->addLayout(buttons);
     auto *native = new QHBoxLayout;
-    native->addWidget(new QLabel("Native capture: logical CPU", controls_));
+    nativePlatform_ = new QComboBox(controls_); nativePlatform_->setObjectName("pmNativePlatform");
+    nativePlatform_->addItems({"Shimada", "Granite Ridge 98.84.0"}); native->addWidget(nativePlatform_);
+    native->addWidget(new QLabel("Logical CPU", controls_));
     cpu_ = new QLineEdit(QString::number(cpu), controls_); cpu_->setObjectName("pmCpu"); cpu_->setMaximumWidth(100); native->addWidget(cpu_);
     auto *readNativeButton = new QPushButton("Read native PM table", controls_); readNativeButton->setObjectName("pmNativeRead");
     readNativeButton->setEnabled(bool(access_)); native->addWidget(readNativeButton);
     mapCcds_ = new QCheckBox("Map firmware CCD slots", controls_); mapCcds_->setObjectName("pmMapCcds");
     mapCcds_->setToolTip("SMU 115.46.0 only. Query the CCD presence mask before and after capture. Firmware IDs are not OS CPU/APIC IDs.");
     native->addWidget(mapCcds_);
-    auto *nativeScope = new QLabel("Shimada 1Ah/08h; firmware transfer, no tuning change requested", controls_);
+    auto *nativeScope = new QLabel("Firmware transfer; no tuning change requested", controls_);
     nativeScope->setWordWrap(true); native->addWidget(nativeScope); controls->addLayout(native);
     connect(readNativeButton, &QPushButton::clicked, this, &AmdPmPanel::readNative);
     auto *inputs = new QHBoxLayout;
     inputs->addWidget(new QLabel("Raw table version", controls_));
     version_ = new QComboBox(controls_); version_->setObjectName("pmVersion"); version_->addItem("Select exact version", 0u);
     for (const auto &v : amdPmLayouts()) version_->addItem(hex(v.version), v.version);
+    for (const auto &v : amdGranitePmLayouts()) version_->addItem(hex(v.version), v.version);
     inputs->addWidget(version_);
     scale_ = new QCheckBox("Scale clocks with supplied BCLK", controls_); scale_->setObjectName("pmScale"); inputs->addWidget(scale_);
     bclk_ = new QLineEdit(controls_); bclk_->setObjectName("pmBclk"); bclk_->setPlaceholderText("MHz"); bclk_->setMaximumWidth(140); inputs->addWidget(bclk_);
@@ -82,7 +85,7 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader, std::shared_ptr<Hard
         "Voltage policy (original mapping)", "Limit contributors (original mapping)",
         "Link bandwidth (original mapping)", "Internal clocks (original mapping)",
         "GMI stored arrays", "DIMM stored arrays", "PCIe stored arrays",
-        "Core stored arrays (18 rows)", "CCD stored arrays (13 rows)"});
+        "Core stored arrays (18 rows)", "CCD stored arrays", "Granite Ridge complete stored table"});
     viewRow->addWidget(view_); viewRow->addStretch();
     layout->addLayout(viewRow);
     metadata_ = new QLabel(this); metadata_->setObjectName("pmMetadata"); metadata_->setTextFormat(Qt::PlainText); layout->addWidget(metadata_);
@@ -102,6 +105,10 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader, std::shared_ptr<Hard
         if (!path.isEmpty()) loadRawFile(path, version_->currentData().toUInt());
     });
     connect(copy_, &QPushButton::clicked, this, [this] { QApplication::clipboard()->setText(QString::fromStdString(nativeCapture_.empty() ? amdPmJson(snapshot_) : nativeCapture_)); });
+    connect(nativePlatform_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int index) {
+        if (index == 1) { mapCcds_->setChecked(false); scale_->setChecked(false); }
+        mapCcds_->setEnabled(index == 0); clear();
+    });
     connect(cpu_, &QLineEdit::textChanged, this, [this] { clear(); });
     connect(mapCcds_, &QCheckBox::toggled, this, [this] { clear(); });
     connect(version_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this] { clear(); });
@@ -124,7 +131,7 @@ void AmdPmPanel::readNative() {
     quint64 cpu = 0;
     if (!parseNumber(cpu_->text(), 10, 1048575, cpu)) { status_->setText("Enter a valid logical CPU for native capture."); return; }
     SmuTarget target; target.cpu = unsigned(cpu); target.profile = SmuProfile::Shimada;
-    const bool mapCcds = mapCcds_->isChecked();
+    const bool mapCcds = mapCcds_->isChecked(), granite = nativePlatform_->currentIndex() == 1;
     const auto revision = revision_;
     busy_ = true; controls_->setEnabled(false); status_->setText("Reading native PM metadata and requesting one firmware transfer...");
     auto *watcher = new QFutureWatcher<AmdPmNativeRead>(this);
@@ -135,6 +142,7 @@ void AmdPmPanel::readNative() {
         QString source = QString("Native PM: phase %1, %2 bytes read, transfer %3, metadata rechecked %4. Freshness and atomicity are unverified.")
             .arg(amdPmNativePhaseName(r.phase)).arg(qulonglong(r.bytesRead)).arg(r.transferAccepted ? "accepted" : "not confirmed")
             .arg(r.metadataRechecked ? "yes" : "no");
+        if (r.graniteRidge) source.prepend("Granite Ridge 98.84.0. ");
         if (r.mappingRequested) source += r.mappingValid ? "\nCCD slots mapped to firmware targets; active cores and OS CPU/APIC mapping remain unverified." :
             "\nCCD mapping failed; no mapping or PM buffer published.";
         present(r.snapshot, source);
@@ -143,9 +151,9 @@ void AmdPmPanel::readNative() {
         copy_->setEnabled(true); // Failures also carry useful transport diagnostics, with no raw buffer.
     });
     const auto access = access_; const auto cancelled = cancelled_;
-    watcher->setFuture(QtConcurrent::run([access, cancelled, target, opt, mapCcds] {
-        AmdPmNativeRead r; r.cpu = target.cpu;
-        const int error = access->transaction([&](HardwareSession &s) { r = readShimadaPmNative(s, target, opt, mapCcds); return r.error; }, 10000, cancelled.get());
+    watcher->setFuture(QtConcurrent::run([access, cancelled, target, opt, mapCcds, granite] {
+        AmdPmNativeRead r; r.cpu = target.cpu; r.graniteRidge = granite;
+        const int error = access->transaction([&](HardwareSession &s) { r = granite ? readGranitePmNative(s,target.cpu,opt) : readShimadaPmNative(s, target, opt, mapCcds); return r.error; }, 10000, cancelled.get());
         if (error && !r.error) { r.error = error; r.snapshot.error = error; r.snapshot.detail = "Native PM transaction could not start"; }
         return r;
     }));
@@ -226,6 +234,7 @@ void AmdPmPanel::present(const AmdPmSnapshot &s, const QString &source) {
     showFields(); copy_->setEnabled(!s.fields.empty());
     QString status = source;
     if (s.error) status += "\n" + QString::fromStdString(s.detail) + " (" + QString::fromLocal8Bit(std::strerror(-s.error)) + ")";
+    else if (s.graniteRidge) status += "\n" + QString::fromStdString(s.detail);
     else status += "\nStored values decoded. BCLK correction uses the supplied value. Original-monitor units, active policies and physical targets are unverified.";
     status_->setText(status);
 }
@@ -234,15 +243,15 @@ void AmdPmPanel::showFields() {
     table_->setHorizontalHeaderLabels({"Field", "Stored value", "Unit", "Scaled clock (MHz)", "Raw word", "Offset", "Status"});
     const auto &s = snapshot_;
     const int index = view_->currentIndex();
-    const bool original = index != 0;
+    const bool original = index != 0 || s.graniteRidge;
     const char *groups[] = {"power", "workload", "power_model", "voltage_policy", "limit_contributors",
         "link_bandwidth", "internal_clocks", "gmi_storage", "dimm_storage", "pcie_storage", "core_storage", "ccd_storage"};
     const auto &fields = index == 0 ? s.fields : index == 1 ? s.originalLimits :
         index < 7 ? s.originalPackage : index < 9 ? s.originalFabric : index < 12 ? s.originalArrays :
-        index == 12 ? s.firmwareCores : s.firmwareCcds;
+        index == 12 ? s.firmwareCores : index == 13 ? s.firmwareCcds : s.graniteRaw;
     table_->setRowCount(0);
     for (const auto &f : fields) {
-        if (index >= 2 && (index > 13 || f.group != groups[index-2])) continue;
+        if (index >= 2 && index < 14 && f.group != groups[index-2]) continue;
         const int row = table_->rowCount(); table_->insertRow(row);
         const QString state = f.error ? "Non-finite stored value" : f.scaleError ? "Clock scaling out of range" :
             original ? "Units unverified" : f.clock && !s.options.hasBclk ? "BCLK not supplied" : "Decoded";

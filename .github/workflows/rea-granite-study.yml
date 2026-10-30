@@ -4,6 +4,7 @@ on:
     paths:
       - '.github/workflows/rea-granite-study.yml'
       - 'analysis/tools/firmware-granite-input.py'
+      - 'analysis/tools/firmware-granite-proof.py'
       - 'analysis/tools/ghidra/Granite*.java'
   workflow_dispatch:
 permissions:
@@ -72,7 +73,15 @@ jobs:
               -scriptlog "$PWD/build/firmware-evidence/script-$component.log"
             test -s build/firmware-evidence/$component/smu-study.json
           done
-      - name: REA static UEFI transport entry points
+      - name: Replay byte-checked Granite Ridge layout and metadata instructions
+        run: |
+          python3 analysis/tools/firmware-granite-proof.py \
+            --smu build/firmware-input/smu-62-54-body.bin \
+            --mp5 build/firmware-input/mp5-62-54-body.bin \
+            --smu-study build/firmware-evidence/smu/smu-study.json \
+            --mp5-study build/firmware-evidence/mp5/smu-study.json \
+            --output build/firmware-evidence/granite-proof.json
+      - name: REA static UEFI entry points and RSMU transport helpers
         if: (success() || failure()) && steps.inputs.outcome == 'success'
         env:
           GHIDRA_INSTALL_DIR: ${{ github.workspace }}/build/firmware-tools/ghidra_12.1.4_PUBLIC

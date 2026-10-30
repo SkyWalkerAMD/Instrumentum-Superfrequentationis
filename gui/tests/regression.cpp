@@ -39,6 +39,7 @@
 #include "amdpmpanel.h"
 #include "amd_pm_fixture.h"
 #include "amd_pm_native_fixture.h"
+#include "amd_granite_pm_fixture.h"
 #include "platform/linux_inventory.h"
 #include "platform/linux_hwio.h"
 #include "platform/linux_cpu.h"
@@ -642,6 +643,90 @@ private slots:
         }
     }
 
+    void pmGraniteNativeRoundtripAndStoredRows() {
+        using namespace octool::core;
+        for (unsigned mode = 0; mode < 3; ++mode) {
+            auto *device = new granite_pm_fixture::Device;
+            const unsigned slots = mode ? 2 : 1;
+            if (!mode) { device->version = 0x620105; device->size = 1828; device->bytes = granite_pm_fixture::bytes(1828); }
+            if (mode == 2) pm_fixture::put(device->bytes,2448,0x7f800001);
+            auto access = std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device));
+            AmdPmPanel panel(nullptr,{},access,130); panel.resize(1400,1000); panel.show();
+            panel.findChild<QCheckBox *>("pmMapCcds")->setChecked(true);
+            panel.findChild<QComboBox *>("pmNativePlatform")->setCurrentIndex(1);
+            QVERIFY(!panel.findChild<QCheckBox *>("pmMapCcds")->isChecked());
+            QVERIFY(!panel.findChild<QCheckBox *>("pmMapCcds")->isEnabled());
+            auto *read = panel.findChild<QPushButton *>("pmNativeRead");
+            auto *table = panel.findChild<QTableWidget *>("pmTable");
+            auto *view = panel.findChild<QComboBox *>("pmView");
+            read->click(); QTRY_VERIFY(read->isEnabled());
+            QCOMPARE(table->rowCount(),8); QCOMPARE(table->item(0,1)->text(),QString("2000"));
+            QCOMPARE(table->item(0,2)->text(),QString("Unverified"));
+            QCOMPARE(device->memoryReads,device->size/4); QCOMPARE(device->presenceQueries,0u);
+            for (int i = 1; i < 12; ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
+            view->setCurrentIndex(12); QCOMPARE(table->rowCount(),int(144*slots));
+            QVERIFY(!table->item(0,0)->text().contains("FW CCD"));
+            view->setCurrentIndex(13); QCOMPARE(table->rowCount(),int(12*slots));
+            if (mode == 1) {
+                QApplication::processEvents(); const auto shot = qEnvironmentVariable("OCTOOL_PM_GRANITE_TEST_SCREENSHOT");
+                if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+            }
+            view->setCurrentIndex(14); QCOMPARE(table->rowCount(),int(device->size/4));
+            QCOMPARE(table->item(table->rowCount()-1,1)->text(),mode == 2 ? QString("Unavailable") : QString("100"));
+            if (mode == 1) {
+                QApplication::processEvents(); const auto shot = qEnvironmentVariable("OCTOOL_PM_GRANITE_RAW_TEST_SCREENSHOT");
+                if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+            }
+            panel.findChild<QPushButton *>("pmCopy")->click(); const auto json = QApplication::clipboard()->text().toUtf8();
+            const auto n = QJsonDocument::fromJson(json).object()["data"].toObject()["native"].toObject();
+            QCOMPARE(n["platform"].toString(),QString("granite-ridge")); QVERIFY(n["metadata_rechecked"].toBool());
+            QTemporaryDir dir; QFile file(dir.path()+"/granite.json"); QVERIFY(file.open(QIODevice::WriteOnly)); file.write(json); file.close();
+            AmdPmPanel imported; QCOMPARE(imported.loadSnapshotFile(file.fileName()),mode != 2);
+            imported.findChild<QComboBox *>("pmView")->setCurrentIndex(14);
+            QCOMPARE(imported.findChild<QTableWidget *>("pmTable")->rowCount(),int(device->size/4));
+            imported.findChild<QPushButton *>("pmCopy")->click();
+            QVERIFY(parseAmdPmCapture(QApplication::clipboard()->text().toStdString()).raw == device->bytes);
+            QCOMPARE(device->memoryReads,device->size/4);
+            panel.findChild<QComboBox *>("pmNativePlatform")->setCurrentIndex(0);
+            QCOMPARE(table->rowCount(),0); QVERIFY(!panel.findChild<QPushButton *>("pmCopy")->isEnabled());
+            QVERIFY(panel.findChild<QCheckBox *>("pmMapCcds")->isEnabled());
+        }
+    }
+    void pmGraniteFailuresClearOldValues() {
+        using namespace octool::core;
+        for (unsigned mode = 0; mode < 4; ++mode) {
+            auto *device = new granite_pm_fixture::Device;
+            if (mode == 0) device->smuVersion = 0x625300;
+            if (mode == 1) device->size = 1828;
+            if (mode == 2) device->smuVersionAfter = 0x625300;
+            if (mode == 3) device->afterRequest = [device] { if (device->memoryReads == 20) device->failAt = int(device->calls); };
+            auto access = std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device));
+            AmdPmPanel panel(nullptr,{},access,130);
+            panel.findChild<QComboBox *>("pmNativePlatform")->setCurrentIndex(1);
+            QTemporaryDir dir; QFile file(dir.path()+"/old.bin"); QVERIFY(file.open(QIODevice::WriteOnly));
+            file.write(reinterpret_cast<const char *>(device->bytes.data()),qint64(device->bytes.size())); file.close();
+            QVERIFY(panel.loadRawFile(file.fileName(),0x620205));
+            auto *table = panel.findChild<QTableWidget *>("pmTable"); QCOMPARE(table->rowCount(),8);
+            auto *read = panel.findChild<QPushButton *>("pmNativeRead"); read->click();
+            QCOMPARE(table->rowCount(),0); QTRY_VERIFY(read->isEnabled()); QCOMPARE(table->rowCount(),0);
+            panel.findChild<QPushButton *>("pmCopy")->click();
+            const auto data = QJsonDocument::fromJson(QApplication::clipboard()->text().toUtf8()).object()["data"].toObject();
+            QVERIFY(data["pm"].toObject()["raw_hex"].toString().isEmpty());
+            QVERIFY(!data["native"].toObject()["metadata_rechecked"].toBool());
+        }
+    }
+    void pmGraniteProfileChangeDuringRead() {
+        using namespace octool::core;
+        auto *device = new granite_pm_fixture::Device;
+        auto access = std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device));
+        AmdPmPanel panel(nullptr,{},access,130);
+        auto *platform = panel.findChild<QComboBox *>("pmNativePlatform"); platform->setCurrentIndex(1);
+        auto *read = panel.findChild<QPushButton *>("pmNativeRead"); read->click();
+        platform->setCurrentIndex(0); QTRY_VERIFY(read->isEnabled());
+        QCOMPARE(panel.findChild<QTableWidget *>("pmTable")->rowCount(),0);
+        QVERIFY(!panel.findChild<QPushButton *>("pmCopy")->isEnabled());
+        QVERIFY(panel.findChild<QLabel *>("pmStatus")->text().contains("discarded"));
+    }
     void pmNativeRoundtripAndPartialFields() {
         using namespace octool::core;
         for (bool partial : {false,true}) {
@@ -918,7 +1003,7 @@ private slots:
         panel.resize(1150,650); panel.show();
         auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
         auto *copy=panel.findChild<QPushButton *>("pmCopy"); auto *status=panel.findChild<QLabel *>("pmStatus");
-        QCOMPARE(view->count(),14);
+        QCOMPARE(view->count(),15);
         const int counts[]={7,8,4,10,24}; const char *names[]={"CPU Power","PPT_WC","VDDCR_CPU_DYN_POWER_WC","FIT PID0","PPT0"};
         const char *values[]={"10","11.75","13.75","14.75","17.25"};
         for (const auto &layout : amdPmLayouts()) {
@@ -1000,7 +1085,7 @@ private slots:
         panel.resize(1150,650); panel.show();
         auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
         auto *copy=panel.findChild<QPushButton *>("pmCopy"); auto *status=panel.findChild<QLabel *>("pmStatus");
-        QCOMPARE(view->count(),14);
+        QCOMPARE(view->count(),15);
         for (const auto &layout : amdPmLayouts()) {
             QVERIFY(savePmFile(raw,pm_fixture::bytes(layout.bytes))); QVERIFY(panel.loadRawFile(raw,layout.version));
             view->setCurrentIndex(7); QCOMPARE(table->rowCount(),9);
@@ -1091,7 +1176,7 @@ private slots:
         panel.resize(1150,940); panel.show();
         auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
         auto *copy=panel.findChild<QPushButton *>("pmCopy"); auto *status=panel.findChild<QLabel *>("pmStatus");
-        QCOMPARE(view->count(),14);
+        QCOMPARE(view->count(),15);
         const int counts[]={36,48,8}, first[]={0,36,84};
         for (const auto &layout : amdPmLayouts()) {
             QVERIFY(savePmFile(raw,pm_fixture::bytes(layout.bytes))); QVERIFY(panel.loadRawFile(raw,layout.version));

@@ -58,7 +58,7 @@ for r in query_results:
         assert d['ln2_enabled'] is None and d['command'] == '0x0000005c'
         assert d['firmware_index'] in (0,1,7,127)
 assert sum(r['error'] == -22 for r in queries) == 20
-assert len(reports) == 1527, len(reports)
+assert len(reports) == 1539, len(reports)
 adjustments = [r for r in reports if r['command'].startswith('amd-power-adjustment-')]
 assert len(adjustments) == 39
 assert sum(r['error'] == -22 for r in adjustments) == 18
@@ -89,7 +89,9 @@ for i,r in enumerate(all_curve[:13]):
     assert not d['verified'] and not d['physical_mapping_verified']
     assert d['current_margin_counts'] is None and d['affected_core_count'] is None
     assert d['accepted'] == (i < 8) and d['write_attempted'] == (i < 8 or i == 10)
-native_pm = [r for r in reports if r['command'] == 'amd-pm-native-read']
+all_native_pm = [r for r in reports if r['command'] == 'amd-pm-native-read']
+assert len(all_native_pm) == 45
+native_pm = all_native_pm[:33]
 assert len(native_pm) == 33 and [r['ok'] for r in native_pm] == [True]*8+[False]*21+[True,False,False,False]
 for i,r in enumerate(native_pm[:17]):
     n = r['data']['native']; pm = r['data']['pm']
@@ -114,6 +116,39 @@ for i,r in enumerate(native_pm[29:]):
         assert pm['raw_hex'] and int(m['smu_version'],16) == 0x732e00
     else:
         assert not pm['raw_hex'] and not n['metadata_rechecked']
+granite_pm = all_native_pm[33:41]
+assert [r['ok'] for r in granite_pm] == [True,True]+[False]*6
+assert all(r['error'] == -22 for r in all_native_pm[41:])
+for i, r in enumerate(granite_pm):
+    n, pm = r['data']['native'], r['data']['pm']
+    assert n['platform'] == 'granite-ridge' and not n['tuning_settings_requested']
+    assert not n['ccd_mapping']['valid'] and not n['ccd_mapping']['requested']
+    assert not n['physical_mapping_verified'] and not n['freshness_verified']
+    if i < 3:
+        slots = 1 if i == 0 else 2
+        length = 1828 if i == 0 else 2452
+        assert n['metadata_rechecked'] and n['smu_version'] == '0x00625400'
+        assert n['bytes_read'] == pm['captured_bytes'] == length
+        assert pm['platform'] == 'granite-ridge'
+        assert len(pm['firmware_core_arrays']) == 18*8*slots
+        assert len(pm['firmware_ccd_arrays']) == 12*slots
+        assert len(pm['granite_stored_words']) == length//4
+        assert pm['granite_stored_words'][-1]['raw'] == ('0x7f800001' if i == 2 else '0x42c80000')
+        assert all(f['unit'] == 'unverified' for f in pm['fields'])
+    else:
+        assert not n['metadata_rechecked'] and not pm['raw_hex'] and not pm['granite_stored_words']
+with tempfile.TemporaryDirectory(prefix='octool-granite-') as directory:
+    capture, raw = Path(directory)/'capture.json', Path(directory)/'table.bin'
+    for i, r in enumerate(granite_pm[:3]):
+        pm = r['data']['pm']; capture.write_text(json.dumps(r),encoding='utf-8')
+        code = 3 if i == 2 else 0
+        decoded = run('amd-pm-decode','--file',str(capture),code=code)['data']['pm']
+        assert decoded == pm
+        raw.write_bytes(bytes.fromhex(pm['raw_hex']))
+        decoded = run('amd-pm-decode','--file',str(raw),'--version',pm['version'],code=code)['data']['pm']
+        assert decoded == pm
+        raw.write_bytes(raw.read_bytes()[:-4])
+        assert run('amd-pm-decode','--file',str(raw),'--version',pm['version'],code=3)['error'] == -90
 oc_modes = [r for r in reports if r['command'] == 'amd-oc-mode-set' and 'requested_enabled' in r['data']]
 assert len(oc_modes) == 9 and [r['ok'] for r in oc_modes] == [True]*3 + [False]*6
 for r in oc_modes:

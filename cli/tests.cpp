@@ -6,6 +6,7 @@
 #include "platform/linux_amd_pm.h"
 #include "tests/amd_pm_fixture.h"
 #include "tests/amd_pm_native_fixture.h"
+#include "tests/amd_granite_pm_fixture.h"
 #include "tests/amd_curve_fixture.h"
 #include "tests/amd_pbo_fixture.h"
 #include "tests/intel_oc_fixture.h"
@@ -103,6 +104,39 @@ void nativePmCcdMapping() {
         assert(result.find(mode ? "\"firmware_ccd_ids_by_slot\":[]" : "\"firmware_ccd_ids_by_slot\":[0,15]") != std::string::npos);
         if (mode) assert(result.find("\"raw_hex\":\"\"") != std::string::npos);
         else assert(parseAmdPmCapture(result).raw == d.bytes);
+    }
+}
+void granitePmCommands() {
+    for (unsigned mode = 0; mode < 8; ++mode) {
+        granite_pm_fixture::Device d;
+        if (mode == 0) { d.version = 0x620105; d.size = 1828; d.bytes = granite_pm_fixture::bytes(d.size); }
+        if (mode == 2) pm_fixture::put(d.bytes,2448,0x7f800001);
+        if (mode == 3) d.smuVersion = 0x625300;
+        if (mode == 4) d.size = 1828;
+        if (mode == 5) d.smuVersionAfter = 0x625300;
+        if (mode == 6) d.afterRequest = [&] { if (d.memoryReads == 300) d.failAt = int(d.calls); };
+        if (mode == 7) d.model = 8;
+        const auto result = command(d,{"amd-pm-native-read","--cpu","130","--platform","granite-ridge"},mode < 2 ? 0 : 3);
+        const auto capture = parseAmdPmCapture(result);
+        if (mode < 3) {
+            assert(capture.raw == d.bytes && capture.graniteRaw.size() == d.size/4 && capture.graniteRidge);
+            assert(capture.error == (mode == 2 ? -EDOM : 0));
+            assert(d.messages == std::vector<std::uint32_t>({2,5,4,3,5,4,2}));
+        } else assert(result.find("\"raw_hex\":\"\"") != std::string::npos);
+        assert(!d.wrongCpu && !d.presenceQueries);
+        for (const auto &r : d.requests) if (r.space == Space::Memory) assert(!r.write);
+    }
+}
+void granitePmInvalidBeforeOpen() {
+    const std::vector<std::vector<std::string>> invalid = {
+        {"--platform","granite"}, {"--platform",""},
+        {"--platform","granite-ridge","--map-ccd"},
+        {"--platform","granite-ridge","--bclk-mhz","100"}};
+    for (auto args : invalid) {
+        args.insert(args.begin(),{"amd-pm-native-read","--cpu","130"});
+        std::ostringstream out; unsigned opened = 0;
+        assert(run(args,out,[&] { ++opened; return std::unique_ptr<HardwareBackend>(); }) == 2 && !opened);
+        if (emit) std::cout << out.str();
     }
 }
 void iccMaxCommands() {
@@ -2443,7 +2477,7 @@ int main(int argc, char **argv) {
     powerAdjustmentCommands(); powerAdjustmentInvalidBeforeOpen();
     ocModeCommands(); ocFrequencyCommands(); ocInvalidBeforeOpen();
     ocSelectedCoreCommands(); ocSelectedCoreFailures(); ocSelectedCoreInvalidBeforeOpen();
-    nativePmCommands(); nativePmFailures(); nativePmInvalidBeforeOpen(); nativePmCcdMapping();
+    nativePmCommands(); nativePmFailures(); nativePmInvalidBeforeOpen(); nativePmCcdMapping(); granitePmCommands(); granitePmInvalidBeforeOpen();
     invalidBeforeOpen(); registerCommands(); ocAndCurveCommands(); voltageCommands(); vfCommands(); pciCommands(); verifiedControls(); rawRegisters(); activityWindowCommands(); turboCommands(); vfEditingCommands();
     offlineUmcDoesNotCreateBackend(); uncoreCommands(); offlineSpdDoesNotCreateBackend(); pmCommands(); turboThresholdCommands(); intelMemoryCommands(); intelMemoryOffline(); intelMemoryExtendedCaptures(); intelMemoryRefreshCaptures(); intelMemoryDdrioCaptures(); intelMemoryOdtCaptures(); intelMemoryOdtLive(); intelMemoryTemperatureCaptures(); intelMemoryTemperatureLive(); thermalEventCommands();
     intelClockCommands(); intelClockOffline(); tvbCommands(); tvbTableCommands(); tvbTableEditingCommands(); energyCommands(); avxCommands(); bclkVoltageCommands(); thermalCommands(); limitsCommands(); nonTurboRatioCommands(); telemetryCommands();
@@ -2452,5 +2486,5 @@ int main(int argc, char **argv) {
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "73 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "75 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

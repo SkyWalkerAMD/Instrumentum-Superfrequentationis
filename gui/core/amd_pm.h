@@ -13,6 +13,9 @@ namespace octool { namespace core {
 constexpr std::size_t amdPmCaptureMaximumBytes = 1048576;
 struct AmdPmLayout { std::uint32_t version; std::size_t bytes; };
 const std::vector<AmdPmLayout> &amdPmLayouts();
+// Separate layout catalog: never feed Granite Ridge into Shimada constructors.
+const std::vector<AmdPmLayout> &amdGranitePmLayouts();
+bool isGranitePm(std::uint32_t version);
 std::size_t amdPmTableSize(std::uint32_t version);
 struct AmdPmLayoutRange {
     std::string group, label;
@@ -45,6 +48,7 @@ struct AmdPmField {
 };
 struct AmdPmSnapshot {
     int error = 0;
+    bool graniteRidge = false;
     std::uint32_t version = 0;
     std::size_t capturedBytes = 0, expectedBytes = 0;
     AmdPmOptions options;
@@ -63,11 +67,14 @@ struct AmdPmSnapshot {
     // GMI/DIMM/PCIe stored arrays. Counts describe storage, not installed or
     // active devices. No unit, topology, enable mask or physical ID inferred.
     std::vector<AmdPmField> originalArrays;
-    // MP5 producer: 18 rows of 8*N core slots, then 13 rows of N CCD slots.
+    // MP5 producer: 18 rows of 8*N core slots; Shimada has 13 CCD rows, Granite 12.
     // N is an exact version-specific storage width, never installed topology.
     // Legacy row labels remain provisional; new rows have numeric names.
     unsigned firmwareCcdSlots = 0;
     std::vector<AmdPmField> firmwareCores, firmwareCcds;
+    // Complete Granite Ridge table inspector. Words are storage positions;
+    // labels, units, live core identities and physical rail identities are not certified.
+    std::vector<AmdPmField> graniteRaw;
 };
 // Exact version and length; no prefix fallback or inferred CPU/core identity.
 // IEEE binary32 little endian. Invalid fields retain their bits, not a fake 0.

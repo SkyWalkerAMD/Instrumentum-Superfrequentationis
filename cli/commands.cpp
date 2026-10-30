@@ -103,7 +103,7 @@ struct Command {
     unsigned cpu = 0, timeout = 10000, ccd = 0, core = 0, point = 0, group = 0;
     unsigned minimumRatio = 0, maximumRatio = 0;
     double value = 0;
-    bool forEdit = false, pmMapCcds = false;
+    bool forEdit = false, pmMapCcds = false, pmGranite = false;
     std::uint32_t pmVersion = 0;
     unsigned pmCaptured = 0, pmFusedCcds = 0;
     AmdPmOptions pmOptions;
@@ -191,7 +191,7 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "amd-umc-read") { keys.insert("--bank"); keys.insert("--refresh-slot"); }
     if (c.name == "spd-decode") keys.insert("--file");
     if (pm || c.name == "amd-pm-native-read") keys.insert("--bclk-mhz");
-    if (c.name == "amd-pm-native-read") keys.insert("--map-ccd");
+    if (c.name == "amd-pm-native-read") { keys.insert("--map-ccd"); keys.insert("--platform"); }
     if (c.name == "amd-pm-decode") { keys.insert("--file"); keys.insert("--version"); }
     if (umcOffline || memoryOffline || clockOffline) keys.insert("--file");
     if (c.name == "intel-memory-read") { keys.insert("--controller"); keys.insert("--channel"); }
@@ -475,6 +475,12 @@ Command parse(const std::vector<std::string> &args) {
         c.pmOptions.hasBclk = true; c.pmOptions.bclkMHz = decimal(get(options, "--bclk-mhz"), "--bclk-mhz");
         require(c.pmOptions.bclkMHz > 0, "--bclk-mhz must be positive");
     }
+    if (c.name == "amd-pm-native-read" && options.count("--platform")) {
+        const auto platform = get(options,"--platform");
+        require(platform == "shimada" || platform == "granite-ridge", "--platform must be shimada or granite-ridge");
+        c.pmGranite = platform == "granite-ridge";
+        require(!c.pmGranite || (!c.pmMapCcds && !c.pmOptions.hasBclk), "Granite Ridge does not support --map-ccd or --bclk-mhz");
+    }
     if (c.name == "amd-pm-decode") {
         c.path = get(options, "--file"); require(!c.path.empty(), "Empty PM capture path");
         if (options.count("--version")) {
@@ -647,7 +653,7 @@ Result hardware(const Command &c, HardwareSession &s) {
     if (!rawRegister || c.reg.space == Space::Msr) out.data.push_back({"cpu", number(c.cpu)});
     if (c.name == "amd-pm-native-read") {
         SmuTarget target; target.cpu = c.cpu; target.profile = SmuProfile::Shimada;
-        const auto r = readShimadaPmNative(s, target, c.pmOptions, c.pmMapCcds); out.error = r.error;
+        const auto r = c.pmGranite ? readGranitePmNative(s,c.cpu,c.pmOptions) : readShimadaPmNative(s, target, c.pmOptions, c.pmMapCcds); out.error = r.error;
         out.data.push_back({"native", amdPmNativeJson(r)});
         out.data.push_back({"pm", amdPmJson(r.snapshot)});
     } else if (rawRegister) {
@@ -1491,7 +1497,8 @@ Usage: octool-cli COMMAND [OPTIONS]
   register-read --space mmio --address A --width 1|2|4|8
   register-read --space pci --address A --width 1|2|4 --bus B --device D --function F
   register-write [same target options] --value V --apply
-  amd-pm-native-read --cpu N [--bclk-mhz MHz] [--map-ccd]  Native Shimada PM capture
+  amd-pm-native-read --cpu N [--bclk-mhz MHz] [--map-ccd]  Native PM capture (default Shimada)
+    --platform granite-ridge      1Ah/44h, SMU 98.84.0; 620105/620205 only; no --map-ccd/BCLK scaling
   amd-pstates --cpu N               Family 17h/19h/1Ah P0..P7 definitions (read only)
   intel-read --cpu N                RAPL, HWP, temperatures, package events and non-turbo ratio
   intel-set --cpu N --field F --value V --apply
@@ -1615,7 +1622,11 @@ Run diagnose first; choose a CPU from allowed_cpus. Device access may need sudo.
 Firmware queries can write mailbox/index registers; settings require --apply.
 amd-pm-read uses the installed driver's sysfs ABI and does not open a register
 backend. amd-pm-native-read uses the OCTool backend, RSMU metadata/transfer and
-bounded physical reads on 1Ah/08h. Firmware must report an exact known version
+bounded physical reads on 1Ah/08h (Shimada) by default.
+--platform granite-ridge selects 1Ah/44h with PCI 1022:14d8 and SMU 98.84.0.
+Only 0x620105/1828 and 0x620205/2452 are accepted; CCD mapping and BCLK scaling
+are unavailable for this profile. Physical units and target IDs are unverified.
+Firmware must report an exact known version
 and matching nonzero byte count. Transfer acceptance does not prove freshness;
 metadata changes or read failures discard the buffer. No driver is auto-loaded.
 --map-ccd additionally requires SMU 115.46.0 and queries all 16 CCD targets
@@ -1623,7 +1634,7 @@ before and after capture. Present-mask order maps table slots to firmware IDs;
 it does not establish active cores or OS CPU/APIC IDs. A changing mask, unknown
 firmware or count mismatch discards the buffer. Imported captures do not certify
 these mapping claims. A5 clock query payloads are not decoded as rail readback.
-Eight exact Shimada PM versions are supported; files do not identify physical
+Eight exact Shimada and two exact Granite Ridge PM versions are supported; files do not identify physical
 cores. PM captures have no checksum. BCLK is caller supplied, not measured here;
 raw clock values remain separate from scaled values. Non-finite fields are null.
 original_limits contains 24 original monitor values with unverified units and

@@ -8,6 +8,7 @@ enum class AmdPmNativePhase { Validate, Version, Topology, Address, Transfer, Re
 const char *amdPmNativePhaseName(AmdPmNativePhase phase);
 struct AmdPmNativeRead {
     int error = 0;
+    bool graniteRidge = false;
     AmdPmNativePhase phase = AmdPmNativePhase::Validate;
     unsigned cpu = 0, physicalAddressBits = 0;
     std::uint32_t version = 0, reportedBytes = 0, response = 0;
@@ -34,5 +35,10 @@ struct AmdPmNativeRead {
 // No active-core mask or mapping from firmware core slots to OS CPUs is inferred.
 AmdPmNativeRead readShimadaPmNative(HardwareSession &session, const SmuTarget &target,
                                   const AmdPmOptions &options = AmdPmOptions(), bool mapCcds = false);
+// Separate Granite Ridge 1Ah/44h, AMD 1022:14d8, BDF 0 profile. The pinned
+// 98.84.0 protocol supports exact 620105/620205 versions with reported lengths.
+// No A5 mapping or BCLK scaling; no tuning command is allowed by this path.
+AmdPmNativeRead readGranitePmNative(HardwareSession &session, unsigned cpu,
+                                  const AmdPmOptions &options = AmdPmOptions());
 std::string amdPmNativeJson(const AmdPmNativeRead &result);
 } }

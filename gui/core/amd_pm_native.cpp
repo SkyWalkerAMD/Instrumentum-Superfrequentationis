@@ -16,21 +16,30 @@ struct Packet {
     bool attempted = false, absent = false;
 };
 // Separate closed transport: the existing tuning command allowlist is unchanged.
-Packet exchange(HardwareSession &s, unsigned command, unsigned target = 0) {
+Reply wait(HardwareSession &s, bool granite) {
+    for (unsigned poll = 0; poll < 100; ++poll) {
+        const auto r = detail::rsmuIndirect(s,granite ? 0x3b10570 : 0x3b10970,false);
+        if (r.error || r.value) return r;
+        detail::rsmuDelay();
+    }
+    Reply r; r.error = -ETIMEDOUT; return r;
+}
+Packet exchange(HardwareSession &s, unsigned command, unsigned target = 0, bool granite = false) {
     Packet out;
+    if (granite && command == 0xa5) { out.error = -ENOTSUP; return out; }
     if ((command != 2 && command != 3 && command != 4 && command != 5 && command != 0xa5) ||
         (command == 0xa5 ? target > 15 : target != 0)) { out.error = -EINVAL; return out; }
-    auto r = detail::rsmuWait(s); if ((out.error = r.error)) return out;
-    r = detail::rsmuIndirect(s, 0x3b10970, true, 0); if ((out.error = r.error)) return out;
+    auto r = wait(s,granite); if ((out.error = r.error)) return out;
+    r = detail::rsmuIndirect(s, granite ? 0x3b10570 : 0x3b10970, true, 0); if ((out.error = r.error)) return out;
     for (unsigned i = 0; i < 6; ++i) {
-        // CPU4 GetDramAddress takes {1,1,0,0,0,0}; version/transfer take zeros.
-        const unsigned arg = command == 4 && i < 2 ? 1 : command == 0xa5 && i == 0 ? target : 0;
+        // Shimada address query uses {1,1,0,0,0,0}; Granite metadata and transfer use zeros.
+        const unsigned arg = !granite && command == 4 && i < 2 ? 1 : command == 0xa5 && i == 0 ? target : 0;
         r = detail::rsmuIndirect(s, 0x3b10a40 + 4*i, true, arg);
         if ((out.error = r.error)) return out;
     }
     out.attempted = true;
-    r = detail::rsmuIndirect(s, 0x3b10924, true, command); if ((out.error = r.error)) return out;
-    r = detail::rsmuWait(s); if ((out.error = r.error)) return out;
+    r = detail::rsmuIndirect(s, granite ? 0x3b10524 : 0x3b10924, true, command); if ((out.error = r.error)) return out;
+    r = wait(s,granite); if ((out.error = r.error)) return out;
     out.response = std::uint32_t(r.value);
     if (command == 0xa5 && out.response == 0xfe) {
         // Only this pinned command's completed FE response means absent.
@@ -49,7 +58,7 @@ Packet exchange(HardwareSession &s, unsigned command, unsigned target = 0) {
 int presentMask(HardwareSession &s, unsigned &mask, unsigned &queried, std::uint32_t &response) {
     mask = queried = 0;
     for (unsigned target = 0; target < 16; ++target) {
-        const auto p = exchange(s, 0xa5, target); response = p.response;
+        const auto p = exchange(s,0xa5,target); response = p.response;
         if (p.error) return p.error;
         ++queried;
         if (!p.absent) mask |= 1u << target;
@@ -62,12 +71,22 @@ std::vector<unsigned> targetIds(unsigned mask) {
     for (unsigned target = 0; target < 16; ++target) if (mask & (1u << target)) out.push_back(target);
     return out;
 }
-int identity(HardwareSession &s, const SmuTarget &t, unsigned &bits) {
-    if (t.profile != SmuProfile::Shimada || t.bus || t.device || t.function) return -ENOTSUP;
+int identity(HardwareSession &s, const SmuTarget &t, unsigned &bits, bool granite = false) {
+    if ((!granite && t.profile != SmuProfile::Shimada) || t.bus || t.device || t.function) return -ENOTSUP;
     if (const int e = s.checkpoint()) return e;
-    const auto p = probeSmu(s, t);
-    if (p.error) return p.error;
-    if (p.identity.model != 8) return -ENOTSUP;
+    if (granite) {
+        const auto cpu = identifyCpu(s,t.cpu);
+        if (cpu.error) return cpu.error;
+        if (!cpu.amd || cpu.family != 0x1a || cpu.model != 0x44) return -ENOTSUP;
+        Request request; request.space = Space::Pci; request.width = 4;
+        const auto pci = s.execute(request);
+        if (pci.error) return pci.error;
+        if (pci.value != 0x14d81022) return -ENODEV;
+    } else {
+        const auto p = probeSmu(s,t);
+        if (p.error) return p.error;
+        if (p.identity.model != 8) return -ENOTSUP;
+    }
     const auto features = s.cpuid(t.cpu, 1);
     if (features.error) return features.error;
     if (features.words[2] & 0x80000000u) return -ENOTSUP;
@@ -101,27 +120,36 @@ const char *amdPmNativePhaseName(AmdPmNativePhase p) {
     }
     return "invalid";
 }
-AmdPmNativeRead readShimadaPmNative(HardwareSession &s, const SmuTarget &t, const AmdPmOptions &opt, bool mapCcds) {
-    AmdPmNativeRead out; out.cpu = t.cpu; out.mappingRequested = mapCcds;
+static AmdPmNativeRead capture(HardwareSession &s, const SmuTarget &t, const AmdPmOptions &opt, bool mapCcds, bool granite) {
+    AmdPmNativeRead out; out.cpu = t.cpu; out.mappingRequested = mapCcds; out.graniteRidge = granite;
     const auto fail = [&](int e) {
         out.error = e; out.snapshot = AmdPmSnapshot(); out.snapshot.error = e;
         out.mappingValid = out.mappingRechecked = false; out.firmwareCcdIds.clear();
         out.snapshot.detail = "Native PM capture stopped during " + std::string(amdPmNativePhaseName(out.phase)) + "; no buffer published";
         return out;
     };
+    const auto packet = [&](unsigned command) { return exchange(s,command,0,granite); };
     if (opt.hasBclk && (!std::isfinite(opt.bclkMHz) || opt.bclkMHz <= 0)) return fail(-EINVAL);
-    if (const int e = identity(s, t, out.physicalAddressBits)) return fail(e);
+    if (granite && (opt.hasBclk || mapCcds)) return fail(-ENOTSUP);
+    if (const int e = identity(s, t, out.physicalAddressBits, granite)) return fail(e);
     out.phase = AmdPmNativePhase::Version;
-    auto p = exchange(s, 5); out.response = p.response;
+    Packet p;
+    if (granite) {
+        p = packet(2); out.response = p.response;
+        if (p.error) return fail(p.error);
+        out.smuVersion = p.words[0];
+        if (out.smuVersion != 0x00625400) return fail(-ENOTSUP);
+    }
+    p = packet(5); out.response = p.response;
     if (p.error) return fail(p.error);
     out.version = p.words[0]; out.reportedBytes = p.words[1];
     const auto size = amdPmTableSize(out.version);
-    if (!size) return fail(-ENOTSUP);
+    if (!size || granite != isGranitePm(out.version)) return fail(-ENOTSUP);
     if (out.reportedBytes != size) return fail(-EMSGSIZE);
     out.metadataValid = true;
     if (mapCcds) {
         out.phase = AmdPmNativePhase::Topology;
-        p = exchange(s, 2); out.response = p.response;
+        p = packet(2); out.response = p.response;
         if (p.error) return fail(p.error);
         out.smuVersion = p.words[0];
         if (out.smuVersion != 0x00732e00) return fail(-ENOTSUP);
@@ -129,7 +157,7 @@ AmdPmNativeRead readShimadaPmNative(HardwareSession &s, const SmuTarget &t, cons
         if (targetIds(out.presentMaskBefore).size() != (size - 0x634) / 0x274) return fail(-EMSGSIZE);
     }
     out.phase = AmdPmNativePhase::Address;
-    p = exchange(s, 4); out.response = p.response;
+    p = packet(4); out.response = p.response;
     if (p.error) return fail(p.error);
     out.address = std::uint64_t(p.words[0]) | (std::uint64_t(p.words[1]) << 32);
     const auto maximum = (std::uint64_t(1) << out.physicalAddressBits) - 1;
@@ -138,10 +166,10 @@ AmdPmNativeRead readShimadaPmNative(HardwareSession &s, const SmuTarget &t, cons
     if (out.address < 4096 || (out.address & 3u) || out.address > maximum || size - 1 > maximum - out.address) return fail(-ERANGE);
     out.addressValid = true;
     unsigned bits = 0;
-    if (const int e = identity(s, t, bits)) return fail(e);
+    if (const int e = identity(s, t, bits, granite)) return fail(e);
     if (bits != out.physicalAddressBits) return fail(-EAGAIN);
     out.phase = AmdPmNativePhase::Transfer;
-    p = exchange(s, 3); out.response = p.response;
+    p = packet(3); out.response = p.response;
     out.transferAttempted = p.attempted; out.transferAccepted = p.response == 1;
     if (p.error) return fail(p.error);
     out.phase = AmdPmNativePhase::Read;
@@ -154,26 +182,33 @@ AmdPmNativeRead readShimadaPmNative(HardwareSession &s, const SmuTarget &t, cons
         out.bytesRead += 4;
     }
     out.phase = AmdPmNativePhase::Recheck;
-    if (const int e = identity(s, t, bits)) return fail(e);
+    if (const int e = identity(s, t, bits, granite)) return fail(e);
     if (bits != out.physicalAddressBits) return fail(-EAGAIN);
-    p = exchange(s, 5); out.response = p.response;
+    p = packet(5); out.response = p.response;
     if (p.error) return fail(p.error);
     if (p.words[0] != out.version || p.words[1] != out.reportedBytes) return fail(-EAGAIN);
-    p = exchange(s, 4); out.response = p.response;
+    p = packet(4); out.response = p.response;
     if (p.error) return fail(p.error);
     if ((std::uint64_t(p.words[0]) | (std::uint64_t(p.words[1]) << 32)) != out.address) return fail(-EAGAIN);
     if (mapCcds) {
         out.phase = AmdPmNativePhase::TopologyRecheck;
-        p = exchange(s, 2); out.response = p.response;
+        p = packet(2); out.response = p.response;
         if (p.error) return fail(p.error);
         if (p.words[0] != out.smuVersion) return fail(-EAGAIN);
         if (const int e = presentMask(s, out.presentMaskAfter, out.queriedAfter, out.response)) return fail(e);
         if (out.presentMaskAfter != out.presentMaskBefore) return fail(-EAGAIN);
-        if (const int e = identity(s, t, bits)) return fail(e);
+        if (const int e = identity(s, t, bits, granite)) return fail(e);
         if (bits != out.physicalAddressBits) return fail(-EAGAIN);
-        p = exchange(s, 2); out.response = p.response;
+        p = packet(2); out.response = p.response;
         if (p.error) return fail(p.error);
         if (p.words[0] != out.smuVersion) return fail(-EAGAIN);
+    }
+    if (granite) {
+        p = packet(2); out.response = p.response;
+        if (p.error) return fail(p.error);
+        if (p.words[0] != out.smuVersion) return fail(-EAGAIN);
+        if (const int e = identity(s,t,bits,granite)) return fail(e);
+        if (bits != out.physicalAddressBits) return fail(-EAGAIN);
     }
     if (const int e = s.checkpoint()) return fail(e);
     if (mapCcds) {
@@ -186,12 +221,19 @@ AmdPmNativeRead readShimadaPmNative(HardwareSession &s, const SmuTarget &t, cons
     if (!out.error) out.phase = AmdPmNativePhase::Complete;
     return out;
 }
+AmdPmNativeRead readShimadaPmNative(HardwareSession &s, const SmuTarget &t, const AmdPmOptions &o, bool map) {
+    return capture(s,t,o,map,false);
+}
+AmdPmNativeRead readGranitePmNative(HardwareSession &s, unsigned cpu, const AmdPmOptions &o) {
+    SmuTarget t; t.cpu = cpu;
+    return capture(s,t,o,false,true);
+}
 std::string amdPmNativeJson(const AmdPmNativeRead &r) {
     std::string ids = "[";
     if (r.mappingValid) for (std::size_t i = 0; i < r.firmwareCcdIds.size(); ++i)
         ids += (i ? "," : "") + std::to_string(r.firmwareCcdIds[i]);
     ids += "]";
-    return "{\"cpu\":" + std::to_string(r.cpu) + ",\"phase\":\"" + amdPmNativePhaseName(r.phase) +
+    return std::string("{\"platform\":\"") + (r.graniteRidge ? "granite-ridge" : "shimada") + "\",\"smu_version\":" + word(r.smuVersion,8) + ",\"cpu\":" + std::to_string(r.cpu) + ",\"phase\":\"" + amdPmNativePhaseName(r.phase) +
         "\",\"error\":" + std::to_string(r.error) + ",\"physical_address_bits\":" + std::to_string(r.physicalAddressBits) +
         ",\"version\":" + word(r.version,8) + ",\"reported_bytes\":" + std::to_string(r.reportedBytes) +
         ",\"address\":" + (r.addressValid ? word(r.address,16) : "null") +

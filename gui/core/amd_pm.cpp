@@ -62,12 +62,18 @@ const std::vector<AmdPmLayout> &amdPmLayouts() {
 }
 std::size_t amdPmTableSize(std::uint32_t version) {
     for (const auto &layout : amdPmLayouts()) if (layout.version == version) return layout.bytes;
+    for (const auto &layout : amdGranitePmLayouts()) if (layout.version == version) return layout.bytes;
     return 0;
 }
+const std::vector<AmdPmLayout> &amdGranitePmLayouts() {
+    static const std::vector<AmdPmLayout> layouts = {{0x620105,1828}, {0x620205,2452}};
+    return layouts;
+}
+bool isGranitePm(std::uint32_t version) { return version == 0x620105 || version == 0x620205; }
 AmdPmLayoutAudit auditLegacyAmdPmLayout(std::uint32_t version, std::size_t captured, unsigned fused) {
     AmdPmLayoutAudit out; out.version = version; out.capturedBytes = captured;
     out.expectedBytes = amdPmTableSize(version); out.fusedCcdInput = fused;
-    if (!out.expectedBytes) { out.error = -ENOTSUP; return out; }
+    if (!out.expectedBytes || isGranitePm(version)) { out.error = -ENOTSUP; return out; }
     if (fused < 1 || fused > 16) { out.error = -EINVAL; return out; }
     if (captured != out.expectedBytes) out.error = -EMSGSIZE;
     switch (fused) {
@@ -123,11 +129,37 @@ std::string amdPmLayoutAuditJson(const AmdPmLayoutAudit &s) {
 }
 AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t version, const AmdPmOptions &options) {
     AmdPmSnapshot out; out.version = version; out.options = options;
+    out.graniteRidge = isGranitePm(version);
     out.capturedBytes = bytes.size(); out.expectedBytes = amdPmTableSize(version);
     if (bytes.size() <= maximumBytes) out.raw = bytes;
     if (!validOptions(options)) { out.error = -EINVAL; out.detail = "Supplied BCLK must be positive and finite"; return out; }
     if (!out.expectedBytes) { out.error = -ENOTSUP; out.detail = "Unsupported exact PM table version"; return out; }
     if (bytes.size() != out.expectedBytes) { out.error = -EMSGSIZE; out.detail = "PM table length does not match its version"; return out; }
+    if (out.graniteRidge) {
+        if (options.hasBclk) { out.error = -ENOTSUP; out.detail = "BCLK scaling is not defined for Granite Ridge PM storage"; return out; }
+        // SMU 98.84.0: common copy is 4b4h bytes. MP5's byte-checked integer
+        // scatter writes 18*8*N core words and 12*N CCD words (N=1 or 2).
+        // Numerical normalization, sensor units and OS target mapping remain separate.
+        const char *names[] = {"FCLK candidate","UCLK candidate","MCLK candidate","VDD_MISC candidate",
+            "VDDCR_SOC candidate","CLDO_VDDG_IOD candidate","CLDO_VDDG_CCD candidate","CLDO_VDDP candidate"};
+        const unsigned indices[] = {71,75,79,58,83,259,261,269};
+        for (unsigned i = 0; i < 8; ++i) field(out,out.fields,names[i],"unverified",indices[i]*4,false,"granite_common");
+        out.firmwareCcdSlots = version == 0x620205 ? 2 : 1;
+        const unsigned cores = out.firmwareCcdSlots*8;
+        for (unsigned row = 0; row < 18; ++row) for (unsigned slot = 0; slot < cores; ++slot) {
+            field(out,out.firmwareCores,("Core row " + std::to_string(row)).c_str(),"unverified",0x4b4+4*(row*cores+slot),false,"core_storage");
+            auto &v = out.firmwareCores.back(); v.row = row; v.slot = slot; v.slotCount = cores;
+        }
+        for (unsigned row = 0; row < 12; ++row) for (unsigned slot = 0; slot < out.firmwareCcdSlots; ++slot) {
+            field(out,out.firmwareCcds,("CCD row " + std::to_string(row)).c_str(),"unverified",0x4b4+4*(18*cores+row*out.firmwareCcdSlots+slot),false,"ccd_storage");
+            auto &v = out.firmwareCcds.back(); v.row = row; v.slot = slot; v.slotCount = out.firmwareCcdSlots;
+        }
+        for (unsigned offset = 0; offset < bytes.size(); offset += 4)
+            field(out,out.graniteRaw,("Word " + std::to_string(offset/4)).c_str(),"unverified",offset,false,"granite_storage");
+        out.detail = out.error ? "Some Granite Ridge stored words are non-finite; raw bits and other values are retained" :
+            "Granite Ridge storage decoded; candidate labels, physical units and CPU/CCD/rail identities remain unverified";
+        return out;
+    }
     // Independently implemented from the pinned layout facts in
     // docs/amd-pm-recovery.md; never infer per-core target IDs from this table.
     field(out, out.fields, "FCLK", "MHz", 0x20c, true);
@@ -266,12 +298,14 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
     appendFields(s.originalFabric);
     out += "],\"original_arrays_units_verified\":false,\"original_arrays_targets_verified\":false,\"original_arrays\":[";
     appendFields(s.originalArrays);
-    out += "],\"firmware_arrays_layout\":\"shimada-18-core-13-ccd-rows\",\"firmware_ccd_storage_slots\":" +
+    out += "],\"firmware_arrays_layout\":" + quote(s.graniteRidge ? "granite-ridge-18-core-12-ccd-rows" : "shimada-18-core-13-ccd-rows") + ",\"firmware_ccd_storage_slots\":" +
         std::to_string(s.firmwareCcdSlots) + ",\"firmware_arrays_units_verified\":false,\"firmware_arrays_targets_verified\":false," +
         "\"firmware_arrays_labels_verified\":false,\"firmware_core_arrays\":[";
     appendFields(s.firmwareCores);
     out += "],\"firmware_ccd_arrays\":[";
     appendFields(s.firmwareCcds);
+    out += "],\"platform\":" + quote(s.graniteRidge ? "granite-ridge" : "shimada") + ",\"granite_stored_words\":[";
+    appendFields(s.graniteRaw);
     return out + "]}";
 }
 AmdPmSnapshot parseAmdPmCapture(const std::string &input) {

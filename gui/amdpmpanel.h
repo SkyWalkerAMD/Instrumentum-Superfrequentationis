@@ -31,7 +31,7 @@ private:
     unsigned revision_ = 0;
     std::string nativeCapture_;
     std::vector<unsigned> firmwareCcdIds_;
-    QComboBox *version_, *view_;
+    QComboBox *version_, *view_, *nativePlatform_;
     QCheckBox *scale_, *mapCcds_;
     QLineEdit *bclk_, *layoutCcds_, *cpu_;
     QWidget *controls_;
