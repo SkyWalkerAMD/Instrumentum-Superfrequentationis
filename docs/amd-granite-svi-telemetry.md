@@ -85,3 +85,15 @@ and 91h are still research-only: byte marshaling and telemetry units do not
 establish an independent second-rail setter/readback pair, transaction timing or
 the board's register contract. No new tuning write is enabled. PM-to-CPUID/OS
 core association is also still separate from these channel measurements.
+
+The follow-up [register-helper replay](../analysis/tools/firmware-granite-registers.py)
+executes 0x32bf8 and 0x32cbc with scripted MMIO responses: 6,912 read and 6,912
+write cases cover all register bytes, channels 0/1/2, three reply delays, varied
+returned bytes and three written byte values. It checks the address mask,
+complete write sequence, read payload extraction and packet formats
+`address | register << 6 | 0x02000000` and
+`address | register << 6 | data << 14 | 0x01000000`.
+Eleven stalled readiness gates exhaust the bounded research instruction budget;
+they do not produce a firmware timeout. Device side effects and readiness/error
+bit semantics beyond the observed branches remain unverified. A completion bit
+does not establish that a voltage changed. No real register command is issued.

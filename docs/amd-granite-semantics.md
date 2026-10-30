@@ -200,6 +200,16 @@ assert trace.hexdigest() == "f394b054ff73ce955cbf08d960a6f4e30756bf20bb697cb876e
 
 ## Firmware storage slot to CCD target
 
+The extended topology replay also connects the local-core counter windows at
+`0x15ffe00 + 0x20000 * slot + 0x304/0x308` to state fields at
+`0x11a18 + 0x1bc * slot + 0x128/0x12c`. Across all 256 enabled-byte masks,
+2,048 enabled counter copies preserve the slot number; 4,096 disabled state
+words retain their previous values. Clock-delta wrap is checked separately in
+the same slice. These masks and MMIO values are synthetic inputs. They identify
+the firmware's local counter indexing, not a CPUID/APIC or OS CPU contract.
+The application therefore continues to show firmware core slots without
+inventing physical-core labels.
+
 The corrected entry scanner also includes frames of 128 bytes and above.
 The formerly missed indirect target at SMU 0x1d7ec initializes the MP5 packet.
 Its byte at +0 is the firmware target, +0x18 is its storage rank among present

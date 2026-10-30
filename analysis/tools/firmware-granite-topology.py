@@ -80,7 +80,27 @@ def main():
         assert {address for address in vm.ram if address>=0xf8000000}==expected_addresses
         cases.append(dict(present_mask=present,active_mask=active,core_masks=core_masks,
                           firmware_target_ids_by_storage_slot=ids,width=width))
-    report=dict(schema=1,hardware_execution=False,source_sha256=dict(smu=SMU_SHA,mp5=MP5_SHA),
+    # Connect the fixed local core storage stride to counter read windows. The
+    # enabled bytes are fixtures: this does not infer active OS CPUs from them.
+    mu=lambda address:struct.unpack_from('<I',mp5,address)[0]
+    assert mu(0x19058)==0x15ffe00 and mu(0x18f40)==0x20000 and mu(0x18d88)==0x31ffe00
+    enabled_reads=retained_words=0
+    for mask in range(256):
+        vm=Slice(mp5,mc)
+        vm.r.update(a12=0x11a18,a4=0x50000,a7=mu(0x18d88),a3=mu(0x18f40),a5=0x1bc)
+        vm.put(mu(0x18d88)+0x3c0,7)
+        for core in range(8):
+            vm.put(0x5000d+core,(mask>>core)&1,1)
+            for offset in (0x120,0x124,0x128,0x12c):vm.put(0x11a18+0x1bc*core+offset,0xfffffffc)
+            for offset in (0x304,0x308):vm.put(mu(0x19058)+mu(0x18f40)*core+offset,0x1000*core+offset)
+        vm.run(0x2c28f,0x2c2ca)
+        for core in range(8):
+            values=[vm.get(0x11a18+0x1bc*core+offset) for offset in (0x120,0x124,0x128,0x12c)]
+            if mask&(1<<core):
+                assert values==[7,11,0x1000*core+0x304,0x1000*core+0x308];enabled_reads+=2
+            else:
+                assert values==[0xfffffffc]*4;retained_words+=4
+    report=dict(schema=2,hardware_execution=False,source_sha256=dict(smu=SMU_SHA,mp5=MP5_SHA),
         initialization_handler='0x1d7ec',initialization_slice='0x1d827..0x1da2e',
         synthetic_cases=len(cases),copied_packets=packet_count,checked_pm_words=copy_words,
         packet_bytes=0x70,packet_target_offset=0,packet_active_rank_offset=2,
@@ -90,6 +110,12 @@ def main():
         two_slot_consequence='within this two-target firmware, width 2 implies storage IDs [0,1]',
         one_slot_ambiguity='width 1 can mean target 0 or target 1 without the presence mask',
         trace_sha256=trace.hexdigest(),cases=cases,
+        core_counter_windows=dict(slice='0x2c28f..0x2c2ca',enable_masks=256,
+            enabled_counter_copies=enabled_reads,disabled_retained_words=retained_words,
+            source='0x15ffe00 + 0x20000 * local_core_slot + 0x304/0x308',
+            destination='0x11a18 + 0x1bc * local_core_slot + 0x128/0x12c',
+            clock_delta_wrap_verified=True,enabled_mask_is_fixture=True,
+            cpuid_or_os_binding_verified=False),
         complete_startup_emulated=False,mailbox_timing_verified=False,
         per_core_physical_mapping_verified=False,cpuid_ccd_mapping_verified=False,
         physical_hardware_acceptance='not_run')
