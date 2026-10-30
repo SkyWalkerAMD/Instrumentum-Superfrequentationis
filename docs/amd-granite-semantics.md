@@ -83,6 +83,64 @@ This path performs CPUID only and sends no SMU or register command. See
 CPUID IDs do not yet establish the PM row-to-physical-core association. No tuning
 target is inferred from L3 size.
 
+### Initial temperature sensor selectors
+
+The pinned MP5 image contains these three bytes at
+`0x11a18 + 0x1bc * core_slot + 0x84..0x86`. The temperature consumer reads
+those selectors and stores their maximum at per-core state +0x28.
+
+| Core storage slot | Initial sensor indices (decimal) |
+| --- | --- |
+| 0 | 1, 2, 3 |
+| 1 | 33, 34, 35 |
+| 2 | 4, 5, 6 |
+| 3 | 36, 37, 38 |
+| 4 | 7, 8, 9 |
+| 5 | 39, 40, 41 |
+| 6 | 10, 11, 12 |
+| 7 | 42, 43, 44 |
+
+A separate local Python replay used these image bytes, 64 rotations of distinct
+valid sensor values and the same byte-checked instruction slice. All 512 core
+maxima matched. This supplements the cloud study; it is not another cloud job
+or a hardware measurement. [The local result](validation/amd-granite-initial-selectors.json)
+records the input hash and deterministic trace.
+
+These are initial image data. Runtime overrides have not been ruled out, and
+the sensor indices do not identify CPUID/APIC or OS cores. No live core label,
+active-core mask or tuning target is inferred from them. To reproduce the local
+inspection and replay using the extracted, hash-pinned study inputs:
+
+```python
+import hashlib, json, runpy, struct
+from pathlib import Path
+
+body = Path("build/granite-study-input/mp5-62-54-body.bin").read_bytes()
+assert hashlib.sha256(body).hexdigest() == "fb5d96c17b909cc4f681523ccc931796e27c7457ba5ad637a3d4fce1c78ce556"
+study = json.loads(Path("build/granite-study-41023307189/mp5/smu-study.json").read_text())
+assert study["source_sha256"] == hashlib.sha256(body).hexdigest()
+code = {int(i["address"], 16): i for f in study["functions"] for i in f["instructions"]}
+Slice = runpy.run_path("analysis/tools/firmware-granite-semantics.py")["Slice"]
+selectors = [list(body[0x11a18+c*0x1bc+0x84:0x11a18+c*0x1bc+0x87]) for c in range(8)]
+trace = hashlib.sha256()
+for rotation in range(64):
+    vm = Slice(body, code)
+    values = [((i+rotation) % 64)/8 for i in range(64)]
+    for i in range(64):
+        vm.put(0x12b44+4*i, ((392+(i+rotation) % 64) << 11) | (1 << 10))
+        vm.putf(0x12c44+4*i, -999)
+    for c, indices in enumerate(selectors):
+        for j, index in enumerate(indices):
+            vm.put(0x11a18+c*0x1bc+0x84+j, index, 1)
+    vm.run(0x2c0e3, 0x2c15f)
+    for c, indices in enumerate(selectors):
+        expected = max(values[i] for i in indices)
+        actual = vm.getf(0x11a18+c*0x1bc+0x28)
+        assert actual == expected
+        trace.update(struct.pack("<IIff", rotation, c, expected, actual))
+assert trace.hexdigest() == "f394b054ff73ce955cbf08d960a6f4e30756bf20bb697cb876ef57410807d13b"
+```
+
 ## Firmware storage slot to CCD target
 
 The corrected entry scanner also includes frames of 128 bytes and above.

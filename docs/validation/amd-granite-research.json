@@ -1,157 +1,344 @@
 {
-  "schema": 1,
+  "schema": 2,
   "date": "2026-10-30",
-  "source_commit": "22faac9ca8c856d57ea4f31553876eabcb1a38c6",
+  "source_commit": "5ff594b3ecd905a036a020645b4fd0a06ae965dd",
   "run": {
     "attempt": 1,
     "conclusion": "success",
-    "headSha": "22faac9ca8c856d57ea4f31553876eabcb1a38c6",
+    "headSha": "5ff594b3ecd905a036a020645b4fd0a06ae965dd",
     "jobs": [
       {
-        "completedAt": "2026-10-30T04:09:07Z",
+        "completedAt": "2026-10-30T08:00:14Z",
         "conclusion": "success",
-        "databaseId": 123885347542,
+        "databaseId": 123955469276,
         "name": "firmware",
-        "startedAt": "2026-10-30T04:07:01Z",
+        "startedAt": "2026-10-30T07:58:01Z",
         "status": "completed",
         "steps": [
           {
-            "completedAt": "2026-10-30T04:07:04Z",
+            "completedAt": "2026-10-30T07:58:03Z",
             "conclusion": "success",
             "name": "Set up job",
             "number": 1,
-            "startedAt": "2026-10-30T04:07:01Z",
+            "startedAt": "2026-10-30T07:58:02Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-30T04:07:06Z",
+            "completedAt": "2026-10-30T07:58:05Z",
             "conclusion": "success",
             "name": "Run actions/checkout@v4",
             "number": 2,
-            "startedAt": "2026-10-30T04:07:04Z",
+            "startedAt": "2026-10-30T07:58:03Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-30T04:07:11Z",
+            "completedAt": "2026-10-30T07:58:10Z",
             "conclusion": "success",
             "name": "Run actions/setup-node@v4",
             "number": 3,
-            "startedAt": "2026-10-30T04:07:06Z",
+            "startedAt": "2026-10-30T07:58:05Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-30T04:07:12Z",
+            "completedAt": "2026-10-30T07:58:10Z",
             "conclusion": "success",
             "name": "Run actions/setup-java@v4",
             "number": 4,
-            "startedAt": "2026-10-30T04:07:11Z",
+            "startedAt": "2026-10-30T07:58:10Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-30T04:07:29Z",
+            "completedAt": "2026-10-30T07:58:26Z",
             "conclusion": "success",
             "name": "Install pinned analysis tools",
             "number": 5,
-            "startedAt": "2026-10-30T04:07:12Z",
+            "startedAt": "2026-10-30T07:58:10Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-30T04:07:37Z",
+            "completedAt": "2026-10-30T07:58:32Z",
             "conclusion": "success",
             "name": "Extend and compile the isolated static Xtensa decoder",
             "number": 6,
-            "startedAt": "2026-10-30T04:07:29Z",
+            "startedAt": "2026-10-30T07:58:26Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-30T04:07:44Z",
+            "completedAt": "2026-10-30T07:58:39Z",
             "conclusion": "success",
             "name": "Extract pinned Granite Ridge reference inputs",
             "number": 7,
-            "startedAt": "2026-10-30T04:07:37Z",
+            "startedAt": "2026-10-30T07:58:32Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-30T04:08:30Z",
+            "completedAt": "2026-10-30T07:59:30Z",
             "conclusion": "success",
             "name": "Static SMU and MP5 discovery without Shimada address assumptions",
             "number": 8,
-            "startedAt": "2026-10-30T04:07:44Z",
+            "startedAt": "2026-10-30T07:58:39Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-30T04:08:31Z",
+            "completedAt": "2026-10-30T07:59:34Z",
             "conclusion": "success",
             "name": "Replay byte-checked Granite Ridge layout and metadata instructions",
             "number": 9,
-            "startedAt": "2026-10-30T04:08:30Z",
+            "startedAt": "2026-10-30T07:59:30Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-30T04:09:01Z",
+            "completedAt": "2026-10-30T08:00:07Z",
             "conclusion": "success",
             "name": "REA static UEFI entry points and RSMU transport helpers",
             "number": 10,
-            "startedAt": "2026-10-30T04:08:31Z",
+            "startedAt": "2026-10-30T07:59:34Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-30T04:09:04Z",
+            "completedAt": "2026-10-30T08:00:10Z",
             "conclusion": "success",
             "name": "Run actions/upload-artifact@v4",
             "number": 11,
-            "startedAt": "2026-10-30T04:09:01Z",
+            "startedAt": "2026-10-30T08:00:07Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-30T04:09:04Z",
+            "completedAt": "2026-10-30T08:00:11Z",
             "conclusion": "success",
             "name": "Post Run actions/setup-java@v4",
             "number": 20,
-            "startedAt": "2026-10-30T04:09:04Z",
+            "startedAt": "2026-10-30T08:00:10Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-30T04:09:04Z",
+            "completedAt": "2026-10-30T08:00:11Z",
             "conclusion": "success",
             "name": "Post Run actions/setup-node@v4",
             "number": 21,
-            "startedAt": "2026-10-30T04:09:04Z",
+            "startedAt": "2026-10-30T08:00:11Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-30T04:09:05Z",
+            "completedAt": "2026-10-30T08:00:11Z",
             "conclusion": "success",
             "name": "Post Run actions/checkout@v4",
             "number": 22,
-            "startedAt": "2026-10-30T04:09:04Z",
+            "startedAt": "2026-10-30T08:00:11Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-30T04:09:05Z",
+            "completedAt": "2026-10-30T08:00:11Z",
             "conclusion": "success",
             "name": "Complete job",
             "number": 23,
-            "startedAt": "2026-10-30T04:09:05Z",
+            "startedAt": "2026-10-30T08:00:11Z",
             "status": "completed"
           }
         ],
-        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41001072012/job/123885347542"
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41023307189/job/123955469276"
       }
     ],
     "status": "completed",
-    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41001072012"
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41023307189"
   },
-  "artifact_id": 12952923198,
-  "artifact": {
-    "path": "build/granite-study-41001072012/artifact.zip",
-    "bytes": 2290199,
-    "sha256": "f61b312777116d4023d1899aaa45399de5115e831e42af0c5c062466aa9a89c6"
+  "artifact_id": 12962771894,
+  "hardware_execution": false,
+  "physical_hardware_acceptance": "not_run",
+  "installed_bios_known": false,
+  "smu_discovery": {
+    "exported": 1796,
+    "selected": 1796,
+    "bad_instruction_functions": 12,
+    "truncated_instruction_functions": 0
   },
-  "log": {
-    "path": "build/granite-study-41001072012/run.log",
-    "bytes": 93586,
-    "sha256": "7ebda5eb6fcd64dd89f7268c810883d24879cdbc750c9a5483df36232121785a"
+  "smu_selftest": {
+    "schema": 1,
+    "hardware_execution": false,
+    "firmware_modified": false,
+    "synthetic_cases": 12240,
+    "passed": true
+  },
+  "mp5_discovery": {
+    "exported": 643,
+    "selected": 643,
+    "bad_instruction_functions": 7,
+    "truncated_instruction_functions": 0
+  },
+  "mp5_selftest": {
+    "schema": 1,
+    "hardware_execution": false,
+    "firmware_modified": false,
+    "synthetic_cases": 12240,
+    "passed": true
+  },
+  "rea-transport": {
+    "schema": 1,
+    "source_sha256": "563fbf5d9350c95a9f8a063e4f98a6fbe4d22d3e2bc11d2a3346a4e3320578c9",
+    "hardware_execution": false,
+    "rea_version": "6.7.0",
+    "ghidra_version": "12.1.4",
+    "records": [
+      {
+        "tool": "open_binary",
+        "arguments": {
+          "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/firmware-input/uefi-granite-transport.bin",
+          "provider_id": "ghidra"
+        },
+        "file": "open.json",
+        "seconds": 0.21,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0x4e4"
+        },
+        "file": "pseudo-0x4e4.json",
+        "seconds": 13.83,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0x4e4"
+        },
+        "file": "info-0x4e4.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0xbb4"
+        },
+        "file": "pseudo-0xbb4.json",
+        "seconds": 0.04,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0xbb4"
+        },
+        "file": "info-0xbb4.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "procedure_callers",
+        "arguments": {
+          "procedure": "0x4e4"
+        },
+        "file": "pm-callers.json",
+        "seconds": 0.0,
+        "error": false
+      },
+      {
+        "tool": "export_evidence_bundle",
+        "arguments": {
+          "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/firmware-evidence/rea-transport/evidence.json"
+        },
+        "file": "export.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "close_binary",
+        "arguments": {},
+        "file": "close.json",
+        "seconds": 0.17,
+        "error": false
+      }
+    ],
+    "startup_timeout_ms": 900000,
+    "disabled_analyzers": "",
+    "study": "granite_transport",
+    "error": null
+  },
+  "rea-transport2": {
+    "schema": 1,
+    "source_sha256": "9ca8b4e78e40f98853163c8414cd61745005ed8d4cd8f7a8463c76e6b16a280e",
+    "hardware_execution": false,
+    "rea_version": "6.7.0",
+    "ghidra_version": "12.1.4",
+    "records": [
+      {
+        "tool": "open_binary",
+        "arguments": {
+          "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/firmware-input/uefi-granite-transport2.bin",
+          "provider_id": "ghidra"
+        },
+        "file": "open.json",
+        "seconds": 0.19,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0x4e4"
+        },
+        "file": "pseudo-0x4e4.json",
+        "seconds": 14.01,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0x4e4"
+        },
+        "file": "info-0x4e4.json",
+        "seconds": 0.02,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0xbf4"
+        },
+        "file": "pseudo-0xbf4.json",
+        "seconds": 0.04,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0xbf4"
+        },
+        "file": "info-0xbf4.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "procedure_callers",
+        "arguments": {
+          "procedure": "0x4e4"
+        },
+        "file": "pm-callers.json",
+        "seconds": 0.0,
+        "error": false
+      },
+      {
+        "tool": "export_evidence_bundle",
+        "arguments": {
+          "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/firmware-evidence/rea-transport2/evidence.json"
+        },
+        "file": "export.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "close_binary",
+        "arguments": {},
+        "file": "close.json",
+        "seconds": 0.19,
+        "error": false
+      }
+    ],
+    "startup_timeout_ms": 900000,
+    "disabled_analyzers": "",
+    "study": "granite_transport2",
+    "error": null
   },
   "input_manifest": {
     "schema": 1,
@@ -200,455 +387,56 @@
       }
     ]
   },
-  "studies": {
-    "smu": {
-      "source_sha256": "5d7951d30fefea6c5f435ac219fe4879adb0d8f66727211e32af1ff89d6b7596",
-      "discovered_functions": 1794,
-      "bad_instruction_functions": 12,
-      "selftest": {
-        "schema": 1,
-        "hardware_execution": false,
-        "firmware_modified": false,
-        "synthetic_cases": 11472,
-        "passed": true
-      },
-      "artifact": {
-        "path": "build/granite-study-41001072012/smu/smu-study.json",
-        "bytes": 8644953,
-        "sha256": "15db76851cd4d4e6f67c220200eefc4d1e4877df46bfad0dc83b656ea2fd67fa"
-      }
+  "decoder": {
+    "schema": 1,
+    "hardware_execution": false,
+    "firmware_modified": false,
+    "ghidra_version": "12.1.4",
+    "qemu_revision": "d73149283205645625bfa9fe029cfb68e4c4a9ae",
+    "encoding_source": "https://github.com/qemu/qemu/blob/d73149283205645625bfa9fe029cfb68e4c4a9ae/target/xtensa/core-de233_fpu/xtensa-modules.c.inc",
+    "constant_semantics_source": "https://github.com/qemu/qemu/blob/d73149283205645625bfa9fe029cfb68e4c4a9ae/target/xtensa/translate.c",
+    "reference_sha256": {
+      "xtensa-modules.c.inc": "70717c4060f356ad038def74241c4de76cbd57758edd19616ad449222a04d0a7",
+      "translate.c": "f06ea79f7c3332fb8910d1e5829978324cf1e04843161bbadb47b6fbb256f810"
     },
-    "mp5": {
-      "source_sha256": "fb5d96c17b909cc4f681523ccc931796e27c7457ba5ad637a3d4fce1c78ce556",
-      "discovered_functions": 643,
-      "bad_instruction_functions": 7,
-      "selftest": {
-        "schema": 1,
-        "hardware_execution": false,
-        "firmware_modified": false,
-        "synthetic_cases": 11472,
-        "passed": true
-      },
-      "artifact": {
-        "path": "build/granite-study-41001072012/mp5/smu-study.json",
-        "bytes": 3657928,
-        "sha256": "6229a8bf2e48dbf85ca371bb81a411d5ae3ebdcbe672fcfc22a292f0fe775920"
-      }
-    },
-    "rea_transport": {
-      "summary": {
-        "schema": 1,
-        "source_sha256": "563fbf5d9350c95a9f8a063e4f98a6fbe4d22d3e2bc11d2a3346a4e3320578c9",
-        "hardware_execution": false,
-        "rea_version": "6.7.0",
-        "ghidra_version": "12.1.4",
-        "records": [
-          {
-            "tool": "open_binary",
-            "arguments": {
-              "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/firmware-input/uefi-granite-transport.bin",
-              "provider_id": "ghidra"
-            },
-            "file": "open.json",
-            "seconds": 0.26,
-            "error": false
-          },
-          {
-            "tool": "procedure_pseudo_code",
-            "arguments": {
-              "procedure": "file-offset:0x4e4"
-            },
-            "file": "pseudo-0x4e4.json",
-            "seconds": 12.86,
-            "error": false
-          },
-          {
-            "tool": "procedure_info",
-            "arguments": {
-              "procedure": "0x4e4"
-            },
-            "file": "info-0x4e4.json",
-            "seconds": 0.01,
-            "error": false
-          },
-          {
-            "tool": "procedure_pseudo_code",
-            "arguments": {
-              "procedure": "file-offset:0xbb4"
-            },
-            "file": "pseudo-0xbb4.json",
-            "seconds": 0.04,
-            "error": false
-          },
-          {
-            "tool": "procedure_info",
-            "arguments": {
-              "procedure": "0xbb4"
-            },
-            "file": "info-0xbb4.json",
-            "seconds": 0.01,
-            "error": false
-          },
-          {
-            "tool": "procedure_callers",
-            "arguments": {
-              "procedure": "0x4e4"
-            },
-            "file": "pm-callers.json",
-            "seconds": 0.0,
-            "error": false
-          },
-          {
-            "tool": "export_evidence_bundle",
-            "arguments": {
-              "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/firmware-evidence/rea-transport/evidence.json"
-            },
-            "file": "export.json",
-            "seconds": 0.01,
-            "error": false
-          },
-          {
-            "tool": "close_binary",
-            "arguments": {},
-            "file": "close.json",
-            "seconds": 0.08,
-            "error": false
-          }
-        ],
-        "startup_timeout_ms": 900000,
-        "disabled_analyzers": "",
-        "study": "granite_transport",
-        "error": null
-      },
-      "resolved_functions": [
-        {
-          "file_offset": "0x4e4",
-          "analysis_address": "0x4e4",
-          "expected_name": "entry",
-          "function": {
-            "name": "entry",
-            "entrypoint": "0x4e4",
-            "basicblock_count": 3,
-            "length": 44,
-            "signature": "longlong __fastcall entry(undefined8 param_1, longlong param_2)",
-            "locals": [],
-            "classification": {
-              "external": false,
-              "thunk": false,
-              "thunk_target": null,
-              "provenance": "ghidra-function-manager"
-            },
-            "body": {
-              "available": true,
-              "provenance": "ghidra-function-body-address-set",
-              "ranges": [
-                {
-                  "start": "0x4e4",
-                  "end": "0x50f"
-                }
-              ],
-              "total_bytes": 44,
-              "span_bytes": 44,
-              "non_contiguous": false,
-              "contains_entry": true
-            }
-          },
-          "evidence_id": "ev_721e2a8f1f72626cffbf7bef94cec3dfc22803383c22beb7480ca2c6516df554"
-        },
-        {
-          "file_offset": "0xbb4",
-          "analysis_address": "0xbb4",
-          "expected_name": "FUN_",
-          "function": {
-            "name": "FUN_00000bb4",
-            "entrypoint": "0xbb4",
-            "basicblock_count": 7,
-            "length": 1018,
-            "signature": "undefined8 __fastcall FUN_00000bb4(uint param_1, ulonglong * param_2, char param_3)",
-            "locals": [
-              {
-                "description": "undefined4 local_4c @ Stack[-0x4c]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_50 @ Stack[-0x50]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_54 @ Stack[-0x54]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_58 @ Stack[-0x58]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_5c @ Stack[-0x5c]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_60 @ Stack[-0x60]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_68 @ Stack[-0x68]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_res10 @ Stack[0x10]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_res18 @ Stack[0x18]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_res20 @ Stack[0x20]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_res8 @ Stack[0x8]:4",
-                "provenance": "ghidra-function-database"
-              }
-            ],
-            "classification": {
-              "external": false,
-              "thunk": false,
-              "thunk_target": null,
-              "provenance": "ghidra-function-manager"
-            },
-            "body": {
-              "available": true,
-              "provenance": "ghidra-function-body-address-set",
-              "ranges": [
-                {
-                  "start": "0xbb4",
-                  "end": "0xfad"
-                }
-              ],
-              "total_bytes": 1018,
-              "span_bytes": 1018,
-              "non_contiguous": false,
-              "contains_entry": true
-            }
-          },
-          "evidence_id": "ev_6d9e10e73536f1a156d8812b9125d6028a7f01e485d8dd44aaaca656f2373484"
-        }
-      ],
-      "evidence": {
-        "path": "build/granite-study-41001072012/rea-transport/evidence.json",
-        "bytes": 27914,
-        "sha256": "ed8807980e5b102ede8bf534e01b6c1e03b67672220361966a4e95356ec7852e"
-      }
-    },
-    "rea_transport2": {
-      "summary": {
-        "schema": 1,
-        "source_sha256": "9ca8b4e78e40f98853163c8414cd61745005ed8d4cd8f7a8463c76e6b16a280e",
-        "hardware_execution": false,
-        "rea_version": "6.7.0",
-        "ghidra_version": "12.1.4",
-        "records": [
-          {
-            "tool": "open_binary",
-            "arguments": {
-              "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/firmware-input/uefi-granite-transport2.bin",
-              "provider_id": "ghidra"
-            },
-            "file": "open.json",
-            "seconds": 0.16,
-            "error": false
-          },
-          {
-            "tool": "procedure_pseudo_code",
-            "arguments": {
-              "procedure": "file-offset:0x4e4"
-            },
-            "file": "pseudo-0x4e4.json",
-            "seconds": 12.69,
-            "error": false
-          },
-          {
-            "tool": "procedure_info",
-            "arguments": {
-              "procedure": "0x4e4"
-            },
-            "file": "info-0x4e4.json",
-            "seconds": 0.02,
-            "error": false
-          },
-          {
-            "tool": "procedure_pseudo_code",
-            "arguments": {
-              "procedure": "file-offset:0xbf4"
-            },
-            "file": "pseudo-0xbf4.json",
-            "seconds": 0.04,
-            "error": false
-          },
-          {
-            "tool": "procedure_info",
-            "arguments": {
-              "procedure": "0xbf4"
-            },
-            "file": "info-0xbf4.json",
-            "seconds": 0.01,
-            "error": false
-          },
-          {
-            "tool": "procedure_callers",
-            "arguments": {
-              "procedure": "0x4e4"
-            },
-            "file": "pm-callers.json",
-            "seconds": 0.01,
-            "error": false
-          },
-          {
-            "tool": "export_evidence_bundle",
-            "arguments": {
-              "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/firmware-evidence/rea-transport2/evidence.json"
-            },
-            "file": "export.json",
-            "seconds": 0.01,
-            "error": false
-          },
-          {
-            "tool": "close_binary",
-            "arguments": {},
-            "file": "close.json",
-            "seconds": 0.07,
-            "error": false
-          }
-        ],
-        "startup_timeout_ms": 900000,
-        "disabled_analyzers": "",
-        "study": "granite_transport2",
-        "error": null
-      },
-      "resolved_functions": [
-        {
-          "file_offset": "0x4e4",
-          "analysis_address": "0x4e4",
-          "expected_name": "entry",
-          "function": {
-            "name": "entry",
-            "entrypoint": "0x4e4",
-            "basicblock_count": 3,
-            "length": 44,
-            "signature": "longlong __fastcall entry(undefined8 param_1, longlong param_2)",
-            "locals": [],
-            "classification": {
-              "external": false,
-              "thunk": false,
-              "thunk_target": null,
-              "provenance": "ghidra-function-manager"
-            },
-            "body": {
-              "available": true,
-              "provenance": "ghidra-function-body-address-set",
-              "ranges": [
-                {
-                  "start": "0x4e4",
-                  "end": "0x50f"
-                }
-              ],
-              "total_bytes": 44,
-              "span_bytes": 44,
-              "non_contiguous": false,
-              "contains_entry": true
-            }
-          },
-          "evidence_id": "ev_43342f9cda848cc349f93960362f84743899281bd77c27b423a7729309233cd1"
-        },
-        {
-          "file_offset": "0xbf4",
-          "analysis_address": "0xbf4",
-          "expected_name": "FUN_",
-          "function": {
-            "name": "FUN_00000bf4",
-            "entrypoint": "0xbf4",
-            "basicblock_count": 7,
-            "length": 1018,
-            "signature": "undefined8 __fastcall FUN_00000bf4(uint param_1, ulonglong * param_2, char param_3)",
-            "locals": [
-              {
-                "description": "undefined4 local_4c @ Stack[-0x4c]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_50 @ Stack[-0x50]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_54 @ Stack[-0x54]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_58 @ Stack[-0x58]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_5c @ Stack[-0x5c]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_60 @ Stack[-0x60]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_68 @ Stack[-0x68]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_res10 @ Stack[0x10]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_res18 @ Stack[0x18]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_res20 @ Stack[0x20]:4",
-                "provenance": "ghidra-function-database"
-              },
-              {
-                "description": "undefined4 local_res8 @ Stack[0x8]:4",
-                "provenance": "ghidra-function-database"
-              }
-            ],
-            "classification": {
-              "external": false,
-              "thunk": false,
-              "thunk_target": null,
-              "provenance": "ghidra-function-manager"
-            },
-            "body": {
-              "available": true,
-              "provenance": "ghidra-function-body-address-set",
-              "ranges": [
-                {
-                  "start": "0xbf4",
-                  "end": "0xfed"
-                }
-              ],
-              "total_bytes": 1018,
-              "span_bytes": 1018,
-              "non_contiguous": false,
-              "contains_entry": true
-            }
-          },
-          "evidence_id": "ev_22b5dce4f3babd7aaa43a04ed8b7b19d8ac66d168188a5a974f063953388fd2d"
-        }
-      ],
-      "evidence": {
-        "path": "build/granite-study-41001072012/rea-transport2/evidence.json",
-        "bytes": 27924,
-        "sha256": "4d5b619976f415c5ebe06572256ae8ec41acf045399ee10023dd92f13a6c4715"
-      }
-    }
+    "original_spec_sha256": "e480837a5e3004401c9904ee486f9cf42b24cd13eefa47a7f141e995be6e1959",
+    "patched_spec_sha256": "c5523cdeb375f23c40e242cfc4d9aefe674d3e9e1c797735e6e714c3140fc3b7",
+    "extension_sha256": "e4924d0bc3a46004c68df91e991f9c8b8f3212eec0b645f919a93b78bae73ab5",
+    "original_instructions_sha256": "d7fcfdc28dd216ba02e5b202c1c4fd61d35885c7b525e6ded7c3ab2dfa40196d",
+    "patched_instructions_sha256": "9e893a9de3660fc2a2992c9e3183ca9972b02f603474e72468f94a29c2b7f3cd",
+    "address_update_profile": "granite-de233-postincrement",
+    "exact_operations": [
+      "const.s",
+      "lsip",
+      "ssip",
+      "lsxp",
+      "ssxp"
+    ],
+    "opaque_operations": [
+      "div0.s",
+      "recip0.s",
+      "sqrt0.s",
+      "rsqrt0.s",
+      "nexp01.s",
+      "mksadj.s",
+      "mkdadj.s",
+      "addexp.s",
+      "addexpm.s",
+      "maddn.s",
+      "divn.s",
+      "round.s",
+      "trunc.s",
+      "floor.s",
+      "ceil.s",
+      "utrunc.s"
+    ],
+    "limitations": [
+      "Reserved CONST.S immediates remain undecodable",
+      "Approximation/refinement numeric results and status flags are opaque",
+      "Coprocessor exceptions are not modeled; static research only"
+    ]
   },
-  "layout_proof": {
+  "copy_proof": {
     "schema": 1,
     "hardware_execution": false,
     "smu_sha256": "5d7951d30fefea6c5f435ac219fe4879adb0d8f66727211e32af1ff89d6b7596",
@@ -835,7 +623,7 @@
     "smu_version_cases": 1
   },
   "rails_proof": {
-    "schema": 1,
+    "schema": 2,
     "source_sha256": "5d7951d30fefea6c5f435ac219fe4879adb0d8f66727211e32af1ff89d6b7596",
     "hardware_execution": false,
     "mailbox_helpers_stubbed": true,
@@ -856,27 +644,1249 @@
     "physical_rail_identity_verified": false,
     "physical_units_verified": false,
     "consumer_verified": false,
+    "shared_floor_consumer_slice_verified": true,
+    "consumer": {
+      "checked": 18432,
+      "accepted_stores": 15360,
+      "rejected_stores": 3072,
+      "selected_second_slot": 1536,
+      "second_slot_above_shared_input": 718,
+      "disabled_branch_cases": 3,
+      "entry": "0x2100c",
+      "shared_float": "0x8c30",
+      "caller_mirror": "0x8c34",
+      "selection": "byte[0xa19c] == 0 ? first : last configured entry",
+      "code_to_float": "float32(0.245 + code * 0.005)",
+      "combination": "max(existing shared input, converted selected code)",
+      "trace_sha256": "22c57b63e2844f200100c3859e50c126c06a24d07595a4431ae52a60f1f76078",
+      "ceil_and_encoded_code_path_emulated": false,
+      "physical_rail_identity_verified": false,
+      "hardware_register_write_emulated": false,
+      "independent_second_rail_getter_verified": false
+    },
     "rail_readback_protocol_verified": false,
     "runtime_write_enabled": false
   },
+  "unit_proof": {
+    "schema": 2,
+    "hardware_execution": false,
+    "source_sha256": "fb5d96c17b909cc4f681523ccc931796e27c7457ba5ad637a3d4fce1c78ce556",
+    "temperature_sensor_formula": "((raw >> 11) & 0xfff) / 8 - 49; validity bit 10",
+    "temperature_cases": 512,
+    "temperature": {
+      "core_max_cases": 512,
+      "raw_sensor_codes_checked": 4096,
+      "invalid_mask_cases": 3,
+      "retained_invalid_sensor_values": 128,
+      "invalid_sensor_behavior": "previous converted value retained; per-core maximum may reuse it"
+    },
+    "residency_cases": 36,
+    "accumulation": {
+      "accumulated_samples": 4,
+      "normalized_words": 156,
+      "unit_checked_core_values": 32,
+      "trace_sha256": "5aee596a8fedf21f7fc12202a14cf6c4381665aadf07ba1757eb5e39b02ef1b5"
+    },
+    "core_units": {
+      "2": "deg C",
+      "5": "%",
+      "6": "%",
+      "7": "%"
+    },
+    "residency_labels": "C0/CC1/CC6 remain candidate names; fraction-to-percent scaling is traced",
+    "sensor_acquisition_emulated": false,
+    "reciprocal_numeric_accuracy_verified": false,
+    "live_sensor_validity_verified": false,
+    "physical_core_mapping_verified": false
+  },
+  "topology_proof": {
+    "schema": 1,
+    "hardware_execution": false,
+    "source_sha256": {
+      "smu": "5d7951d30fefea6c5f435ac219fe4879adb0d8f66727211e32af1ff89d6b7596",
+      "mp5": "fb5d96c17b909cc4f681523ccc931796e27c7457ba5ad637a3d4fce1c78ce556"
+    },
+    "initialization_handler": "0x1d7ec",
+    "initialization_slice": "0x1d827..0x1da2e",
+    "synthetic_cases": 75,
+    "copied_packets": 100,
+    "checked_pm_words": 15600,
+    "packet_bytes": 112,
+    "packet_target_offset": 0,
+    "packet_active_rank_offset": 2,
+    "packet_storage_rank_offset": 24,
+    "packet_width_offset": 17,
+    "packet_pm_destination_offset": 60,
+    "presence_mask": "ushort[0x6814]",
+    "active_mask": "ushort[0x6816]",
+    "mapping": "ascending set bits of presence mask; core availability does not compact storage rank",
+    "two_slot_consequence": "within this two-target firmware, width 2 implies storage IDs [0,1]",
+    "one_slot_ambiguity": "width 1 can mean target 0 or target 1 without the presence mask",
+    "trace_sha256": "1fb673b4d8f92d9189db0c40f66b2bc940ccd00e72b804a771c9d9e8741d925f",
+    "cases": [
+      {
+        "present_mask": 1,
+        "active_mask": 0,
+        "core_masks": [
+          0,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 0,
+        "core_masks": [
+          0,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 0,
+        "core_masks": [
+          0,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 0,
+        "core_masks": [
+          0,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 0,
+        "core_masks": [
+          0,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          1,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          1,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          1,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          1,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          1,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          128,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          128,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          128,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          128,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          128,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          129,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          129,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          129,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          129,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          129,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          255,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          255,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          255,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          255,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 1,
+        "active_mask": 1,
+        "core_masks": [
+          255,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 0,
+        "core_masks": [
+          0,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          1
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          128
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          129
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          255
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 0,
+        "core_masks": [
+          0,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          1
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          128
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          129
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          255
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 0,
+        "core_masks": [
+          0,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          1
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          128
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          129
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          255
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 0,
+        "core_masks": [
+          0,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          1
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          128
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          129
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          255
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 0,
+        "core_masks": [
+          0,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          1
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          128
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          129
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 2,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          255
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          1
+        ],
+        "width": 1
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 0,
+        "core_masks": [
+          0,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          1
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          128
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          129
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 2,
+        "core_masks": [
+          0,
+          255
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 1,
+        "core_masks": [
+          1,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 3,
+        "core_masks": [
+          1,
+          1
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 3,
+        "core_masks": [
+          1,
+          128
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 3,
+        "core_masks": [
+          1,
+          129
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 3,
+        "core_masks": [
+          1,
+          255
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 1,
+        "core_masks": [
+          128,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 3,
+        "core_masks": [
+          128,
+          1
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 3,
+        "core_masks": [
+          128,
+          128
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 3,
+        "core_masks": [
+          128,
+          129
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 3,
+        "core_masks": [
+          128,
+          255
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 1,
+        "core_masks": [
+          129,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 3,
+        "core_masks": [
+          129,
+          1
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 3,
+        "core_masks": [
+          129,
+          128
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 3,
+        "core_masks": [
+          129,
+          129
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 3,
+        "core_masks": [
+          129,
+          255
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 1,
+        "core_masks": [
+          255,
+          0
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 3,
+        "core_masks": [
+          255,
+          1
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 3,
+        "core_masks": [
+          255,
+          128
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 3,
+        "core_masks": [
+          255,
+          129
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      },
+      {
+        "present_mask": 3,
+        "active_mask": 3,
+        "core_masks": [
+          255,
+          255
+        ],
+        "firmware_target_ids_by_storage_slot": [
+          0,
+          1
+        ],
+        "width": 2
+      }
+    ],
+    "complete_startup_emulated": false,
+    "mailbox_timing_verified": false,
+    "per_core_physical_mapping_verified": false,
+    "cpuid_ccd_mapping_verified": false,
+    "physical_hardware_acceptance": "not_run"
+  },
+  "evidence_files": [
+    {
+      "path": "build/granite-study-41023307189/artifact.json",
+      "bytes": 863,
+      "sha256": "1087306d08b3fbd2a1f30a7bcbe4c28074dddd120327dbf0394067b718fd685e"
+    },
+    {
+      "path": "build/granite-study-41023307189/artifact.zip",
+      "bytes": 2301026,
+      "sha256": "2a831e9c793d99df02c05d46afc5d017ba930704c3773631fab018e250cb0078"
+    },
+    {
+      "path": "build/granite-study-41023307189/granite-input-manifest.json",
+      "bytes": 1527,
+      "sha256": "4ba9860e2368d014d6934e86b28e68258f605cbc981a2177526e55e961b0b501"
+    },
+    {
+      "path": "build/granite-study-41023307189/granite-proof.json",
+      "bytes": 3373,
+      "sha256": "b595fd2b1dba1e53733b429d702fc4f87f3ea6ce2fb17afb839932f0b7b836f6"
+    },
+    {
+      "path": "build/granite-study-41023307189/granite-rails-proof.json",
+      "bytes": 1680,
+      "sha256": "92a32002bee28fc90ca1023c53f6a7095bab06e31b74374fb02a2fce565251b0"
+    },
+    {
+      "path": "build/granite-study-41023307189/granite-semantics.json",
+      "bytes": 1092,
+      "sha256": "9765e2ea7d5759c3354a0ba9a9052d70da1ada757d83f34e93084c268f26232e"
+    },
+    {
+      "path": "build/granite-study-41023307189/granite-topology.json",
+      "bytes": 16423,
+      "sha256": "f738772f232ee630335e100970952bbe60f21db1e937eb95fe1a96362fee28d9"
+    },
+    {
+      "path": "build/granite-study-41023307189/mp5/smu-study.json",
+      "bytes": 3657773,
+      "sha256": "cf50ca47bcc57219e5576e512398241c26d9a65a8c645233967ab2bc611e47b6"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport/close.json",
+      "bytes": 251,
+      "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport/evidence.json",
+      "bytes": 27914,
+      "sha256": "ed8807980e5b102ede8bf534e01b6c1e03b67672220361966a4e95356ec7852e"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport/export.json",
+      "bytes": 553,
+      "sha256": "18f876a121ef434309031d0b9a8dadd6b386fb737138cfa30d071ba0f56904a8"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport/info-0x4e4.json",
+      "bytes": 9933,
+      "sha256": "2eed5c66efd56193f1f4ee28d65d29b75eaec6bb81bf1db8ff4aaca581aa32dc"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport/info-0xbb4.json",
+      "bytes": 15469,
+      "sha256": "e5e80bc0a55ce4395d829262be54f6f353a55af0725b5c8109a283bc93d24e6e"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport/initialize.json",
+      "bytes": 1222,
+      "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport/open.json",
+      "bytes": 864,
+      "sha256": "0494bed192f61d9bf4ad60af81a4ebb13ce28d3b5a9574b56e68259bd6ebca46"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport/pm-callers.json",
+      "bytes": 8409,
+      "sha256": "25b8298d8fbfe609d764f141a391095e4e358915a64094a5a3e9259fab41f397"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport/pseudo-0x4e4.json",
+      "bytes": 9433,
+      "sha256": "719f871d8773c37ff96ba1438d87d72823792863a80c9dd937c06a05535fd5a7"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport/pseudo-0xbb4.json",
+      "bytes": 21053,
+      "sha256": "8a8d39b0df43120395e0e60f49f4b25d078519804e0516dbd9c8a0e41f4ef88b"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport/rea-stderr.log",
+      "bytes": 1257,
+      "sha256": "74dc1b15994b3d0a20de0a84b2be5580396992e94c22ae7a2a6541eb12616a28"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport/resolved-functions.json",
+      "bytes": 3400,
+      "sha256": "0234a84227976f5059b12aff824dc59cb418f6a9d181f8cadc815818b5aa1269"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport/selected-tool-schemas.json",
+      "bytes": 80370,
+      "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport/study.json",
+      "bytes": 2048,
+      "sha256": "fd100c1b7c234df645921886ae7479b84126cfeab343dd27b4825407587cc82d"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport2/close.json",
+      "bytes": 251,
+      "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport2/evidence.json",
+      "bytes": 27924,
+      "sha256": "4d5b619976f415c5ebe06572256ae8ec41acf045399ee10023dd92f13a6c4715"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport2/export.json",
+      "bytes": 555,
+      "sha256": "eb4e1a89063ea32680688db9bf6695ec67604764c4c6b1cf798d92a2af814658"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport2/info-0x4e4.json",
+      "bytes": 9937,
+      "sha256": "d4bc4d6114aca5d3c773f258048e82f46e2971c4a5244ab1321a05661cae57df"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport2/info-0xbf4.json",
+      "bytes": 15473,
+      "sha256": "92bf5887daf705a8c50e5f3a340d52637d81246013a3c30d56ba0b51fd4369d3"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport2/initialize.json",
+      "bytes": 1222,
+      "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport2/open.json",
+      "bytes": 866,
+      "sha256": "055babf43601ca39797d4d7a9038f10ea681b59056d951d756a843157c3c32d2"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport2/pm-callers.json",
+      "bytes": 8413,
+      "sha256": "6baf10327045d2492f6468602072a55c90204b211131e494fd8a805ddc885fb9"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport2/pseudo-0x4e4.json",
+      "bytes": 9437,
+      "sha256": "90612c8e85fe61dadcaa649c25be2533072290422aa21901506dd34dd6cd5f92"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport2/pseudo-0xbf4.json",
+      "bytes": 21057,
+      "sha256": "075d1f49756f6797f70ad867b3b693eae2b7a0de84eb2623ef191bd8a99cc465"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport2/rea-stderr.log",
+      "bytes": 1260,
+      "sha256": "6596adbe9fe769496955a3ebc7d18515595b7e9c2e5de7b450f1d698c24afaba"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport2/resolved-functions.json",
+      "bytes": 3400,
+      "sha256": "89e52ef8a2a8707e7cf9b225ffa09057ef5aae2f4f229ab02fb0614c4e8ee9a6"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport2/selected-tool-schemas.json",
+      "bytes": 80370,
+      "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
+    },
+    {
+      "path": "build/granite-study-41023307189/rea-transport2/study.json",
+      "bytes": 2051,
+      "sha256": "575bf8f84c59572b85aa96052ef835cbf1b51708166d5ff3e9cf5c4de0d843c1"
+    },
+    {
+      "path": "build/granite-study-41023307189/run.json",
+      "bytes": 4722,
+      "sha256": "19654b28d0521960d200132c7229cf6c0bf27f901028469409cf9a4e683a4314"
+    },
+    {
+      "path": "build/granite-study-41023307189/run.log",
+      "bytes": 98667,
+      "sha256": "562ec6aae158008cd6b42dcd6adf91f7757a63ed4c23006f63e166f997560ce1"
+    },
+    {
+      "path": "build/granite-study-41023307189/smu/smu-study.json",
+      "bytes": 8701085,
+      "sha256": "b9e0f8988b389633b4591f2bf30192a367df9b90c9121e9dcc45b8f719b5a7f1"
+    },
+    {
+      "path": "build/granite-study-41023307189/xtensa-fp-extension.json",
+      "bytes": 1793,
+      "sha256": "ddecf3c59b86b5dd337d38fa73bd82cd9ba9090b66d188d4448b8028d77e4bad"
+    },
+    {
+      "path": "build/granite-study-41023307189/xtensa-fp-selftest-mp5.json",
+      "bytes": 104,
+      "sha256": "d62d6ee6649c6634cc5ebba4bb05b6ffc96b20b479e45ed510b135eac32fff8f"
+    },
+    {
+      "path": "build/granite-study-41023307189/xtensa-fp-selftest-smu.json",
+      "bytes": 104,
+      "sha256": "d62d6ee6649c6634cc5ebba4bb05b6ffc96b20b479e45ed510b135eac32fff8f"
+    }
+  ],
   "source_files": {
-    ".github/workflows/rea-granite-study.yml": "82a321f48e997809e5fbb3f0c7a13cc2b29cac95b62b393b195f033590cf117f",
+    ".github/workflows/rea-granite-study.yml": "3563e303c2a88b7b3a44ec13b125dab79580ff607835b5b0f44791f35535f7aa",
+    "analysis/tools/rea-native-study.py": "0c6a791d68f5c527fe3d61be5a7b8a1a52b584df938b296c92c2e0c9b4748d72",
     "analysis/tools/firmware-granite-input.py": "a7e2448802d69415889cc2fae43dd1f910120e6d20a978e1ac9b8b63d36e1beb",
     "analysis/tools/firmware-granite-proof.py": "808db166fab45eff0f00549da638cf2d1b99a004205941df5e1c877e92eeac11",
-    "analysis/tools/firmware-granite-rails.py": "53e7eb32636b2d3d7eda3d43a9d5262fc4967811fa107981981bcd42b2528dd5",
-    "analysis/tools/rea-native-study.py": "0c6a791d68f5c527fe3d61be5a7b8a1a52b584df938b296c92c2e0c9b4748d72",
-    "analysis/tools/ghidra/GraniteSeed.java": "828cffd1b418c071d9d23b386e845cc480a38a77e74a8660aaf09c5f7f1615b0",
-    "analysis/tools/ghidra/GraniteStudy.java": "be960b11ae3f55bba5822831e04c17ad765c631ea8a9d9ed4cd861a31f6a4680",
-    "analysis/tools/ghidra/SmuFpPatch.py": "7baf4559fe7a9928b354d8471dee272b621d5de7305732c5e45089a735ce7e0d",
-    "analysis/tools/ghidra/SmuFpSelfTest.java": "4390af1de0d77a62390500ddcc1915c07b12f425c4b25e90ed9733a331b9e2ad"
+    "analysis/tools/firmware-granite-rails.py": "940f45a9cb2f02fa0f9b7f8fdf4d2773927e00d60ed013bed32e9187a5ddffca",
+    "analysis/tools/firmware-granite-semantics.py": "17da118a71d1259bf3b7f80b8a6f2602a386b397f53ca2c21423c9f8382431e2",
+    "analysis/tools/firmware-granite-topology.py": "af09034f177a334ee12b155948969aca8d7065d2c677a40b723a160aabbff418",
+    "analysis/tools/ghidra/GraniteSeed.java": "c21912f7ad4fa2d82693dcb89de2f1295dce6318fca4dfcb61d7b886212b751e",
+    "analysis/tools/ghidra/GraniteStudy.java": "1a96cf1e05121153d0c3f380786b2fb77a0a83bca2c95de84823683140912dc5",
+    "analysis/tools/ghidra/SmuFpPatch.py": "a484de6016665c92d975ceec727c5e7588db5ff0e6d3ca18e439cdea1f92d246",
+    "analysis/tools/ghidra/SmuFpSelfTest.java": "51b25d844d8ccabe75185d29350d9752ec00b199ec3dcc8ce0ca1454f89c23fe"
   },
-  "physical_hardware_acceptance": "not_run",
-  "installed_bios_known": false,
   "limitations": [
-    "Static discovery still has undecoded functions; only the byte-checked selected handlers and slices are relied on.",
-    "FP normalization/address-update semantics, physical units and OS/CCD mapping remain unverified.",
-    "61h storage behavior does not establish rail identities, consumers or a second-rail readback protocol.",
-    "Mailbox helper stubs and synthetic replay do not establish live timing, freshness or atomicity.",
-    "Public ASUS 2503 is a reference, not the installed BIOS."
+    "Static discovery is not a proof that every function has been recovered; only byte-checked slices are used.",
+    "Temperature and percent units have static reference evidence; residency names, other units and real sensor validity remain unresolved.",
+    "Firmware two-slot IDs [0,1] do not establish CPUID CCD/APIC or physical core/OS CPU association. One-slot native mapping remains ambiguous.",
+    "61h indexed storage and shared-floor selection do not establish independently addressable rails or a second-rail getter.",
+    "Reciprocal accuracy, floating exception behavior, encoded hardware requests and peripheral effects were not emulated.",
+    "Synthetic replay does not establish live timing, freshness, atomicity or target-machine acceptance. ASUS 2503 is a reference, not the installed BIOS."
   ]
 }

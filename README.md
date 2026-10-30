@@ -1,8 +1,8 @@
 # Instrumentum Superfrequentationis
 
-<!-- amd-granite-8a8f3c9 -->
-2026-10-30：[Granite Ridge / 9950X3D 验证](docs/amd-granite-validation.md)通过 44/44 云端任务。GUI/CLI 已提供独立 PM 读取、逐核/CCD 存储区及完整原始表，原生路径限定 SMU 98.84.0。字段单位、物理映射、第二 rails 写入回读和真机验收仍未完成。[用法](docs/amd-granite-pm.md)；源码与包：`dist/gui-cli-amd-granite-8a8f3c9/`。
-<!-- /amd-granite-8a8f3c9 -->
+<!-- amd-granite-5ff594b -->
+2026-10-30：[9950X3D 本轮验证](docs/amd-granite-validation.md)通过 44/44 云端任务。GUI/CLI 同步支持四行逐核字段的单位、CPUID L3 识别及精确 SMU 98.84.0 两槽表的固件 CCD 0/1 映射。其余单位、OS 核心物理关联、第二 rails 独立写入回读和真机验收仍未完成。[证据范围](docs/amd-granite-semantics.md)；源码与 33 个安装包：`dist/gui-cli-amd-granite-5ff594b/`。以下条目为历史阶段记录，以本段和当前验证报告为准。
+<!-- /amd-granite-5ff594b -->
 
 <!-- amd-pm-ccd-168a618 -->
 2026-10-26：[PM 固件 CCD 映射验证](docs/amd-pm-ccd-validation.md)已通过 44/44 云端任务；GUI/CLI 同步提供 `--map-ccd`。适用 Shimada SMU 115.46.0，9950X3D 的 Granite Ridge 路径、字段单位和第二 rails 回读仍待恢复。源码与包：`dist/gui-cli-amd-pm-ccd-168a618/`。

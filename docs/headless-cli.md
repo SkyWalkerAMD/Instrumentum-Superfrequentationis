@@ -1,6 +1,6 @@
 # 无桌面版 OCTool
 
-2026-10-30：新增 [Granite Ridge / 9950X3D PM 读取](amd-granite-pm.md)，CLI 使用 `amd-pm-native-read --cpu N --platform granite-ridge`，GUI 可选择相同平台；限定 SMU 98.84.0，单位与物理映射待确认。
+2026-10-30：[Granite Ridge / 9950X3D PM 读取](amd-granite-pm.md)已接入温度、三组驻留百分数及两槽表的可选固件 CCD 映射。CLI 使用 `amd-pm-native-read --cpu N --platform granite-ridge --map-ccd`，GUI 提供相同选项；限定 SMU 98.84.0 / 0x620205。单槽表可读取但不能推断固件目标。`amd-topology --cpu N --l3` 独立读取 CPUID CCD/核心与 L3 容量；尚未建立 PM 槽位到 OS 核心的对应关系。详见[证据范围](amd-granite-semantics.md)。
 
 <!-- amd-pm-ccd-mapping-current -->
 新增 [PM 固件 CCD 槽位映射](amd-pm-ccd-mapping.md)：GUI 与 CLI `--map-ccd` 同步支持精确 SMU 115.46.0 的存在掩码查询、稀疏编号映射和前后复核。OS CPU/APIC 对应、逐核/CCD 物理单位及第二 rails 回读仍未完成。
