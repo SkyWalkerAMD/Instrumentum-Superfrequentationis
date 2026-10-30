@@ -1,17 +1,82 @@
 #!/usr/bin/env python3
 """Static/synthetic Granite 61h handler research; never a hardware writer.
 
-No rail identity, physical unit, consumer or setter/readback pair is inferred.
-The tested semantics are the bounded integer storage performed by this handler.
+No physical rail identity or setter/readback pair is inferred. The tested
+semantics cover integer storage and a bounded shared-floor consumer slice.
 """
 import argparse
 import hashlib
 import itertools
 import json
 from pathlib import Path
+import runpy
 import struct
 
 SHA = '5d7951d30fefea6c5f435ac219fe4879adb0d8f66727211e32af1ff89d6b7596'
+
+
+def consumer(body, instructions):
+    """Replay storage -> selection -> float floor on synthetic RAM only.
+
+    Stop before opaque ceil.s. Replay the independent float store explicitly;
+    the encoded hardware request, peripheral side effects and readback are
+    outside this experiment. Positive finite fixtures avoid FP exceptions.
+    """
+    helpers = runpy.run_path(str(Path(__file__).with_name('firmware-granite-semantics.py')))
+    Slice, f32 = helpers['Slice'], helpers['f32']
+    u = lambda a: struct.unpack_from('<I', body, a)[0]
+    assert u(0x11514) == 0xae30 and u(0x116b4) == 0x8c30
+    assert u(0x1178c) == 0xb9a0 and u(0x118e0) == 0xa19c
+    assert u(0x11484) == 0x3e7ae148 and u(0x11480) == 0x3ba3d70a
+    assert instructions[0x21069]['text'] == 'ceil.s a3,f4,0x0'
+    assert instructions[0x21072]['text'] == 'ssi f3,a5,0x0'
+    assert instructions[0x210c7]['text'] == 'call8 0x0002100c'
+    assert instructions[0x210cd]['text'] == 'lsi f0,a8,0x0'
+    assert instructions[0x210d0]['text'] == 'ssi f0,a8,0x4'
+    offset, scale = (struct.unpack_from('<f', body, p)[0] for p in (0x11484,0x11480))
+    cases = accepted = rejected = selected_second = raised_by_second = 0
+    trace = hashlib.sha256()
+    for code, selector, count, policy, floor in itertools.product(
+            range(512), (0,1), (1,2,4), (0,1), (0.0,1.25,3.0)):
+        cap = (0,80,255)[code % 3]
+        response, writes = replay(body, instructions, selector<<9 | code, 1, count, cap)
+        vm = Slice(body, instructions)
+        vm.put(0xae68,1,1); vm.put(0xae67,count,1); vm.put(0xa19c,policy,1)
+        vm.putf(0xb9a8,floor)
+        initial = [17+7*i for i in range(count)]
+        for i,value in enumerate(initial): vm.put(0xaf28+2*i,value,2)
+        for address,value in writes.items(): vm.put(address,value,2)
+        chosen = count-1 if policy else 0
+        expected_code = min(code,cap) if cap else code
+        expected_code = expected_code if selector<count and selector==chosen else initial[chosen]
+        expected = max(floor,f32(offset+expected_code*scale))
+        vm.run(0x2100c,0x21060)
+        assert vm.r['a11'] == expected_code and vm.f['f3'] == expected
+        # The store is after ceil.s, but its operands do not depend on ceil.s.
+        # Replaying it in isolation is not execution of the encoded-code path.
+        vm.run(0x21072,0x21075)
+        assert vm.getf(0x8c30) == expected
+        vm.run(0x210ca,0x210d3)  # caller mirrors the shared float into +4
+        assert vm.getf(0x8c34) == expected
+        ok = selector<count
+        assert response == (1 if ok else 0xfd)
+        cases += 1; accepted += int(ok); rejected += int(not ok)
+        selected_second += int(ok and selector==chosen==1)
+        raised_by_second += int(ok and selector==chosen==1 and expected>floor)
+        trace.update(struct.pack('<6Iff',code,selector,count,policy,cap,expected_code,floor,expected))
+    for floor in (0.0,1.25,3.0):
+        vm = Slice(body,instructions); vm.put(0xae68,0,1); vm.putf(0xb9a8,floor)
+        vm.run(0x2100c,0x21085)  # no configured-count or array read on this branch
+        assert vm.f['f3'] == floor
+    return dict(checked=cases,accepted_stores=accepted,rejected_stores=rejected,
+        selected_second_slot=selected_second,second_slot_above_shared_input=raised_by_second,
+        disabled_branch_cases=3,entry='0x2100c',shared_float='0x8c30',caller_mirror='0x8c34',
+        selection='byte[0xa19c] == 0 ? first : last configured entry',
+        code_to_float='float32(0.245 + code * 0.005)',
+        combination='max(existing shared input, converted selected code)',
+        trace_sha256=trace.hexdigest(),ceil_and_encoded_code_path_emulated=False,
+        physical_rail_identity_verified=False,hardware_register_write_emulated=False,
+        independent_second_rail_getter_verified=False)
 
 
 def replay(body, instructions, argument, enabled, count, cap):
@@ -75,6 +140,12 @@ def main():
         for i in f['instructions']:
             address = int(i['address'],16); raw = bytes.fromhex(i['bytes'])
             assert body[address:address+len(raw)] == raw
+    for entry in (0x2100c,0x210c4):
+        f = functions[entry]
+        assert not f['bad_instruction_truncation'] and not f['instructions_truncated']
+        for i in f['instructions']:
+            address = int(i['address'],16); raw = bytes.fromhex(i['bytes'])
+            assert body[address:address+len(raw)] == raw
     assert u(0x11514) == 0xae30 and u(0x11724) == 0x134c4
     checked = accepted = rejected = second_slot = 0
     cases = itertools.chain(
@@ -102,7 +173,8 @@ def main():
     scalar = functions[0x2a7c8]['instructions']
     assert any(i['text'].startswith('lsi ') and i['text'].endswith(',0xb4') for i in scalar)
     assert any(i['text'].endswith(',0x00011514') for i in scalar)
-    report = dict(schema=1,source_sha256=SHA,hardware_execution=False,mailbox_helpers_stubbed=True,
+    consumer_report = consumer(body,instructions)
+    report = dict(schema=2,source_sha256=SHA,hardware_execution=False,mailbox_helpers_stubbed=True,
         checked=checked,accepted=accepted,rejected=rejected,accepted_second_slot=second_slot,
         command='0x61',handler='0x2a644',selector_bits='16:9',code_bits='8:0',
         guard='byte[0xae68] != 0 and selector < byte[0xae67]',
@@ -110,11 +182,14 @@ def main():
         halfword_array='0xaf28 + 2 * selector',a5_argument_affects_output=False,
         a5_source='0x9d20 + 4 * ushort[0x9d20 + 0xb0/0x74]',
         command_6e_fixed_float='0xaee4',physical_rail_identity_verified=False,
-        physical_units_verified=False,consumer_verified=False,rail_readback_protocol_verified=False,
+        physical_units_verified=False,consumer_verified=False,
+        shared_floor_consumer_slice_verified=True,consumer=consumer_report,
+        rail_readback_protocol_verified=False,
         runtime_write_enabled=False)
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
-    print('Verified',checked,'synthetic 61h cases; no live setter/readback enabled')
+    print('Verified',checked,'synthetic 61h storage cases and',consumer_report['checked'],
+          'shared-floor cases; no live setter/readback enabled')
 
 
 if __name__ == '__main__': main()

@@ -87,3 +87,13 @@ This is evidence that the second stored entry can affect shared policy, not a
 proof of two independently readable physical rails. RSMU 0x6e still reads a
 different fixed float; 0xa5 is not the missing indexed readback. Actual second
 rail writes remain disabled pending the remaining protocol and hardware checks.
+
+The byte-checked rails experiment now joins 61h storage to this consumer on
+synthetic RAM: 18,432 cases vary all 512 input codes, selectors 0/1, configured
+counts 1/2/4, first/last policy, caps and shared inputs. It checks rejected
+selectors, unselected entries, 1,536 selected-second-entry cases and three
+disabled branches. Of these synthetic selected-second cases, 718 exceed the
+seeded shared input. The float at 0x8c30 and the caller's mirror at 0x8c34 agree.
+The opaque `ceil.s` conversion and encoded hardware-request path are deliberately
+not executed; the independent float store is replayed separately. These are
+code-path tests, not voltage measurements or proof of an independent rail getter.

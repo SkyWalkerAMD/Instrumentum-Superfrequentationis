@@ -66,9 +66,11 @@ class Slice:
                 self.r[a[0]] = self.get(val(a[1])+val(a[2]), {'l8ui':1, 'l16ui':2, 'l32i':4}[op])
             elif op in ('s8i', 's16i', 's32i'):
                 self.put(val(a[1])+val(a[2]), val(a[0]), {'s8i':1, 's16i':2, 's32i':4}[op])
-            elif op in ('add', 'addi', 'addmi', 'addx4', 'mull', 'quou'):
+            elif op in ('add', 'addi', 'addmi', 'addx2', 'addx4', 'mull', 'quou'):
                 x, y = val(a[1]), val(a[2])
-                self.r[a[0]] = (4*x+y if op=='addx4' else x*y if op=='mull' else x//y if op=='quou' else x+y) & 0xffffffff
+                self.r[a[0]] = (2*x+y if op=='addx2' else 4*x+y if op=='addx4' else x*y if op=='mull' else x//y if op=='quou' else x+y) & 0xffffffff
+            elif op == 'moveqz':
+                if not val(a[2]): self.r[a[0]] = val(a[1])
             elif op == 'extui':
                 self.r[a[0]] = (val(a[1]) >> val(a[2])) & ((1 << val(a[3]))-1)
             elif op in ('lsi', 'lsip', 'lsxp'):
@@ -99,6 +101,8 @@ class Slice:
                 else: next_pc = end
             elif op == 'bbci':
                 if not (val(a[0]) & (1 << val(a[1]))): next_pc = val(a[2])
+            elif op == 'beqz':
+                if not val(a[0]): next_pc = val(a[1])
             else:
                 raise ValueError(f'Unmodeled instruction at {pc:x}: {ins["text"]}')
             if loop and next_pc == loop[1]:
