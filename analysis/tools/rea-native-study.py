@@ -21,6 +21,10 @@ SOURCE_SHA = '44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10'
 # Separately pinned UEFI modules from the vendor's public ASUS 1317 capsule.
 # These profiles do not relax the original ELF identity check.
 FIRMWARE_STUDIES = {
+    'granite_transport': ('563fbf5d9350c95a9f8a063e4f98a6fbe4d22d3e2bc11d2a3346a4e3320578c9',
+                          (('0x4e4', 'entry'),)),
+    'granite_transport2': ('9ca8b4e78e40f98853163c8414cd61745005ed8d4cd8f7a8463c76e6b16a280e',
+                           (('0x4e4', 'entry'),)),
     'firmware_transport': ('7b5302929acb73d0a6a56842af62850b1b017e5c8d1fe1ccbc22a25551d06e67',
                            (('0x1464', 'entry'),)),
     'firmware_limits': ('7da8e70b76a41f065bfa645b04bdcb58a1cdab3f02bcae111c3c8581467e9f4d',
