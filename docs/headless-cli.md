@@ -428,11 +428,16 @@ sudo octool-cli intel-uncore-read --cpu 0
 sudo octool-cli amd-smu-probe --cpu 0 --profile shimada
 sudo octool-cli amd-smu-read --cpu 0 --profile shimada --message 2
 octool-cli amd-topology --cpu 0
+octool-cli amd-topology --cpu 0 --l3
 sudo octool-cli amd-curve-read --cpu 0 --ccd 0 --core 0
 sudo octool-cli amd-umc-read --cpu 0 --bank 0 --refresh-slot 0 > umc.json
 ```
 
 曲线的 CCD/core 是手动确认的固件索引，不由 Linux CPU 号或 CPUID 拓扑推导。
+`amd-topology --l3` 同时读取所选 CPU 的 L3 容量、共享 ID 和原始 CPUID 字段，
+可用于区分 9950X3D 两侧 CCD 的缓存容量；它不会把 CPUID 编号自动绑定到 PM 槽位。
+GUI 的 AMD tuning 面板提供对应的 **Include L3 cache** 选项。
+Granite 温度与驻留单位及其证据范围见[字段单位说明](amd-granite-semantics.md)。
 UMC bank 是地址索引，不能直接当作内存通道/DIMM 标签。输出原始编码，不假设物理单位。
 曲线及 UMC 查询会写入查询邮箱或地址索引，没有修改曲线或内存设置。
 曲线读取新增 `--cores 0,2,7`；Shimada `1Ah/08h` 的 `amd-curve-set` 支持

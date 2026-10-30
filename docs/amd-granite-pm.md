@@ -4,6 +4,10 @@ This profile is a separate implementation of the Granite Ridge PM transport and
 stored table layout. It does not enable Shimada tuning commands on Granite Ridge.
 GUI and CLI use the same core decoder and capture implementation.
 
+The follow-up [field-unit and CCD identification study](amd-granite-semantics.md)
+recovers four core-row units and adds optional L3 geometry to CPUID topology.
+The remaining unknown units and PM-to-physical-core association stay explicit.
+
 The user's target is a Ryzen 9 9950X3D with an ASUS X870E Creator board, interpreted
 as ProArt X870E-CREATOR WIFI. The installed BIOS version is unknown. ASUS's public
 2503 capsule is an offline reference, not a claim about the installed firmware.

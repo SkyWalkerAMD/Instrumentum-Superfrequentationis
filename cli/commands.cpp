@@ -103,7 +103,7 @@ struct Command {
     unsigned cpu = 0, timeout = 10000, ccd = 0, core = 0, point = 0, group = 0;
     unsigned minimumRatio = 0, maximumRatio = 0;
     double value = 0;
-    bool forEdit = false, pmMapCcds = false, pmGranite = false;
+    bool forEdit = false, pmMapCcds = false, pmGranite = false, topologyL3 = false;
     std::uint32_t pmVersion = 0;
     unsigned pmCaptured = 0, pmFusedCcds = 0;
     AmdPmOptions pmOptions;
@@ -189,6 +189,7 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "amd-curve-set") { keys.insert("--margin"); keys.insert("--expect-raw"); }
     if (c.name == "amd-pbo-scalar-set") { keys.insert("--scalar"); keys.insert("--expect-raw"); }
     if (c.name == "amd-umc-read") { keys.insert("--bank"); keys.insert("--refresh-slot"); }
+    if (c.name == "amd-topology") keys.insert("--l3");
     if (c.name == "spd-decode") keys.insert("--file");
     if (pm || c.name == "amd-pm-native-read") keys.insert("--bclk-mhz");
     if (c.name == "amd-pm-native-read") { keys.insert("--map-ccd"); keys.insert("--platform"); }
@@ -201,7 +202,7 @@ Command parse(const std::vector<std::string> &args) {
         const auto key = args[i];
         require(keys.count(key) != 0, "Unknown option for " + c.name + ": " + key);
         require(!options.count(key), "Duplicate option: " + key);
-        const bool flag = key == "--json" || key == "--apply" || key == "--for-edit" || key == "--map-ccd";
+        const bool flag = key == "--json" || key == "--apply" || key == "--for-edit" || key == "--map-ccd" || key == "--l3";
         if (!flag) require(i + 1 < args.size() && args[i + 1].compare(0, 2, "--") != 0, "Missing value: " + key);
         options[key] = flag ? "true" : args[++i];
     }
@@ -229,6 +230,7 @@ Command parse(const std::vector<std::string> &args) {
         require(c.timeout > 0, "--timeout-ms must be 1..120000");
     }
     if (writing) require(options.count("--apply") != 0, "Settings commands require --apply; nothing was opened or changed");
+    c.topologyL3=options.count("--l3")!=0;
     if (c.name == "intel-iccmax-set") {
         c.value = decimal(get(options, "--amps"), "--amps"); std::uint32_t encoded = 0;
         require(!encodeIntelIccMax(c.value, 0, encoded), "--amps must be 1..511.75 in exact 0.25 A steps");
@@ -1241,7 +1243,8 @@ Result hardware(const Command &c, HardwareSession &s) {
         out.data.push_back({"response", hex(r.response)}); out.data.push_back({"raw", out.error ? "null" : hex(r.raw)});
         out.data.push_back({"raw_signed", out.error ? "null" : number(r.raw <= 0x7fffffff ? double(r.raw) : double(r.raw) - 4294967296.0)});
     } else if (c.name == "amd-topology") {
-        const auto t = readAmdTopology(s, c.cpu); out.error = t.error;
+        const auto t = readAmdTopology(s, c.cpu, c.topologyL3); out.error = t.error;
+        out.data.push_back({"topology",amdTopologyJson(t)});
         out.data.push_back({"identity", identity(t.identity)}); out.data.push_back({"firmware_mapping_verified", "false"});
         if (!out.error) {
             out.data.push_back({"apic_id", hex(t.apicId)}); out.data.push_back({"socket_id", number(t.socketId)});
@@ -1579,7 +1582,7 @@ Usage: octool-cli COMMAND [OPTIONS]
     Shimada 1Ah/08h only; explicit firmware indices. Expected raw values follow
     ascending core order. CO counts, not mV. Recheck and readback per core;
     stop on first failure, report partial completion, no retry or rollback.
-  amd-topology --cpu N
+  amd-topology --cpu N [--l3]
   amd-pm-read [--bclk-mhz N]        Read an already installed ryzen_smu driver
   amd-pm-layout-audit --version V --bytes N --fused-ccds N
                                    Offline core/CCD range and conflict diagnostic

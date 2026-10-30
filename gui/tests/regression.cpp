@@ -40,6 +40,7 @@
 #include "amd_pm_fixture.h"
 #include "amd_pm_native_fixture.h"
 #include "amd_granite_pm_fixture.h"
+#include "amd_topology_fixture.h"
 #include "platform/linux_inventory.h"
 #include "platform/linux_hwio.h"
 #include "platform/linux_cpu.h"
@@ -665,6 +666,9 @@ private slots:
             QCOMPARE(device->memoryReads,device->size/4); QCOMPARE(device->presenceQueries,0u);
             for (int i = 1; i < 12; ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
             view->setCurrentIndex(12); QCOMPARE(table->rowCount(),int(144*storageSlots));
+            QCOMPARE(table->item(2*8*storageSlots,2)->text(),QString("deg C"));
+            QCOMPARE(table->item(5*8*storageSlots,2)->text(),QString("%"));
+            QVERIFY(table->item(2*8*storageSlots,6)->text().contains("98.84.0"));
             QVERIFY(!table->item(0,0)->text().contains("FW CCD"));
             view->setCurrentIndex(13); QCOMPARE(table->rowCount(),int(12*storageSlots));
             if (mode == 1) {
@@ -3120,6 +3124,25 @@ private slots:
         reference.extendedMaximum=0x80000025; read->click(); QTRY_VERIFY(read->isEnabled());
         QCOMPARE(table->rowCount(),0);
         QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("unavailable"));
+    }
+    void amdTopologyL3DistinguishesCcdsAndClearsFailures() {
+        using namespace octool::core;
+        auto *device=new amd_topology_fixture::Device;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device)),nullptr,130);
+        panel.resize(1180,900); panel.show();
+        auto *option=panel.findChild<QCheckBox*>("smuTopologyL3"); QVERIFY(option); option->setChecked(true);
+        auto *read=panel.findChild<QPushButton*>("smuTopology"); auto *table=panel.findChild<QTableWidget*>("smuTable");
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->item(3,1)->text(),QString("1"));
+        QCOMPARE(table->item(6,1)->text(),QString("96 MiB (100663296 bytes)"));
+        QCOMPARE(table->item(7,1)->text(),QString("1"));
+        QVERIFY(panel.findChild<QLabel*>("smuStatus")->text().contains("mapping is not assumed"));
+        device->apic=0; device->caches[2][1]=63u|(15u<<22);
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->item(3,1)->text(),QString("0"));
+        QCOMPARE(table->item(6,1)->text(),QString("32 MiB (33554432 bytes)"));
+        device->extension=false; read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),0);
+        QCOMPARE(device->registerRequests,0u);
     }
     void unsupportedIntelProfileDoesNotReadOrWriteMsrs() {
         PstateReference reference; reference.amd=false; auto access=reference.access();

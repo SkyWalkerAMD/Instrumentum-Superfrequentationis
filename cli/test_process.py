@@ -58,7 +58,18 @@ for r in query_results:
         assert d['ln2_enabled'] is None and d['command'] == '0x0000005c'
         assert d['firmware_index'] in (0,1,7,127)
 assert sum(r['error'] == -22 for r in queries) == 20
-assert len(reports) == 1539, len(reports)
+assert len(reports) == 1543, len(reports)
+l3_reports=[r for r in reports if r['command']=='amd-topology' and r['data'].get('topology',{}).get('l3_requested')]
+assert len(l3_reports)==4 and [r['ok'] for r in l3_reports]==[True,True,False,False]
+for i,r in enumerate(l3_reports):
+    t=r['data']['topology']
+    assert not t['pm_slot_mapping_verified'] and not t['firmware_mapping_verified']
+    if i<2:
+        assert t['l3']['bytes']==[100663296,33554432][i]
+        assert t['l3']['cache_id']==[1,0][i] and t['ccd_in_socket']==[1,0][i]
+        assert t['l3']['sharing_capacity']==16
+    else:
+        assert t['l3'] is None and t['apic_id'] is None
 adjustments = [r for r in reports if r['command'].startswith('amd-power-adjustment-')]
 assert len(adjustments) == 39
 assert sum(r['error'] == -22 for r in adjustments) == 18
@@ -820,7 +831,11 @@ for report in reports:
             assert off not in seen and first_core<=off and off+4<=len(raw); seen.add(off)
             assert bits==struct.unpack_from('<I',raw,off)[0]
             assert f['row']==j//slots and f['slot']==j%slots and f['slot_count']==slots
-            assert f['unit']=='unverified' and not f['clock'] and f['scaled_clock_mhz'] is None
+            known=pm['platform']=='granite-ridge' and key=='firmware_core_arrays' and f['row'] in (2,5,6,7)
+            assert f['unit']==('deg C' if known and f['row']==2 else '%' if known else 'unverified')
+            assert not f['clock'] and f['scaled_clock_mhz'] is None
+            if known:
+                assert f['unit_evidence']=='granite-mp5-98.84.0-static' and not f['capture_firmware_verified']
             if (bits & 0x7f800000)==0x7f800000:
                 assert f['stored_value'] is None and f['error']==-33
             else:

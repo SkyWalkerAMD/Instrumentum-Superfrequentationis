@@ -38,6 +38,8 @@ std::string amdPmLayoutAuditJson(const AmdPmLayoutAudit &audit);
 struct AmdPmOptions { bool hasBclk = false; double bclkMHz = 0; };
 struct AmdPmField {
     std::string name, unit, group;
+    // Static firmware reference, not an assertion about capture provenance.
+    std::string unitEvidence;
     unsigned offset = 0;
     // Nonzero only for original array storage. Never a physical target ID.
     unsigned slot = 0, slotCount = 0, row = 0;

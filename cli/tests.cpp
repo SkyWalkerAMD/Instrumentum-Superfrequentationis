@@ -7,6 +7,7 @@
 #include "tests/amd_pm_fixture.h"
 #include "tests/amd_pm_native_fixture.h"
 #include "tests/amd_granite_pm_fixture.h"
+#include "tests/amd_topology_fixture.h"
 #include "tests/amd_curve_fixture.h"
 #include "tests/amd_pbo_fixture.h"
 #include "tests/intel_oc_fixture.h"
@@ -53,6 +54,23 @@ std::string command(HardwareBackend &device, const std::vector<std::string> &arg
     return out.str();
 }
 
+void l3TopologyCommands() {
+    for(unsigned mode=0;mode<4;++mode) {
+        amd_topology_fixture::Device d;
+        if(mode==1) { d.apic=0; d.caches[2][1]=63u|(15u<<22); }
+        if(mode==2) d.extension=false;
+        if(mode==3) d.changeCache=true;
+        const auto json=command(d,{"amd-topology","--cpu","130","--l3"},mode<2?0:3);
+        assert(json.find("\"pm_slot_mapping_verified\":false")!=std::string::npos);
+        if(mode<2) assert(json.find(mode?"\"bytes\":33554432":"\"bytes\":100663296")!=std::string::npos);
+        else assert(json.find("\"l3\":null")!=std::string::npos);
+        assert(!d.registerRequests);
+    }
+    unsigned opened=0; std::ostringstream output;
+    assert(run({"amd-topology","--cpu","130","--l3","--apply"},output,[&] {
+        ++opened; return std::unique_ptr<HardwareBackend>(new amd_topology_fixture::Device);
+    })==2 && !opened);
+}
 void nativePmCommands() {
     for (const auto &layout : amdPmLayouts()) {
         AmdPmNativeFixture d; d.version = layout.version; d.size = unsigned(layout.bytes); d.bytes = pm_fixture::bytes(layout.bytes);
@@ -2486,5 +2504,6 @@ int main(int argc, char **argv) {
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    if (!emit) std::cout << "75 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    l3TopologyCommands();
+    if (!emit) std::cout << "76 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

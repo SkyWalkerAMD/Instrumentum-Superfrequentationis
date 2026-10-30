@@ -319,6 +319,9 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     auto *send = new QPushButton("Send command…", this); send->setObjectName("smuSend"); buttons->addWidget(send); layout->addLayout(buttons);
     auto *topology = new QPushButton("Read CPU topology",this); topology->setObjectName("smuTopology"); buttons->addWidget(topology);
     connect(topology,&QPushButton::clicked,this,[this] { readTopology(); });
+    auto *topologyL3 = new QCheckBox("Include L3 cache",this); topologyL3->setObjectName("smuTopologyL3");
+    topologyL3->setToolTip("Read the selected CPU's L3 capacity and cache sharing ID to distinguish CCDs. PM slot numbering remains separate.");
+    buttons->addWidget(topologyL3);
     table_ = table({"Item", "Result"}, this, layout); table_->setObjectName("smuTable");
     status_ = description("Ready. No hardware access has been performed.", layout, this); status_->setObjectName("smuStatus");
     copyButton(this, buttons, table_, status_);
@@ -976,6 +979,7 @@ void AmdTuningPanel::readTopology() {
     quint64 cpu=0;
     if(!parseNumber(cpu_->text(),10,UINT32_MAX,cpu)) { table_->setRowCount(0); status_->setText("Invalid logical CPU."); return; }
     table_->setRowCount(0); setEnabled(false); status_->setText("Reading selected CPU topology…");
+    const bool includeL3=findChild<QCheckBox*>("smuTopologyL3")->isChecked();
     auto *watcher=new QFutureWatcher<AmdTopology>(this);
     connect(watcher,&QFutureWatcher<AmdTopology>::finished,this,[this,watcher] {
         const auto t=watcher->result(); setEnabled(true);
@@ -987,6 +991,11 @@ void AmdTuningPanel::readTopology() {
             append(table_,{"CPUID CCD within socket",QString::number(t.ccdInSocket)});
             append(table_,{"CPUID core within CCD",QString::number(t.coreInCcd)});
             append(table_,{"Thread within core",QString::number(t.threadInCore)});
+            if(t.l3Valid) {
+                append(table_,{"L3 capacity",QString("%1 MiB (%2 bytes)").arg(double(t.l3.bytes)/1048576.0).arg(qulonglong(t.l3.bytes))});
+                append(table_,{"CPUID L3 sharing ID",QString::number(t.l3.cacheId)});
+                append(table_,{"L3 sharing capacity",QString("%1 logical processors (capacity, not online count)").arg(t.l3.sharingCapacity)});
+            }
             for(const auto &l:t.levels) append(table_,{QString("CPUID level %1").arg(l.type),
                 QString("%1 logical processors · APIC shift %2 · global ID %3").arg(l.logicalCount).arg(l.shift).arg(l.globalId)});
             status_->setText("CPUID topology read. Sparse IDs are preserved. Firmware CCD/core mapping is not assumed; no command was prepared or sent.");
@@ -994,9 +1003,9 @@ void AmdTuningPanel::readTopology() {
         watcher->deleteLater();
     });
     const auto access=access_; const auto cancelled=cancelled_;
-    watcher->setFuture(QtConcurrent::run([access,cancelled,cpu] {
+    watcher->setFuture(QtConcurrent::run([access,cancelled,cpu,includeL3] {
         AmdTopology out;
-        const int error=access->transaction([&](HardwareSession &s) { out=readAmdTopology(s,unsigned(cpu)); return out.error; },10000,cancelled.get());
+        const int error=access->transaction([&](HardwareSession &s) { out=readAmdTopology(s,unsigned(cpu),includeL3); return out.error; },10000,cancelled.get());
         if(error) out.error=error;
         return out;
     }));

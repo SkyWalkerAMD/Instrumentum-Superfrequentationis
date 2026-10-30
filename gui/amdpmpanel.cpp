@@ -254,6 +254,7 @@ void AmdPmPanel::showFields() {
         if (index >= 2 && index < 14 && f.group != groups[index-2]) continue;
         const int row = table_->rowCount(); table_->insertRow(row);
         const QString state = f.error ? "Non-finite stored value" : f.scaleError ? "Clock scaling out of range" :
+            !f.unitEvidence.empty() ? "Unit from SMU 98.84.0 reference" :
             original ? "Units unverified" : f.clock && !s.options.hasBclk ? "BCLK not supplied" : "Decoded";
         QString label = QString::fromStdString(f.name) +
             (f.slotCount > 1 ? QString(" [slot %1]").arg(f.slot) : QString());
@@ -265,7 +266,7 @@ void AmdPmPanel::showFields() {
                 label += "]";
             }
         }
-        const QStringList values{label, f.error ? "Unavailable" : number(f.value), original ? QString("Unverified") : QString::fromStdString(f.unit),
+        const QStringList values{label, f.error ? "Unavailable" : number(f.value), original && f.unitEvidence.empty() ? QString("Unverified") : QString::fromStdString(f.unit),
             f.scaled ? number(f.scaledValue) : QString("—"), hex(f.raw), hex(f.offset), state};
         for (int col = 0; col < values.size(); ++col) table_->setItem(row, col, new QTableWidgetItem(values[col]));
     }

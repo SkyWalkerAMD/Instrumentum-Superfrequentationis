@@ -28,13 +28,32 @@ int main() {
         assert(s.graniteRaw.size() == sizes[n]/4 && s.graniteRaw.back().value == 100);
         assert(s.originalLimits.empty() && s.originalArrays.empty() && s.originalPackage.empty() && s.originalFabric.empty());
         std::set<unsigned> offsets;
-        for (const auto &f : s.firmwareCores) { assert(f.unit == "unverified" && !f.scaled && !f.clock); offsets.insert(f.offset); }
+        for (const auto &f : s.firmwareCores) {
+            const bool known=f.row==2 || (f.row>=5 && f.row<=7);
+            assert(f.unit==(f.row==2?"deg C":known?"%":"unverified") && !f.scaled && !f.clock);
+            assert(f.unitEvidence.empty()!=known); offsets.insert(f.offset);
+        }
         for (const auto &f : s.firmwareCcds) { assert(f.unit == "unverified" && !f.scaled && !f.clock); assert(offsets.insert(f.offset).second); }
         assert(offsets.size() == 156*(n+1) && *offsets.begin() == 1204 && *offsets.rbegin() == sizes[n]-4);
         const auto json = amdPmJson(s); assert(amdPmJson(parseAmdPmCapture(json)) == json);
         assert(auditLegacyAmdPmLayout(versions[n],sizes[n],n+1).error == -ENOTSUP);
         auto forged = json; const auto pos = forged.find("\"stored_value\":2000"); assert(pos != std::string::npos);
         forged.replace(pos,19,"\"stored_value\":9999"); assert(amdPmJson(parseAmdPmCapture(forged)) == json);
+    } ++groups;
+    for(unsigned width=1;width<=2;++width) {
+        auto b=granite_pm_fixture::bytes(sizes[width-1]);
+        for(unsigned core=0;core<8*width;++core) {
+            pm_fixture::put(b,0x4b4+4*(2*8*width+core),0x42928000); // 73.25 deg C
+            pm_fixture::put(b,0x4b4+4*(5*8*width+core),0x41c80000); // 25 percent already
+        }
+        const auto s=decodeAmdPm(b,versions[width-1]);
+        for(unsigned core=0;core<8*width;++core) {
+            assert(s.firmwareCores[2*8*width+core].value==73.25);
+            assert(s.firmwareCores[5*8*width+core].value==25);
+        }
+        auto forged=amdPmJson(s); const auto p=forged.find("\"unit\":\"deg C\""); assert(p!=std::string::npos);
+        forged.replace(p,14,"\"unit\":\"W\"");
+        assert(amdPmJson(parseAmdPmCapture(forged))==amdPmJson(s));
     } ++groups;
     for (unsigned n = 0; n < 2; ++n) for (unsigned length = 0; length <= sizes[n]+4; ++length) {
         if (length == sizes[n]) continue;
@@ -112,6 +131,6 @@ int main() {
     { Test t; pm_fixture::put(t.d->bytes,2448,0x7f800001); const auto r = t.run();
       assert(r.error == -EDOM && r.metadataRechecked && r.snapshot.raw == t.d->bytes); }
     ++groups;
-    assert(groups == 12);
+    assert(groups == 13);
     std::cout << groups << " AMD Granite Ridge PM scenario groups passed\n";
 }

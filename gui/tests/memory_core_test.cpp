@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "amd_umc.h"
 #include "amd_topology.h"
+#include "amd_topology_fixture.h"
 #include <cassert>
 #include <cerrno>
 #include <iostream>
@@ -210,10 +211,62 @@ void topologyRejectsMalformedAndUnavailableLeaves() {
         const auto t=topology(fake); assert(t.error && !t.socketId && !t.ccdInSocket && !t.coreInCcd);
     }
 }
+ AmdTopology l3Topology(amd_topology_fixture::Device &fake,bool include=true) {
+    struct Adapter : HardwareBackend {
+        amd_topology_fixture::Device &f;
+        explicit Adapter(amd_topology_fixture::Device &value):f(value) {}
+        Reply execute(const Request &r) override { return f.execute(r); }
+        CpuIdReply cpuid(unsigned c,std::uint32_t l,std::uint32_t sub) override { return f.cpuid(c,l,sub); }
+        Backend backend(Space s) const override { return f.backend(s); }
+    };
+    HardwareService service{std::unique_ptr<HardwareBackend>(new Adapter(fake))}; AmdTopology out;
+    service.transaction([&](HardwareSession &s) { out=readAmdTopology(s,fake.expectedCpu,include); return out.error; });
+    return out;
+}
+void topologyDistinguishesL3CapacityWithoutPmMapping() {
+    for(unsigned ccd=0;ccd<2;++ccd) for(unsigned core=0;core<8;++core) for(unsigned thread=0;thread<2;++thread) {
+        amd_topology_fixture::Device d; d.apic=0x80+(ccd<<4)+(core<<1)+thread;
+        d.caches[2][1]=63u|((ccd?15u:47u)<<22);
+        const auto t=l3Topology(d); assert(!t.error && t.l3Valid && !d.registerRequests);
+        assert(t.socketId==4 && t.ccdInSocket==ccd && t.coreInCcd==core && t.threadInCore==thread);
+        assert(t.l3.bytes==(ccd?32:96)*UINT64_C(1048576) && t.l3.cacheId==(d.apic>>4));
+        assert(t.l3.sharingCapacity==16 && t.l3.sharingShift==4 && t.l3.subleaf==2);
+        const auto json=amdTopologyJson(t);
+        assert(json.find("\"pm_slot_mapping_verified\":false")!=std::string::npos);
+    }
+    amd_topology_fixture::Device d; assert(!l3Topology(d,false).l3Valid && !d.l3Reads);
+}
+void topologyCacheFailuresDiscardGeometry() {
+    amd_topology_fixture::Device good; assert(!l3Topology(good).error);
+    for(unsigned fault=0;fault<good.calls;++fault) {
+        amd_topology_fixture::Device d; d.failAt=fault; const auto t=l3Topology(d);
+        assert(t.error==-EACCES && !t.l3Valid && !t.l3.bytes && d.calls==fault+1);
+        assert(amdTopologyJson(t).find("\"l3\":null")!=std::string::npos);
+    }
+    for(unsigned mode=0;mode<8;++mode) {
+        amd_topology_fixture::Device d;
+        if(mode==0) d.extension=false;
+        if(mode==1) d.caches.pop_back();
+        if(mode==2) d.caches.push_back(d.caches.back());
+        if(mode==3) d.caches[2][0]=3u|(3u<<5)|(31u<<14);
+        if(mode==4) { d.caches[2][1]=UINT32_MAX; d.caches[2][2]=UINT32_MAX; }
+        if(mode==5) d.caches[0][0]=4u|(1u<<5);
+        if(mode==6) d.changeApic=true;
+        if(mode==7) d.changeCache=true;
+        const auto t=l3Topology(d); assert(t.error && !t.l3Valid && !t.l3.bytes);
+    }
+}
+void topologyCacheEnumerationBoundedAndSparse() {
+    amd_topology_fixture::Device d; d.caches.assign(8,d.caches[0]);
+    assert(l3Topology(d).error==-ENOTSUP && d.calls<20);
+    amd_topology_fixture::Device sparse; sparse.caches[2][0]=3u|(3u<<5)|(11u<<14);
+    const auto t=l3Topology(sparse); assert(!t.error && t.l3.sharingCapacity==12 && t.l3.sharingShift==4 && t.l3.cacheId==1);
+}
 }
 int main() {
     originalVectors(); offlineBoundaries(); refreshSelections(); identityGates(); explicitRead();
     failedReadsStop(); cancellationStopsBeforeDataRead();
     topologyUsesShiftsAndSparseIds(); topologyRejectsMalformedAndUnavailableLeaves();
-    std::cout << "9 memory and topology scenario groups passed\n";
+    topologyDistinguishesL3CapacityWithoutPmMapping(); topologyCacheFailuresDiscardGeometry(); topologyCacheEnumerationBoundedAndSparse();
+    std::cout << "12 memory and topology scenario groups passed\n";
 }
