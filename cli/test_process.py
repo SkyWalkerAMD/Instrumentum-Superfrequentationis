@@ -155,7 +155,13 @@ for i, r in enumerate(granite_pm):
         assert len(pm['firmware_ccd_arrays']) == 12*slots
         assert len(pm['granite_stored_words']) == length//4
         assert pm['granite_stored_words'][-1]['raw'] == ('0x7f800001' if i == 2 else '0x42c80000')
-        assert all(f['unit'] == 'unverified' for f in pm['fields'])
+        assert len(pm['fields'])==20
+        assert all(f['unit'] == 'unverified' for f in pm['fields'][:8])
+        assert [f['unit'] for f in pm['fields'][8:]]==['V','A','W','deg C']*3
+        assert [f['stored_value'] for f in pm['fields'][8:]]==[1.25,12.5,15.625,60.5,1.5,20,30,65.25,1,2,2,70]
+        for j,f in enumerate(pm['fields'][8:]):
+            assert f['firmware_channel']==j//4 and f['group']=='granite_svi'
+            assert not any(f[k] for k in ('capture_firmware_verified','physical_rail_verified','freshness_verified','setting_readback_verified'))
     else:
         assert not n['metadata_rechecked'] and not pm['raw_hex'] and not pm['granite_stored_words']
 with tempfile.TemporaryDirectory(prefix='octool-granite-') as directory:
