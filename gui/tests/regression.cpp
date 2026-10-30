@@ -661,8 +661,21 @@ private slots:
             auto *table = panel.findChild<QTableWidget *>("pmTable");
             auto *view = panel.findChild<QComboBox *>("pmView");
             read->click(); QTRY_VERIFY(read->isEnabled());
-            QCOMPARE(table->rowCount(),8); QCOMPARE(table->item(0,1)->text(),QString("2000"));
+            QCOMPARE(table->rowCount(),20); QCOMPARE(table->item(0,1)->text(),QString("2000"));
             QCOMPARE(table->item(0,2)->text(),QString("Unverified"));
+            const QStringList units{"V","A","W","deg C"};
+            for(int channel=0;channel<3;++channel) for(int kind=0;kind<4;++kind) {
+                const int row=8+4*channel+kind;
+                QVERIFY(table->item(row,0)->text().contains(QString("SVI channel %1").arg(channel)));
+                QCOMPARE(table->item(row,2)->text(),units[kind]);
+                QVERIFY(table->item(row,6)->text().contains("freshness and rail unverified"));
+            }
+            QCOMPARE(table->item(8,1)->text(),QString("1.25"));
+            QCOMPARE(table->item(10,1)->text(),QString("15.625"));
+            if (mode == 1) {
+                QApplication::processEvents(); const auto shot=qEnvironmentVariable("OCTOOL_PM_GRANITE_SVI_TEST_SCREENSHOT");
+                if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+            }
             QCOMPARE(device->memoryReads,device->size/4); QCOMPARE(device->presenceQueries,0u);
             for (int i = 1; i < 12; ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
             view->setCurrentIndex(12); QCOMPARE(table->rowCount(),int(144*storageSlots));

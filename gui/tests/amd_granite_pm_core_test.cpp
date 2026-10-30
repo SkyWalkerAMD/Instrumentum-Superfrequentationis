@@ -23,7 +23,15 @@ int main() {
     assert(amdPmLayouts().size() == 8 && amdGranitePmLayouts().size() == 2);
     for (unsigned n = 0; n < 2; ++n) {
         const auto b = granite_pm_fixture::bytes(sizes[n]); const auto s = decodeAmdPm(b,versions[n]);
-        assert(!s.error && s.graniteRidge && s.raw == b && s.fields.size() == 8 && s.fields[0].value == 2000);
+        assert(!s.error && s.graniteRidge && s.raw == b && s.fields.size() == 20 && s.fields[0].value == 2000);
+        const double telemetry[3][4]={{1.25,12.5,15.625,60.5},{1.5,20,30,65.25},{1,2,2,70}};
+        const char *units[]={"V","A","W","deg C"};
+        for(unsigned channel=0;channel<3;++channel) for(unsigned kind=0;kind<4;++kind) {
+            const auto &f=s.fields[8+channel*4+kind];
+            assert(f.group=="granite_svi" && f.firmwareChannel==channel && f.offset==4*(49+channel*5+kind));
+            assert(f.value==telemetry[channel][kind] && f.unit==units[kind] && !f.clock && !f.scaled);
+            assert(f.unitEvidence=="granite-smu-98.84.0-static");
+        }
         assert(s.firmwareCcdSlots == n+1 && s.firmwareCores.size() == 144*(n+1) && s.firmwareCcds.size() == 12*(n+1));
         assert(s.graniteRaw.size() == sizes[n]/4 && s.graniteRaw.back().value == 100);
         assert(s.originalLimits.empty() && s.originalArrays.empty() && s.originalPackage.empty() && s.originalFabric.empty());
@@ -43,6 +51,11 @@ int main() {
         assert(auditLegacyAmdPmLayout(versions[n],sizes[n],n+1).error == -ENOTSUP);
         auto forged = json; const auto pos = forged.find("\"stored_value\":2000"); assert(pos != std::string::npos);
         forged.replace(pos,19,"\"stored_value\":9999"); assert(amdPmJson(parseAmdPmCapture(forged)) == json);
+        forged=json; const auto channel=forged.find("\"firmware_channel\":1"); assert(channel!=std::string::npos);
+        forged.replace(channel,20,"\"firmware_channel\":99");
+        assert(amdPmJson(parseAmdPmCapture(forged))==json);
+        assert(json.find("\"freshness_verified\":false")!=std::string::npos);
+        assert(json.find("\"setting_readback_verified\":false")!=std::string::npos);
     } ++groups;
     for(unsigned width=1;width<=2;++width) {
         auto b=granite_pm_fixture::bytes(sizes[width-1]);
@@ -83,10 +96,11 @@ int main() {
     AmdPmOptions scale; scale.hasBclk = true; scale.bclkMHz = 100;
     assert(decodeAmdPm(granite_pm_fixture::bytes(),0x620205,scale).error == -ENOTSUP);
     ++groups;
-    for (unsigned off : {0u,284u,1204u,1268u,2352u,2380u,2388u,2448u}) for (std::uint32_t bits : {0x7f800001u,0x7fc00000u,0x7f800000u,0xff800000u}) {
+    for (unsigned off : {0u,196u,200u,204u,208u,216u,220u,224u,228u,236u,240u,244u,248u,284u,1204u,1268u,2352u,2380u,2388u,2448u}) for (std::uint32_t bits : {0x7f800001u,0x7fc00000u,0x7f800000u,0xff800000u}) {
         auto b = granite_pm_fixture::bytes(); pm_fixture::put(b,off,bits); const auto s = decodeAmdPm(b,0x620205);
         assert(s.error == -EDOM && s.raw == b && s.graniteRaw[off/4].raw == bits && s.graniteRaw[off/4].error == -EDOM);
         assert(parseAmdPmCapture(amdPmJson(s)).raw == b);
+        for(const auto &f:s.fields) if(f.offset==off) assert(f.error==-EDOM && f.raw==bits);
     } ++groups;
     for (unsigned n = 0; n < 2; ++n) {
         Test t; t.d->version = versions[n]; t.d->size = sizes[n]; t.d->bytes = granite_pm_fixture::bytes(sizes[n]);

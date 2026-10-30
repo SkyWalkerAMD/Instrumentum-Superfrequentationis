@@ -9,6 +9,12 @@ inline std::vector<std::uint8_t> bytes(unsigned size = 2452) {
     pm_fixture::put(b,75*4,0x44e10000); // 1800
     pm_fixture::put(b,79*4,0x45610000); // 3600
     pm_fixture::put(b,58*4,0x3f600000); // .875
+    const std::uint32_t telemetry[3][4] = {
+        {0x3fa00000,0x41480000,0x417a0000,0x42720000}, // 1.25 V, 12.5 A, 15.625 W, 60.5 C
+        {0x3fc00000,0x41a00000,0x41f00000,0x42828000}, // 1.5 V, 20 A, 30 W, 65.25 C
+        {0x3f800000,0x40000000,0x40000000,0x428c0000}}; // 1 V, 2 A, 2 W, 70 C
+    for (unsigned channel=0;channel<3;++channel) for(unsigned kind=0;kind<4;++kind)
+        pm_fixture::put(b,4*(49+channel*5+kind),telemetry[channel][kind]);
     pm_fixture::put(b,size-4,0x42c80000); // 100, including the final CCD word
     return b;
 }

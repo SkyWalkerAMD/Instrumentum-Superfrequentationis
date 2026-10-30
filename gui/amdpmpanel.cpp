@@ -255,6 +255,7 @@ void AmdPmPanel::showFields() {
         if (index >= 2 && index < 14 && f.group != groups[index-2]) continue;
         const int row = table_->rowCount(); table_->insertRow(row);
         const QString state = f.error ? "Non-finite stored value" : f.scaleError ? "Clock scaling out of range" :
+            f.group == "granite_svi" ? "98.84.0 unit; freshness and rail unverified" :
             !f.unitEvidence.empty() ? "Unit from SMU 98.84.0 reference" :
             original ? "Units unverified" : f.clock && !s.options.hasBclk ? "BCLK not supplied" : "Decoded";
         QString label = QString::fromStdString(f.name) +

@@ -826,7 +826,17 @@ for report in reports:
         first_core, ccd_rows = 0x4b4, 12
         start = first_core+18*8*n*4
         assert pm['firmware_arrays_layout'] == 'granite-ridge-18-core-12-ccd-rows'
-        assert all('candidate' in f['name'] and f['unit'] == 'unverified' for f in pm['fields'])
+        assert len(pm['fields'])==20
+        assert all('candidate' in f['name'] and f['unit'] == 'unverified' for f in pm['fields'][:8])
+        raw=bytes.fromhex(pm['raw_hex'])
+        for j,f in enumerate(pm['fields'][8:]):
+            channel,kind=divmod(j,4); off=4*(49+5*channel+kind)
+            assert f['group']=='granite_svi' and f['firmware_channel']==channel
+            assert f['unit']==('V','A','W','deg C')[kind] and int(f['offset'],16)==off
+            assert f['unit_evidence']=='granite-smu-98.84.0-static'
+            assert not any(f[k] for k in ('capture_firmware_verified','physical_rail_verified','freshness_verified','setting_readback_verified'))
+            assert not f['clock'] and f['scaled_clock_mhz'] is None
+            assert f['stored_value']==struct.unpack_from('<f',raw,off)[0]
     else:
         assert not any('VDDG' in f['name'] for f in pm['fields'])
         n,start = {2844:(2,0xab4),4100:(4,0xf34),5356:(6,0x13b4),6612:(8,0x1834),

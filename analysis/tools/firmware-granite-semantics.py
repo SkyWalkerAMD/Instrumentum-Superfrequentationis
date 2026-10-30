@@ -72,8 +72,8 @@ class Slice:
                 self.r[a[0]] = (2*x+y if op=='addx2' else 4*x+y if op=='addx4' else x*y if op=='mull' else x//y if op=='quou' else x-y if op=='sub' else x+y) & 0xffffffff
             elif op == 'moveqz':
                 if not val(a[2]): self.r[a[0]] = val(a[1])
-            elif op == 'and':
-                self.r[a[0]] = val(a[1]) & val(a[2])
+            elif op in ('and', 'or'):
+                self.r[a[0]] = val(a[1]) & val(a[2]) if op=='and' else val(a[1]) | val(a[2])
             elif op == 'ssl':
                 self.shift = val(a[0]) & 31
             elif op == 'sll':
@@ -94,6 +94,12 @@ class Slice:
                 self.f[a[0]] = struct.unpack('<f', struct.pack('<I', val(a[1])))[0]
             elif op == 'ufloat.s':
                 self.f[a[0]] = f32(val(a[1])/(1 << val(a[2])))
+            elif op == 'float.s':
+                signed = val(a[1]); signed -= (1 << 32) if signed & (1 << 31) else 0
+                self.f[a[0]] = f32(signed/(1 << val(a[2])))
+            elif op == 'const.s':
+                assert val(a[1]) == 0, 'Only the zero constant is modeled'
+                self.f[a[0]] = 0.0
             elif op == 'mov.s':
                 self.f[a[0]] = self.f[a[1]]
             elif op == 'movt.s':
@@ -114,6 +120,8 @@ class Slice:
                 if not val(a[0]): next_pc = val(a[1])
             elif op == 'bnez':
                 if val(a[0]): next_pc = val(a[1])
+            elif op in ('bne', 'bnei'):
+                if val(a[0]) != val(a[1]): next_pc = val(a[2])
             elif op == 'bgeu':
                 if val(a[0]) >= val(a[1]): next_pc = val(a[2])
             elif op in ('bany','bnone'):

@@ -145,6 +145,14 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
             "VDDCR_SOC candidate","CLDO_VDDG_IOD candidate","CLDO_VDDG_CCD candidate","CLDO_VDDP candidate"};
         const unsigned indices[] = {71,75,79,58,83,259,261,269};
         for (unsigned i = 0; i < 8; ++i) field(out,out.fields,names[i],"unverified",indices[i]*4,false,"granite_common");
+        const char *quantities[] = {"voltage", "current", "power", "temperature"};
+        const char *units[] = {"V", "A", "W", "deg C"};
+        for (unsigned channel = 0; channel < 3; ++channel) for (unsigned quantity = 0; quantity < 4; ++quantity) {
+            const auto name = "SVI channel " + std::to_string(channel) + " " + quantities[quantity] + " (averaged)";
+            field(out,out.fields,name.c_str(),units[quantity],4*(49+5*channel+quantity),false,"granite_svi");
+            auto &v = out.fields.back(); v.firmwareChannel = channel;
+            v.unitEvidence = "granite-smu-98.84.0-static";
+        }
         out.firmwareCcdSlots = version == 0x620205 ? 2 : 1;
         const unsigned cores = out.firmwareCcdSlots*8;
         for (unsigned row = 0; row < 18; ++row) for (unsigned slot = 0; slot < cores; ++slot) {
@@ -169,7 +177,7 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
         for (unsigned offset = 0; offset < bytes.size(); offset += 4)
             field(out,out.graniteRaw,("Word " + std::to_string(offset/4)).c_str(),"unverified",offset,false,"granite_storage");
         out.detail = out.error ? "Some Granite Ridge stored words are non-finite; raw bits and other values are retained" :
-            "Granite Ridge storage decoded. Voltage model, sensor temperatures, residency and interval ratio units follow the 98.84.0 reference. Model voltage is not measured rail voltage; conditional sensors may retain old values. Other units and CPU/CCD/rail identities remain unverified. Capture provenance and live validity are not certified.";
+            "Granite Ridge storage decoded using the 98.84.0 unit reference. SVI channels report averaged voltage, current, power and temperature; failed reads can retain old values and current scale mode 0 produces zero. Their validity flags are absent from this table. Channel numbers do not identify physical rails or verify applied settings. Core model voltage is not measured rail voltage; conditional sensors may retain old values. Other units, CPU/CCD mapping and capture provenance remain unverified.";
         return out;
     }
     // Independently implemented from the pinned layout facts in
@@ -297,6 +305,8 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
             (v.scaled ? number(v.scaledValue) : "null");
         if (!v.group.empty()) out += ",\"group\":" + quote(v.group);
         if (!v.unitEvidence.empty()) out += ",\"unit_evidence\":" + quote(v.unitEvidence) + ",\"capture_firmware_verified\":false";
+        if (v.group == "granite_svi") out += ",\"firmware_channel\":" + std::to_string(v.firmwareChannel) +
+            ",\"physical_rail_verified\":false,\"freshness_verified\":false,\"setting_readback_verified\":false";
         if (v.slotCount) out += ",\"slot\":" + std::to_string(v.slot) + ",\"slot_count\":" + std::to_string(v.slotCount);
         if (v.group == "core_storage" || v.group == "ccd_storage") out += ",\"row\":" + std::to_string(v.row);
         out += '}';

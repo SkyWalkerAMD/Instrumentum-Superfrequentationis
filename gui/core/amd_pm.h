@@ -43,6 +43,8 @@ struct AmdPmField {
     unsigned offset = 0;
     // Nonzero only for original array storage. Never a physical target ID.
     unsigned slot = 0, slotCount = 0, row = 0;
+    // Used only by granite_svi: firmware transport channel, not a physical rail.
+    unsigned firmwareChannel = 0;
     std::uint32_t raw = 0;
     bool clock = false, scaled = false;
     int error = 0, scaleError = 0;
