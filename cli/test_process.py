@@ -796,20 +796,28 @@ for report in reports:
         continue
     assert not pm['firmware_arrays_units_verified'] and not pm['firmware_arrays_targets_verified']
     assert not pm['firmware_arrays_labels_verified']
-    assert not any('VDDG' in f['name'] for f in pm['fields'])
     if not pm['fields']:
         assert not pm['firmware_core_arrays'] and not pm['firmware_ccd_arrays']
         assert pm['firmware_ccd_storage_slots'] == 0
         continue
-    n,start = {2844:(2,0xab4),4100:(4,0xf34),5356:(6,0x13b4),6612:(8,0x1834),
-               7868:(10,0x1cb4),9124:(12,0x2134),10380:(14,0x25b4),11636:(16,0x2a34)}[pm['captured_bytes']]
+    if pm['platform'] == 'granite-ridge':
+        n = {1828:1,2452:2}[pm['captured_bytes']]
+        first_core, ccd_rows = 0x4b4, 12
+        start = first_core+18*8*n*4
+        assert pm['firmware_arrays_layout'] == 'granite-ridge-18-core-12-ccd-rows'
+        assert all('candidate' in f['name'] and f['unit'] == 'unverified' for f in pm['fields'])
+    else:
+        assert not any('VDDG' in f['name'] for f in pm['fields'])
+        n,start = {2844:(2,0xab4),4100:(4,0xf34),5356:(6,0x13b4),6612:(8,0x1834),
+                   7868:(10,0x1cb4),9124:(12,0x2134),10380:(14,0x25b4),11636:(16,0x2a34)}[pm['captured_bytes']]
+        first_core, ccd_rows = 0x634, 13
     assert pm['firmware_ccd_storage_slots'] == n
     raw = bytes.fromhex(pm['raw_hex']); seen=set()
-    for key,count,slots,first in (('firmware_core_arrays',18,8*n,0x634),('firmware_ccd_arrays',13,n,start)):
+    for key,count,slots,first in (('firmware_core_arrays',18,8*n,first_core),('firmware_ccd_arrays',ccd_rows,n,start)):
         rows=pm[key]; assert len(rows)==count*slots and int(rows[0]['offset'],16)==first
         for j,f in enumerate(rows):
             off=int(f['offset'],16); bits=int(f['raw'],16)
-            assert off not in seen and 0x634<=off and off+4<=len(raw); seen.add(off)
+            assert off not in seen and first_core<=off and off+4<=len(raw); seen.add(off)
             assert bits==struct.unpack_from('<I',raw,off)[0]
             assert f['row']==j//slots and f['slot']==j%slots and f['slot_count']==slots
             assert f['unit']=='unverified' and not f['clock'] and f['scaled_clock_mhz'] is None
@@ -817,7 +825,7 @@ for report in reports:
                 assert f['stored_value'] is None and f['error']==-33
             else:
                 assert f['stored_value']==struct.unpack_from('<f',raw,off)[0] and not f['error']
-    assert len(seen)==(len(raw)-0x634)//4
+    assert len(seen)==(len(raw)-first_core)//4
 array_reports = pm_reports[72:]
 fabric_reports, package_reports, limit_reports, pm_reports = pm_reports[56:72], pm_reports[38:56], pm_reports[20:38], pm_reports[:20]
 assert [r["ok"] for r in pm_reports] == [True] * 9 + [False, True, True, False, False, False, False, True, True, False, False]
