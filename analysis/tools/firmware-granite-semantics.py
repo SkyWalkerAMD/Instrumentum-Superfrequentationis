@@ -67,9 +67,9 @@ class Slice:
                 self.r[a[0]] = self.get(val(a[1])+val(a[2]), {'l8ui':1, 'l16ui':2, 'l32i':4}[op])
             elif op in ('s8i', 's16i', 's32i'):
                 self.put(val(a[1])+val(a[2]), val(a[0]), {'s8i':1, 's16i':2, 's32i':4}[op])
-            elif op in ('add', 'addi', 'addmi', 'addx2', 'addx4', 'mull', 'quou'):
+            elif op in ('add', 'addi', 'addmi', 'addx2', 'addx4', 'mull', 'quou', 'sub'):
                 x, y = val(a[1]), val(a[2])
-                self.r[a[0]] = (2*x+y if op=='addx2' else 4*x+y if op=='addx4' else x*y if op=='mull' else x//y if op=='quou' else x+y) & 0xffffffff
+                self.r[a[0]] = (2*x+y if op=='addx2' else 4*x+y if op=='addx4' else x*y if op=='mull' else x//y if op=='quou' else x-y if op=='sub' else x+y) & 0xffffffff
             elif op == 'moveqz':
                 if not val(a[2]): self.r[a[0]] = val(a[1])
             elif op == 'and':
@@ -114,6 +114,8 @@ class Slice:
                 if not val(a[0]): next_pc = val(a[1])
             elif op == 'bnez':
                 if val(a[0]): next_pc = val(a[1])
+            elif op == 'bgeu':
+                if val(a[0]) >= val(a[1]): next_pc = val(a[2])
             elif op in ('bany','bnone'):
                 # Ghidra renders these branch targets before their registers.
                 matches = bool(val(a[1]) & val(a[2]))
@@ -191,6 +193,7 @@ def accumulation(body, code):
         for off in (0x1f4,0x204): vm.putf(0x11278+core*0x3c+off, 2)
     literal = lambda a: struct.unpack_from('<I',body,a)[0]
     for off in (0x1ac,0x1f0,0x224,0x1b4,0x1b8,0x23c,0x230,0x250): vm.putf(0x12658+off, 0.5)
+    vm.putf(0x1280c,61.25); vm.putf(0x12810,72.5)
     vm.putf(literal(0x191b8)+0x100, 1)
     vm.put(literal(0x191b8)+4, 4<<16)
     vm.putf(0x19cf0+0xc,0.25); vm.putf(0x7e34+0x1fc,1.25); vm.putf(0x11128+0x318,64)
@@ -205,11 +208,14 @@ def accumulation(body, code):
         scale=100 if 40<=i<64 else 1
         assert vm.getf(ACC+4*i)==before[i]/4*scale
     for core in range(8):
+        assert vm.getf(ACC+0x20+core*4)==1.25
         assert vm.getf(ACC+0x40+core*4)==40+core/8
         for off, percent in ((0xa0,50),(0xc0,12.5),(0xe0,37.5)):
             assert vm.getf(ACC+off+core*4)==percent
+    assert vm.getf(ACC+0x24c)==61.25 and vm.getf(ACC+0x250)==72.5
+    assert vm.getf(ACC+0x26c)==0.25
     assert vm.get(ACC+0x270)==4  # SSIP does not overwrite the sample counter.
-    return {'accumulated_samples':4,'normalized_words':156,'unit_checked_core_values':32,
+    return {'accumulated_samples':4,'normalized_words':156,'unit_checked_core_values':40,'unit_checked_ccd_values':3,
             'trace_sha256':hashlib.sha256(json.dumps(vm.trace).encode()).hexdigest()}
 
 
@@ -232,6 +238,124 @@ def residency(body, code):
     return cases
 
 
+def ccd_temperature(body, code):
+    # Include the core selection loop to preserve the real register state at
+    # the CCD tail. Sensor responses are synthetic, not peripheral execution.
+    selectors=[list(body[CORE+c*0x1bc+0x84:CORE+c*0x1bc+0x87]) for c in range(8)]
+    ccd_selectors=list(body[0x12864:0x1286c])
+    assert ccd_selectors==[13,14,15,16,25,26,27,28]
+    cases=core_cases=retained=0; trace=hashlib.sha256()
+    for rotation in range(64):
+        for enabled in (0,1):
+            for valid_mask in (0xffffffffffffffff,0,0x5555555555555555):
+                vm=Slice(body,code); values=[]
+                for i in range(64):
+                    v=(i+rotation)%64; valid=(valid_mask>>i)&1
+                    vm.put(0x12b44+4*i,((392+v)<<11)|(valid<<10))
+                    vm.putf(0x12c44+4*i,100+v/8)
+                    values.append(v/8 if valid else 100+v/8)
+                for c,indices in enumerate(selectors):
+                    for j,index in enumerate(indices): vm.put(CORE+c*0x1bc+0x84+j,index,1)
+                for j,index in enumerate(ccd_selectors): vm.put(0x12864+j,index,1)
+                vm.put(0x7829,enabled,1); vm.putf(0x12810,321.25)
+                vm.run(0x2c0e3,0x2c19d)
+                for c,indices in enumerate(selectors):
+                    assert vm.getf(CORE+c*0x1bc+0x28)==max(values[i] for i in indices)
+                    core_cases+=1
+                a=max(values[i] for i in ccd_selectors)
+                b=max(values[45:53]) if enabled else 321.25
+                assert vm.getf(0x1280c)==a and vm.getf(0x12810)==b
+                retained+=int(not enabled); cases+=1
+                trace.update(struct.pack('<IIIff',rotation,enabled,valid_mask&0xffffffff,a,b))
+    return dict(cases=cases,core_maxima=core_cases,disabled_row4_retained_cases=retained,
+        initial_core_selectors=selectors,initial_ccd_row3_selectors=ccd_selectors,
+        ccd_row4_sensor_indices=list(range(45,53)),runtime_selector_overrides_excluded=False,
+        trace_sha256=trace.hexdigest())
+
+
+def interval_ratio(body, code):
+    # Check the copy chain into CCD row 11, then replay the counter arithmetic.
+    # Clock/peripheral acquisition, interrupt masking and the reciprocal call
+    # are explicit boundaries. A ratio is not CPU utilization or temperature.
+    for pc,text in {0x31b56:'call8 0x000022a8',0x31b75:'call8 0x000327b0',
+            0x3221d:'call8 0x00031b50',0x32223:'ssi f0,a2,0x0',
+            0x2d77d:'call8 0x00032214',0x2d783:'lsi f0,a1,0x0',
+            0x2d786:'ssi f0,a8,0xc'}.items(): assert code[pc]['text']==text
+    assert struct.unpack_from('<I',body,0x19100)[0]==0x19cf0
+    count=wraps=0; trace=hashlib.sha256()
+    for elapsed in (8,256,65536):
+        for now in (4,100000,0xfffffffc):
+            for active in (0,1):
+                for accumulated in (0,elapsed//4,elapsed):
+                    vm=Slice(body,code); state=0x1000
+                    pending=elapsed//8 if active else 0
+                    vm.r.update(a2=state,a10=now)
+                    vm.put(state,active,1); vm.put(state+4,(now-pending)&0xffffffff)
+                    vm.put(state+8,(now-elapsed)&0xffffffff); vm.put(state+12,accumulated)
+                    vm.run(0x31b59,0x31b75)
+                    assert vm.f['f0']==elapsed and vm.r['a4']==accumulated+pending
+                    vm.f['f0']=1/elapsed  # exact reciprocal fixture only
+                    vm.run(0x31b78,0x31b87)
+                    ratio=(accumulated+pending)/elapsed
+                    assert vm.getf(state+16)==ratio and vm.get(state+12)==0 and vm.get(state+8)==now
+                    assert vm.get(state+4)==(now if active else (now-pending)&0xffffffff)
+                    # Replay the caller stores with explicit ABI hand-off.
+                    vm.r['a2']=0x2000; vm.run(0x32220,0x32226)
+                    vm.r['a1']=0x2000; vm.run(0x2d780,0x2d789)
+                    assert vm.getf(0x19cfc)==ratio
+                    count+=1; wraps+=int(now<elapsed)
+                    trace.update(struct.pack('<5If',elapsed,now,active,accumulated,pending,ratio))
+    return dict(cases=count,wrapped_interval_cases=wraps,unit='ratio',
+        numerator='accumulated ticks plus active interval if flagged',denominator='elapsed ticks',
+        zero_elapsed_behavior_verified=False,counter_meaning_verified=False,
+        trace_sha256=trace.hexdigest())
+
+
+def voltage_model(body, code):
+    # Seed completed fuse reads. The 9-bit code conversion and 5-bit grid step
+    # are replayed; electrical off-code semantics are deliberately not imported.
+    vf=0x19ac0; stack=0x1000
+    assert struct.unpack_from('<I',body,0x19144)[0]==vf
+    assert struct.unpack_from('<I',body,0x1914c)[0]+0x24==vf+0x34
+    assert code[0x29bbb]['text']=='call8 0x00024ae4'
+    offset,scale=(struct.unpack_from('<f',body,p)[0] for p in (0x18dac,0x18da8))
+    assert abs(offset-.245)<1e-8 and abs(scale-.005)<1e-9
+    conversions=grids=interpolations=0; trace=hashlib.sha256()
+    for vid in range(512):
+        vm=Slice(body,code); vm.r['a2']=vid; vm.run(0x24ae4,0x24af9)
+        base=f32(offset+vid*scale); assert vm.f['f0']==base; conversions+=1
+        for step_code in (0,1,16,31):
+            vm.r.update(a1=stack,a4=vf,a10=step_code)
+            vm.run(0x29b9a,0x29bac)
+            step=f32(step_code*scale); assert vm.getf(vf+4)==step
+            vm.f['f0']=base; vm.run(0x29bbe,0x29bd9)
+            expected=base
+            for i in range(16):
+                assert vm.getf(vf+0x34+4*i)==expected
+                expected=f32(expected+step)
+            grids+=1
+            trace.update(struct.pack('<IIff',vid,step_code,base,vm.getf(vf+0x34+60)))
+    # Bounded interpolation slice: exact power-of-two reciprocal fixture,
+    # with a distinct source axis. Do not emulate recip0 or index selection.
+    for index in range(15):
+        for fraction in (0,0.25,0.5,1):
+            vm=Slice(body,code); vm.r.update(a3=0x3000,a4=index,a13=vf,a6=0xec40)
+            axis=1+index/32
+            vm.putf(vf+0x34+4*index,axis)
+            vm.putf(0x3200,0.5); vm.putf(0x3080,2)
+            vm.f.update(f2=4,f3=2,f0=2+fraction*2,f7=0.03125)
+            vm.run(0x2976b,0x2977a); assert vm.f['f8']==2
+            vm.f['f1']=0.5; vm.run(0x2977d,0x29789)
+            expected=f32(axis+0.03125*fraction); assert vm.f['f5']==expected
+            # The target register a6 at the common store is 0xec40 + slot*520.
+            vm.run(0x29748,0x2974e)
+            assert vm.getf(0xf040)==expected; interpolations+=1
+    return dict(vid_conversions=conversions,voltage_grids=grids,points_per_grid=16,
+        interpolation_cases=interpolations,unit='V',code_formula='0.245 + code * 0.005',
+        measured_voltage=False,complete_model_emulated=False,zero_code_electrical_off_inferred=False,
+        trace_sha256=trace.hexdigest())
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for key in ('mp5','study','output'): p.add_argument('--'+key,required=True,type=Path)
@@ -248,12 +372,15 @@ def main():
     reciprocal=[i['text'].split(' ')[0] for i in functions[0x327b0]['instructions']]
     assert reciprocal.count('recip0.s')==1 and reciprocal.count('maddn.s')==2
     temperature_report=temperature(body,code)
-    report={'schema':2,'hardware_execution':False,'source_sha256':SHA,
+    report={'schema':3,'hardware_execution':False,'source_sha256':SHA,
             'temperature_sensor_formula':'((raw >> 11) & 0xfff) / 8 - 49; validity bit 10',
             'temperature_cases':temperature_report['core_max_cases'],'temperature':temperature_report,
             'residency_cases':residency(body,code),
+            'ccd_temperature':ccd_temperature(body,code),
+            'interval_ratio':interval_ratio(body,code),'voltage_model':voltage_model(body,code),
             'accumulation':accumulation(body,code),
-            'core_units':{'2':'deg C','5':'%','6':'%','7':'%'},
+            'core_units':{'1':'V','2':'deg C','5':'%','6':'%','7':'%'},
+            'ccd_units':{'3':'deg C','4':'deg C','11':'ratio'},
             'residency_labels':'C0/CC1/CC6 remain candidate names; fraction-to-percent scaling is traced',
             'sensor_acquisition_emulated':False,'reciprocal_numeric_accuracy_verified':False,
             'live_sensor_validity_verified':False,'physical_core_mapping_verified':False}

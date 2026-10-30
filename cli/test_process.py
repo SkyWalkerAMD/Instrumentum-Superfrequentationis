@@ -840,8 +840,10 @@ for report in reports:
             assert off not in seen and first_core<=off and off+4<=len(raw); seen.add(off)
             assert bits==struct.unpack_from('<I',raw,off)[0]
             assert f['row']==j//slots and f['slot']==j%slots and f['slot_count']==slots
-            known=pm['platform']=='granite-ridge' and key=='firmware_core_arrays' and f['row'] in (2,5,6,7)
-            assert f['unit']==('deg C' if known and f['row']==2 else '%' if known else 'unverified')
+            units=({1:'V',2:'deg C',5:'%',6:'%',7:'%'} if key=='firmware_core_arrays'
+                   else {3:'deg C',4:'deg C',11:'ratio'}) if pm['platform']=='granite-ridge' else {}
+            known=f['row'] in units
+            assert f['unit']==units.get(f['row'],'unverified')
             assert not f['clock'] and f['scaled_clock_mhz'] is None
             if known:
                 assert f['unit_evidence']=='granite-mp5-98.84.0-static' and not f['capture_firmware_verified']

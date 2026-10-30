@@ -5,7 +5,7 @@ stored table layout. It does not enable Shimada tuning commands on Granite Ridge
 GUI and CLI use the same core decoder and capture implementation.
 
 The follow-up [field-unit and CCD identification study](amd-granite-semantics.md)
-recovers four core-row units, adds optional L3 geometry to CPUID topology and
+recovers five core-row and three CCD-row units, adds optional L3 geometry to CPUID topology and
 maps the exact two-slot native table to firmware target IDs 0/1.
 The remaining unknown units and PM-to-physical-core association stay explicit.
 

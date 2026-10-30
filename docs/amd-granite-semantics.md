@@ -11,10 +11,17 @@ and 0x620205. Row numbers and storage slots are zero based.
 
 | Core row | Display | Unit | Static data path |
 | --- | --- | --- | --- |
+| 1 | Core voltage model, averaged | V | VID-derived voltage axis, interpolated by the per-core model; not measured voltage |
 | 2 | Core temperature, sensor maximum, averaged | deg C | 12-bit sensor code / 8 - 49; maximum of three selected sensors; accumulation and normalization |
 | 5 | C0 residency candidate, averaged | % | Fraction at per-core state +0x70, accumulated and multiplied by 100 after normalization |
 | 6 | CC1 residency candidate, averaged | % | Fraction at +0x74, same normalization |
 | 7 | CC6 residency candidate, averaged | % | Fraction at +0x78, same normalization |
+
+| CCD row | Display | Unit | Static data path |
+| --- | --- | --- | --- |
+| 3 | CCD sensor maximum A, averaged | deg C | Maximum of eight selected converted sensors, stored at 0x1280c |
+| 4 | CCD sensor maximum B, conditional, averaged | deg C | Maximum of converted sensors 45..52 if byte[0x7829] is nonzero, stored at 0x12810 |
+| 11 | MP5 interval counter ratio, averaged | ratio | Accumulated ticks divided by elapsed ticks, stored at 0x19cfc |
 
 Residency fractions and percentage scaling are traced; the individual state
 names remain candidates. The independently maintained
@@ -40,6 +47,43 @@ Three additional invalid-mask fixtures check 128 retained sensor values. An
 invalid sensor response leaves the previous converted float in place, and the
 per-core maximum can still use that retained value. The reported temperature
 unit therefore does not imply that a sample is fresh or currently valid.
+
+### CCD temperatures, model voltage and interval ratio
+
+The extended temperature slice ends at MP5 0x2c19d, including both CCD maxima.
+Row 3 initially selects sensors `[13,14,15,16,25,26,27,28]` through the bytes at
+0x12864. Row 4 uses sensors 45..52 only when enabled; otherwise the previous
+float remains. In 384 synthetic cases, 192 disabled cases retain that float.
+These runs also check 3,072 core maxima using the image's initial selectors.
+Runtime selector overrides and freshness are not established. Neither CCD row
+is named L3 temperature: sensor coordinates have not been physically identified.
+
+Core row 1 is copied from 0xf040 + 0x520 * core slot. Function 0x29658 writes
+that field using the voltage axis at 0x19ac0+0x34 and its step at +4. Initializer
+0x29b14 builds 16 points from a 9-bit code and a 5-bit step code; helper 0x24ae4
+converts the former with `0.245 + code * 0.005`, and the step is `code * 0.005`.
+The conversion matches the volt scale in the manufacturer's
+[SVI3 controller documentation, page 80](https://www.richtek.com/assets/product_file/RT3674FE/RT3674FE_DS-00.pdf#page=80).
+This is a scale reference, not identification of the controller on the ASUS board.
+The helper returns 0.245 for code zero: the experiment does not import an
+electrical off-code rule into this model. It checks 512 conversions, 2,048
+16-point grids (step codes 0/1/16/31), and 60 bounded interpolation cases.
+Fuse reads, model index selection and approximate reciprocal accuracy remain
+outside the replay. The PM value is a model output, not a voltage sensor,
+verified applied setting, or second-rail getter.
+
+CCD row 11 comes from 0x31b50 through 0x32214 and 0x2d778. The numerator is an
+accumulated tick count, plus an active interval when flagged; the denominator
+is elapsed ticks. The experiment checks 54 cases, including 18 wrapping clock
+intervals, then checks the caller stores into the PM producer source. Exact
+reciprocal fixtures exclude zero elapsed time and do not establish reciprocal
+accuracy. The flag's physical meaning is unresolved, so the value is not called
+CPU utilization and is neither multiplied by 100 nor clamped to [0,1].
+
+All four newly interpreted rows pass through the same accumulation and averaging
+path without additional scaling. The synthetic normalization experiment checks
+40 core values and three CCD values. Both frontends use these shared units;
+unknown rows remain unverified, and imports rebuild interpretation from raw bytes.
 
 ## Decoder correction
 
@@ -194,3 +238,14 @@ seeded shared input. The float at 0x8c30 and the caller's mirror at 0x8c34 agree
 The opaque `ceil.s` conversion and encoded hardware-request path are deliberately
 not executed; the independent float store is replayed separately. These are
 code-path tests, not voltage measurements or proof of an independent rail getter.
+
+The downstream callers at 0x20bc8/0x20bec compare the requested code at 0x8c6e
+with the software current code at 0x8c6c. If an increase/decrease is needed, both
+pass **channel 0** to 0x20e4c. The direct path at 0x20fb0 also passes channel 0
+to the hardware helper 0x32d6c. The new caller experiment checks 5,120 comparisons,
+512 direct cases and 512 locked cases with hardware calls explicitly skipped.
+Its subsequent updates of 0x8c6c/0x8c74 are software mirrors, not hardware readback.
+These slices start from seeded encoded codes and do not execute the opaque ceil
+conversion. The 61h array selector is therefore not an independent SVI channel
+selector in these paths. Other channels exist, but their physical identity and
+relationship to a second CPU rail remain unproved; runtime writes stay disabled.

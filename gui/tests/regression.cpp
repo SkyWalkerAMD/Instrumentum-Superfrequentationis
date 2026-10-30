@@ -666,11 +666,18 @@ private slots:
             QCOMPARE(device->memoryReads,device->size/4); QCOMPARE(device->presenceQueries,0u);
             for (int i = 1; i < 12; ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
             view->setCurrentIndex(12); QCOMPARE(table->rowCount(),int(144*storageSlots));
+            QCOMPARE(table->item(8*storageSlots,2)->text(),QString("V"));
+            QVERIFY(table->item(8*storageSlots,0)->text().contains("voltage model"));
             QCOMPARE(table->item(2*8*storageSlots,2)->text(),QString("deg C"));
             QCOMPARE(table->item(5*8*storageSlots,2)->text(),QString("%"));
             QVERIFY(table->item(2*8*storageSlots,6)->text().contains("98.84.0"));
             QVERIFY(!table->item(0,0)->text().contains("FW CCD"));
             view->setCurrentIndex(13); QCOMPARE(table->rowCount(),int(12*storageSlots));
+            QCOMPARE(table->item(3*storageSlots,2)->text(),QString("deg C"));
+            QCOMPARE(table->item(4*storageSlots,2)->text(),QString("deg C"));
+            QCOMPARE(table->item(11*storageSlots,2)->text(),QString("ratio"));
+            QVERIFY(table->item(4*storageSlots,0)->text().contains("conditional"));
+            QVERIFY(table->item(3*storageSlots,6)->text().contains("98.84.0"));
             if (mode == 1) {
                 QApplication::processEvents(); const auto shot = qEnvironmentVariable("OCTOOL_PM_GRANITE_TEST_SCREENSHOT");
                 if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));

@@ -139,7 +139,7 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
         if (options.hasBclk) { out.error = -ENOTSUP; out.detail = "BCLK scaling is not defined for Granite Ridge PM storage"; return out; }
         // SMU 98.84.0: common copy is 4b4h bytes. MP5's byte-checked integer
         // scatter writes 18*8*N core words and 12*N CCD words (N=1 or 2).
-        // Four row units are traced in the pinned 98.84.0 MP5 producer. They
+        // Eight row units are traced in the pinned 98.84.0 MP5 producer. They
         // arrive averaged/scaled already: never apply the conversion a second time.
         const char *names[] = {"FCLK candidate","UCLK candidate","MCLK candidate","VDD_MISC candidate",
             "VDDCR_SOC candidate","CLDO_VDDG_IOD candidate","CLDO_VDDG_CCD candidate","CLDO_VDDP candidate"};
@@ -150,21 +150,26 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
         for (unsigned row = 0; row < 18; ++row) for (unsigned slot = 0; slot < cores; ++slot) {
             field(out,out.firmwareCores,("Core row " + std::to_string(row)).c_str(),"unverified",0x4b4+4*(row*cores+slot),false,"core_storage");
             auto &v = out.firmwareCores.back(); v.row = row; v.slot = slot; v.slotCount = cores;
+            if(row==1) { v.name="Core voltage model (averaged)"; v.unit="V"; }
             if(row==2) { v.name="Core temperature (sensor maximum, averaged)"; v.unit="deg C"; }
             if(row>=5 && row<=7) {
                 const char *residencies[]={"C0 residency candidate (averaged)","CC1 residency candidate (averaged)","CC6 residency candidate (averaged)"};
                 v.name=residencies[row-5]; v.unit="%";
             }
-            if(row==2 || (row>=5 && row<=7)) v.unitEvidence="granite-mp5-98.84.0-static";
+            if(row==1 || row==2 || (row>=5 && row<=7)) v.unitEvidence="granite-mp5-98.84.0-static";
         }
         for (unsigned row = 0; row < 12; ++row) for (unsigned slot = 0; slot < out.firmwareCcdSlots; ++slot) {
             field(out,out.firmwareCcds,("CCD row " + std::to_string(row)).c_str(),"unverified",0x4b4+4*(18*cores+row*out.firmwareCcdSlots+slot),false,"ccd_storage");
             auto &v = out.firmwareCcds.back(); v.row = row; v.slot = slot; v.slotCount = out.firmwareCcdSlots;
+            if(row==3) { v.name="CCD sensor maximum A (averaged)"; v.unit="deg C"; }
+            if(row==4) { v.name="CCD sensor maximum B (conditional, averaged)"; v.unit="deg C"; }
+            if(row==11) { v.name="MP5 interval counter ratio (averaged)"; v.unit="ratio"; }
+            if(row==3 || row==4 || row==11) v.unitEvidence="granite-mp5-98.84.0-static";
         }
         for (unsigned offset = 0; offset < bytes.size(); offset += 4)
             field(out,out.graniteRaw,("Word " + std::to_string(offset/4)).c_str(),"unverified",offset,false,"granite_storage");
         out.detail = out.error ? "Some Granite Ridge stored words are non-finite; raw bits and other values are retained" :
-            "Granite Ridge storage decoded. Core temperature and residency units follow the 98.84.0 firmware reference; other units and CPU/CCD/rail identities remain unverified. Capture provenance and live sensor validity are not certified.";
+            "Granite Ridge storage decoded. Voltage model, sensor temperatures, residency and interval ratio units follow the 98.84.0 reference. Model voltage is not measured rail voltage; conditional sensors may retain old values. Other units and CPU/CCD/rail identities remain unverified. Capture provenance and live validity are not certified.";
         return out;
     }
     // Independently implemented from the pinned layout facts in

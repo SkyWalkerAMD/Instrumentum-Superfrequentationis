@@ -29,11 +29,15 @@ int main() {
         assert(s.originalLimits.empty() && s.originalArrays.empty() && s.originalPackage.empty() && s.originalFabric.empty());
         std::set<unsigned> offsets;
         for (const auto &f : s.firmwareCores) {
-            const bool known=f.row==2 || (f.row>=5 && f.row<=7);
-            assert(f.unit==(f.row==2?"deg C":known?"%":"unverified") && !f.scaled && !f.clock);
+            const bool known=f.row==1 || f.row==2 || (f.row>=5 && f.row<=7);
+            assert(f.unit==(f.row==1?"V":f.row==2?"deg C":known?"%":"unverified") && !f.scaled && !f.clock);
             assert(f.unitEvidence.empty()!=known); offsets.insert(f.offset);
         }
-        for (const auto &f : s.firmwareCcds) { assert(f.unit == "unverified" && !f.scaled && !f.clock); assert(offsets.insert(f.offset).second); }
+        for (const auto &f : s.firmwareCcds) {
+            const bool known=f.row==3 || f.row==4 || f.row==11;
+            assert(f.unit == (f.row==11?"ratio":known?"deg C":"unverified") && !f.scaled && !f.clock);
+            assert(f.unitEvidence.empty()!=known); assert(offsets.insert(f.offset).second);
+        }
         assert(offsets.size() == 156*(n+1) && *offsets.begin() == 1204 && *offsets.rbegin() == sizes[n]-4);
         const auto json = amdPmJson(s); assert(amdPmJson(parseAmdPmCapture(json)) == json);
         assert(auditLegacyAmdPmLayout(versions[n],sizes[n],n+1).error == -ENOTSUP);
@@ -43,16 +47,31 @@ int main() {
     for(unsigned width=1;width<=2;++width) {
         auto b=granite_pm_fixture::bytes(sizes[width-1]);
         for(unsigned core=0;core<8*width;++core) {
+            pm_fixture::put(b,0x4b4+4*(8*width+core),0x3fa00000); // 1.25 V model, not VID
             pm_fixture::put(b,0x4b4+4*(2*8*width+core),0x42928000); // 73.25 deg C
             pm_fixture::put(b,0x4b4+4*(5*8*width+core),0x41c80000); // 25 percent already
         }
+        for(unsigned slot=0;slot<width;++slot) {
+            pm_fixture::put(b,0x4b4+4*(144*width+3*width+slot),0x42750000); // 61.25 C
+            pm_fixture::put(b,0x4b4+4*(144*width+4*width+slot),0x42910000); // 72.5 C
+            pm_fixture::put(b,0x4b4+4*(144*width+11*width+slot),0x3e800000); // .25 ratio
+        }
         const auto s=decodeAmdPm(b,versions[width-1]);
         for(unsigned core=0;core<8*width;++core) {
+            assert(s.firmwareCores[8*width+core].value==1.25);
             assert(s.firmwareCores[2*8*width+core].value==73.25);
             assert(s.firmwareCores[5*8*width+core].value==25);
         }
+        for(unsigned slot=0;slot<width;++slot) {
+            assert(s.firmwareCcds[3*width+slot].value==61.25);
+            assert(s.firmwareCcds[4*width+slot].value==72.5);
+            assert(s.firmwareCcds[11*width+slot].value==0.25);
+        }
         auto forged=amdPmJson(s); const auto p=forged.find("\"unit\":\"deg C\""); assert(p!=std::string::npos);
         forged.replace(p,14,"\"unit\":\"W\"");
+        assert(amdPmJson(parseAmdPmCapture(forged))==amdPmJson(s));
+        forged=amdPmJson(s); const auto ratio=forged.find("\"unit\":\"ratio\""); assert(ratio!=std::string::npos);
+        forged.replace(ratio,14,"\"unit\":\"deg C\"");
         assert(amdPmJson(parseAmdPmCapture(forged))==amdPmJson(s));
     } ++groups;
     for (unsigned n = 0; n < 2; ++n) for (unsigned length = 0; length <= sizes[n]+4; ++length) {
@@ -64,7 +83,7 @@ int main() {
     AmdPmOptions scale; scale.hasBclk = true; scale.bclkMHz = 100;
     assert(decodeAmdPm(granite_pm_fixture::bytes(),0x620205,scale).error == -ENOTSUP);
     ++groups;
-    for (unsigned off : {0u,284u,1204u,2352u,2448u}) for (std::uint32_t bits : {0x7f800001u,0x7fc00000u,0x7f800000u,0xff800000u}) {
+    for (unsigned off : {0u,284u,1204u,1268u,2352u,2380u,2388u,2448u}) for (std::uint32_t bits : {0x7f800001u,0x7fc00000u,0x7f800000u,0xff800000u}) {
         auto b = granite_pm_fixture::bytes(); pm_fixture::put(b,off,bits); const auto s = decodeAmdPm(b,0x620205);
         assert(s.error == -EDOM && s.raw == b && s.graniteRaw[off/4].raw == bits && s.graniteRaw[off/4].error == -EDOM);
         assert(parseAmdPmCapture(amdPmJson(s)).raw == b);

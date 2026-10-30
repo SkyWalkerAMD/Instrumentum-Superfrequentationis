@@ -7,7 +7,10 @@ on:
       - 'analysis/tools/firmware-granite-proof.py'
       - 'analysis/tools/firmware-granite-rails.py'
       - 'analysis/tools/firmware-granite-semantics.py'
+      - 'analysis/tools/firmware-granite-topology.py'
       - 'analysis/tools/ghidra/Granite*.java'
+      - 'analysis/tools/ghidra/SmuFpPatch.py'
+      - 'analysis/tools/ghidra/SmuFpSelfTest.java'
   workflow_dispatch:
 permissions:
   contents: read

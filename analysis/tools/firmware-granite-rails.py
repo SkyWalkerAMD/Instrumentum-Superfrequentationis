@@ -79,6 +79,49 @@ def consumer(body, instructions):
         independent_second_rail_getter_verified=False)
 
 
+def channel_routing(body, instructions):
+    """Bounded callers of the application helper; no peripheral is executed.
+
+    Codes here are fixtures at the output of the unmodeled ceil.s path.
+    The update of a software mirror after a stubbed helper is not a readback.
+    """
+    helpers=runpy.run_path(str(Path(__file__).with_name('firmware-granite-semantics.py')))
+    Slice,f32=helpers['Slice'],helpers['f32']
+    for pc,text in {0x20be1:'call8 0x00020e4c',0x20c05:'call8 0x00020e4c',
+            0x20fc0:'call8 0x00032d6c'}.items(): assert instructions[pc]['text']==text
+    cases=calls=direct=blocked=0; trace=hashlib.sha256()
+    for requested,current in itertools.product(range(512),(0,1,127,255,511)):
+        for start,call,end,needed in ((0x20bd1,0x20be1,0x20be4,requested>current),
+                (0x20bf5,0x20c05,0x20c08,requested<current)):
+            vm=Slice(body,instructions)
+            vm.put(0x8c6c,current,2); vm.put(0x8c6e,requested,2)
+            vm.r.update(a10=0xdeadbeef,a12=0xfeedface)
+            vm.run(start,call if needed else end)
+            if needed:
+                assert [vm.r[r] for r in ('a10','a11','a12')]==[0,requested,0]
+                calls+=1
+            cases+=1
+            trace.update(struct.pack('<4I',start,requested,current,int(needed)))
+    offset,scale=(struct.unpack_from('<f',body,p)[0] for p in (0x11484,0x11480))
+    for requested,locked in itertools.product(range(512),(0,1)):
+        vm=Slice(body,instructions); vm.put(0x8c70,locked,2); vm.put(0x8c6e,requested,2)
+        vm.put(0x8c6c,0xffff,2); vm.putf(0x8c74,-999)
+        vm.run(0x20fb0,0x20fde if locked else 0x20fc0)
+        if locked:
+            assert vm.get(0x8c6c,2)==0xffff and vm.getf(0x8c74)==-999; blocked+=1
+        else:
+            assert vm.r['a10']==0 and vm.r['a11']==requested
+            # Explicitly skip the hardware call, keeping caller-local registers.
+            vm.run(0x20fc3,0x20fde)
+            assert vm.get(0x8c6c,2)==requested and vm.getf(0x8c74)==f32(offset+requested*scale)
+            direct+=1
+    return dict(comparison_cases=cases,application_calls=calls,application_channel=0,
+        direct_cases=direct,locked_cases=blocked,software_mirror='ushort[0x8c6c], float[0x8c74]',
+        trace_sha256=trace.hexdigest(),hardware_helper_stubbed=True,
+        encoded_ceil_path_emulated=False,software_mirror_is_hardware_readback=False,
+        second_independent_rail_verified=False)
+
+
 def replay(body, instructions, argument, enabled, count, cap):
     registers = {'a'+str(i):0 for i in range(16)}
     memory = {0xae68:enabled,0xae67:count,0x13549:cap}
@@ -132,6 +175,8 @@ def main():
     assert study['source_sha256'] == SHA
     functions = {int(f['entry'],16):f for f in study['functions']}
     instructions = {int(i['address'],16):i for f in functions.values() for i in f['instructions']}
+    for address,i in instructions.items():
+        raw=bytes.fromhex(i['bytes']); assert body[address:address+len(raw)]==raw
     u = lambda a:struct.unpack_from('<I',body,a)[0]
     for command, entry in ((0x61,0x2a644),(0x6e,0x2a7c8),(0x70,0x29e54),(0xa5,0x25d8c)):
         assert u(0x6fa4+8*command) == entry
@@ -174,7 +219,7 @@ def main():
     assert any(i['text'].startswith('lsi ') and i['text'].endswith(',0xb4') for i in scalar)
     assert any(i['text'].endswith(',0x00011514') for i in scalar)
     consumer_report = consumer(body,instructions)
-    report = dict(schema=2,source_sha256=SHA,hardware_execution=False,mailbox_helpers_stubbed=True,
+    report = dict(schema=3,source_sha256=SHA,hardware_execution=False,mailbox_helpers_stubbed=True,
         checked=checked,accepted=accepted,rejected=rejected,accepted_second_slot=second_slot,
         command='0x61',handler='0x2a644',selector_bits='16:9',code_bits='8:0',
         guard='byte[0xae68] != 0 and selector < byte[0xae67]',
@@ -184,6 +229,7 @@ def main():
         command_6e_fixed_float='0xaee4',physical_rail_identity_verified=False,
         physical_units_verified=False,consumer_verified=False,
         shared_floor_consumer_slice_verified=True,consumer=consumer_report,
+        channel_routing=channel_routing(body,instructions),
         rail_readback_protocol_verified=False,
         runtime_write_enabled=False)
     args.output.parent.mkdir(parents=True,exist_ok=True)
