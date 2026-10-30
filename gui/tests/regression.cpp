@@ -3180,6 +3180,7 @@ private slots:
         auto *read=panel.findChild<QPushButton*>("smuTopology"); auto *table=panel.findChild<QTableWidget*>("smuTable");
         read->click(); QTRY_VERIFY(panel.isEnabled());
         QCOMPARE(table->item(3,1)->text(),QString("1"));
+        QVERIFY(table->item(3,0)->text().contains("Complex level"));
         QCOMPARE(table->item(6,1)->text(),QString("96 MiB (100663296 bytes)"));
         QCOMPARE(table->item(7,1)->text(),QString("1"));
         QVERIFY(panel.findChild<QLabel*>("smuStatus")->text().contains("mapping is not assumed"));

@@ -65,6 +65,7 @@ for i,r in enumerate(l3_reports):
     t=r['data']['topology']
     assert not t['pm_slot_mapping_verified'] and not t['firmware_mapping_verified']
     if i<2:
+        assert t['ccd_level_type']==2
         assert t['l3']['bytes']==[100663296,33554432][i]
         assert t['l3']['cache_id']==[1,0][i] and t['ccd_in_socket']==[1,0][i]
         assert t['l3']['sharing_capacity']==16

@@ -127,6 +127,19 @@ This path performs CPUID only and sends no SMU or register command. See
 CPUID IDs do not yet establish the PM row-to-physical-core association. No tuning
 target is inferred from L3 size.
 
+The model-specific [AMD PPR 57896 Rev 3.00](https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/programmer-references/57896.zip)
+corrects an earlier assumption borrowed from Model 02h. Model 44h's page 120
+marks topology type 3 reserved; Figure 21 on page 34 shows one Complex per CCD.
+For Family 1Ah / Model 44h only, the decoder therefore uses the type-2 Complex
+shift for the CPUID CCD boundary and records `ccd_level_type: 2`. Other models
+still require the explicit type-3 level. Missing Complex or a reserved type 3
+on Model 44h fails closed. The corrected fixture contains Core/Complex/Socket
+levels, and tests cover sparse IDs, disabled SMT, missing levels and wrong models.
+This fixes OS CPU-to-CPUID CCD parsing, not the still-missing firmware PM binding.
+[Source hashes and inspected pages](validation/amd-granite-topology-source.json)
+pin the document; page 110's CoreId field is a logical core identifier, not a
+contract for MP5 table indexing.
+
 ### Initial temperature sensor selectors
 
 The pinned MP5 image contains these three bytes at

@@ -20,12 +20,14 @@ struct AmdTopology {
     int error=0;
     unsigned cpu=0;
     CpuIdentity identity;
+    unsigned ccdLevelType=0;
     std::uint32_t apicId=0, socketId=0, ccdInSocket=0, coreInCcd=0, threadInCore=0;
     std::vector<AmdTopologyLevel> levels;
     bool l3Requested=false, l3Valid=false;
     AmdL3Cache l3;
 };
-// CPUID Fn80000026, per AMD PPR 57238 pp142-144 and Linux x86 topology docs.
+// CPUID Fn80000026: PPR 57238 pp142-144; Model 44h uses PPR 57896 pp34,119-121
+// (one Complex per CCD; level type 3 reserved). ccdLevelType records the source.
 // No core-count heuristics or renumbering of sparse APIC IDs. These are CPUID
 // topology IDs, NOT an assertion that SMU firmware uses the same target IDs.
 AmdTopology readAmdTopology(HardwareSession &session,unsigned cpu,bool includeL3=false);

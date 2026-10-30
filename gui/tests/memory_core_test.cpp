@@ -229,12 +229,29 @@ void topologyDistinguishesL3CapacityWithoutPmMapping() {
         d.caches[2][1]=63u|((ccd?15u:47u)<<22);
         const auto t=l3Topology(d); assert(!t.error && t.l3Valid && !d.registerRequests);
         assert(t.socketId==4 && t.ccdInSocket==ccd && t.coreInCcd==core && t.threadInCore==thread);
+        assert(t.ccdLevelType==2 && t.levels.size()==3);
         assert(t.l3.bytes==(ccd?32:96)*UINT64_C(1048576) && t.l3.cacheId==(d.apic>>4));
         assert(t.l3.sharingCapacity==16 && t.l3.sharingShift==4 && t.l3.subleaf==2);
         const auto json=amdTopologyJson(t);
         assert(json.find("\"pm_slot_mapping_verified\":false")!=std::string::npos);
+        assert(json.find("\"ccd_level_type\":2")!=std::string::npos);
     }
     amd_topology_fixture::Device d; assert(!l3Topology(d,false).l3Valid && !d.l3Reads);
+    // Missing-CCD fallback is model-specific, not a guess for every AMD CPU.
+    for(unsigned mode=0;mode<4;++mode) {
+        amd_topology_fixture::Device bad;
+        if(mode==0) bad.signature=0x00b00f80; // Shimada still requires type 3
+        if(mode==1) bad.signature=0x00a40f40; // family 19h, model 44h
+        if(mode==2) bad.levels={{{1,2,0x100}},{{5,32,0x401}}};
+        if(mode==3) bad.levels={{{1,2,0x100}},{{4,16,0x201}},{{4,16,0x302}},{{5,32,0x403}}};
+        const auto t=l3Topology(bad); assert(t.error==-ENOTSUP && !t.l3Valid && !bad.registerRequests);
+    }
+    // Disabled SMT and sparse core IDs keep the APIC bit partition intact.
+    amd_topology_fixture::Device single;
+    single.apic=5; single.levels={{{0,1,0x100}},{{3,6,0x201}},{{3,6,0x402}}};
+    single.caches[2][0]=3u|(3u<<5)|(7u<<14);
+    const auto t=l3Topology(single);
+    assert(!t.error && t.ccdLevelType==2 && t.ccdInSocket==0 && t.coreInCcd==5 && !t.threadInCore);
 }
 void topologyCacheFailuresDiscardGeometry() {
     amd_topology_fixture::Device good; assert(!l3Topology(good).error);

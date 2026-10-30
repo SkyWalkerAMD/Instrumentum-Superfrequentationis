@@ -989,7 +989,7 @@ void AmdTuningPanel::readTopology() {
             append(table_,{"Logical CPU",QString::number(t.cpu)});
             append(table_,{"Extended APIC ID",hexValue(t.apicId,4)});
             append(table_,{"CPUID socket ID",QString::number(t.socketId)});
-            append(table_,{"CPUID CCD within socket",QString::number(t.ccdInSocket)});
+            append(table_,{t.ccdLevelType==2?"CPUID CCD within socket (Complex level)":"CPUID CCD within socket",QString::number(t.ccdInSocket)});
             append(table_,{"CPUID core within CCD",QString::number(t.coreInCcd)});
             append(table_,{"Thread within core",QString::number(t.threadInCore)});
             if(t.l3Valid) {

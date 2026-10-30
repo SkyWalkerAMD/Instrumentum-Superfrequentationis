@@ -1,0 +1,39 @@
+{
+  "url": "https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/programmer-references/57896.zip",
+  "bytes": 3209905,
+  "sha256": "5ffaa95d1d4438afa79f8fb025f712efb29bfcbb0d0711d85df60c5151da7288",
+  "files": [
+    {
+      "file": "57896-B0-PUB_3.00.pdf",
+      "pages": 486,
+      "bytes": 3572589,
+      "sha256": "643cae09d0bdae788ab090c0c4185168482b424e79f9feeced3f14c6de1817e5"
+    }
+  ],
+  "schema": 1,
+  "revision": "AMD 57896 Rev 3.00, 2024-08-28, Family 1Ah Model 44h B0",
+  "pages": [
+    34,
+    110,
+    119,
+    120,
+    121
+  ],
+  "hardware_execution": false,
+  "firmware_pm_binding_verified": false,
+  "findings": [
+    "One Complex per CCD is shown in Figure 21; type 3 reserved in Fn80000026 ECX.",
+    "Model 44h uses the type 2 boundary; other models require explicit type 3.",
+    "Fn8000001E CoreId is a logical identifier, not a published MP5 indexing contract."
+  ],
+  "visually_inspected_pages": [
+    {
+      "page": 34,
+      "sha256": "2e4a11816e787987a134428eeaefdd216316dae99871139a6f7ff617922da22f"
+    },
+    {
+      "page": 120,
+      "sha256": "6c40b35b7863df7fb1c82b69f7b2ed6f709f21cc4507d8c6b4ca4b4894df4eed"
+    }
+  ]
+}

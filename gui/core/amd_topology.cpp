@@ -15,14 +15,16 @@ AmdTopology readAmdTopology(HardwareSession &s,unsigned cpu,bool includeL3) {
     if((out.error=r.error)) return out;
     if(r.words[0]<0x80000026) { out.error=-ENOTSUP; return out; }
     unsigned previousType=0, previousShift=0, previousCount=0;
-    unsigned coreShift=0,ccdShift=0,socketShift=0;
-    bool haveCore=false,haveCcd=false,haveSocket=false,terminated=false;
+    unsigned coreShift=0,complexShift=0,ccdShift=0,socketShift=0;
+    bool haveCore=false,haveComplex=false,haveCcd=false,haveSocket=false,terminated=false;
+    const bool granite=out.identity.family==0x1a && out.identity.model==0x44;
     for(unsigned subleaf=0;subleaf<8;++subleaf) {
         r=s.cpuid(cpu,0x80000026,subleaf);
         if((out.error=r.error)) return out;
         const unsigned count=r.words[1]&0xffff;
         if(!count) { terminated=true; break; }
         const unsigned type=(r.words[2]>>8)&255,shift=r.words[0]&31;
+        if(granite && type==3) { out.error=-ENOTSUP; return out; }
         if((r.words[2]&255)!=subleaf || type<=previousType || type>4 || shift<previousShift ||
             count<previousCount || std::uint64_t(count)>(UINT64_C(1)<<shift) ||
             (!out.levels.empty() && r.words[3]!=out.apicId)) {
@@ -34,10 +36,15 @@ AmdTopology readAmdTopology(HardwareSession &s,unsigned cpu,bool includeL3) {
         for(unsigned i=0;i<4;++i) level.words[i]=r.words[i];
         out.levels.push_back(level);
         if(type==1) { haveCore=true; coreShift=shift; }
+        if(type==2) { haveComplex=true; complexShift=shift; }
         if(type==3) { haveCcd=true; ccdShift=shift; }
         if(type==4) { haveSocket=true; socketShift=shift; }
         previousType=type; previousShift=shift; previousCount=count;
     }
+    // 57896 Model 44h has one Complex per CCD, and no level type 3.
+    // This only resolves CPUID topology; it does not bind a firmware PM slot.
+    if(granite && haveComplex) { haveCcd=true; ccdShift=complexShift; out.ccdLevelType=2; }
+    else if(haveCcd) out.ccdLevelType=3;
     if(!terminated || !haveCore || !haveCcd || !haveSocket) { out.error=-ENOTSUP; return out; }
     out.socketId=out.apicId>>socketShift;
     out.ccdInSocket=(out.apicId>>ccdShift)&mask(socketShift-ccdShift);
@@ -91,6 +98,7 @@ std::string amdTopologyJson(const AmdTopology &t) {
         ",\"error\":"+std::to_string(t.error)+",\"source\":\"cpuid\",\"firmware_mapping_verified\":false,\"pm_slot_mapping_verified\":false";
     auto add=[&](const char *key,std::uint64_t value) { out+=",\""+std::string(key)+"\":"+(t.error?"null":std::to_string(value)); };
     add("apic_id",t.apicId); add("socket_id",t.socketId); add("ccd_in_socket",t.ccdInSocket);
+    add("ccd_level_type",t.ccdLevelType);
     add("core_in_ccd",t.coreInCcd); add("thread_in_core",t.threadInCore);
     out+=",\"l3_requested\":"+std::string(t.l3Requested?"true":"false")+",\"l3\":";
     if(t.error || !t.l3Valid) return out+"null}";
