@@ -77,10 +77,34 @@ define pcodeop {op}_flags;
     return source
 
 
+def postincrement(source):
+    """Select the DE233-style FP address-update encoding for Granite research.
+
+    These encodings alias the older FPU's LSIU/SSIU/LSXU/SSXU. The pinned
+    configuration-specific ISA names them LSIP/SSIP/LSXP/SSXP. Never silently
+    apply this processor configuration to an unrelated firmware study.
+    """
+    for old, new, store, indexed in (
+            ('lsiu', 'lsip', False, False), ('ssiu', 'ssip', True, False),
+            ('lsxu', 'lsxp', False, True), ('ssxu', 'ssxp', True, True)):
+        def replace(match):
+            header = match.group(0).split('{', 1)[0].replace(':'+old+' ', ':'+new+' ')
+            fp = 'fr' if indexed else 'ft'
+            increment = 'at' if indexed else 'ri8_i8_sh2'
+            access = f'*:4 as = {fp};' if store else f'{fp} = *:4 as;'
+            return header + '{\n    local next:4 = as + ' + increment + ';\n    ' + access + '\n    as = next;\n}'
+        source, count = re.subn(r':'+old+r' [^\n]+\{[^}]+\}', replace, source)
+        if count != 1:
+            raise SystemExit('Unexpected stock update constructor: ' + old)
+    return source
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--ghidra', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
+    parser.add_argument('--granite-postincrement', action='store_true',
+                        help='Select pinned DE233-style FP postincrement encodings for Granite Ridge')
     args = parser.parse_args()
     install = args.ghidra.resolve()
     props = (install / 'Ghidra/application.properties').read_text()
@@ -104,7 +128,10 @@ def main():
         raise SystemExit('Refusing to replace an existing extension')
     content = definitions().encode()
     stock_instructions = language / 'xtensaInstructions.sinc'
-    patched_instructions = conversions(stock_instructions.read_text()).encode()
+    patched = conversions(stock_instructions.read_text())
+    if args.granite_postincrement:
+        patched = postincrement(patched)
+    patched_instructions = patched.encode()
     extension.write_bytes(content)
     spec.write_bytes(original.replace(marker, marker + b'@include "octool-fp.sinc"\n'))
     stock_instructions.write_bytes(patched_instructions)
@@ -123,7 +150,8 @@ def main():
         'extension_sha256': hashlib.sha256(content).hexdigest(),
         'original_instructions_sha256': expected['xtensaInstructions.sinc'],
         'patched_instructions_sha256': hashlib.sha256(patched_instructions).hexdigest(),
-        'exact_operations': ['const.s'],
+        'address_update_profile': 'granite-de233-postincrement' if args.granite_postincrement else 'stock',
+        'exact_operations': ['const.s'] + (['lsip','ssip','lsxp','ssxp'] if args.granite_postincrement else []),
         'opaque_operations': [n + '.s' for n, *_ in UNARY] +
                              ['maddn.s', 'divn.s', 'round.s', 'trunc.s', 'floor.s', 'ceil.s', 'utrunc.s'],
         'limitations': ['Reserved CONST.S immediates remain undecodable',

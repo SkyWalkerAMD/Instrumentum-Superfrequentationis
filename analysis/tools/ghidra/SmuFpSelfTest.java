@@ -90,6 +90,33 @@ public class SmuFpSelfTest extends GhidraScript {
                 require(opaque,"Conversion rounding/overflow must stay explicit");
                 checks++;
             }
+            boolean postincrement=getScriptArgs().length>1 && getScriptArgs()[1].equals("granite-postincrement");
+            if(postincrement) {
+                String[] updateNames={"lsip","ssip","lsxp","ssxp"};
+                for(int kind=0;kind<4;kind++) for(int f:new int[]{0,7,15}) for(int base=0;base<16;base++)
+                    for(int step:new int[]{0,1,7,15}) {
+                    boolean indexed=kind>=2, store=(kind&1)!=0;
+                    int opcode=indexed ? (store?0x580000:0x180000)|f<<12|base<<8|step<<4
+                        : (store?0xc003:0x8003)|f<<4|base<<8|step<<16;
+                    Instruction ins=decode(opcode);
+                    require(ins!=null && ins.getMnemonicString().equals(updateNames[kind]),"Wrong FP update variant");
+                    reg(ins,0,f);
+                    Register baseReg=probe.getRegister("a"+base);
+                    int memoryAt=-1,updateAt=-1,index=0;
+                    for(PcodeOp op:ins.getPcode()) {
+                        if(op.getOpcode()==(store?PcodeOp.STORE:PcodeOp.LOAD)) {
+                            require(memoryAt<0,"Multiple memory operations");
+                            require(op.getInput(1).isRegister() && op.getInput(1).getOffset()==baseReg.getOffset(),
+                                "FP update accessed incremented address");
+                            memoryAt=index;
+                        }
+                        if(op.getOutput()!=null && op.getOutput().isRegister() && op.getOutput().getOffset()==baseReg.getOffset()) updateAt=index;
+                        index++;
+                    }
+                    require(memoryAt>=0 && updateAt>memoryAt,"FP pointer must update after memory access");
+                    checks++;
+                }
+            }
             Path output=Path.of(getScriptArgs()[0]);
             Files.writeString(output,"{\"schema\":1,\"hardware_execution\":false,\"firmware_modified\":false,\"synthetic_cases\":"+checks+",\"passed\":true}\n");
             println("Synthetic FP decoding checks passed: "+checks);

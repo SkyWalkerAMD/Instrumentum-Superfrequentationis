@@ -46,6 +46,7 @@ jobs:
       - name: Extend and compile the isolated static Xtensa decoder
         run: |
           python3 analysis/tools/ghidra/SmuFpPatch.py --ghidra build/firmware-tools/ghidra_12.1.4_PUBLIC \
+            --granite-postincrement \
             --output build/firmware-evidence/xtensa-fp-extension.json
           build/firmware-tools/ghidra_12.1.4_PUBLIC/support/sleigh \
             build/firmware-tools/ghidra_12.1.4_PUBLIC/Ghidra/Processors/Xtensa/data/languages/xtensa_le.slaspec
@@ -66,7 +67,7 @@ jobs:
               -import "$PWD/build/firmware-input/$component-62-54-body.bin" -loader BinaryLoader \
               -processor Xtensa:LE:32:default -cspec default \
               -scriptPath "$PWD/analysis/tools/ghidra" \
-              -preScript SmuFpSelfTest.java "$PWD/build/firmware-evidence/xtensa-fp-selftest-$component.json" \
+              -preScript SmuFpSelfTest.java "$PWD/build/firmware-evidence/xtensa-fp-selftest-$component.json" granite-postincrement \
               -preScript GraniteSeed.java \
               -postScript GraniteStudy.java "$PWD/build/firmware-evidence/$component" $component \
               -analysisTimeoutPerFile 1200 -max-cpu 2 \
