@@ -1,43 +1,47 @@
 # Granite Ridge / 9950X3D 整批验证
 
-应用、GUI、CLI、核心验证使用 `091c1b40b7c8d7a8c6d0aeb51e9aa29bda77dff3`；REA 使用 `c54f05e45df70acbb41289c2c7e89c4cfe352cde`，11 个研究源文件哈希与交付一致。后续研究提交仅改动 rails 静态实验及其文档，应用输入未变。最终发布提交仅追加文档和证据。
-目标为 Ryzen 9 9950X3D + ASUS X870E Creator（按 ProArt X870E-CREATOR WIFI 匹配）。
-用户确认目标机器目前不在手边。已安装 BIOS 未知；ASUS 2503 / SMU 98.84.0 是固定研究参考，真机验收未执行。
+本轮为共享 GUI/CLI 增加三条 SVI 固件通道的电压、电流、功率、温度，共 **12 个公共 PM 字段**。
+单位分别为 V、A、W、deg C，表内数据已平均，应用不再缩放。
+目标为 9950X3D + ASUS X870E Creator（按 ProArt X870E-CREATOR WIFI 匹配）。
+用户确认机器目前不在手边；真实 BIOS 未知，ASUS 2503 / SMU 98.84.0 仅作为固定研究参考。
 
 | 验证 | 实际结果 |
 |---|---|
-| [可移植核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41049339992) | 4/4；Ubuntu 22/24、Windows 2022、macOS 14，各 35 CTest、477 场景组 |
-| [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41049347145) | 13/13；11 Linux 目标各 37 CTest、77 CLI 场景组、1547 JSON 报告 |
-| [GUI/内核](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41049354109) | 26/26；各目标与 EL7/EL8 基线 237 Qt 测试；142 分析测试、34 移植测试 |
-| [REA/固件](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41050031099) | 1/1；REA 6.7.0 实际分析两个 UEFI 传输模块；SMU/MP5 各 12240 个编码自检 |
-| 字段单位 | 384 组 CCD 传感器选择（192 组禁用后保留旧值）、3072 个初始选择器逐核最大值；512 个 VID 转换、2048 个 16 点电压网格、60 组插值；54 组计时器比值（18 组回绕） |
-| 既有单位与布局 | 4096 个温度码、512 个逐核最大值、128 个失效缓存值、36 组驻留率、156 个归一化字；75 组映射、100 个启动包、15600 个 PM 复制字 |
-| rails | 21432 组 61h 存储、18432 组共享下限；5120 组升降压比较、512 组直接路由、512 组锁定；0x90/0x91 各 7680 组参数/回包检查；未执行硬件写入或回读 |
-| 内存检查 | 6 个离线解析/核心套件通过 ASan/UBSan |
-| 安装与运行 | 11 目标 CLI 安装/卸载/重装、无显示/无 Qt 运行、非 root diagnose、GUI 显示；33 个安装包 |
-| 内核集成 | 12 次匹配内核 QEMU 启动；未测试真实寄存器调参或 Secure Boot |
-| 本地扩展 | 50 项：37 通过，13 因 Windows 缺工具链跳过；保留八项用户扩展 |
+| [可移植核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41057093230) | 4/4，Ubuntu 22/24、Windows 2022、macOS 14；各 35 CTest、477 场景组；6 个 ASan/UBSan 套件 |
+| [无 GUI CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41058252731) | 13/13；11 Linux 目标各 37 CTest、77 CLI 场景组、1547 JSON 报告；安装、卸载、重装、无 Qt/显示运行 |
+| [GUI 与内核](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41057819927) | 26/26；各目标及 EL7/EL8 基线 237 Qt 测试；142 分析测试、34 移植测试；12 次 QEMU 内核启动 |
+| [REA 固件研究](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41057598730) | 1/1；REA 6.7.0 实际分析两个 UEFI 模块；SMU/MP5 各 12240 项编码自检 |
+| 新增遥测回放 | 49152 个通道转换；256 个量程回复、768 个初始化存储；全部 512 种有效性掩码两轮、9216 个载荷、4608 个旧值保留检查；12 字段完整累加/平均/输出路径 |
+| 新增寄存器回放 | 6912 次读助手、6912 次写助手、11 个停滞等待状态；全部使用脚本化 MMIO 回复，未执行真实硬件读写 |
+| 新增核心索引回放 | 全部 256 种核心启用掩码，2048 个计数器复制、4096 个禁用槽旧值保留；仍未关联 CPUID/APIC/OS 核心 |
+| 本机扩展检查 | 用户源码树 50 项：37 通过、13 因工具链/平台限制跳过；保留八项既有扩展 |
 
-最终采用 **44/44 云端任务通过**。旧应用矩阵被 Model 44h 拓扑修正替代，其取消状态不计入通过数。每目标保留 137 张截图，共 1507 张；直接检查 EL7 和 Ubuntu 24.04
-的 CCD 表及原始字视图。11 个 x86_64 目标：`el7, el8, el9, el10, ubuntu20.04, ubuntu22.04, ubuntu24.04, ubuntu26.04, debian11, debian12, debian13`。
-EL7 指 Oracle Linux 7.9；Windows/macOS 仅验证可移植核心。
+采用 **44/44 云端任务通过**。核心提交 `91854d32b98e32d1feea6faf3bed3188ee5b0dc4`，GUI/内核提交 `27daaee7cec2b9545d22c69657bf9697f9817c61`，
+CLI 提交 `edc8a7def223f4ad3f7060c5d594def5f28caef8`，REA 提交 `d3f301989cb2aeb2109648f0795a36543dd66b49`。
+后续 GUI 和 CLI 提交分别修正一处遗留测试断言（旧 8 行、全部单位未知），生产代码保持一致。
+各矩阵测试自己的对应提交，所有应用输入及 13 个研究源文件分别核对哈希。
+被替代的失败/取消任务完整记录在验证 JSON 中，不计作通过任务。
+最终 main 发布提交只增加文档和证据。
 
-依据新取得的 Model 44h PPR，修复 CPUID 无 type 3 时被错误拒绝的问题：仅该型号用 Complex 层划分 CCD，并显示来源；该修复经完整应用矩阵验证。
+11 个 x86_64 目标：`el7, el8, el9, el10, ubuntu20.04, ubuntu22.04, ubuntu24.04, ubuntu26.04, debian11, debian12, debian13`。
+EL7 指 Oracle Linux 7.9；Windows/macOS 只验证核心。
+共生成 33 个安装包，每目标 138 张截图，共 1518 张。
+直接检查 EL7 和 Ubuntu 24.04 的 SVI、CCD、原始字视图，共六张合成数据截图；
+屏幕外的表格行由 Qt 断言验证。QEMU 验证驱动集成，未验证物理寄存器调参或 Secure Boot。
 
-GUI/CLI 新增解释核心 row 1 的电压模型（V），CCD row 3/4 的传感器最大值（deg C），
-及 CCD row 11 的计时器比值（ratio）。加上既有温度/驻留率，共 **5 行核心、3 行 CCD**
-具有参考固件的单位证据。数值直接使用固件已归一化结果；离线导入重新解释原始字节。
-电压模型不表示实测电压，条件传感器可能保留旧值，比值的物理含义尚未确认，未标作 CPU 利用率。
+本地首次移植测试使用系统沙箱临时目录时遇到权限错误；改用工作区临时目录后完成检查。
+本轮所有可用本机和云端检查已完成，**目标真机验收未执行**。
 
-61h 的索引参数参与共享下限；新增追踪确认升降压调用与直接调用在这些路径都指向通道 0。
-0x90/0x91 则定位到另一套按通道/寄存器寻址的底层传输；未核实物理通道、寄存器契约与多字节一致性。软件镜像更新不能充当硬件回读。GUI/CLI 仍禁用尚未证实的 Granite rails 写入。
+SVI 读取失败可能保留旧值，电流量程模式 0 可能产生零电流/零功率；这些 PM 字段不携带有效性标记。
+GUI 与 CLI 明示新鲜度和物理电压轨身份未验证。它们不能作为第二 rails 的独立设置回读。
+既有五行核心、三行 CCD 单位、Model 44h CPUID/L3 识别和精确双槽固件 ID 映射继续保留。
 
-**仍未完成**：其他字段单位，PM 槽位到物理 CCD / OS 核心的可靠关联，第二 rails 独立写入/回读，
-其他固件版本及既有清单中的剩余调参。已完成的两槽固件 ID 0/1 映射、CPUID L3 识别仍分别保留，
-不会据此推断二者一一对应。真实传感器有效性和目标机器验收也未完成。
+**仍未完成**：其余字段单位、PM 槽位到物理 CCD/OS 核心的可靠绑定、第二 rails 独立写入和回读，
+以及既有清单中的剩余调参/其他固件适配。新增底层编码与等待循环证据没有启用未知写入命令。
 
-交付目录 `dist/gui-cli-amd-granite-091c1b4/` 包含 33 个安装包；根源码包对应精确云端提交，
-`updated-source/` 保留用户扩展及最终文档。全部交付文件附 `SHA256SUMS`。
+交付目录 `dist/gui-cli-amd-granite-edc8a7d/` 含 33 个安装包；根源码包对应 GUI 云端提交，
+`updated-source/` 包含最终测试修正、用户扩展及发布文档。`MANIFEST.json` 区分验证来源，
+`SHA256SUMS` 覆盖全部交付文件。
 
-[协议与用法](amd-granite-pm.md)、[字段和映射依据](amd-granite-semantics.md)、
-[验证清单](validation/amd-granite-ci-091c1b4.json)、[REA 证据](validation/amd-granite-research.json)。
+[遥测字段与限制](amd-granite-svi-telemetry.md)、[核心/CCD 映射依据](amd-granite-semantics.md)、
+[验证清单](validation/amd-granite-ci-edc8a7d.json)、[REA 证据](validation/amd-granite-research.json)。
