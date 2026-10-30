@@ -7,6 +7,7 @@
 #include "platform/linux_inventory.h"
 #include "platform/linux_inventory_native.h"
 #include <QApplication>
+#include <QCheckBox>
 #include <QClipboard>
 #include <QComboBox>
 #include <QDateTime>
