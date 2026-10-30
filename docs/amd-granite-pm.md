@@ -99,6 +99,23 @@ Source references:
 - [Pinned ryzen_smu transport and version definitions](https://github.com/amkillam/ryzen_smu/blob/d2983668300dd2a598e5a7dc40e71ce0678cc270/smu.c)
 - [Pinned Granite Ridge 9950X3D research](https://github.com/Kyworn/gnr-smu/blob/def79d66d5431dfc4b6fc773f0b99fb99c8e378d/docs/architectures/granite_ridge/9950X3D.md)
 
+### Remaining rails protocol research
+
+The separately replayed 61h handler at 0x2a644 extracts selector bits 16:9 and
+code bits 8:0. It requires byte[0xae68] != 0 and selector < byte[0xae67], clamps
+the code to byte[0x13549] when that cap is nonzero, and stores one halfword at
+0xaf28 + 2 × selector. `firmware-granite-rails.py` checks 21,432 synthetic cases,
+including all 512 input codes, the second slot, disabled/range failures, clamp
+boundaries and ignored upper bits. This establishes integer storage behavior;
+neither the physical rail identity nor the consuming control loop is established.
+
+Granite's A5 handler reads and then discards the caller's argument. Its packed
+output comes from two fixed indexed float sources under 0x9d20; it cannot be
+used as the Shimada per-CCD presence query. The 6Eh handler reads a fixed float at
+0xaee4, distinct from 61h's selected halfword array. Neither query establishes a
+second-rail setter/readback pair. The GUI and CLI therefore do not enable a
+Granite 61h writer or label either query as verified rail voltage readback.
+
 Synthetic core, CLI and GUI tests cover layout boundaries, imports, non-finite
 words, profile gates, metadata changes, partial reads and cancellation. The
 sanitizer suite includes Granite decoding. Distribution packaging and portable
