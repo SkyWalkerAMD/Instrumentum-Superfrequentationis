@@ -1,5 +1,7 @@
 # AMD PM 遥测、离线解码与 GUI / CLI 快照互通
 
+2026-10-30：新增 [Granite Ridge / 9950X3D PM 读取](amd-granite-pm.md)，CLI 使用 `amd-pm-native-read --cpu N --platform granite-ridge`，GUI 可选择相同平台；限定 SMU 98.84.0，单位与物理映射待确认。
+
 2026-10-26：[逐核/CCD 存储区](amd-pm-core-ccd.md)按固件生成端恢复 18/13 行，GUI/CLI 同步。
 撤回 `714h/71Ch` 的 VDDG 电压映射；公共字段由 220 项降为 218 项，新增 314–2512 个数组值。
 PM 快照上限为 1 MiB / 65536 个 JSON 值。下文旧版 24 项公共字段中这两项不再适用。

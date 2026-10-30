@@ -1,5 +1,7 @@
 # 无桌面版 OCTool
 
+2026-10-30：新增 [Granite Ridge / 9950X3D PM 读取](amd-granite-pm.md)，CLI 使用 `amd-pm-native-read --cpu N --platform granite-ridge`，GUI 可选择相同平台；限定 SMU 98.84.0，单位与物理映射待确认。
+
 <!-- amd-pm-ccd-mapping-current -->
 新增 [PM 固件 CCD 槽位映射](amd-pm-ccd-mapping.md)：GUI 与 CLI `--map-ccd` 同步支持精确 SMU 115.46.0 的存在掩码查询、稀疏编号映射和前后复核。OS CPU/APIC 对应、逐核/CCD 物理单位及第二 rails 回读仍未完成。
 <!-- /amd-pm-ccd-mapping-current -->

@@ -1,5 +1,9 @@
 # 安装包与源码归档
 
+<!-- amd-granite-8a8f3c9 -->
+2026-10-30：[Granite Ridge / 9950X3D 验证](amd-granite-validation.md)通过 44/44 云端任务。GUI/CLI 已提供独立 PM 读取、逐核/CCD 存储区及完整原始表，原生路径限定 SMU 98.84.0。字段单位、物理映射、第二 rails 写入回读和真机验收仍未完成。[用法](amd-granite-pm.md)；源码与包：`dist/gui-cli-amd-granite-8a8f3c9/`。
+<!-- /amd-granite-8a8f3c9 -->
+
 <!-- amd-pm-ccd-168a618 -->
 2026-10-26：[PM 固件 CCD 映射验证](amd-pm-ccd-validation.md)已通过 44/44 云端任务；GUI/CLI 同步提供 `--map-ccd`。适用 Shimada SMU 115.46.0，9950X3D 的 Granite Ridge 路径、字段单位和第二 rails 回读仍待恢复。源码与包：`dist/gui-cli-amd-pm-ccd-168a618/`。
 <!-- /amd-pm-ccd-168a618 -->
