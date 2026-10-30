@@ -647,7 +647,7 @@ private slots:
         using namespace octool::core;
         for (unsigned mode = 0; mode < 3; ++mode) {
             auto *device = new granite_pm_fixture::Device;
-            const unsigned slots = mode ? 2 : 1;
+            const unsigned storageSlots = mode ? 2 : 1;
             if (!mode) { device->version = 0x620105; device->size = 1828; device->bytes = granite_pm_fixture::bytes(1828); }
             if (mode == 2) pm_fixture::put(device->bytes,2448,0x7f800001);
             auto access = std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device));
@@ -664,9 +664,9 @@ private slots:
             QCOMPARE(table->item(0,2)->text(),QString("Unverified"));
             QCOMPARE(device->memoryReads,device->size/4); QCOMPARE(device->presenceQueries,0u);
             for (int i = 1; i < 12; ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
-            view->setCurrentIndex(12); QCOMPARE(table->rowCount(),int(144*slots));
+            view->setCurrentIndex(12); QCOMPARE(table->rowCount(),int(144*storageSlots));
             QVERIFY(!table->item(0,0)->text().contains("FW CCD"));
-            view->setCurrentIndex(13); QCOMPARE(table->rowCount(),int(12*slots));
+            view->setCurrentIndex(13); QCOMPARE(table->rowCount(),int(12*storageSlots));
             if (mode == 1) {
                 QApplication::processEvents(); const auto shot = qEnvironmentVariable("OCTOOL_PM_GRANITE_TEST_SCREENSHOT");
                 if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
