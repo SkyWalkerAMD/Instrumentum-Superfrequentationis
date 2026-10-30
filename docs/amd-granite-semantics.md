@@ -262,3 +262,21 @@ These slices start from seeded encoded codes and do not execute the opaque ceil
 conversion. The 61h array selector is therefore not an independent SVI channel
 selector in these paths. Other channels exist, but their physical identity and
 relationship to a second CPU rail remain unproved; runtime writes stay disabled.
+
+### Separate register transport candidate
+
+The RSMU table points command 0x90 to 0x33054 and 0x91 to 0x33084. They unpack
+channel bits 7:0 and register bits 15:8; the write path also takes a byte from
+bits 23:16. The read path calls 0x32bf8, which extracts reply bits 15:8 after the
+peripheral handshake, and forwards that byte to the mailbox. The write helper
+is 0x32cbc. These are distinct from 61h policy storage and the 6Eh fixed float.
+
+The byte-checked experiment covers 7,680 read and 7,680 write marshaling cases,
+including ignored upper bits, returned bytes different from the request, and
+channel values 3/255 that reach the helper without a handler bounds check.
+All helper calls are stubbed; out-of-range fixtures never dereference hardware
+configuration or execute peripheral access. This identifies a candidate
+register transport, not a verified voltage register map, physical channel
+assignment, atomic multi-byte readback or independently controllable second rail.
+Neither command is enabled by this update. A software mirror and a returned
+raw register byte are not interchangeable evidence of an applied voltage.
