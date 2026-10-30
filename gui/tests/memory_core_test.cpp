@@ -257,8 +257,13 @@ void topologyCacheFailuresDiscardGeometry() {
     }
 }
 void topologyCacheEnumerationBoundedAndSparse() {
-    amd_topology_fixture::Device d; d.caches.assign(8,d.caches[0]);
-    assert(l3Topology(d).error==-ENOTSUP && d.calls<20);
+    amd_topology_fixture::Device d;
+    // assign may release the vector's storage before copying the fill value.
+    const auto l1=d.caches.front(); d.caches.assign(8,l1);
+    const auto bounded=l3Topology(d);
+    if(bounded.error!=-ENOTSUP || d.calls>=20)
+        std::cerr << "Unterminated cache enumeration: error=" << bounded.error << " calls=" << d.calls << '\n';
+    assert(bounded.error==-ENOTSUP && d.calls<20);
     amd_topology_fixture::Device sparse; sparse.caches[2][0]=3u|(3u<<5)|(11u<<14);
     const auto t=l3Topology(sparse); assert(!t.error && t.l3.sharingCapacity==12 && t.l3.sharingShift==4 && t.l3.cacheId==1);
 }
