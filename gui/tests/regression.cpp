@@ -693,12 +693,16 @@ private slots:
                 QVERIFY(table->item(index,6)->text().contains("counter unverified"));
             }
             if(mode==1) {
+                // Let the newly selected table update its scroll range first.
+                QApplication::processEvents();
                 table->scrollToItem(table->item(13*8*storageSlots,0),QAbstractItemView::PositionAtTop);
                 QApplication::processEvents();
+                QCOMPARE(table->rowAt(0),int(13*8*storageSlots));
                 const auto fractions=qEnvironmentVariable("OCTOOL_PM_GRANITE_FRACTIONS_TEST_SCREENSHOT");
                 if(!fractions.isEmpty()) QVERIFY(panel.grab().save(fractions));
                 table->scrollToItem(table->item(15*8*storageSlots,0),QAbstractItemView::PositionAtTop);
                 QApplication::processEvents();
+                QCOMPARE(table->rowAt(0),int(15*8*storageSlots));
                 const auto counters=qEnvironmentVariable("OCTOOL_PM_GRANITE_COUNTERS_TEST_SCREENSHOT");
                 if(!counters.isEmpty()) QVERIFY(panel.grab().save(counters));
             }

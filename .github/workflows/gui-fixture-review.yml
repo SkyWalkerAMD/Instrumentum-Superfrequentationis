@@ -50,20 +50,25 @@ jobs:
           assert len(sdk_jobs)==2 and all(j['conclusion']=='success' for j in sdk_jobs), 'Both SDK jobs must have passed'
           base=baseline['head_sha']; head=os.environ['GITHUB_SHA']
           changed=subprocess.check_output(['git','diff','--name-only',base,head]).decode().splitlines()
-          allowed={'port/ci/in-container.sh','.github/workflows/gui-fixture-review.yml'}
+          allowed={'gui/tests/regression.cpp','.github/workflows/gui-fixture-review.yml'}
           assert all(p in allowed or p.startswith(('docs/','analysis/')) or p=='README.md' for p in changed), changed
-          path='port/ci/in-container.sh'; old=subprocess.check_output(['git','show',base+':'+path]).decode()
+          path='gui/tests/regression.cpp'; old=subprocess.check_output(['git','show',base+':'+path]).decode()
           current=pathlib.Path(path).read_text(); expected=old
-          names=('power-adjustment-fixture.png','power-adjustment-failure-fixture.png')
-          for prefix in ('build/gui/regression','build/gui-$target/regression'):
-              anchor=f'        cp "{prefix}/pbo-query-failure-fixture.png" "$out/pbo-query-failure-fixture.png"'
+          anchor='                table->scrollToItem(table->item(13*8*storageSlots,0),QAbstractItemView::PositionAtTop);'
+          settle='                // Let the newly selected table update its scroll range first.\n                QApplication::processEvents();\n'
+          assert expected.count(anchor)==1
+          if settle+anchor not in expected: expected=expected.replace(anchor,settle+anchor)
+          for row,variable in ((13,'fractions'),(15,'counters')):
+              anchor=f'                const auto {variable}=qEnvironmentVariable('
+              check=f'                QCOMPARE(table->rowAt(0),int({row}*8*storageSlots));\n'
               assert expected.count(anchor)==1
-              additions=''.join(f'\n        cp "{prefix}/{name}" "$out/{name}"' for name in names)
-              if anchor+additions not in expected: expected=expected.replace(anchor,anchor+additions)
-          assert current==expected, 'Supplement must only add the four screenshot copy commands'
+              if check+anchor not in expected: expected=expected.replace(anchor,check+anchor)
+          assert current==expected, 'Supplement may only settle and assert Granite screenshot viewports'
+          patch=subprocess.check_output(['git','diff',base,head,'--',path])
+          pathlib.Path('build/fixture-review/test-only.patch').write_bytes(patch)
           evidence={'source_commit':head,'baseline_commit':base,'baseline_run':int(run),'baseline_url':baseline['html_url'],
                     'sdk_jobs_successful':True,'baseline_conclusion_at_start':baseline['conclusion'],
-                    'changed_paths':changed,'runtime_inputs_identical':True,'change_scope':'Four screenshot copy commands and evidence workflow; application and test sources unchanged'}
+                    'changed_paths':changed,'runtime_inputs_identical':True,'change_scope':'Granite screenshot viewport settling/assertions and evidence workflow only; application and fixture values unchanged'}
           pathlib.Path('build/fixture-review/provenance.json').write_text(json.dumps(evidence,indent=2)+'\n')
           with open(os.environ['GITHUB_OUTPUT'],'a') as output: output.write('run='+run+'\n')
           PY
@@ -83,7 +88,7 @@ jobs:
           docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -e JOBS=4 \
             -v "$PWD:/src" -v "$PWD/build/inputs:/inputs:ro" -v "$PWD/build/fixture-review:/out" \
             -w /src "$IMAGE" bash port/ci/in-container.sh desktop "$TARGET"
-          for page in power-adjustment-fixture power-adjustment-failure-fixture; do
+          for page in pm-granite-fractions-fixture pm-granite-counters-fixture pm-granite-ccd-counter-fixture; do
             test -s "build/fixture-review/$page.png"
           done
       - uses: actions/upload-artifact@v4
@@ -93,8 +98,10 @@ jobs:
           path: |
             build/fixture-review/provenance.json
             build/fixture-review/container-image.json
+            build/fixture-review/test-only.patch
             build/fixture-review/gui-tests.txt
-            build/fixture-review/power-adjustment-fixture.png
-            build/fixture-review/power-adjustment-failure-fixture.png
+            build/fixture-review/pm-granite-fractions-fixture.png
+            build/fixture-review/pm-granite-counters-fixture.png
+            build/fixture-review/pm-granite-ccd-counter-fixture.png
           if-no-files-found: error
           retention-days: 14
