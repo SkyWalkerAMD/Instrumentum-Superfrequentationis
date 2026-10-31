@@ -13,6 +13,9 @@ common voltage/current/power/temperature fields, with explicit stale-value and
 physical-channel limitations shared by GUI and CLI.
 The [counter-unit follow-up](amd-granite-counter-units.md) adds five core rows and
 corrects CCD row 11 to percent by checking the final output scaling.
+The [command-mirror and code study](amd-granite-channel-mirrors.md) adds three
+software voltage mirrors, two core code rows and one CCD code row. Storage
+coordinates now explicitly decompose into a CCD slot and local core slot.
 
 The user's target is a Ryzen 9 9950X3D with an ASUS X870E Creator board, interpreted
 as ProArt X870E-CREATOR WIFI. The installed BIOS version is unknown. ASUS's public
@@ -73,11 +76,14 @@ retain that distinction. Raw bits and byte offsets are included. Non-finite
 binary32 interpretations retain their bits and return a partial result, not zero.
 The complete word inspector makes no promise that every word is a live float sensor.
 
-Eight common positions have **candidate** labels from the pinned public Granite
-reference: FCLK/UCLK/MCLK at words 71/75/79, VDD_MISC 58, VDDCR_SOC 83,
+Seven common positions retain **candidate** labels from the pinned public Granite
+reference: FCLK/UCLK/MCLK at words 71/75/79, VDDCR_SOC 83,
 CLDO_VDDG_IOD/CCD 259/261, CLDO_VDDP 269. Units remain unverified and no BCLK
 correction is applied. These candidate positions are not evidence for rail setting
-commands. Words 589/590 and 591/592 are not labeled as CCD power. The upstream
+commands. Word 58 is now identified as a channel-2 software command mirror in
+volts, replacing the former VDD_MISC candidate label. Words 48/53 hold the
+corresponding mirrors for channels 0/1. None is a hardware setting readback.
+Words 589/590 and 591/592 are not labeled as CCD power. The upstream
 9950X3D study specifically rejected that interpretation. The temperature and
 three residency rows now have static unit evidence; other physical units, physical
 core mapping, second-rail write/readback and remaining tuning remain separate work.

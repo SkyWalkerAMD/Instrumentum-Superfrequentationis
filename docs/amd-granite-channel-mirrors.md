@@ -99,3 +99,19 @@ counts must not be reported as sixteen fully identified physical metrics.
 The common view has seven unresolved candidates, three command mirrors and
 twelve telemetry fields. See [the current validation report](amd-granite-validation.md)
 for tested builds, reproducible outputs and remaining hardware limitations.
+
+## Unresolved scaling boundary for core rows 9/10
+
+Additional disassembly inspection, separate from the executable proofs above,
+locates their sources at `0x11278 + 0x3c * local_slot + 0x1f4/0x204`.
+Producer `0x2f930` reads two packed words at
+`0x1602e00 + 0x20000 * local_slot + 0x238/0x23c`, retains previous words when
+individual reads are zero, combines their bytes and applies policy bounds.
+Its floating paths scale selected codes by approximately 1/166 and the float
+at `0x119a0`. Initializer `0x2ad20` copies that float from offset 8 of an incoming
+record; handler `0x2b33c` obtains a 24-byte record before initialization.
+
+The record's source unit has not been traced end to end. This is not sufficient
+evidence for GHz or MHz, nor for a binding to an OS core. Core rows 9/10 remain
+unverified. A future unit proof must establish the source scale as well as the
+consumer arithmetic; fitting plausible frequency values is insufficient.

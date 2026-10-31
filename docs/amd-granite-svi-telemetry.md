@@ -107,3 +107,9 @@ by the research instruction budget. There is no returned voltage payload in
 this helper. This advances packet-level reconstruction but does not establish
 physical second-rail identity, electrical effect, or independent setting readback.
 Runtime voltage writes remain disabled for this unverified protocol.
+
+The [command-mirror follow-up](amd-granite-channel-mirrors.md) traces separate
+channel-1/2 override routes and three averaged software voltage mirrors at PM
+indices 48/53/58. These mirrors are displayed separately from telemetry and
+cannot serve as independent setting readback. Release commands only clear the
+override flags; physical rail identity and electrical effects remain unresolved.

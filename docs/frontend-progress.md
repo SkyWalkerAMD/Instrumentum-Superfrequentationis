@@ -1,5 +1,11 @@
 # GUI / CLI 同步进度
 
+2026-10-31：9950X3D 的 GUI/CLI 已同步增加三个电压命令镜像、两行逐核和一行 CCD 平均代码值，
+并显示 CCD/局部核心存储槽位。公共区为 22 项，Granite 另有完整原始字视图。
+软件命令镜像不是硬件回读；代码含义、物理 CCD/OS 核心绑定和第二 rails 独立设置回读仍未完成。
+当前实现见[字段与协议说明](amd-granite-channel-mirrors.md)，实际测试结果见[本轮验证](amd-granite-validation.md)。
+以下为历史阶段记录。
+
 <!-- amd-firmware-pm-472e785 -->
 2026-10-26：GUI / CLI 同步恢复 **八种 PM 表的逐核 / CCD 存储区**，修正 OC 模式状态位。
 

@@ -411,6 +411,16 @@ octool-cli amd-pm-decode --file pm.bin --version 0x730204 --bclk-mhz 102.5
 另有 `original_arrays` 的 92 个 [GMI/DIMM/PCIe 数组存储值](amd-pm-arrays.md)，每项含 `slot`、`slot_count`；它们不是物理目标编号或已安装设备数量。
 另有 `firmware_core_arrays` / `firmware_ccd_arrays`，提供[已核实边界的逐核 / CCD 存储字](amd-pm-core-ccd.md)；单位和物理映射未认证。GUI 的 Display 现有十四组；旧 schema-1 快照会重算派生字段，撤回两项 VDDG 解释。PM JSON 上限为 1 MiB / 65536 个值，包含 CLI 外层；其它格式保持原限制。
 
+9950X3D 使用独立的 [Granite Ridge 配置](amd-granite-pm.md)：
+`amd-pm-native-read --cpu 0 --platform granite-ridge`，接受精确 SMU 98.84.0；
+双槽表可加 `--map-ccd` 标出固件目标 0/1，但没有物理 CCD/OS 核心绑定。
+两种 Granite 表的公共 `fields` 有 22 项：七个未解释候选、三个软件电压命令镜像、十二个 SVI 遥测字段。
+命令镜像的 `group` 为 `granite_command_mirror`，并明确给出 `measurement: false`、
+`setting_readback_verified: false`。不要将字段列表下标当作 PM 索引，应使用 `offset` 与 `group`。
+核心第 8/11 行与 CCD 第 7 行以 `code` 保留平均代码，可能有小数，具体含义仍未确认。
+核心数组另含 `firmware_ccd_storage_slot` 与 `firmware_local_core_slot`，均只是存储坐标。
+这些字段由 GUI/CLI 共享解码器生成；详情见[命令镜像、代码和槽位说明](amd-granite-channel-mirrors.md)。
+
 CPU 硬件命令必须明确指定 `--cpu`，从 `diagnose` 的 `data.allowed_cpus` 选择。
 原始 MMIO/PCI 命令分别指定物理地址或 BDF，不使用 `--cpu`。
 以下 `0` 仅为示例；受限容器、CPU 亲和性和多路机器未必允许 CPU 0。

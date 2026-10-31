@@ -43,6 +43,10 @@ Import recomputes labels and units from raw bytes. Other row units remain unknow
 The [counter follow-up](amd-granite-counter-units.md) verifies the five additional
 core rows and corrects the former CCD-row-11 ratio label. Counter event identities
 remain unknown even when their mathematical units are established.
+The [stored-code follow-up](amd-granite-channel-mirrors.md) separately traces
+core rows 8/11 and CCD row 7 to averaged integer codes. Their `code` representation
+does not establish a physical unit, code meaning or OS core identity. It also
+documents the new storage-slot coordinates, which are not physical mappings.
 
 The byte-checked experiment is
 [`firmware-granite-semantics.py`](../analysis/tools/firmware-granite-semantics.py).
