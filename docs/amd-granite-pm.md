@@ -5,9 +5,12 @@ stored table layout. It does not enable Shimada tuning commands on Granite Ridge
 GUI and CLI use the same core decoder and capture implementation.
 
 The follow-up [field-unit and CCD identification study](amd-granite-semantics.md)
-recovers ten core-row and three CCD-row units, adds optional L3 geometry to CPUID topology and
+recovers twelve core-row and three CCD-row units, adds optional L3 geometry to CPUID topology and
 maps the exact two-slot native table to firmware target IDs 0/1.
 The remaining unknown units and PM-to-physical-core association stay explicit.
+The [request-policy and CPU catalog follow-up](amd-granite-performance-policy.md)
+traces core rows 9/10 to GHz policy values, not measured clocks, and reads all
+available OS CPU identities with two CPUID sweeps in both GUI and CLI.
 The [SVI telemetry study](amd-granite-svi-telemetry.md) additionally traces twelve
 common voltage/current/power/temperature fields, with explicit stale-value and
 physical-channel limitations shared by GUI and CLI.

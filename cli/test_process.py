@@ -58,7 +58,29 @@ for r in query_results:
         assert d['ln2_enabled'] is None and d['command'] == '0x0000005c'
         assert d['firmware_index'] in (0,1,7,127)
 assert sum(r['error'] == -22 for r in queries) == 20
-assert len(reports) == 1547, len(reports)
+assert len(reports) == 1551, len(reports)
+catalogs=[r['data']['topology_catalog'] for r in reports if 'topology_catalog' in r['data']]
+assert len(catalogs)==4 and [t['complete'] for t in catalogs]==[True,True,False,False]
+for t in catalogs:
+    assert t['requested_cpus']==sorted(os.sched_getaffinity(0))
+    assert not t['pm_slot_mapping_verified'] and not t['firmware_mapping_verified']
+    if t['complete']:
+        assert t['rechecked'] and [c['cpu'] for c in t['cpus']]==t['requested_cpus']
+        assert len({c['apic_id'] for c in t['cpus']})==len(t['cpus'])
+        for c in t['cpus']:
+            assert c['ccd_level_type']==2 and not c['pm_slot_mapping_verified']
+            assert [l['type'] for l in c['cpuid_levels']]==[1,2,4]
+            assert all(l['words'][3]==c['apic_id'] for l in c['cpuid_levels'])
+            if t['l3_requested']: assert c['l3']['bytes'] in (33554432,100663296)
+            else: assert c['l3'] is None
+    else:
+        assert not t['rechecked'] and t['cpus']==[]
+restricted=subprocess.check_output([fixture,'--topology-catalog'],text=True,env=env,timeout=20,
+    preexec_fn=lambda:os.sched_setaffinity(0,{cpu})).splitlines()
+assert len(restricted)==4
+for line in restricted:
+    t=json.loads(line)['data']['topology_catalog'];assert t['requested_cpus']==[cpu]
+    if t['complete']:assert [c['cpu'] for c in t['cpus']]==[cpu]
 l3_reports=[r for r in reports if r['command']=='amd-topology' and r['data'].get('topology',{}).get('l3_requested')]
 assert len(l3_reports)==4 and [r['ok'] for r in l3_reports]==[True,True,False,False]
 for i,r in enumerate(l3_reports):
@@ -869,7 +891,7 @@ for report in reports:
             assert off not in seen and first_core<=off and off+4<=len(raw); seen.add(off)
             assert bits==struct.unpack_from('<I',raw,off)[0]
             assert f['row']==j//slots and f['slot']==j%slots and f['slot_count']==slots
-            units=({1:'V',2:'deg C',5:'%',6:'%',7:'%',8:'code',11:'code',13:'ratio',14:'ratio',15:'%',16:'%',17:'%'} if key=='firmware_core_arrays'
+            units=({1:'V',2:'deg C',5:'%',6:'%',7:'%',8:'code',9:'GHz',10:'GHz',11:'code',13:'ratio',14:'ratio',15:'%',16:'%',17:'%'} if key=='firmware_core_arrays'
                    else {3:'deg C',4:'deg C',7:'code',11:'%'}) if pm['platform']=='granite-ridge' else {}
             known=f['row'] in units
             assert f['unit']==units.get(f['row'],'unverified')
@@ -879,6 +901,9 @@ for report in reports:
                 assert f['firmware_local_core_slot']==f['slot']%8
             if f['unit']=='code':
                 assert not f['code_meaning_verified'] and not f['freshness_verified']
+            if f['unit']=='GHz':
+                assert f['request_policy_value'] and not f['measured_frequency']
+                assert not f['freshness_verified'] and not f['setting_readback_verified']
             if known:
                 assert f['unit_evidence']=='granite-mp5-98.84.0-static' and not f['capture_firmware_verified']
             counter = pm['platform']=='granite-ridge' and ((key=='firmware_core_arrays' and f['row']>=13) or

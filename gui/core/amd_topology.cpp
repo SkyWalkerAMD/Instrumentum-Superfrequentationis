@@ -2,6 +2,9 @@
 #include "amd_topology.h"
 #include <cerrno>
 #include <limits>
+#include <set>
+#include <map>
+#include <tuple>
 
 namespace octool { namespace core {
 namespace {
@@ -100,6 +103,16 @@ std::string amdTopologyJson(const AmdTopology &t) {
     add("apic_id",t.apicId); add("socket_id",t.socketId); add("ccd_in_socket",t.ccdInSocket);
     add("ccd_level_type",t.ccdLevelType);
     add("core_in_ccd",t.coreInCcd); add("thread_in_core",t.threadInCore);
+    out+=",\"cpuid_levels\":[";
+    if(!t.error) for(std::size_t i=0;i<t.levels.size();++i) {
+        if(i) out+=',';
+        const auto &l=t.levels[i];
+        out+="{\"type\":"+std::to_string(l.type)+",\"shift\":"+std::to_string(l.shift)+
+            ",\"logical_count\":"+std::to_string(l.logicalCount)+",\"words\":[";
+        for(unsigned word=0;word<4;++word) { if(word) out+=','; out+=std::to_string(l.words[word]); }
+        out+="]}";
+    }
+    out+=']';
     out+=",\"l3_requested\":"+std::string(t.l3Requested?"true":"false")+",\"l3\":";
     if(t.error || !t.l3Valid) return out+"null}";
     const auto &c=t.l3;
@@ -109,5 +122,56 @@ std::string amdTopologyJson(const AmdTopology &t) {
         ",\"cache_id\":"+std::to_string(c.cacheId)+",\"subleaf\":"+std::to_string(c.subleaf)+",\"cpuid_words\":[";
     for(unsigned i=0;i<4;++i) { if(i) out+=','; out+=std::to_string(c.words[i]); }
     return out+"]}}";
+}
+AmdTopologyCatalog readAmdTopologyCatalog(HardwareSession &s,const std::vector<unsigned> &cpus,bool includeL3) {
+    AmdTopologyCatalog out; out.requestedCpus=cpus; out.l3Requested=includeL3;
+    const auto fail=[&](int error,unsigned cpu,bool selected=true) {
+        out.error=error; out.failedCpu=cpu; out.hasFailedCpu=selected; out.cpus.clear(); return out;
+    };
+    if(cpus.empty() || cpus.size()>4096) return fail(-EINVAL,0,false);
+    std::set<unsigned> uniqueCpus;
+    for(unsigned cpu:cpus) if(cpu>1048575 || !uniqueCpus.insert(cpu).second) return fail(-EINVAL,cpu);
+    std::set<std::uint32_t> apics;
+    std::map<std::uint32_t,std::tuple<std::uint32_t,std::uint32_t,std::array<std::uint32_t,4>>> caches;
+    for(unsigned cpu:cpus) {
+        auto t=readAmdTopology(s,cpu,includeL3);
+        if(t.error) return fail(t.error,cpu);
+        if(!apics.insert(t.apicId).second) return fail(-EINVAL,cpu);
+        if(!out.cpus.empty()) {
+            const auto &first=out.cpus.front();
+            if(t.identity.signature!=first.identity.signature || t.ccdLevelType!=first.ccdLevelType || t.levels.size()!=first.levels.size())
+                return fail(-EINVAL,cpu);
+            for(std::size_t i=0;i<t.levels.size();++i)
+                if(t.levels[i].type!=first.levels[i].type || t.levels[i].shift!=first.levels[i].shift)
+                    return fail(-EINVAL,cpu);
+        }
+        if(t.l3Valid) {
+            const auto geometry=std::make_tuple(t.socketId,t.ccdInSocket,t.l3.words);
+            const auto found=caches.find(t.l3.cacheId);
+            if(found!=caches.end() && found->second!=geometry) return fail(-EINVAL,cpu);
+            caches[t.l3.cacheId]=geometry;
+        }
+        out.cpus.push_back(t);
+    }
+    for(const auto &before:out.cpus) {
+        const auto after=readAmdTopology(s,before.cpu,includeL3);
+        if(after.error) return fail(after.error,before.cpu);
+        bool same=before.identity.signature==after.identity.signature && before.levels.size()==after.levels.size() &&
+            before.l3Valid==after.l3Valid;
+        if(same) for(std::size_t i=0;i<before.levels.size();++i) same=same && before.levels[i].words==after.levels[i].words;
+        if(before.l3Valid) same=same && before.l3.words==after.l3.words && before.l3.subleaf==after.l3.subleaf;
+        if(!same) return fail(-EAGAIN,before.cpu);
+    }
+    out.rechecked=true; return out;
+}
+std::string amdTopologyCatalogJson(const AmdTopologyCatalog &t) {
+    std::string out="{\"format\":\"octool-amd-topology-catalog\",\"schema\":1,\"source\":\"cpuid\",\"scope\":\"requested-os-cpus\",\"error\":"+std::to_string(t.error)+
+        ",\"complete\":"+(t.error?std::string("false"):std::string("true"))+",\"rechecked\":"+(t.rechecked?"true":"false")+
+        ",\"l3_requested\":"+(t.l3Requested?"true":"false")+",\"firmware_mapping_verified\":false,\"pm_slot_mapping_verified\":false,\"failed_cpu\":"+
+        (t.hasFailedCpu?std::to_string(t.failedCpu):"null")+",\"requested_cpus\":[";
+    for(std::size_t i=0;i<t.requestedCpus.size();++i) { if(i) out+=','; out+=std::to_string(t.requestedCpus[i]); }
+    out+="],\"cpus\":[";
+    if(!t.error) for(std::size_t i=0;i<t.cpus.size();++i) { if(i) out+=','; out+=amdTopologyJson(t.cpus[i]); }
+    return out+"]}";
 }
 } }

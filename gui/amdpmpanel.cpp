@@ -257,6 +257,7 @@ void AmdPmPanel::showFields() {
         const QString state = f.error ? "Non-finite stored value" : f.scaleError ? "Clock scaling out of range" :
             f.group == "granite_command_mirror" ? "Software command mirror; not readback" :
             f.group == "granite_svi" ? "98.84.0 unit; freshness and rail unverified" :
+            s.graniteRidge && f.group=="core_storage" && (f.row==9 || f.row==10) ? "Request policy; not measured clock" :
             s.graniteRidge && f.unit=="code" ? "98.84.0 code; meaning unverified" :
             s.graniteRidge && ((f.group=="core_storage" && f.row>=13 && f.row<=17) ||
                 (f.group=="ccd_storage" && f.row==11)) ? "98.84.0 unit; counter unverified" :

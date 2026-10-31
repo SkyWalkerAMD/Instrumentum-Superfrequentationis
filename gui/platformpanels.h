@@ -35,6 +35,7 @@ public:
 private:
     void submit(bool probeOnly);
     void readTopology();
+    void readTopologyCatalog();
     void readCurve();
     void applyCurve();
     void applyAllCoreCurve();

@@ -3,6 +3,7 @@
 #include "../core/amd_topology.h"
 #include <cassert>
 #include <cerrno>
+#include <map>
 namespace amd_topology_fixture {
 struct Device : octool::core::HardwareBackend {
     unsigned expectedCpu=130,calls=0,failAt=UINT32_MAX,topologyReads=0,l3Reads=0,registerRequests=0;
@@ -37,6 +38,25 @@ struct Device : octool::core::HardwareBackend {
             if(subleaf==2 && ++l3Reads>1 && changeCache) r.words[1]^=1u<<22;
         } else assert(false);
         return r;
+    }
+    octool::core::Backend backend(octool::core::Space) const override { return octool::core::Backend::Unavailable; }
+};
+struct CatalogDevice : octool::core::HardwareBackend {
+    std::map<unsigned,Device> devices;
+    unsigned calls=0,failAt=UINT32_MAX,registerRequests=0,changeCpu=UINT32_MAX,changeAfterReads=2;
+    bool changed=false;
+    explicit CatalogDevice(const std::vector<unsigned> &cpus) {
+        for(unsigned i=0;i<cpus.size();++i) {
+            auto &d=devices[cpus[i]]; d.expectedCpu=cpus[i]; d.apic=0x80+i;
+            d.caches[2][1]=63u|((((i>>4)&1)?15u:47u)<<22);
+        }
+    }
+    octool::core::Reply execute(const octool::core::Request &) override { ++registerRequests; assert(false); return {}; }
+    octool::core::CpuIdReply cpuid(unsigned cpu,std::uint32_t leaf,std::uint32_t subleaf) override {
+        if(calls++==failAt || !devices.count(cpu)) { octool::core::CpuIdReply r; r.error=-EACCES; return r; }
+        auto &d=devices.at(cpu);
+        if(cpu==changeCpu && !changed && d.topologyReads>=changeAfterReads) { d.apic+=0x20; changed=true; }
+        return d.cpuid(cpu,leaf,subleaf);
     }
     octool::core::Backend backend(octool::core::Space) const override { return octool::core::Backend::Unavailable; }
 };

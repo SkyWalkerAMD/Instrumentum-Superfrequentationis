@@ -6,6 +6,7 @@
 #include "core/spd.h"
 #include "platform/linux_inventory.h"
 #include "platform/linux_inventory_native.h"
+#include "platform/system_info.h"
 #include <QApplication>
 #include <QCheckBox>
 #include <QClipboard>
@@ -323,6 +324,11 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     auto *topologyL3 = new QCheckBox("Include L3 cache",this); topologyL3->setObjectName("smuTopologyL3");
     topologyL3->setToolTip("Read the selected CPU's L3 capacity and cache sharing ID to distinguish CCDs. PM slot numbering remains separate.");
     buttons->addWidget(topologyL3);
+    auto *catalogButtons=new QHBoxLayout;
+    auto *catalog=new QPushButton("Read all available CPU topology",this); catalog->setObjectName("smuTopologyCatalog");
+    catalog->setToolTip("Read CPUs allowed to this process, preserving OS and APIC IDs. Include L3 cache to compare CCD capacities.");
+    catalogButtons->addWidget(catalog); catalogButtons->addStretch(); layout->addLayout(catalogButtons);
+    connect(catalog,&QPushButton::clicked,this,[this] { readTopologyCatalog(); });
     table_ = table({"Item", "Result"}, this, layout); table_->setObjectName("smuTable");
     status_ = description("Ready. No hardware access has been performed.", layout, this); status_->setObjectName("smuStatus");
     copyButton(this, buttons, table_, status_);
@@ -1008,6 +1014,42 @@ void AmdTuningPanel::readTopology() {
         AmdTopology out;
         const int error=access->transaction([&](HardwareSession &s) { out=readAmdTopology(s,unsigned(cpu),includeL3); return out.error; },10000,cancelled.get());
         if(error) out.error=error;
+        return out;
+    }));
+}
+void AmdTuningPanel::readTopologyCatalog() {
+    using namespace octool::core;
+    invalidateCurve(); table_->setRowCount(0); setEnabled(false);
+    status_->setText("Reading topology for CPUs available to this process…");
+    const bool includeL3=findChild<QCheckBox*>("smuTopologyL3")->isChecked();
+    auto *watcher=new QFutureWatcher<AmdTopologyCatalog>(this);
+    connect(watcher,&QFutureWatcher<AmdTopologyCatalog>::finished,this,[this,watcher] {
+        const auto catalog=watcher->result(); setEnabled(true); table_->setRowCount(0);
+        if(catalog.error) status_->setText(failure(catalog.error)+" CPU catalog discarded: a CPU, cache or allowed CPU set was unavailable or inconsistent.");
+        else {
+            for(const auto &t:catalog.cpus) {
+                QString value=QString("APIC %1 · socket %2 · CCD %3 · core %4 · thread %5")
+                    .arg(hexValue(t.apicId,4)).arg(t.socketId).arg(t.ccdInSocket).arg(t.coreInCcd).arg(t.threadInCore);
+                if(t.l3Valid) value+=QString(" · L3 %1 MiB · cache ID %2").arg(double(t.l3.bytes)/1048576.0).arg(t.l3.cacheId);
+                append(table_,{QString("OS CPU %1").arg(t.cpu),value});
+            }
+            status_->setText(QString("%1 available CPUs read and rechecked. OS CPU IDs map to CPUID CCD/core/thread IDs; L3 capacity is reported when requested. PM slots and firmware targets are not bound to these IDs. CPUs outside this process's allowed set are omitted.").arg(qulonglong(catalog.cpus.size())));
+        }
+        watcher->deleteLater();
+    });
+    const auto access=access_; const auto cancelled=cancelled_;
+    watcher->setFuture(QtConcurrent::run([access,cancelled,includeL3] {
+        AmdTopologyCatalog out; out.l3Requested=includeL3;
+        const auto before=octool::platform::systemInfo(); out.requestedCpus=before.allowedCpus;
+        if(before.affinityError) { out.error=before.affinityError; return out; }
+        const int error=access->transaction([&](HardwareSession &s) {
+            out=readAmdTopologyCatalog(s,before.allowedCpus,includeL3); return out.error;
+        },10000,cancelled.get());
+        if(error) out.error=error;
+        const auto after=octool::platform::systemInfo();
+        if(!out.error && (after.affinityError || before.allowedCpus!=after.allowedCpus))
+            out.error=after.affinityError?after.affinityError:-EAGAIN;
+        if(out.error) { out.cpus.clear(); out.rechecked=false; }
         return out;
     }));
 }

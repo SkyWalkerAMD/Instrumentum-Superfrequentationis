@@ -16,6 +16,8 @@ and 0x620205. Row numbers and storage slots are zero based.
 | 5 | C0 residency candidate, averaged | % | Fraction at per-core state +0x70, accumulated and multiplied by 100 after normalization |
 | 6 | CC1 residency candidate, averaged | % | Fraction at +0x74, same normalization |
 | 7 | CC6 residency candidate, averaged | % | Fraction at +0x78, same normalization |
+| 9 | Core request policy A, averaged | GHz | Selected performance code / 166 times the shared Fmax scale; not a measured clock |
+| 10 | Core request policy B, averaged | GHz | Lower-policy or selected code with the same scale; may exceed A and may retain old values |
 | 13 | Core counter fraction A, averaged | ratio | Bounded partition stored at per-core state +0x108 |
 | 14 | Core counter fraction B, averaged | ratio | Remaining bounded fraction at +0x104 |
 | 15 | Core counter percentage A, averaged | % | Counter at +0x1a8 relative to reference delta; capped at 100 by firmware |
@@ -47,6 +49,8 @@ The [stored-code follow-up](amd-granite-channel-mirrors.md) separately traces
 core rows 8/11 and CCD row 7 to averaged integer codes. Their `code` representation
 does not establish a physical unit, code meaning or OS core identity. It also
 documents the new storage-slot coordinates, which are not physical mappings.
+The [request-policy follow-up](amd-granite-performance-policy.md) connects rows
+9/10 to the Fmax scale and adds a complete OS CPU/CPUID topology catalog.
 
 The byte-checked experiment is
 [`firmware-granite-semantics.py`](../analysis/tools/firmware-granite-semantics.py).
@@ -123,6 +127,7 @@ loop bodies.
 ```sh
 octool-cli diagnose
 octool-cli amd-topology --cpu 0 --l3
+octool-cli amd-topology --all-cpus --l3
 ```
 
 Choose an allowed CPU from `diagnose`. In AMD tuning, select **Include L3 cache**

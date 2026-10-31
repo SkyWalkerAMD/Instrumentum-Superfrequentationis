@@ -285,10 +285,69 @@ void topologyCacheEnumerationBoundedAndSparse() {
     const auto t=l3Topology(sparse); assert(!t.error && t.l3.sharingCapacity==12 && t.l3.sharingShift==4 && t.l3.cacheId==1);
 }
 }
+AmdTopologyCatalog catalogTopology(amd_topology_fixture::CatalogDevice &fake,const std::vector<unsigned> &cpus,bool include=true) {
+    struct Adapter : HardwareBackend {
+        amd_topology_fixture::CatalogDevice &f;
+        explicit Adapter(amd_topology_fixture::CatalogDevice &v):f(v) {}
+        Reply execute(const Request &r) override { return f.execute(r); }
+        CpuIdReply cpuid(unsigned c,std::uint32_t l,std::uint32_t sub) override { return f.cpuid(c,l,sub); }
+        Backend backend(Space s) const override { return f.backend(s); }
+    };
+    HardwareService service{std::unique_ptr<HardwareBackend>(new Adapter(fake))}; AmdTopologyCatalog out;
+    service.transaction([&](HardwareSession &s) { out=readAmdTopologyCatalog(s,cpus,include); return out.error; });
+    return out;
+}
+void topologyCatalogPreservesOsIdsAndCacheGroups() {
+    const std::vector<unsigned> cpus={4095,0,130,7};
+    amd_topology_fixture::CatalogDevice d(cpus);
+    const std::uint32_t apics[]={0x91,0x80,0x90,0x81};
+    for(unsigned i=0;i<cpus.size();++i) {
+        d.devices[cpus[i]].apic=apics[i];
+        d.devices[cpus[i]].caches[2][1]=63u|(((apics[i]&16)?15u:47u)<<22);
+    }
+    const auto t=catalogTopology(d,cpus); assert(!t.error && t.rechecked && t.cpus.size()==4 && !d.registerRequests);
+    assert(t.requestedCpus==cpus);
+    for(unsigned i=0;i<4;++i) {
+        const auto &c=t.cpus[i]; assert(c.cpu==cpus[i] && c.apicId==apics[i]);
+        assert(c.socketId==4 && c.ccdInSocket==((apics[i]>>4)&1) && c.coreInCcd==0 && c.threadInCore==(apics[i]&1));
+        assert(c.l3.bytes==((apics[i]&16)?33554432u:100663296u));
+    }
+    const auto json=amdTopologyCatalogJson(t);
+    assert(json.find("\"requested_cpus\":[4095,0,130,7]")!=std::string::npos);
+    assert(json.find("\"pm_slot_mapping_verified\":false")!=std::string::npos);
+    assert(json.find("\"complete\":true")!=std::string::npos);
+    amd_topology_fixture::CatalogDevice noCache(cpus); const auto minimal=catalogTopology(noCache,cpus,false);
+    assert(!minimal.error && minimal.rechecked);
+    for(const auto &entry:noCache.devices) assert(!entry.second.l3Reads);
+}
+void topologyCatalogRejectsIncompleteAndChangingSets() {
+    const std::vector<unsigned> cpus={7,130};
+    amd_topology_fixture::CatalogDevice good(cpus); assert(!catalogTopology(good,cpus).error);
+    for(unsigned fault=0;fault<good.calls;++fault) {
+        amd_topology_fixture::CatalogDevice d(cpus); d.failAt=fault;
+        const auto t=catalogTopology(d,cpus); assert(t.error==-EACCES && t.cpus.empty() && !t.rechecked && t.hasFailedCpu);
+        assert(amdTopologyCatalogJson(t).find("\"cpus\":[]")!=std::string::npos);
+    }
+    for(unsigned mode=0;mode<5;++mode) {
+        amd_topology_fixture::CatalogDevice d(cpus);
+        if(mode==0) d.devices[130].apic=d.devices[7].apic;
+        if(mode==1) d.devices[130].caches[2][1]=63u|(15u<<22);
+        if(mode==2) d.devices[130].signature^=1;
+        if(mode==3) d.devices[130].levels[2][0]=6;
+        if(mode==4) d.changeCpu=7;
+        const auto t=catalogTopology(d,cpus); assert(t.error && t.cpus.empty() && !t.rechecked);
+        if(mode==4) assert(t.error==-EAGAIN && d.changed);
+    }
+    for(const auto &invalid:std::vector<std::vector<unsigned>>{{},{7,7},{1048576},std::vector<unsigned>(4097,0)}) {
+        amd_topology_fixture::CatalogDevice d(cpus); const auto t=catalogTopology(d,invalid);
+        assert(t.error==-EINVAL && t.cpus.empty() && !d.calls);
+    }
+}
 int main() {
     originalVectors(); offlineBoundaries(); refreshSelections(); identityGates(); explicitRead();
     failedReadsStop(); cancellationStopsBeforeDataRead();
     topologyUsesShiftsAndSparseIds(); topologyRejectsMalformedAndUnavailableLeaves();
     topologyDistinguishesL3CapacityWithoutPmMapping(); topologyCacheFailuresDiscardGeometry(); topologyCacheEnumerationBoundedAndSparse();
-    std::cout << "12 memory and topology scenario groups passed\n";
+    topologyCatalogPreservesOsIdsAndCacheGroups(); topologyCatalogRejectsIncompleteAndChangingSets();
+    std::cout << "14 memory and topology scenario groups passed\n";
 }

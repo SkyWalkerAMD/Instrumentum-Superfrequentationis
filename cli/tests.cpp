@@ -4,6 +4,7 @@
 #include "json.h"
 #include "platform/linux_inventory_native.h"
 #include "platform/linux_amd_pm.h"
+#include "platform/system_info.h"
 #include "tests/amd_pm_fixture.h"
 #include "tests/amd_pm_native_fixture.h"
 #include "tests/amd_granite_pm_fixture.h"
@@ -70,6 +71,25 @@ void l3TopologyCommands() {
     assert(run({"amd-topology","--cpu","130","--l3","--apply"},output,[&] {
         ++opened; return std::unique_ptr<HardwareBackend>(new amd_topology_fixture::Device);
     })==2 && !opened);
+}
+void topologyCatalogCommands() {
+    const auto cpus=octool::platform::systemInfo().allowedCpus; assert(!cpus.empty());
+    for(unsigned mode=0;mode<4;++mode) {
+        amd_topology_fixture::CatalogDevice d(cpus);
+        if(mode==2) d.failAt=0;
+        if(mode==3) d.changeCpu=cpus.front();
+        std::vector<std::string> args={"amd-topology","--all-cpus"}; if(mode) args.push_back("--l3");
+        const auto json=command(d,args,mode<2?0:3);
+        assert(json.find("\"pm_slot_mapping_verified\":false")!=std::string::npos && !d.registerRequests);
+        assert(json.find(mode<2?"\"complete\":true":"\"cpus\":[]")!=std::string::npos);
+        if(mode==3) assert(d.changed);
+    }
+    for(const auto &args:std::vector<std::vector<std::string>>{
+            {"amd-topology","--all-cpus","--cpu","0"},{"amd-topology","--all-cpus","--apply"},
+            {"amd-topology","--all-cpus","--all-cpus"},{"amd-topology","--all-cpus","1"}}) {
+        unsigned opened=0; std::ostringstream output;
+        assert(run(args,output,[&] { ++opened; return std::unique_ptr<HardwareBackend>(new amd_topology_fixture::CatalogDevice(cpus)); })==2 && !opened);
+    }
 }
 void nativePmCommands() {
     for (const auto &layout : amdPmLayouts()) {
@@ -2503,6 +2523,7 @@ void inventory(const std::string &root) {
 }
 }
 int main(int argc, char **argv) {
+    if(argc==2 && std::string(argv[1])=="--topology-catalog") { emit=true; topologyCatalogCommands(); return 0; }
     if (argc == 3 && std::string(argv[1]) == "--inventory-fixture") { inventory(argv[2]); return 0; }
     if (argc == 3 && std::string(argv[1]) == "--pm-fixture") { pmFilesystem(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
@@ -2521,6 +2542,6 @@ int main(int argc, char **argv) {
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    l3TopologyCommands();
-    if (!emit) std::cout << "77 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    l3TopologyCommands(); topologyCatalogCommands();
+    if (!emit) std::cout << "78 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

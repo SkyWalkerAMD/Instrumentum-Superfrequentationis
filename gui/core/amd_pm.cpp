@@ -182,7 +182,11 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
                 v.name=row==8?"Core firmware code A (averaged)":"Core firmware code B (averaged)";
                 v.unit="code";
             }
-            if(row==1 || row==2 || (row>=5 && row<=8) || row==11 || row>=13) v.unitEvidence="granite-mp5-98.84.0-static";
+            if(row==9 || row==10) {
+                v.name=row==9?"Core request policy A (averaged)":"Core request policy B (averaged)";
+                v.unit="GHz";
+            }
+            if(row==1 || row==2 || (row>=5 && row<=11) || row>=13) v.unitEvidence="granite-mp5-98.84.0-static";
         }
         for (unsigned row = 0; row < 12; ++row) for (unsigned slot = 0; slot < out.firmwareCcdSlots; ++slot) {
             field(out,out.firmwareCcds,("CCD row " + std::to_string(row)).c_str(),"unverified",0x4b4+4*(18*cores+row*out.firmwareCcdSlots+slot),false,"ccd_storage");
@@ -196,7 +200,7 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
         for (unsigned offset = 0; offset < bytes.size(); offset += 4)
             field(out,out.graniteRaw,("Word " + std::to_string(offset/4)).c_str(),"unverified",offset,false,"granite_storage");
         out.detail = out.error ? "Some Granite Ridge stored words are non-finite; raw bits and other values are retained" :
-            "Granite Ridge storage decoded using the 98.84.0 reference. Command mirrors are averaged software values, not voltage measurements or setting readback. SVI telemetry can retain old values after failed reads; current scale mode 0 produces zero and validity flags are absent here. Channel numbers do not identify physical rails. Core model voltage is not measured rail voltage. Conditional sensors and counters may retain old values. Code and counter meanings and freshness are unverified; averaged codes may be fractional. Stored values are not rescaled or clamped. CCD/core slots describe storage only. Other units, physical CCD/OS CPU mapping and capture provenance remain unverified.";
+            "Granite Ridge storage decoded using the 98.84.0 reference. Command mirrors are averaged software values, not voltage measurements or setting readback. SVI telemetry can retain old values after failed reads; current scale mode 0 produces zero and validity flags are absent here. Channel numbers do not identify physical rails. Core model voltage is not measured rail voltage. Request policy A/B use the GHz Fmax scale, not measured core clocks; both-zero requests retain old values, and B can exceed A. Conditional sensors and counters may retain old values. Code and counter meanings and freshness are unverified; averaged codes may be fractional. Stored values are not rescaled or clamped. CCD/core slots describe storage only. Other units, physical CCD/OS CPU mapping and capture provenance remain unverified.";
         return out;
     }
     // Independently implemented from the pinned layout facts in
@@ -328,6 +332,8 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
             ",\"physical_rail_verified\":false,\"freshness_verified\":false,\"setting_readback_verified\":false";
         if (v.group == "granite_command_mirror") out += ",\"software_command_mirror\":true,\"measurement\":false";
         if (s.graniteRidge && v.unit=="code") out += ",\"code_meaning_verified\":false,\"freshness_verified\":false";
+        if (s.graniteRidge && v.group=="core_storage" && (v.row==9 || v.row==10)) out +=
+            ",\"request_policy_value\":true,\"measured_frequency\":false,\"freshness_verified\":false,\"setting_readback_verified\":false";
         if (s.graniteRidge && v.group=="core_storage") out +=
             ",\"firmware_ccd_storage_slot\":" + std::to_string(v.slot/8) +
             ",\"firmware_local_core_slot\":" + std::to_string(v.slot%8);

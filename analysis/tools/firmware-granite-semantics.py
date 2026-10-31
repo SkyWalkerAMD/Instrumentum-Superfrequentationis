@@ -72,6 +72,10 @@ class Slice:
                 self.r[a[0]] = (2*x+y if op=='addx2' else 4*x+y if op=='addx4' else 8*x+y if op=='addx8' else x*y if op=='mull' else x//y if op=='quou' else x-y if op=='sub' else x+y) & 0xffffffff
             elif op == 'moveqz':
                 if not val(a[2]): self.r[a[0]] = val(a[1])
+            elif op == 'movnez':
+                if val(a[2]): self.r[a[0]] = val(a[1])
+            elif op in ('minu', 'maxu'):
+                self.r[a[0]] = (min if op=='minu' else max)(val(a[1]),val(a[2]))
             elif op in ('and', 'or'):
                 self.r[a[0]] = val(a[1]) & val(a[2]) if op=='and' else val(a[1]) | val(a[2])
             elif op == 'ssl':
@@ -92,6 +96,8 @@ class Slice:
                 if op=='ssip': self.r[a[1]] = (val(a[1])+val(a[2])) & 0xffffffff
             elif op == 'wfr':
                 self.f[a[0]] = struct.unpack('<f', struct.pack('<I', val(a[1])))[0]
+            elif op == 'rfr':
+                self.r[a[0]] = struct.unpack('<I',struct.pack('<f',self.f[a[1]]))[0]
             elif op == 'ufloat.s':
                 self.f[a[0]] = f32(val(a[1])/(1 << val(a[2])))
             elif op == 'float.s':
@@ -102,8 +108,12 @@ class Slice:
                 self.f[a[0]] = float(val(a[1]))
             elif op == 'mov.s':
                 self.f[a[0]] = self.f[a[1]]
-            elif op == 'movt.s':
-                if self.b[a[2]]: self.f[a[0]] = self.f[a[1]]
+            elif op in ('movt.s','movf.s'):
+                if self.b[a[2]] == (op=='movt.s'): self.f[a[0]] = self.f[a[1]]
+            elif op == 'round.s':
+                value=f32(self.f[a[1]]*(1<<val(a[2])))
+                assert -2147483648 <= value < 2147483648
+                self.r[a[0]]=round(value)&0xffffffff
             elif op == 'movt':
                 if self.b[a[2]]: self.r[a[0]] = val(a[1])
             elif op in ('olt.s', 'ole.s', 'oeq.s'):
@@ -120,12 +130,18 @@ class Slice:
                 else: next_pc = end
             elif op == 'bbci':
                 if not (val(a[0]) & (1 << val(a[1]))): next_pc = val(a[2])
+            elif op == 'bbc':
+                if not (val(a[0]) & (1 << (val(a[1])&31))): next_pc = val(a[2])
             elif op == 'beqz':
                 if not val(a[0]): next_pc = val(a[1])
             elif op == 'bnez':
                 if val(a[0]): next_pc = val(a[1])
             elif op in ('bne', 'bnei'):
                 if val(a[0]) != val(a[1]): next_pc = val(a[2])
+            elif op == 'beq':
+                if val(a[0]) == val(a[1]): next_pc = val(a[2])
+            elif op in ('bltu','bltui'):
+                if val(a[0]) < val(a[1]): next_pc = val(a[2])
             elif op == 'bgeu':
                 if val(a[0]) >= val(a[1]): next_pc = val(a[2])
             elif op in ('bany','bnone'):

@@ -703,6 +703,12 @@ private slots:
                     QCOMPARE(table->item(index,2)->text(),QString("code"));
                     QVERIFY(table->item(index,6)->text().contains("meaning unverified"));
                 }
+                for(unsigned row:{9u,10u}) {
+                    const unsigned index=row*8*storageSlots+core;
+                    QCOMPARE(table->item(index,1)->text(),row==9?QString("5.5"):QString("6.25"));
+                    QCOMPARE(table->item(index,2)->text(),QString("GHz"));
+                    QVERIFY(table->item(index,6)->text().contains("not measured clock"));
+                }
             }
             const QStringList counterValues{"0.625","0.125","25","75","150"};
             for(unsigned row=13;row<18;++row) for(unsigned core=0;core<8*storageSlots;++core) {
@@ -719,6 +725,11 @@ private slots:
                 QCOMPARE(table->rowAt(0),int(8*8*storageSlots));
                 const auto codes=qEnvironmentVariable("OCTOOL_PM_GRANITE_CODES_TEST_SCREENSHOT");
                 if(!codes.isEmpty()) QVERIFY(panel.grab().save(codes));
+                table->scrollToItem(table->item(9*8*storageSlots,0),QAbstractItemView::PositionAtTop);
+                QApplication::processEvents();
+                QCOMPARE(table->rowAt(0),int(9*8*storageSlots));
+                const auto performance=qEnvironmentVariable("OCTOOL_PM_GRANITE_PERFORMANCE_TEST_SCREENSHOT");
+                if(!performance.isEmpty()) QVERIFY(panel.grab().save(performance));
                 table->scrollToItem(table->item(13*8*storageSlots,0),QAbstractItemView::PositionAtTop);
                 QApplication::processEvents();
                 QCOMPARE(table->rowAt(0),int(13*8*storageSlots));
@@ -3257,6 +3268,32 @@ private slots:
         QCOMPARE(table->item(6,1)->text(),QString("32 MiB (33554432 bytes)"));
         device->extension=false; read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),0);
         QCOMPARE(device->registerRequests,0u);
+    }
+    void amdTopologyCatalogListsAvailableCpusAndClearsFailures() {
+        using namespace octool::core;
+        const auto cpus=octool::platform::systemInfo().allowedCpus; QVERIFY(!cpus.empty());
+        auto *device=new amd_topology_fixture::CatalogDevice(cpus);
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device)),nullptr,130);
+        panel.resize(1500,1400); panel.show();
+        panel.findChild<QCheckBox*>("smuTopologyL3")->setChecked(true);
+        auto *read=panel.findChild<QPushButton*>("smuTopologyCatalog"); QVERIFY(read);
+        auto *table=panel.findChild<QTableWidget*>("smuTable");
+        // All-CPU mode obtains the available set; the selected-CPU field is irrelevant.
+        panel.findChild<QLineEdit*>("smuCpu")->setText("invalid");
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(),int(cpus.size()));
+        for(unsigned i=0;i<cpus.size();++i) {
+            QCOMPARE(table->item(i,0)->text(),QString("OS CPU %1").arg(cpus[i]));
+            QVERIFY(table->item(i,1)->text().contains("APIC"));
+            QVERIFY(table->item(i,1)->text().contains("L3"));
+        }
+        QVERIFY(panel.findChild<QLabel*>("smuStatus")->text().contains("PM slots and firmware targets are not bound"));
+        QApplication::processEvents();
+        const auto shot=qEnvironmentVariable("OCTOOL_AMD_TOPOLOGY_CATALOG_TEST_SCREENSHOT");
+        if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        device->failAt=device->calls; read->click(); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(),0); QCOMPARE(device->registerRequests,0u);
+        QVERIFY(panel.findChild<QLabel*>("smuStatus")->text().contains("catalog discarded"));
     }
     void unsupportedIntelProfileDoesNotReadOrWriteMsrs() {
         PstateReference reference; reference.amd=false; auto access=reference.access();

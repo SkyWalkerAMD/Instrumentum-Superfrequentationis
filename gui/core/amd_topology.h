@@ -34,4 +34,18 @@ AmdTopology readAmdTopology(HardwareSession &session,unsigned cpu,bool includeL3
 // Optional Fn8000001D geometry identifies the selected CPU's L3 capacity and
 // sharing ID. It does not identify a PM storage slot or certify a tuning target.
 std::string amdTopologyJson(const AmdTopology &topology);
+struct AmdTopologyCatalog {
+    int error=0;
+    bool l3Requested=false, rechecked=false;
+    unsigned failedCpu=0;
+    bool hasFailedCpu=false;
+    std::vector<unsigned> requestedCpus;
+    std::vector<AmdTopology> cpus;
+};
+// Two CPUID sweeps over the caller's explicit OS CPU set. Never sorts or
+// renumbers sparse IDs, fills missing CPUs, or binds these IDs to PM slots.
+// Any failure/change discards the catalog; no partial identity map is returned.
+AmdTopologyCatalog readAmdTopologyCatalog(HardwareSession &session,
+    const std::vector<unsigned> &cpus,bool includeL3=false);
+std::string amdTopologyCatalogJson(const AmdTopologyCatalog &catalog);
 } }

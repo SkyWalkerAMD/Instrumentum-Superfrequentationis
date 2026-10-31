@@ -20,6 +20,8 @@ inline std::vector<std::uint8_t> bytes(unsigned size = 2452) {
     const unsigned storageSlots=size==1828?1:2;
     for(unsigned core=0;core<8*storageSlots;++core) {
         pm_fixture::put(b,0x4b4+4*(8*8*storageSlots+core),0x40600000); // averaged code 3.5
+        pm_fixture::put(b,0x4b4+4*(9*8*storageSlots+core),0x40b00000); // 5.5 GHz request policy A
+        pm_fixture::put(b,0x4b4+4*(10*8*storageSlots+core),0x40c80000); // 6.25 GHz B can exceed A; no clamp
         pm_fixture::put(b,0x4b4+4*(11*8*storageSlots+core),0x42ff0000); // averaged code 127.5
     }
     for(unsigned ccd=0;ccd<storageSlots;++ccd)

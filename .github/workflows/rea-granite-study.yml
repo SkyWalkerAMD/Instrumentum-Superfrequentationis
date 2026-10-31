@@ -13,6 +13,7 @@ on:
       - 'analysis/tools/firmware-granite-counters.py'
       - 'analysis/tools/firmware-granite-channels.py'
       - 'analysis/tools/firmware-granite-codes.py'
+      - 'analysis/tools/firmware-granite-performance.py'
       - 'analysis/tools/ghidra/Granite*.java'
       - 'analysis/tools/ghidra/SmuFpPatch.py'
       - 'analysis/tools/ghidra/SmuFpSelfTest.java'
@@ -132,6 +133,12 @@ jobs:
             --mp5 build/firmware-input/mp5-62-54-body.bin \
             --study build/firmware-evidence/mp5/smu-study.json \
             --output build/firmware-evidence/granite-codes.json
+          python3 analysis/tools/firmware-granite-performance.py \
+            --smu build/firmware-input/smu-62-54-body.bin \
+            --mp5 build/firmware-input/mp5-62-54-body.bin \
+            --smu-study build/firmware-evidence/smu/smu-study.json \
+            --mp5-study build/firmware-evidence/mp5/smu-study.json \
+            --output build/firmware-evidence/granite-performance.json
       - name: REA static UEFI entry points and RSMU transport helpers
         if: (success() || failure()) && steps.inputs.outcome == 'success'
         env:

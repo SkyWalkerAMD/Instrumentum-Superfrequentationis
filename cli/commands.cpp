@@ -103,7 +103,7 @@ struct Command {
     unsigned cpu = 0, timeout = 10000, ccd = 0, core = 0, point = 0, group = 0;
     unsigned minimumRatio = 0, maximumRatio = 0;
     double value = 0;
-    bool forEdit = false, pmMapCcds = false, pmGranite = false, topologyL3 = false;
+    bool forEdit = false, pmMapCcds = false, pmGranite = false, topologyL3 = false, topologyAll = false;
     std::uint32_t pmVersion = 0;
     unsigned pmCaptured = 0, pmFusedCcds = 0;
     AmdPmOptions pmOptions;
@@ -189,7 +189,7 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "amd-curve-set") { keys.insert("--margin"); keys.insert("--expect-raw"); }
     if (c.name == "amd-pbo-scalar-set") { keys.insert("--scalar"); keys.insert("--expect-raw"); }
     if (c.name == "amd-umc-read") { keys.insert("--bank"); keys.insert("--refresh-slot"); }
-    if (c.name == "amd-topology") keys.insert("--l3");
+    if (c.name == "amd-topology") { keys.insert("--l3"); keys.insert("--all-cpus"); }
     if (c.name == "spd-decode") keys.insert("--file");
     if (pm || c.name == "amd-pm-native-read") keys.insert("--bclk-mhz");
     if (c.name == "amd-pm-native-read") { keys.insert("--map-ccd"); keys.insert("--platform"); }
@@ -202,7 +202,7 @@ Command parse(const std::vector<std::string> &args) {
         const auto key = args[i];
         require(keys.count(key) != 0, "Unknown option for " + c.name + ": " + key);
         require(!options.count(key), "Duplicate option: " + key);
-        const bool flag = key == "--json" || key == "--apply" || key == "--for-edit" || key == "--map-ccd" || key == "--l3";
+        const bool flag = key == "--json" || key == "--apply" || key == "--for-edit" || key == "--map-ccd" || key == "--l3" || key == "--all-cpus";
         if (!flag) require(i + 1 < args.size() && args[i + 1].compare(0, 2, "--") != 0, "Missing value: " + key);
         options[key] = flag ? "true" : args[++i];
     }
@@ -223,7 +223,10 @@ Command parse(const std::vector<std::string> &args) {
         require(validateRequest(c.reg) == ValidationError::None, "Invalid register width, alignment, address range or value width");
     }
     if (hardware.count(c.name) || pboCapabilityCommand) {
-        if (!rawRegister || c.reg.space == Space::Msr) c.cpu = uintOption(options, "--cpu", 1048575);
+        c.topologyAll=options.count("--all-cpus")!=0;
+        require(!c.topologyAll || !options.count("--cpu"), "--all-cpus and --cpu are mutually exclusive");
+        if (c.topologyAll) c.cpu=0;
+        else if (!rawRegister || c.reg.space == Space::Msr) c.cpu = uintOption(options, "--cpu", 1048575);
         else require(!options.count("--cpu"), "--cpu is only used with MSR registers; select an address or PCI target instead");
         c.reg.cpu = c.cpu;
         c.timeout = optional(options, "--timeout-ms", 120000, 10000);
@@ -1243,8 +1246,22 @@ Result hardware(const Command &c, HardwareSession &s) {
         out.data.push_back({"response", hex(r.response)}); out.data.push_back({"raw", out.error ? "null" : hex(r.raw)});
         out.data.push_back({"raw_signed", out.error ? "null" : number(r.raw <= 0x7fffffff ? double(r.raw) : double(r.raw) - 4294967296.0)});
     } else if (c.name == "amd-topology") {
-        const auto t = readAmdTopology(s, c.cpu, c.topologyL3); out.error = t.error;
-        out.data.push_back({"topology",amdTopologyJson(t)});
+        if(c.topologyAll) {
+            const auto before=platform::systemInfo(); AmdTopologyCatalog t;
+            t.l3Requested=c.topologyL3; t.requestedCpus=before.allowedCpus;
+            t.error=before.affinityError;
+            if(!t.error) t=readAmdTopologyCatalog(s,before.allowedCpus,c.topologyL3);
+            if(!t.error) {
+                const auto after=platform::systemInfo();
+                if(after.affinityError || before.allowedCpus!=after.allowedCpus) {
+                    t.error=after.affinityError?after.affinityError:-EAGAIN; t.cpus.clear(); t.rechecked=false;
+                }
+            }
+            out.error=t.error; out.data.push_back({"topology_catalog",amdTopologyCatalogJson(t)});
+        } else {
+            const auto t = readAmdTopology(s, c.cpu, c.topologyL3); out.error = t.error;
+            out.data.push_back({"topology",amdTopologyJson(t)});
+        }
         out.data.push_back({"identity", identity(t.identity)}); out.data.push_back({"firmware_mapping_verified", "false"});
         if (!out.error) {
             out.data.push_back({"apic_id", hex(t.apicId)}); out.data.push_back({"socket_id", number(t.socketId)});
@@ -1582,7 +1599,7 @@ Usage: octool-cli COMMAND [OPTIONS]
     Shimada 1Ah/08h only; explicit firmware indices. Expected raw values follow
     ascending core order. CO counts, not mV. Recheck and readback per core;
     stop on first failure, report partial completion, no retry or rollback.
-  amd-topology --cpu N [--l3]
+  amd-topology (--cpu N | --all-cpus) [--l3]
   amd-pm-read [--bclk-mhz N]        Read an already installed ryzen_smu driver
   amd-pm-layout-audit --version V --bytes N --fused-ccds N
                                    Offline core/CCD range and conflict diagnostic
