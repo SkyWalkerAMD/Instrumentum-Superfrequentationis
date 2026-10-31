@@ -823,7 +823,7 @@ private slots:
             QTemporaryDir dir; QFile file(dir.path()+"/old.bin"); QVERIFY(file.open(QIODevice::WriteOnly));
             file.write(reinterpret_cast<const char *>(device->bytes.data()),qint64(device->bytes.size())); file.close();
             QVERIFY(panel.loadRawFile(file.fileName(),0x620205));
-            auto *table = panel.findChild<QTableWidget *>("pmTable"); QCOMPARE(table->rowCount(),20);
+            auto *table = panel.findChild<QTableWidget *>("pmTable"); QCOMPARE(table->rowCount(),22);
             auto *read = panel.findChild<QPushButton *>("pmNativeRead"); read->click();
             QCOMPARE(table->rowCount(),0); QTRY_VERIFY(read->isEnabled()); QCOMPARE(table->rowCount(),0);
             panel.findChild<QPushButton *>("pmCopy")->click();
