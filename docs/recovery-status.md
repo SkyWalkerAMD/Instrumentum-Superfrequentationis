@@ -1,8 +1,8 @@
 # 功能还原状态
 
-<!-- amd-granite-edc8a7d -->
-2026-10-30：[9950X3D 本轮验证](amd-granite-validation.md)通过 44/44 云端任务。GUI/CLI 新增三通道电压、电流、功率、温度共 12 个公共字段；REA 补齐寄存器读写助手及本地核心计数器窗口回放。字段可能保留旧值，固件通道尚未绑定物理电压轨；PM 到 OS 核心映射、第二 rails 独立写入回读、其他剩余调参及真机验收仍未完成。[字段证据](amd-granite-svi-telemetry.md)；源码与 33 个安装包：`dist/gui-cli-amd-granite-edc8a7d/`。以下为历史阶段记录，以本段和当前验证报告为准。
-<!-- /amd-granite-edc8a7d -->
+<!-- amd-granite-36cc2ba -->
+2026-10-31：[9950X3D 本轮验证](amd-granite-validation.md)通过 46/46 云端任务（含两项 GUI 截图补验）。GUI/CLI 新增五行核心计数器单位，纠正 CCD 第 11 行为百分比；REA 补齐最终输出路径和 9216 组直接 VID 命令回放。已解释十行核心、三行 CCD 及十二个 SVI 公共字段的单位；计数器事件身份、新鲜度、PM 到 OS 核心映射、第二 rails 独立写入回读及真机验收仍未完成。[字段证据](amd-granite-counter-units.md)；源码与 33 个安装包：`dist/gui-cli-amd-granite-36cc2ba/`。以下为历史阶段记录，以本段和当前验证报告为准。
+<!-- /amd-granite-36cc2ba -->
 
 <!-- amd-pm-ccd-168a618 -->
 2026-10-26：[PM 固件 CCD 映射验证](amd-pm-ccd-validation.md)已通过 44/44 云端任务；GUI/CLI 同步提供 `--map-ccd`。适用 Shimada SMU 115.46.0，9950X3D 的 Granite Ridge 路径、字段单位和第二 rails 回读仍待恢复。源码与包：`dist/gui-cli-amd-pm-ccd-168a618/`。
