@@ -55,7 +55,9 @@ struct CatalogDevice : octool::core::HardwareBackend {
     octool::core::CpuIdReply cpuid(unsigned cpu,std::uint32_t leaf,std::uint32_t subleaf) override {
         if(calls++==failAt || !devices.count(cpu)) { octool::core::CpuIdReply r; r.error=-EACCES; return r; }
         auto &d=devices.at(cpu);
-        if(cpu==changeCpu && !changed && d.topologyReads>=changeAfterReads) { d.apic+=0x20; changed=true; }
+        // Change at the start of a fresh CPU identity read, after the first
+        // complete snapshot (including its internal topology recheck).
+        if(cpu==changeCpu && !changed && !leaf && !subleaf && d.topologyReads>=changeAfterReads) { d.apic+=0x20; changed=true; }
         return d.cpuid(cpu,leaf,subleaf);
     }
     octool::core::Backend backend(octool::core::Space) const override { return octool::core::Backend::Unavailable; }

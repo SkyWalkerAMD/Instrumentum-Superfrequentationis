@@ -1261,13 +1261,14 @@ Result hardware(const Command &c, HardwareSession &s) {
         } else {
             const auto t = readAmdTopology(s, c.cpu, c.topologyL3); out.error = t.error;
             out.data.push_back({"topology",amdTopologyJson(t)});
+            out.data.push_back({"identity", identity(t.identity)});
+            if (!out.error) {
+                out.data.push_back({"apic_id", hex(t.apicId)}); out.data.push_back({"socket_id", number(t.socketId)});
+                out.data.push_back({"ccd_in_socket", number(t.ccdInSocket)}); out.data.push_back({"core_in_ccd", number(t.coreInCcd)});
+                out.data.push_back({"thread_in_core", number(t.threadInCore)});
+            }
         }
-        out.data.push_back({"identity", identity(t.identity)}); out.data.push_back({"firmware_mapping_verified", "false"});
-        if (!out.error) {
-            out.data.push_back({"apic_id", hex(t.apicId)}); out.data.push_back({"socket_id", number(t.socketId)});
-            out.data.push_back({"ccd_in_socket", number(t.ccdInSocket)}); out.data.push_back({"core_in_ccd", number(t.coreInCcd)});
-            out.data.push_back({"thread_in_core", number(t.threadInCore)});
-        }
+        out.data.push_back({"firmware_mapping_verified", "false"});
     } else if (c.name == "intel-clock-read") {
         const auto r = readIntelClock(s,c.cpu); out.error = r.error;
         out.data.push_back({"identity",identity(r.identity)});
