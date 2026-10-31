@@ -5,12 +5,14 @@ stored table layout. It does not enable Shimada tuning commands on Granite Ridge
 GUI and CLI use the same core decoder and capture implementation.
 
 The follow-up [field-unit and CCD identification study](amd-granite-semantics.md)
-recovers five core-row and three CCD-row units, adds optional L3 geometry to CPUID topology and
+recovers ten core-row and three CCD-row units, adds optional L3 geometry to CPUID topology and
 maps the exact two-slot native table to firmware target IDs 0/1.
 The remaining unknown units and PM-to-physical-core association stay explicit.
 The [SVI telemetry study](amd-granite-svi-telemetry.md) additionally traces twelve
 common voltage/current/power/temperature fields, with explicit stale-value and
 physical-channel limitations shared by GUI and CLI.
+The [counter-unit follow-up](amd-granite-counter-units.md) adds five core rows and
+corrects CCD row 11 to percent by checking the final output scaling.
 
 The user's target is a Ryzen 9 9950X3D with an ASUS X870E Creator board, interpreted
 as ProArt X870E-CREATOR WIFI. The installed BIOS version is unknown. ASUS's public

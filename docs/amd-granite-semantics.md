@@ -16,12 +16,17 @@ and 0x620205. Row numbers and storage slots are zero based.
 | 5 | C0 residency candidate, averaged | % | Fraction at per-core state +0x70, accumulated and multiplied by 100 after normalization |
 | 6 | CC1 residency candidate, averaged | % | Fraction at +0x74, same normalization |
 | 7 | CC6 residency candidate, averaged | % | Fraction at +0x78, same normalization |
+| 13 | Core counter fraction A, averaged | ratio | Bounded partition stored at per-core state +0x108 |
+| 14 | Core counter fraction B, averaged | ratio | Remaining bounded fraction at +0x104 |
+| 15 | Core counter percentage A, averaged | % | Counter at +0x1a8 relative to reference delta; capped at 100 by firmware |
+| 16 | Core counter percentage B, averaged | % | Counter at +0x1ac relative to reference delta; capped at 100 by firmware |
+| 17 | Core counter percentage C, averaged | % | 18-bit delta ratio, integer scaling by 12800 then division by 128; zero denominator retains the previous value |
 
 | CCD row | Display | Unit | Static data path |
 | --- | --- | --- | --- |
 | 3 | CCD sensor maximum A, averaged | deg C | Maximum of eight selected converted sensors, stored at 0x1280c |
 | 4 | CCD sensor maximum B, conditional, averaged | deg C | Maximum of converted sensors 45..52 if byte[0x7829] is nonzero, stored at 0x12810 |
-| 11 | MP5 interval counter ratio, averaged | ratio | Accumulated ticks divided by elapsed ticks, stored at 0x19cfc |
+| 11 | MP5 interval counter percentage, averaged | % | Ratio at 0x19cfc, averaged and multiplied by 100 at 0x2f5cf before the final PM write |
 
 Residency fractions and percentage scaling are traced; the individual state
 names remain candidates. The independently maintained
@@ -35,6 +40,9 @@ divides temperatures by eight again nor multiplies stored percentages by 100.
 `unit_evidence` records `granite-mp5-98.84.0-static`; the capture itself does not
 authenticate firmware, sensor validity, freshness or active core identity.
 Import recomputes labels and units from raw bytes. Other row units remain unknown.
+The [counter follow-up](amd-granite-counter-units.md) verifies the five additional
+core rows and corrects the former CCD-row-11 ratio label. Counter event identities
+remain unknown even when their mathematical units are established.
 
 The byte-checked experiment is
 [`firmware-granite-semantics.py`](../analysis/tools/firmware-granite-semantics.py).
@@ -48,7 +56,7 @@ invalid sensor response leaves the previous converted float in place, and the
 per-core maximum can still use that retained value. The reported temperature
 unit therefore does not imply that a sample is fresh or currently valid.
 
-### CCD temperatures, model voltage and interval ratio
+### CCD temperatures, model voltage and interval counter percentage
 
 The extended temperature slice ends at MP5 0x2c19d, including both CCD maxima.
 Row 3 initially selects sensors `[13,14,15,16,25,26,27,28]` through the bytes at
@@ -77,12 +85,15 @@ accumulated tick count, plus an active interval when flagged; the denominator
 is elapsed ticks. The experiment checks 54 cases, including 18 wrapping clock
 intervals, then checks the caller stores into the PM producer source. Exact
 reciprocal fixtures exclude zero elapsed time and do not establish reciprocal
-accuracy. The flag's physical meaning is unresolved, so the value is not called
-CPU utilization and is neither multiplied by 100 nor clamped to [0,1].
+accuracy. The producer's flag meaning is unresolved, so this is not called CPU
+utilization. The complete export now verifies the later multiply by 100 at
+0x2f5cf: the PM field is a percentage, while 0x19cfc is an internal ratio.
+The application preserves the stored percentage without scaling or clamping.
 
-All four newly interpreted rows pass through the same accumulation and averaging
-path without additional scaling. The synthetic normalization experiment checks
-40 core values and three CCD values. Both frontends use these shared units;
+The voltage and temperature rows pass through accumulation and averaging
+without another scale conversion; the interval counter has the late percentage
+conversion. The experiment now continues through all final output writes and
+checks 40 core values and three CCD values. Both frontends use these shared units;
 unknown rows remain unverified, and imports rebuild interpretation from raw bytes.
 
 ## Decoder correction

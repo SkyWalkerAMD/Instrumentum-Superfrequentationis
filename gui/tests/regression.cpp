@@ -685,15 +685,38 @@ private slots:
             QCOMPARE(table->item(5*8*storageSlots,2)->text(),QString("%"));
             QVERIFY(table->item(2*8*storageSlots,6)->text().contains("98.84.0"));
             QVERIFY(!table->item(0,0)->text().contains("FW CCD"));
+            const QStringList counterValues{"0.625","0.125","25","75","150"};
+            for(unsigned row=13;row<18;++row) for(unsigned core=0;core<8*storageSlots;++core) {
+                const unsigned index=row*8*storageSlots+core;
+                QCOMPARE(table->item(index,1)->text(),counterValues[row-13]);
+                QCOMPARE(table->item(index,2)->text(),row<15?QString("ratio"):QString("%"));
+                QVERIFY(table->item(index,6)->text().contains("counter unverified"));
+            }
+            if(mode==1) {
+                table->scrollToItem(table->item(13*8*storageSlots,0),QAbstractItemView::PositionAtTop);
+                QApplication::processEvents();
+                const auto fractions=qEnvironmentVariable("OCTOOL_PM_GRANITE_FRACTIONS_TEST_SCREENSHOT");
+                if(!fractions.isEmpty()) QVERIFY(panel.grab().save(fractions));
+                table->scrollToItem(table->item(15*8*storageSlots,0),QAbstractItemView::PositionAtTop);
+                QApplication::processEvents();
+                const auto counters=qEnvironmentVariable("OCTOOL_PM_GRANITE_COUNTERS_TEST_SCREENSHOT");
+                if(!counters.isEmpty()) QVERIFY(panel.grab().save(counters));
+            }
             view->setCurrentIndex(13); QCOMPARE(table->rowCount(),int(12*storageSlots));
             QCOMPARE(table->item(3*storageSlots,2)->text(),QString("deg C"));
             QCOMPARE(table->item(4*storageSlots,2)->text(),QString("deg C"));
-            QCOMPARE(table->item(11*storageSlots,2)->text(),QString("ratio"));
+            QCOMPARE(table->item(11*storageSlots,2)->text(),QString("%"));
+            QCOMPARE(table->item(11*storageSlots,1)->text(),mode?QString("25"):QString("100"));
+            QVERIFY(table->item(11*storageSlots,6)->text().contains("counter unverified"));
             QVERIFY(table->item(4*storageSlots,0)->text().contains("conditional"));
             QVERIFY(table->item(3*storageSlots,6)->text().contains("98.84.0"));
             if (mode == 1) {
+                table->scrollToTop();
                 QApplication::processEvents(); const auto shot = qEnvironmentVariable("OCTOOL_PM_GRANITE_TEST_SCREENSHOT");
                 if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+                table->scrollToBottom(); QApplication::processEvents();
+                const auto counter=qEnvironmentVariable("OCTOOL_PM_GRANITE_CCD_COUNTER_TEST_SCREENSHOT");
+                if(!counter.isEmpty()) QVERIFY(panel.grab().save(counter));
             }
             view->setCurrentIndex(14); QCOMPARE(table->rowCount(),int(device->size/4));
             QCOMPARE(table->item(table->rowCount()-1,1)->text(),mode == 2 ? QString("Unavailable") : QString("100"));

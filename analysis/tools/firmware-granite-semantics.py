@@ -67,9 +67,9 @@ class Slice:
                 self.r[a[0]] = self.get(val(a[1])+val(a[2]), {'l8ui':1, 'l16ui':2, 'l32i':4}[op])
             elif op in ('s8i', 's16i', 's32i'):
                 self.put(val(a[1])+val(a[2]), val(a[0]), {'s8i':1, 's16i':2, 's32i':4}[op])
-            elif op in ('add', 'addi', 'addmi', 'addx2', 'addx4', 'mull', 'quou', 'sub'):
+            elif op in ('add', 'addi', 'addmi', 'addx2', 'addx4', 'addx8', 'mull', 'quou', 'sub'):
                 x, y = val(a[1]), val(a[2])
-                self.r[a[0]] = (2*x+y if op=='addx2' else 4*x+y if op=='addx4' else x*y if op=='mull' else x//y if op=='quou' else x-y if op=='sub' else x+y) & 0xffffffff
+                self.r[a[0]] = (2*x+y if op=='addx2' else 4*x+y if op=='addx4' else 8*x+y if op=='addx8' else x*y if op=='mull' else x//y if op=='quou' else x-y if op=='sub' else x+y) & 0xffffffff
             elif op == 'moveqz':
                 if not val(a[2]): self.r[a[0]] = val(a[1])
             elif op in ('and', 'or'):
@@ -98,14 +98,18 @@ class Slice:
                 signed = val(a[1]); signed -= (1 << 32) if signed & (1 << 31) else 0
                 self.f[a[0]] = f32(signed/(1 << val(a[2])))
             elif op == 'const.s':
-                assert val(a[1]) == 0, 'Only the zero constant is modeled'
-                self.f[a[0]] = 0.0
+                assert val(a[1]) in (0, 1), 'Only zero and one constants are modeled'
+                self.f[a[0]] = float(val(a[1]))
             elif op == 'mov.s':
                 self.f[a[0]] = self.f[a[1]]
             elif op == 'movt.s':
                 if self.b[a[2]]: self.f[a[0]] = self.f[a[1]]
-            elif op in ('olt.s', 'ole.s'):
-                self.b[a[0]] = self.f[a[1]] < self.f[a[2]] if op=='olt.s' else self.f[a[1]] <= self.f[a[2]]
+            elif op == 'movt':
+                if self.b[a[2]]: self.r[a[0]] = val(a[1])
+            elif op in ('olt.s', 'ole.s', 'oeq.s'):
+                self.b[a[0]] = self.f[a[1]] < self.f[a[2]] if op=='olt.s' else self.f[a[1]] <= self.f[a[2]] if op=='ole.s' else self.f[a[1]] == self.f[a[2]]
+            elif op in ('bt', 'bf'):
+                if self.b[a[0]] == (op == 'bt'): next_pc = val(a[1])
             elif op in ('add.s', 'sub.s', 'mul.s', 'madd.s'):
                 x, y = self.f[a[1]], self.f[a[2]]
                 self.f[a[0]] = f32(x+y if op=='add.s' else x-y if op=='sub.s' else x*y+self.f[a[0]] if op=='madd.s' else x*y)
@@ -186,8 +190,32 @@ def temperature(body, code):
         invalid_sensor_behavior='previous converted value retained; per-core maximum may reuse it')
 
 
-def accumulation(body, code):
-    vm = Slice(body, code)
+def export_snapshot(vm, width, ordinal):
+    """Normalization and complete scatter, including the late CCD-11 x100.
+
+    The reciprocal helper is an explicit exact-factor fixture. Everything from
+    its return to the final PM write is executed, with no floating op skipped.
+    Output MMIO addresses are dictionary keys, never real device accesses.
+    """
+    assert width in (1, 2) and 0 <= ordinal < width
+    vm.r['a1'] = 0x50000
+    vm.put(0x19d20+0x11, width, 1)
+    vm.put(0x19d20+0x18, ordinal, 1)
+    vm.put(0x19d20+0x3c, 0x20000)
+    samples = vm.get(ACC+0x270)
+    vm.run(0x2f54c, 0x2f565 if samples else 0x2f56f)
+    if samples:
+        assert vm.f['f0'] == samples
+        vm.f['f0'] = f32(1/samples)
+    vm.run(0x2f568 if samples else 0x2f56f, 0x2f657)
+    addresses = [0x1320000+4*(row*8*width+ordinal*8+core)
+                 for row in range(18) for core in range(8)]
+    addresses += [0x1320000+4*(144*width+row*width+ordinal) for row in range(12)]
+    return [vm.getf(address) for address in addresses]
+
+
+def seed_accumulation(vm):
+    body = vm.body
     for offset in range(0, 0x274, 4): vm.putf(ACC+offset, 0)
     core_offsets = (0x10,0x28,0x68,0xf4,0x70,0x74,0x78,0xf8,0x108,0x104,0xe8,0xec,0xdc)
     for core in range(8):
@@ -205,25 +233,29 @@ def accumulation(body, code):
     vm.putf(literal(0x191b8)+0x100, 1)
     vm.put(literal(0x191b8)+4, 4<<16)
     vm.putf(0x19cf0+0xc,0.25); vm.putf(0x7e34+0x1fc,1.25); vm.putf(0x11128+0x318,64)
+
+
+def accumulation(body, code):
+    vm = Slice(body, code)
+    seed_accumulation(vm)
     for _ in range(4): vm.run(0x2f370,0x2f536)
     assert vm.get(ACC+0x270)==4
     before=[vm.getf(ACC+4*i) for i in range(156)]
-    # Explicit exact reciprocal fixture. The firmware calls reciprocal seed
-    # and refinement; this experiment does not emulate their numeric accuracy.
-    vm.f['f0']=0.25
-    vm.run(0x2f56f,0x2f5af)
+    exported=export_snapshot(vm,2,1)
     for i in range(156):
-        scale=100 if 40<=i<64 else 1
+        scale=100 if 40<=i<64 or i==155 else 1
         assert vm.getf(ACC+4*i)==before[i]/4*scale
+        assert exported[i]==vm.getf(ACC+4*i)
     for core in range(8):
         assert vm.getf(ACC+0x20+core*4)==1.25
         assert vm.getf(ACC+0x40+core*4)==40+core/8
         for off, percent in ((0xa0,50),(0xc0,12.5),(0xe0,37.5)):
             assert vm.getf(ACC+off+core*4)==percent
     assert vm.getf(ACC+0x24c)==61.25 and vm.getf(ACC+0x250)==72.5
-    assert vm.getf(ACC+0x26c)==0.25
+    assert vm.getf(ACC+0x26c)==25
     assert vm.get(ACC+0x270)==4  # SSIP does not overwrite the sample counter.
-    return {'accumulated_samples':4,'normalized_words':156,'unit_checked_core_values':40,'unit_checked_ccd_values':3,
+    return {'accumulated_samples':4,'normalized_words':156,'exported_words':156,
+            'late_ccd_row_11_scale':100,'unit_checked_core_values':40,'unit_checked_ccd_values':3,
             'trace_sha256':hashlib.sha256(json.dumps(vm.trace).encode()).hexdigest()}
 
 
@@ -313,7 +345,7 @@ def interval_ratio(body, code):
                     assert vm.getf(0x19cfc)==ratio
                     count+=1; wraps+=int(now<elapsed)
                     trace.update(struct.pack('<5If',elapsed,now,active,accumulated,pending,ratio))
-    return dict(cases=count,wrapped_interval_cases=wraps,unit='ratio',
+    return dict(cases=count,wrapped_interval_cases=wraps,producer_unit='ratio',pm_unit='%',pm_scale=100,
         numerator='accumulated ticks plus active interval if flagged',denominator='elapsed ticks',
         zero_elapsed_behavior_verified=False,counter_meaning_verified=False,
         trace_sha256=trace.hexdigest())
@@ -380,7 +412,7 @@ def main():
     reciprocal=[i['text'].split(' ')[0] for i in functions[0x327b0]['instructions']]
     assert reciprocal.count('recip0.s')==1 and reciprocal.count('maddn.s')==2
     temperature_report=temperature(body,code)
-    report={'schema':3,'hardware_execution':False,'source_sha256':SHA,
+    report={'schema':4,'hardware_execution':False,'source_sha256':SHA,
             'temperature_sensor_formula':'((raw >> 11) & 0xfff) / 8 - 49; validity bit 10',
             'temperature_cases':temperature_report['core_max_cases'],'temperature':temperature_report,
             'residency_cases':residency(body,code),
@@ -388,7 +420,7 @@ def main():
             'interval_ratio':interval_ratio(body,code),'voltage_model':voltage_model(body,code),
             'accumulation':accumulation(body,code),
             'core_units':{'1':'V','2':'deg C','5':'%','6':'%','7':'%'},
-            'ccd_units':{'3':'deg C','4':'deg C','11':'ratio'},
+            'ccd_units':{'3':'deg C','4':'deg C','11':'%'},
             'residency_labels':'C0/CC1/CC6 remain candidate names; fraction-to-percent scaling is traced',
             'sensor_acquisition_emulated':False,'reciprocal_numeric_accuracy_verified':False,
             'live_sensor_validity_verified':False,'physical_core_mapping_verified':False}

@@ -15,6 +15,11 @@ inline std::vector<std::uint8_t> bytes(unsigned size = 2452) {
         {0x3f800000,0x40000000,0x40000000,0x428c0000}}; // 1 V, 2 A, 2 W, 70 C
     for (unsigned channel=0;channel<3;++channel) for(unsigned kind=0;kind<4;++kind)
         pm_fixture::put(b,4*(49+channel*5+kind),telemetry[channel][kind]);
+    const unsigned slots=size==1828?1:2;
+    const std::uint32_t counters[]={0x3f200000,0x3e000000,0x41c80000,0x42960000,0x43160000}; // .625, .125, 25, 75, 150
+    for(unsigned row=13;row<18;++row) for(unsigned core=0;core<8*slots;++core)
+        pm_fixture::put(b,0x4b4+4*(row*8*slots+core),counters[row-13]);
+    pm_fixture::put(b,0x4b4+4*(144*slots+11*slots),0x41c80000); // already 25 percent
     pm_fixture::put(b,size-4,0x42c80000); // 100, including the final CCD word
     return b;
 }

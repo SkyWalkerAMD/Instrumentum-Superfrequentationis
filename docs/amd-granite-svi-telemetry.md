@@ -97,3 +97,13 @@ Eleven stalled readiness gates exhaust the bounded research instruction budget;
 they do not produce a firmware timeout. Device side effects and readiness/error
 bit semantics beyond the observed branches remain unverified. A completion bit
 does not establish that a voltage changed. No real register command is issued.
+
+The same replay now executes direct VID helper 0x32d6c in 9,216 cases: all 512
+9-bit codes, three firmware channels, three reply delays and two synthetic
+address assignments. The helper waits for readiness, writes
+`configured_address | VID << 6 | 0x8000` to offset 0x73010, writes the address
+to the select register, then waits for bit 15. Both stalled gates are bounded
+by the research instruction budget. There is no returned voltage payload in
+this helper. This advances packet-level reconstruction but does not establish
+physical second-rail identity, electrical effect, or independent setting readback.
+Runtime voltage writes remain disabled for this unverified protocol.

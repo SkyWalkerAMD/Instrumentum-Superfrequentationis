@@ -162,6 +162,15 @@ for i, r in enumerate(granite_pm):
         for j,f in enumerate(pm['fields'][8:]):
             assert f['firmware_channel']==j//4 and f['group']=='granite_svi'
             assert not any(f[k] for k in ('capture_firmware_verified','physical_rail_verified','freshness_verified','setting_readback_verified'))
+        for f in pm['firmware_core_arrays']:
+            if f['row']>=13:
+                assert f['stored_value']==(.625,.125,25,75,150)[f['row']-13]
+                assert f['unit']==('ratio' if f['row']<15 else '%')
+                assert not f['counter_meaning_verified'] and not f['freshness_verified']
+        for f in pm['firmware_ccd_arrays']:
+            if f['row']==11:
+                assert f['unit']=='%' and not f['counter_meaning_verified'] and not f['freshness_verified']
+                if not f['error']: assert f['stored_value']==(100 if f['slot']==slots-1 else 25)
     else:
         assert not n['metadata_rechecked'] and not pm['raw_hex'] and not pm['granite_stored_words']
 with tempfile.TemporaryDirectory(prefix='octool-granite-') as directory:
@@ -857,13 +866,19 @@ for report in reports:
             assert off not in seen and first_core<=off and off+4<=len(raw); seen.add(off)
             assert bits==struct.unpack_from('<I',raw,off)[0]
             assert f['row']==j//slots and f['slot']==j%slots and f['slot_count']==slots
-            units=({1:'V',2:'deg C',5:'%',6:'%',7:'%'} if key=='firmware_core_arrays'
-                   else {3:'deg C',4:'deg C',11:'ratio'}) if pm['platform']=='granite-ridge' else {}
+            units=({1:'V',2:'deg C',5:'%',6:'%',7:'%',13:'ratio',14:'ratio',15:'%',16:'%',17:'%'} if key=='firmware_core_arrays'
+                   else {3:'deg C',4:'deg C',11:'%'}) if pm['platform']=='granite-ridge' else {}
             known=f['row'] in units
             assert f['unit']==units.get(f['row'],'unverified')
             assert not f['clock'] and f['scaled_clock_mhz'] is None
             if known:
                 assert f['unit_evidence']=='granite-mp5-98.84.0-static' and not f['capture_firmware_verified']
+            counter = pm['platform']=='granite-ridge' and ((key=='firmware_core_arrays' and f['row']>=13) or
+                                                         (key=='firmware_ccd_arrays' and f['row']==11))
+            if counter:
+                assert not f['counter_meaning_verified'] and not f['freshness_verified']
+            else:
+                assert 'counter_meaning_verified' not in f
             if (bits & 0x7f800000)==0x7f800000:
                 assert f['stored_value'] is None and f['error']==-33
             else:
