@@ -661,20 +661,30 @@ private slots:
             auto *table = panel.findChild<QTableWidget *>("pmTable");
             auto *view = panel.findChild<QComboBox *>("pmView");
             read->click(); QTRY_VERIFY(read->isEnabled());
-            QCOMPARE(table->rowCount(),20); QCOMPARE(table->item(0,1)->text(),QString("2000"));
+            QCOMPARE(table->rowCount(),22); QCOMPARE(table->item(0,1)->text(),QString("2000"));
             QCOMPARE(table->item(0,2)->text(),QString("Unverified"));
             const QStringList units{"V","A","W","deg C"};
             for(int channel=0;channel<3;++channel) for(int kind=0;kind<4;++kind) {
-                const int row=8+4*channel+kind;
+                const int row=8+5*channel+kind;
                 QVERIFY(table->item(row,0)->text().contains(QString("SVI channel %1").arg(channel)));
                 QCOMPARE(table->item(row,2)->text(),units[kind]);
                 QVERIFY(table->item(row,6)->text().contains("freshness and rail unverified"));
+            }
+            const QStringList mirrorValues{"1.125","0.875","0.625"};
+            for(int channel=0;channel<3;++channel) {
+                const int row=7+5*channel;
+                QCOMPARE(table->item(row,1)->text(),mirrorValues[channel]);
+                QCOMPARE(table->item(row,2)->text(),QString("V"));
+                QVERIFY(table->item(row,6)->text().contains("Software command mirror; not readback"));
             }
             QCOMPARE(table->item(8,1)->text(),QString("1.25"));
             QCOMPARE(table->item(10,1)->text(),QString("15.625"));
             if (mode == 1) {
                 QApplication::processEvents(); const auto shot=qEnvironmentVariable("OCTOOL_PM_GRANITE_SVI_TEST_SCREENSHOT");
                 if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+                table->scrollToBottom(); QApplication::processEvents();
+                const auto mirrors=qEnvironmentVariable("OCTOOL_PM_GRANITE_MIRRORS_TEST_SCREENSHOT");
+                if(!mirrors.isEmpty()) QVERIFY(panel.grab().save(mirrors));
             }
             QCOMPARE(device->memoryReads,device->size/4); QCOMPARE(device->presenceQueries,0u);
             for (int i = 1; i < 12; ++i) { view->setCurrentIndex(i); QCOMPARE(table->rowCount(),0); }
@@ -685,6 +695,15 @@ private slots:
             QCOMPARE(table->item(5*8*storageSlots,2)->text(),QString("%"));
             QVERIFY(table->item(2*8*storageSlots,6)->text().contains("98.84.0"));
             QVERIFY(!table->item(0,0)->text().contains("FW CCD"));
+            for(unsigned core=0;core<8*storageSlots;++core) {
+                QVERIFY(table->item(core,0)->text().contains(QString("CCD slot %1, core slot %2").arg(core/8).arg(core%8)));
+                for(unsigned row:{8u,11u}) {
+                    const unsigned index=row*8*storageSlots+core;
+                    QCOMPARE(table->item(index,1)->text(),row==8?QString("3.5"):QString("127.5"));
+                    QCOMPARE(table->item(index,2)->text(),QString("code"));
+                    QVERIFY(table->item(index,6)->text().contains("meaning unverified"));
+                }
+            }
             const QStringList counterValues{"0.625","0.125","25","75","150"};
             for(unsigned row=13;row<18;++row) for(unsigned core=0;core<8*storageSlots;++core) {
                 const unsigned index=row*8*storageSlots+core;
@@ -695,6 +714,11 @@ private slots:
             if(mode==1) {
                 // Let the newly selected table update its scroll range first.
                 QApplication::processEvents();
+                table->scrollToItem(table->item(8*8*storageSlots,0),QAbstractItemView::PositionAtTop);
+                QApplication::processEvents();
+                QCOMPARE(table->rowAt(0),int(8*8*storageSlots));
+                const auto codes=qEnvironmentVariable("OCTOOL_PM_GRANITE_CODES_TEST_SCREENSHOT");
+                if(!codes.isEmpty()) QVERIFY(panel.grab().save(codes));
                 table->scrollToItem(table->item(13*8*storageSlots,0),QAbstractItemView::PositionAtTop);
                 QApplication::processEvents();
                 QCOMPARE(table->rowAt(0),int(13*8*storageSlots));
@@ -709,6 +733,9 @@ private slots:
             view->setCurrentIndex(13); QCOMPARE(table->rowCount(),int(12*storageSlots));
             QCOMPARE(table->item(3*storageSlots,2)->text(),QString("deg C"));
             QCOMPARE(table->item(4*storageSlots,2)->text(),QString("deg C"));
+            QCOMPARE(table->item(7*storageSlots,2)->text(),QString("code"));
+            QCOMPARE(table->item(7*storageSlots,1)->text(),QString("32767.5"));
+            QVERIFY(table->item(7*storageSlots,6)->text().contains("meaning unverified"));
             QCOMPARE(table->item(11*storageSlots,2)->text(),QString("%"));
             QCOMPARE(table->item(11*storageSlots,1)->text(),mode?QString("25"):QString("100"));
             QVERIFY(table->item(11*storageSlots,6)->text().contains("counter unverified"));

@@ -255,13 +255,16 @@ void AmdPmPanel::showFields() {
         if (index >= 2 && index < 14 && f.group != groups[index-2]) continue;
         const int row = table_->rowCount(); table_->insertRow(row);
         const QString state = f.error ? "Non-finite stored value" : f.scaleError ? "Clock scaling out of range" :
+            f.group == "granite_command_mirror" ? "Software command mirror; not readback" :
             f.group == "granite_svi" ? "98.84.0 unit; freshness and rail unverified" :
+            s.graniteRidge && f.unit=="code" ? "98.84.0 code; meaning unverified" :
             s.graniteRidge && ((f.group=="core_storage" && f.row>=13 && f.row<=17) ||
                 (f.group=="ccd_storage" && f.row==11)) ? "98.84.0 unit; counter unverified" :
             !f.unitEvidence.empty() ? "Unit from SMU 98.84.0 reference" :
             original ? "Units unverified" : f.clock && !s.options.hasBclk ? "BCLK not supplied" : "Decoded";
         QString label = QString::fromStdString(f.name) +
-            (f.slotCount > 1 ? QString(" [slot %1]").arg(f.slot) : QString());
+            (s.graniteRidge && index==12 ? QString(" [CCD slot %1, core slot %2]").arg(f.slot/8).arg(f.slot%8) :
+             f.slotCount > 1 ? QString(" [slot %1]").arg(f.slot) : QString());
         if (index >= 12 && index <= 13) {
             const unsigned ccdSlot = index == 12 ? f.slot / 8 : f.slot;
             if (ccdSlot < firmwareCcdIds_.size()) {

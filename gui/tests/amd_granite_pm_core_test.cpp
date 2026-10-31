@@ -4,6 +4,7 @@
 #include <cassert>
 #include <iostream>
 #include <set>
+#include <utility>
 using namespace octool::core;
 namespace {
 struct Test {
@@ -23,34 +24,55 @@ int main() {
     assert(amdPmLayouts().size() == 8 && amdGranitePmLayouts().size() == 2);
     for (unsigned n = 0; n < 2; ++n) {
         const auto b = granite_pm_fixture::bytes(sizes[n]); const auto s = decodeAmdPm(b,versions[n]);
-        assert(!s.error && s.graniteRidge && s.raw == b && s.fields.size() == 20 && s.fields[0].value == 2000);
+        assert(!s.error && s.graniteRidge && s.raw == b && s.fields.size() == 22 && s.fields[0].value == 2000);
         const double telemetry[3][4]={{1.25,12.5,15.625,60.5},{1.5,20,30,65.25},{1,2,2,70}};
         const char *units[]={"V","A","W","deg C"};
         for(unsigned channel=0;channel<3;++channel) for(unsigned kind=0;kind<4;++kind) {
-            const auto &f=s.fields[8+channel*4+kind];
+            const auto &f=s.fields[8+channel*5+kind];
             assert(f.group=="granite_svi" && f.firmwareChannel==channel && f.offset==4*(49+channel*5+kind));
             assert(f.value==telemetry[channel][kind] && f.unit==units[kind] && !f.clock && !f.scaled);
             assert(f.unitEvidence=="granite-smu-98.84.0-static");
+        }
+        const double mirrors[]={1.125,.875,.625};
+        std::set<unsigned> commonOffsets;
+        for(const auto &f:s.fields) assert(commonOffsets.insert(f.offset).second);
+        for(unsigned channel=0;channel<3;++channel) {
+            const auto &f=s.fields[7+channel*5];
+            assert(f.group=="granite_command_mirror" && f.firmwareChannel==channel);
+            assert(f.value==mirrors[channel] && f.unit=="V" && f.offset==4*(48+channel*5));
+            assert(f.unitEvidence=="granite-smu-98.84.0-static" && !f.clock && !f.scaled);
         }
         assert(s.firmwareCcdSlots == n+1 && s.firmwareCores.size() == 144*(n+1) && s.firmwareCcds.size() == 12*(n+1));
         assert(s.graniteRaw.size() == sizes[n]/4 && s.graniteRaw.back().value == 100);
         assert(s.originalLimits.empty() && s.originalArrays.empty() && s.originalPackage.empty() && s.originalFabric.empty());
         std::set<unsigned> offsets;
         for (const auto &f : s.firmwareCores) {
-            const bool known=f.row==1 || f.row==2 || (f.row>=5 && f.row<=7) || f.row>=13;
-            assert(f.unit==(f.row==1?"V":f.row==2?"deg C":f.row==13 || f.row==14?"ratio":known?"%":"unverified") && !f.scaled && !f.clock);
+            const bool known=f.row==1 || f.row==2 || (f.row>=5 && f.row<=8) || f.row==11 || f.row>=13;
+            assert(f.unit==(f.row==1?"V":f.row==2?"deg C":f.row==13 || f.row==14?"ratio":f.row==8 || f.row==11?"code":known?"%":"unverified") && !f.scaled && !f.clock);
             assert(f.unitEvidence.empty()!=known); offsets.insert(f.offset);
+            if(f.row==8 || f.row==11) assert(f.value==(f.row==8?3.5:127.5));
             const double counters[]={.625,.125,25,75,150};
             if(f.row>=13) assert(f.value==counters[f.row-13]);
         }
         for (const auto &f : s.firmwareCcds) {
-            const bool known=f.row==3 || f.row==4 || f.row==11;
-            assert(f.unit == (f.row==11?"%":known?"deg C":"unverified") && !f.scaled && !f.clock);
+            const bool known=f.row==3 || f.row==4 || f.row==7 || f.row==11;
+            assert(f.unit == (f.row==11?"%":f.row==7?"code":known?"deg C":"unverified") && !f.scaled && !f.clock);
             assert(f.unitEvidence.empty()!=known); assert(offsets.insert(f.offset).second);
+            if(f.row==7) assert(f.value==32767.5);
         }
         assert(offsets.size() == 156*(n+1) && *offsets.begin() == 1204 && *offsets.rbegin() == sizes[n]-4);
         const auto json = amdPmJson(s); assert(amdPmJson(parseAmdPmCapture(json)) == json);
         assert(auditLegacyAmdPmLayout(versions[n],sizes[n],n+1).error == -ENOTSUP);
+        for(const auto &entry:std::vector<std::pair<std::string,std::string>>{
+            {"\"software_command_mirror\":true","\"software_command_mirror\":false"},
+            {"\"measurement\":false","\"measurement\":true"},
+            {"\"code_meaning_verified\":false","\"code_meaning_verified\":true"},
+            {"\"firmware_ccd_storage_slot\":0","\"firmware_ccd_storage_slot\":99"},
+            {"\"firmware_local_core_slot\":0","\"firmware_local_core_slot\":99"}}) {
+            auto forged=json; const auto p=forged.find(entry.first); assert(p!=std::string::npos);
+            forged.replace(p,entry.first.size(),entry.second);
+            assert(amdPmJson(parseAmdPmCapture(forged))==json);
+        }
         auto forged = json; const auto pos = forged.find("\"stored_value\":2000"); assert(pos != std::string::npos);
         forged.replace(pos,19,"\"stored_value\":9999"); assert(amdPmJson(parseAmdPmCapture(forged)) == json);
         forged=json; const auto channel=forged.find("\"firmware_channel\":1"); assert(channel!=std::string::npos);
@@ -106,7 +128,7 @@ int main() {
     AmdPmOptions scale; scale.hasBclk = true; scale.bclkMHz = 100;
     assert(decodeAmdPm(granite_pm_fixture::bytes(),0x620205,scale).error == -ENOTSUP);
     ++groups;
-    for (unsigned off : {0u,196u,200u,204u,208u,216u,220u,224u,228u,236u,240u,244u,248u,284u,1204u,1268u,2036u,2100u,2164u,2228u,2292u,2352u,2380u,2388u,2448u}) for (std::uint32_t bits : {0x7f800001u,0x7fc00000u,0x7f800000u,0xff800000u}) {
+    for (unsigned off : {0u,192u,212u,232u,1716u,1908u,2412u,196u,200u,204u,208u,216u,220u,224u,228u,236u,240u,244u,248u,284u,1204u,1268u,2036u,2100u,2164u,2228u,2292u,2352u,2380u,2388u,2448u}) for (std::uint32_t bits : {0x7f800001u,0x7fc00000u,0x7f800000u,0xff800000u}) {
         auto b = granite_pm_fixture::bytes(); pm_fixture::put(b,off,bits); const auto s = decodeAmdPm(b,0x620205);
         assert(s.error == -EDOM && s.raw == b && s.graniteRaw[off/4].raw == bits && s.graniteRaw[off/4].error == -EDOM);
         assert(parseAmdPmCapture(amdPmJson(s)).raw == b);

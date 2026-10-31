@@ -155,12 +155,14 @@ for i, r in enumerate(granite_pm):
         assert len(pm['firmware_ccd_arrays']) == 12*slots
         assert len(pm['granite_stored_words']) == length//4
         assert pm['granite_stored_words'][-1]['raw'] == ('0x7f800001' if i == 2 else '0x42c80000')
-        assert len(pm['fields'])==20
-        assert all(f['unit'] == 'unverified' for f in pm['fields'][:8])
-        assert [f['unit'] for f in pm['fields'][8:]]==['V','A','W','deg C']*3
-        assert [f['stored_value'] for f in pm['fields'][8:]]==[1.25,12.5,15.625,60.5,1.5,20,30,65.25,1,2,2,70]
-        for j,f in enumerate(pm['fields'][8:]):
-            assert f['firmware_channel']==j//4 and f['group']=='granite_svi'
+        assert len(pm['fields'])==22
+        assert all(f['unit'] == 'unverified' for f in pm['fields'][:7])
+        assert [f['unit'] for f in pm['fields'][7:]]==['V','V','A','W','deg C']*3
+        assert [f['stored_value'] for f in pm['fields'][7:]]==[1.125,1.25,12.5,15.625,60.5,.875,1.5,20,30,65.25,.625,1,2,2,70]
+        for j,f in enumerate(pm['fields'][7:]):
+            assert f['firmware_channel']==j//5
+            assert f['group']==('granite_command_mirror' if j%5==0 else 'granite_svi')
+            if j%5==0: assert f['software_command_mirror'] and not f['measurement']
             assert not any(f[k] for k in ('capture_firmware_verified','physical_rail_verified','freshness_verified','setting_readback_verified'))
         for f in pm['firmware_core_arrays']:
             if f['row']>=13:
@@ -841,13 +843,14 @@ for report in reports:
         first_core, ccd_rows = 0x4b4, 12
         start = first_core+18*8*n*4
         assert pm['firmware_arrays_layout'] == 'granite-ridge-18-core-12-ccd-rows'
-        assert len(pm['fields'])==20
-        assert all('candidate' in f['name'] and f['unit'] == 'unverified' for f in pm['fields'][:8])
+        assert len(pm['fields'])==22
+        assert all('candidate' in f['name'] and f['unit'] == 'unverified' for f in pm['fields'][:7])
         raw=bytes.fromhex(pm['raw_hex'])
-        for j,f in enumerate(pm['fields'][8:]):
-            channel,kind=divmod(j,4); off=4*(49+5*channel+kind)
-            assert f['group']=='granite_svi' and f['firmware_channel']==channel
-            assert f['unit']==('V','A','W','deg C')[kind] and int(f['offset'],16)==off
+        for j,f in enumerate(pm['fields'][7:]):
+            channel,kind=divmod(j,5); off=4*(48+5*channel+kind)
+            assert f['group']==('granite_command_mirror' if kind==0 else 'granite_svi') and f['firmware_channel']==channel
+            if kind==0: assert f['software_command_mirror'] and not f['measurement']
+            assert f['unit']==('V','V','A','W','deg C')[kind] and int(f['offset'],16)==off
             assert f['unit_evidence']=='granite-smu-98.84.0-static'
             assert not any(f[k] for k in ('capture_firmware_verified','physical_rail_verified','freshness_verified','setting_readback_verified'))
             assert not f['clock'] and f['scaled_clock_mhz'] is None
@@ -866,11 +869,16 @@ for report in reports:
             assert off not in seen and first_core<=off and off+4<=len(raw); seen.add(off)
             assert bits==struct.unpack_from('<I',raw,off)[0]
             assert f['row']==j//slots and f['slot']==j%slots and f['slot_count']==slots
-            units=({1:'V',2:'deg C',5:'%',6:'%',7:'%',13:'ratio',14:'ratio',15:'%',16:'%',17:'%'} if key=='firmware_core_arrays'
-                   else {3:'deg C',4:'deg C',11:'%'}) if pm['platform']=='granite-ridge' else {}
+            units=({1:'V',2:'deg C',5:'%',6:'%',7:'%',8:'code',11:'code',13:'ratio',14:'ratio',15:'%',16:'%',17:'%'} if key=='firmware_core_arrays'
+                   else {3:'deg C',4:'deg C',7:'code',11:'%'}) if pm['platform']=='granite-ridge' else {}
             known=f['row'] in units
             assert f['unit']==units.get(f['row'],'unverified')
             assert not f['clock'] and f['scaled_clock_mhz'] is None
+            if pm['platform']=='granite-ridge' and key=='firmware_core_arrays':
+                assert f['firmware_ccd_storage_slot']==f['slot']//8
+                assert f['firmware_local_core_slot']==f['slot']%8
+            if f['unit']=='code':
+                assert not f['code_meaning_verified'] and not f['freshness_verified']
             if known:
                 assert f['unit_evidence']=='granite-mp5-98.84.0-static' and not f['capture_firmware_verified']
             counter = pm['platform']=='granite-ridge' and ((key=='firmware_core_arrays' and f['row']>=13) or

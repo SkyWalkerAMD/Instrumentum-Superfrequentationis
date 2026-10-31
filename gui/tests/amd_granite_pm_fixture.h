@@ -8,7 +8,9 @@ inline std::vector<std::uint8_t> bytes(unsigned size = 2452) {
     pm_fixture::put(b,71*4,0x44fa0000); // independent binary32 fixture: 2000
     pm_fixture::put(b,75*4,0x44e10000); // 1800
     pm_fixture::put(b,79*4,0x45610000); // 3600
-    pm_fixture::put(b,58*4,0x3f600000); // .875
+    pm_fixture::put(b,48*4,0x3f900000); // 1.125 V command mirror
+    pm_fixture::put(b,53*4,0x3f600000); // .875 V command mirror
+    pm_fixture::put(b,58*4,0x3f200000); // .625 V command mirror
     const std::uint32_t telemetry[3][4] = {
         {0x3fa00000,0x41480000,0x417a0000,0x42720000}, // 1.25 V, 12.5 A, 15.625 W, 60.5 C
         {0x3fc00000,0x41a00000,0x41f00000,0x42828000}, // 1.5 V, 20 A, 30 W, 65.25 C
@@ -16,6 +18,12 @@ inline std::vector<std::uint8_t> bytes(unsigned size = 2452) {
     for (unsigned channel=0;channel<3;++channel) for(unsigned kind=0;kind<4;++kind)
         pm_fixture::put(b,4*(49+channel*5+kind),telemetry[channel][kind]);
     const unsigned storageSlots=size==1828?1:2;
+    for(unsigned core=0;core<8*storageSlots;++core) {
+        pm_fixture::put(b,0x4b4+4*(8*8*storageSlots+core),0x40600000); // averaged code 3.5
+        pm_fixture::put(b,0x4b4+4*(11*8*storageSlots+core),0x42ff0000); // averaged code 127.5
+    }
+    for(unsigned ccd=0;ccd<storageSlots;++ccd)
+        pm_fixture::put(b,0x4b4+4*(144*storageSlots+7*storageSlots+ccd),0x46ffff00); // averaged code 32767.5
     const std::uint32_t counters[]={0x3f200000,0x3e000000,0x41c80000,0x42960000,0x43160000}; // .625, .125, 25, 75, 150
     for(unsigned row=13;row<18;++row) for(unsigned core=0;core<8*storageSlots;++core)
         pm_fixture::put(b,0x4b4+4*(row*8*storageSlots+core),counters[row-13]);
