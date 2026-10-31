@@ -1,148 +1,148 @@
 {
   "schema": 2,
   "date": "2026-10-31",
-  "source_commit": "5d5d4f92b90663da43b98a66361f2782c32817c0",
+  "source_commit": "6016964727519c1cbc179c5c8358a6e29047dccd",
   "run": {
     "attempt": 1,
     "conclusion": "success",
-    "headSha": "5d5d4f92b90663da43b98a66361f2782c32817c0",
+    "headSha": "6016964727519c1cbc179c5c8358a6e29047dccd",
     "jobs": [
       {
-        "completedAt": "2026-10-31T06:02:20Z",
+        "completedAt": "2026-10-31T07:30:04Z",
         "conclusion": "success",
-        "databaseId": 124460063709,
+        "databaseId": 124477228567,
         "name": "firmware",
-        "startedAt": "2026-10-31T06:00:35Z",
+        "startedAt": "2026-10-31T07:27:22Z",
         "status": "completed",
         "steps": [
           {
-            "completedAt": "2026-10-31T06:00:38Z",
+            "completedAt": "2026-10-31T07:27:24Z",
             "conclusion": "success",
             "name": "Set up job",
             "number": 1,
-            "startedAt": "2026-10-31T06:00:36Z",
+            "startedAt": "2026-10-31T07:27:23Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-31T06:00:40Z",
+            "completedAt": "2026-10-31T07:27:25Z",
             "conclusion": "success",
             "name": "Run actions/checkout@v4",
             "number": 2,
-            "startedAt": "2026-10-31T06:00:38Z",
+            "startedAt": "2026-10-31T07:27:24Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-31T06:00:43Z",
+            "completedAt": "2026-10-31T07:27:29Z",
             "conclusion": "success",
             "name": "Run actions/setup-node@v4",
             "number": 3,
-            "startedAt": "2026-10-31T06:00:40Z",
+            "startedAt": "2026-10-31T07:27:25Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-31T06:00:43Z",
+            "completedAt": "2026-10-31T07:27:30Z",
             "conclusion": "success",
             "name": "Run actions/setup-java@v4",
             "number": 4,
-            "startedAt": "2026-10-31T06:00:43Z",
+            "startedAt": "2026-10-31T07:27:29Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-31T06:00:57Z",
+            "completedAt": "2026-10-31T07:27:51Z",
             "conclusion": "success",
             "name": "Install pinned analysis tools",
             "number": 5,
-            "startedAt": "2026-10-31T06:00:43Z",
+            "startedAt": "2026-10-31T07:27:30Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-31T06:01:00Z",
+            "completedAt": "2026-10-31T07:27:57Z",
             "conclusion": "success",
             "name": "Extend and compile the isolated static Xtensa decoder",
             "number": 6,
-            "startedAt": "2026-10-31T06:00:57Z",
+            "startedAt": "2026-10-31T07:27:51Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-31T06:01:05Z",
+            "completedAt": "2026-10-31T07:28:04Z",
             "conclusion": "success",
             "name": "Extract pinned Granite Ridge reference inputs",
             "number": 7,
-            "startedAt": "2026-10-31T06:01:00Z",
+            "startedAt": "2026-10-31T07:27:57Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-31T06:01:37Z",
+            "completedAt": "2026-10-31T07:28:56Z",
             "conclusion": "success",
             "name": "Static SMU and MP5 discovery without Shimada address assumptions",
             "number": 8,
-            "startedAt": "2026-10-31T06:01:05Z",
+            "startedAt": "2026-10-31T07:28:04Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-31T06:01:51Z",
+            "completedAt": "2026-10-31T07:29:27Z",
             "conclusion": "success",
             "name": "Replay byte-checked Granite Ridge layout and metadata instructions",
             "number": 9,
-            "startedAt": "2026-10-31T06:01:37Z",
+            "startedAt": "2026-10-31T07:28:56Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-31T06:02:14Z",
+            "completedAt": "2026-10-31T07:30:00Z",
             "conclusion": "success",
             "name": "REA static UEFI entry points and RSMU transport helpers",
             "number": 10,
-            "startedAt": "2026-10-31T06:01:51Z",
+            "startedAt": "2026-10-31T07:29:27Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-31T06:02:17Z",
+            "completedAt": "2026-10-31T07:30:03Z",
             "conclusion": "success",
             "name": "Run actions/upload-artifact@v4",
             "number": 11,
-            "startedAt": "2026-10-31T06:02:14Z",
+            "startedAt": "2026-10-31T07:30:00Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-31T06:02:17Z",
+            "completedAt": "2026-10-31T07:30:03Z",
             "conclusion": "success",
             "name": "Post Run actions/setup-java@v4",
             "number": 20,
-            "startedAt": "2026-10-31T06:02:17Z",
+            "startedAt": "2026-10-31T07:30:03Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-31T06:02:17Z",
+            "completedAt": "2026-10-31T07:30:03Z",
             "conclusion": "success",
             "name": "Post Run actions/setup-node@v4",
             "number": 21,
-            "startedAt": "2026-10-31T06:02:17Z",
+            "startedAt": "2026-10-31T07:30:03Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-31T06:02:17Z",
+            "completedAt": "2026-10-31T07:30:03Z",
             "conclusion": "success",
             "name": "Post Run actions/checkout@v4",
             "number": 22,
-            "startedAt": "2026-10-31T06:02:17Z",
+            "startedAt": "2026-10-31T07:30:03Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-10-31T06:02:17Z",
+            "completedAt": "2026-10-31T07:30:03Z",
             "conclusion": "success",
             "name": "Complete job",
             "number": 23,
-            "startedAt": "2026-10-31T06:02:17Z",
+            "startedAt": "2026-10-31T07:30:03Z",
             "status": "completed"
           }
         ],
-        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41174811065/job/124460063709"
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41180662273/job/124477228567"
       }
     ],
     "status": "completed",
-    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41174811065"
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41180662273"
   },
-  "artifact_id": 13031724088,
+  "artifact_id": 13034483928,
   "hardware_execution": false,
   "physical_hardware_acceptance": "not_run",
   "installed_bios_known": false,
@@ -186,7 +186,7 @@
           "provider_id": "ghidra"
         },
         "file": "open.json",
-        "seconds": 0.12,
+        "seconds": 0.22,
         "error": false
       },
       {
@@ -195,7 +195,7 @@
           "procedure": "file-offset:0x4e4"
         },
         "file": "pseudo-0x4e4.json",
-        "seconds": 9.43,
+        "seconds": 14.27,
         "error": false
       },
       {
@@ -213,7 +213,7 @@
           "procedure": "file-offset:0xbb4"
         },
         "file": "pseudo-0xbb4.json",
-        "seconds": 0.03,
+        "seconds": 0.04,
         "error": false
       },
       {
@@ -247,7 +247,7 @@
         "tool": "close_binary",
         "arguments": {},
         "file": "close.json",
-        "seconds": 0.07,
+        "seconds": 0.12,
         "error": false
       }
     ],
@@ -270,7 +270,7 @@
           "provider_id": "ghidra"
         },
         "file": "open.json",
-        "seconds": 0.12,
+        "seconds": 0.23,
         "error": false
       },
       {
@@ -279,7 +279,7 @@
           "procedure": "file-offset:0x4e4"
         },
         "file": "pseudo-0x4e4.json",
-        "seconds": 9.52,
+        "seconds": 14.1,
         "error": false
       },
       {
@@ -297,7 +297,7 @@
           "procedure": "file-offset:0xbf4"
         },
         "file": "pseudo-0xbf4.json",
-        "seconds": 0.03,
+        "seconds": 0.04,
         "error": false
       },
       {
@@ -324,14 +324,14 @@
           "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/firmware-evidence/rea-transport2/evidence.json"
         },
         "file": "export.json",
-        "seconds": 0.0,
+        "seconds": 0.01,
         "error": false
       },
       {
         "tool": "close_binary",
         "arguments": {},
         "file": "close.json",
-        "seconds": 0.06,
+        "seconds": 0.11,
         "error": false
       }
     ],
@@ -2243,256 +2243,582 @@
     "pm_os_cpu_mapping_verified": false,
     "trace_sha256": "8ed8ab8a8e06da7fb8ff3fe8d86f653017e3977374369801bb5ac0925d8aa340"
   },
+  "performance_policy_proof": {
+    "schema": 1,
+    "hardware_execution": false,
+    "smu_sha256": "5d7951d30fefea6c5f435ac219fe4879adb0d8f66727211e32af1ff89d6b7596",
+    "mp5_sha256": "fb5d96c17b909cc4f681523ccc931796e27c7457ba5ad637a3d4fce1c78ce556",
+    "scale": {
+      "cases": 13,
+      "shared_smu_float": "0xaee4",
+      "mp5_scale_float": "0x119a0",
+      "rsmu_commands": {
+        "0x70": "policy-clipped Fmax setter",
+        "0x6e": "stored Fmax getter",
+        "0xe7": "direct scale handler"
+      },
+      "mp5_commands": {
+        "0x32": "initial record",
+        "0x90": "replacement record",
+        "0x72": "direct float argument"
+      },
+      "smu_to_mp5_transport_executed": false,
+      "mailbox_and_fuse_helpers_stubbed": true,
+      "prior_fmax_policy_clipping_replayed": false,
+      "unit": "GHz",
+      "unit_basis": "MHz Fmax command convention; binary32 x0.001 on input and x1000 on stored getter",
+      "measurement": false,
+      "runtime_write_enabled": false,
+      "trace_sha256": "8b6fbea315082cc1be58f20d556e1b3797650d365b4832729a50ebf2376a0090"
+    },
+    "requests": {
+      "cases": 32768,
+      "both_zero_retains_old_cases": 8192,
+      "equal_policy_value_cases": 16392,
+      "lower_exceeds_upper_cases": 1960,
+      "local_core_slots": 8,
+      "input_codes_checked": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        156,
+        157,
+        158,
+        159,
+        160,
+        161,
+        162,
+        163,
+        164,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+        193,
+        194,
+        195,
+        196,
+        197,
+        198,
+        199,
+        200,
+        201,
+        202,
+        203,
+        204,
+        205,
+        206,
+        207,
+        208,
+        209,
+        210,
+        211,
+        212,
+        213,
+        214,
+        215,
+        216,
+        217,
+        218,
+        219,
+        220,
+        221,
+        222,
+        223,
+        224,
+        225,
+        226,
+        227,
+        228,
+        229,
+        230,
+        231,
+        232,
+        233,
+        234,
+        235,
+        236,
+        237,
+        238,
+        239,
+        240,
+        241,
+        242,
+        243,
+        244,
+        245,
+        246,
+        247,
+        248,
+        249,
+        250,
+        251,
+        252,
+        253,
+        254,
+        255
+      ],
+      "source_registers": "0x1603038/0x160303c + 0x20000 * local core slot",
+      "source_identity": "performance request candidate; MMIO-to-MSR alias not established",
+      "smt_merge": "max of first three bytes; min of fourth byte",
+      "zero_word": "use that thread cached word; both current words zero skip the update",
+      "scaling": "binary32(selected code * binary32(1/166)) * Fmax scale",
+      "desired_nonzero": "both outputs use clipped selected code, unless clipping produces zero",
+      "runtime_clamp_added": false,
+      "freshness_verified": false,
+      "physical_core_mapping_verified": false,
+      "trace_sha256": "cc30f60bfb8f2fa747731f5c9f78a528c9006317ee7b0b13e7cf7d72b19a57c6"
+    },
+    "pm": {
+      "cases": 3,
+      "samples": 4,
+      "policy_words": 48,
+      "core_rows": [
+        9,
+        10
+      ],
+      "additional_scaling": false,
+      "averaging": true,
+      "physical_ccd_or_os_mapping_verified": false,
+      "trace_sha256": "3620f484dc4774fc99bafc18a8e2966fdcb18ecb5440f164fe1bc8ef284789bd"
+    },
+    "runtime_write_enabled": false,
+    "measured_frequency": false,
+    "physical_pm_binding_verified": false
+  },
   "evidence_files": [
     {
-      "path": "build/granite-study-41174811065/artifact.json",
+      "path": "build/granite-study-41180662273/artifact.json",
       "bytes": 863,
-      "sha256": "14f6e8f2037b19570f02aaa17876de639efea469329b3a3e2176865b047db15e"
+      "sha256": "a0408a775ee0c1b8742e82e6b834734a8965bebe8790f7523666ef5d525b3256"
     },
     {
-      "path": "build/granite-study-41174811065/artifact.zip",
-      "bytes": 2307092,
-      "sha256": "109e79e5347deae98bbf6549c9f4aef51fbee17764f0f2b12cf0c192f7114222"
+      "path": "build/granite-study-41180662273/artifact.zip",
+      "bytes": 2309002,
+      "sha256": "348b9587b0932c7f1e9976cf1e13f9c2695d70dc72c8b862d7f07413644e0ea0"
     },
     {
-      "path": "build/granite-study-41174811065/granite-channels.json",
+      "path": "build/granite-study-41180662273/granite-channels.json",
       "bytes": 2363,
       "sha256": "1ab3cd3eff9fffada57ac1708c85e9b503a41d67d10561b30b3034a92f489997"
     },
     {
-      "path": "build/granite-study-41174811065/granite-codes.json",
+      "path": "build/granite-study-41180662273/granite-codes.json",
       "bytes": 950,
       "sha256": "ebd749e1635d91493b73eccf580e755b59718c3b9ff17d876e21d537fa5dcfab"
     },
     {
-      "path": "build/granite-study-41174811065/granite-counters.json",
+      "path": "build/granite-study-41180662273/granite-counters.json",
       "bytes": 2681,
       "sha256": "15270b81a04bb032404de4e16fef79a0dc48048b3c25f570fcd4d522ad974e24"
     },
     {
-      "path": "build/granite-study-41174811065/granite-input-manifest.json",
+      "path": "build/granite-study-41180662273/granite-input-manifest.json",
       "bytes": 1527,
       "sha256": "4ba9860e2368d014d6934e86b28e68258f605cbc981a2177526e55e961b0b501"
     },
     {
-      "path": "build/granite-study-41174811065/granite-proof.json",
+      "path": "build/granite-study-41180662273/granite-performance.json",
+      "bytes": 5044,
+      "sha256": "7c85779ab9e2bd81ba902d303c92e1de161196226d33cbb12e46cc09582bd942"
+    },
+    {
+      "path": "build/granite-study-41180662273/granite-proof.json",
       "bytes": 3373,
       "sha256": "b595fd2b1dba1e53733b429d702fc4f87f3ea6ce2fb17afb839932f0b7b836f6"
     },
     {
-      "path": "build/granite-study-41174811065/granite-rails-proof.json",
+      "path": "build/granite-study-41180662273/granite-rails-proof.json",
       "bytes": 2939,
       "sha256": "a06a2f4c580a5730bc6b3cb0a66137cf6fb6ac5cfdb601060c3eba78a07fcb84"
     },
     {
-      "path": "build/granite-study-41174811065/granite-registers.json",
+      "path": "build/granite-study-41180662273/granite-registers.json",
       "bytes": 1748,
       "sha256": "9188731a950ac20c601226ce6c2401bae3954a4631ebe6547e996ecb39f86c36"
     },
     {
-      "path": "build/granite-study-41174811065/granite-semantics.json",
+      "path": "build/granite-study-41180662273/granite-semantics.json",
       "bytes": 3038,
       "sha256": "e713f6d307f1b47caaafbc0673390b820107a79ba6b39d904dccc135c7730b0b"
     },
     {
-      "path": "build/granite-study-41174811065/granite-telemetry.json",
+      "path": "build/granite-study-41180662273/granite-telemetry.json",
       "bytes": 3823,
       "sha256": "5a4e3d34a8410ac946a140eb7735af32144e6cdb9a405ee779e25d81f5f1767c"
     },
     {
-      "path": "build/granite-study-41174811065/granite-topology.json",
+      "path": "build/granite-study-41180662273/granite-topology.json",
       "bytes": 16844,
       "sha256": "98bc24873455a99905321dbf286732c08f11c8e1566763c3fbcedccf3c9da841"
     },
     {
-      "path": "build/granite-study-41174811065/mp5/smu-study.json",
+      "path": "build/granite-study-41180662273/mp5/smu-study.json",
       "bytes": 3657773,
       "sha256": "cf50ca47bcc57219e5576e512398241c26d9a65a8c645233967ab2bc611e47b6"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport/close.json",
+      "path": "build/granite-study-41180662273/rea-transport/close.json",
       "bytes": 251,
       "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport/evidence.json",
+      "path": "build/granite-study-41180662273/rea-transport/evidence.json",
       "bytes": 27914,
       "sha256": "ed8807980e5b102ede8bf534e01b6c1e03b67672220361966a4e95356ec7852e"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport/export.json",
+      "path": "build/granite-study-41180662273/rea-transport/export.json",
       "bytes": 553,
       "sha256": "18f876a121ef434309031d0b9a8dadd6b386fb737138cfa30d071ba0f56904a8"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport/info-0x4e4.json",
+      "path": "build/granite-study-41180662273/rea-transport/info-0x4e4.json",
       "bytes": 9933,
       "sha256": "2eed5c66efd56193f1f4ee28d65d29b75eaec6bb81bf1db8ff4aaca581aa32dc"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport/info-0xbb4.json",
+      "path": "build/granite-study-41180662273/rea-transport/info-0xbb4.json",
       "bytes": 15469,
       "sha256": "e5e80bc0a55ce4395d829262be54f6f353a55af0725b5c8109a283bc93d24e6e"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport/initialize.json",
+      "path": "build/granite-study-41180662273/rea-transport/initialize.json",
       "bytes": 1222,
       "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport/open.json",
+      "path": "build/granite-study-41180662273/rea-transport/open.json",
       "bytes": 864,
       "sha256": "0494bed192f61d9bf4ad60af81a4ebb13ce28d3b5a9574b56e68259bd6ebca46"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport/pm-callers.json",
+      "path": "build/granite-study-41180662273/rea-transport/pm-callers.json",
       "bytes": 8409,
       "sha256": "25b8298d8fbfe609d764f141a391095e4e358915a64094a5a3e9259fab41f397"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport/pseudo-0x4e4.json",
+      "path": "build/granite-study-41180662273/rea-transport/pseudo-0x4e4.json",
       "bytes": 9433,
       "sha256": "719f871d8773c37ff96ba1438d87d72823792863a80c9dd937c06a05535fd5a7"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport/pseudo-0xbb4.json",
+      "path": "build/granite-study-41180662273/rea-transport/pseudo-0xbb4.json",
       "bytes": 21053,
       "sha256": "8a8d39b0df43120395e0e60f49f4b25d078519804e0516dbd9c8a0e41f4ef88b"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport/rea-stderr.log",
-      "bytes": 1258,
-      "sha256": "3c9c90c00ac3e130e139a80d84660b080ff10f3e4e4c3f0dc01ad006fb6a1cd6"
+      "path": "build/granite-study-41180662273/rea-transport/rea-stderr.log",
+      "bytes": 1259,
+      "sha256": "dab0b0c5ab0e694ef9b6f72054010c0f07065fd209df3a05cba9a672d6332fc1"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport/resolved-functions.json",
+      "path": "build/granite-study-41180662273/rea-transport/resolved-functions.json",
       "bytes": 3400,
       "sha256": "0234a84227976f5059b12aff824dc59cb418f6a9d181f8cadc815818b5aa1269"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport/selected-tool-schemas.json",
+      "path": "build/granite-study-41180662273/rea-transport/selected-tool-schemas.json",
       "bytes": 80370,
       "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport/study.json",
-      "bytes": 2047,
-      "sha256": "96734e1d1b59502334115afccea140d4a8045b5f095f9da1eed09b40c5e1b672"
+      "path": "build/granite-study-41180662273/rea-transport/study.json",
+      "bytes": 2048,
+      "sha256": "7f40c5c48c18870e32a73fba1b676000efd273ac333e056031b231361145ed38"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport2/close.json",
+      "path": "build/granite-study-41180662273/rea-transport2/close.json",
       "bytes": 251,
       "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport2/evidence.json",
+      "path": "build/granite-study-41180662273/rea-transport2/evidence.json",
       "bytes": 27924,
       "sha256": "4d5b619976f415c5ebe06572256ae8ec41acf045399ee10023dd92f13a6c4715"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport2/export.json",
+      "path": "build/granite-study-41180662273/rea-transport2/export.json",
       "bytes": 555,
       "sha256": "eb4e1a89063ea32680688db9bf6695ec67604764c4c6b1cf798d92a2af814658"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport2/info-0x4e4.json",
+      "path": "build/granite-study-41180662273/rea-transport2/info-0x4e4.json",
       "bytes": 9937,
       "sha256": "d4bc4d6114aca5d3c773f258048e82f46e2971c4a5244ab1321a05661cae57df"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport2/info-0xbf4.json",
+      "path": "build/granite-study-41180662273/rea-transport2/info-0xbf4.json",
       "bytes": 15473,
       "sha256": "92bf5887daf705a8c50e5f3a340d52637d81246013a3c30d56ba0b51fd4369d3"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport2/initialize.json",
+      "path": "build/granite-study-41180662273/rea-transport2/initialize.json",
       "bytes": 1222,
       "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport2/open.json",
+      "path": "build/granite-study-41180662273/rea-transport2/open.json",
       "bytes": 866,
       "sha256": "055babf43601ca39797d4d7a9038f10ea681b59056d951d756a843157c3c32d2"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport2/pm-callers.json",
+      "path": "build/granite-study-41180662273/rea-transport2/pm-callers.json",
       "bytes": 8413,
       "sha256": "6baf10327045d2492f6468602072a55c90204b211131e494fd8a805ddc885fb9"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport2/pseudo-0x4e4.json",
+      "path": "build/granite-study-41180662273/rea-transport2/pseudo-0x4e4.json",
       "bytes": 9437,
       "sha256": "90612c8e85fe61dadcaa649c25be2533072290422aa21901506dd34dd6cd5f92"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport2/pseudo-0xbf4.json",
+      "path": "build/granite-study-41180662273/rea-transport2/pseudo-0xbf4.json",
       "bytes": 21057,
       "sha256": "075d1f49756f6797f70ad867b3b693eae2b7a0de84eb2623ef191bd8a99cc465"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport2/rea-stderr.log",
-      "bytes": 1258,
-      "sha256": "3a8b2f1f0aa13548212a4208dd14a2064380c9d1575ab4b54f93672a7999244d"
+      "path": "build/granite-study-41180662273/rea-transport2/rea-stderr.log",
+      "bytes": 1260,
+      "sha256": "e0627fb4400ff82596180f36ebc6650238fc18b764f5deffdc6e65e32f9002d9"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport2/resolved-functions.json",
+      "path": "build/granite-study-41180662273/rea-transport2/resolved-functions.json",
       "bytes": 3400,
       "sha256": "89e52ef8a2a8707e7cf9b225ffa09057ef5aae2f4f229ab02fb0614c4e8ee9a6"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport2/selected-tool-schemas.json",
+      "path": "build/granite-study-41180662273/rea-transport2/selected-tool-schemas.json",
       "bytes": 80370,
       "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
     },
     {
-      "path": "build/granite-study-41174811065/rea-transport2/study.json",
-      "bytes": 2049,
-      "sha256": "1f3b10c6fcc4958bf75b05964967eb6027bdfe2db0edc77ac70f70c06b346ba8"
+      "path": "build/granite-study-41180662273/rea-transport2/study.json",
+      "bytes": 2050,
+      "sha256": "8182a3feeb97aa317280fb63eac2226e4e75adc8258e1a2ae99a7d5cac215718"
     },
     {
-      "path": "build/granite-study-41174811065/run.json",
+      "path": "build/granite-study-41180662273/run.json",
       "bytes": 4722,
-      "sha256": "4705965047e692a282319587c7753901e7dc778e59d6f6f397e4a2fcee3df42e"
+      "sha256": "5cec5b127b7000a3b4aaaa6dd0efd605db5b3587bddf711b525239ef977ecea3"
     },
     {
-      "path": "build/granite-study-41174811065/run.log",
-      "bytes": 109531,
-      "sha256": "8f14aed13e98e60b9d2626cdaed022285c1d35c136e49f2a61d394952977cb86"
+      "path": "build/granite-study-41180662273/run.log",
+      "bytes": 113379,
+      "sha256": "90460104cebfb94d47e77107b6d4fad24898c125992a7c18a52e2958ec73dda0"
     },
     {
-      "path": "build/granite-study-41174811065/smu/smu-study.json",
+      "path": "build/granite-study-41180662273/smu/smu-study.json",
       "bytes": 8701085,
       "sha256": "b9e0f8988b389633b4591f2bf30192a367df9b90c9121e9dcc45b8f719b5a7f1"
     },
     {
-      "path": "build/granite-study-41174811065/xtensa-fp-extension.json",
+      "path": "build/granite-study-41180662273/xtensa-fp-extension.json",
       "bytes": 1793,
       "sha256": "ddecf3c59b86b5dd337d38fa73bd82cd9ba9090b66d188d4448b8028d77e4bad"
     },
     {
-      "path": "build/granite-study-41174811065/xtensa-fp-selftest-mp5.json",
+      "path": "build/granite-study-41180662273/xtensa-fp-selftest-mp5.json",
       "bytes": 104,
       "sha256": "d62d6ee6649c6634cc5ebba4bb05b6ffc96b20b479e45ed510b135eac32fff8f"
     },
     {
-      "path": "build/granite-study-41174811065/xtensa-fp-selftest-smu.json",
+      "path": "build/granite-study-41180662273/xtensa-fp-selftest-smu.json",
       "bytes": 104,
       "sha256": "d62d6ee6649c6634cc5ebba4bb05b6ffc96b20b479e45ed510b135eac32fff8f"
     }
   ],
   "source_files": {
-    ".github/workflows/rea-granite-study.yml": "20fd1bfee56248ef9020ee04693cd3fad6ec56bcecd11daf64dbb439d6de9eeb",
+    ".github/workflows/rea-granite-study.yml": "a904ed06d4d02f70a5e594d796d0e153dcf9c05c3903021184f08d7c14d8780d",
     "analysis/tools/rea-native-study.py": "0c6a791d68f5c527fe3d61be5a7b8a1a52b584df938b296c92c2e0c9b4748d72",
     "analysis/tools/firmware-granite-input.py": "a7e2448802d69415889cc2fae43dd1f910120e6d20a978e1ac9b8b63d36e1beb",
     "analysis/tools/firmware-granite-proof.py": "808db166fab45eff0f00549da638cf2d1b99a004205941df5e1c877e92eeac11",
     "analysis/tools/firmware-granite-rails.py": "b5df94724f0baaf56e513fa218060c6239b0b169e3579a4e6055b2ef4e7714bc",
-    "analysis/tools/firmware-granite-semantics.py": "3937a1851e9600d3892d7e1bd8ee40149b794cd6958dfb28ecdcdb140165d4c5",
+    "analysis/tools/firmware-granite-semantics.py": "34aebf6d14acb6b7046215b6fa8381117c71cc1d7ae05d992194a55c3b55170a",
     "analysis/tools/firmware-granite-topology.py": "339c9b7a45185941ff6a1883e007e8e328d58ef8190bc3c102ef51f18bc96c18",
     "analysis/tools/firmware-granite-telemetry.py": "3abd332b21d492947edd34e9cb43acead17ef398bdcf348a5a15c8f4e35cb88c",
     "analysis/tools/firmware-granite-registers.py": "1510b523ff1f190b5a2441cf2f0bc12bfc76c43d32a3c4c0354ef16434b0766d",
     "analysis/tools/firmware-granite-counters.py": "f8aa34c6573f53aae357797b39dcbf2d8a11bc693c1f8b074bcd763bce1c5596",
     "analysis/tools/firmware-granite-channels.py": "149e302df605d3f85c2b0a415d70e43c07ed84bad7900d71ddc7d8039fe5c988",
     "analysis/tools/firmware-granite-codes.py": "95f00aa98ea10e0909542335e2af2bc9cfa32437243a6fd4499d46fa113481c9",
+    "analysis/tools/firmware-granite-performance.py": "b596b1561db6ad7d75105c27e49da90ab3188dff6ad299d9c3db7e227949541f",
     "analysis/tools/ghidra/GraniteSeed.java": "c21912f7ad4fa2d82693dcb89de2f1295dce6318fca4dfcb61d7b886212b751e",
     "analysis/tools/ghidra/GraniteStudy.java": "1a96cf1e05121153d0c3f380786b2fb77a0a83bca2c95de84823683140912dc5",
     "analysis/tools/ghidra/SmuFpPatch.py": "a484de6016665c92d975ceec727c5e7588db5ff0e6d3ca18e439cdea1f92d246",
@@ -2500,7 +2826,7 @@
   },
   "limitations": [
     "Static discovery is not a proof that every function has been recovered; only byte-checked slices are used.",
-    "Twelve SVI telemetry fields, three software command mirrors, ten core and three CCD rows have static unit evidence. Two additional core rows and one CCD row have an averaged integer-code representation, with unresolved meanings. SVI values can be stale or zero in scale mode 0; neither channel identity nor applied settings are authenticated. Voltage model is not measured rail voltage; conditional sensors may retain old values; counter fractions/percentages have unverified event identities and freshness; CCD row 11 has a late firmware multiply by 100. Other units and physical identities remain unresolved.",
+    "Twelve SVI telemetry fields, three software command mirrors, twelve core and three CCD rows have static unit evidence. Two additional core rows and one CCD row have an averaged integer-code representation, with unresolved meanings. SVI values can be stale or zero in scale mode 0; neither channel identity nor applied settings are authenticated. Voltage model is not measured rail voltage; conditional sensors may retain old values; counter fractions/percentages have unverified event identities and freshness; CCD row 11 has a late firmware multiply by 100. Core rows 9/10 are averaged GHz request policy values, not measured clocks or independent setting readback. Other units and physical identities remain unresolved.",
     "Firmware two-slot IDs [0,1] do not establish CPUID CCD/APIC or physical core/OS CPU association. One-slot native mapping remains ambiguous.",
     "61h remains a shared-floor path. Separate override/release commands 11h/12h and 13h/14h select firmware channels 1/2, but do not establish physical rail identity, electrical range, device-side effects or independent setting readback. Software command mirrors are not measurements.",
     "Reciprocal accuracy, floating exception behavior, peripheral effects and live error semantics were not emulated. Packet encodings and polling are checked only against scripted responses.",

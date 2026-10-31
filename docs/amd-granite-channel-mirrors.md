@@ -93,14 +93,14 @@ ambiguous. Neither the integer codes nor this decomposition bind a PM slot to
 a physical CCD, APIC ID or OS CPU. The global target-verification flag stays
 false, and imports cannot establish live topology trust.
 
-The current represented rows are ten core and three CCD rows with traced
+The current represented rows are twelve core and three CCD rows with traced
 physical/dimensionless units, plus two core and one CCD code rows. These
-counts must not be reported as sixteen fully identified physical metrics.
+code representations do not establish fully identified physical metrics.
 The common view has seven unresolved candidates, three command mirrors and
 twelve telemetry fields. See [the current validation report](amd-granite-validation.md)
 for tested builds, reproducible outputs and remaining hardware limitations.
 
-## Unresolved scaling boundary for core rows 9/10
+## Follow-up on the scale for core rows 9/10
 
 Additional disassembly inspection, separate from the executable proofs above,
 locates their sources at `0x11278 + 0x3c * local_slot + 0x1f4/0x204`.
@@ -111,7 +111,8 @@ Its floating paths scale selected codes by approximately 1/166 and the float
 at `0x119a0`. Initializer `0x2ad20` copies that float from offset 8 of an incoming
 record; handler `0x2b33c` obtains a 24-byte record before initialization.
 
-The record's source unit has not been traced end to end. This is not sufficient
-evidence for GHz or MHz, nor for a binding to an OS core. Core rows 9/10 remain
-unverified. A future unit proof must establish the source scale as well as the
-consumer arithmetic; fitting plausible frequency values is insufficient.
+The [request-policy follow-up](amd-granite-performance-policy.md) now traces
+the record back to the Fmax MHz-to-GHz conversion, checks its SMU and MP5
+handlers, and replays the request arithmetic and PM averaging. Rows 9/10 are
+therefore displayed as GHz policy values. This does not establish measured
+frequency, independent setting readback, freshness or an OS core binding.

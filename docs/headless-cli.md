@@ -1,5 +1,10 @@
 # 无桌面版 OCTool
 
+2026-10-31：[GHz 请求策略与全部可用 CPU 拓扑目录](amd-granite-performance-policy.md)已同步接入 GUI/CLI。
+`amd-topology --all-cpus --l3` 保留 OS CPU 原编号，列出 APIC、CCD/Core/Thread 与 L3，并复读检查；
+它只覆盖当前进程允许访问的 CPU，尚不能绑定 PM 槽位。9950X3D 的 PM 第 9/10 行核心值现在显示 GHz 请求策略，不能当作实测频率或设置回读。
+当前测试、交付与剩余范围见[本轮验证](amd-granite-validation.md)，下方保留历史记录。
+
 2026-10-30：[Granite Ridge / 9950X3D PM 读取](amd-granite-pm.md)已接入温度、三组驻留百分数及两槽表的可选固件 CCD 映射。CLI 使用 `amd-pm-native-read --cpu N --platform granite-ridge --map-ccd`，GUI 提供相同选项；限定 SMU 98.84.0 / 0x620205。单槽表可读取但不能推断固件目标。`amd-topology --cpu N --l3` 独立读取 CPUID CCD/核心与 L3 容量；尚未建立 PM 槽位到 OS 核心的对应关系。详见[证据范围](amd-granite-semantics.md)。
 
 <!-- amd-pm-ccd-mapping-current -->

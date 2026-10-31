@@ -1,8 +1,8 @@
 # 安装包与源码归档
 
-<!-- amd-granite-5d5d4f9 -->
-2026-10-31：[9950X3D 本轮验证](amd-granite-validation.md)通过 44/44 云端任务。GUI/CLI 新增三个电压命令镜像、两行逐核和一行 CCD 平均代码值，并显示 CCD/核心存储槽位；REA 核对通道 1/2 独立覆盖入口及状态流转。软件镜像不是硬件回读，代码含义、物理 CCD/OS 核心绑定及第二 rails 独立写入回读仍未完成。[本轮证据](amd-granite-channel-mirrors.md)；源码与 33 个安装包：`dist/gui-cli-amd-granite-5d5d4f9/`。以下为历史阶段记录，以本段和当前验证报告为准。
-<!-- /amd-granite-5d5d4f9 -->
+<!-- amd-granite-dd5f432 -->
+2026-10-31：[9950X3D 本轮验证](amd-granite-validation.md)通过 44/44 云端任务。GUI/CLI 新增两行逐核 GHz 请求策略值，以及全部可用 CPU 的 CPUID/L3 拓扑目录；REA 配合指令回放核对 Fmax 缩放与 32768 组请求策略组合。请求策略值不是实测频率；剩余单位、PM 到物理 CCD/OS 核心绑定及第二 rails 独立写入回读仍未完成。[本轮证据](amd-granite-performance-policy.md)；源码与 33 个安装包：`dist/gui-cli-amd-granite-dd5f432/`。以下为历史阶段记录，以本段和当前验证报告为准。
+<!-- /amd-granite-dd5f432 -->
 
 <!-- amd-pm-ccd-168a618 -->
 2026-10-26：[PM 固件 CCD 映射验证](amd-pm-ccd-validation.md)已通过 44/44 云端任务；GUI/CLI 同步提供 `--map-ccd`。适用 Shimada SMU 115.46.0，9950X3D 的 Granite Ridge 路径、字段单位和第二 rails 回读仍待恢复。源码与包：`dist/gui-cli-amd-pm-ccd-168a618/`。
