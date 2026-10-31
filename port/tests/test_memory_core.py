@@ -26,4 +26,4 @@ class MemoryCore(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             result = subprocess.run([str(binary)], capture_output=True, text=True, timeout=120)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertEqual(result.stdout.strip(), '12 memory and topology scenario groups passed')
+            self.assertEqual(result.stdout.strip(), '14 memory and topology scenario groups passed')
