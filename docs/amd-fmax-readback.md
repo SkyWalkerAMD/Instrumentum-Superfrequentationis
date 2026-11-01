@@ -1,5 +1,7 @@
 # Shimada Fmax 固件设置回读
 
+后续新增 [Granite Ridge SMU 98.84.0 Fmax](amd-granite-fmax.md)，使用 `--platform granite-ridge`；本页描述 Shimada 路径。
+
 GUI 和 CLI 共用同一实现，新增 `6Eh` 读取及 `70h` 写后校验。
 限定 AMD family 1Ah / model 08h、PCI 1022:153a、0000:00:00.0，
 且 RSMU `02h` 必须报告 SMU **115.46.0 / 00732E00h**。

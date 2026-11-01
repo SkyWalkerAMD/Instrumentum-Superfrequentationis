@@ -1,0 +1,198 @@
+{
+  "schema": 1,
+  "date": "2026-11-01",
+  "source_commit": "7eb3a574de8bca9fe98a54214f3d02df712c4dd6",
+  "baseline_commit": "5d12a19212292d7fae3a17fbcbde408d6c31ea16",
+  "workflow": ".github/workflows/gui-fixture-review.yml",
+  "workflow_sha256": "d050893e12b6fafb1832a985c57d0531d3fad34aad87d40f38a3aff62f00de2d",
+  "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41273776159",
+  "run_id": 41273776159,
+  "conclusion": "success",
+  "jobs": [
+    {
+      "id": 124751690534,
+      "name": "screenshots (el7, oraclelinux:7, el7-baseline)",
+      "conclusion": "success",
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41273776159/job/124751690534"
+    },
+    {
+      "id": 124751690711,
+      "name": "screenshots (ubuntu24.04, ubuntu:24.04, el8-baseline)",
+      "conclusion": "success",
+      "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41273776159/job/124751690711"
+    }
+  ],
+  "targets": [
+    {
+      "target": "el7",
+      "gui_tests": 241,
+      "artifact_id": 13070840455,
+      "provenance": {
+        "source_commit": "7eb3a574de8bca9fe98a54214f3d02df712c4dd6",
+        "baseline_commit": "5d12a19212292d7fae3a17fbcbde408d6c31ea16",
+        "baseline_run": 41272412665,
+        "changed_paths": [
+          ".github/workflows/gui-fixture-review.yml",
+          "cli/test_process.py"
+        ],
+        "runtime_and_build_inputs_identical": true,
+        "fixture_inputs_identical": true,
+        "workflow_sha256": "d050893e12b6fafb1832a985c57d0531d3fad34aad87d40f38a3aff62f00de2d",
+        "hardware_execution": false,
+        "reason": "The main workflow retained the previous fixed screenshot list; this supplement exports the already-generated Granite Fmax capture without changing application or fixture inputs."
+      },
+      "files": [
+        {
+          "path": "build/amd-granite-5d12a19/gui-review-artifacts/granite-fmax-review-el7/granite-fmax-fixture.png",
+          "bytes": 251858,
+          "sha256": "8e9ebb8bf0f5a72e3a59580b221a6079c9ee6e980591cc7bc665f568f901ecbc"
+        },
+        {
+          "path": "build/amd-granite-5d12a19/gui-review-artifacts/granite-fmax-review-el7/gui-tests.txt",
+          "bytes": 95887,
+          "sha256": "07d6df71b9b9331afba0a496f65a76a0d76333965167a7ab6f0a444190cfbd71"
+        },
+        {
+          "path": "build/amd-granite-5d12a19/gui-review-artifacts/granite-fmax-review-el7/pbo-fmax-verified-fixture.png",
+          "bytes": 253987,
+          "sha256": "1142c2137f9d5783fc3a7739321af2b56f413e7153cd75d15e6292d767c966b4"
+        },
+        {
+          "path": "build/amd-granite-5d12a19/gui-review-artifacts/granite-fmax-review-el7/provenance.json",
+          "bytes": 657,
+          "sha256": "7577ae8269f90ebf71fd43637eeede710dff0661c5c3b32ea7494caeba0bb94e"
+        },
+        {
+          "path": "build/amd-granite-5d12a19/archives/granite-fmax-review-el7-13070840455.zip",
+          "bytes": 484666,
+          "sha256": "3e209d3b477e34897c4fad809ed9ceb9a7cc0dc490b138369b1fdbe0b40b9f05"
+        },
+        {
+          "path": "build/amd-granite-5d12a19/gui-review-el7.log",
+          "bytes": 441616,
+          "sha256": "eba34cc0ab1fb738dab2ceb66fefe407d1d8084ddd66c513cf6ebbf3a2981856"
+        }
+      ]
+    },
+    {
+      "target": "ubuntu24.04",
+      "gui_tests": 241,
+      "artifact_id": 13070064777,
+      "provenance": {
+        "source_commit": "7eb3a574de8bca9fe98a54214f3d02df712c4dd6",
+        "baseline_commit": "5d12a19212292d7fae3a17fbcbde408d6c31ea16",
+        "baseline_run": 41272412665,
+        "changed_paths": [
+          ".github/workflows/gui-fixture-review.yml",
+          "cli/test_process.py"
+        ],
+        "runtime_and_build_inputs_identical": true,
+        "fixture_inputs_identical": true,
+        "workflow_sha256": "d050893e12b6fafb1832a985c57d0531d3fad34aad87d40f38a3aff62f00de2d",
+        "hardware_execution": false,
+        "reason": "The main workflow retained the previous fixed screenshot list; this supplement exports the already-generated Granite Fmax capture without changing application or fixture inputs."
+      },
+      "files": [
+        {
+          "path": "build/amd-granite-5d12a19/gui-review-artifacts/granite-fmax-review-ubuntu24.04/granite-fmax-fixture.png",
+          "bytes": 294330,
+          "sha256": "0445f12ddffe41f9e6dd276a1a4d709791e442ed9d548e28806ee367092f6aba"
+        },
+        {
+          "path": "build/amd-granite-5d12a19/gui-review-artifacts/granite-fmax-review-ubuntu24.04/gui-tests.txt",
+          "bytes": 91657,
+          "sha256": "5c1196f109224ec1dac2e51163ef4345b3c3550c3af96f65d5bb9b916a0aab28"
+        },
+        {
+          "path": "build/amd-granite-5d12a19/gui-review-artifacts/granite-fmax-review-ubuntu24.04/pbo-fmax-verified-fixture.png",
+          "bytes": 296677,
+          "sha256": "8584ac6a1a774c0e03d10813c1fc05a9b50dfbf854ffd8217adce4f01b6302af"
+        },
+        {
+          "path": "build/amd-granite-5d12a19/gui-review-artifacts/granite-fmax-review-ubuntu24.04/provenance.json",
+          "bytes": 657,
+          "sha256": "7577ae8269f90ebf71fd43637eeede710dff0661c5c3b32ea7494caeba0bb94e"
+        },
+        {
+          "path": "build/amd-granite-5d12a19/archives/granite-fmax-review-ubuntu24.04-13070064777.zip",
+          "bytes": 580078,
+          "sha256": "f2589a22e25a57f7061cc4073f912ff608356434fa1715be0b366839fa39f2fc"
+        },
+        {
+          "path": "build/amd-granite-5d12a19/gui-review-ubuntu24.04.log",
+          "bytes": 446603,
+          "sha256": "c49a07c80e6036d3b31898bcf0d718d2c10d541e8e6ccc580b3afef80862728c"
+        }
+      ]
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "build/amd-granite-5d12a19/gui-review-artifacts/granite-fmax-review-el7/granite-fmax-fixture.png",
+      "bytes": 251858,
+      "sha256": "8e9ebb8bf0f5a72e3a59580b221a6079c9ee6e980591cc7bc665f568f901ecbc"
+    },
+    {
+      "path": "build/amd-granite-5d12a19/gui-review-artifacts/granite-fmax-review-el7/gui-tests.txt",
+      "bytes": 95887,
+      "sha256": "07d6df71b9b9331afba0a496f65a76a0d76333965167a7ab6f0a444190cfbd71"
+    },
+    {
+      "path": "build/amd-granite-5d12a19/gui-review-artifacts/granite-fmax-review-el7/pbo-fmax-verified-fixture.png",
+      "bytes": 253987,
+      "sha256": "1142c2137f9d5783fc3a7739321af2b56f413e7153cd75d15e6292d767c966b4"
+    },
+    {
+      "path": "build/amd-granite-5d12a19/gui-review-artifacts/granite-fmax-review-el7/provenance.json",
+      "bytes": 657,
+      "sha256": "7577ae8269f90ebf71fd43637eeede710dff0661c5c3b32ea7494caeba0bb94e"
+    },
+    {
+      "path": "build/amd-granite-5d12a19/archives/granite-fmax-review-el7-13070840455.zip",
+      "bytes": 484666,
+      "sha256": "3e209d3b477e34897c4fad809ed9ceb9a7cc0dc490b138369b1fdbe0b40b9f05"
+    },
+    {
+      "path": "build/amd-granite-5d12a19/gui-review-el7.log",
+      "bytes": 441616,
+      "sha256": "eba34cc0ab1fb738dab2ceb66fefe407d1d8084ddd66c513cf6ebbf3a2981856"
+    },
+    {
+      "path": "build/amd-granite-5d12a19/gui-review-artifacts/granite-fmax-review-ubuntu24.04/granite-fmax-fixture.png",
+      "bytes": 294330,
+      "sha256": "0445f12ddffe41f9e6dd276a1a4d709791e442ed9d548e28806ee367092f6aba"
+    },
+    {
+      "path": "build/amd-granite-5d12a19/gui-review-artifacts/granite-fmax-review-ubuntu24.04/gui-tests.txt",
+      "bytes": 91657,
+      "sha256": "5c1196f109224ec1dac2e51163ef4345b3c3550c3af96f65d5bb9b916a0aab28"
+    },
+    {
+      "path": "build/amd-granite-5d12a19/gui-review-artifacts/granite-fmax-review-ubuntu24.04/pbo-fmax-verified-fixture.png",
+      "bytes": 296677,
+      "sha256": "8584ac6a1a774c0e03d10813c1fc05a9b50dfbf854ffd8217adce4f01b6302af"
+    },
+    {
+      "path": "build/amd-granite-5d12a19/gui-review-artifacts/granite-fmax-review-ubuntu24.04/provenance.json",
+      "bytes": 657,
+      "sha256": "7577ae8269f90ebf71fd43637eeede710dff0661c5c3b32ea7494caeba0bb94e"
+    },
+    {
+      "path": "build/amd-granite-5d12a19/archives/granite-fmax-review-ubuntu24.04-13070064777.zip",
+      "bytes": 580078,
+      "sha256": "f2589a22e25a57f7061cc4073f912ff608356434fa1715be0b366839fa39f2fc"
+    },
+    {
+      "path": "build/amd-granite-5d12a19/gui-review-ubuntu24.04.log",
+      "bytes": 446603,
+      "sha256": "c49a07c80e6036d3b31898bcf0d718d2c10d541e8e6ccc580b3afef80862728c"
+    },
+    {
+      "path": "build/amd-granite-5d12a19/gui-review-metadata.json",
+      "bytes": 21465,
+      "sha256": "66b8185a7565abc2068dc3e3c59bd9064aa0588276cbd39a5c78cc58cca55a52"
+    }
+  ],
+  "hardware_execution": false,
+  "scope": "Supplemental EL7 and Ubuntu 24.04 GUI regression and four Fmax captures. Runtime, build, and fixture inputs match the successful portability run; only CLI test assertions and screenshot workflow differ. Synthetic fixtures are not target-machine measurements."
+}

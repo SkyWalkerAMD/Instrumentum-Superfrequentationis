@@ -107,6 +107,13 @@ The request producer strengthens the local-slot-to-MMIO-window trace but does
 not provide that missing identity link. `pm_slot_mapping_verified` and
 `firmware_mapping_verified` remain false.
 
+## Later Fmax runtime support
+
+[Granite Fmax read/set and stored readback](amd-granite-fmax.md) now use the
+version-pinned 98.84.0 transport in both GUI and CLI. A subsequent byte-checked
+replay covers the 70h policy clipping/rejection branches and 6Fh capability bits.
+The earlier scale-slice report remains limited to its stated boundaries.
+
 ## Remaining boundaries
 
 Twelve core rows now have physical or dimensionless units, and two further

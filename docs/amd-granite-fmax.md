@@ -50,6 +50,8 @@ JSON 的 `verified` 表示保存的上限与请求相同。即使固件响应成
 沿用 REA 对原版 `set_fmax` (`0x2397b0`) 及调用者的静态分析，复核原版
 功能边界。Granite 固件使用 Ghidra 的字节校验解码和合成 RAM 回放。
 REA 不执行目标硬件，也不把原版平台协议直接套用于 Granite。
+本轮 [原版 REA 复核](validation/amd-granite-fmax-native.json) 保留了未知调用约定和
+终止流限制；不能从这些伪代码单独推出参数协议。
 
 | 项目 | Granite 98.84.0 证据 |
 |---|---|
