@@ -32,7 +32,7 @@ Missing Complex or conflicting boundaries/counts fail without returning an
 identity map. Other processor models keep their existing rules.
 
 Use `octool-cli amd-topology --all-cpus --l3`, or the AMD tuning page's
-**Read available CPU topology** action. CPUID topology remains separate from
+**Read all available CPU topology** action. CPUID topology remains separate from
 firmware tuning targets and PM slots. No setting command is prepared or sent.
 
 The shared test fixture preserves the captured signature, four topology levels
