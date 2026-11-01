@@ -57,6 +57,7 @@ class Slice:
             op = op.removesuffix('.n')
             a = [s.strip() for s in rest.split(',') if s.strip()]
             next_pc = pc+len(raw)
+            branched = False
             self.trace.append(pc)
             if op in ('entry', 'memw'):
                 pass
@@ -88,6 +89,8 @@ class Slice:
                 self.r[a[0]] = (min if op=='min' else max)(signed(val(a[1])),signed(val(a[2]))) & 0xffffffff
             elif op in ('and', 'or'):
                 self.r[a[0]] = val(a[1]) & val(a[2]) if op=='and' else val(a[1]) | val(a[2])
+            elif op == 'mul16u':
+                self.r[a[0]] = (val(a[1]) & 0xffff) * (val(a[2]) & 0xffff)
             elif op == 'ssl':
                 self.shift = val(a[0]) & 31
             elif op == 'sll':
@@ -98,8 +101,12 @@ class Slice:
                 self.r[a[0]] = val(a[1]) >> self.shift
             elif op == 'slli':
                 self.r[a[0]] = (val(a[1]) << val(a[2])) & 0xffffffff
+            elif op == 'srli':
+                self.r[a[0]] = val(a[1]) >> val(a[2])
             elif op == 'extui':
                 self.r[a[0]] = (val(a[1]) >> val(a[2])) & ((1 << val(a[3]))-1)
+            elif op == 'lsx':
+                self.f[a[0]] = self.getf(val(a[1])+val(a[2]))
             elif op in ('lsi', 'lsip', 'lsxp'):
                 address = val(a[1])+(val(a[2]) if op=='lsi' else 0)
                 self.f[a[0]] = self.getf(address)
@@ -150,44 +157,49 @@ class Slice:
             elif op in ('olt.s', 'ole.s', 'oeq.s'):
                 self.b[a[0]] = self.f[a[1]] < self.f[a[2]] if op=='olt.s' else self.f[a[1]] <= self.f[a[2]] if op=='ole.s' else self.f[a[1]] == self.f[a[2]]
             elif op in ('bt', 'bf'):
-                if self.b[a[0]] == (op == 'bt'): next_pc = val(a[1])
+                if self.b[a[0]] == (op == 'bt'): next_pc = val(a[1]); branched = True
             elif op in ('add.s', 'sub.s', 'mul.s', 'madd.s', 'msub.s'):
                 x, y = self.f[a[1]], self.f[a[2]]
                 self.f[a[0]] = f32(x+y if op=='add.s' else x-y if op=='sub.s' else x*y+self.f[a[0]] if op=='madd.s' else self.f[a[0]]-x*y if op=='msub.s' else x*y)
             elif op == 'loopgtz':
-                assert loop is None
+                # Xtensa has one LBEG/LEND/LCOUNT set; a new LOOP replaces it.
+                loop = None
                 count, end = val(a[0]), val(a[1])
                 # LOOPGTZ tests a signed register: n-1 skips for n == 0.
                 if 0 < count < (1 << 31): loop = [next_pc, end, count]
                 else: next_pc = end
             elif op == 'bbci':
-                if not (val(a[0]) & (1 << val(a[1]))): next_pc = val(a[2])
+                if not (val(a[0]) & (1 << val(a[1]))): next_pc = val(a[2]); branched = True
             elif op in ('bbc','bbs'):
-                if bool(val(a[0]) & (1 << (val(a[1])&31))) == (op=='bbs'): next_pc = val(a[2])
+                if bool(val(a[0]) & (1 << (val(a[1])&31))) == (op=='bbs'): next_pc = val(a[2]); branched = True
             elif op == 'beqz':
-                if not val(a[0]): next_pc = val(a[1])
+                if not val(a[0]): next_pc = val(a[1]); branched = True
             elif op == 'bnez':
-                if val(a[0]): next_pc = val(a[1])
+                if val(a[0]): next_pc = val(a[1]); branched = True
             elif op in ('bne', 'bnei'):
-                if val(a[0]) != val(a[1]): next_pc = val(a[2])
+                if val(a[0]) != val(a[1]): next_pc = val(a[2]); branched = True
             elif op == 'beq':
-                if val(a[0]) == val(a[1]): next_pc = val(a[2])
+                if val(a[0]) == val(a[1]): next_pc = val(a[2]); branched = True
             elif op in ('bltu','bltui'):
-                if val(a[0]) < val(a[1]): next_pc = val(a[2])
+                if val(a[0]) < val(a[1]): next_pc = val(a[2]); branched = True
             elif op in ('bgeu','bgeui'):
-                if val(a[0]) >= val(a[1]): next_pc = val(a[2])
+                if val(a[0]) >= val(a[1]): next_pc = val(a[2]); branched = True
             elif op == 'bgei':
                 signed = val(a[0]); signed -= (1 << 32) if signed & (1 << 31) else 0
-                if signed >= val(a[1]): next_pc = val(a[2])
+                if signed >= val(a[1]): next_pc = val(a[2]); branched = True
             elif op in ('bany','bnone'):
                 # Ghidra renders these branch targets before their registers.
                 matches = bool(val(a[1]) & val(a[2]))
-                if matches == (op=='bany'): next_pc = val(a[0])
+                if matches == (op=='bany'): next_pc = val(a[0]); branched = True
             elif op == 'j':
-                next_pc = val(a[0])
+                next_pc = val(a[0]); branched = True
             else:
                 raise ValueError(f'Unmodeled instruction at {pc:x}: {ins["text"]}')
-            if loop and next_pc == loop[1]:
+            # A taken branch to LEND does not perform the sequential loop-end
+            # check (QEMU gen_brcond/gen_jumpi vs gen_jumpi_check_loop_end).
+            # This matters in the firmware's interpolation helper: jumping
+            # out of its search loop must not repeat the interpolation.
+            if loop and not branched and next_pc == loop[1]:
                 loop[2] -= 1
                 if loop[2]: next_pc = loop[0]
                 else: loop = None

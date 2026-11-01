@@ -24,7 +24,7 @@ int main() {
     assert(amdPmLayouts().size() == 8 && amdGranitePmLayouts().size() == 2);
     for (unsigned n = 0; n < 2; ++n) {
         const auto b = granite_pm_fixture::bytes(sizes[n]); const auto s = decodeAmdPm(b,versions[n]);
-        assert(!s.error && s.graniteRidge && s.raw == b && s.fields.size() == 23 && s.fields[0].value == 2000);
+        assert(!s.error && s.graniteRidge && s.raw == b && s.fields.size() == 39 && s.fields[0].value == 2000);
         const auto &request=s.fields.back();
         assert(request.group=="granite_shared_request" && request.unit=="V" && request.offset==76);
         assert(request.value==1.5 && request.unitEvidence=="granite-smu-98.84.0-static");
@@ -96,6 +96,14 @@ int main() {
             {"\"firmware_consumer_channel\":0","\"firmware_consumer_channel\":1"},
             {"\"reference_address_space\":\"smu_local\"","\"reference_address_space\":\"host_physical\""},
             {"\"measurement\":false","\"measurement\":true"},
+            {"\"policy_state\":0","\"policy_state\":99"},
+            {"\"clock_policy_kind\":0","\"clock_policy_kind\":99"},
+            {"\"nominal_reference_mhz\":100","\"nominal_reference_mhz\":200"},
+            {"\"sample_share\":true","\"sample_share\":false"},
+            {"\"time_residency\":false","\"time_residency\":true"},
+            {"\"selected_state_verified\":false","\"selected_state_verified\":true"},
+            {"\"physical_clock_identity_verified\":false","\"physical_clock_identity_verified\":true"},
+            {"\"zero_override_retains_policy\":true","\"zero_override_retains_policy\":false"},
             {"\"measured_frequency\":false","\"measured_frequency\":true"},
             {"\"request_policy_value\":true","\"request_policy_value\":false"},
             {"\"frequency_model\":true","\"frequency_model\":false"},
@@ -131,6 +139,37 @@ int main() {
         assert(amdPmJson(parseAmdPmCapture(forged))==json);
         assert(json.find("\"freshness_verified\":false")!=std::string::npos);
         assert(json.find("\"setting_readback_verified\":false")!=std::string::npos);
+    } ++groups;
+    // Every policy state is exported, including the zero-share state. Preserve
+    // the already converted values, without BCLK scaling or physical IDs.
+    for(unsigned width=1;width<=2;++width) {
+        const auto s=decodeAmdPm(granite_pm_fixture::bytes(sizes[width-1]),versions[width-1]);
+        const double expected[5][4]={{25,0,50,25},{2000,1800,1600,1400},
+            {1800,1600,1200,1000},{3600,1600,2400,1000},{1,1.125,1.25,1.375}};
+        std::set<unsigned> offsets;
+        for(const auto &f:s.fields) if(f.offset>=67*4 && f.offset<87*4) {
+            assert(offsets.insert(f.offset).second);
+            const unsigned kind=(f.offset/4-67)/4,state=(f.offset/4-67)%4;
+            assert(f.value==expected[kind][state] && f.slot==state && !f.slotCount);
+            assert(f.unit==(kind==0?"%":kind==4?"V":"MHz") && !f.clock && !f.scaled);
+            assert(f.group==(kind==0?"granite_dpm_share":kind==4?"granite_dpm_voltage":"granite_dpm_clock"));
+            assert(f.unitEvidence=="granite-smu-98.84.0-static" && !f.producerNote.empty());
+        }
+        assert(offsets.size()==20);
+    } ++groups;
+    // A capture may contain exceptional or out-of-range values. Decode raw
+    // words independently; never clamp a share or apply a voltage conversion.
+    for(unsigned width=1;width<=2;++width) for(std::uint32_t bits:
+            {0x80000000u,1u,0xbf800000u,0x43160000u,0x7f800000u,0x7f800001u,0xffc12345u}) {
+        auto b=granite_pm_fixture::bytes(sizes[width-1]);
+        for(unsigned index=67;index<87;++index) pm_fixture::put(b,4*index,bits);
+        const auto s=decodeAmdPm(b,versions[width-1]);
+        for(const auto &f:s.fields) if(f.offset>=67*4 && f.offset<87*4) {
+            assert(f.raw==bits && !f.scaled && !f.clock);
+            assert(bool(f.error)==((bits&0x7f800000u)==0x7f800000u));
+        }
+        assert(s.fields[7].value==1.125 && s.fields.back().value==1.5);
+        const auto json=amdPmJson(s);assert(amdPmJson(parseAmdPmCapture(json))==json);
     } ++groups;
     // Preserve requests independently of channel command/telemetry values,
     // including negative zero, subnormals and invalid encodings. No conversion

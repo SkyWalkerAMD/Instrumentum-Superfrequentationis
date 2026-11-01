@@ -650,6 +650,46 @@ private slots:
         }
     }
 
+    void pmGraniteDpmPolicySnapshot() {
+        using namespace octool::core;
+        QTemporaryDir dir;QVERIFY(dir.isValid());QFile file(dir.path()+"/policies.json");
+        AmdPmPanel panel;panel.resize(1600,1250);panel.show();
+        auto *view=panel.findChild<QComboBox *>("pmView");
+        auto *table=panel.findChild<QTableWidget *>("pmTable");
+        view->setCurrentIndex(view->findText("Granite Ridge DPM policies"));
+        for(unsigned width=1;width<=2;++width) {
+            const auto capture=amdPmJson(decodeAmdPm(granite_pm_fixture::bytes(width==1?1828:2452),width==1?0x620105:0x620205));
+            QVERIFY(file.open(QIODevice::WriteOnly|QIODevice::Truncate));file.write(QByteArray::fromStdString(capture));file.close();
+            QVERIFY(panel.loadSnapshotFile(file.fileName()));QCOMPARE(table->rowCount(),20);
+            unsigned shares=0,clocks=0,volts=0;
+            for(int row=0;row<table->rowCount();++row) {
+                const auto name=table->item(row,0)->text();const auto state=table->item(row,6)->text();
+                QVERIFY(name.startsWith("DPM state "));QVERIFY(!name.contains("CCD"));
+                QVERIFY(!table->item(row,0)->toolTip().isEmpty());
+                if(name.contains("sample share")) {
+                    ++shares;QCOMPARE(table->item(row,2)->text(),QString("%"));QVERIFY(state.contains("not time residency"));
+                } else if(name.contains("voltage policy")) {
+                    ++volts;QCOMPARE(table->item(row,2)->text(),QString("V"));QVERIFY(state.contains("not device readback"));
+                } else {
+                    ++clocks;QCOMPARE(table->item(row,2)->text(),QString("MHz"));QVERIFY(state.contains("not measured frequency"));
+                    QVERIFY(table->item(row,0)->toolTip().contains("nominal 100 MHz"));
+                }
+            }
+            QCOMPARE(shares,4u);QCOMPARE(clocks,12u);QCOMPARE(volts,4u);
+            QCOMPARE(table->item(0,1)->text(),QString("2000"));
+            panel.findChild<QPushButton *>("pmCopy")->click();
+            QCOMPARE(QApplication::clipboard()->text(),QString::fromStdString(capture));
+            if(width==2) {
+                QApplication::processEvents();const auto shot=qEnvironmentVariable("OCTOOL_PM_GRANITE_DPM_TEST_SCREENSHOT");
+                if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+            }
+        }
+        // Switching to a different platform must not leave Granite policies.
+        const auto layout=amdPmLayouts().front();
+        const auto other=amdPmJson(decodeAmdPm(std::vector<std::uint8_t>(layout.bytes),layout.version));
+        QVERIFY(file.open(QIODevice::WriteOnly|QIODevice::Truncate));file.write(QByteArray::fromStdString(other));file.close();
+        QVERIFY(panel.loadSnapshotFile(file.fileName()));QCOMPARE(table->rowCount(),0);
+    }
     void pmGraniteNativeRoundtripAndStoredRows() {
         using namespace octool::core;
         for (unsigned mode = 0; mode < 3; ++mode) {
@@ -667,14 +707,14 @@ private slots:
             auto *table = panel.findChild<QTableWidget *>("pmTable");
             auto *view = panel.findChild<QComboBox *>("pmView");
             read->click(); QTRY_VERIFY(read->isEnabled());
-            QCOMPARE(table->rowCount(),23); QCOMPARE(table->item(0,1)->text(),QString("2000"));
-            QCOMPARE(table->item(22,1)->text(),QString("1.5"));
-            QCOMPARE(table->item(22,2)->text(),QString("V"));
-            QCOMPARE(table->item(22,6)->text(),QString("Shared request mirror; not readback"));
-            QVERIFY(table->item(22,0)->toolTip().contains("firmware channel 0"));
-            QVERIFY(table->item(22,0)->toolTip().contains("0x8c34"));
-            QVERIFY(table->item(22,0)->toolTip().contains("pre-quantization"));
-            QCOMPARE(table->item(0,2)->text(),QString("Unverified"));
+            QCOMPARE(table->rowCount(),39); QCOMPARE(table->item(0,1)->text(),QString("2000"));
+            QCOMPARE(table->item(38,1)->text(),QString("1.5"));
+            QCOMPARE(table->item(38,2)->text(),QString("V"));
+            QCOMPARE(table->item(38,6)->text(),QString("Shared request mirror; not readback"));
+            QVERIFY(table->item(38,0)->toolTip().contains("firmware channel 0"));
+            QVERIFY(table->item(38,0)->toolTip().contains("0x8c34"));
+            QVERIFY(table->item(38,0)->toolTip().contains("pre-quantization"));
+            QCOMPARE(table->item(0,2)->text(),QString("MHz"));
             const QStringList units{"V","A","W","deg C"};
             for(int channel=0;channel<3;++channel) for(int kind=0;kind<4;++kind) {
                 const int row=8+5*channel+kind;

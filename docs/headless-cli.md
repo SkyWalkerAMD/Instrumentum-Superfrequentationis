@@ -1,5 +1,11 @@
 # 无桌面版 OCTool
 
+新增 [Granite Ridge 四状态 DPM 策略表](amd-granite-dpm-policy.md)：
+`amd-pm-decode` / `amd-pm-native-read --platform granite-ridge` 与 GUI 同步显示
+20 个采样占比、频率策略和电压策略字段，公共字段由 23 个增至 39 个。
+频率使用标称参考时钟下的 MHz，电压使用 V；它们不代表实测频率、设备电压回读
+或已确定的物理 rails。采样占比不是时间驻留率，四个状态编号也不是 CCD 编号。
+
 新增 [APOB 与 OS CPU 核对](amd-apob-os-comparison.md)：
 `amd-topology --all-cpus --apob PATH [--l3]` 与 GUI 的 Compare file with OS CPUs
 共用只读逻辑。限定到已核对的 Model 44h / SMT2 拓扑，保留 OS CPU 编号，

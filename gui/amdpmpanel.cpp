@@ -85,7 +85,8 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader, std::shared_ptr<Hard
         "Voltage policy (original mapping)", "Limit contributors (original mapping)",
         "Link bandwidth (original mapping)", "Internal clocks (original mapping)",
         "GMI stored arrays", "DIMM stored arrays", "PCIe stored arrays",
-        "Core stored arrays (18 rows)", "CCD stored arrays", "Granite Ridge complete stored table"});
+        "Core stored arrays (18 rows)", "CCD stored arrays", "Granite Ridge complete stored table",
+        "Granite Ridge DPM policies"});
     viewRow->addWidget(view_); viewRow->addStretch();
     layout->addLayout(viewRow);
     metadata_ = new QLabel(this); metadata_->setObjectName("pmMetadata"); metadata_->setTextFormat(Qt::PlainText); layout->addWidget(metadata_);
@@ -247,11 +248,12 @@ void AmdPmPanel::showFields() {
     const bool original = index != 0 || s.graniteRidge;
     const char *groups[] = {"power", "workload", "power_model", "voltage_policy", "limit_contributors",
         "link_bandwidth", "internal_clocks", "gmi_storage", "dimm_storage", "pcie_storage", "core_storage", "ccd_storage"};
-    const auto &fields = index == 0 ? s.fields : index == 1 ? s.originalLimits :
+    const auto &fields = index == 0 || index == 15 ? s.fields : index == 1 ? s.originalLimits :
         index < 7 ? s.originalPackage : index < 9 ? s.originalFabric : index < 12 ? s.originalArrays :
         index == 12 ? s.firmwareCores : index == 13 ? s.firmwareCcds : s.graniteRaw;
     table_->setRowCount(0);
     for (const auto &f : fields) {
+        if (index == 15 && f.group != "granite_dpm_clock" && f.group != "granite_dpm_voltage" && f.group != "granite_dpm_share") continue;
         if (index >= 2 && index < 14 && f.group != groups[index-2]) continue;
         const int row = table_->rowCount(); table_->insertRow(row);
         const QString state = f.error ? "Non-finite stored value" : f.scaleError ? "Clock scaling out of range" :
@@ -261,6 +263,9 @@ void AmdPmPanel::showFields() {
             f.producerKind=="counter_rate" ? "Counter rate; unit unverified" :
             f.group == "granite_command_mirror" ? "Software command mirror; not readback" :
             f.group == "granite_shared_request" ? "Shared request mirror; not readback" :
+            f.group == "granite_dpm_clock" ? "Clock policy; not measured frequency" :
+            f.group == "granite_dpm_voltage" ? "Voltage policy; not device readback" :
+            f.group == "granite_dpm_share" ? "Sample share; not time residency" :
             f.group == "granite_svi" ? "98.84.0 unit; freshness and rail unverified" :
             s.graniteRidge && f.group=="core_storage" && (f.row==9 || f.row==10) ? "Request policy; not measured clock" :
             s.graniteRidge && ((f.group=="core_storage" && f.row==3) || (f.group=="ccd_storage" && f.row==5)) ? "Frequency model; not measured clock" :

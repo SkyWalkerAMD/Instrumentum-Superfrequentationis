@@ -141,10 +141,27 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
         // scatter writes 18*8*N core words and 12*N CCD words (N=1 or 2).
         // Traced units and integer-code representations arrive averaged/scaled
         // already: never apply the conversion a second time.
-        const char *names[] = {"FCLK candidate","UCLK candidate","MCLK candidate",
-            "VDDCR_SOC candidate","CLDO_VDDG_IOD candidate","CLDO_VDDG_CCD candidate","CLDO_VDDP candidate"};
-        const unsigned indices[] = {71,75,79,83,259,261,269};
-        for (unsigned i = 0; i < 7; ++i) field(out,out.fields,names[i],"unverified",indices[i]*4,false,"granite_common");
+        // Four software states, not physical CCD/core slots. The clock path
+        // uses a nominal 100 MHz reference; these are not measured clocks.
+        // Keep existing common offsets in order, then append the other states.
+        const auto policy = [&](unsigned state, unsigned kind) {
+            const char *labels[] = {"clock policy A (FCLK candidate)","clock policy B (UCLK candidate)",
+                "clock policy C (MCLK candidate)","voltage policy","sample share"};
+            const unsigned index = kind == 4 ? 67+state : 71+4*kind+state;
+            const auto name = "DPM state " + std::to_string(state) + " " + labels[kind];
+            field(out,out.fields,name.c_str(),kind==4?"%":kind==3?"V":"MHz",index*4,false,
+                kind==4?"granite_dpm_share":kind==3?"granite_dpm_voltage":"granite_dpm_clock");
+            auto &v=out.fields.back();v.slot=state;v.row=kind;
+            v.unitEvidence="granite-smu-98.84.0-static";
+            v.producerNote=kind==4?
+                "State sample count times 100 / total samples. This is a sampling share, not elapsed-time residency. Invalid states contribute only to the denominator. State numbers do not identify physical CCDs or cores.":kind==3?
+                "Software voltage policy from two fuse-table interpolations or a configured override. Zero override retains the prior policy. All four states are exported regardless of use; selected state, physical rail and freshness are unverified. This is not voltage measurement or setting readback.":
+                "Software frequency policy using nominal 100 MHz reference arithmetic. Policy C rounds policy B and applies a configured multiplier with 16-bit truncation. FCLK/UCLK/MCLK identities are candidates; this is not measured frequency or setting readback. All four states are exported, not averaged. State numbers do not identify physical CCDs or cores.";
+        };
+        for(unsigned kind=0;kind<4;++kind) policy(0,kind);
+        const char *names[] = {"CLDO_VDDG_IOD candidate","CLDO_VDDG_CCD candidate","CLDO_VDDP candidate"};
+        const unsigned indices[] = {259,261,269};
+        for (unsigned i = 0; i < 3; ++i) field(out,out.fields,names[i],"unverified",indices[i]*4,false,"granite_common");
         const char *quantities[] = {"voltage", "current", "power", "temperature"};
         const char *units[] = {"V", "A", "W", "deg C"};
         for (unsigned channel = 0; channel < 3; ++channel) {
@@ -159,6 +176,8 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
             v.unitEvidence = "granite-smu-98.84.0-static";
           }
         }
+        for(unsigned state=0;state<4;++state) policy(state,4);
+        for(unsigned state=1;state<4;++state) for(unsigned kind=0;kind<4;++kind) policy(state,kind);
         field(out,out.fields,"Shared voltage request mirror (averaged)","V",19*4,false,"granite_shared_request");
         out.fields.back().unitEvidence = "granite-smu-98.84.0-static";
         out.fields.back().producerNote = "Shared software voltage request, averaged from SMU-local 0x8c34. The enabled 61h path selects the first or last configured entry and keeps the pre-quantization request; its encoded code may be capped at 255. The disabled path reconstructs the request from its rounded code. The checked writer uses firmware channel 0 and can retain the previous command mirror while locked. This value is neither a second independently addressed rail nor measured voltage or applied-setting readback.";
@@ -235,7 +254,7 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
         for (unsigned offset = 0; offset < bytes.size(); offset += 4)
             field(out,out.graniteRaw,("Word " + std::to_string(offset/4)).c_str(),"unverified",offset,false,"granite_storage");
         out.detail = out.error ? "Some Granite Ridge stored words are non-finite; raw bits and other values are retained" :
-            "Granite Ridge storage decoded using the 98.84.0 reference. Command mirrors are averaged software values, not voltage measurements or setting readback. SVI telemetry can retain old values after failed reads; current scale mode 0 produces zero and validity flags are absent here. Channel numbers do not identify physical rails. Core model voltage is not measured rail voltage. GHz fields describe frequency models or policies, not measured clocks or setting readback. Disabled core models can retain old values. Request policy A/B use the GHz Fmax scale; both-zero requests retain old values, and B can exceed A. Conditional sensors and counters may retain old values; CCD counter percentage retains its old value on a zero denominator and can exceed 100. Code and counter meanings and freshness are unverified; averaged codes may be fractional. Stored values are not rescaled or clamped. CCD/core slots describe storage only. Other units, physical CCD/OS CPU mapping and capture provenance remain unverified.";
+            "Granite Ridge storage decoded using the 98.84.0 reference. DPM states contain software clock/voltage policies and sampling shares, not measured frequency/voltage or elapsed-time residency. Clock policies use nominal 100 MHz reference arithmetic; physical clock identities remain candidates. Command mirrors are averaged software values, not voltage measurements or setting readback. SVI telemetry can retain old values after failed reads; current scale mode 0 produces zero and validity flags are absent here. Channel numbers do not identify physical rails. Core model voltage is not measured rail voltage. GHz fields describe frequency models or policies, not measured clocks or setting readback. Disabled core models can retain old values. Request policy A/B use the GHz Fmax scale; both-zero requests retain old values, and B can exceed A. Conditional sensors and counters may retain old values; CCD counter percentage retains its old value on a zero denominator and can exceed 100. Code and counter meanings and freshness are unverified; averaged codes may be fractional. Stored values are not rescaled or clamped. CCD/core slots describe storage only. Other units, physical CCD/OS CPU mapping and capture provenance remain unverified.";
         return out;
     }
     // Independently implemented from the pinned layout facts in
@@ -388,6 +407,20 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
         if (v.group == "granite_svi" || v.group == "granite_command_mirror") out += ",\"firmware_channel\":" + std::to_string(v.firmwareChannel) +
             ",\"physical_rail_verified\":false,\"freshness_verified\":false,\"setting_readback_verified\":false";
         if (v.group == "granite_command_mirror") out += ",\"software_command_mirror\":true,\"measurement\":false";
+        if (v.group == "granite_dpm_clock" || v.group == "granite_dpm_voltage" || v.group == "granite_dpm_share") {
+            const unsigned source = v.row==4 ? 0x155c0+4*v.slot : 0x96a0+80*v.slot+(v.row==3?0x23c:0x228+4*v.row);
+            out += ",\"policy_state\":"+std::to_string(v.slot)+",\"reference_address_space\":\"smu_local\""
+                ",\"producer_source_address\":"+word(source)+",\"reference_addresses_are_host_addresses\":false"
+                ",\"producer_note\":"+quote(v.producerNote)+",\"freshness_verified\":false,\"selected_state_verified\":false"
+                ",\"physical_mapping_verified\":false,\"setting_readback_verified\":false,\"runtime_write_enabled\":false";
+            if(v.row==4) out += ",\"sample_share\":true,\"time_residency\":false";
+            else {
+                out += ",\"policy_value\":true,\"measurement\":false,\"averaged\":false";
+                if(v.row==3) out += ",\"physical_rail_verified\":false,\"zero_override_retains_policy\":true";
+                else out += ",\"clock_policy_kind\":"+std::to_string(v.row)+",\"nominal_reference_mhz\":100"
+                    ",\"measured_frequency\":false,\"physical_clock_identity_verified\":false";
+            }
+        }
         if (v.group == "granite_shared_request") out += ",\"software_request_mirror\":true,\"measurement\":false"
             ",\"firmware_consumer_channel\":0,\"reference_address_space\":\"smu_local\",\"producer_source_address\":\"0x00008c34\""
             ",\"producer_note\":" + quote(v.producerNote) + ",\"physical_rail_verified\":false,\"freshness_verified\":false"

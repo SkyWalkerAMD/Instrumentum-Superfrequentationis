@@ -4,6 +4,12 @@ This profile is a separate implementation of the Granite Ridge PM transport and
 stored table layout. It does not enable Shimada tuning commands on Granite Ridge.
 GUI and CLI use the same core decoder and capture implementation.
 
+The [four-state DPM policy study](amd-granite-dpm-policy.md) exposes all 20
+common sampling-share and clock/voltage policy fields. The common view now has
+39 fields; the GUI also has a dedicated DPM policy view. Nominal MHz policies
+are not measured clocks, voltage policies are not physical-rail readback, and
+sampling shares are not elapsed-time residency.
+
 The [shared voltage request follow-up](amd-granite-shared-request.md) adds common
 index 19 in software volts and connects its complete encoding path to firmware
 channel 0. It remains separate from command mirrors and SVI telemetry;
@@ -87,11 +93,13 @@ retain that distinction. Raw bits and byte offsets are included. Non-finite
 binary32 interpretations retain their bits and return a partial result, not zero.
 The complete word inspector makes no promise that every word is a live float sensor.
 
-Seven common positions retain **candidate** labels from the pinned public Granite
-reference: FCLK/UCLK/MCLK at words 71/75/79, VDDCR_SOC 83,
-CLDO_VDDG_IOD/CCD 259/261, CLDO_VDDP 269. Units remain unverified and no BCLK
-correction is applied. These candidate positions are not evidence for rail setting
-commands. Word 58 is now identified as a channel-2 software command mirror in
+Three common positions retain **candidate** labels with unverified units:
+CLDO_VDDG_IOD/CCD 259/261 and CLDO_VDDP 269. Words 71/75/79 are now state-0
+clock policies in nominal MHz; their FCLK/UCLK/MCLK identities remain candidates.
+Word 83 is state-0 software voltage policy in V, with no physical-rail label.
+The other states and sample shares are included in the DPM view. No BCLK
+correction is applied. These policies do not establish rail setting commands.
+Word 58 is now identified as a channel-2 software command mirror in
 volts, replacing the former VDD_MISC candidate label. Words 48/53 hold the
 corresponding mirrors for channels 0/1. None is a hardware setting readback.
 Words 589/590 and 591/592 are not labeled as CCD power. The upstream

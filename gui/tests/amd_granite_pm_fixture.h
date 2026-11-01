@@ -5,9 +5,14 @@ namespace granite_pm_fixture {
 inline std::vector<std::uint8_t> bytes(unsigned size = 2452) {
     std::vector<std::uint8_t> b(size);
     for (unsigned off = 0; off < size; off += 4) pm_fixture::put(b,off,0x3f000000+off/4);
-    pm_fixture::put(b,71*4,0x44fa0000); // independent binary32 fixture: 2000
-    pm_fixture::put(b,75*4,0x44e10000); // 1800
-    pm_fixture::put(b,79*4,0x45610000); // 3600
+    const std::uint32_t dpm[5][4] = {
+        {0x41c80000,0,0x42480000,0x41c80000}, // sample shares: 25, 0, 50, 25
+        {0x44fa0000,0x44e10000,0x44c80000,0x44af0000}, // policy A: 2000, 1800, 1600, 1400
+        {0x44e10000,0x44c80000,0x44960000,0x447a0000}, // policy B: 1800, 1600, 1200, 1000
+        {0x45610000,0x44c80000,0x45160000,0x447a0000}, // policy C: 3600, 1600, 2400, 1000
+        {0x3f800000,0x3f900000,0x3fa00000,0x3fb00000}}; // policy V: 1, 1.125, 1.25, 1.375
+    for(unsigned kind=0;kind<5;++kind) for(unsigned state=0;state<4;++state)
+        pm_fixture::put(b,4*(67+4*kind+state),dpm[kind][state]);
     pm_fixture::put(b,19*4,0x3fc00000); // 1.5 V shared request, distinct from command/telemetry
     pm_fixture::put(b,48*4,0x3f900000); // 1.125 V command mirror
     pm_fixture::put(b,53*4,0x3f600000); // .875 V command mirror
