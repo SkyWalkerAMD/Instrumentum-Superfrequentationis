@@ -1005,11 +1005,10 @@ bool AmdTuningPanel::loadTopologyRecord(const QString &path) {
     // The public loader also refuses calls during an outstanding hardware read.
     if(!isEnabled()) return false;
     invalidateCurve(); table_->setRowCount(0);
-    QFile file(path);
-    if(!file.open(QIODevice::ReadOnly)) { status_->setText("Cannot open topology record: "+file.errorString()); return false; }
-    const auto bytes=file.read(1048577);
-    if(file.error()!=QFile::NoError) { status_->setText("Cannot read topology record: "+file.errorString()); return false; }
-    const auto t=decodeAmdApobTopology(std::vector<std::uint8_t>(bytes.begin(),bytes.end()));
+    std::vector<std::uint8_t> bytes;
+    const int error=octool::platform::readBoundedFile(path.toStdString(),bytes,1048576);
+    if(error) { status_->setText("Cannot read topology record: "+failure(error)); return false; }
+    const auto t=decodeAmdApobTopology(bytes);
     if(t.error) { status_->setText(QString::fromStdString(t.detail)); return false; }
     append(table_,{"Record instance",QString::number(t.instance)});
     append(table_,{"Unparsed extension bytes",QString::number(qulonglong(t.extensionBytes))});

@@ -64,6 +64,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#ifdef Q_OS_LINUX
+#include <sys/stat.h>
+#endif
 #include <atomic>
 #include <array>
 #include <cmath>
@@ -3327,6 +3330,13 @@ private slots:
             QCOMPARE(panel.loadTopologyRecord(mode==3?path+".missing":path),mode==0);
             QCOMPARE(panel.findChild<QTableWidget*>("smuTable")->rowCount(),mode==0?11:0);
         }
+#ifdef Q_OS_LINUX
+        const auto fifo=dir.filePath("record.fifo");
+        QCOMPARE(::mkfifo(fifo.toLocal8Bit().constData(),0600),0);
+        QVERIFY(!panel.loadTopologyRecord(fifo));
+        QCOMPARE(panel.findChild<QTableWidget*>("smuTable")->rowCount(),0);
+        QVERIFY(!panel.loadTopologyRecord(dir.path()));
+#endif
         QCOMPARE(device->calls,0u); QCOMPARE(device->topologyReads,0u); QCOMPARE(device->registerRequests,0u);
     }
     void amdTopologyShowsSparseIdsWithoutPreparingACommand() {
