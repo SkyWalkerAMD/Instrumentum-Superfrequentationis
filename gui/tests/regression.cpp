@@ -695,6 +695,13 @@ private slots:
             QCOMPARE(table->item(5*8*storageSlots,2)->text(),QString("%"));
             QVERIFY(table->item(2*8*storageSlots,6)->text().contains("98.84.0"));
             QVERIFY(!table->item(0,0)->text().contains("FW CCD"));
+            for(unsigned row:{0u,4u,12u}) for(unsigned core=0;core<8*storageSlots;++core) {
+                const unsigned index=row*8*storageSlots+core;
+                QCOMPARE(table->item(index,2)->text(),QString("Unverified"));
+                QVERIFY(table->item(index,6)->text().contains("unit unverified"));
+                QVERIFY(!table->item(index,0)->toolTip().isEmpty());
+                QCOMPARE(table->item(index,0)->toolTip(),table->item(index,6)->toolTip());
+            }
             for(unsigned core=0;core<8*storageSlots;++core) {
                 QVERIFY(table->item(core,0)->text().contains(QString("CCD slot %1, core slot %2").arg(core/8).arg(core%8)));
                 const unsigned modelIndex=3*8*storageSlots+core;
@@ -724,6 +731,9 @@ private slots:
             if(mode==1) {
                 // Let the newly selected table update its scroll range first.
                 QApplication::processEvents();
+                table->scrollToTop(); QApplication::processEvents();
+                const auto producers=qEnvironmentVariable("OCTOOL_PM_GRANITE_PRODUCERS_TEST_SCREENSHOT");
+                if(!producers.isEmpty()) QVERIFY(panel.grab().save(producers));
                 table->scrollToItem(table->item(3*8*storageSlots,0),QAbstractItemView::PositionAtTop);
                 QApplication::processEvents();
                 QCOMPARE(table->rowAt(0),int(3*8*storageSlots));
@@ -751,6 +761,12 @@ private slots:
                 if(!counters.isEmpty()) QVERIFY(panel.grab().save(counters));
             }
             view->setCurrentIndex(13); QCOMPARE(table->rowCount(),int(12*storageSlots));
+            for(unsigned row:{0u,1u,2u,6u,8u}) for(unsigned ccd=0;ccd<storageSlots;++ccd) {
+                const unsigned index=row*storageSlots+ccd;
+                QCOMPARE(table->item(index,2)->text(),QString("Unverified"));
+                QVERIFY(table->item(index,6)->text().contains("unit unverified"));
+                QVERIFY(!table->item(index,0)->toolTip().isEmpty());
+            }
             QCOMPARE(table->item(3*storageSlots,2)->text(),QString("deg C"));
             QCOMPARE(table->item(4*storageSlots,2)->text(),QString("deg C"));
             QCOMPARE(table->item(7*storageSlots,2)->text(),QString("code"));

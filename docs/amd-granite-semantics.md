@@ -58,6 +58,9 @@ The [request-policy follow-up](amd-granite-performance-policy.md) connects rows
 The [frequency-model and CCD counter follow-up](amd-granite-clock-models.md)
 adds core row 3 and CCD rows 5/9/10. Core 0/4/12 and CCD 0/1/2/6/8 still have
 unknown units; code meanings and physical associations remain unresolved.
+The [eight-producer follow-up](amd-granite-producer-paths.md) adds checked
+calculation paths and configuration-retention behavior; physical units remain
+unverified and are distinguished from producer evidence in both frontends.
 
 The byte-checked experiment is
 [`firmware-granite-semantics.py`](../analysis/tools/firmware-granite-semantics.py).

@@ -103,6 +103,9 @@ bytes; edited metadata does not grant trust.
 There are now 13 core rows and six CCD rows with physical/dimensionless unit
 evidence, plus two core rows and one CCD row identified only as averaged codes.
 Core rows **0, 4, 12** and CCD rows **0, 1, 2, 6, 8** still have unknown units.
+The [producer follow-up](amd-granite-producer-paths.md) verifies their arithmetic
+tails, configuration updates and shared-parameter paths without promoting a
+physical unit. It supersedes the discovery leads below where applicable.
 Seven common candidate fields, the meanings of the three code rows, physical
 PM-to-CCD/OS-CPU mapping and second-rail independent write/readback remain open.
 

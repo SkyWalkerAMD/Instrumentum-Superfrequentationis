@@ -85,6 +85,10 @@ class Slice:
                 self.shift = val(a[0]) & 31
             elif op == 'sll':
                 self.r[a[0]] = (val(a[1]) << self.shift) & 0xffffffff
+            elif op == 'ssr':
+                self.shift = val(a[0]) & 31
+            elif op == 'srl':
+                self.r[a[0]] = val(a[1]) >> self.shift
             elif op == 'slli':
                 self.r[a[0]] = (val(a[1]) << val(a[2])) & 0xffffffff
             elif op == 'extui':
@@ -111,6 +115,8 @@ class Slice:
                 self.f[a[0]] = float(val(a[1]))
             elif op == 'mov.s':
                 self.f[a[0]] = self.f[a[1]]
+            elif op == 'movnez.s':
+                if val(a[2]): self.f[a[0]] = self.f[a[1]]
             elif op in ('movt.s','movf.s'):
                 if self.b[a[2]] == (op=='movt.s'): self.f[a[0]] = self.f[a[1]]
             elif op == 'round.s':

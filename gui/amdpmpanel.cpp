@@ -255,6 +255,9 @@ void AmdPmPanel::showFields() {
         if (index >= 2 && index < 14 && f.group != groups[index-2]) continue;
         const int row = table_->rowCount(); table_->insertRow(row);
         const QString state = f.error ? "Non-finite stored value" : f.scaleError ? "Clock scaling out of range" :
+            f.producerKind=="model" ? "Model output; unit unverified" :
+            f.producerKind=="configuration" ? "Configuration mirror; unit unverified" :
+            f.producerKind=="counter_rate" ? "Counter rate; unit unverified" :
             f.group == "granite_command_mirror" ? "Software command mirror; not readback" :
             f.group == "granite_svi" ? "98.84.0 unit; freshness and rail unverified" :
             s.graniteRidge && f.group=="core_storage" && (f.row==9 || f.row==10) ? "Request policy; not measured clock" :
@@ -279,6 +282,8 @@ void AmdPmPanel::showFields() {
         const QStringList values{label, f.error ? "Unavailable" : number(f.value), original && f.unitEvidence.empty() ? QString("Unverified") : QString::fromStdString(f.unit),
             f.scaled ? number(f.scaledValue) : QString("—"), hex(f.raw), hex(f.offset), state};
         for (int col = 0; col < values.size(); ++col) table_->setItem(row, col, new QTableWidgetItem(values[col]));
+        if (!f.producerNote.empty()) for (int col : {0, 2, 6})
+            table_->item(row,col)->setToolTip(QString::fromStdString(f.producerNote));
     }
     table_->resizeColumnsToContents();
 }

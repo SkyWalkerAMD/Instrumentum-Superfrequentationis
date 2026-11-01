@@ -164,6 +164,15 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
         for (unsigned row = 0; row < 18; ++row) for (unsigned slot = 0; slot < cores; ++slot) {
             field(out,out.firmwareCores,("Core row " + std::to_string(row)).c_str(),"unverified",0x4b4+4*(row*cores+slot),false,"core_storage");
             auto &v = out.firmwareCores.back(); v.row = row; v.slot = slot; v.slotCount = cores;
+            if(row==0 || row==4 || row==12) {
+                v.producerEvidence="granite-mp5-98.84.0-static";
+                v.producerKind=row==0?"model":"counter_rate";
+                v.name=row==0?"Core corrected model (averaged)":row==4?"Core counter rate A (averaged)":"Core counter rate B (averaged)";
+                v.producerNote=row==0?
+                    "Model helper output plus activity polynomial, multiplied by a voltage model with a nonnegative correction. Coefficient units remain unknown; this is not verified power telemetry.":row==4?
+                    "Unsigned 32-bit counter delta times 100 / elapsed, then times 0.001 before averaging. Elapsed uses timer 0x32001c0; its absolute rate and the counter event are unverified.":
+                    "Unsigned 32-bit counter delta times 100 / elapsed before averaging. This row has no additional 0.001 multiplier. Timer rate and counter event are unverified.";
+            }
             if(row==1) { v.name="Core voltage model (averaged)"; v.unit="V"; }
             if(row==2) { v.name="Core temperature (sensor maximum, averaged)"; v.unit="deg C"; }
             if(row==3) { v.name="Core divider frequency model (averaged)"; v.unit="GHz"; }
@@ -192,6 +201,18 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
         for (unsigned row = 0; row < 12; ++row) for (unsigned slot = 0; slot < out.firmwareCcdSlots; ++slot) {
             field(out,out.firmwareCcds,("CCD row " + std::to_string(row)).c_str(),"unverified",0x4b4+4*(18*cores+row*out.firmwareCcdSlots+slot),false,"ccd_storage");
             auto &v = out.firmwareCcds.back(); v.row = row; v.slot = slot; v.slotCount = out.firmwareCcdSlots;
+            if(row<=2 || row==6 || row==8) {
+                v.producerEvidence="granite-mp5-98.84.0-static";
+                v.producerKind=row<=1?"model":row==2?"configuration":"counter_rate";
+                v.name=row==0?"CCD model A (averaged)":row==1?"CCD corrected model B (averaged)":
+                    row==2?"CCD configuration mirror (averaged)":row==6?"CCD counter rate A (averaged)":"CCD scaled counter rate B (averaged)";
+                v.producerNote=row==0?
+                    "Model helper output plus activity polynomial, multiplied by a voltage model. Coefficient units remain unknown; this is not verified power telemetry.":row==1?
+                    "Model helper output plus activity polynomial and a nonnegative correction. Disabled CCD state can retain the old value. Coefficient units remain unknown.":row==2?
+                    "Initialization converts an 8-bit code using base 0.4975340962 and step 0.002959169447. Later code changes copy a configuration float; an unchanged code can retain the old float. Not a sensor or independent setting readback; physical unit unverified.":row==6?
+                    "Unsigned 32-bit counter delta times 0.1 / elapsed before averaging. Absolute timer rate and counter event are unverified.":
+                    "Reconstructed counter delta times a shared reciprocal scale and 100 / elapsed. Firmware then multiplies by the shared parameter times 0.05 / 65536 before accumulation. Preserve operation order; physical unit remains unverified.";
+            }
             if(row==3) { v.name="CCD sensor maximum A (averaged)"; v.unit="deg C"; }
             if(row==4) { v.name="CCD sensor maximum B (conditional, averaged)"; v.unit="deg C"; }
             if(row==5) { v.name="CCD frequency model (averaged)"; v.unit="GHz"; }
@@ -332,6 +353,10 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
             (v.scaled ? number(v.scaledValue) : "null");
         if (!v.group.empty()) out += ",\"group\":" + quote(v.group);
         if (!v.unitEvidence.empty()) out += ",\"unit_evidence\":" + quote(v.unitEvidence) + ",\"capture_firmware_verified\":false";
+        if (!v.producerEvidence.empty()) out += ",\"producer_evidence\":" + quote(v.producerEvidence) +
+            ",\"producer_kind\":" + quote(v.producerKind) + ",\"producer_note\":" + quote(v.producerNote) +
+            ",\"physical_unit_verified\":false,\"physical_measurement_verified\":false,\"capture_firmware_verified\":false," +
+            "\"freshness_verified\":false,\"setting_readback_verified\":false";
         if (v.group == "granite_svi" || v.group == "granite_command_mirror") out += ",\"firmware_channel\":" + std::to_string(v.firmwareChannel) +
             ",\"physical_rail_verified\":false,\"freshness_verified\":false,\"setting_readback_verified\":false";
         if (v.group == "granite_command_mirror") out += ",\"software_command_mirror\":true,\"measurement\":false";

@@ -909,6 +909,17 @@ for report in reports:
                 assert not f['freshness_verified'] and not f['setting_readback_verified']
             if known:
                 assert f['unit_evidence']=='granite-mp5-98.84.0-static' and not f['capture_firmware_verified']
+            producer=pm['platform']=='granite-ridge' and not known
+            if producer:
+                assert 'unit_evidence' not in f
+                assert f['producer_evidence']=='granite-mp5-98.84.0-static' and f['producer_note']
+                kind=('model' if f['row']==0 else 'counter_rate') if key=='firmware_core_arrays' else (
+                    'model' if f['row']<=1 else 'configuration' if f['row']==2 else 'counter_rate')
+                assert f['producer_kind']==kind
+                assert all(not f[k] for k in ('physical_unit_verified','physical_measurement_verified',
+                    'freshness_verified','setting_readback_verified','capture_firmware_verified'))
+            else:
+                assert all(k not in f for k in ('producer_kind','producer_note','producer_evidence'))
             counter = pm['platform']=='granite-ridge' and ((key=='firmware_core_arrays' and f['row']>=13) or
                                                          (key=='firmware_ccd_arrays' and f['row'] in (9,11)))
             if counter:

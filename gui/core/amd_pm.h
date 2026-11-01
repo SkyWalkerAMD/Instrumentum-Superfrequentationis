@@ -40,6 +40,9 @@ struct AmdPmField {
     std::string name, unit, group;
     // Static firmware reference, not an assertion about capture provenance.
     std::string unitEvidence;
+    // A checked producer slice is weaker than a physical-unit identification.
+    // These fields describe reference firmware; imported metadata is ignored.
+    std::string producerEvidence, producerKind, producerNote;
     unsigned offset = 0;
     // Nonzero only for original array storage. Never a physical target ID.
     unsigned slot = 0, slotCount = 0, row = 0;

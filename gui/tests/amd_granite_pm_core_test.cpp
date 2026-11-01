@@ -50,6 +50,11 @@ int main() {
             const bool known=(f.row>=1 && f.row<=3) || (f.row>=5 && f.row<=11) || f.row>=13;
             assert(f.unit==(f.row==1?"V":f.row==2?"deg C":f.row==3 || f.row==9 || f.row==10?"GHz":f.row==13 || f.row==14?"ratio":f.row==8 || f.row==11?"code":known?"%":"unverified") && !f.scaled && !f.clock);
             assert(f.unitEvidence.empty()!=known); offsets.insert(f.offset);
+            assert(f.producerEvidence.empty()==known);
+            if(!known) {
+                assert(f.producerEvidence=="granite-mp5-98.84.0-static" && !f.producerNote.empty());
+                assert(f.producerKind==(f.row==0?"model":"counter_rate"));
+            }
             if(f.row==8 || f.row==11) assert(f.value==(f.row==8?3.5:127.5));
             if(f.row==9 || f.row==10) assert(f.value==(f.row==9?5.5:6.25));
             if(f.row==3) assert(f.value==4.375);
@@ -60,6 +65,8 @@ int main() {
             const bool known=(f.row>=3 && f.row<=5) || f.row==7 || f.row>=9;
             assert(f.unit == (f.row==9 || f.row==11?"%":f.row==5 || f.row==10?"GHz":f.row==7?"code":known?"deg C":"unverified") && !f.scaled && !f.clock);
             assert(f.unitEvidence.empty()!=known); assert(offsets.insert(f.offset).second);
+            assert(f.producerEvidence.empty()==known);
+            if(!known) assert(f.producerKind==(f.row<=1?"model":f.row==2?"configuration":"counter_rate") && !f.producerNote.empty());
             if(f.row==7) assert(f.value==32767.5);
             if(f.row==5 || f.row==9 || f.row==10) assert(f.value==(f.row==5?6:f.row==9?150.125:5.75));
         }
@@ -73,6 +80,10 @@ int main() {
             {"\"request_policy_value\":true","\"request_policy_value\":false"},
             {"\"frequency_model\":true","\"frequency_model\":false"},
             {"\"fused_frequency_policy\":true","\"fused_frequency_policy\":false"},
+            {"\"physical_unit_verified\":false","\"physical_unit_verified\":true"},
+            {"\"physical_measurement_verified\":false","\"physical_measurement_verified\":true"},
+            {"\"producer_kind\":\"model\"","\"producer_kind\":\"sensor\""},
+            {"\"producer_evidence\":\"granite-mp5-98.84.0-static\"","\"producer_evidence\":\"hardware-tested\""},
             {"\"code_meaning_verified\":false","\"code_meaning_verified\":true"},
             {"\"firmware_ccd_storage_slot\":0","\"firmware_ccd_storage_slot\":99"},
             {"\"firmware_local_core_slot\":0","\"firmware_local_core_slot\":99"}}) {
@@ -87,6 +98,25 @@ int main() {
         assert(amdPmJson(parseAmdPmCapture(forged))==json);
         assert(json.find("\"freshness_verified\":false")!=std::string::npos);
         assert(json.find("\"setting_readback_verified\":false")!=std::string::npos);
+    } ++groups;
+    // Producer evidence never grants a unit, rescales a raw word or trusts an
+    // imported producer note. Cover each new row in both exact layouts.
+    for(unsigned width=1;width<=2;++width) for(unsigned group=0;group<2;++group) {
+        const std::vector<unsigned> rows=group?std::vector<unsigned>{0,1,2,6,8}:std::vector<unsigned>{0,4,12};
+        for(unsigned row:rows) for(std::uint32_t bits:{0x80000000u,0x00000001u,0xc2480000u,0x7f800000u,0x7f800001u}) {
+            auto bytes=granite_pm_fixture::bytes(sizes[width-1]);
+            const unsigned offset=0x4b4+4*(group?144*width+row*width:row*8*width);
+            pm_fixture::put(bytes,offset,bits);const auto s=decodeAmdPm(bytes,versions[width-1]);
+            const auto &f=group?s.firmwareCcds[row*width]:s.firmwareCores[row*8*width];
+            assert(f.raw==bits && !f.producerEvidence.empty() && f.unitEvidence.empty());
+            assert(f.unit=="unverified" && !f.scaled && !f.clock);
+            assert(bool(f.error)==((bits&0x7f800000u)==0x7f800000u));
+            const auto json=amdPmJson(s);auto forged=json;
+            const std::string key="\"producer_note\":";const auto p=forged.find(key);
+            assert(p!=std::string::npos);const auto end=forged.find('\"',p+key.size()+1);
+            assert(end!=std::string::npos);forged.replace(p+key.size(),end-(p+key.size())+1,"\"measured GHz\"");
+            assert(amdPmJson(parseAmdPmCapture(forged))==json);
+        }
     } ++groups;
     for(unsigned width=1;width<=2;++width) {
         auto b=granite_pm_fixture::bytes(sizes[width-1]);
