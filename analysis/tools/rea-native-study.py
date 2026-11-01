@@ -170,6 +170,19 @@ def main():
     if hashlib.sha256(binary.read_bytes()).hexdigest() != source_sha:
         raise ValueError('Unexpected reference binary')
     output.mkdir(parents=True, exist_ok=True)
+    seeds = None
+    if args.study in ('granite_topology_provider_a', 'granite_topology_provider_b'):
+        # These PE images have base zero and file offsets equal to RVAs here.
+        # Their installer constructs a function table at runtime; REA's default
+        # discovery leaves some entries as labels. Declare only the pinned
+        # installer/table/helper entries, without changing any binary bytes.
+        addresses = [offset for offset, _ in FIRMWARE_STUDIES[args.study][1]]
+        payload = ''.join(offset + '\tfunction\n' for offset in addresses).encode()
+        seed_path = output / 'analysis-seeds.tsv'
+        seed_path.write_bytes(payload)
+        seeds = dict(path=str(seed_path), sha256=hashlib.sha256(payload).hexdigest(),
+                     addresses=addresses, analyst_declared=True,
+                     basis='Pinned installer, stored function pointers and called record helper')
     node = shutil.which('node')
     if not node or not rea.is_file():
         raise ValueError('Missing analysis runtime')
@@ -189,6 +202,8 @@ def main():
             'REA_GHIDRA_STARTUP_TIMEOUT_MS', 'REA_GHIDRA_DISABLED_ANALYZERS') if key in os.environ}
         env.update(HOME=temporary, TMPDIR=temporary, LANG='C.UTF-8',
                    REA_ANALYSIS_PROVIDER='ghidra')
+        if seeds:
+            env['REA_GHIDRA_SEED_FILE'] = seeds['path']
         with (output / 'rea-stderr.log').open('w', encoding='utf-8') as errors:
             proc = subprocess.Popen([node, str(rea), 'mcp'], stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE, stderr=errors, text=True, encoding='utf-8',
@@ -308,7 +323,7 @@ def main():
                     rea_version='6.7.0', ghidra_version='12.1.4', records=records,
                     startup_timeout_ms=startup_ms,
                     disabled_analyzers=env.get('REA_GHIDRA_DISABLED_ANALYZERS', ''),
-                    study=args.study,
+                    study=args.study, analysis_seeds=seeds,
                     error=None if failure is None else str(failure)))
                 proc.stdin.close()
                 try:
