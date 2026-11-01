@@ -93,9 +93,11 @@ ambiguous. Neither the integer codes nor this decomposition bind a PM slot to
 a physical CCD, APIC ID or OS CPU. The global target-verification flag stays
 false, and imports cannot establish live topology trust.
 
-The current represented rows are twelve core and three CCD rows with traced
+The current represented rows are thirteen core and six CCD rows with traced
 physical/dimensionless units, plus two core and one CCD code rows. These
 code representations do not establish fully identified physical metrics.
+The [frequency-model follow-up](amd-granite-clock-models.md) adds GHz models,
+a fused frequency policy and a quantized CCD counter percentage.
 The common view has seven unresolved candidates, three command mirrors and
 twelve telemetry fields. See [the current validation report](amd-granite-validation.md)
 for tested builds, reproducible outputs and remaining hardware limitations.

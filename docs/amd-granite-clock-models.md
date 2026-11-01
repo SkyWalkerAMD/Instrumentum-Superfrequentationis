@@ -106,6 +106,20 @@ Core rows **0, 4, 12** and CCD rows **0, 1, 2, 6, 8** still have unknown units.
 Seven common candidate fields, the meanings of the three code rows, physical
 PM-to-CCD/OS-CPU mapping and second-rail independent write/readback remain open.
 
+The next static trace leads are recorded below. These are producer/consumer
+locations, not additional verified units; the new executable proof does not
+cover their complete upstream data paths.
+
+| Unresolved row | MP5 source / candidate producer | Missing evidence |
+| --- | --- | --- |
+| Core 0 | `0x11a28 + 0x1bc * slot`; 0x2c798 stores at 0x2c86c | Model coefficient and input scales; a product alone does not establish watts |
+| Core 4 / 12 | `0x11b0c / 0x11b10 + 0x1bc * slot`; stores at 0x2c569 / 0x2c5ea | Counter clock domains and scaling inputs; cannot inherit the row 3 model unit |
+| CCD 0 | 0x12804; producer 0x2ccb8, store 0x2cd11 | Polynomial/table inputs and multiplier scale |
+| CCD 1 | 0x12848; producer 0x2cdc8, store 0x2ce25 | Table output, correction term and source 0x8030 scale |
+| CCD 2 | 0x8030, also consumed by 0x2cdc8 / 0x2ce2c | Incoming source identity and unit |
+| CCD 6 | 0x128a8; store 0x2cb67 | Counter/window reference and the meaning of the 0.1 multiplier |
+| CCD 8 | 0x12888 times 0x1302c divided by 65536 at PM export | Both source scales and the final multiplier; the counter producer alone is insufficient |
+
 Reproduce with [the checked replay](../analysis/tools/firmware-granite-clock-models.py)
 and the [REA workflow](../.github/workflows/rea-granite-study.yml).
 See [validation](amd-granite-validation.md) for the latest completed cloud run.

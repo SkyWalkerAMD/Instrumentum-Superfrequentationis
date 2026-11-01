@@ -13,6 +13,7 @@ and 0x620205. Row numbers and storage slots are zero based.
 | --- | --- | --- | --- |
 | 1 | Core voltage model, averaged | V | VID-derived voltage axis, interpolated by the per-core model; not measured voltage |
 | 2 | Core temperature, sensor maximum, averaged | deg C | 12-bit sensor code / 8 - 49; maximum of three selected sensors; accumulation and normalization |
+| 3 | Core divider frequency model, averaged | GHz | Selected GHz policy to code, common frequency model times dimensionless divider interpolation; disabled slots retain old values |
 | 5 | C0 residency candidate, averaged | % | Fraction at per-core state +0x70, accumulated and multiplied by 100 after normalization |
 | 6 | CC1 residency candidate, averaged | % | Fraction at +0x74, same normalization |
 | 7 | CC6 residency candidate, averaged | % | Fraction at +0x78, same normalization |
@@ -28,6 +29,9 @@ and 0x620205. Row numbers and storage slots are zero based.
 | --- | --- | --- | --- |
 | 3 | CCD sensor maximum A, averaged | deg C | Maximum of eight selected converted sensors, stored at 0x1280c |
 | 4 | CCD sensor maximum B, conditional, averaged | deg C | Maximum of converted sensors 45..52 if byte[0x7829] is nonzero, stored at 0x12810 |
+| 5 | CCD frequency model, averaged | GHz | Common model at 0x12878 copied to 0x1287c; not a measured clock |
+| 9 | CCD counter percentage, averaged | % | 18-bit delta ratio scaled by 12800 then divided by 128; zero denominator retains the old value |
+| 10 | CCD fused frequency policy, averaged | GHz | Fuse code times 0.005 plus accepted GHz policy offset at 0x11440; not independent setting readback |
 | 11 | MP5 interval counter percentage, averaged | % | Ratio at 0x19cfc, averaged and multiplied by 100 at 0x2f5cf before the final PM write |
 
 Residency fractions and percentage scaling are traced; the individual state
@@ -51,6 +55,9 @@ does not establish a physical unit, code meaning or OS core identity. It also
 documents the new storage-slot coordinates, which are not physical mappings.
 The [request-policy follow-up](amd-granite-performance-policy.md) connects rows
 9/10 to the Fmax scale and adds a complete OS CPU/CPUID topology catalog.
+The [frequency-model and CCD counter follow-up](amd-granite-clock-models.md)
+adds core row 3 and CCD rows 5/9/10. Core 0/4/12 and CCD 0/1/2/6/8 still have
+unknown units; code meanings and physical associations remain unresolved.
 
 The byte-checked experiment is
 [`firmware-granite-semantics.py`](../analysis/tools/firmware-granite-semantics.py).
