@@ -190,6 +190,7 @@ jobs:
         run: |
           python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-granite-transport.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-transport --study granite_transport
           python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-granite-transport2.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-transport2 --study granite_transport2
+          python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-granite-topology.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-topology --study granite_topology
       - uses: actions/upload-artifact@v4
         if: always()
         with:
