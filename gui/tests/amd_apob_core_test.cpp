@@ -30,7 +30,10 @@ void boundedSingleRecord() {
         auto b=good; word(b,at,0xffffffff);
         const auto t=decodeAmdApobTopology(b); assert(t.error && t.groups.empty());
     }
-    auto b=good; b.insert(b.end(),good.begin(),good.end());
+    // Allocate both records up front; GCC 11 diagnoses vector range insertion
+    // here as an overread under -O3, despite the separate source container.
+    std::vector<std::uint8_t> b(good.size()*2);
+    for(std::size_t i=0;i<b.size();++i) b[i]=good[i%good.size()];
     assert(decodeAmdApobTopology(b).error==-EINVAL);
     b=good; b.resize(1048576,0x5a); word(b,12,unsigned(b.size()));
     auto t=decodeAmdApobTopology(b); assert(!t.error && t.extensionBytes==1048120 && t.groups.size()==2);
