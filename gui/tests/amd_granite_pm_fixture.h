@@ -8,6 +8,7 @@ inline std::vector<std::uint8_t> bytes(unsigned size = 2452) {
     pm_fixture::put(b,71*4,0x44fa0000); // independent binary32 fixture: 2000
     pm_fixture::put(b,75*4,0x44e10000); // 1800
     pm_fixture::put(b,79*4,0x45610000); // 3600
+    pm_fixture::put(b,19*4,0x3fc00000); // 1.5 V shared request, distinct from command/telemetry
     pm_fixture::put(b,48*4,0x3f900000); // 1.125 V command mirror
     pm_fixture::put(b,53*4,0x3f600000); // .875 V command mirror
     pm_fixture::put(b,58*4,0x3f200000); // .625 V command mirror

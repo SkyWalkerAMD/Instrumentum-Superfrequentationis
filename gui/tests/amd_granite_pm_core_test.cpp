@@ -24,7 +24,11 @@ int main() {
     assert(amdPmLayouts().size() == 8 && amdGranitePmLayouts().size() == 2);
     for (unsigned n = 0; n < 2; ++n) {
         const auto b = granite_pm_fixture::bytes(sizes[n]); const auto s = decodeAmdPm(b,versions[n]);
-        assert(!s.error && s.graniteRidge && s.raw == b && s.fields.size() == 22 && s.fields[0].value == 2000);
+        assert(!s.error && s.graniteRidge && s.raw == b && s.fields.size() == 23 && s.fields[0].value == 2000);
+        const auto &request=s.fields.back();
+        assert(request.group=="granite_shared_request" && request.unit=="V" && request.offset==76);
+        assert(request.value==1.5 && request.unitEvidence=="granite-smu-98.84.0-static");
+        assert(!request.producerNote.empty() && !request.clock && !request.scaled);
         const double telemetry[3][4]={{1.25,12.5,15.625,60.5},{1.5,20,30,65.25},{1,2,2,70}};
         const char *units[]={"V","A","W","deg C"};
         for(unsigned channel=0;channel<3;++channel) for(unsigned kind=0;kind<4;++kind) {
@@ -88,6 +92,9 @@ int main() {
         assert(auditLegacyAmdPmLayout(versions[n],sizes[n],n+1).error == -ENOTSUP);
         for(const auto &entry:std::vector<std::pair<std::string,std::string>>{
             {"\"software_command_mirror\":true","\"software_command_mirror\":false"},
+            {"\"software_request_mirror\":true","\"software_request_mirror\":false"},
+            {"\"firmware_consumer_channel\":0","\"firmware_consumer_channel\":1"},
+            {"\"reference_address_space\":\"smu_local\"","\"reference_address_space\":\"host_physical\""},
             {"\"measurement\":false","\"measurement\":true"},
             {"\"measured_frequency\":false","\"measured_frequency\":true"},
             {"\"request_policy_value\":true","\"request_policy_value\":false"},
@@ -120,6 +127,19 @@ int main() {
         assert(amdPmJson(parseAmdPmCapture(forged))==json);
         assert(json.find("\"freshness_verified\":false")!=std::string::npos);
         assert(json.find("\"setting_readback_verified\":false")!=std::string::npos);
+    } ++groups;
+    // Preserve requests independently of channel command/telemetry values,
+    // including negative zero, subnormals and invalid encodings. No conversion
+    // from the already exported volt value back into a hardware VID is applied.
+    for(unsigned width=1;width<=2;++width) for(std::uint32_t bits:
+            {0x80000000u,1u,0xbf800000u,0x40700000u,0x7f800000u,0x7f800001u,0xffc12345u}) {
+        auto b=granite_pm_fixture::bytes(sizes[width-1]); pm_fixture::put(b,76,bits);
+        const auto s=decodeAmdPm(b,versions[width-1]); const auto &f=s.fields.back();
+        assert(f.raw==bits && f.unit=="V" && f.group=="granite_shared_request");
+        assert(bool(f.error)==((bits&0x7f800000u)==0x7f800000u));
+        assert(!f.scaled && !f.clock && s.fields[7].value==1.125 && s.fields[8].value==1.25);
+        const auto json=amdPmJson(s); assert(amdPmJson(parseAmdPmCapture(json))==json);
+        assert(json.find("\"software_request_mirror\":true,\"measurement\":false")!=std::string::npos);
     } ++groups;
     // Producer evidence never grants a unit, rescales a raw word or trusts an
     // imported producer note. Cover each new row in both exact layouts.

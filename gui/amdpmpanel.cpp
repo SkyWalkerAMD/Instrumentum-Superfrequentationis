@@ -260,6 +260,7 @@ void AmdPmPanel::showFields() {
             f.producerKind=="configuration" ? "Configuration mirror; unit unverified" :
             f.producerKind=="counter_rate" ? "Counter rate; unit unverified" :
             f.group == "granite_command_mirror" ? "Software command mirror; not readback" :
+            f.group == "granite_shared_request" ? "Shared request mirror; not readback" :
             f.group == "granite_svi" ? "98.84.0 unit; freshness and rail unverified" :
             s.graniteRidge && f.group=="core_storage" && (f.row==9 || f.row==10) ? "Request policy; not measured clock" :
             s.graniteRidge && ((f.group=="core_storage" && f.row==3) || (f.group=="ccd_storage" && f.row==5)) ? "Frequency model; not measured clock" :

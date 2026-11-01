@@ -665,7 +665,13 @@ private slots:
             auto *table = panel.findChild<QTableWidget *>("pmTable");
             auto *view = panel.findChild<QComboBox *>("pmView");
             read->click(); QTRY_VERIFY(read->isEnabled());
-            QCOMPARE(table->rowCount(),22); QCOMPARE(table->item(0,1)->text(),QString("2000"));
+            QCOMPARE(table->rowCount(),23); QCOMPARE(table->item(0,1)->text(),QString("2000"));
+            QCOMPARE(table->item(22,1)->text(),QString("1.5"));
+            QCOMPARE(table->item(22,2)->text(),QString("V"));
+            QCOMPARE(table->item(22,6)->text(),QString("Shared request mirror; not readback"));
+            QVERIFY(table->item(22,0)->toolTip().contains("firmware channel 0"));
+            QVERIFY(table->item(22,0)->toolTip().contains("0x8c34"));
+            QVERIFY(table->item(22,0)->toolTip().contains("pre-quantization"));
             QCOMPARE(table->item(0,2)->text(),QString("Unverified"));
             const QStringList units{"V","A","W","deg C"};
             for(int channel=0;channel<3;++channel) for(int kind=0;kind<4;++kind) {
@@ -892,7 +898,7 @@ private slots:
             QTemporaryDir dir; QFile file(dir.path()+"/old.bin"); QVERIFY(file.open(QIODevice::WriteOnly));
             file.write(reinterpret_cast<const char *>(device->bytes.data()),qint64(device->bytes.size())); file.close();
             QVERIFY(panel.loadRawFile(file.fileName(),0x620205));
-            auto *table = panel.findChild<QTableWidget *>("pmTable"); QCOMPARE(table->rowCount(),22);
+            auto *table = panel.findChild<QTableWidget *>("pmTable"); QCOMPARE(table->rowCount(),23);
             auto *read = panel.findChild<QPushButton *>("pmNativeRead"); read->click();
             QCOMPARE(table->rowCount(),0); QTRY_VERIFY(read->isEnabled()); QCOMPARE(table->rowCount(),0);
             panel.findChild<QPushButton *>("pmCopy")->click();

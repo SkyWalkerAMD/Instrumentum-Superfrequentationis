@@ -8,6 +8,7 @@ normalization and percentage paths without inventing hardware observations.
 import argparse
 import hashlib
 import json
+import math
 import struct
 from pathlib import Path
 
@@ -132,6 +133,12 @@ class Slice:
                 value=f32(self.f[a[1]]*(1<<val(a[2])))
                 assert -2147483648 <= value < 2147483648
                 self.r[a[0]]=round(value)&0xffffffff
+            elif op == 'ceil.s':
+                value=f32(self.f[a[1]]*(1<<val(a[2])))
+                # Finite, signed-representable fixtures only. Exceptions and
+                # out-of-range conversion results are deliberately unmodeled.
+                assert math.isfinite(value) and -2147483648 <= value < 2147483648
+                self.r[a[0]]=math.ceil(value)&0xffffffff
             elif op == 'utrunc.s':
                 value=f32(self.f[a[1]]*(1<<val(a[2])))
                 # Deliberately exclude negative, non-finite and overflowing
@@ -169,6 +176,9 @@ class Slice:
                 if val(a[0]) < val(a[1]): next_pc = val(a[2])
             elif op == 'bgeu':
                 if val(a[0]) >= val(a[1]): next_pc = val(a[2])
+            elif op == 'bgei':
+                signed = val(a[0]); signed -= (1 << 32) if signed & (1 << 31) else 0
+                if signed >= val(a[1]): next_pc = val(a[2])
             elif op in ('bany','bnone'):
                 # Ghidra renders these branch targets before their registers.
                 matches = bool(val(a[1]) & val(a[2]))

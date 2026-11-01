@@ -159,6 +159,9 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
             v.unitEvidence = "granite-smu-98.84.0-static";
           }
         }
+        field(out,out.fields,"Shared voltage request mirror (averaged)","V",19*4,false,"granite_shared_request");
+        out.fields.back().unitEvidence = "granite-smu-98.84.0-static";
+        out.fields.back().producerNote = "Shared software voltage request, averaged from SMU-local 0x8c34. The enabled 61h path selects the first or last configured entry and keeps the pre-quantization request; its encoded code may be capped at 255. The disabled path reconstructs the request from its rounded code. The checked writer uses firmware channel 0 and can retain the previous command mirror while locked. This value is neither a second independently addressed rail nor measured voltage or applied-setting readback.";
         out.firmwareCcdSlots = version == 0x620205 ? 2 : 1;
         const unsigned cores = out.firmwareCcdSlots*8;
         for (unsigned row = 0; row < 18; ++row) for (unsigned slot = 0; slot < cores; ++slot) {
@@ -383,6 +386,10 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
         if (v.group == "granite_svi" || v.group == "granite_command_mirror") out += ",\"firmware_channel\":" + std::to_string(v.firmwareChannel) +
             ",\"physical_rail_verified\":false,\"freshness_verified\":false,\"setting_readback_verified\":false";
         if (v.group == "granite_command_mirror") out += ",\"software_command_mirror\":true,\"measurement\":false";
+        if (v.group == "granite_shared_request") out += ",\"software_request_mirror\":true,\"measurement\":false"
+            ",\"firmware_consumer_channel\":0,\"reference_address_space\":\"smu_local\",\"producer_source_address\":\"0x00008c34\""
+            ",\"producer_note\":" + quote(v.producerNote) + ",\"physical_rail_verified\":false,\"freshness_verified\":false"
+            ",\"setting_readback_verified\":false,\"independent_rail_addressing\":false,\"runtime_write_enabled\":false";
         if (s.graniteRidge && v.unit=="code") out += ",\"code_meaning_verified\":false,\"freshness_verified\":false";
         if (s.graniteRidge && v.group=="core_storage" && (v.row==9 || v.row==10)) out +=
             ",\"request_policy_value\":true,\"measured_frequency\":false,\"freshness_verified\":false,\"setting_readback_verified\":false";

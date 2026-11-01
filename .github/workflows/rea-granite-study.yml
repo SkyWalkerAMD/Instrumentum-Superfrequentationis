@@ -6,6 +6,7 @@ on:
       - 'analysis/tools/firmware-granite-input.py'
       - 'analysis/tools/firmware-granite-proof.py'
       - 'analysis/tools/firmware-granite-rails.py'
+      - 'analysis/tools/firmware-granite-shared-request.py'
       - 'analysis/tools/firmware-granite-semantics.py'
       - 'analysis/tools/firmware-granite-topology.py'
       - 'analysis/tools/firmware-granite-telemetry.py'
@@ -116,6 +117,10 @@ jobs:
             --smu build/firmware-input/smu-62-54-body.bin \
             --study build/firmware-evidence/smu/smu-study.json \
             --output build/firmware-evidence/granite-rails-proof.json
+          python3 analysis/tools/firmware-granite-shared-request.py \
+            --smu build/firmware-input/smu-62-54-body.bin \
+            --study build/firmware-evidence/smu/smu-study.json \
+            --output build/firmware-evidence/granite-shared-request.json
           python3 analysis/tools/firmware-granite-semantics.py \
             --mp5 build/firmware-input/mp5-62-54-body.bin \
             --study build/firmware-evidence/mp5/smu-study.json \
