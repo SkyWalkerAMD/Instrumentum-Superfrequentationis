@@ -113,6 +113,13 @@ refinement, floating exceptions, peripheral programming, live timing and device
 effects are not reproduced. The finite Python arithmetic model is not a
 complete binary32 FPU emulator.
 
+The generic instruction interpretation is cross-checked against QEMU 9.0:
+[Xtensa translation](https://github.com/qemu/qemu/blob/v9.0.0/target/xtensa/translate.c)
+defines the four `CONST.S` values and the signed `LOOPGTZ` condition;
+[floating helpers](https://github.com/qemu/qemu/blob/v9.0.0/target/xtensa/fpu_helper.c)
+implement `MSUB.S` as accumulator minus product. This supports the operation
+selection, not a claim of complete AMD FPU equivalence or physical units.
+
 Eight rows still lack physical units: core **0/4/12**, CCD **0/1/2/6/8**.
 PM-to-physical-CCD/OS-core binding and the second rail's physical identity,
 independent write and device readback remain unresolved. The user's machine
