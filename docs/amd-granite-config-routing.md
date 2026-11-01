@@ -47,12 +47,18 @@ anchor; the 0.001 scale alone is insufficient to label the values volts.
 
 ## GUI and CLI
 
-Both frontends use the shared PM decoder. CCD row 2 now appears as **Selected
-configuration; unit unverified** in the GUI. Its tooltip explains broadcast,
-threshold selection, retained values and the acknowledgement limitation.
+Both frontends use the shared PM decoder. CCD row 2 appears as **Configuration
+mirror; may retain old value** in the GUI; its unit remains unverified. Its
+tooltip explains broadcast, threshold selection and the acknowledgement
+limitation. The [local-port follow-up](amd-granite-config-port.md) also proves
+that an alternate branch can change the code while retaining the old float;
+the local write uses fixed delays without polling an applied value.
 CLI/JSON adds `configuration_protocol` to this row only, with reference command
 IDs, input role, target-selection rule and explicit false values for independent
-rail addressing, device readback and runtime write enablement.
+rail addressing, device readback and runtime write enablement. The follow-up
+adds `changed_code_can_retain_previous_value: true` and false values for
+`local_write_completion_polled`, `local_write_returns_device_payload` and
+`raw_read_host_route_verified`.
 
 This describes the pinned reference. It neither certifies the firmware that
 produced an imported file nor requests a write. Import rebuilds all derived

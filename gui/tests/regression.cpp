@@ -781,16 +781,18 @@ private slots:
             for(unsigned row:{0u,1u,2u,6u,8u}) for(unsigned ccd=0;ccd<storageSlots;++ccd) {
                 const unsigned index=row*storageSlots+ccd;
                 QCOMPARE(table->item(index,2)->text(),QString("Unverified"));
-                QVERIFY(table->item(index,6)->text().contains("unit unverified"));
+                QVERIFY(table->item(index,6)->text().contains(row==2 ? "may retain old value" : "unit unverified"));
                 QVERIFY(!table->item(index,0)->toolTip().isEmpty());
                 const auto note=table->item(index,0)->toolTip();
                 const unsigned addresses[]={0x12804,0x12848,0x8030,0,0,0,0x128a8,0,0x12888};
                 QVERIFY(note.contains(QString::number(addresses[row],16)));
                 if(row==2) {
-                    QCOMPARE(table->item(index,6)->text(),QString("Selected configuration; unit unverified"));
+                    QCOMPARE(table->item(index,6)->text(),QString("Configuration mirror; may retain old value"));
                     QVERIFY(note.contains("broadcast to every present firmware target"));
                     QVERIFY(note.contains("equality selects the first"));
                     QVERIFY(note.contains("acknowledgement accepts any nonzero target completion"));
+                    QVERIFY(note.contains("retain the old float even after the code changes"));
+                    QVERIFY(note.contains("fixed delays without polling applied values"));
                     QVERIFY(note.contains("not two independently addressed rails or device readback"));
                 }
                 if(row==6) QVERIFY(note.contains("0x0187f134"));

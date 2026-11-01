@@ -75,6 +75,11 @@ the new record contains a different float. There are 64 gate cases, including
 16 decreases and 32 unchanged-code retentions. Calls that program peripherals,
 the full transition sequence, and their success are outside this replay.
 
+The [local configuration-port follow-up](amd-granite-config-port.md) checks the
+write helper and a separate raw-byte reader. It also covers the alternate
+branch of this handler: a changed code can coexist with the old exported
+float. This does not turn the configuration mirror into a device getter.
+
 The initial byte conversion must not be applied to an already exported value:
 the normal update path copies the incoming float instead. The 0.001 factor
 and voltage-like constants alone do not independently prove volts. Neither

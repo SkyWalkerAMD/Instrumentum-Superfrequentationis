@@ -256,6 +256,8 @@ with tempfile.TemporaryDirectory(prefix='octool-granite-') as directory:
             if field['row'] == 2:
                 field['configuration_protocol'] = dict(input_role='physical_rails',
                     target_selection='os_cpu', independent_rail_addressing=True,
+                    changed_code_can_retain_previous_value=False, local_write_completion_polled=True,
+                    local_write_returns_device_payload=True, raw_read_host_route_verified=True,
                     device_readback=True, runtime_write_enabled=True)
         capture.write_text(json.dumps(forged),encoding='utf-8')
         assert run('amd-pm-decode','--file',str(capture),code=code)['data']['pm'] == pm
@@ -1017,8 +1019,10 @@ for report in reports:
                 assert protocol['input_count']==2 and protocol['input_role']=='threshold_alternatives'
                 assert protocol['target_selection']=='present_firmware_targets'
                 assert protocol['zero_second_reuses_first'] and protocol['equal_code_retains_previous_value']
+                assert protocol['changed_code_can_retain_previous_value']
                 assert protocol['select_second']=='strictly_above_local_threshold'
                 assert all(not protocol[k] for k in ('completion_code_checked_for_success',
+                    'local_write_completion_polled','local_write_returns_device_payload','raw_read_host_route_verified',
                     'independent_rail_addressing','device_readback','runtime_write_enabled'))
             else:
                 assert 'configuration_protocol' not in f

@@ -218,7 +218,7 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
                 v.producerNote=row==0?
                     "Firmware exponential model plus activity polynomial, multiplied by a voltage model. Model coefficients and physical units remain unverified; this is not verified power telemetry.":row==1?
                     "Firmware exponential model plus activity polynomial and a nonnegative correction. Disabled CCD state can retain the old value. Model coefficients and physical units remain unverified.":row==2?
-                    "Two alternative inputs are broadcast to every present firmware target. Each target selects the second only above its local threshold; equality selects the first. A zero second input reuses the first. Initialization decodes an 8-bit code; later commands use different quantization and copy the selected input only when its code changes. An unchanged code retains the old float. The host acknowledgement accepts any nonzero target completion and does not prove application. These are not two independently addressed rails or device readback; physical unit unverified.":row==6?
+                    "Two alternative inputs are broadcast to every present firmware target. Each target selects the second only above its local threshold; equality selects the first. A zero second input reuses the first. Initialization decodes an 8-bit code; later commands use different quantization. The normal update copies the selected input only when its code changes. An alternate firmware branch can retain the old float even after the code changes. Local writes use fixed delays without polling applied values. The host acknowledgement accepts any nonzero target completion and does not prove application. These are not two independently addressed rails or device readback; physical unit unverified.":row==6?
                     "Unsigned 32-bit counter delta times 0.1 / elapsed before averaging. Absolute timer rate and counter event are unverified.":
                     "Reconstructed counter delta times a shared reciprocal scale and 100 / elapsed. Firmware then multiplies by the shared parameter times 0.05 / 65536 before accumulation. Preserve operation order; physical unit remains unverified.";
             }
@@ -382,6 +382,8 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
             "\"input_role\":\"threshold_alternatives\",\"target_selection\":\"present_firmware_targets\","
             "\"zero_second_reuses_first\":true,\"select_second\":\"strictly_above_local_threshold\","
             "\"equal_code_retains_previous_value\":true,\"completion_code_checked_for_success\":false,"
+            "\"changed_code_can_retain_previous_value\":true,\"local_write_completion_polled\":false,"
+            "\"local_write_returns_device_payload\":false,\"raw_read_host_route_verified\":false,"
             "\"independent_rail_addressing\":false,\"device_readback\":false,\"runtime_write_enabled\":false}";
         if (v.group == "granite_svi" || v.group == "granite_command_mirror") out += ",\"firmware_channel\":" + std::to_string(v.firmwareChannel) +
             ",\"physical_rail_verified\":false,\"freshness_verified\":false,\"setting_readback_verified\":false";
