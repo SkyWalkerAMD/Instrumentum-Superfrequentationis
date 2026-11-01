@@ -1,8 +1,8 @@
 # Instrumentum Superfrequentationis
 
-<!-- amd-granite-2f7b9f9 -->
-2026-11-01：[9950X3D 本轮验证](docs/amd-granite-validation.md)通过 44/44 云端任务。GUI/CLI 同步补齐核心 0/4/12、CCD 0/1/2/6/8 行的模型、配置镜像和计数器来源说明；REA 配合指令回放验证换算、回绕、旧值保留与平均导出。本轮没有把这八行提升为已验证物理单位；它们的绝对时基或系数单位、PM 到物理 CCD/OS 核心绑定及第二 rails 独立写入回读仍未完成。[本轮证据](docs/amd-granite-producer-paths.md)；源码与 33 个安装包：`dist/gui-cli-amd-granite-2f7b9f9/`。以下为历史阶段记录，以本段和当前验证报告为准。
-<!-- /amd-granite-2f7b9f9 -->
+<!-- amd-granite-6d1f227 -->
+2026-11-01：[9950X3D 本轮验证](docs/amd-granite-validation.md)通过 44/44 云端任务。GUI/CLI 同步提供八行未明字段的 MP5 本地来源与计数器地址；REA 配合指令回放核对三通道提交、逐核启用门控、模型汇总及整数积分。本轮没有把这八行提升为已验证物理单位；它们的绝对时基或系数单位、PM 到物理 CCD/OS 核心绑定及第二 rails 独立写入回读仍未完成。[本轮证据](docs/amd-granite-transfer-paths.md)；源码与 33 个安装包：`dist/gui-cli-amd-granite-6d1f227/`。以下为历史阶段记录，以本段和当前验证报告为准。
+<!-- /amd-granite-6d1f227 -->
 
 <!-- amd-pm-ccd-168a618 -->
 2026-10-26：[PM 固件 CCD 映射验证](docs/amd-pm-ccd-validation.md)已通过 44/44 云端任务；GUI/CLI 同步提供 `--map-ccd`。适用 Shimada SMU 115.46.0，9950X3D 的 Granite Ridge 路径、字段单位和第二 rails 回读仍待恢复。源码与包：`dist/gui-cli-amd-pm-ccd-168a618/`。

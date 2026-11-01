@@ -116,9 +116,23 @@ REA 6.7.0 analyzes two UEFI transports; the pinned Ghidra Xtensa extension and
 instruction replays handle SMU/MP5. Neither tool's inferred C is treated as
 recovered original source or a substitute for instruction checks.
 
-The Windows reference `Tool.exe` contains a `0x620205` comparison and
-power/voltage/frequency labels. Its surrounding constructor handles multiple
-layouts, so those strings have not been adopted as unit evidence for these
-rows. Absolute counter timebase, event identities, model coefficient units,
+The callback registration is another boundary for the timebase investigation.
+MP5 `0x2d7d8` writes callback pointers into `0x19c10`; the model/integration
+callback `0x2c798` occupies slot 6. Dispatcher `0x2d78c` walks 21 callbacks and
+records the difference of `0x32001c0` around each call. That difference measures
+callback execution duration, not its invocation period. `0x2d7b8` queues the
+dispatcher through `0x1e6c`, and its own pointer occurs in the initial command
+table at `0x13300`. These static observations do not establish a periodic
+one-millisecond update or identify the integrator's destination as an energy
+MSR; neither assumption is used by the replay or decoder.
+
+The Windows reference `Tool.exe` has SHA-256
+`04a6a6043b9b653737a3e7030ded0cd3f67289575f6959ef8096b0b1a2a1c609`.
+At virtual address `0x14007f757`, `cmp eax,0x620205` is followed by `jb` at
+`0x14007f75c`: this is a threshold comparison, not an exact-version match.
+Its surrounding constructor handles multiple layouts, so its
+power/voltage/frequency labels have not been adopted as unit evidence for these
+rows. This executable was inspected statically, not executed. Absolute counter
+timebase, event identities, model coefficient units,
 physical CCD/core mapping and independent second-rail write/readback remain
 unverified. No new hardware write is enabled.
