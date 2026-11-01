@@ -9,6 +9,7 @@
 #include "tests/amd_pm_native_fixture.h"
 #include "tests/amd_granite_pm_fixture.h"
 #include "tests/amd_topology_fixture.h"
+#include "tests/amd_9950x3d_topology_fixture.h"
 #include "tests/amd_apob_fixture.h"
 #include "tests/amd_curve_fixture.h"
 #include "tests/amd_pbo_fixture.h"
@@ -90,6 +91,16 @@ void topologyCatalogCommands() {
             {"amd-topology","--all-cpus","--all-cpus"},{"amd-topology","--all-cpus","1"}}) {
         unsigned opened=0; std::ostringstream output;
         assert(run(args,output,[&] { ++opened; return std::unique_ptr<HardwareBackend>(new amd_topology_fixture::CatalogDevice(cpus)); })==2 && !opened);
+    }
+}
+void published9950x3dTopologyCommands() {
+    for(unsigned i=0;i<34;++i) {
+        amd_topology_fixture::Device d; amd_topology_fixture::published9950x3d(d,i%32);
+        if(i==32) d.levels[2][0]=5;
+        if(i==33) d.levels[1][1]=12;
+        const auto json=command(d,{"amd-topology","--cpu","130","--l3"},i<32?0:3);
+        assert(json.find(i<32?"\"redundant_ccd_level\":true":"\"redundant_ccd_level\":null")!=std::string::npos);
+        assert(json.find("\"pm_slot_mapping_verified\":false")!=std::string::npos && !d.registerRequests);
     }
 }
 void nativePmCommands() {
@@ -2628,5 +2639,6 @@ int main(int argc, char **argv) {
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
     l3TopologyCommands(); topologyCatalogCommands(); offlineTopologyDoesNotCreateBackend();
-    if (!emit) std::cout << "81 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    published9950x3dTopologyCommands();
+    if (!emit) std::cout << "82 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

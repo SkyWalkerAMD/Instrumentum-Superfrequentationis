@@ -58,7 +58,7 @@ for r in query_results:
         assert d['ln2_enabled'] is None and d['command'] == '0x0000005c'
         assert d['firmware_index'] in (0,1,7,127)
 assert sum(r['error'] == -22 for r in queries) == 20
-assert len(reports) == 1584, len(reports)
+assert len(reports) == 1618, len(reports)
 apob=[r for r in reports if r['command']=='amd-topology-decode']
 assert len(apob)==12 and sum(r['ok'] for r in apob)==2
 for r in apob:
@@ -104,8 +104,22 @@ for line in restricted:
     t=json.loads(line)['data']['topology_catalog'];assert t['requested_cpus']==[cpu]
     if t['complete']:assert [c['cpu'] for c in t['cpus']]==[cpu]
 l3_reports=[r for r in reports if r['command']=='amd-topology' and r['data'].get('topology',{}).get('l3_requested')]
-assert len(l3_reports)==4 and [r['ok'] for r in l3_reports]==[True,True,False,False]
-for i,r in enumerate(l3_reports):
+assert len(l3_reports)==38
+published=l3_reports[4:]
+assert [r['ok'] for r in published]==[True]*32+[False]*2
+for i,r in enumerate(published):
+    t=r['data']['topology']
+    assert not t['pm_slot_mapping_verified'] and not t['firmware_mapping_verified']
+    if i<32:
+        assert t['redundant_ccd_level'] and t['ccd_level_type']==3
+        assert t['cpu']==130 and t['apic_id']==i and t['socket_id']==0
+        assert (t['ccd_in_socket'],t['core_in_ccd'],t['thread_in_core'])==(i//16,i%16//2,i%2)
+        assert [l['type'] for l in t['cpuid_levels']]==[1,2,3,4]
+        assert t['l3']['bytes']==(100663296 if i<16 else 33554432) and t['l3']['subleaf']==3
+    else:
+        assert t['redundant_ccd_level'] is None and t['apic_id'] is None and t['l3'] is None and t['cpuid_levels']==[]
+assert [r['ok'] for r in l3_reports[:4]]==[True,True,False,False]
+for i,r in enumerate(l3_reports[:4]):
     t=r['data']['topology']
     assert not t['pm_slot_mapping_verified'] and not t['firmware_mapping_verified']
     if i<2:

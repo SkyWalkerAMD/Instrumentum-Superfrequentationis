@@ -24,7 +24,7 @@ FABRIC, NODE, CONFIG, BOOT, OUTPUT_POINTER = (DATA+i for i in (0x5000,0x6000,0x7
 LOOKUP, SOCKETS, DIES, PROXIMITY, GET_CONFIG = (0xe000+i*16 for i in range(5))
 
 
-def replay(provider, topology, functions, outer, middle, cores, flags, smt, type3, x2):
+def replay(provider, topology, functions, outer, middle, cores, flags, smt, type3, x2, cpuid_inputs=None):
     vm=u.Uc(u.UC_ARCH_X86,u.UC_MODE_64)
     for address in (0,PBASE,DATA,0x100000): vm.mem_map(address,0x20000)
     vm.mem_write(0,topology);vm.mem_write(PBASE,provider)
@@ -38,6 +38,12 @@ def replay(provider, topology, functions, outer, middle, cores, flags, smt, type
     put(OUTPUT_POINTER,OUT);put(STACK,STOP)
     vm.reg_write(x.UC_X86_REG_RSP,STACK);vm.reg_write(x.UC_X86_REG_R8,OUTPUT_POINTER)
     queries=[];coordinates=[];diagnostics=[];seen=set();services=[]
+    if cpuid_inputs is None:
+        levels=((1,smt),(2,3+smt),(3,4+smt),(4,7+smt)) if type3 else (
+                (1,smt),(2,3+smt),(4,5+smt),(0,0))
+        cpuid_inputs={(0xb,0):(smt,1<<smt,1<<8,0)}
+        cpuid_inputs.update({(0x80000026,i):(shift,1<<shift if kind else 0,kind<<8|i,0)
+                            for i,(kind,shift) in enumerate(levels)})
     reg=lambda r:vm.reg_read(r)
 
     def returned(value):
@@ -76,12 +82,7 @@ def replay(provider, topology, functions, outer, middle, cores, flags, smt, type
 
     def cpuid(uc,_):
         leaf,sub=reg(x.UC_X86_REG_EAX),reg(x.UC_X86_REG_ECX);queries.append((leaf,sub))
-        if leaf==0xb:assert sub==0;words=(smt,1<<smt,1<<8,0)
-        else:
-            assert leaf==0x80000026 and sub<4
-            levels=((1,smt),(2,3+smt),(3,4+smt),(4,7+smt)) if type3 else (
-                    (1,smt),(2,3+smt),(4,5+smt),(0,0))
-            kind,shift=levels[sub];words=(shift,1<<shift if kind else 0,kind<<8|sub,0)
+        words=cpuid_inputs[(leaf,sub)]
         for r,val in zip((x.UC_X86_REG_EAX,x.UC_X86_REG_EBX,x.UC_X86_REG_ECX,x.UC_X86_REG_EDX),words):
             uc.reg_write(r,val)
         return True
@@ -104,8 +105,13 @@ def replay(provider, topology, functions, outer, middle, cores, flags, smt, type
     expected_coordinates=[(0,0,g,s,c,t) for g in order for s in range(len(middle))
                           for c in range(len(cores)) for t in range(count)]
     assert coordinates==expected_coordinates
-    expected=[(g<<(4+smt) if type3 else g)+(s<<(3+smt))+(c<<smt)+(t if smt else 0)
-              for _,_,g,s,c,t in coordinates]
+    shifts={i:0 for i in range(1,5)}
+    for sub in range(4):
+        words=cpuid_inputs[(0x80000026,sub)];kind=words[2]>>8&255
+        if kind in shifts:shifts[kind]=words[0]&31
+    thread_shift=cpuid_inputs[(0xb,0)][0]&31
+    expected=[((sock<<shifts[4])+(g<<shifts[3])+(s<<shifts[2])+(c<<shifts[1])+
+               (t if thread_shift==1 else 0))&0xffffffff for sock,_,g,s,c,t in coordinates]
     assert queries==([(0xb,0)]+[(0x80000026,i) for i in range(4)])*len(coordinates)
     width=24 if x2 else 16
     selected=[i for i,a in enumerate(expected) if x2 or a<255]

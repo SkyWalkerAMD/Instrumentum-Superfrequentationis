@@ -2,6 +2,7 @@
 #include "amd_umc.h"
 #include "amd_topology.h"
 #include "amd_topology_fixture.h"
+#include "amd_9950x3d_topology_fixture.h"
 #include <cassert>
 #include <cerrno>
 #include <iostream>
@@ -243,7 +244,7 @@ void topologyDistinguishesL3CapacityWithoutPmMapping() {
         if(mode==0) bad.signature=0x00b00f80; // Shimada still requires type 3
         if(mode==1) bad.signature=0x00a40f40; // family 19h, model 44h
         if(mode==2) bad.levels={{{1,2,0x100}},{{5,32,0x401}}};
-        if(mode==3) bad.levels={{{1,2,0x100}},{{4,16,0x201}},{{4,16,0x302}},{{5,32,0x403}}};
+        if(mode==3) bad.levels={{{1,2,0x100}},{{4,16,0x201}},{{5,16,0x302}},{{5,32,0x403}}};
         const auto t=l3Topology(bad); assert(t.error==-ENOTSUP && !t.l3Valid && !bad.registerRequests);
     }
     // Disabled SMT and sparse core IDs keep the APIC bit partition intact.
@@ -271,6 +272,37 @@ void topologyCacheFailuresDiscardGeometry() {
         if(mode==6) d.changeApic=true;
         if(mode==7) d.changeCache=true;
         const auto t=l3Topology(d); assert(t.error && !t.l3Valid && !t.l3.bytes);
+    }
+}
+void topologyAcceptsPublished9950x3dLevels() {
+    for(bool includeL3:{false,true}) for(unsigned captureCpu=0;captureCpu<32;++captureCpu) {
+        amd_topology_fixture::Device d; amd_topology_fixture::published9950x3d(d,captureCpu);
+        // Deliberately unrelated OS CPU numbering, never copied from APIC.
+        d.expectedCpu=4095-7*captureCpu;
+        const auto t=l3Topology(d,includeL3);
+        assert(!t.error && t.redundantCcdLevel && t.ccdLevelType==3 && t.levels.size()==4);
+        assert(t.cpu==d.expectedCpu && t.apicId==captureCpu && t.socketId==0);
+        assert(t.ccdInSocket==captureCpu/16 && t.coreInCcd==(captureCpu%16)/2 && t.threadInCore==captureCpu%2);
+        assert(t.l3Valid==includeL3 && !d.registerRequests);
+        if(includeL3) assert(t.l3.subleaf==3 && t.l3.bytes==(captureCpu<16?100663296u:33554432u) && t.l3.cacheId==captureCpu/16);
+        const auto json=amdTopologyJson(t);
+        assert(json.find("\"redundant_ccd_level\":true")!=std::string::npos);
+        assert(json.find("\"pm_slot_mapping_verified\":false")!=std::string::npos);
+    }
+    amd_topology_fixture::Device good; amd_topology_fixture::published9950x3d(good,31);
+    assert(!l3Topology(good).error);
+    for(unsigned fault=0;fault<good.calls;++fault) {
+        amd_topology_fixture::Device d; amd_topology_fixture::published9950x3d(d,31); d.failAt=fault;
+        const auto t=l3Topology(d); assert(t.error==-EACCES && !t.l3Valid && !d.registerRequests);
+        const auto json=amdTopologyJson(t);
+        assert(json.find("\"redundant_ccd_level\":null")!=std::string::npos && json.find("\"apic_id\":null")!=std::string::npos);
+    }
+    for(unsigned mode=0;mode<3;++mode) {
+        amd_topology_fixture::Device d; amd_topology_fixture::published9950x3d(d,0);
+        if(mode==0) d.levels[2][0]=5; // Type 3 boundary disagrees with Complex.
+        if(mode==1) d.levels[1][1]=12; // Same boundary, different count.
+        if(mode==2) { d.levels.erase(d.levels.begin()+1); d.levels[1][2]=0x301; d.levels[2][2]=0x402; }
+        const auto t=l3Topology(d); assert(t.error==-ENOTSUP && !t.l3Valid && !d.registerRequests);
     }
 }
 void topologyCacheEnumerationBoundedAndSparse() {
@@ -343,11 +375,27 @@ void topologyCatalogRejectsIncompleteAndChangingSets() {
         assert(t.error==-EINVAL && t.cpus.empty() && !d.calls);
     }
 }
+void topologyCatalogPreservesPublished9950x3dBoundaries() {
+    std::vector<unsigned> cpus;
+    for(unsigned i=0;i<32;++i) cpus.push_back(4095-7*i);
+    amd_topology_fixture::CatalogDevice d(cpus);
+    for(unsigned i=0;i<32;++i) amd_topology_fixture::published9950x3d(d.devices.at(cpus[i]),31-i);
+    const auto t=catalogTopology(d,cpus);
+    assert(!t.error && t.rechecked && t.cpus.size()==32 && !d.registerRequests);
+    for(unsigned i=0;i<32;++i) {
+        const auto &c=t.cpus[i]; assert(c.cpu==cpus[i] && c.apicId==31-i && c.redundantCcdLevel);
+        assert(c.l3.bytes==(i<16?33554432u:100663296u));
+    }
+    d.devices.at(cpus.back()).levels[1][1]=12;
+    const auto bad=catalogTopology(d,cpus);
+    assert(bad.error==-ENOTSUP && bad.cpus.empty() && !bad.rechecked && bad.failedCpu==cpus.back());
+}
 int main() {
     originalVectors(); offlineBoundaries(); refreshSelections(); identityGates(); explicitRead();
     failedReadsStop(); cancellationStopsBeforeDataRead();
     topologyUsesShiftsAndSparseIds(); topologyRejectsMalformedAndUnavailableLeaves();
     topologyDistinguishesL3CapacityWithoutPmMapping(); topologyCacheFailuresDiscardGeometry(); topologyCacheEnumerationBoundedAndSparse();
     topologyCatalogPreservesOsIdsAndCacheGroups(); topologyCatalogRejectsIncompleteAndChangingSets();
-    std::cout << "14 memory and topology scenario groups passed\n";
+    topologyAcceptsPublished9950x3dLevels(); topologyCatalogPreservesPublished9950x3dBoundaries();
+    std::cout << "16 memory and topology scenario groups passed\n";
 }

@@ -1059,6 +1059,7 @@ void AmdTuningPanel::readTopology() {
             for(const auto &l:t.levels) append(table_,{QString("CPUID level %1").arg(l.type),
                 QString("%1 logical processors · APIC shift %2 · global ID %3").arg(l.logicalCount).arg(l.shift).arg(l.globalId)});
             status_->setText("CPUID topology read. Sparse IDs are preserved. Firmware CCD/core mapping is not assumed; no command was prepared or sent.");
+            if(t.redundantCcdLevel) status_->setText(status_->text()+" The reported CCD and Complex boundaries agree.");
         }
         watcher->deleteLater();
     });
@@ -1084,6 +1085,7 @@ void AmdTuningPanel::readTopologyCatalog() {
                 QString value=QString("APIC %1 · socket %2 · CCD %3 · core %4 · thread %5")
                     .arg(hexValue(t.apicId,4)).arg(t.socketId).arg(t.ccdInSocket).arg(t.coreInCcd).arg(t.threadInCore);
                 if(t.l3Valid) value+=QString(" · L3 %1 MiB · cache ID %2").arg(double(t.l3.bytes)/1048576.0).arg(t.l3.cacheId);
+                if(t.redundantCcdLevel) value+=" · CCD/Complex boundaries agree";
                 append(table_,{QString("OS CPU %1").arg(t.cpu),value});
             }
             status_->setText(QString("%1 available CPUs read and rechecked. OS CPU IDs map to CPUID CCD/core/thread IDs; L3 capacity is reported when requested. PM slots and firmware targets are not bound to these IDs. CPUs outside this process's allowed set are omitted.").arg(qulonglong(catalog.cpus.size())));

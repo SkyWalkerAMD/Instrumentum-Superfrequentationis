@@ -13,7 +13,8 @@ struct Device : octool::core::HardwareBackend {
     std::vector<std::array<std::uint32_t,4>> caches;
     std::vector<std::array<std::uint32_t,3>> levels;
     Device() {
-        // Model 44h: type 3 is reserved (PPR 57896 p120). Complex == CCD.
+        // Synthetic PPR-compatible missing-type-3 shape. Published 9950X3D
+        // inputs with a redundant type 3 are in amd_9950x3d_topology_fixture.h.
         levels={{{1,2,0x100}},{{4,16,0x201}},{{5,32,0x402}}};
         caches={{{1u|(1u<<5),63u|(7u<<22),63u,0}},
                 {{3u|(2u<<5)|(1u<<14),63u|(7u<<22),2047u,0}},

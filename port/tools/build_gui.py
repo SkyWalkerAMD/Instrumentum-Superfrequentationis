@@ -167,6 +167,7 @@ def main():
                     OCTOOL_PM_GRANITE_MODELS_TEST_SCREENSHOT=str((tests / "pm-granite-models-fixture.png").resolve()),
                     OCTOOL_PM_GRANITE_PRODUCERS_TEST_SCREENSHOT=str((tests / "pm-granite-producers-fixture.png").resolve()),
                     OCTOOL_AMD_TOPOLOGY_CATALOG_TEST_SCREENSHOT=str((tests / "amd-topology-catalog-fixture.png").resolve()),
+                    OCTOOL_AMD_9950X3D_TOPOLOGY_TEST_SCREENSHOT=str((tests / "amd-9950x3d-topology-fixture.png").resolve()),
                     OCTOOL_AMD_APOB_TEST_SCREENSHOT=str((tests / "amd-apob-fixture.png").resolve()),
                     OCTOOL_AMD_APOB_CONTAINER_TEST_SCREENSHOT=str((tests / "amd-apob-container-fixture.png").resolve()),
                      OCTOOL_PM_GRANITE_FRACTIONS_TEST_SCREENSHOT=str((tests / "pm-granite-fractions-fixture.png").resolve()),

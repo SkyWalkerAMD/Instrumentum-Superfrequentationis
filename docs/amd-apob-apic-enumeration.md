@@ -46,6 +46,11 @@ mapping formula based only on the recovered record layout.
 
 ## Reproduction and limits
 
+A [published 9950X3D CPUID follow-up](amd-granite-published-topology.md) supplies
+an observed redundant type-3 shape to this consumer. With synthetic APOB records
+it produces 32 distinct APIC IDs. This fixes the application's overly strict
+type-3 rejection but does not certify the target's runtime APOB or PM binding.
+
 [`firmware-granite-apic-enumeration.py`](../analysis/tools/firmware-granite-apic-enumeration.py)
 runs **432 cases per provider, 864 total**, using pinned Unicorn 2.1.4 and
 pefile 2024.8.26. Each provider produces 6,552 checked records. Shapes vary

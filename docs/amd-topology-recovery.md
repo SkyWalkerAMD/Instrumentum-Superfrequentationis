@@ -8,8 +8,10 @@ AMD tuning 页新增 Read CPU topology，读取用户选择的逻辑 CPU 的 `CP
 
 9950X3D 对应的 Model 44h 需按 [PPR 57896 Rev 3.00](https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/programmer-references/57896.zip)
 区别处理：第 120 页把 type 3 标为保留；第 34 页示意每个 CCD 只有一个 Complex。
-因此仅在 Family 1Ah / Model 44h 用 type 2 的位移划分 CCD，JSON 标明 `ccd_level_type: 2`，
-GUI 显示 Complex level。其它型号仍要求显式 type 3；缺失或保留层级不猜测。
+因此在 Family 1Ah / Model 44h 缺少 type 3 时，用 type 2 的位移划分 CCD，JSON 标明 `ccd_level_type: 2`。
+[公开 9950X3D 记录与 REA 回放](amd-granite-published-topology.md)进一步确认了冗余 type 3 的情况：
+当 type 2/3 的位移和计数完全相同时，两层都保留，JSON 标明 `ccd_level_type: 3` 和
+`redundant_ccd_level: true`，GUI 提示边界一致。缺少 Complex 或两层冲突仍报错；其它型号仍要求显式 type 3。
 [原文哈希及检查页码](validation/amd-granite-topology-source.json)已记录。
 这修复了目标型号缺少 type 3 时原先会拒绝读取的问题，尚未证明 MP5 槽位与 CPUID ID 一致。
 

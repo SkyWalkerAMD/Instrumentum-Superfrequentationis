@@ -41,6 +41,7 @@
 #include "amd_pm_native_fixture.h"
 #include "amd_granite_pm_fixture.h"
 #include "amd_topology_fixture.h"
+#include "amd_9950x3d_topology_fixture.h"
 #include "amd_apob_fixture.h"
 #include "platform/linux_inventory.h"
 #include "platform/linux_hwio.h"
@@ -3409,6 +3410,33 @@ private slots:
         QCOMPARE(table->item(3,1)->text(),QString("0"));
         QCOMPARE(table->item(6,1)->text(),QString("32 MiB (33554432 bytes)"));
         device->extension=false; read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),0);
+        QCOMPARE(device->registerRequests,0u);
+    }
+    void amdTopologyAcceptsPublished9950x3dAndClearsConflicts() {
+        using namespace octool::core;
+        auto *device=new amd_topology_fixture::Device;
+        amd_topology_fixture::published9950x3d(*device,0);
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device)),nullptr,130);
+        panel.resize(1300,1050); panel.show();
+        panel.findChild<QCheckBox*>("smuTopologyL3")->setChecked(true);
+        auto *read=panel.findChild<QPushButton*>("smuTopology");
+        auto *table=panel.findChild<QTableWidget*>("smuTable");
+        for(unsigned captureCpu:{0u,16u}) {
+            amd_topology_fixture::published9950x3d(*device,captureCpu);
+            read->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(table->rowCount(),13);
+            QCOMPARE(table->item(0,1)->text(),QString("130"));
+            QCOMPARE(table->item(3,1)->text(),QString::number(captureCpu/16));
+            QVERIFY(table->item(6,1)->text().startsWith(captureCpu?"32 MiB":"96 MiB"));
+            QCOMPARE(table->item(11,0)->text(),QString("CPUID level 3"));
+            QVERIFY(panel.findChild<QLabel*>("smuStatus")->text().contains("CCD and Complex boundaries agree"));
+        }
+        QApplication::processEvents();
+        const auto shot=qEnvironmentVariable("OCTOOL_AMD_9950X3D_TOPOLOGY_TEST_SCREENSHOT");
+        if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+        device->levels[1][1]=12;
+        read->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),0);
+        QCOMPARE(panel.findChild<QLineEdit*>("smuArg0")->text(),QString("0"));
         QCOMPARE(device->registerRequests,0u);
     }
     void amdTopologyCatalogListsAvailableCpusAndClearsFailures() {
