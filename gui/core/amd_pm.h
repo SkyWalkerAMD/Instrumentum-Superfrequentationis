@@ -43,6 +43,9 @@ struct AmdPmField {
     // A checked producer slice is weaker than a physical-unit identification.
     // These fields describe reference firmware; imported metadata is ignored.
     std::string producerEvidence, producerKind, producerNote;
+    // Reference command carries two alternatives broadcast to present MP5s.
+    // It does not independently address two rails or certify a live setting.
+    bool alternativeConfigurationInputs = false;
     // Reference MP5-local addresses, never host addresses or read permissions.
     // Core addresses use slot % 8 in each MP5, not the global storage index.
     std::uint32_t producerSourceAddress = 0;

@@ -204,6 +204,14 @@ with tempfile.TemporaryDirectory(prefix='octool-granite-') as directory:
         code = 3 if i == 2 else 0
         decoded = run('amd-pm-decode','--file',str(capture),code=code)['data']['pm']
         assert decoded == pm
+        forged = json.loads(json.dumps(r))
+        for field in forged['data']['pm']['firmware_ccd_arrays']:
+            if field['row'] == 2:
+                field['configuration_protocol'] = dict(input_role='physical_rails',
+                    target_selection='os_cpu', independent_rail_addressing=True,
+                    device_readback=True, runtime_write_enabled=True)
+        capture.write_text(json.dumps(forged),encoding='utf-8')
+        assert run('amd-pm-decode','--file',str(capture),code=code)['data']['pm'] == pm
         raw.write_bytes(bytes.fromhex(pm['raw_hex']))
         decoded = run('amd-pm-decode','--file',str(raw),'--version',pm['version'],code=code)['data']['pm']
         assert decoded == pm
@@ -945,6 +953,18 @@ for report in reports:
                 assert all(k not in f for k in ('producer_source_address','counter_source_addresses','reference_address_space'))
             counter = pm['platform']=='granite-ridge' and ((key=='firmware_core_arrays' and f['row']>=13) or
                                                          (key=='firmware_ccd_arrays' and f['row'] in (9,11)))
+            if producer and key=='firmware_ccd_arrays' and f['row']==2:
+                protocol = f['configuration_protocol']
+                assert protocol['evidence']=='granite-smu-mp5-98.84.0-static'
+                assert (protocol['rsmu_command'],protocol['mp5_command']) == ('0x72','0x75')
+                assert protocol['input_count']==2 and protocol['input_role']=='threshold_alternatives'
+                assert protocol['target_selection']=='present_firmware_targets'
+                assert protocol['zero_second_reuses_first'] and protocol['equal_code_retains_previous_value']
+                assert protocol['select_second']=='strictly_above_local_threshold'
+                assert all(not protocol[k] for k in ('completion_code_checked_for_success',
+                    'independent_rail_addressing','device_readback','runtime_write_enabled'))
+            else:
+                assert 'configuration_protocol' not in f
             if counter:
                 assert not f['counter_meaning_verified'] and not f['freshness_verified']
             else:

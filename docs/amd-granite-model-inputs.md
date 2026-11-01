@@ -94,6 +94,11 @@ float differs. Thus applying the initializer's byte-to-float formula to every
 later exported value would be incorrect. This remains a configuration mirror,
 not a sensor value or independent hardware setting readback.
 
+The [host routing and consumer follow-up](amd-granite-config-routing.md) connects
+RSMU 72h to this MP5 75h path. The two inputs are broadcast alternatives selected
+by a local threshold, not separately addressed rails. Host acknowledgement does
+not validate a target success code or provide device readback.
+
 ## Reproduction and limits
 
 Run after the pinned input extraction and Granite instruction study:

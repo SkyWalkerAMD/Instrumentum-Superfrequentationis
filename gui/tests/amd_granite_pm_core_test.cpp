@@ -67,6 +67,7 @@ int main() {
             if(f.row>=13) assert(f.value==counters[f.row-13]);
         }
         for (const auto &f : s.firmwareCcds) {
+            assert(f.alternativeConfigurationInputs == (f.row == 2));
             const bool known=(f.row>=3 && f.row<=5) || f.row==7 || f.row>=9;
             assert(f.unit == (f.row==9 || f.row==11?"%":f.row==5 || f.row==10?"GHz":f.row==7?"code":known?"deg C":"unverified") && !f.scaled && !f.clock);
             assert(f.unitEvidence.empty()!=known); assert(offsets.insert(f.offset).second);
@@ -100,6 +101,11 @@ int main() {
             {"\"counter_source_addresses\":[\"0x01600134\"]","\"counter_source_addresses\":[\"0xffffffff\"]"},
             {"\"reference_address_space\":\"mp5_local\"","\"reference_address_space\":\"host_physical\""},
             {"\"reference_addresses_are_host_addresses\":false","\"reference_addresses_are_host_addresses\":true"},
+            {"\"input_role\":\"threshold_alternatives\"","\"input_role\":\"physical_rails\""},
+            {"\"target_selection\":\"present_firmware_targets\"","\"target_selection\":\"os_cpu\""},
+            {"\"independent_rail_addressing\":false","\"independent_rail_addressing\":true"},
+            {"\"device_readback\":false","\"device_readback\":true"},
+            {"\"runtime_write_enabled\":false","\"runtime_write_enabled\":true"},
             {"\"code_meaning_verified\":false","\"code_meaning_verified\":true"},
             {"\"firmware_ccd_storage_slot\":0","\"firmware_ccd_storage_slot\":99"},
             {"\"firmware_local_core_slot\":0","\"firmware_local_core_slot\":99"}}) {

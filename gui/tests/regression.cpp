@@ -775,6 +775,13 @@ private slots:
                 const auto note=table->item(index,0)->toolTip();
                 const unsigned addresses[]={0x12804,0x12848,0x8030,0,0,0,0x128a8,0,0x12888};
                 QVERIFY(note.contains(QString::number(addresses[row],16)));
+                if(row==2) {
+                    QCOMPARE(table->item(index,6)->text(),QString("Selected configuration; unit unverified"));
+                    QVERIFY(note.contains("broadcast to every present firmware target"));
+                    QVERIFY(note.contains("equality selects the first"));
+                    QVERIFY(note.contains("acknowledgement accepts any nonzero target completion"));
+                    QVERIFY(note.contains("not two independently addressed rails or device readback"));
+                }
                 if(row==6) QVERIFY(note.contains("0x0187f134"));
                 if(row==8) QVERIFY(note.contains("0x0187f170, 0x0187f174, 0x0187f17c (low word, high word, tag)"));
             }

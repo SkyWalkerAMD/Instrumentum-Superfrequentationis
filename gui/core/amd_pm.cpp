@@ -215,7 +215,7 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
                 v.producerNote=row==0?
                     "Firmware exponential model plus activity polynomial, multiplied by a voltage model. Model coefficients and physical units remain unverified; this is not verified power telemetry.":row==1?
                     "Firmware exponential model plus activity polynomial and a nonnegative correction. Disabled CCD state can retain the old value. Model coefficients and physical units remain unverified.":row==2?
-                    "Initialization decodes an 8-bit code. Later commands quantize the input with different constants and copy the input float only when the code changes. An unchanged code retains the old float. Not a sensor or independent setting readback; physical unit unverified.":row==6?
+                    "Two alternative inputs are broadcast to every present firmware target. Each target selects the second only above its local threshold; equality selects the first. A zero second input reuses the first. Initialization decodes an 8-bit code; later commands use different quantization and copy the selected input only when its code changes. An unchanged code retains the old float. The host acknowledgement accepts any nonzero target completion and does not prove application. These are not two independently addressed rails or device readback; physical unit unverified.":row==6?
                     "Unsigned 32-bit counter delta times 0.1 / elapsed before averaging. Absolute timer rate and counter event are unverified.":
                     "Reconstructed counter delta times a shared reciprocal scale and 100 / elapsed. Firmware then multiplies by the shared parameter times 0.05 / 65536 before accumulation. Preserve operation order; physical unit remains unverified.";
             }
@@ -226,6 +226,7 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
             if(row==9) { v.name="CCD counter percentage (averaged, may retain old value)"; v.unit="%"; }
             if(row==10) { v.name="CCD fused frequency policy (averaged)"; v.unit="GHz"; }
             if(row==11) { v.name="MP5 interval counter percentage (averaged)"; v.unit="%"; }
+            v.alternativeConfigurationInputs = row == 2;
             if((row>=3 && row<=5) || row==7 || row>=9) v.unitEvidence="granite-mp5-98.84.0-static";
         }
         for (unsigned offset = 0; offset < bytes.size(); offset += 4)
@@ -372,6 +373,13 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
             }
             out += "],\"reference_addresses_are_host_addresses\":false";
         }
+        if (v.alternativeConfigurationInputs) out +=
+            ",\"configuration_protocol\":{\"evidence\":\"granite-smu-mp5-98.84.0-static\","
+            "\"rsmu_command\":\"0x72\",\"mp5_command\":\"0x75\",\"input_count\":2,"
+            "\"input_role\":\"threshold_alternatives\",\"target_selection\":\"present_firmware_targets\","
+            "\"zero_second_reuses_first\":true,\"select_second\":\"strictly_above_local_threshold\","
+            "\"equal_code_retains_previous_value\":true,\"completion_code_checked_for_success\":false,"
+            "\"independent_rail_addressing\":false,\"device_readback\":false,\"runtime_write_enabled\":false}";
         if (v.group == "granite_svi" || v.group == "granite_command_mirror") out += ",\"firmware_channel\":" + std::to_string(v.firmwareChannel) +
             ",\"physical_rail_verified\":false,\"freshness_verified\":false,\"setting_readback_verified\":false";
         if (v.group == "granite_command_mirror") out += ",\"software_command_mirror\":true,\"measurement\":false";

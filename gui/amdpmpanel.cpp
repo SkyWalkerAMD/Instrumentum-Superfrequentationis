@@ -256,6 +256,7 @@ void AmdPmPanel::showFields() {
         const int row = table_->rowCount(); table_->insertRow(row);
         const QString state = f.error ? "Non-finite stored value" : f.scaleError ? "Clock scaling out of range" :
             f.producerKind=="model" ? "Model output; unit unverified" :
+            f.alternativeConfigurationInputs ? "Selected configuration; unit unverified" :
             f.producerKind=="configuration" ? "Configuration mirror; unit unverified" :
             f.producerKind=="counter_rate" ? "Counter rate; unit unverified" :
             f.group == "granite_command_mirror" ? "Software command mirror; not readback" :
