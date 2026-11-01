@@ -1239,7 +1239,7 @@ private slots:
         panel.resize(1150,650); panel.show();
         auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
         auto *copy=panel.findChild<QPushButton *>("pmCopy"); auto *status=panel.findChild<QLabel *>("pmStatus");
-        QCOMPARE(view->count(),15);
+        QCOMPARE(view->count(),16);
         const int counts[]={7,8,4,10,24}; const char *names[]={"CPU Power","PPT_WC","VDDCR_CPU_DYN_POWER_WC","FIT PID0","PPT0"};
         const char *values[]={"10","11.75","13.75","14.75","17.25"};
         for (const auto &layout : amdPmLayouts()) {
@@ -1321,7 +1321,7 @@ private slots:
         panel.resize(1150,650); panel.show();
         auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
         auto *copy=panel.findChild<QPushButton *>("pmCopy"); auto *status=panel.findChild<QLabel *>("pmStatus");
-        QCOMPARE(view->count(),15);
+        QCOMPARE(view->count(),16);
         for (const auto &layout : amdPmLayouts()) {
             QVERIFY(savePmFile(raw,pm_fixture::bytes(layout.bytes))); QVERIFY(panel.loadRawFile(raw,layout.version));
             view->setCurrentIndex(7); QCOMPARE(table->rowCount(),9);
@@ -1412,7 +1412,7 @@ private slots:
         panel.resize(1150,940); panel.show();
         auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
         auto *copy=panel.findChild<QPushButton *>("pmCopy"); auto *status=panel.findChild<QLabel *>("pmStatus");
-        QCOMPARE(view->count(),15);
+        QCOMPARE(view->count(),16);
         const int counts[]={36,48,8}, first[]={0,36,84};
         for (const auto &layout : amdPmLayouts()) {
             QVERIFY(savePmFile(raw,pm_fixture::bytes(layout.bytes))); QVERIFY(panel.loadRawFile(raw,layout.version));
