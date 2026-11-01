@@ -48,7 +48,7 @@ the low 28 EBX bits. This supports prioritizing A's **group-based reference
 selector** for that input, rather than treating the two entry gates as
 equivalent. It does not prove that the user's installed BIOS executed A,
 that its dependencies allowed protocol installation, or what the register
-does. No machine CPUID capture is available; both offline candidate routes
+does. No target-machine CPUID capture is available; both offline candidate routes
 remain visible and neither becomes an executable target.
 
 The gate replay covers **16,636 cases**: every model byte and package nibble

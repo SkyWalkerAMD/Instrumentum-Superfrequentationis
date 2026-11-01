@@ -1,8 +1,8 @@
 # Instrumentum Superfrequentationis
 
-<!-- amd-granite-ee1aee1 -->
-2026-11-01：[9950X3D 本轮验证](docs/amd-granite-validation.md)通过 44/44 云端任务，24 组固件回放本地/云端一致。还原 MP5 内部配置写入与原始字节读取流程，发现配置码改变后 PM 值仍可保留旧值；GUI/CLI 同步显示该限制，并核对导入文件不能伪造设备回读。新增 12,288 组读写与 126 组状态分支回放。剩余八行单位、PM 到物理 CCD/OS 核心绑定、第二 rails 独立写入与设备回读仍未完成。[研究证据](docs/amd-granite-config-port.md)；源码和 33 个安装包：`dist/gui-cli-amd-granite-ee1aee1/`。以下为历史阶段记录，以本段和当前验证报告为准。
-<!-- /amd-granite-ee1aee1 -->
+<!-- amd-granite-9e21a56 -->
+2026-11-01：[9950X3D 本轮验证](docs/amd-granite-validation.md)通过 44/44 云端任务，26 组固件回放本地/云端一致。新增 3,244 组寄存器目标及 16,636 组 CPU 入口条件原始指令回放，确认两套 APOB 提供者使用不同寄存器选择器，且不同条目可能指向同一地址/位号。9950X3D 夹具的 CPU 特征值通过 A 路径入口条件、未通过 B 路径，实际运行时提供者仍未确认。GUI/CLI 同步增加候选目标、重复目标和线程前缀差异的离线诊断；不选择运行时提供者、不开放写入。剩余八行单位、PM 到物理 CCD/OS 核心绑定、第二 rails 独立写入与设备回读仍未完成。[研究证据](docs/amd-apob-register-targets.md)；源码和 33 个安装包：`dist/gui-cli-amd-granite-9e21a56/`。以下为历史阶段记录，以本段和当前验证报告为准。
+<!-- /amd-granite-9e21a56 -->
 
 <!-- amd-pm-ccd-168a618 -->
 2026-10-26：[PM 固件 CCD 映射验证](docs/amd-pm-ccd-validation.md)已通过 44/44 云端任务；GUI/CLI 同步提供 `--map-ccd`。适用 Shimada SMU 115.46.0，9950X3D 的 Granite Ridge 路径、字段单位和第二 rails 回读仍待恢复。源码与包：`dist/gui-cli-amd-pm-ccd-168a618/`。

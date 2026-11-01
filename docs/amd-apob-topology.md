@@ -47,8 +47,9 @@ two providers of `D20482F8-7ECF-4A40-8C11-D326D8153806`:
 Offsets are file offsets/RVAs in these pinned PE images (image base zero).
 Installers populate an allocated function table at runtime. Default REA
 function discovery missed some of these indirect entries. The study now
-passes 15 explicitly recorded analyst seeds per provider through REA's native
-`REA_GHIDRA_SEED_FILE` support, based on the installer stores. The inputs are
+passes 17 explicitly recorded analyst seeds for A and 18 for B through REA's
+native `REA_GHIDRA_SEED_FILE` support, covering installer stores and the
+[CPU eligibility follow-up](amd-apob-register-targets.md#cpu-eligibility-narrows-the-reference-path). The inputs are
 hash checked; this does not patch the binary or the analysis engine. Seed
 addresses and tool calls are retained in each study's evidence.
 
@@ -77,8 +78,8 @@ a physical map in the application.
 
 Protocol slot `+0x48` (`0x2118` / `0x2178`) is **not an inverse topology
 lookup**. Its body reads then writes a register through another interface,
-using an address derived from a stored ID. It is outside the emulator's
-allowed execution range and is not exposed as a product command.
+using an address derived from a stored ID. It is outside the original getter
+replay's allowed execution range and is not exposed as a product command.
 The [register-target follow-up](amd-apob-register-targets.md) now executes
 these two bodies in a separate bounded replay with scripted register services.
 It proves that A uses the group ID while B uses the subgroup ID, and that
