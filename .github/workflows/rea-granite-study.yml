@@ -206,6 +206,7 @@ jobs:
           python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-granite-topology.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-topology --study granite_topology
           python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-granite-topology-provider-a.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-topology-provider-a --study granite_topology_provider_a
           python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-granite-topology-provider-b.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-topology-provider-b --study granite_topology_provider_b
+          python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-granite-fabric-topology.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-fabric-topology --study granite_fabric_topology
       - uses: actions/upload-artifact@v4
         if: always()
         with:

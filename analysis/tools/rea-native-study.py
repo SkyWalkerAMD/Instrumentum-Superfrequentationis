@@ -23,10 +23,16 @@ SOURCE_SHA = '44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10'
 FIRMWARE_STUDIES = {
     'granite_topology_provider_a': ('8ea4e45882f053775e87943b20b092d2086787a9500a120fb9f35af62d424295',
         tuple((offset, 'FUN_') for offset in ('0x13e4', '0x1840', '0x1a50', '0x1ce0', '0x1d00',
-              '0x1d28', '0x1d78', '0x1de4', '0x1e7c', '0x1f40', '0x2118', '0x2bb0'))),
+              '0x1d28', '0x1d78', '0x1de4', '0x1e7c', '0x1f40', '0x2118', '0x2bb0',
+              '0x2ac0', '0x99c', '0x96c'))),
     'granite_topology_provider_b': ('c4828555b14a4d8b8e84c7f94f2258b941a778a553cbb7666aac603b251a56b4',
         tuple((offset, 'FUN_') for offset in ('0x1454', '0x18b4', '0x1ac4', '0x1d54', '0x1d74',
-              '0x1d9c', '0x1dec', '0x1e58', '0x1ef0', '0x1fb4', '0x2178', '0x2b20'))),
+              '0x1d9c', '0x1dec', '0x1e58', '0x1ef0', '0x1fb4', '0x2178', '0x2b20',
+              '0x2a30', '0x9e4', '0x9b4'))),
+    'granite_fabric_topology': ('4ec3a9dd5c115f221349071bc5aceb3cc0901190808dc3fea4e72ae80801cea0',
+        (('0x404', 'entry'),) + tuple((offset, 'FUN_') for offset in
+            ('0x4a38', '0x5338', '0x5364', '0x53a4', '0x546c',
+             '0x550c', '0x55f8', '0x5660', '0x5700'))),
     'granite_topology': ('78e0fae1bbe0c4a35d6edaf1e50f0b1c5572066fdf63f9da5b8b59517d93b813',
                          (('0x526c','FUN_'),('0x3a0','FUN_'),('0x4c4','entry'),
                           ('0x1844','FUN_'),('0x2094','FUN_'),('0x2d24','FUN_'),('0x54e0','FUN_'))),
@@ -171,7 +177,8 @@ def main():
         raise ValueError('Unexpected reference binary')
     output.mkdir(parents=True, exist_ok=True)
     seeds = None
-    if args.study in ('granite_topology_provider_a', 'granite_topology_provider_b'):
+    if args.study in ('granite_topology_provider_a', 'granite_topology_provider_b',
+                      'granite_fabric_topology'):
         # These PE images have base zero and file offsets equal to RVAs here.
         # Their installer constructs a function table at runtime; REA's default
         # discovery leaves some entries as labels. Declare only the pinned
