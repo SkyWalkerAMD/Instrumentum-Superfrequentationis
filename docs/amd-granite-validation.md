@@ -1,27 +1,55 @@
-# Granite Ridge / 9950X3D APOB 交接与整表导入验证
+# Granite Ridge / 9950X3D 公共电压请求与 APIC 枚举验证
 
-2026-11-01，使用 REA 6.7.0 继续研究 ASUS ProArt X870E-CREATOR WIFI BIOS 2503 / SMU 98.84.0。GUI 和 CLI 同步支持导入完整 APOB 文件，并在整表检查通过后选择唯一拓扑记录。新增 502 个原指令回放案例，连接了缓存 HOB 列表、APOB 描述符和拓扑记录选择。**八行字段单位、PM 到物理/OS 核心的绑定和第二 rails 独立写入回读仍未完成。**
+2026-11-01，本轮使用 REA 6.7.0 / Ghidra 12.1.4 继续分析 ASUS ProArt
+X870E-CREATOR WIFI BIOS 2503。应用、测试与研究脚本通过的版本均为
+[e75556b](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/commit/e75556b5e7863ddd9e5c2fbfe43426119422183f)。
+其后发布提交仅整理文档和验证记录，未改变应用或研究输入。
 
-目标为 9950X3D + ASUS X870E Creator。目标机器不在用户手边，实际 BIOS 未知；参考固件、合成回放和虚拟机检查不代表真机验收。
+## 本轮实现
 
-| 验证 | 实际结果 |
-|---|---|
-| [共享核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41285375187) | 4/4；Ubuntu 22/24、Windows 2022、macOS 14 各 37 CTest、495 场景组；7 个 ASan/UBSan 套件 |
-| [无 GUI CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41285382159) | 13/13；11 Linux 目标各 39 CTest、81 CLI 场景组、1584 JSON 报告；安装、卸载、重装及无 Qt/显示环境运行 |
-| [GUI 与内核](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41285387207) | 26/26；各目标及 EL7/EL8 基线 244 Qt 测试；142 分析测试、34 移植测试；12 次 QEMU 内核启动 |
-| [REA 固件研究](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41287057271) | 1/1；REA 分析六个 UEFI 模块，SMU/MP5 各 12240 项编码自检；20 组回放结果与本地逐项一致 |
-| 新增 HOB/APOB 回放 | 两份固定哈希实现共 502 案例：432 个有效选择、56 个实例/重复案例、12 个不可用案例、2 个零长度循环的受限回放 |
-| APOB 整表导入 | 每个截断长度、首记录位置、完整 48 字节头、零长度/超大长度、有效拓扑之后的损坏尾记录、重复实例与空选择；GUI 失败后清空、CLI 零后端创建 |
-| 本机扩展 | 用户源码树 50 项：37 通过、13 因工具链/平台限制跳过；保留八项既有扩展 |
+- GUI、CLI 共用 PM 解码器新增 **PM 索引 19／偏移 0x4c：公共电压请求镜像，单位 V**。
+  与索引 48 命令镜像、索引 49 SVI 电压遥测分别呈现，不把请求值当作设备回读。索引从零开始。
+- 61h 请求路径完成选择、向上取整、编码上限、通道 0 路由及 PM 导出的连接；
+  24,576 组请求案例、160 组另一分支案例、6,144 组相邻浮点边界案例通过。
+- APOB 排序器、两套提供者、APIC 构造器与记录写出方贯通回放，864 组案例、
+  13,104 条输出记录通过。确认传入构造器的是枚举序号；尚不能从这里直接绑定 PM 槽位。
+- 导入时根据原始字节重建标记；伪造“已回读／物理电源已确认／可写”不会被信任。
+  负零、负值、次正规数、非有限值的原始位保留，不额外缩放或钳制。
 
-**44/44 最终云端任务通过：43 个应用任务和 1 个研究任务。** 应用使用提交 `89307187039a0db6eef8b4e01bdb6904a92adf74`，研究使用 `72439f25b00ef859bfd9a57032128d9a50352571`；两者之间仅修正一处研究脚本的记录头元数据，应用与构建输入一致；最终 main 提交只补文档及验证记录，未把它另算一次应用测试。源码核对覆盖应用/构建文件、27 个研究源文件和 195 份研究证据。其中 18 组既有回放脚本未改；拓扑协议回放修正 48 字节头的元数据后重跑 5348 个案例，执行结果与此前相同。新增 HOB/APOB 回放的 502 个案例也在本机、云端各执行并比对。前期 REA 检索批次保留记录，不重复计入 44 项。
+详见[公共请求路径](amd-granite-shared-request.md)及
+[APIC 枚举连接](amd-apob-apic-enumeration.md)。本轮新增的是一个公共软件电压字段，
+**剩余八行中没有新增已确认单位**，也没有开放新的硬件电压写入。
 
-11 个 x86_64 目标：`el7, el8, el9, el10, ubuntu20.04, ubuntu22.04, ubuntu24.04, ubuntu26.04, debian11, debian12, debian13`。EL7 指 Oracle Linux 7.9；Windows/macOS 只验证共享核心。生成 33 个安装包，最终桌面矩阵保存 1639 张截图。直接检查 EL7 和 Ubuntu 24.04 的新整表视图，截图来自合成文件。QEMU 检查驱动集成，未验证目标机调参、设备侧电压效果或 Secure Boot。
+## 最终云端结果
 
-CLI：`amd-topology-decode --file apob.bin`。GUI：AMD tuning → Open firmware topology file。可以使用单条 group 3/type 3 原始记录，或只含一条该类型记录的完整 APOB 文件。上限为 1 MiB；完整记录头是 48 字节（16 字节字段加 32 字节 HMAC），这修正了此前只把前 16 字节称作记录头的表述。HMAC 不作认证，解析成功不表示实际固件身份已核实。
+| 验证 | 结果 | 证据 |
+|---|---|---|
+| 可移植核心 | 4/4；Ubuntu 22.04/24.04、Windows 2022、macOS 14；每目标 37 个 CTest、496 组场景 | [core](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41289101995) |
+| 无 GUI CLI | 13/13；11 个 Linux 目标均 39 个 CTest、81 组 CLI 场景、1,584 条夹具 JSON；另增 14 组请求值进程测试 | [CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41289106398) |
+| GUI／发行包／内核 | 26/26；每个 Linux 目标 244 项 Qt 测试，EL7/EL8 基线各 244 项；33 个安装包、12 次内核虚拟机启动检查 | [Linux](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41289113688) |
+| REA／固件回放 | 1/1；六个 UEFI 模块，SMU/MP5 各 12,240 组编码自检，22 组本地与云端回放结果一致 | [REA](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41289121712) |
+| 合计 | **44/44 最终任务通过** | [完整机器可读记录](validation/amd-granite-ci-e75556b.json) |
 
-REA 追到 HOB GUID `30b174f3-7712-4cca-bd13-d0b8a8801997` 的读取路径；合成回放中的 HOB 列表已缓存，未运行 UEFI 初始化、断言处理或记录生产器。AMD openSIL 的公开头文件支持 HMAC 头部及嵌套编号字段的结构解释，但不同处理器的最大跨度不同，不能直接扩大本项目的 ASUS 参考布局。详见[交接路径与边界](amd-apob-handoff.md)。
+Linux 目标：el7, el8, el9, el10, ubuntu20.04, ubuntu22.04, ubuntu24.04, ubuntu26.04, debian11, debian12, debian13。EL7 为 Oracle Linux 7.9 基线。
+Windows/macOS 是核心测试，不是 Linux 安装包或真机调参验收。
+内核虚拟机检查未覆盖真实调参寄存器或 Secure Boot。
+本机源码镜像的 50 项移植测试为 37 通过、13 项因缺工具链跳过。云端编译验证使用上表仓库提交；
+八项既有本机扩展单独保留，未作为整套扩展提交云端验证。
+ASan/UBSan 的七组离线解析器检查通过，发行矩阵还通过 142 项分析工具及 34 项移植检查。
 
-剩余八行仍是核心 **0/4/12**、CCD **0/1/2/6/8**：还缺模型标定、计数事件身份和独立时间基准。APOB 记录的来源与目标机采用的实现、PM 槽位到物理 CCD/OS CPU 的关系、第二 rails 的物理通道和独立设备回读仍未证实。既有 Fmax 读写与保存值回读保留；未把软件镜像或命令完成状态当作设备实际状态。
+首轮新增用例通过后，测试末尾的场景总数断言仍为 16；已改为 17 后重跑。
+最终结果仅统计上表版本。被替代的运行及原因保存在验证记录中，没有计入通过数量。
 
-交付目录 `dist/gui-cli-amd-granite-8930718/` 含 33 个安装包及源码。根目录源码包保留云端测试快照；推荐 `updated-source/`，含最终文档和八项既有用户扩展。扩展只作本机可执行检查，不声称与云端源码完全一致。`SHA256SUMS` 覆盖全部交付文件；研究工具不打入 GUI/CLI 安装包。详细记录见[验证 JSON](validation/amd-granite-ci-8930718.json)和[研究 JSON](validation/amd-granite-research.json)。
+## 交付与边界
+
+本机交付目录为 `dist/gui-cli-amd-granite-e75556b/`，含 11 组 GUI／CLI／DKMS 安装包。
+`updated-source/octool-2.0.1-src.tar.gz` 包含已验证代码、最终文档和八项既有用户扩展；
+根目录源码包保留云端测试时的原始快照。文件来源、字节数、哈希和检查范围见
+`MANIFEST.json`、`VALIDATION.json` 与 `SHA256SUMS`。
+本机源码镜像已核对，保留既有扩展和文档 UMC 链接别名。
+EL7 和 Ubuntu 24.04 的公共请求/命令镜像截图已逐张检查，相关哈希保存在验证记录中。
+
+仍未完成：核心第 **0/4/12** 行、CCD 第 **0/1/2/6/8** 行单位；PM 槽位与物理
+CCD／OS 核心绑定；第二 rails 独立写入与设备回读。原指令回放说明当前软件模型的
+计算路径，不替代缺失的计数事件、时间基准、模型系数校准和真实固件选择证据。
+目标 9950X3D 不在用户身边，安装的 BIOS 未知，本轮没有进行真机验收。

@@ -1,8 +1,8 @@
 # Instrumentum Superfrequentationis
 
-<!-- amd-granite-8930718 -->
-2026-11-01：[9950X3D 本轮验证](docs/amd-granite-validation.md)通过 44/44 最终云端任务，20 组固件回放本地/云端逐项一致。GUI/CLI 支持完整 APOB 文件导入，整表检查后选择唯一拓扑记录；REA 追到 HOB 交接读取路径，新增 502 个原指令案例。剩余八行单位、PM 到物理 CCD/OS 核心绑定、第二 rails 独立写入与设备回读仍未完成。[用法与证据](docs/amd-apob-handoff.md)；源码和 33 个安装包：`dist/gui-cli-amd-granite-8930718/`。以下为历史阶段记录，以本段和当前验证报告为准。
-<!-- /amd-granite-8930718 -->
+<!-- amd-granite-e75556b -->
+2026-11-01：[9950X3D 本轮验证](docs/amd-granite-validation.md)通过 44/44 最终云端任务，22 组固件回放本地/云端逐项一致。GUI/CLI 新增 PM 索引 19 的公共电压请求镜像（V），与命令镜像及 SVI 遥测分别呈现；完成 24,576 组请求路径、6,144 组边界和 864 组拓扑枚举回放。剩余八行单位、PM 到物理 CCD/OS 核心绑定、第二 rails 独立写入与设备回读仍未完成。[用法与证据](docs/amd-granite-shared-request.md)；源码和 33 个安装包：`dist/gui-cli-amd-granite-e75556b/`。以下为历史阶段记录，以本段和当前验证报告为准。
+<!-- /amd-granite-e75556b -->
 
 <!-- amd-pm-ccd-168a618 -->
 2026-10-26：[PM 固件 CCD 映射验证](docs/amd-pm-ccd-validation.md)已通过 44/44 云端任务；GUI/CLI 同步提供 `--map-ccd`。适用 Shimada SMU 115.46.0，9950X3D 的 Granite Ridge 路径、字段单位和第二 rails 回读仍待恢复。源码与包：`dist/gui-cli-amd-pm-ccd-168a618/`。

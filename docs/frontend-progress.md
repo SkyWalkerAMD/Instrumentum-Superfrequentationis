@@ -1,9 +1,12 @@
 # GUI / CLI 同步进度
 
-2026-10-31：9950X3D 的 GUI/CLI 已同步增加三个电压命令镜像、两行逐核和一行 CCD 平均代码值，
-并显示 CCD/局部核心存储槽位。公共区为 22 项，Granite 另有完整原始字视图。
-软件命令镜像不是硬件回读；代码含义、物理 CCD/OS 核心绑定和第二 rails 独立设置回读仍未完成。
-当前实现见[字段与协议说明](amd-granite-channel-mirrors.md)，实际测试结果见[本轮验证](amd-granite-validation.md)。
+2026-11-01：9950X3D 的 GUI/CLI 已同步显示三个电压命令镜像、一个公共电压请求镜像，
+两行逐核和一行 CCD 平均代码值，以及 CCD/局部核心存储槽位。公共区为 23 项，
+Granite 另有完整原始字视图。新增请求镜像位于 PM 索引 19（偏移 0x4c），单位 V；
+它与命令镜像、SVI 遥测分别呈现。请求和命令镜像均不是硬件回读。
+剩余八行单位、代码含义、物理 CCD/OS 核心绑定和第二 rails 独立设置回读仍未完成。
+当前实现见[公共请求路径](amd-granite-shared-request.md)和[字段与协议说明](amd-granite-channel-mirrors.md)，
+实际测试结果见[本轮验证](amd-granite-validation.md)。
 以下为历史阶段记录。
 
 <!-- amd-firmware-pm-472e785 -->

@@ -423,7 +423,10 @@ octool-cli amd-pm-decode --file pm.bin --version 0x730204 --bclk-mhz 102.5
 9950X3D 使用独立的 [Granite Ridge 配置](amd-granite-pm.md)：
 `amd-pm-native-read --cpu 0 --platform granite-ridge`，接受精确 SMU 98.84.0；
 双槽表可加 `--map-ccd` 标出固件目标 0/1，但没有物理 CCD/OS 核心绑定。
-两种 Granite 表的公共 `fields` 有 22 项：七个未解释候选、三个软件电压命令镜像、十二个 SVI 遥测字段。
+两种 Granite 表的公共 `fields` 有 23 项：七个未解释候选、三个软件电压命令镜像、十二个 SVI 遥测字段，
+以及一个[公共电压请求镜像](amd-granite-shared-request.md)。新增请求位于 PM 索引 19／偏移 0x4c，
+以 V 显示；在字段列表末尾追加，保留已有字段顺序。其 `group` 为 `granite_shared_request`，
+`software_request_mirror: true`，`firmware_consumer_channel: 0`；独立 rail 和设备回读标记均为 false。
 命令镜像的 `group` 为 `granite_command_mirror`，并明确给出 `measurement: false`、
 `setting_readback_verified: false`。不要将字段列表下标当作 PM 索引，应使用 `offset` 与 `group`。
 核心第 8/11 行与 CCD 第 7 行以 `code` 保留平均代码，可能有小数，具体含义仍未确认。

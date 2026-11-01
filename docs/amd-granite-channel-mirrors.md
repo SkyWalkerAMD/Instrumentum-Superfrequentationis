@@ -27,6 +27,12 @@ JSON includes `software_command_mirror: true`, `measurement: false`, and false
 values for physical rail identity, freshness and setting readback verification.
 Imported labels and trust flags are rebuilt from the raw bytes.
 
+The subsequent [shared-request study](amd-granite-shared-request.md) adds PM
+index 19 in volts. It retains a software request before the enabled path's code
+quantization and cap, so it can differ from the channel-0 command mirror even
+before accounting for retention. It is displayed separately from these three
+command mirrors and from SVI telemetry.
+
 ## Separate override routes, unresolved physical rail identity
 
 | Firmware channel | Override command / handler | Direct writer | Release command / handler | Override flag |

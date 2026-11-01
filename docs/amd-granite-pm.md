@@ -4,6 +4,11 @@ This profile is a separate implementation of the Granite Ridge PM transport and
 stored table layout. It does not enable Shimada tuning commands on Granite Ridge.
 GUI and CLI use the same core decoder and capture implementation.
 
+The [shared voltage request follow-up](amd-granite-shared-request.md) adds common
+index 19 in software volts and connects its complete encoding path to firmware
+channel 0. It remains separate from command mirrors and SVI telemetry;
+independent second-rail write/readback is not established.
+
 The follow-up [field-unit and CCD identification study](amd-granite-semantics.md)
 now covers thirteen core-row and six CCD-row units, adds optional L3 geometry to CPUID topology and
 maps the exact two-slot native table to firmware target IDs 0/1.

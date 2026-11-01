@@ -7,6 +7,11 @@ accepted; see the [handoff and container follow-up](amd-apob-handoff.md). This i
 component of the firmware topology path. It does not connect PM storage slots
 to physical CCDs, OS CPUs or firmware tuning targets.
 
+The [APIC consumer follow-up](amd-apob-apic-enumeration.md) now replays the
+sorter, provider getters and APIC constructor together. The selected caller
+passes enumeration ordinals, not stored IDs; runtime PM/physical binding
+remains unverified.
+
 In AMD tuning, choose **Open firmware topology file…**. In the CLI:
 
 ```sh
