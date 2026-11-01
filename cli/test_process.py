@@ -58,9 +58,9 @@ for r in query_results:
         assert d['ln2_enabled'] is None and d['command'] == '0x0000005c'
         assert d['firmware_index'] in (0,1,7,127)
 assert sum(r['error'] == -22 for r in queries) == 20
-assert len(reports) == 1580, len(reports)
+assert len(reports) == 1584, len(reports)
 apob=[r for r in reports if r['command']=='amd-topology-decode']
-assert len(apob)==8 and sum(r['ok'] for r in apob)==1
+assert len(apob)==12 and sum(r['ok'] for r in apob)==2
 for r in apob:
     if 'topology_record' not in r['data']:
         assert not r['ok']
@@ -68,13 +68,19 @@ for r in apob:
     t=r['data']['topology_record']
     assert t['error']==r['error']
     assert not any(t[k] for k in ('hardware_accessed','reference_identity_verified',
-        'physical_mapping_verified','os_cpu_mapping_verified','pm_slot_mapping_verified'))
+        'physical_mapping_verified','os_cpu_mapping_verified','pm_slot_mapping_verified','record_hmac_verified'))
+    assert t['record_header_bytes']==48
     if r['ok']:
         assert [g['stored_id'] for g in t['groups']]==[8,4]
         c=t['groups'][0]['subgroups'][0]['cores'][1]
         assert c['stored_id']==2 and c['thread_flags']==[0,1] and c['thread_prefix_count']==0
+        if t['source']=='offline-apob-container':
+            assert t['container']==dict(version=5,record_count=3,selected_record_offset=80)
+            assert t['input_bytes']==584 and t['bytes']==456
+        else:
+            assert t['container'] is None and t['input_bytes']==456
     else:
-        assert t['groups']==[] and t['instance'] is None
+        assert t['groups']==[] and t['instance'] is None and t['container'] is None
 catalogs=[r['data']['topology_catalog'] for r in reports if 'topology_catalog' in r['data']]
 assert len(catalogs)==4 and [t['complete'] for t in catalogs]==[True,True,False,False]
 for t in catalogs:

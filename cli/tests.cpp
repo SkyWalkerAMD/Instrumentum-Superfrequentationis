@@ -1117,25 +1117,32 @@ void offlineTopologyDoesNotCreateBackend() {
     struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
     unsigned opens=0;
     const auto factory=[&]() { ++opens; return std::unique_ptr<HardwareBackend>(); };
-    for(unsigned mode=0;mode<8;++mode) {
+    for(unsigned mode=0;mode<12;++mode) {
         auto b=amd_apob_fixture::record();
         if(mode==1) b[4]=4;
         if(mode==2) b.resize(455);
         if(mode==3) b.resize(1048577);
         if(mode==4) b[12]=0;
+        if(mode>=8) b=amd_apob_fixture::container(mode==10);
+        if(mode==9) amd_apob_fixture::word(b,548,0); // Malformed tail after valid record.
+        if(mode==11) amd_apob_fixture::word(b,84,4); // No topology record.
         { std::ofstream file(path,std::ios::binary); file.write(reinterpret_cast<const char*>(b.data()),b.size()); }
         std::vector<std::string> args={"amd-topology-decode","--file",path};
         if(mode==5) args.back()=std::string(path)+".missing";
         if(mode==6) args.resize(1);
         if(mode==7) { args.push_back("--cpu"); args.push_back("0"); }
-        std::ostringstream out; assert(run(args,out,factory)==(mode>=6?2:mode?3:0));
+        const bool good=mode==0 || mode==8;
+        const bool syntax=mode==6 || mode==7;
+        std::ostringstream out; assert(run(args,out,factory)==(syntax?2:good?0:3));
         const auto json=out.str();
-        if(mode<6) {
+        if(!syntax) {
             assert(json.find("\"hardware_accessed\":false")!=std::string::npos);
             assert(json.find("\"pm_slot_mapping_verified\":false")!=std::string::npos);
-            if(mode) assert(json.find("\"groups\":[]")!=std::string::npos);
+            if(!good) assert(json.find("\"groups\":[]")!=std::string::npos);
+            assert(json.find("\"record_hmac_verified\":false")!=std::string::npos);
         }
-        if(!mode) assert(json.find("\"thread_flags\":[0,1],\"thread_prefix_count\":0")!=std::string::npos);
+        if(good) assert(json.find("\"thread_flags\":[0,1],\"thread_prefix_count\":0")!=std::string::npos);
+        if(mode==8) assert(json.find("\"selected_record_offset\":80")!=std::string::npos);
         if(emit) std::cout<<json;
     }
     assert(!opens);

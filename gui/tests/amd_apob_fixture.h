@@ -19,4 +19,16 @@ inline std::vector<std::uint8_t> record() {
     b[0x65]=7; b[0x66]=2; b[0x67]=0;
     return b;
 }
+// Complete synthetic container: header extension, unknown 48-byte record,
+// topology at byte 80, optional second instance, unknown trailing record.
+inline std::vector<std::uint8_t> container(bool duplicate=false) {
+    std::vector<std::uint8_t> b(duplicate?1040:584,0);
+    word(b,0,0x424f5041); word(b,4,5); word(b,8,unsigned(b.size())); word(b,12,32);
+    word(b,32,1); word(b,36,7); word(b,44,48);
+    const auto single=record();
+    for(unsigned i=0;i<456;++i) { b[80+i]=single[i]; if(duplicate) b[536+i]=single[i]; }
+    const unsigned tail=duplicate?992:536;
+    word(b,tail,7); word(b,tail+4,1); word(b,tail+12,48);
+    return b;
+}
 }

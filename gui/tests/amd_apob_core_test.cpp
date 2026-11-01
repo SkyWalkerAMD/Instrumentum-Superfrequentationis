@@ -85,8 +85,61 @@ void jsonAndMutationBoundaries() {
         else assert(t.groups.size()<=8);
     }
 }
+void completeContainerAndAmbiguity() {
+    auto b=amd_apob_fixture::container();
+    auto t=decodeAmdApobTopology(b);
+    assert(!t.error && t.container && t.containerVersion==5 && t.containerRecords==3);
+    assert(t.recordOffset==80 && t.inputBytes==584 && t.bytes==456 && t.groups.size()==2);
+    assert(t.instance==0x102 && t.groups[0].storedId==8);
+    auto json=amdApobTopologyJson(t);
+    assert(json.find("\"source\":\"offline-apob-container\"")!=std::string::npos);
+    assert(json.find("\"record_hmac_verified\":false")!=std::string::npos);
+    assert(json.find("\"selected_record_offset\":80")!=std::string::npos);
+    assert(json.find("\"pm_slot_mapping_verified\":false")!=std::string::npos);
+    for(unsigned instance:{0x102u,0u,0xffffffffu}) {
+        b=amd_apob_fixture::container(true); word(b,544,instance);
+        t=decodeAmdApobTopology(b); assert(t.error==-EEXIST && t.groups.empty());
+    }
+    b=amd_apob_fixture::container(); word(b,84,4);
+    assert(decodeAmdApobTopology(b).error==-ENOENT);
+    // HMAC is opaque, including all-ones; successful decoding never verifies it.
+    b=amd_apob_fixture::container();
+    for(unsigned i=96;i<128;++i) b[i]=255;
+    t=decodeAmdApobTopology(b); assert(!t.error && t.groups[0].storedId==8);
+    word(b,4,4); assert(decodeAmdApobTopology(b).error==-ENOTSUP);
+}
+void malformedContainersNeverExposePartialGroups() {
+    const auto good=amd_apob_fixture::container();
+    for(std::size_t n=0;n<good.size();++n) {
+        std::vector<std::uint8_t> b(n);
+        for(std::size_t i=0;i<n;++i) b[i]=good[i];
+        auto t=decodeAmdApobTopology(b); assert(t.error && t.groups.empty());
+        if(n>=16) {
+            word(b,8,unsigned(n)); t=decodeAmdApobTopology(b);
+            if(n==536) assert(!t.error && t.containerRecords==2);
+            else assert(t.error && t.groups.empty());
+        }
+    }
+    for(unsigned at:{8u,12u,44u,92u,548u}) for(unsigned value:{0u,15u,47u,0xfffffff0u,0xffffffffu}) {
+        auto b=good; word(b,at,value); const auto t=decodeAmdApobTopology(b);
+        assert(t.error && t.groups.empty());
+        const auto json=amdApobTopologyJson(t);
+        assert(json.find("\"groups\":[]")!=std::string::npos);
+        assert(json.find("\"container\":null")!=std::string::npos);
+    }
+    // Every structural field is mutated independently, including the tail
+    // AFTER a usable topology record. No loop can be driven by TypeSize zero.
+    for(unsigned at:{32u,36u,80u,84u,536u,540u}) for(unsigned value:{0u,1u,3u,0xffffffffu}) {
+        auto b=good; word(b,at,value); const auto t=decodeAmdApobTopology(b);
+        if(t.error) assert(t.groups.empty());
+        else assert(t.groups.size()==2 && t.containerRecords==3);
+    }
+    auto b=good; b.push_back(0); word(b,8,unsigned(b.size()));
+    assert(decodeAmdApobTopology(b).error==-EINVAL);
+}
 int main() {
     sparseIdsAndFlags(); boundedSingleRecord(); completeSpanAndArbitraryIds();
     sentinelAndAmbiguousRecords(); jsonAndMutationBoundaries();
-    std::cout << "5 AMD APOB topology scenario groups passed\n";
+    completeContainerAndAmbiguity(); malformedContainersNeverExposePartialGroups();
+    std::cout << "7 AMD APOB topology scenario groups passed\n";
 }

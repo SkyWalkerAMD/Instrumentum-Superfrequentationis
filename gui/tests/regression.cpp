@@ -3339,6 +3339,38 @@ private slots:
 #endif
         QCOMPARE(device->calls,0u); QCOMPARE(device->topologyReads,0u); QCOMPARE(device->registerRequests,0u);
     }
+    void amdTopologyContainerValidatesWholeInputBeforeDisplay() {
+        auto *device=new amd_topology_fixture::Device;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)));
+        panel.resize(1500,1400); panel.show();
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path=dir.filePath("apob.bin");
+        auto *table=panel.findChild<QTableWidget*>("smuTable");
+        for(unsigned mode=0;mode<4;++mode) {
+            // Reload a good file before EVERY rejection, checking stale results.
+            auto b=amd_apob_fixture::container();
+            const auto save=[&]() {
+                QFile file(path); QVERIFY(file.open(QIODevice::WriteOnly));
+                QCOMPARE(file.write(reinterpret_cast<const char*>(b.data()),qint64(b.size())),qint64(b.size()));
+            };
+            save(); QVERIFY(panel.loadTopologyRecord(path)); QCOMPARE(table->rowCount(),14);
+            QCOMPARE(table->item(0,1)->text(),QString("5"));
+            QCOMPARE(table->item(1,1)->text(),QString("3"));
+            QCOMPARE(table->item(2,1)->text(),QString("80"));
+            QCOMPARE(table->item(7,1)->text(),QString("Stored ID 8"));
+            if(mode==0) {
+                QVERIFY(panel.findChild<QLabel*>("smuStatus")->text().contains("HMAC"));
+                QApplication::processEvents();
+                const auto shot=qEnvironmentVariable("OCTOOL_AMD_APOB_CONTAINER_TEST_SCREENSHOT");
+                if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+                continue;
+            }
+            if(mode==1) amd_apob_fixture::word(b,548,0);
+            if(mode==2) b=amd_apob_fixture::container(true);
+            if(mode==3) amd_apob_fixture::word(b,84,4);
+            save(); QVERIFY(!panel.loadTopologyRecord(path)); QCOMPARE(table->rowCount(),0);
+        }
+        QCOMPARE(device->calls,0u); QCOMPARE(device->topologyReads,0u); QCOMPARE(device->registerRequests,0u);
+    }
     void amdTopologyShowsSparseIdsWithoutPreparingACommand() {
         PstateReference reference; reference.extendedMaximum=0x80000026;
         AmdTuningPanel panel(reference.access(),nullptr,3);

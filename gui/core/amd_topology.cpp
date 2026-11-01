@@ -175,14 +175,44 @@ std::string amdTopologyCatalogJson(const AmdTopologyCatalog &t) {
     return out+"]}";
 }
 AmdApobTopology decodeAmdApobTopology(const std::vector<std::uint8_t> &record) {
-    AmdApobTopology out; out.bytes=record.size();
+    AmdApobTopology out; out.bytes=record.size(); out.inputBytes=record.size();
     if(record.size()>1048576) { out.error=-EFBIG; out.detail="Topology record exceeds 1 MiB."; return out; }
-    // Maximum getter span: 0x30 + 8 * (1 + 2 * (1 + 8 * 3)).
-    if(record.size()<0x1c8) { out.error=-EINVAL; out.detail="Truncated APOB topology record (minimum 456 bytes)."; return out; }
     const auto word=[&](std::size_t at) {
         return std::uint32_t(record[at]) | (std::uint32_t(record[at+1])<<8) |
             (std::uint32_t(record[at+2])<<16) | (std::uint32_t(record[at+3])<<24);
     };
+    if(record.size()>=4 && word(0)==0x424f5041) {
+        out.container=true;
+        const auto fail=[&](int error,const char *detail) {
+            out.error=error; out.detail=detail; return out;
+        };
+        if(record.size()<16) return fail(-EINVAL,"Truncated APOB container header.");
+        if(word(4)<5) return fail(-ENOTSUP,"APOB container versions below 5 are unsupported.");
+        if(word(8)!=record.size()) return fail(-EINVAL,"Declared APOB container size does not match the file.");
+        std::size_t at=word(12), selected=0, selectedBytes=0;
+        unsigned matches=0, records=0;
+        if(at<16 || at>record.size()) return fail(-EINVAL,"Invalid first APOB record offset.");
+        while(at<record.size()) {
+            // Subtraction bounds every load/addition, including zero/oversized
+            // TypeSize, truncated HMAC headers and malformed trailing records.
+            if(record.size()-at<48) return fail(-EINVAL,"Truncated APOB record header in container.");
+            const std::size_t size=word(at+12);
+            if(size<48 || size>record.size()-at) return fail(-EINVAL,"Invalid APOB record size in container.");
+            ++records;
+            if(word(at)==3 && word(at+4)==3) { ++matches; selected=at; selectedBytes=size; }
+            at+=size;
+        }
+        if(!matches) return fail(-ENOENT,"No group 3/type 3 topology record in APOB container.");
+        if(matches!=1) return fail(-EEXIST,"Multiple topology records: extract the intended instance before decoding.");
+        std::vector<std::uint8_t> single(selectedBytes);
+        for(std::size_t i=0;i<selectedBytes;++i) single[i]=record[selected+i];
+        auto decoded=decodeAmdApobTopology(single);
+        decoded.container=true; decoded.inputBytes=record.size();
+        decoded.containerVersion=word(4); decoded.containerRecords=records; decoded.recordOffset=selected;
+        return decoded;
+    }
+    // Maximum getter span: 0x30 + 8 * (1 + 2 * (1 + 8 * 3)).
+    if(record.size()<0x1c8) { out.error=-EINVAL; out.detail="Truncated APOB topology record (minimum 456 bytes)."; return out; }
     if(word(0)!=3 || word(4)!=3) { out.error=-ENOTSUP; out.detail="Expected a single APOB group 3/type 3 record, including its header."; return out; }
     if(word(12)!=record.size()) { out.error=-EINVAL; out.detail="Declared record length does not match the file."; return out; }
     out.instance=word(8); out.extensionBytes=record.size()-0x1c8;
@@ -219,12 +249,17 @@ AmdApobTopology decodeAmdApobTopology(const std::vector<std::uint8_t> &record) {
 }
 std::string amdApobTopologyJson(const AmdApobTopology &t) {
     std::string out="{\"format\":\"octool-amd-apob-topology\",\"schema\":1,\"error\":"+std::to_string(t.error)+
-        ",\"source\":\"offline-apob-record\",\"reference_layout\":\"asus-creator-2503-d20482f8\","
+        ",\"source\":\""+(t.container?"offline-apob-container":"offline-apob-record")+"\",\"reference_layout\":\"asus-creator-2503-d20482f8\","
         "\"reference_identity_verified\":false,\"physical_mapping_verified\":false,\"os_cpu_mapping_verified\":false,"
-        "\"pm_slot_mapping_verified\":false,\"hardware_accessed\":false,\"bytes\":"+std::to_string(t.bytes);
+        "\"pm_slot_mapping_verified\":false,\"hardware_accessed\":false,\"record_hmac_verified\":false,"
+        "\"record_header_bytes\":48,\"input_bytes\":"+std::to_string(t.inputBytes)+",\"bytes\":"+std::to_string(t.bytes);
     const auto add=[&](const char *key,std::uint64_t value) { out+=",\""+std::string(key)+"\":"+(t.error?"null":std::to_string(value)); };
     add("instance",t.instance); add("extension_bytes",t.extensionBytes);
     add("duplicate_ids",t.duplicateIds); add("non_prefix_thread_flags",t.nonPrefixThreadFlags);
+    out+=",\"container\":";
+    if(t.container && !t.error) out+="{\"version\":"+std::to_string(t.containerVersion)+
+        ",\"record_count\":"+std::to_string(t.containerRecords)+",\"selected_record_offset\":"+std::to_string(t.recordOffset)+"}";
+    else out+="null";
     out+=",\"groups\":[";
     if(!t.error) for(std::size_t g=0;g<t.groups.size();++g) {
         if(g) out+=',';

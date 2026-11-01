@@ -65,11 +65,17 @@ struct AmdApobTopology {
     int error=0;
     std::string detail;
     std::uint32_t instance=0;
-    std::size_t bytes=0, extensionBytes=0;
+    std::size_t bytes=0, extensionBytes=0, inputBytes=0, recordOffset=0;
+    bool container=false;
+    std::uint32_t containerVersion=0;
+    unsigned containerRecords=0;
     unsigned duplicateIds=0, nonPrefixThreadFlags=0;
     std::vector<AmdApobGroup> groups;
 };
-// Offline single APOB group 3/type 3 record, INCLUDING its 16-byte record header.
+// Offline group 3/type 3 record INCLUDING its 48-byte header (16-byte fields
+// plus 32-byte HMAC), or a complete APOB container with exactly one such record.
+// The whole container is bounds checked before returning any decoded groups.
+// HMAC is not verified. Other records and header extensions are not interpreted.
 // Reference: ASUS ProArt X870E-CREATOR WIFI 2503, D20482F8 protocol providers.
 // This accepts a reference layout, not a verified platform/firmware identity.
 // Stored IDs are not asserted to be physical CCD/core, OS CPU or PM target IDs.

@@ -1529,7 +1529,7 @@ Usage: octool-cli COMMAND [OPTIONS]
   diagnose                         OS/CPU affinity/driver presence, no device open
   inventory                        BIOS, hwmon and bound-driver DDR4/DDR5 SPD
   spd-decode --file PATH            Decode a bounded offline SPD file
-  amd-topology-decode --file PATH   Decode one raw APOB topology record (reference layout only)
+  amd-topology-decode --file PATH   Decode an APOB record or unique-record container (reference layout)
   cpu --cpu N                      CPU identity
   register-read --space msr --cpu N --address A
   register-read --space mmio --address A --width 1|2|4|8

@@ -336,10 +336,10 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     auto *catalog=new QPushButton("Read all available CPU topology",this); catalog->setObjectName("smuTopologyCatalog");
     catalog->setToolTip("Read CPUs allowed to this process, preserving OS and APIC IDs. Include L3 cache to compare CCD capacities.");
     catalogButtons->addWidget(catalog);
-    auto *record=new QPushButton("Open firmware topology record…",this); record->setObjectName("smuTopologyRecord");
+    auto *record=new QPushButton("Open firmware topology file…",this); record->setObjectName("smuTopologyRecord");
     catalogButtons->addWidget(record); catalogButtons->addStretch(); layout->addLayout(catalogButtons);
     connect(record,&QPushButton::clicked,this,[this] {
-        const auto path=QFileDialog::getOpenFileName(this,"Open APOB topology record",QString(),"Binary records (*.bin);;All files (*)");
+        const auto path=QFileDialog::getOpenFileName(this,"Open APOB record or container",QString(),"Binary files (*.bin);;All files (*)");
         if(!path.isEmpty()) loadTopologyRecord(path);
     });
     connect(catalog,&QPushButton::clicked,this,[this] { readTopologyCatalog(); });
@@ -1010,6 +1010,11 @@ bool AmdTuningPanel::loadTopologyRecord(const QString &path) {
     if(error) { status_->setText("Cannot read topology record: "+failure(error)); return false; }
     const auto t=decodeAmdApobTopology(bytes);
     if(t.error) { status_->setText(QString::fromStdString(t.detail)); return false; }
+    if(t.container) {
+        append(table_,{"APOB container version",QString::number(t.containerVersion)});
+        append(table_,{"Container records",QString::number(t.containerRecords)});
+        append(table_,{"Selected record offset",QString::number(qulonglong(t.recordOffset))});
+    }
     append(table_,{"Record instance",QString::number(t.instance)});
     append(table_,{"Unparsed extension bytes",QString::number(qulonglong(t.extensionBytes))});
     append(table_,{"Duplicate IDs within a parent",QString::number(t.duplicateIds)});
@@ -1025,7 +1030,7 @@ bool AmdTuningPanel::loadTopologyRecord(const QString &path) {
                     .arg(c.storedId).arg(c.threadFlags[0]).arg(c.threadFlags[1]).arg(c.threadCount)});
         }
     }
-    status_->setText("Offline reference-layout record. Stored IDs and thread flags are preserved; these are not verified physical CCD/core, OS CPU or PM slot mappings. No hardware access performed.");
+    status_->setText("Offline reference-layout record. Origin, HMAC and physical/OS/PM mappings remain unverified. Stored IDs and thread flags are preserved. No hardware access performed.");
     return true;
 }
 void AmdTuningPanel::readTopology() {
