@@ -1,156 +1,156 @@
 {
   "schema": 2,
   "date": "2026-11-01",
-  "source_commit": "7de4b75616f2e904745f91f92e677bdac39af4ba",
+  "source_commit": "56475278681973db25a18fbcaf725c06a2e009e7",
   "run": {
     "attempt": 1,
     "conclusion": "success",
-    "headSha": "7de4b75616f2e904745f91f92e677bdac39af4ba",
+    "headSha": "56475278681973db25a18fbcaf725c06a2e009e7",
     "jobs": [
       {
-        "completedAt": "2026-11-01T12:04:50Z",
+        "completedAt": "2026-11-01T13:22:23Z",
         "conclusion": "success",
-        "databaseId": 124841638977,
+        "databaseId": 124859475449,
         "name": "firmware",
-        "startedAt": "2026-11-01T12:00:09Z",
+        "startedAt": "2026-11-01T13:16:13Z",
         "status": "completed",
         "steps": [
           {
-            "completedAt": "2026-11-01T12:00:12Z",
+            "completedAt": "2026-11-01T13:16:16Z",
             "conclusion": "success",
             "name": "Set up job",
             "number": 1,
-            "startedAt": "2026-11-01T12:00:10Z",
+            "startedAt": "2026-11-01T13:16:15Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T12:00:15Z",
+            "completedAt": "2026-11-01T13:16:18Z",
             "conclusion": "success",
             "name": "Run actions/checkout@v4",
             "number": 2,
-            "startedAt": "2026-11-01T12:00:12Z",
+            "startedAt": "2026-11-01T13:16:16Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T12:00:20Z",
+            "completedAt": "2026-11-01T13:16:22Z",
             "conclusion": "success",
             "name": "Run actions/setup-node@v4",
             "number": 3,
-            "startedAt": "2026-11-01T12:00:15Z",
+            "startedAt": "2026-11-01T13:16:18Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T12:00:20Z",
+            "completedAt": "2026-11-01T13:16:23Z",
             "conclusion": "success",
             "name": "Run actions/setup-java@v4",
             "number": 4,
-            "startedAt": "2026-11-01T12:00:20Z",
+            "startedAt": "2026-11-01T13:16:22Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T12:00:34Z",
+            "completedAt": "2026-11-01T13:16:39Z",
             "conclusion": "success",
             "name": "Install pinned analysis tools",
             "number": 5,
-            "startedAt": "2026-11-01T12:00:20Z",
+            "startedAt": "2026-11-01T13:16:23Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T12:00:37Z",
+            "completedAt": "2026-11-01T13:16:45Z",
             "conclusion": "success",
             "name": "Extend and compile the isolated static Xtensa decoder",
             "number": 6,
-            "startedAt": "2026-11-01T12:00:34Z",
+            "startedAt": "2026-11-01T13:16:39Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T12:00:38Z",
+            "completedAt": "2026-11-01T13:16:48Z",
             "conclusion": "success",
             "name": "Install isolated APIC replay dependencies",
             "number": 7,
-            "startedAt": "2026-11-01T12:00:37Z",
+            "startedAt": "2026-11-01T13:16:45Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T12:00:44Z",
+            "completedAt": "2026-11-01T13:16:55Z",
             "conclusion": "success",
             "name": "Extract pinned Granite Ridge reference inputs",
             "number": 8,
-            "startedAt": "2026-11-01T12:00:38Z",
+            "startedAt": "2026-11-01T13:16:48Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T12:01:21Z",
+            "completedAt": "2026-11-01T13:17:46Z",
             "conclusion": "success",
             "name": "Static SMU and MP5 discovery without Shimada address assumptions",
             "number": 9,
-            "startedAt": "2026-11-01T12:00:44Z",
+            "startedAt": "2026-11-01T13:16:55Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T12:03:22Z",
+            "completedAt": "2026-11-01T13:20:33Z",
             "conclusion": "success",
             "name": "Replay byte-checked Granite Ridge layout and metadata instructions",
             "number": 10,
-            "startedAt": "2026-11-01T12:01:21Z",
+            "startedAt": "2026-11-01T13:17:46Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T12:04:44Z",
+            "completedAt": "2026-11-01T13:22:15Z",
             "conclusion": "success",
             "name": "REA static UEFI entry points and RSMU transport helpers",
             "number": 11,
-            "startedAt": "2026-11-01T12:03:22Z",
+            "startedAt": "2026-11-01T13:20:33Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T12:04:47Z",
+            "completedAt": "2026-11-01T13:22:19Z",
             "conclusion": "success",
             "name": "Run actions/upload-artifact@v4",
             "number": 12,
-            "startedAt": "2026-11-01T12:04:44Z",
+            "startedAt": "2026-11-01T13:22:15Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T12:04:47Z",
+            "completedAt": "2026-11-01T13:22:19Z",
             "conclusion": "success",
             "name": "Post Run actions/setup-java@v4",
             "number": 22,
-            "startedAt": "2026-11-01T12:04:47Z",
+            "startedAt": "2026-11-01T13:22:19Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T12:04:47Z",
+            "completedAt": "2026-11-01T13:22:19Z",
             "conclusion": "success",
             "name": "Post Run actions/setup-node@v4",
             "number": 23,
-            "startedAt": "2026-11-01T12:04:47Z",
+            "startedAt": "2026-11-01T13:22:19Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T12:04:48Z",
+            "completedAt": "2026-11-01T13:22:20Z",
             "conclusion": "success",
             "name": "Post Run actions/checkout@v4",
             "number": 24,
-            "startedAt": "2026-11-01T12:04:47Z",
+            "startedAt": "2026-11-01T13:22:19Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T12:04:48Z",
+            "completedAt": "2026-11-01T13:22:20Z",
             "conclusion": "success",
             "name": "Complete job",
             "number": 25,
-            "startedAt": "2026-11-01T12:04:48Z",
+            "startedAt": "2026-11-01T13:22:20Z",
             "status": "completed"
           }
         ],
-        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41304365186/job/124841638977"
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41310432044/job/124859475449"
       }
     ],
     "status": "completed",
-    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41304365186"
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41310432044"
   },
-  "artifact_id": 13082727383,
+  "artifact_id": 13084663959,
   "hardware_execution": false,
   "physical_hardware_acceptance": "not_run",
   "installed_bios_known": false,
@@ -194,7 +194,7 @@
           "provider_id": "ghidra"
         },
         "file": "open.json",
-        "seconds": 0.17,
+        "seconds": 0.21,
         "error": false
       },
       {
@@ -203,7 +203,7 @@
           "procedure": "file-offset:0x4e4"
         },
         "file": "pseudo-0x4e4.json",
-        "seconds": 11.33,
+        "seconds": 14.38,
         "error": false
       },
       {
@@ -255,7 +255,7 @@
         "tool": "close_binary",
         "arguments": {},
         "file": "close.json",
-        "seconds": 0.1,
+        "seconds": 0.12,
         "error": false
       }
     ],
@@ -279,7 +279,7 @@
           "provider_id": "ghidra"
         },
         "file": "open.json",
-        "seconds": 0.16,
+        "seconds": 0.19,
         "error": false
       },
       {
@@ -288,7 +288,7 @@
           "procedure": "file-offset:0x4e4"
         },
         "file": "pseudo-0x4e4.json",
-        "seconds": 11.04,
+        "seconds": 13.84,
         "error": false
       },
       {
@@ -306,7 +306,7 @@
           "procedure": "file-offset:0xbf4"
         },
         "file": "pseudo-0xbf4.json",
-        "seconds": 0.03,
+        "seconds": 0.05,
         "error": false
       },
       {
@@ -340,7 +340,7 @@
         "tool": "close_binary",
         "arguments": {},
         "file": "close.json",
-        "seconds": 0.11,
+        "seconds": 0.13,
         "error": false
       }
     ],
@@ -364,7 +364,7 @@
           "provider_id": "ghidra"
         },
         "file": "open.json",
-        "seconds": 0.16,
+        "seconds": 0.19,
         "error": false
       },
       {
@@ -373,7 +373,7 @@
           "procedure": "file-offset:0x526c"
         },
         "file": "pseudo-0x526c.json",
-        "seconds": 12.35,
+        "seconds": 15.68,
         "error": false
       },
       {
@@ -391,7 +391,7 @@
           "procedure": "file-offset:0x3a0"
         },
         "file": "pseudo-0x3a0.json",
-        "seconds": 0.01,
+        "seconds": 0.02,
         "error": false
       },
       {
@@ -400,7 +400,7 @@
           "procedure": "0x3a0"
         },
         "file": "info-0x3a0.json",
-        "seconds": 0.0,
+        "seconds": 0.01,
         "error": false
       },
       {
@@ -427,7 +427,7 @@
           "procedure": "file-offset:0x1844"
         },
         "file": "pseudo-0x1844.json",
-        "seconds": 0.06,
+        "seconds": 0.08,
         "error": false
       },
       {
@@ -436,7 +436,7 @@
           "procedure": "0x1844"
         },
         "file": "info-0x1844.json",
-        "seconds": 0.01,
+        "seconds": 0.04,
         "error": false
       },
       {
@@ -463,7 +463,7 @@
           "procedure": "file-offset:0x2d24"
         },
         "file": "pseudo-0x2d24.json",
-        "seconds": 0.05,
+        "seconds": 0.06,
         "error": false
       },
       {
@@ -539,7 +539,7 @@
           "provider_id": "ghidra"
         },
         "file": "open.json",
-        "seconds": 0.17,
+        "seconds": 0.2,
         "error": false
       },
       {
@@ -548,7 +548,7 @@
           "procedure": "file-offset:0x13e4"
         },
         "file": "pseudo-0x13e4.json",
-        "seconds": 11.11,
+        "seconds": 13.64,
         "error": false
       },
       {
@@ -566,7 +566,7 @@
           "procedure": "file-offset:0x1840"
         },
         "file": "pseudo-0x1840.json",
-        "seconds": 0.02,
+        "seconds": 0.03,
         "error": false
       },
       {
@@ -584,7 +584,7 @@
           "procedure": "file-offset:0x1a50"
         },
         "file": "pseudo-0x1a50.json",
-        "seconds": 0.03,
+        "seconds": 0.04,
         "error": false
       },
       {
@@ -593,7 +593,7 @@
           "procedure": "0x1a50"
         },
         "file": "info-0x1a50.json",
-        "seconds": 0.01,
+        "seconds": 0.03,
         "error": false
       },
       {
@@ -602,7 +602,7 @@
           "procedure": "file-offset:0x1ce0"
         },
         "file": "pseudo-0x1ce0.json",
-        "seconds": 0.01,
+        "seconds": 0.02,
         "error": false
       },
       {
@@ -611,7 +611,7 @@
           "procedure": "0x1ce0"
         },
         "file": "info-0x1ce0.json",
-        "seconds": 0.0,
+        "seconds": 0.01,
         "error": false
       },
       {
@@ -629,7 +629,7 @@
           "procedure": "0x1d00"
         },
         "file": "info-0x1d00.json",
-        "seconds": 0.0,
+        "seconds": 0.01,
         "error": false
       },
       {
@@ -656,7 +656,7 @@
           "procedure": "file-offset:0x1d78"
         },
         "file": "pseudo-0x1d78.json",
-        "seconds": 0.01,
+        "seconds": 0.02,
         "error": false
       },
       {
@@ -665,7 +665,7 @@
           "procedure": "0x1d78"
         },
         "file": "info-0x1d78.json",
-        "seconds": 0.0,
+        "seconds": 0.01,
         "error": false
       },
       {
@@ -692,7 +692,7 @@
           "procedure": "file-offset:0x1e7c"
         },
         "file": "pseudo-0x1e7c.json",
-        "seconds": 0.01,
+        "seconds": 0.02,
         "error": false
       },
       {
@@ -701,7 +701,7 @@
           "procedure": "0x1e7c"
         },
         "file": "info-0x1e7c.json",
-        "seconds": 0.0,
+        "seconds": 0.01,
         "error": false
       },
       {
@@ -737,7 +737,7 @@
           "procedure": "0x2118"
         },
         "file": "info-0x2118.json",
-        "seconds": 0.0,
+        "seconds": 0.01,
         "error": false
       },
       {
@@ -773,7 +773,7 @@
           "procedure": "0x2ac0"
         },
         "file": "info-0x2ac0.json",
-        "seconds": 0.01,
+        "seconds": 0.0,
         "error": false
       },
       {
@@ -800,7 +800,7 @@
           "procedure": "file-offset:0x96c"
         },
         "file": "pseudo-0x96c.json",
-        "seconds": 0.04,
+        "seconds": 0.01,
         "error": false
       },
       {
@@ -809,7 +809,7 @@
           "procedure": "0x96c"
         },
         "file": "info-0x96c.json",
-        "seconds": 0.02,
+        "seconds": 0.0,
         "error": false
       },
       {
@@ -818,7 +818,7 @@
           "procedure": "file-offset:0x72c"
         },
         "file": "pseudo-0x72c.json",
-        "seconds": 0.09,
+        "seconds": 0.03,
         "error": false
       },
       {
@@ -827,7 +827,7 @@
           "procedure": "0x72c"
         },
         "file": "info-0x72c.json",
-        "seconds": 0.01,
+        "seconds": 0.0,
         "error": false
       },
       {
@@ -870,7 +870,7 @@
         "tool": "close_binary",
         "arguments": {},
         "file": "close.json",
-        "seconds": 0.09,
+        "seconds": 0.12,
         "error": false
       }
     ],
@@ -918,7 +918,7 @@
           "provider_id": "ghidra"
         },
         "file": "open.json",
-        "seconds": 0.16,
+        "seconds": 0.19,
         "error": false
       },
       {
@@ -927,7 +927,7 @@
           "procedure": "file-offset:0x1454"
         },
         "file": "pseudo-0x1454.json",
-        "seconds": 10.95,
+        "seconds": 14.06,
         "error": false
       },
       {
@@ -945,7 +945,7 @@
           "procedure": "file-offset:0x18b4"
         },
         "file": "pseudo-0x18b4.json",
-        "seconds": 0.02,
+        "seconds": 0.03,
         "error": false
       },
       {
@@ -963,7 +963,7 @@
           "procedure": "file-offset:0x1ac4"
         },
         "file": "pseudo-0x1ac4.json",
-        "seconds": 0.03,
+        "seconds": 0.04,
         "error": false
       },
       {
@@ -972,7 +972,7 @@
           "procedure": "0x1ac4"
         },
         "file": "info-0x1ac4.json",
-        "seconds": 0.01,
+        "seconds": 0.03,
         "error": false
       },
       {
@@ -990,7 +990,7 @@
           "procedure": "0x1d54"
         },
         "file": "info-0x1d54.json",
-        "seconds": 0.02,
+        "seconds": 0.1,
         "error": false
       },
       {
@@ -999,7 +999,7 @@
           "procedure": "file-offset:0x1d74"
         },
         "file": "pseudo-0x1d74.json",
-        "seconds": 0.02,
+        "seconds": 0.01,
         "error": false
       },
       {
@@ -1008,7 +1008,7 @@
           "procedure": "0x1d74"
         },
         "file": "info-0x1d74.json",
-        "seconds": 0.01,
+        "seconds": 0.0,
         "error": false
       },
       {
@@ -1026,7 +1026,7 @@
           "procedure": "0x1d9c"
         },
         "file": "info-0x1d9c.json",
-        "seconds": 0.01,
+        "seconds": 0.0,
         "error": false
       },
       {
@@ -1035,7 +1035,7 @@
           "procedure": "file-offset:0x1dec"
         },
         "file": "pseudo-0x1dec.json",
-        "seconds": 0.02,
+        "seconds": 0.01,
         "error": false
       },
       {
@@ -1044,7 +1044,7 @@
           "procedure": "0x1dec"
         },
         "file": "info-0x1dec.json",
-        "seconds": 0.01,
+        "seconds": 0.0,
         "error": false
       },
       {
@@ -1053,7 +1053,7 @@
           "procedure": "file-offset:0x1e58"
         },
         "file": "pseudo-0x1e58.json",
-        "seconds": 0.02,
+        "seconds": 0.01,
         "error": false
       },
       {
@@ -1062,7 +1062,7 @@
           "procedure": "0x1e58"
         },
         "file": "info-0x1e58.json",
-        "seconds": 0.01,
+        "seconds": 0.0,
         "error": false
       },
       {
@@ -1071,7 +1071,7 @@
           "procedure": "file-offset:0x1ef0"
         },
         "file": "pseudo-0x1ef0.json",
-        "seconds": 0.02,
+        "seconds": 0.01,
         "error": false
       },
       {
@@ -1080,7 +1080,7 @@
           "procedure": "0x1ef0"
         },
         "file": "info-0x1ef0.json",
-        "seconds": 0.01,
+        "seconds": 0.0,
         "error": false
       },
       {
@@ -1089,7 +1089,7 @@
           "procedure": "file-offset:0x1fb4"
         },
         "file": "pseudo-0x1fb4.json",
-        "seconds": 0.03,
+        "seconds": 0.02,
         "error": false
       },
       {
@@ -1098,7 +1098,7 @@
           "procedure": "0x1fb4"
         },
         "file": "info-0x1fb4.json",
-        "seconds": 0.01,
+        "seconds": 0.0,
         "error": false
       },
       {
@@ -1152,7 +1152,7 @@
           "procedure": "0x2a30"
         },
         "file": "info-0x2a30.json",
-        "seconds": 0.0,
+        "seconds": 0.01,
         "error": false
       },
       {
@@ -1267,7 +1267,7 @@
         "tool": "close_binary",
         "arguments": {},
         "file": "close.json",
-        "seconds": 0.1,
+        "seconds": 0.11,
         "error": false
       }
     ],
@@ -1316,7 +1316,7 @@
           "provider_id": "ghidra"
         },
         "file": "open.json",
-        "seconds": 0.16,
+        "seconds": 0.19,
         "error": false
       },
       {
@@ -1325,7 +1325,7 @@
           "procedure": "file-offset:0x404"
         },
         "file": "pseudo-0x404.json",
-        "seconds": 12.22,
+        "seconds": 15.15,
         "error": false
       },
       {
@@ -1343,7 +1343,7 @@
           "procedure": "file-offset:0x4a38"
         },
         "file": "pseudo-0x4a38.json",
-        "seconds": 0.03,
+        "seconds": 0.04,
         "error": false
       },
       {
@@ -1379,7 +1379,7 @@
           "procedure": "file-offset:0x5364"
         },
         "file": "pseudo-0x5364.json",
-        "seconds": 0.01,
+        "seconds": 0.04,
         "error": false
       },
       {
@@ -1388,7 +1388,7 @@
           "procedure": "0x5364"
         },
         "file": "info-0x5364.json",
-        "seconds": 0.0,
+        "seconds": 0.01,
         "error": false
       },
       {
@@ -1397,7 +1397,7 @@
           "procedure": "file-offset:0x53a4"
         },
         "file": "pseudo-0x53a4.json",
-        "seconds": 0.05,
+        "seconds": 0.03,
         "error": false
       },
       {
@@ -1433,7 +1433,7 @@
           "procedure": "file-offset:0x550c"
         },
         "file": "pseudo-0x550c.json",
-        "seconds": 0.02,
+        "seconds": 0.03,
         "error": false
       },
       {
@@ -1469,7 +1469,7 @@
           "procedure": "file-offset:0x5660"
         },
         "file": "pseudo-0x5660.json",
-        "seconds": 0.01,
+        "seconds": 0.02,
         "error": false
       },
       {
@@ -1487,7 +1487,7 @@
           "procedure": "file-offset:0x5700"
         },
         "file": "pseudo-0x5700.json",
-        "seconds": 0.01,
+        "seconds": 0.02,
         "error": false
       },
       {
@@ -1496,7 +1496,7 @@
           "procedure": "0x5700"
         },
         "file": "info-0x5700.json",
-        "seconds": 0.0,
+        "seconds": 0.01,
         "error": false
       },
       {
@@ -1521,7 +1521,7 @@
         "tool": "close_binary",
         "arguments": {},
         "file": "close.json",
-        "seconds": 0.1,
+        "seconds": 0.11,
         "error": false
       }
     ],
@@ -4527,6 +4527,7 @@
   "local_cloud_replays_identical": [
     "apic",
     "apic-enumeration",
+    "apob-comparison",
     "apob-handoff",
     "channels",
     "clock-models",
@@ -4545,6 +4546,7 @@
     "rails",
     "register-targets",
     "registers",
+    "scheduling",
     "semantics",
     "shared-request",
     "telemetry",
@@ -5316,6 +5318,84 @@
     "schema": 1,
     "user_cpu_capture_verified": false
   },
+  "apob_os_comparison_oracle": {
+    "schema": 1,
+    "hardware_execution": false,
+    "providers": {
+      "a": {
+        "source_sha256": "8ea4e45882f053775e87943b20b092d2086787a9500a120fb9f35af62d424295",
+        "cases": 24,
+        "output_records": 312,
+        "trace_sha256": "fd2872e3f37931a7baf9152419dd5ac7749f9218ce340160a965002bf4a7b377"
+      },
+      "b": {
+        "source_sha256": "c4828555b14a4d8b8e84c7f94f2258b941a778a553cbb7666aac603b251a56b4",
+        "cases": 24,
+        "output_records": 312,
+        "trace_sha256": "fd2872e3f37931a7baf9152419dd5ac7749f9218ce340160a965002bf4a7b377"
+      }
+    },
+    "topology_sha256": "78e0fae1bbe0c4a35d6edaf1e50f0b1c5572066fdf63f9da5b8b59517d93b813",
+    "capture_sha256": "3f4f76ee0440b141b1a8f180ccaa7b0e2662607df622320cfab0b00e468d3279",
+    "fixture_sha256": "48678c1123e42e70cb92622931f7c832a38bdb63dcf4edd322cebe76f4d7e8bb",
+    "fixture_cases": 24,
+    "fixture_rows": 312,
+    "runtime_provider_verified": false,
+    "record_origin_verified": false,
+    "pm_slot_mapping_verified": false,
+    "physical_mapping_verified": false,
+    "remaining_row_units_verified": false,
+    "independent_second_rail_verified": false
+  },
+  "model_scheduling_proof": {
+    "schema": 1,
+    "hardware_execution": false,
+    "source_sha256": {
+      "smu": "5d7951d30fefea6c5f435ac219fe4879adb0d8f66727211e32af1ff89d6b7596",
+      "mp5": "fb5d96c17b909cc4f681523ccc931796e27c7457ba5ad637a3d4fce1c78ce556"
+    },
+    "enqueue": {
+      "cases": 8192,
+      "queue_attempts": 16,
+      "accepted": 4,
+      "pending_gate_skips": 2032,
+      "inhibited_cases": 6144,
+      "entry": "0x11e8",
+      "pending_byte": "0x82f8",
+      "inhibit_byte": "0x82f9",
+      "skipped_counter": "0x81cc",
+      "queued_dispatcher": "0x1dcf4",
+      "trace_sha256": "7a3afec88bb8b921a174eb1208a574f43f2904a1b2d4df67f6dc462483e356b0"
+    },
+    "broadcast": {
+      "cases": 48,
+      "non_success_nonzero_completion_cases": 27,
+      "entry": "0x1d62c",
+      "command": "0x0d",
+      "presence_not_active_mask": true,
+      "checks_success_code": false,
+      "trace_sha256": "c5444e6ed3ef7b74d8defa7f0df6988cc70b0851e42647982b93b887175276c6"
+    },
+    "ack_before_queue": {
+      "cases": 6,
+      "entry": "0x2d7b8",
+      "queued_dispatcher": "0x2d78c",
+      "model_callback": "0x2c798",
+      "completion_precedes_queue": true,
+      "queue_return_checked": false,
+      "model_update_completed": false,
+      "trace_sha256": "968bc043492d31e8330799c62ce71a20986926ce0c3c7c444dd90e2a116e3290"
+    },
+    "queue_services_executed": false,
+    "interrupt_service_executed": false,
+    "absolute_update_period_verified": false,
+    "counter_event_identity_verified": false,
+    "integrator_msr_alias_verified": false,
+    "new_physical_units": {},
+    "runtime_write_enabled": false,
+    "pm_slot_mapping_verified": false,
+    "independent_second_rail_verified": false
+  },
   "new_common_units": {},
   "previous_common_units": {
     "19": "V"
@@ -5323,1079 +5403,1093 @@
   "new_core_or_ccd_units": {},
   "research_iterations": [
     {
-      "run": 41303616639,
-      "sha": "9e21a56a9f08bbaece5dd7efd947b0e4cfc805bf"
+      "run": 41308642806,
+      "sha": "fac21388bc18c304080f2bad7dd16b7628872db9"
     },
     {
-      "run": 41304365186,
-      "sha": "7de4b75616f2e904745f91f92e677bdac39af4ba"
+      "run": 41308876161,
+      "sha": "d50da8dd72735fa9beab77ac0ddcee28c68d6fd6"
+    },
+    {
+      "run": 41310432044,
+      "sha": "56475278681973db25a18fbcaf725c06a2e009e7"
     }
   ],
   "prior_local_replay_batch": "granite13/granite15: prior outputs rechecked against final cloud; added finite CEIL.S and BGEI support does not change these replay results",
   "evidence_files": [
     {
-      "path": "build/granite-study-41304365186/artifact.json",
+      "path": "build/granite-study-41310432044/artifact.json",
       "bytes": 863,
-      "sha256": "beab31e12d392b240b48646d3e5e739bbb19c6dfe24010afd0f013549a8dc557"
+      "sha256": "b2e6a33f3de8eacb8176def2f9af30900a7d4590fc9f4380658be1062f42a588"
     },
     {
-      "path": "build/granite-study-41304365186/artifact.zip",
-      "bytes": 2801072,
-      "sha256": "a33eab09b2b9707d8607145e5cc295ff3895395d31961a006946a2dc8a98ed5c"
+      "path": "build/granite-study-41310432044/artifact.zip",
+      "bytes": 2802625,
+      "sha256": "382be42c4cb631faa901e26ed075833a0184479f75a7d15fee42d2f075bc69ab"
     },
     {
-      "path": "build/granite-study-41304365186/granite-apic-enumeration.json",
+      "path": "build/granite-study-41310432044/granite-apic-enumeration.json",
       "bytes": 2986,
       "sha256": "6f8b8753220997fcd95db1366cac46ec97363f655add4d9e10e1324ec8c6ed9d"
     },
     {
-      "path": "build/granite-study-41304365186/granite-apic.json",
+      "path": "build/granite-study-41310432044/granite-apic.json",
       "bytes": 1509,
       "sha256": "6c5b7e93d85129ce974e48e64610e3280c5df767cfb14443c516b5535c5a30db"
     },
     {
-      "path": "build/granite-study-41304365186/granite-apob-handoff.json",
+      "path": "build/granite-study-41310432044/granite-apob-comparison.json",
+      "bytes": 1107,
+      "sha256": "f70fe824cc68aa5b74f7b35973aa97b88fc3b473433aa520b41f248bd89dc895"
+    },
+    {
+      "path": "build/granite-study-41310432044/granite-apob-handoff.json",
       "bytes": 1494,
       "sha256": "1449c37e5c2d98ebd5f065a025584bc31c892060c0028d884735fc5f36d99a19"
     },
     {
-      "path": "build/granite-study-41304365186/granite-channels.json",
+      "path": "build/granite-study-41310432044/granite-channels.json",
       "bytes": 2363,
       "sha256": "1ab3cd3eff9fffada57ac1708c85e9b503a41d67d10561b30b3034a92f489997"
     },
     {
-      "path": "build/granite-study-41304365186/granite-clock-models.json",
+      "path": "build/granite-study-41310432044/granite-clock-models.json",
       "bytes": 3905,
       "sha256": "7c02e1623702393751f65c7a2c9ad98e65bf760b32005a67594064e5de0e9740"
     },
     {
-      "path": "build/granite-study-41304365186/granite-codes.json",
+      "path": "build/granite-study-41310432044/granite-codes.json",
       "bytes": 950,
       "sha256": "ebd749e1635d91493b73eccf580e755b59718c3b9ff17d876e21d537fa5dcfab"
     },
     {
-      "path": "build/granite-study-41304365186/granite-config-port.json",
+      "path": "build/granite-study-41310432044/granite-config-port.json",
       "bytes": 2469,
       "sha256": "d9575b7197bc2f58ef6d96e685f7e6fc7930adb47f71ca042d7fc7505094dc67"
     },
     {
-      "path": "build/granite-study-41304365186/granite-config-route.json",
+      "path": "build/granite-study-41310432044/granite-config-route.json",
       "bytes": 1857,
       "sha256": "4c3282989932cf82de9a87a35c621bf1ff1b00ea3d968e8126dbb1195c2678df"
     },
     {
-      "path": "build/granite-study-41304365186/granite-consumers.json",
+      "path": "build/granite-study-41310432044/granite-consumers.json",
       "bytes": 1389,
       "sha256": "1de0f9ba3d7a737aa2cc9fdee547ed630294abca3ba865cb0d498910a83df28e"
     },
     {
-      "path": "build/granite-study-41304365186/granite-counters.json",
+      "path": "build/granite-study-41310432044/granite-counters.json",
       "bytes": 2681,
       "sha256": "15270b81a04bb032404de4e16fef79a0dc48048b3c25f570fcd4d522ad974e24"
     },
     {
-      "path": "build/granite-study-41304365186/granite-fmax.json",
+      "path": "build/granite-study-41310432044/granite-fmax.json",
       "bytes": 900,
       "sha256": "40a0e733eb5eff51b2c9e5b1e563e065d8ed395c103d5ae8a3f57a9a81dc10a2"
     },
     {
-      "path": "build/granite-study-41304365186/granite-input-manifest.json",
+      "path": "build/granite-study-41310432044/granite-input-manifest.json",
       "bytes": 2348,
       "sha256": "b419b617b4d614dba27b047d20837e338354ce43de4993702a48de3628b67485"
     },
     {
-      "path": "build/granite-study-41304365186/granite-model-inputs.json",
+      "path": "build/granite-study-41310432044/granite-model-inputs.json",
       "bytes": 2283,
       "sha256": "14d1d7a558da772a4a630363085c275e7d0190890c9a1d7df3a71b71cab95f3b"
     },
     {
-      "path": "build/granite-study-41304365186/granite-performance.json",
+      "path": "build/granite-study-41310432044/granite-performance.json",
       "bytes": 5044,
       "sha256": "7c85779ab9e2bd81ba902d303c92e1de161196226d33cbb12e46cc09582bd942"
     },
     {
-      "path": "build/granite-study-41304365186/granite-producers.json",
+      "path": "build/granite-study-41310432044/granite-producers.json",
       "bytes": 3130,
       "sha256": "fa18faceb9a1bb25a007c8eb1a999590527b9b00b11e54626649938c9c2ac21a"
     },
     {
-      "path": "build/granite-study-41304365186/granite-proof.json",
+      "path": "build/granite-study-41310432044/granite-proof.json",
       "bytes": 3373,
       "sha256": "b595fd2b1dba1e53733b429d702fc4f87f3ea6ce2fb17afb839932f0b7b836f6"
     },
     {
-      "path": "build/granite-study-41304365186/granite-provider-gates.json",
+      "path": "build/granite-study-41310432044/granite-provider-gates.json",
       "bytes": 3652,
       "sha256": "71dbd66aac2823d452feafbb03c02ffbc3ee9d09791f03e39b8bb4ed078f5925"
     },
     {
-      "path": "build/granite-study-41304365186/granite-published-topology.json",
+      "path": "build/granite-study-41310432044/granite-published-topology.json",
       "bytes": 2591,
       "sha256": "7f1e4455c5f5d0264e025e37a6c772a594a4ee992ab09a1738f1665208c1b997"
     },
     {
-      "path": "build/granite-study-41304365186/granite-rails-proof.json",
+      "path": "build/granite-study-41310432044/granite-rails-proof.json",
       "bytes": 2939,
       "sha256": "a06a2f4c580a5730bc6b3cb0a66137cf6fb6ac5cfdb601060c3eba78a07fcb84"
     },
     {
-      "path": "build/granite-study-41304365186/granite-register-targets.json",
+      "path": "build/granite-study-41310432044/granite-register-targets.json",
       "bytes": 1958,
       "sha256": "f90070b2f28428ca3f74c9f46140b3ea4e53a5b3421e15e61c51d79d8683b7cd"
     },
     {
-      "path": "build/granite-study-41304365186/granite-registers.json",
+      "path": "build/granite-study-41310432044/granite-registers.json",
       "bytes": 1748,
       "sha256": "9188731a950ac20c601226ce6c2401bae3954a4631ebe6547e996ecb39f86c36"
     },
     {
-      "path": "build/granite-study-41304365186/granite-semantics.json",
+      "path": "build/granite-study-41310432044/granite-scheduling.json",
+      "bytes": 1594,
+      "sha256": "4261ca93f6fb02303c55731b8106de07808d9fbebca12b9cc27b4faaeb308e1c"
+    },
+    {
+      "path": "build/granite-study-41310432044/granite-semantics.json",
       "bytes": 3038,
       "sha256": "e713f6d307f1b47caaafbc0673390b820107a79ba6b39d904dccc135c7730b0b"
     },
     {
-      "path": "build/granite-study-41304365186/granite-shared-request.json",
+      "path": "build/granite-study-41310432044/granite-shared-request.json",
       "bytes": 1944,
       "sha256": "e66f7a85064b83c201b454951c2b2d50940e8789f5973c67ad41cd694445222a"
     },
     {
-      "path": "build/granite-study-41304365186/granite-telemetry.json",
+      "path": "build/granite-study-41310432044/granite-telemetry.json",
       "bytes": 3823,
       "sha256": "5a4e3d34a8410ac946a140eb7735af32144e6cdb9a405ee779e25d81f5f1767c"
     },
     {
-      "path": "build/granite-study-41304365186/granite-topology-protocol.json",
+      "path": "build/granite-study-41310432044/granite-topology-protocol.json",
       "bytes": 3800,
       "sha256": "c875da5f20c1dbcc0c5c2cf553762c3109c72faff6ed55facfc03a94b2d7abfe"
     },
     {
-      "path": "build/granite-study-41304365186/granite-topology.json",
+      "path": "build/granite-study-41310432044/granite-topology.json",
       "bytes": 16953,
       "sha256": "105017644becf8ae4b7c6bfd84137bb142cceaaefeb26578935c16a928d6f57d"
     },
     {
-      "path": "build/granite-study-41304365186/granite-transfers.json",
+      "path": "build/granite-study-41310432044/granite-transfers.json",
       "bytes": 5589,
       "sha256": "732cdda068ca346962e2a4b09f2eccca9e6f754cdca0e0df79bd3729bde5b7c3"
     },
     {
-      "path": "build/granite-study-41304365186/mp5/smu-study.json",
+      "path": "build/granite-study-41310432044/mp5/smu-study.json",
       "bytes": 3661570,
       "sha256": "08135dd0d1359241fbd0b8cd8c1ecaf3e98fa4c5de3f1fcf94f85516a82ab7bf"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/analysis-seeds.tsv",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/analysis-seeds.tsv",
       "bytes": 159,
       "sha256": "79ffe2b23d52aa0d02a337961d9a36918059d82626779e761f5c4fe1f65ed353"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/close.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/close.json",
       "bytes": 251,
       "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/evidence.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/evidence.json",
       "bytes": 129484,
       "sha256": "dc1e70843a4499764b96315cb03fccb7f2495640fa1231d0036ad843b617c96a"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/export.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/export.json",
       "bytes": 569,
       "sha256": "37b6d1b6b664c28262e9acaa0adfa4dfaddbc774916be77550c119ef31e13573"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/info-0x404.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/info-0x404.json",
       "bytes": 12245,
       "sha256": "7c2ac957ae7ac54acc07fb8ab8be6beb45012005ff5b7de5aa104a43bc3301e1"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/info-0x4a38.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/info-0x4a38.json",
       "bytes": 14043,
       "sha256": "e28857bf1aee1a22b1335f87f02c518ff5255e8e7faf16a44fbecbfb690e8884"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/info-0x5338.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/info-0x5338.json",
       "bytes": 12807,
       "sha256": "98d723193bb90ae99bd0a1daa00712462acd5d6b4b59935df8d81c8f5cf7f120"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/info-0x5364.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/info-0x5364.json",
       "bytes": 12831,
       "sha256": "ef4e6fe6a441069340f8a777bfcd2220270728d9615a1c98e53494df414d06a4"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/info-0x53a4.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/info-0x53a4.json",
       "bytes": 13915,
       "sha256": "afd66b454135564dac9a3e5e9222f31627505b4713df1720db70c7f8b678c634"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/info-0x546c.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/info-0x546c.json",
       "bytes": 14399,
       "sha256": "2c529963d5e25586d96b98a2f117b8b26ef85f31454ab309af401f246437bd37"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/info-0x550c.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/info-0x550c.json",
       "bytes": 14683,
       "sha256": "3364d543f5d6b3de24644233a0e97e08720b7578a73f2fa1849a596844c9e78b"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/info-0x55f8.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/info-0x55f8.json",
       "bytes": 13515,
       "sha256": "aff0907f3c61b37ec92da0b15b3b4dc5285070bdbb05124080d2ce47c3d065cf"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/info-0x5660.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/info-0x5660.json",
       "bytes": 14659,
       "sha256": "bda00e8c6b2d81d725bdc712b5fec586c135b6a3f99a356b054e7404608a7158"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/info-0x5700.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/info-0x5700.json",
       "bytes": 15015,
       "sha256": "fc00f4e39fd9cd2f08e78758f1353a9f7c3dc9550d3ebb1c54f234b652a75cf2"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/initialize.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/initialize.json",
       "bytes": 1222,
       "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/open.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/open.json",
       "bytes": 876,
       "sha256": "e8589fa7ea74de34d0d98ec4404bf5eef9b46b4009aaf7456987b3da3f9a8190"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/pm-callers.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/pm-callers.json",
       "bytes": 10725,
       "sha256": "0bcb65aeee1d1876714a6d83f10d976ef5a54104f53122269545b92ed1e029c7"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/pseudo-0x404.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/pseudo-0x404.json",
       "bytes": 11789,
       "sha256": "e4560dda0fe312f4b1e28f254bfb7911e7fd35ee3a558f7dede8f7d841a2d1ce"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/pseudo-0x4a38.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/pseudo-0x4a38.json",
       "bytes": 25847,
       "sha256": "4d1cb82e21bdae83725bf84829323906975379b0b6247b91b350aa7fe1e65744"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/pseudo-0x5338.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/pseudo-0x5338.json",
       "bytes": 11547,
       "sha256": "59a58908b4dea06bd759c8757e7afb7a310d1bf407c9233d6051aaa6f6c60470"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/pseudo-0x5364.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/pseudo-0x5364.json",
       "bytes": 12007,
       "sha256": "387709077e9986e6c8aacc56d3426ae613348ca360090312e0c47b5ec045119f"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/pseudo-0x53a4.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/pseudo-0x53a4.json",
       "bytes": 14909,
       "sha256": "e9a884cb0337e718f199baaf5ab28bfc52c517ee19e76486e4faabbe8f28eab2"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/pseudo-0x546c.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/pseudo-0x546c.json",
       "bytes": 13305,
       "sha256": "1b09a716a35223fa2abeaf2fd1f15bab6cd53c37154bb051e620be92f76cd192"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/pseudo-0x550c.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/pseudo-0x550c.json",
       "bytes": 16447,
       "sha256": "00ab9d719ddd48f2b67491eb2ad430c5a6a821c63b46ba2fa863cfcf16a23d8e"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/pseudo-0x55f8.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/pseudo-0x55f8.json",
       "bytes": 13289,
       "sha256": "f4582f684cd685fbea36f7b72898807545eb32cc489a4c0d6dd83313bbd0a29e"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/pseudo-0x5660.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/pseudo-0x5660.json",
       "bytes": 14105,
       "sha256": "c8fd0f28def14293ebfdfe20d425f23f448dd7502c2a06484ddf900dae809fda"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/pseudo-0x5700.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/pseudo-0x5700.json",
       "bytes": 16801,
       "sha256": "eaa34da3be088cb7171910b2286624f1d195e0a93967f96974f72e16f167f2b6"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/rea-stderr.log",
-      "bytes": 4149,
-      "sha256": "7bc95de7745fd0145cf1d3d56cbedaa9f0f9f02bb30e194f1bc9607d7745a042"
+      "path": "build/granite-study-41310432044/rea-fabric-topology/rea-stderr.log",
+      "bytes": 4154,
+      "sha256": "225737ff5bab29caa11b1a07e1873027333d8a2deb4f95654137e8be7bf04604"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/resolved-functions.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/resolved-functions.json",
       "bytes": 13560,
       "sha256": "e39bc9577598051c6937031bea34d7b7510adab96ca8ebcc03696bed3802fe6b"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/selected-tool-schemas.json",
+      "path": "build/granite-study-41310432044/rea-fabric-topology/selected-tool-schemas.json",
       "bytes": 80370,
       "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
     },
     {
-      "path": "build/granite-study-41304365186/rea-fabric-topology/study.json",
-      "bytes": 5731,
-      "sha256": "d65bf55880f6d6d83859281075b195e117b302909d78b09d45abe5215ca3e1e5"
+      "path": "build/granite-study-41310432044/rea-fabric-topology/study.json",
+      "bytes": 5734,
+      "sha256": "2cb95f6f8982e89489dd10d04895fea27ed0e6f3c518f79eeed8ee069b66523c"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/analysis-seeds.tsv",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/analysis-seeds.tsv",
       "bytes": 268,
       "sha256": "9f9ef6f898078b4b676914b0541d145fba3985a39215eec3a63893983970c60d"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/close.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/close.json",
       "bytes": 251,
       "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/evidence.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/evidence.json",
       "bytes": 241086,
       "sha256": "bd0213fa2208c72a4608d710a7f7a35aa7215648e4b6861f4c35c3c08f7781a9"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/export.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/export.json",
       "bytes": 577,
       "sha256": "d4f9e5ec6ea9289270af28df1595a591638fd4c5899b5fcee75c60a16c751f7e"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/info-0x13e4.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/info-0x13e4.json",
       "bytes": 16239,
       "sha256": "fc03a7a859ffaf1eec1b55682dba9a4d136af39849b62a1b7d3df7a7c8b3d75a"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/info-0x1840.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/info-0x1840.json",
       "bytes": 17707,
       "sha256": "c4c6029f4830fd9451b9410fa86e4fd3431e57d94a0248b16e98e8cdb81938cc"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/info-0x1a50.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/info-0x1a50.json",
       "bytes": 17299,
       "sha256": "aa875f28839d085b2ae930e57cc3f46dc4f45d1456bc055397e26667c070503e"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/info-0x1ce0.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/info-0x1ce0.json",
       "bytes": 12375,
       "sha256": "2bae84284781208020f791fc29558b4bc4c15639750614a091529666e75e8f3d"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/info-0x1d00.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/info-0x1d00.json",
       "bytes": 12451,
       "sha256": "e367ac56fdcf1c41602ef3bad89c0a10b2c4955b8c3b53d8954187263f8e0292"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/info-0x1d28.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/info-0x1d28.json",
       "bytes": 12527,
       "sha256": "3330e55a8b0f28e27b59ebf0e6e9cdc712a946b60341dccba97505741d352d8b"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/info-0x1d78.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/info-0x1d78.json",
       "bytes": 12615,
       "sha256": "41961ddd46923091261482551f33cc704722f4501b377c85aaa2181b4db3a6c2"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/info-0x1de4.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/info-0x1de4.json",
       "bytes": 13191,
       "sha256": "b94f5788d2d94e9323dbacad26716ae9df8166ecf2774eb3b389e13d60f64c4d"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/info-0x1e7c.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/info-0x1e7c.json",
       "bytes": 13267,
       "sha256": "17c48a0dd0042c79654473362f005f79a83f3ae445670f6907715ce6a8658e1d"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/info-0x1f40.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/info-0x1f40.json",
       "bytes": 14711,
       "sha256": "cb713f895054525109a65bc56962bced7f5151646988f30d7fa827b3084fc78b"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/info-0x2118.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/info-0x2118.json",
       "bytes": 14735,
       "sha256": "8f0208e8ea5a47c631551a2c76acbd34b61c2fa2a81b45deb783bda8029bd15d"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/info-0x2ac0.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/info-0x2ac0.json",
       "bytes": 13803,
       "sha256": "e8f96f4d9606cffdf1790cc5691f89fff86a3003b20e1c0536094523561aab97"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/info-0x2bb0.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/info-0x2bb0.json",
       "bytes": 15079,
       "sha256": "b16fcd8faff737c4a35b7c7ea06dcf540a5e5798ca50641c9640581f5372fa41"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/info-0x390.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/info-0x390.json",
       "bytes": 12577,
       "sha256": "b738c028261e1b9fcf823deafcc5f3b394ff9afda90d1d81d9dbf80a05b0da6e"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/info-0x72c.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/info-0x72c.json",
       "bytes": 16313,
       "sha256": "0f53dd339534e3a2300005766d5061f989ba7427d5a2463bb5a4c498078ee44d"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/info-0x96c.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/info-0x96c.json",
       "bytes": 12161,
       "sha256": "f567c19bc4368c4b9df398415d7d2b4a8ad0e684e3627f29628b23c4a480fdc2"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/info-0x99c.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/info-0x99c.json",
       "bytes": 12277,
       "sha256": "83a3f42a7f2c87b9d37a2a9b2734563555bdee5db7325a760af3f5bec0728fd4"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/initialize.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/initialize.json",
       "bytes": 1222,
       "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/open.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/open.json",
       "bytes": 884,
       "sha256": "bf80d41dc269286aad2f994795d1be48914928c0edf1240c83cda75d3056de42"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pm-callers.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pm-callers.json",
       "bytes": 10827,
       "sha256": "6fd7d844ee6ebbe61a443f5b52c44835a831996ec6d9f2a4d9c9de3a55e80018"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pseudo-0x13e4.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pseudo-0x13e4.json",
       "bytes": 30497,
       "sha256": "6afcbe176c46c84201010e1cc8c7f248ebed1f975f5ecac362eb848696df2089"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pseudo-0x1840.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pseudo-0x1840.json",
       "bytes": 20053,
       "sha256": "30bffbbde54ba30b08cb9fea6c550d4edb2cdc98bc8073ae444e2a9e95eb3453"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pseudo-0x1a50.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pseudo-0x1a50.json",
       "bytes": 24631,
       "sha256": "72096203e253515d7969d7caf9462d1ab7d6087de2936453c758ff35d722e742"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pseudo-0x1ce0.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pseudo-0x1ce0.json",
       "bytes": 11817,
       "sha256": "9244a06a3c048a4eaa466aaf805d4d82532da2a0d22f56fc1a0def092525c5c3"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pseudo-0x1d00.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pseudo-0x1d00.json",
       "bytes": 12107,
       "sha256": "33aea8264827d7c8df5dedcbffd824fcce93341c037a11ec653e8d44bb34c3b6"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pseudo-0x1d28.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pseudo-0x1d28.json",
       "bytes": 13577,
       "sha256": "b28f3ed7b11eca067dae3cbc350f77a7fc5fc412624394c4b61a342e3604924a"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pseudo-0x1d78.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pseudo-0x1d78.json",
       "bytes": 14107,
       "sha256": "e540c1c3e828137cf3a1b59fe28213eb51513eeccb48d01d4f1c17c9523cf257"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pseudo-0x1de4.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pseudo-0x1de4.json",
       "bytes": 15029,
       "sha256": "6208278021465ba1b7c34f958c28212ef8ca6c076ff945afc4450925a973728f"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pseudo-0x1e7c.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pseudo-0x1e7c.json",
       "bytes": 15461,
       "sha256": "9318331dd716c21a96a41c469d5e7297a61cf4332239a61fe437446a9ef02d18"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pseudo-0x1f40.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pseudo-0x1f40.json",
       "bytes": 23529,
       "sha256": "d10db5dd9c860e307e9d8485efb3586eb08b0c36617d2ab8a2d25de48a85085d"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pseudo-0x2118.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pseudo-0x2118.json",
       "bytes": 18885,
       "sha256": "3ccd091347f7b1113c9fb62b498b9658c26fc3975024de53efbe4d58b3195ca9"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pseudo-0x2ac0.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pseudo-0x2ac0.json",
       "bytes": 15695,
       "sha256": "5aeb0f8aa6bbb6e02cfc033d09534b596a881e50801640409c7976df72b6a084"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pseudo-0x2bb0.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pseudo-0x2bb0.json",
       "bytes": 23889,
       "sha256": "3fe2ca5d3204cb2875d850883bdb4b1fe990c34060fcb4fa2ee6931cd71d49a2"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pseudo-0x390.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pseudo-0x390.json",
       "bytes": 19895,
       "sha256": "3bbcc7cc22f1244231db6d0208b97e23a435c93ff0a3534240310a75b6d3fcd8"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pseudo-0x72c.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pseudo-0x72c.json",
       "bytes": 17457,
       "sha256": "de2f6db7ea5ef81a2ce46d6f0348fa8dbeb666c6b40a3a973debf7b33f717301"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pseudo-0x96c.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pseudo-0x96c.json",
       "bytes": 11505,
       "sha256": "5d2b3050c0292edbad86c73e420cbbf7e0499cdb9aaaee1b3fd53dd8b47be21d"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/pseudo-0x99c.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/pseudo-0x99c.json",
       "bytes": 12899,
       "sha256": "0c051f236848dfd63c663b02e0029e396513dd76ea201b04678c582a6a63e4c5"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/rea-stderr.log",
-      "bytes": 6679,
-      "sha256": "d522c6efee08f344ada64745d2d979750d128a3eb96ce5ccc74a4aa21db0b481"
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/rea-stderr.log",
+      "bytes": 6683,
+      "sha256": "1ea9bef38f6c676dafedeae12f475864e12702a22f33db3777cb47035733eb7f"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/resolved-functions.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/resolved-functions.json",
       "bytes": 24140,
       "sha256": "2207fdfa552a03b291d96f2ce8ceed7abe6f8634f5ba13abd7451da0792cfd91"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/selected-tool-schemas.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/selected-tool-schemas.json",
       "bytes": 80370,
       "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-a/study.json",
-      "bytes": 8552,
-      "sha256": "72a1ae65bf903efacc1e9de9d4b3011b64e209e8f9323ffb67ad467f46f68ed1"
+      "path": "build/granite-study-41310432044/rea-topology-provider-a/study.json",
+      "bytes": 8553,
+      "sha256": "61ca073827b7534ae1401bf8cdcbe55393de22018eab56b8e4dcacb492d57b68"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/analysis-seeds.tsv",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/analysis-seeds.tsv",
       "bytes": 283,
       "sha256": "802e4371382d37b4f9a3cb09ba27e24d8e796391c5f2f7bc7f47da5e377ce4af"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/close.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/close.json",
       "bytes": 251,
       "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/evidence.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/evidence.json",
       "bytes": 251647,
       "sha256": "a27a7e1591898f2ee2e2b6903525339175fb381d37ed2975d8c15d872bf1c3f9"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/export.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/export.json",
       "bytes": 577,
       "sha256": "a7000ed01f60ef4e9791496d42964322851a0e06cfbee55c0c3acb9d5b162c3c"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x1454.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x1454.json",
       "bytes": 16239,
       "sha256": "ebd17df2c28a1371993673feeb50dbad1b38e3383671133f814752bb2d30d5e7"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x18b4.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x18b4.json",
       "bytes": 17707,
       "sha256": "2a12f2690cba024099524f066a5c63b5be18787de8e6200c494b8efa9613635e"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x1ac4.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x1ac4.json",
       "bytes": 17299,
       "sha256": "91dea1db742442eda36132b8efe1cc85e9ab0287e77b5cac1da8c67d8f81b3e5"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x1d54.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x1d54.json",
       "bytes": 12375,
       "sha256": "71c6daf0cfb50dbdeadddb6603945de3fe5ae08a67408d8b82c90652adf5705b"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x1d74.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x1d74.json",
       "bytes": 12451,
       "sha256": "08f13a0c97503f119146022cef747c2e0e43a87ee612802ee51add597449087a"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x1d9c.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x1d9c.json",
       "bytes": 12527,
       "sha256": "f41820ad97cb6b8fd3d9c30f957df7f014000303ed10442a50ef83538b3840d6"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x1dec.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x1dec.json",
       "bytes": 12615,
       "sha256": "c362d93a5baa45fdaab2177f7f15f726dc4f864f5ea9d5c1d6a0520d7a5d3376"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x1e58.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x1e58.json",
       "bytes": 13191,
       "sha256": "c7d7f2131309779dea685741debbd438213ceb1104c6d2134c8fc9e5d2df993b"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x1ef0.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x1ef0.json",
       "bytes": 13267,
       "sha256": "72f36caf5da3d438c8c34bb2788625d08de97f447661a98de161886cd53478ba"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x1fb4.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x1fb4.json",
       "bytes": 14215,
       "sha256": "bccccbca98aaba16a8cf9851f8105f4c304cf039c86aa8867c00c3263fe005c9"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x2178.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x2178.json",
       "bytes": 14735,
       "sha256": "526444c79715e34720e3c042e11eaeee3b6b6f8ee62cfa7812541dcfe060c8d2"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x2a30.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x2a30.json",
       "bytes": 13803,
       "sha256": "7b6c6b5bbe30db85b235a57507d93f0c81efb07b32428a778a424622a43b8423"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x2b20.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x2b20.json",
       "bytes": 15079,
       "sha256": "68fe93740e50c38fe9d480e5c978eabe6c80e8dde64a3c64add20a6df84f9c98"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x390.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x390.json",
       "bytes": 12577,
       "sha256": "94b5a8559e59f0fbd2be42fe39e5f4b85cce63ab208a4d8b9e8695162fe0befd"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x72c.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x72c.json",
       "bytes": 14853,
       "sha256": "9aff45203c99fe3bc36636bb3ee867150c8a6e3bf07ba86c62e1391faa1c1f9d"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x960.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x960.json",
       "bytes": 13745,
       "sha256": "5b6150c4349f0c6751398cb8be390343159c4100bc3084f4e3fd69cb57452cf2"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x9b4.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x9b4.json",
       "bytes": 12161,
       "sha256": "b99111eeeeab65d2cc3d4689525eaffd3c0d411c87a661955c4838af79c97265"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/info-0x9e4.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/info-0x9e4.json",
       "bytes": 12277,
       "sha256": "badce721953aede340f8e3910736bf7cd5fc66133f3fbece1d09ecbbd0d0788e"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/initialize.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/initialize.json",
       "bytes": 1222,
       "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/open.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/open.json",
       "bytes": 884,
       "sha256": "6e2765e7c3f2b1ac9336bc83628a572f4da6a7905456bc7d0c49d017619e6713"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pm-callers.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pm-callers.json",
       "bytes": 10827,
       "sha256": "63409a335309f09ac13671be5194622885a562877d090e3df4a686aed4fcc074"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x1454.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x1454.json",
       "bytes": 30497,
       "sha256": "f14421847d225faf128fbe9a4141917bae859abac458681bbb3e25b3b47bfb10"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x18b4.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x18b4.json",
       "bytes": 20053,
       "sha256": "4b3932e15c8b108517800c073e033dc8f955a920bb2a4e4381f86ed0f9f1673a"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x1ac4.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x1ac4.json",
       "bytes": 24631,
       "sha256": "0f0f1164586f5677cfa7d89da8dac25ce94a43f7437c66ac1d789bea032be764"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x1d54.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x1d54.json",
       "bytes": 11817,
       "sha256": "4f9617bfe9fa1e39b67ccab500dbb8404fe5249c46d1f5bd3a8b30e56bed2486"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x1d74.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x1d74.json",
       "bytes": 12107,
       "sha256": "ad90ab39f54b61ebd839ac6ead363baab8e9b78411e3333499c6b0c19bd74db3"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x1d9c.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x1d9c.json",
       "bytes": 13577,
       "sha256": "a46cb7fb7ceef573939ad8f116e88435b6eb0b32b4c6abd32ca539c5d87b4d88"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x1dec.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x1dec.json",
       "bytes": 14107,
       "sha256": "d37e7c4e6b72c84ec2ebc8a24744eab3ea9f48e20e2c7e4858c018c9b0a2050c"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x1e58.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x1e58.json",
       "bytes": 15029,
       "sha256": "d5222fe32c9c0f137c0645bc4538ce04f81b499e456abdabcb5cf3123da4822c"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x1ef0.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x1ef0.json",
       "bytes": 15461,
       "sha256": "d2e3ad4e497f2837fbadf27e16c09d9642b37062ccb86186d20872d58f0b386f"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x1fb4.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x1fb4.json",
       "bytes": 23487,
       "sha256": "204dbb71c1f62846c5b982a23f039bf98cae7d7b6b5c9fe3c0596597b481cad7"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x2178.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x2178.json",
       "bytes": 18911,
       "sha256": "6758692e3775dd83382c1300dbf2cca242c10206df31ca954e07d227de03d5d2"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x2a30.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x2a30.json",
       "bytes": 15695,
       "sha256": "b511b98be25c6ccb1c6e065fbe6349204f42dae69209095e0382c1a1dfd9e09a"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x2b20.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x2b20.json",
       "bytes": 23889,
       "sha256": "928b063db5c6b71833772b263afa17b7647cccb44aaa6e14905b338f4e058a88"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x390.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x390.json",
       "bytes": 19895,
       "sha256": "21dd14523534e654acb9d63126ca5fd1d9774ce51a76c8c241f67af5a3b9325a"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x72c.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x72c.json",
       "bytes": 17369,
       "sha256": "5dc7043a9c1cc92b91b94a8eee3be32c1c20a625e398877cacafdcba45e3a3c4"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x960.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x960.json",
       "bytes": 12921,
       "sha256": "8fe4780eefce07b09258c696259e8008971edc27a3ec5a27506cdb9c1f21feb4"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x9b4.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x9b4.json",
       "bytes": 11505,
       "sha256": "7d2c9e5f22b53ac0f2ed78d982febc16da97ea55fd0972c6e1ae8a5c10eed93a"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/pseudo-0x9e4.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/pseudo-0x9e4.json",
       "bytes": 12899,
       "sha256": "4fc53bc4621c66afc12c8b42c89e81f1833ceee0d0504554e11b5fbaaf2296df"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/rea-stderr.log",
-      "bytes": 7042,
-      "sha256": "2fc013f6fd7a368950bc2369ae80ea9eb53ad999293fd818eae35a03a002e578"
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/rea-stderr.log",
+      "bytes": 7038,
+      "sha256": "d5b1d7c2c4df84557b94a3dcaac6cd37f3001847a2987bf0c5e3659dba046a45"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/resolved-functions.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/resolved-functions.json",
       "bytes": 24925,
       "sha256": "e56e8475e3cc9556d15a251d58a70ba726bbf92b09f29c1325de91cbae398e84"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/selected-tool-schemas.json",
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/selected-tool-schemas.json",
       "bytes": 80370,
       "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology-provider-b/study.json",
-      "bytes": 8949,
-      "sha256": "398c1db4fe4c6c5aec4859ac691b67bf564d567328b082c12216e1ab0f1ed108"
+      "path": "build/granite-study-41310432044/rea-topology-provider-b/study.json",
+      "bytes": 8944,
+      "sha256": "2f16fd6259608cb67c36c6e161b9b2df478f34abde1b74535dc4fa1c62db03f9"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/close.json",
+      "path": "build/granite-study-41310432044/rea-topology/close.json",
       "bytes": 251,
       "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/evidence.json",
+      "path": "build/granite-study-41310432044/rea-topology/evidence.json",
       "bytes": 129862,
       "sha256": "fdaf296d194b1e9e583e53b5027439191356fcb9e796aea62872e073586fe7d1"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/export.json",
+      "path": "build/granite-study-41310432044/rea-topology/export.json",
       "bytes": 555,
       "sha256": "d685afb2b6a495bbd6357b34e943ee2d5beff29b61fa2e3f91c2693aebb5c29e"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/info-0x1844.json",
+      "path": "build/granite-study-41310432044/rea-topology/info-0x1844.json",
       "bytes": 20791,
       "sha256": "cafd25f72ac835c68829340298f89bc333e49a5f6da0a35104e315525dc80320"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/info-0x2094.json",
+      "path": "build/granite-study-41310432044/rea-topology/info-0x2094.json",
       "bytes": 21863,
       "sha256": "a6aa950c9d20c1eca0e1b6adfa6fa647f0f7364152c9eb96d958d90adeb7c55c"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/info-0x2d24.json",
+      "path": "build/granite-study-41310432044/rea-topology/info-0x2d24.json",
       "bytes": 19955,
       "sha256": "830310c6caf0945fd35527997078fc75e2d315dd280278c0ce3de56e254cdcdc"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/info-0x3a0.json",
+      "path": "build/granite-study-41310432044/rea-topology/info-0x3a0.json",
       "bytes": 10297,
       "sha256": "ce2d3d76ac98ffa585fe461452af42f21383cf1e7c4f7aec4a47abc7bede7488"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/info-0x4c4.json",
+      "path": "build/granite-study-41310432044/rea-topology/info-0x4c4.json",
       "bytes": 9929,
       "sha256": "c2d4de9d3abf3d9f70bcdea5fecd3614652b79cae9b0e958557bd4674faa4727"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/info-0x526c.json",
+      "path": "build/granite-study-41310432044/rea-topology/info-0x526c.json",
       "bytes": 14227,
       "sha256": "b9a03d037d16dd068e1492057938d91527bb48992c5fabb6b7fe5ea1c0011ac0"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/info-0x54e0.json",
+      "path": "build/granite-study-41310432044/rea-topology/info-0x54e0.json",
       "bytes": 24119,
       "sha256": "687561b71e5d697de9ba2c8d9940e5a0f74198875e9c3ba5986b8db8e9a4f606"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/initialize.json",
+      "path": "build/granite-study-41310432044/rea-topology/initialize.json",
       "bytes": 1222,
       "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/open.json",
+      "path": "build/granite-study-41310432044/rea-topology/open.json",
       "bytes": 862,
       "sha256": "7ea23dbd310f007fb91f4dab2193fba3940cd3998f142dd0443934ce22c40c9d"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/pm-callers.json",
+      "path": "build/granite-study-41310432044/rea-topology/pm-callers.json",
       "bytes": 9267,
       "sha256": "ac9cef874a4421b32baddf861a5d75e7a10010a1f900591994de5fcf34f64da0"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/pseudo-0x1844.json",
+      "path": "build/granite-study-41310432044/rea-topology/pseudo-0x1844.json",
       "bytes": 34495,
       "sha256": "62bbb5009a557640f0e663abecccd1d739fd4e83006d0ead01976ccc114767ee"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/pseudo-0x2094.json",
+      "path": "build/granite-study-41310432044/rea-topology/pseudo-0x2094.json",
       "bytes": 37005,
       "sha256": "9c1bc4736cc72abefd6c6f2d8305f9ec2ecdcb0217007a5c6d8ce82d148f76f2"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/pseudo-0x2d24.json",
+      "path": "build/granite-study-41310432044/rea-topology/pseudo-0x2d24.json",
       "bytes": 34049,
       "sha256": "95d611782bd1731b94a9d1e4a0fd1c013388b23019482b00f071b320c0bfa840"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/pseudo-0x3a0.json",
+      "path": "build/granite-study-41310432044/rea-topology/pseudo-0x3a0.json",
       "bytes": 17611,
       "sha256": "ab696fadbe1847f3ca1611c4f63ed27f1ce4736fd9e9dd792eee84c8f8a4a0c4"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/pseudo-0x4c4.json",
+      "path": "build/granite-study-41310432044/rea-topology/pseudo-0x4c4.json",
       "bytes": 9473,
       "sha256": "8b03389dd19d79dde56b0dd789b1ebc953929343a81d0d423d6ac9b5ea973867"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/pseudo-0x526c.json",
+      "path": "build/granite-study-41310432044/rea-topology/pseudo-0x526c.json",
       "bytes": 15623,
       "sha256": "51bb9c142c3c0412aa52e9fb510ecee7bd4b61ce8e325fdbe84691b8e9c3209d"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/pseudo-0x54e0.json",
+      "path": "build/granite-study-41310432044/rea-topology/pseudo-0x54e0.json",
       "bytes": 16795,
       "sha256": "bdca69c114b7399e20e7abf6d476023f4f2773975322ec7a28b64c1315abd89d"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/rea-stderr.log",
-      "bytes": 3069,
-      "sha256": "de407b278a6b1aa4208862059590107ec43cf9c724f54e45b2bd2f24e1b3d1d4"
+      "path": "build/granite-study-41310432044/rea-topology/rea-stderr.log",
+      "bytes": 3068,
+      "sha256": "b2bb7663f1bf6360b1ac928354c3800b285708545a02344467db62b207b7f61f"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/resolved-functions.json",
+      "path": "build/granite-study-41310432044/rea-topology/resolved-functions.json",
       "bytes": 20930,
       "sha256": "30836f4080ef7d26370a5341461eb15a2cb79db42a8b06c4fe4fa3a425c2cf2e"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/selected-tool-schemas.json",
+      "path": "build/granite-study-41310432044/rea-topology/selected-tool-schemas.json",
       "bytes": 80370,
       "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
     },
     {
-      "path": "build/granite-study-41304365186/rea-topology/study.json",
-      "bytes": 4006,
-      "sha256": "22c05f3fd798b99c7064b69faac9b7c6fabd6f71c98aad439526b50bb5363a75"
+      "path": "build/granite-study-41310432044/rea-topology/study.json",
+      "bytes": 4007,
+      "sha256": "a5b03329bf91e9307e2598be20821d6a5bdba1cc697901f4e77f78ad4bd9cf32"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport/close.json",
+      "path": "build/granite-study-41310432044/rea-transport/close.json",
       "bytes": 251,
       "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport/evidence.json",
+      "path": "build/granite-study-41310432044/rea-transport/evidence.json",
       "bytes": 27914,
       "sha256": "ed8807980e5b102ede8bf534e01b6c1e03b67672220361966a4e95356ec7852e"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport/export.json",
+      "path": "build/granite-study-41310432044/rea-transport/export.json",
       "bytes": 553,
       "sha256": "18f876a121ef434309031d0b9a8dadd6b386fb737138cfa30d071ba0f56904a8"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport/info-0x4e4.json",
+      "path": "build/granite-study-41310432044/rea-transport/info-0x4e4.json",
       "bytes": 9933,
       "sha256": "2eed5c66efd56193f1f4ee28d65d29b75eaec6bb81bf1db8ff4aaca581aa32dc"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport/info-0xbb4.json",
+      "path": "build/granite-study-41310432044/rea-transport/info-0xbb4.json",
       "bytes": 15469,
       "sha256": "e5e80bc0a55ce4395d829262be54f6f353a55af0725b5c8109a283bc93d24e6e"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport/initialize.json",
+      "path": "build/granite-study-41310432044/rea-transport/initialize.json",
       "bytes": 1222,
       "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport/open.json",
+      "path": "build/granite-study-41310432044/rea-transport/open.json",
       "bytes": 864,
       "sha256": "0494bed192f61d9bf4ad60af81a4ebb13ce28d3b5a9574b56e68259bd6ebca46"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport/pm-callers.json",
+      "path": "build/granite-study-41310432044/rea-transport/pm-callers.json",
       "bytes": 8409,
       "sha256": "25b8298d8fbfe609d764f141a391095e4e358915a64094a5a3e9259fab41f397"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport/pseudo-0x4e4.json",
+      "path": "build/granite-study-41310432044/rea-transport/pseudo-0x4e4.json",
       "bytes": 9433,
       "sha256": "719f871d8773c37ff96ba1438d87d72823792863a80c9dd937c06a05535fd5a7"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport/pseudo-0xbb4.json",
+      "path": "build/granite-study-41310432044/rea-transport/pseudo-0xbb4.json",
       "bytes": 21053,
       "sha256": "8a8d39b0df43120395e0e60f49f4b25d078519804e0516dbd9c8a0e41f4ef88b"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport/rea-stderr.log",
-      "bytes": 1258,
-      "sha256": "00929d035d1f107cefe0a673a42016eec00d7aedef38def7fb6a8ea8212827bd"
+      "path": "build/granite-study-41310432044/rea-transport/rea-stderr.log",
+      "bytes": 1260,
+      "sha256": "30adbe6dc29737a640c705705410595a7fe11fd71ac8868e9d5121995ff6f1c4"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport/resolved-functions.json",
+      "path": "build/granite-study-41310432044/rea-transport/resolved-functions.json",
       "bytes": 3400,
       "sha256": "0234a84227976f5059b12aff824dc59cb418f6a9d181f8cadc815818b5aa1269"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport/selected-tool-schemas.json",
+      "path": "build/granite-study-41310432044/rea-transport/selected-tool-schemas.json",
       "bytes": 80370,
       "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport/study.json",
-      "bytes": 2073,
-      "sha256": "da11510db4a03219b6d1371a95a390a4ecc5415481bc9729781683b532c5e975"
+      "path": "build/granite-study-41310432044/rea-transport/study.json",
+      "bytes": 2074,
+      "sha256": "f04831f1784657319d0a7c7ad6c7f3749d8aaafc45840e73500a21ed7f5b4269"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport2/close.json",
+      "path": "build/granite-study-41310432044/rea-transport2/close.json",
       "bytes": 251,
       "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport2/evidence.json",
+      "path": "build/granite-study-41310432044/rea-transport2/evidence.json",
       "bytes": 27924,
       "sha256": "4d5b619976f415c5ebe06572256ae8ec41acf045399ee10023dd92f13a6c4715"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport2/export.json",
+      "path": "build/granite-study-41310432044/rea-transport2/export.json",
       "bytes": 555,
       "sha256": "eb4e1a89063ea32680688db9bf6695ec67604764c4c6b1cf798d92a2af814658"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport2/info-0x4e4.json",
+      "path": "build/granite-study-41310432044/rea-transport2/info-0x4e4.json",
       "bytes": 9937,
       "sha256": "d4bc4d6114aca5d3c773f258048e82f46e2971c4a5244ab1321a05661cae57df"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport2/info-0xbf4.json",
+      "path": "build/granite-study-41310432044/rea-transport2/info-0xbf4.json",
       "bytes": 15473,
       "sha256": "92bf5887daf705a8c50e5f3a340d52637d81246013a3c30d56ba0b51fd4369d3"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport2/initialize.json",
+      "path": "build/granite-study-41310432044/rea-transport2/initialize.json",
       "bytes": 1222,
       "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport2/open.json",
+      "path": "build/granite-study-41310432044/rea-transport2/open.json",
       "bytes": 866,
       "sha256": "055babf43601ca39797d4d7a9038f10ea681b59056d951d756a843157c3c32d2"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport2/pm-callers.json",
+      "path": "build/granite-study-41310432044/rea-transport2/pm-callers.json",
       "bytes": 8413,
       "sha256": "6baf10327045d2492f6468602072a55c90204b211131e494fd8a805ddc885fb9"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport2/pseudo-0x4e4.json",
+      "path": "build/granite-study-41310432044/rea-transport2/pseudo-0x4e4.json",
       "bytes": 9437,
       "sha256": "90612c8e85fe61dadcaa649c25be2533072290422aa21901506dd34dd6cd5f92"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport2/pseudo-0xbf4.json",
+      "path": "build/granite-study-41310432044/rea-transport2/pseudo-0xbf4.json",
       "bytes": 21057,
       "sha256": "075d1f49756f6797f70ad867b3b693eae2b7a0de84eb2623ef191bd8a99cc465"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport2/rea-stderr.log",
-      "bytes": 1260,
-      "sha256": "9bb14e01c94daf617d43a7df0be9a032885d0d1face4fef88e867d72de4e6445"
+      "path": "build/granite-study-41310432044/rea-transport2/rea-stderr.log",
+      "bytes": 1261,
+      "sha256": "a08e99f205d2abb451167ffb4b0a9709ebe7f1c317279008f95c28c593a91d2a"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport2/resolved-functions.json",
+      "path": "build/granite-study-41310432044/rea-transport2/resolved-functions.json",
       "bytes": 3400,
       "sha256": "89e52ef8a2a8707e7cf9b225ffa09057ef5aae2f4f229ab02fb0614c4e8ee9a6"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport2/selected-tool-schemas.json",
+      "path": "build/granite-study-41310432044/rea-transport2/selected-tool-schemas.json",
       "bytes": 80370,
       "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
     },
     {
-      "path": "build/granite-study-41304365186/rea-transport2/study.json",
+      "path": "build/granite-study-41310432044/rea-transport2/study.json",
       "bytes": 2077,
-      "sha256": "77117e5bb89c37ce0a066d398f1bb10fe9e9f80de73160752582290b2d1c7d49"
+      "sha256": "71da0737226111c324dc36037519146d3737045e550249b78b75a9b4e4e39f2e"
     },
     {
-      "path": "build/granite-study-41304365186/run.json",
+      "path": "build/granite-study-41310432044/run.json",
       "bytes": 5001,
-      "sha256": "f7a65f19c884c2fcaa312e5c188db92a796ffa6a45e7cd872f5f9e1604be8cff"
+      "sha256": "10fdfa03a9604afaad93ad2bd94672749e34a281041e06a03cb481c2b68587a2"
     },
     {
-      "path": "build/granite-study-41304365186/run.log",
-      "bytes": 174096,
-      "sha256": "40b8e6c968a36904b7342524e575251992d5fe3396a532239033ccb0b26d82a3"
+      "path": "build/granite-study-41310432044/run.log",
+      "bytes": 178731,
+      "sha256": "bd89ade871ef736ba525d5c3af4c12142a69d242115ae8fd47a9c4f7193d3963"
     },
     {
-      "path": "build/granite-study-41304365186/smu/smu-study.json",
+      "path": "build/granite-study-41310432044/smu/smu-study.json",
       "bytes": 8701085,
       "sha256": "b9e0f8988b389633b4591f2bf30192a367df9b90c9121e9dcc45b8f719b5a7f1"
     },
     {
-      "path": "build/granite-study-41304365186/xtensa-fp-extension.json",
+      "path": "build/granite-study-41310432044/xtensa-fp-extension.json",
       "bytes": 1793,
       "sha256": "ddecf3c59b86b5dd337d38fa73bd82cd9ba9090b66d188d4448b8028d77e4bad"
     },
     {
-      "path": "build/granite-study-41304365186/xtensa-fp-selftest-mp5.json",
+      "path": "build/granite-study-41310432044/xtensa-fp-selftest-mp5.json",
       "bytes": 104,
       "sha256": "d62d6ee6649c6634cc5ebba4bb05b6ffc96b20b479e45ed510b135eac32fff8f"
     },
     {
-      "path": "build/granite-study-41304365186/xtensa-fp-selftest-smu.json",
+      "path": "build/granite-study-41310432044/xtensa-fp-selftest-smu.json",
       "bytes": 104,
       "sha256": "d62d6ee6649c6634cc5ebba4bb05b6ffc96b20b479e45ed510b135eac32fff8f"
     }
   ],
   "source_files": {
-    ".github/workflows/rea-granite-study.yml": "d7aa5cfe0dca6ea2595c113be33fa6a70f6ac322962e354672c3a30265878db1",
+    ".github/workflows/rea-granite-study.yml": "d53095c55759045a1b77bc49bfbcb83182196b7b2fd92c099a5092843c8b9c51",
     "analysis/tools/rea-native-study.py": "8a01fede714e0bc1caf0b73e5b1452083ce1443082384d58d9efc192bd5c87ed",
     "analysis/tools/firmware-granite-input.py": "29c686b6d573999a3961432933befefd80e943c7af9d1d250a347c6d534446f2",
     "analysis/tools/firmware-granite-proof.py": "808db166fab45eff0f00549da638cf2d1b99a004205941df5e1c877e92eeac11",
     "analysis/tools/firmware-granite-rails.py": "b5df94724f0baaf56e513fa218060c6239b0b169e3579a4e6055b2ef4e7714bc",
-    "analysis/tools/firmware-granite-semantics.py": "2d297aeaafdc7fb83630df9601df44fd62c8924d0550b44fcd15e47996c9a3ea",
+    "analysis/tools/firmware-granite-semantics.py": "ee3e0b5407f0835a7eb1cb2fb7ac2282eb1f71d78e131141f85bca6e7ed79c9f",
     "analysis/tools/firmware-granite-topology.py": "c3a9522a8535858759fa1ef1d4491d9ecbde2e6eaf9603e4b6badfc15f4a89ec",
     "analysis/tools/firmware-granite-telemetry.py": "3abd332b21d492947edd34e9cb43acead17ef398bdcf348a5a15c8f4e35cb88c",
     "analysis/tools/firmware-granite-registers.py": "1510b523ff1f190b5a2441cf2f0bc12bfc76c43d32a3c4c0354ef16434b0766d",
@@ -6419,13 +6513,19 @@
     "analysis/tools/firmware-granite-shared-request.py": "03306242508870c510d13f3660a1b7befca1159aea8b778d69543ab3ed5806b2",
     "analysis/tools/firmware-granite-apic-enumeration.py": "754624afca3d04987d529a10522bf79d07b579bf332d8aea0333eb40a4aa5fd6",
     "analysis/tools/firmware-granite-published-topology.py": "28653d78d56a07d81af4ecfcb6dfe3e71d90260ac9ff17cae324ee0f2f9e86b7",
+    "analysis/tools/firmware-granite-apob-comparison.py": "403bf24a509f6e952c64c3b0cbf7981308f355a06faa919c59c13c15fba8fe73",
+    "analysis/tools/firmware-granite-scheduling.py": "c8cf0691376d693f0433504d5e9d26868156be8ff870d13ca7f4974d26f52e9f",
     "analysis/tools/ghidra/GraniteSeed.java": "ec0db3ae63fd9cb998bfca1b5df10816590a4e7aff82030d324a2cbbe3ba6fd4",
     "analysis/tools/ghidra/GraniteStudy.java": "1a96cf1e05121153d0c3f380786b2fb77a0a83bca2c95de84823683140912dc5",
     "analysis/tools/ghidra/SmuFpPatch.py": "a484de6016665c92d975ceec727c5e7588db5ff0e6d3ca18e439cdea1f92d246",
     "analysis/tools/ghidra/SmuFpSelfTest.java": "51b25d844d8ccabe75185d29350d9752ec00b199ec3dcc8ce0ca1454f89c23fe",
-    "gui/tests/amd_9950x3d_topology_fixture.h": "71eb147c930f097ccef2857a306c9b41a293c3aaafecabf59d3d7a1c9c8592e0"
+    "gui/tests/amd_9950x3d_topology_fixture.h": "71eb147c930f097ccef2857a306c9b41a293c3aaafecabf59d3d7a1c9c8592e0",
+    "gui/tests/amd_apob_reference_vectors.h": "48678c1123e42e70cb92622931f7c832a38bdb63dcf4edd322cebe76f4d7e8bb",
+    "gui/tests/amd_apob_comparison_fixture.h": "275757a23e2077133223bdec109409de4ce4eb8b2bc9e5a18d598432e3835a3b"
   },
   "limitations": [
+    "SMU enqueue can be inhibited or skipped at pending >= 2. The MP5 update handler writes completion 1 before attempting to queue its dispatcher and does not inspect the queue result. These selected gates do not establish a fixed model-update period, energy-MSR alias, physical unit or freshness guarantee; queue/interrupt services and timing remain fixtures.",
+    "GUI/CLI reference APOB/OS comparison requires the published Model 44h SMT2 topology and actual redundant type-3 boundary. An APIC-set match is not runtime provider, record origin, physical identity or PM-slot validation. Original-byte oracles use synthetic APOB and services.",
     "The fixture signature 0x00b40f40 with CPUID 80000001 EBX high nibble zero passes provider A entry eligibility and rejects B in 16,636 synthetic gate replays. No host CPUID, installer or firmware service executes; entry eligibility does not establish runtime protocol installation, register effects, physical mapping or PM binding.",
     "Provider A derives register addresses from group stored IDs; B uses subgroup stored IDs. Both use the first core flag prefix and a core ordinal for bit selection. Address/bit aliases and unchecked original thread indexing prevent treating these as a physical/PM/OS map. Product diagnostics only use flags 0/1 and never select a provider or issue register access.",
     "Local MP5 configuration writes wait for raw timer ticks without polling device completion. The raw-byte reader has no verified host route or write/read pairing. An alternate transition can change the code while retaining the old PM float. Scripted MMIO and timers do not verify electrical effects or units.",
