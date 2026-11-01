@@ -96,6 +96,18 @@ Its arithmetic tail is `float32(float32(delta * 0.1f) / elapsed)`. Acquisition
 timer; that peripheral acquisition is not executed. Calling this GHz would
 require both a clock-event identity and a timer-frequency anchor.
 
+Additional static timing lead (not an extra replay result): MP5 helper
+0x22e4 waits for a raw uint32 difference at 0x32001c0. At 0x29002..0x29015,
+its argument is formed from word[0xe448] multiplied by 100000000 through
+0x32748, then divided by 1000000 through 0x32440. Poll helper 0x305bc uses
+the paired timer reader 0x22c8 and a rounded-up conversion with 100000000
+and 1000000000. This is consistent with a 100 MHz timer and microsecond /
+nanosecond arguments, but those input units and the peripheral clock binding
+are still inferred. The [AMD Model 44h PPR](https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/programmer-references/57896.zip)
+defines a 100 MHz reference clock; that definition alone does not identify
+this MMIO timer or its counter events. These leads therefore do not change
+the decoder's unit labels or the verified-unit count.
+
 ## CCD 8: shared parameter and averaging order
 
 Let `K` be float[0x7cac]. Initialization 0x2d18c writes
