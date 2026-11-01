@@ -69,6 +69,8 @@ def main():
             assert packet[2]==sum(bool(active&(1<<i)) for i in range(target))
             assert packet[0x10]==int(bool(active&(1<<target)) and not (active&((1<<target)-1)))
             assert struct.unpack_from('<I',packet,0x3c)[0]==0x15660
+            # Aggregates use the firmware target, not compact storage ordinal.
+            assert struct.unpack_from('<I',packet,0x34)[0]==0xa1c0+0xe4*target
             assert packet[0x44:0x54]==struct.pack('<4f',1,2,3,4)
             writes,_=copy(mp5,mc,packet[0x11],packet[0x18])
             for row in range(18):
@@ -105,6 +107,7 @@ def main():
         synthetic_cases=len(cases),copied_packets=packet_count,checked_pm_words=copy_words,
         packet_bytes=0x70,packet_target_offset=0,packet_active_rank_offset=2,
         packet_storage_rank_offset=0x18,packet_width_offset=0x11,packet_pm_destination_offset=0x3c,
+        packet_aggregate_destination_offset=0x34,aggregate_base='0xa1c0',aggregate_target_stride=0xe4,
         presence_mask='ushort[0x6814]',active_mask='ushort[0x6816]',
         mapping='ascending set bits of presence mask; core availability does not compact storage rank',
         two_slot_consequence='within this two-target firmware, width 2 implies storage IDs [0,1]',

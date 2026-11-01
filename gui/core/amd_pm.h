@@ -43,6 +43,10 @@ struct AmdPmField {
     // A checked producer slice is weaker than a physical-unit identification.
     // These fields describe reference firmware; imported metadata is ignored.
     std::string producerEvidence, producerKind, producerNote;
+    // Reference MP5-local addresses, never host addresses or read permissions.
+    // Core addresses use slot % 8 in each MP5, not the global storage index.
+    std::uint32_t producerSourceAddress = 0;
+    std::vector<std::uint32_t> counterSourceAddresses;
     unsigned offset = 0;
     // Nonzero only for original array storage. Never a physical target ID.
     unsigned slot = 0, slotCount = 0, row = 0;

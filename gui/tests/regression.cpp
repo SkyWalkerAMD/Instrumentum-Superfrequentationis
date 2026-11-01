@@ -701,6 +701,12 @@ private slots:
                 QVERIFY(table->item(index,6)->text().contains("unit unverified"));
                 QVERIFY(!table->item(index,0)->toolTip().isEmpty());
                 QCOMPARE(table->item(index,0)->toolTip(),table->item(index,6)->toolTip());
+                const auto note=table->item(index,0)->toolTip();
+                QVERIFY(note.contains("Reference MP5-local producer:"));
+                const auto source=0x11a18+0x1bc*(core%8)+(row==0?0x10:row==4?0xf4:0xf8);
+                QVERIFY(note.contains(QString::number(source,16)));
+                QVERIFY(note.contains("not host addresses or physical core identities"));
+                if(row!=0) QVERIFY(note.contains(QString::number(0x1600000+0x20000*(core%8)+(row==4?0x134:0x13c),16)));
             }
             for(unsigned core=0;core<8*storageSlots;++core) {
                 QVERIFY(table->item(core,0)->text().contains(QString("CCD slot %1, core slot %2").arg(core/8).arg(core%8)));
@@ -766,6 +772,11 @@ private slots:
                 QCOMPARE(table->item(index,2)->text(),QString("Unverified"));
                 QVERIFY(table->item(index,6)->text().contains("unit unverified"));
                 QVERIFY(!table->item(index,0)->toolTip().isEmpty());
+                const auto note=table->item(index,0)->toolTip();
+                const unsigned addresses[]={0x12804,0x12848,0x8030,0,0,0,0x128a8,0,0x12888};
+                QVERIFY(note.contains(QString::number(addresses[row],16)));
+                if(row==6) QVERIFY(note.contains("0x0187f134"));
+                if(row==8) QVERIFY(note.contains("0x0187f170, 0x0187f174, 0x0187f17c (low word, high word, tag)"));
             }
             QCOMPARE(table->item(3*storageSlots,2)->text(),QString("deg C"));
             QCOMPARE(table->item(4*storageSlots,2)->text(),QString("deg C"));

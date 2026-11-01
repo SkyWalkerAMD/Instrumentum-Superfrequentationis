@@ -282,8 +282,20 @@ void AmdPmPanel::showFields() {
         const QStringList values{label, f.error ? "Unavailable" : number(f.value), original && f.unitEvidence.empty() ? QString("Unverified") : QString::fromStdString(f.unit),
             f.scaled ? number(f.scaledValue) : QString("—"), hex(f.raw), hex(f.offset), state};
         for (int col = 0; col < values.size(); ++col) table_->setItem(row, col, new QTableWidgetItem(values[col]));
-        if (!f.producerNote.empty()) for (int col : {0, 2, 6})
-            table_->item(row,col)->setToolTip(QString::fromStdString(f.producerNote));
+        if (!f.producerNote.empty()) {
+            QString note=QString::fromStdString(f.producerNote);
+            if(f.producerSourceAddress) {
+                note += "\nReference MP5-local producer: "+hex(f.producerSourceAddress);
+                if(!f.counterSourceAddresses.empty()) {
+                    QStringList addresses;
+                    for(auto address:f.counterSourceAddresses) addresses << hex(address);
+                    note += "\nReference counter registers: "+addresses.join(", ");
+                    if(index==13 && f.row==8) note += " (low word, high word, tag)";
+                }
+                note += "\nThese reference coordinates are not host addresses or physical core identities.";
+            }
+            for (int col : {0, 2, 6}) table_->item(row,col)->setToolTip(note);
+        }
     }
     table_->resizeColumnsToContents();
 }

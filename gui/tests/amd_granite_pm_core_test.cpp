@@ -54,6 +54,11 @@ int main() {
             if(!known) {
                 assert(f.producerEvidence=="granite-mp5-98.84.0-static" && !f.producerNote.empty());
                 assert(f.producerKind==(f.row==0?"model":"counter_rate"));
+                assert(f.producerSourceAddress==0x11a18+0x1bc*(f.slot%8)+(f.row==0?0x10:f.row==4?0xf4:0xf8));
+                if(f.row==0) assert(f.counterSourceAddresses.empty());
+                else assert(f.counterSourceAddresses==std::vector<std::uint32_t>{0x1600000+0x20000*(f.slot%8)+(f.row==4?0x134u:0x13cu)});
+            } else {
+                assert(!f.producerSourceAddress && f.counterSourceAddresses.empty());
             }
             if(f.row==8 || f.row==11) assert(f.value==(f.row==8?3.5:127.5));
             if(f.row==9 || f.row==10) assert(f.value==(f.row==9?5.5:6.25));
@@ -66,7 +71,14 @@ int main() {
             assert(f.unit == (f.row==9 || f.row==11?"%":f.row==5 || f.row==10?"GHz":f.row==7?"code":known?"deg C":"unverified") && !f.scaled && !f.clock);
             assert(f.unitEvidence.empty()!=known); assert(offsets.insert(f.offset).second);
             assert(f.producerEvidence.empty()==known);
-            if(!known) assert(f.producerKind==(f.row<=1?"model":f.row==2?"configuration":"counter_rate") && !f.producerNote.empty());
+            if(!known) {
+                assert(f.producerKind==(f.row<=1?"model":f.row==2?"configuration":"counter_rate") && !f.producerNote.empty());
+                const std::uint32_t addresses[]={0x12804,0x12848,0x8030,0,0,0,0x128a8,0,0x12888};
+                assert(f.producerSourceAddress==addresses[f.row]);
+                const std::vector<std::uint32_t> counters=f.row==6?std::vector<std::uint32_t>{0x187f134}:
+                    f.row==8?std::vector<std::uint32_t>{0x187f170,0x187f174,0x187f17c}:std::vector<std::uint32_t>{};
+                assert(f.counterSourceAddresses==counters);
+            } else assert(!f.producerSourceAddress && f.counterSourceAddresses.empty());
             if(f.row==7) assert(f.value==32767.5);
             if(f.row==5 || f.row==9 || f.row==10) assert(f.value==(f.row==5?6:f.row==9?150.125:5.75));
         }
@@ -84,6 +96,10 @@ int main() {
             {"\"physical_measurement_verified\":false","\"physical_measurement_verified\":true"},
             {"\"producer_kind\":\"model\"","\"producer_kind\":\"sensor\""},
             {"\"producer_evidence\":\"granite-mp5-98.84.0-static\"","\"producer_evidence\":\"hardware-tested\""},
+            {"\"producer_source_address\":\"0x00011a28\"","\"producer_source_address\":\"0xffffffff\""},
+            {"\"counter_source_addresses\":[\"0x01600134\"]","\"counter_source_addresses\":[\"0xffffffff\"]"},
+            {"\"reference_address_space\":\"mp5_local\"","\"reference_address_space\":\"host_physical\""},
+            {"\"reference_addresses_are_host_addresses\":false","\"reference_addresses_are_host_addresses\":true"},
             {"\"code_meaning_verified\":false","\"code_meaning_verified\":true"},
             {"\"firmware_ccd_storage_slot\":0","\"firmware_ccd_storage_slot\":99"},
             {"\"firmware_local_core_slot\":0","\"firmware_local_core_slot\":99"}}) {

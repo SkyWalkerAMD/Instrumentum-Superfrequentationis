@@ -1,5 +1,9 @@
 # Granite Ridge: the eight remaining row producers
 
+The [transfer follow-up](amd-granite-transfer-paths.md) adds the checked local
+producer/counter addresses, descriptor enable gates and model integration path.
+It does not establish additional physical units.
+
 2026-11-01. Reference: ASUS ProArt X870E-CREATOR WIFI BIOS 2503,
 SMU/MP5 98.84.0. The user's 9950X3D is unavailable and its installed BIOS is
 unknown. This is REA-assisted static research and synthetic instruction replay,

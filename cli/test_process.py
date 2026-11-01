@@ -916,10 +916,21 @@ for report in reports:
                 kind=('model' if f['row']==0 else 'counter_rate') if key=='firmware_core_arrays' else (
                     'model' if f['row']<=1 else 'configuration' if f['row']==2 else 'counter_rate')
                 assert f['producer_kind']==kind
+                assert f['reference_address_space']=='mp5_local' and not f['reference_addresses_are_host_addresses']
+                if key=='firmware_core_arrays':
+                    local=f['slot']%8
+                    address=0x11a18+0x1bc*local+{0:0x10,4:0xf4,12:0xf8}[f['row']]
+                    counters=[] if f['row']==0 else [0x1600000+0x20000*local+{4:0x134,12:0x13c}[f['row']]]
+                else:
+                    address={0:0x12804,1:0x12848,2:0x8030,6:0x128a8,8:0x12888}[f['row']]
+                    counters={6:[0x187f134],8:[0x187f170,0x187f174,0x187f17c]}.get(f['row'],[])
+                assert int(f['producer_source_address'],16)==address
+                assert [int(v,16) for v in f['counter_source_addresses']]==counters
                 assert all(not f[k] for k in ('physical_unit_verified','physical_measurement_verified',
                     'freshness_verified','setting_readback_verified','capture_firmware_verified'))
             else:
                 assert all(k not in f for k in ('producer_kind','producer_note','producer_evidence'))
+                assert all(k not in f for k in ('producer_source_address','counter_source_addresses','reference_address_space'))
             counter = pm['platform']=='granite-ridge' and ((key=='firmware_core_arrays' and f['row']>=13) or
                                                          (key=='firmware_ccd_arrays' and f['row'] in (9,11)))
             if counter:

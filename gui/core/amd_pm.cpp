@@ -167,6 +167,8 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
             if(row==0 || row==4 || row==12) {
                 v.producerEvidence="granite-mp5-98.84.0-static";
                 v.producerKind=row==0?"model":"counter_rate";
+                v.producerSourceAddress=0x11a18+0x1bc*(slot%8)+(row==0?0x10:row==4?0xf4:0xf8);
+                if(row!=0) v.counterSourceAddresses={0x160010c+0x20000*(slot%8)+(row==4?0x28u:0x30u)};
                 v.name=row==0?"Core corrected model (averaged)":row==4?"Core counter rate A (averaged)":"Core counter rate B (averaged)";
                 v.producerNote=row==0?
                     "Model helper output plus activity polynomial, multiplied by a voltage model with a nonnegative correction. Coefficient units remain unknown; this is not verified power telemetry.":row==4?
@@ -204,6 +206,10 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
             if(row<=2 || row==6 || row==8) {
                 v.producerEvidence="granite-mp5-98.84.0-static";
                 v.producerKind=row<=1?"model":row==2?"configuration":"counter_rate";
+                v.producerSourceAddress=row==0?0x12804:row==1?0x12848:row==2?0x8030:row==6?0x128a8:0x12888;
+                if(row==6) v.counterSourceAddresses={0x187f134};
+                // Low word, high word, reconstruction tag, in that order.
+                if(row==8) v.counterSourceAddresses={0x187f170,0x187f174,0x187f17c};
                 v.name=row==0?"CCD model A (averaged)":row==1?"CCD corrected model B (averaged)":
                     row==2?"CCD configuration mirror (averaged)":row==6?"CCD counter rate A (averaged)":"CCD scaled counter rate B (averaged)";
                 v.producerNote=row==0?
@@ -357,6 +363,15 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
             ",\"producer_kind\":" + quote(v.producerKind) + ",\"producer_note\":" + quote(v.producerNote) +
             ",\"physical_unit_verified\":false,\"physical_measurement_verified\":false,\"capture_firmware_verified\":false," +
             "\"freshness_verified\":false,\"setting_readback_verified\":false";
+        if (v.producerSourceAddress) {
+            out += ",\"reference_address_space\":\"mp5_local\",\"producer_source_address\":"+word(v.producerSourceAddress)+
+                ",\"counter_source_addresses\":[";
+            for(std::size_t i=0;i<v.counterSourceAddresses.size();++i) {
+                if(i) out += ',';
+                out += word(v.counterSourceAddresses[i]);
+            }
+            out += "],\"reference_addresses_are_host_addresses\":false";
+        }
         if (v.group == "granite_svi" || v.group == "granite_command_mirror") out += ",\"firmware_channel\":" + std::to_string(v.firmwareChannel) +
             ",\"physical_rail_verified\":false,\"freshness_verified\":false,\"setting_readback_verified\":false";
         if (v.group == "granite_command_mirror") out += ",\"software_command_mirror\":true,\"measurement\":false";
