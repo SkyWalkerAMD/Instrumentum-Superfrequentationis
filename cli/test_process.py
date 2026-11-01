@@ -324,7 +324,9 @@ assert pbo_settings[1]['data']['unchanged']
 assert pbo_settings[2]['error'] == -11 and pbo_settings[2]['data']['phase'] == 'compare'
 assert pbo_settings[3]['data']['after']['multiplier'] == 1 and pbo_settings[3]['data']['phase'] == 'verify'
 assert pbo_settings[7]['data']['after']['multiplier'] is None and int(pbo_settings[7]['data']['after']['raw'],16) == 0x7fc00000
-pbo_reads = [r for r in reports if r['command'] == 'amd-pbo-scalar-read']
+pbo_read_rejections = [r for r in reports if r['command'] == 'amd-pbo-scalar-read' and 'scalar' not in r['data']]
+assert len(pbo_read_rejections) == 1 and pbo_read_rejections[0]['error'] == -22
+pbo_reads = [r for r in reports if r['command'] == 'amd-pbo-scalar-read' and 'scalar' in r['data']]
 assert [r['data']['scalar']['multiplier'] for r in pbo_reads] == [0,2.5,None]
 assert [r['data']['scalar']['valid'] for r in pbo_reads] == [True,True,False]
 curve_settings = [r for r in reports if r['command'] == 'amd-curve-set' and r['error'] != -22]
