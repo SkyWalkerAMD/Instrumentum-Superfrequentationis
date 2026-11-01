@@ -23,7 +23,11 @@ void sparseIdsAndFlags() {
 void boundedSingleRecord() {
     const auto good=record();
     for(std::size_t n=0;n<good.size();++n) {
-        auto b=good; b.resize(n); const auto t=decodeAmdApobTopology(b);
+        // Construct the exact truncated size; no resize growth path for GCC 14
+        // to diagnose while optimizing this every-length boundary sweep.
+        std::vector<std::uint8_t> b(n);
+        for(std::size_t i=0;i<n;++i) b[i]=good[i];
+        const auto t=decodeAmdApobTopology(b);
         assert(t.error==-EINVAL && t.groups.empty());
     }
     for(unsigned at:{0u,4u,12u}) {
