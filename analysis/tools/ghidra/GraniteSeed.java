@@ -17,6 +17,22 @@ public class GraniteSeed extends GhidraScript {
             throw new IllegalArgumentException("Wrong firmware or analysis language");
         }
         setAnalysisOption(currentProgram, "Non-Returning Functions - Discovered", "false");
+        if (sha.equals("fb5d96c17b909cc4f681523ccc931796e27c7457ba5ad637a3d4fce1c78ce556")) {
+            // Direct CALL8 targets in 0x2d160/0x2d11c identify this entry.
+            // Seed it before speculative scanning: a preceding candidate can
+            // otherwise claim an instruction at 0x317b9, inside ENTRY, and
+            // suppress the actual descriptor-submission helper.
+            int offset = 0x317b8;
+            byte[] expected = HexFormat.of().parseHex("3641000c04a2");
+            for (int i = 0; i < expected.length; i++) {
+                if (input[offset + i] != expected[i])
+                    throw new IllegalStateException("Changed MP5 descriptor helper bytes");
+            }
+            Address address = toAddr(offset);
+            if (!disassemble(address) || createFunction(address, null) == null)
+                throw new IllegalStateException("Cannot seed MP5 descriptor helper 0x317b8");
+            println("Seeded pinned direct-call target: " + address);
+        }
         int candidates = 0, largeFrames = 0;
         for (int offset = 0; offset + 3 < input.length; offset += 4) {
             // ENTRY's upper twelve bits encode the frame size in units of
