@@ -1,20 +1,22 @@
 # APOB topology record recovery
 
-The GUI and CLI share a bounded offline decoder for a **single APOB group 3,
-type 3 record**, including its 16-byte record header. This is a recovered
+The GUI and CLI share a bounded offline decoder for an **APOB group 3,
+type 3 record**, including its complete 48-byte header (16-byte fields and
+32-byte HMAC). Complete APOB containers with exactly one such record are also
+accepted; see the [handoff and container follow-up](amd-apob-handoff.md). This is a recovered
 component of the firmware topology path. It does not connect PM storage slots
 to physical CCDs, OS CPUs or firmware tuning targets.
 
-In AMD tuning, choose **Open firmware topology record…**. In the CLI:
+In AMD tuning, choose **Open firmware topology file…**. In the CLI:
 
 ```sh
 octool-cli amd-topology-decode --file topology-record.bin
 ```
 
-Input is a raw record, not a BIOS image, the complete APOB container, a CPUID
+Input is a raw record or complete APOB container, not a BIOS image, a CPUID
 snapshot or a PM table. No hardware backend is opened. There is no automatic
-physical-memory acquisition. The file must be 456 bytes through 1 MiB, have
-group/type 3/3, and declare exactly its file length at offset 12. Extension
+physical-memory acquisition. A single-record file must be 456 bytes through
+1 MiB, have group/type 3/3, and declare exactly its file length at offset 12. Extension
 bytes beyond the known span are counted, not interpreted. Matching these
 checks does not authenticate the file's firmware origin or applicability.
 
@@ -40,7 +42,7 @@ two providers of `D20482F8-7ECF-4A40-8C11-D326D8153806`:
 Offsets are file offsets/RVAs in these pinned PE images (image base zero).
 Installers populate an allocated function table at runtime. Default REA
 function discovery missed some of these indirect entries. The study now
-passes 12 explicitly recorded analyst seeds per provider through REA's native
+passes 15 explicitly recorded analyst seeds per provider through REA's native
 `REA_GHIDRA_SEED_FILE` support, based on the installer stores. The inputs are
 hash checked; this does not patch the binary or the analysis engine. Seed
 addresses and tool calls are retained in each study's evidence.
@@ -48,13 +50,13 @@ addresses and tool calls are retained in each study's evidence.
 The selector checks the APOB signature `0x424f5041`, container version at least
 5, then selects a unique group 3/type 3 record with the requested instance.
 The returned address points to the record header, not the payload. This is
-static evidence; the selector and installer have not been executed. The
+static evidence extended by the 502-case handoff replay; the installer has not been executed. The
 application does not copy the firmware's unbounded container walking logic.
 
 | Record offset/stride | Recovered read behavior |
 | --- | --- |
 | `0x00/0x04/0x08/0x0c` | Group, type, instance, total record bytes (little-endian DWORDs) |
-| `0x10..0x2f` | Uninterpreted bytes |
+| `0x10..0x2f` | HMAC bytes in the matching public AMD header; not verified |
 | `0x30 + g*0x33`, `g < 8` | Group's stored ID |
 | Group base `+1+s*0x19`, `s < 2` | Subgroup's stored ID |
 | Subgroup base `+1+c*3`, `c < 8` | Core entry's stored ID and two thread flags |
@@ -90,5 +92,5 @@ record and clearing of failed results. See [completed validation](amd-granite-va
 for the final tested commits and cloud outcomes.
 
 Still unverified: which provider executes on the target, the runtime record
-producer and physical meaning of its stored IDs, the link to PM slots and OS
+producer and physical binding of its stored IDs, the link to PM slots and OS
 CPUs, eight remaining field units, and independent second-rail write/readback.

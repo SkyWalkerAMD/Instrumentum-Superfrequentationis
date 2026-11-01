@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "comparison_kind": "cross-platform static source comparison",
+  "sources": [
+    {
+      "repository": "openSIL/openSIL",
+      "commit": "9648171d730771cc3574d7d4d13581d22d163319",
+      "path": "xUSL/Include/ApobCmn.h",
+      "git_blob_sha": "0d93a73385aa2f37f57db7a5bfbe68304a904e52",
+      "sha256": "fd56fbcc54a9123b87b5104bcb712f7bc5d2a68e579ad9eed1d0e74bb51d105d",
+      "bytes": 34730,
+      "url": "https://github.com/openSIL/openSIL/blob/9648171d730771cc3574d7d4d13581d22d163319/xUSL/Include/ApobCmn.h"
+    },
+    {
+      "repository": "openSIL/openSIL",
+      "commit": "9648171d730771cc3574d7d4d13581d22d163319",
+      "path": "xUSL/Include/Apob.h",
+      "git_blob_sha": "278835252a5d7a5e538ecfd707ca2125e11faf0d",
+      "sha256": "3ed157cc3142a773ca890740877a5de275bd844c240da898aec1c30e76d8bc19",
+      "bytes": 13765,
+      "url": "https://github.com/openSIL/openSIL/blob/9648171d730771cc3574d7d4d13581d22d163319/xUSL/Include/Apob.h"
+    },
+    {
+      "repository": "openSIL/openSIL",
+      "commit": "9648171d730771cc3574d7d4d13581d22d163319",
+      "path": "xUSL/Apob.c",
+      "git_blob_sha": "d8a94b0ff31a5e8a857995cabe8543d3b0c59791",
+      "sha256": "0eb2f5ea8af553ca62950d457f71b3d3a566a4eb0b42cedfb89e9b719b62eb7a",
+      "bytes": 19848,
+      "url": "https://github.com/openSIL/openSIL/blob/9648171d730771cc3574d7d4d13581d22d163319/xUSL/Apob.c"
+    },
+    {
+      "repository": "openSIL/openSIL",
+      "commit": "9de7d45669af452c8563acb82ced47ba15a7f61a",
+      "path": "xUSL/APOB/BRH/Apob-BRH.h",
+      "git_blob_sha": "74f96df1baae395e6d4260923e9960c56cb15346",
+      "sha256": "9118c0d60bc7f90130849e136392c3d083dc9204d926dbd8d0e03b7470bf9a0d",
+      "bytes": 21010,
+      "url": "https://github.com/openSIL/openSIL/blob/9de7d45669af452c8563acb82ced47ba15a7f61a/xUSL/APOB/BRH/Apob-BRH.h"
+    }
+  ],
+  "layout": {
+    "type_header_bytes": 48,
+    "type_fields_bytes": 16,
+    "hmac_bytes": 32,
+    "core_stride": 3,
+    "complex_stride": 25,
+    "ccd_stride": 51,
+    "genoa_max_ccds": 12,
+    "asus_getter_max_ccds": 8,
+    "turin_max_ccds": 16,
+    "turin_complexes_per_ccd": 1,
+    "turin_cores_per_complex": 16
+  },
+  "inference": "Matching group/type, header and nested strides support the public field names; full layout and physical identity are not inferred across processor families.",
+  "target_firmware_identity_verified": false,
+  "record_hmac_verified": false,
+  "physical_or_pm_os_binding_verified": false
+}

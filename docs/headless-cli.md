@@ -1,6 +1,6 @@
 # 无桌面版 OCTool
 
-新增 [APOB 拓扑记录离线解码](amd-apob-topology.md)：`amd-topology-decode --file PATH` 与 GUI 的 Open firmware topology record 共用解析器，显示枚举序号、存储编号、线程标志及重复编号。只接受带完整记录头的单条原始记录，不访问硬件，也不据此绑定 PM/物理/OS 核心。
+新增 [APOB 拓扑离线解码](amd-apob-handoff.md)：`amd-topology-decode --file PATH` 与 GUI 的 Open firmware topology file 共用解析器，接受单条原始记录或只含一条 group 3/type 3 记录的完整 APOB 文件。整张表通过边界检查后才显示枚举序号、存储编号和线程标志；多条拓扑记录会报错。记录头为 48 字节，其中 32 字节 HMAC 不作认证。此功能不访问硬件，也不据此绑定 PM/物理/OS 核心。
 
 新增 [Granite Ridge Fmax](amd-granite-fmax.md)：`amd-pbo-fmax-read/set --platform granite-ridge` 支持精确 SMU 98.84.0 的保存上限读取、比较旧值与写后回读；GUI 同步提供平台选项。实际运行频率尚未测量。
 
