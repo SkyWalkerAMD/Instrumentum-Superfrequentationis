@@ -34,7 +34,8 @@ struct AmdPboCapabilities {
     std::uint32_t raw = 0, response = 0;
     bool valid = false, messageAttempted = false;
 };
-// SMU 115.46.0 only. 6E reports the stored shared Fmax ceiling in integer
+// Shimada SMU 115.46.0 / Granite Ridge SMU 98.84.0 only.
+// 6E reports the stored shared Fmax ceiling in integer
 // MHz after firmware policy/clamping; this is not a measured core clock.
 struct AmdPboFmax {
     int error = 0;
@@ -43,6 +44,7 @@ struct AmdPboFmax {
     bool firmwareValid = false, messageAttempted = false, rawValid = false, valid = false;
 };
 AmdPboFmax readShimadaPboFmax(HardwareSession &session, const SmuTarget &target);
+AmdPboFmax readAmdPboFmax(HardwareSession &session, const SmuTarget &target);
 struct AmdPboFmaxUpdate {
     int error = 0;
     AmdPboPhase phase = AmdPboPhase::Validate;
@@ -102,6 +104,8 @@ bool amdPboFmaxAvailable(std::uint32_t capabilities);
 // and the previously read MHz value. Read back once; never enable OC or retry.
 AmdPboFmaxUpdate setShimadaPboFmax(HardwareSession &session, const SmuTarget &target,
                                  std::uint32_t expectedCapabilities, unsigned mhz, unsigned expectedMHz);
+AmdPboFmaxUpdate setAmdPboFmax(HardwareSession &session, const SmuTarget &target,
+                             std::uint32_t expectedCapabilities, unsigned mhz, unsigned expectedMHz);
 enum class AmdPboLimit { Ppt, Tdc, Edc, Temperature };
 const char *amdPboLimitName(AmdPboLimit limit);
 const char *amdPboLimitUnit(AmdPboLimit limit);

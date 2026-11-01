@@ -9,6 +9,16 @@ struct AmdPboFixture : AmdCurveFixture {
     std::uint32_t scalarRaw = 0x3f800000;
     std::uint32_t capsRaw = 4, fmaxMHz = 0;
     bool allowFmaxReadback = false, clampFmax = false;
+    bool graniteFmax = false, hypervisor = false;
+    void useGraniteFmax() {
+        graniteFmax = allowFmaxReadback = true;
+        model = 0x44; pciId = 0x14d81022; firmwareVersion = 0x00625400;
+    }
+    octool::core::CpuIdReply cpuid(unsigned cpu, std::uint32_t leaf, std::uint32_t subleaf) override {
+        auto out = AmdCurveFixture::cpuid(cpu,leaf,subleaf);
+        if (!out.error && leaf == 1 && hypervisor) out.words[2] |= 0x80000000u;
+        return out;
+    }
     std::uint32_t fmaxClampedMHz = 6000;
     bool allowManualOc = false, overrideModeCaps = false;
     bool allowAllCoreCurve = false;
@@ -24,18 +34,21 @@ struct AmdPboFixture : AmdCurveFixture {
     octool::core::Reply execute(const octool::core::Request &r) override {
         using namespace octool::core;
         requests.push_back(r); Reply out;
+        const unsigned responseAddress = graniteFmax ? 0x3b10570 : 0x3b10970;
+        const unsigned commandAddress = graniteFmax ? 0x3b10524 : 0x3b10924;
         if (failing()) { out.error = -EACCES; out.value = UINT64_MAX; return out; }
         if (r.space != Space::Pci || r.width != 4 || r.bus || r.device || r.function) out.error = -EINVAL;
         else if (!r.write && r.address == 0) out.value = pciId;
         else if (r.write && r.address == 0xb8) {
-            if (r.value != 0x3b10970 && r.value != 0x3b10924 &&
+            if (r.value != responseAddress && r.value != commandAddress &&
                 (r.value < 0x3b10a40 || r.value > 0x3b10a54 || (r.value & 3))) out.error = -EINVAL;
             else index = std::uint32_t(r.value);
         } else if (r.address != 0xbc) out.error = -EINVAL;
         else if (r.write) {
-            if (index == 0x3b10970 && !r.value) response = 0;
+            if (index == responseAddress && !r.value) response = 0;
             else if (index >= 0x3b10a40 && index <= 0x3b10a54) scalarArgs[(index-0x3b10a40)/4] = std::uint32_t(r.value);
-            else if (index == 0x3b10924 && (r.value == 0x6d || r.value == 0x5b || r.value == 0x6f || r.value == 0x70 || (r.value >= 0x56 && r.value <= 0x59) ||
+            else if (index == commandAddress && (!graniteFmax || r.value == 2 || r.value == 0x6e || r.value == 0x6f || r.value == 0x70) &&
+                     (r.value == 0x6d || r.value == 0x5b || r.value == 0x6f || r.value == 0x70 || (r.value >= 0x56 && r.value <= 0x59) ||
                      (allowManualOc && r.value >= 0x5d && r.value <= 0x60) || (allowAllCoreCurve && r.value == 7) ||
                      (allowStatusQueries && (r.value == 0xa6 || r.value == 0x5c)) ||
                      (allowPowerAdjustment && (r.value == 2 || r.value == 0xa7 || r.value == 0xa8)) ||
@@ -70,7 +83,7 @@ struct AmdPboFixture : AmdCurveFixture {
                     } else if (completion == 1) scalarArgs[0] = r.value == 2 ? firmwareVersion : r.value == 0x6e ? fmaxMHz : r.value == 0xa8 ? powerAdjustmentRaw : r.value == 0x6d ? scalarRaw : r.value == 0x6f ? capsRaw : r.value == 0xa6 ? ln2Raw : performanceRaw;
                 }
             } else out.error = -EINVAL;
-        } else if (index == 0x3b10970) {
+        } else if (index == responseAddress) {
             ++polls; out.value = (!commands && busyBefore) || (commands && polls <= busyPolls) ? 0 : response;
         } else if (index == 0x3b10a40) { ++argumentReads; out.value = scalarArgs[0]; }
         else out.error = -EINVAL;

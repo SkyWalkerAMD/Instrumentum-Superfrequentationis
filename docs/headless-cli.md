@@ -1,5 +1,7 @@
 # 无桌面版 OCTool
 
+新增 [Granite Ridge Fmax](amd-granite-fmax.md)：`amd-pbo-fmax-read/set --platform granite-ridge` 支持精确 SMU 98.84.0 的保存上限读取、比较旧值与写后回读；GUI 同步提供平台选项。实际运行频率尚未测量。
+
 2026-10-31：[GHz 请求策略与全部可用 CPU 拓扑目录](amd-granite-performance-policy.md)已同步接入 GUI/CLI。
 `amd-topology --all-cpus --l3` 保留 OS CPU 原编号，列出 APIC、CCD/Core/Thread 与 L3，并复读检查；
 它只覆盖当前进程允许访问的 CPU，尚不能绑定 PM 槽位。9950X3D 的 PM 第 9/10 行核心值现在显示 GHz 请求策略，不能当作实测频率或设置回读。

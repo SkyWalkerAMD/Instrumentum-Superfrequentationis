@@ -2166,6 +2166,54 @@ void pboFmaxCommands() {
         assert(!opened); if (emit) std::cout << output.str();
     }
 }
+void graniteFmaxCommands() {
+    for(unsigned mhz:{0u,5500u,0xfffffu}) {
+        AmdPboFixture d; d.useGraniteFmax(); d.fmaxMHz=mhz;
+        const auto r=command(d,{"amd-pbo-fmax-read","--cpu","130","--platform","granite-ridge"},0);
+        assert(r.find("\"platform\":\"granite-ridge\"")!=std::string::npos);
+        assert(r.find("\"supported_firmware_version\":\"0x00625400\"")!=std::string::npos);
+        assert(r.find("\"current_fmax_mhz\":"+std::to_string(mhz))!=std::string::npos && !d.settings && !d.wrongCpu);
+    }
+    AmdPboFixture d; d.useGraniteFmax(); d.fmaxMHz=5500;
+    for(unsigned expected:{5500u,5000u}) {
+        const auto r=command(d,{"amd-pbo-fmax-set","--cpu","130","--platform","granite-ridge","--mhz","5000",
+            "--expect-mhz",std::to_string(expected),"--expect-caps","4","--apply"},0);
+        assert(r.find("\"verified\":true")!=std::string::npos && d.fmaxMHz==5000 && d.settings==1);
+    }
+    for(unsigned mode=0;mode<6;++mode) {
+        AmdPboFixture f; f.useGraniteFmax(); f.fmaxMHz=5500;
+        if(mode==0) f.firmwareVersion=0x00625401;
+        if(mode==1) f.capsRaw=0;
+        if(mode==2) f.fmaxMHz=5600;
+        if(mode==3) f.writeCompletion=0xfd;
+        if(mode==4) f.discardChange=true;
+        if(mode==5) f.clampFmax=true;
+        const auto r=command(f,{"amd-pbo-fmax-set","--cpu","130","--platform","granite-ridge","--mhz","5000",
+            "--expect-mhz","5500","--expect-caps","4","--apply"},3);
+        assert(r.find("\"verified\":false")!=std::string::npos && f.settings==(mode>=3?1u:0u));
+    }
+    for(unsigned version:{0u,0x00625401u,0x00732e00u}) {
+        AmdPboFixture f; f.useGraniteFmax(); f.firmwareVersion=version;
+        const auto r=command(f,{"amd-pbo-fmax-read","--cpu","130","--platform","granite-ridge"},3);
+        assert(r.find("\"current_fmax_mhz\":null")!=std::string::npos && f.messages==std::vector<std::uint32_t>{2});
+    }
+    AmdPboFixture wrong; wrong.useGraniteFmax();
+    command(wrong,{"amd-pbo-fmax-read","--cpu","130"},3);
+    assert(!wrong.commands); // Never detect a new mailbox by trial commands.
+}
+void graniteFmaxInvalidBeforeOpen() {
+    for(const auto &args:{
+        std::vector<std::string>{"amd-pbo-fmax-read","--cpu","130","--platform","unknown"},
+        {"amd-pbo-fmax-read","--cpu","130","--platform","granite-ridge","--platform","shimada"},
+        {"amd-pbo-fmax-set","--cpu","130","--platform","granite-ridge","--mhz","5000","--expect-mhz","5500","--expect-caps","4"},
+        {"amd-pbo-fmax-set","--cpu","130","--platform","granite-ridge","--mhz","5000","--expect-mhz","5500","--expect-caps","0x10004","--apply"},
+        {"amd-pbo-scalar-read","--cpu","130","--platform","granite-ridge"},
+        {"amd-pbo-capabilities","--cpu","130","--platform","granite-ridge"}}) {
+        unsigned opened=0; std::ostringstream output;
+        assert(run(args,output,[&] { ++opened; return std::unique_ptr<HardwareBackend>(new AmdPboFixture); })==2);
+        assert(!opened); if(emit) std::cout << output.str();
+    }
+}
 void powerAdjustmentCommands() {
     for(int counts : {-128,-10,-1,0,5,127}) {
         AmdPboFixture d; d.allowPowerAdjustment=true; d.powerAdjustmentRaw=std::uint32_t(counts);
@@ -2528,6 +2576,7 @@ int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "--pm-fixture") { pmFilesystem(argv[2]); return 0; }
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     curveSettingCommands(); pboScalarCommands(); pboFmaxCommands(); pboOfflineCommands(); pboLimitCommands(); pboLimitInvalidBeforeOpen();
+    graniteFmaxCommands(); graniteFmaxInvalidBeforeOpen();
     allCoreCurveCommands(); allCoreCurveInvalidBeforeOpen();
     pboQueryCommands(); pboQueryInvalidBeforeOpen();
     powerAdjustmentCommands(); powerAdjustmentInvalidBeforeOpen();
@@ -2543,5 +2592,5 @@ int main(int argc, char **argv) {
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
     l3TopologyCommands(); topologyCatalogCommands();
-    if (!emit) std::cout << "78 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "80 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

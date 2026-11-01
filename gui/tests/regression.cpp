@@ -4009,6 +4009,68 @@ private slots:
         apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(device->settings,0u);
         QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("No setting sent"));
     }
+    void graniteFmaxVerifiedAndClamped() {
+        auto *d=new AmdPboFixture; d->useGraniteFmax(); d->fmaxMHz=5500;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        panel.resize(1400,1250); panel.show(); QApplication::processEvents();
+        auto *profile=panel.findChild<QComboBox *>("smuProfile");
+        profile->setCurrentIndex(profile->findData(int(octool::core::SmuProfile::GraniteRidge)));
+        auto *read=panel.findChild<QPushButton *>("pboFmaxRead"), *apply=panel.findChild<QPushButton *>("pboFmaxApply");
+        panel.findChild<QLineEdit *>("pboFmax")->setText("5000");
+        for(unsigned n=0;n<3;++n) {
+            if(n==2) { d->clampFmax=true; panel.findChild<QLineEdit *>("pboFmax")->setText("5100"); }
+            read->click(); QTRY_VERIFY(panel.isEnabled());
+            auto *table=panel.findChild<QTableWidget *>("smuTable");
+            QCOMPARE(table->item(0,1)->text(),QString("0x00625400"));
+            QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+            apply->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(d->settings,n==2?2u:1u); QCOMPARE(d->wrongCpu,0u);
+            QCOMPARE(table->item(3,1)->text(),QString(n==2?"6000":"5000"));
+            QCOMPARE(table->item(4,1)->text(),QString(n==2?"No / not verified":"Yes"));
+            QCOMPARE(table->item(5,1)->text(),QString("Not measured"));
+            if(n==0) {
+                QApplication::processEvents(); const auto shot=qEnvironmentVariable("OCTOOL_GRANITE_FMAX_TEST_SCREENSHOT");
+                if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+            }
+            if(n==1) QCOMPARE(table->item(1,1)->text(),QString("Already matches; not sent"));
+        }
+    }
+    void graniteFmaxVersionAndProfileChanges() {
+        auto *d=new AmdPboFixture; d->useGraniteFmax(); d->fmaxMHz=5500; d->firmwareVersion=0x00625401;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        auto *profile=panel.findChild<QComboBox *>("smuProfile");
+        const auto granite=profile->findData(int(octool::core::SmuProfile::GraniteRidge)); profile->setCurrentIndex(granite);
+        auto *read=panel.findChild<QPushButton *>("pboFmaxRead"), *apply=panel.findChild<QPushButton *>("pboFmaxApply");
+        read->click(); QTRY_VERIFY(panel.isEnabled());
+        QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("requires SMU 98.84.0"));
+        const auto failedCalls=d->calls; apply->click(); QCOMPARE(d->calls,failedCalls);
+        d->firmwareVersion=0x00625400; read->click(); QTRY_VERIFY(panel.isEnabled());
+        panel.findChild<QLineEdit *>("pboFmax")->setText("5000"); const auto calls=d->calls;
+        QTimer::singleShot(0, [&] {
+            auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());
+            if(box) { profile->setCurrentIndex(0); box->button(QMessageBox::Yes)->click(); }
+        });
+        apply->click(); QCOMPARE(d->calls,calls); QCOMPARE(d->settings,0u);
+        profile->setCurrentIndex(granite); apply->click(); QCOMPARE(d->calls,calls);
+        read->click(); QTRY_VERIFY(panel.isEnabled()); d->fmaxMHz=5600;
+        QTimer::singleShot(0, [] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) box->button(QMessageBox::Yes)->click(); });
+        apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(d->settings,0u);
+    }
+    void graniteFmaxDoesNotPrepareOtherWriters() {
+        auto *d=new AmdPboFixture; d->useGraniteFmax(); d->fmaxMHz=5500;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        auto *profile=panel.findChild<QComboBox *>("smuProfile");
+        profile->setCurrentIndex(profile->findData(int(octool::core::SmuProfile::GraniteRidge)));
+        QVERIFY(!panel.findChild<QPushButton *>("smuSend")->isEnabled());
+        QVERIFY(!panel.findChild<QPushButton *>("smuProbe")->isEnabled());
+        QCOMPARE(panel.findChild<QComboBox *>("smuCommand")->count(),0);
+        panel.findChild<QPushButton *>("pboFmaxRead")->click(); QTRY_VERIFY(panel.isEnabled());
+        const auto calls=d->calls;
+        for(const auto name:{"allCurveApply","pboLimitApply","pboScalarApply"}) {
+            auto *button=panel.findChild<QPushButton *>(name); QVERIFY(button); button->click();
+            QCOMPARE(d->calls,calls); QCOMPARE(d->settings,0u);
+        }
+    }
     void firmwareLn2Readback() {
         auto *d=new AmdPboFixture; d->allowStatusQueries=true;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);

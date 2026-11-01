@@ -14,6 +14,38 @@ int checkTarget(HardwareSession &s, const SmuTarget &target) {
     if (probe.error) return probe.error;
     return probe.identity.model == 0x08 ? 0 : -ENOTSUP;
 }
+int checkFmaxTarget(HardwareSession &s, const SmuTarget &t) {
+    if (t.profile != SmuProfile::GraniteRidge) return checkTarget(s,t);
+    if (t.bus || t.device || t.function) return -ENOTSUP;
+    if (const int error = s.checkpoint()) return error;
+    const auto cpu = identifyCpu(s,t.cpu);
+    if (cpu.error) return cpu.error;
+    if (!cpu.amd || cpu.family != 0x1a || cpu.model != 0x44) return -ENOTSUP;
+    const auto features = s.cpuid(t.cpu,1);
+    if (features.error) return features.error;
+    if (features.words[2] & 0x80000000u) return -ENOTSUP;
+    Request request; request.space = Space::Pci; request.width = 4;
+    const auto pci = s.execute(request);
+    if (pci.error) return pci.error;
+    if (pci.value != 0x14d81022u) return -ENODEV;
+    return s.checkpoint();
+}
+detail::AmdRsmuReply fmaxExchange(HardwareSession &s, const SmuTarget &t,
+                                 unsigned command, unsigned argument = 0) {
+    return t.profile == SmuProfile::GraniteRidge ? detail::exchangeGraniteFmax(s,command,argument) :
+        detail::exchangeShimadaRsmu(s,command,argument,command != 0x70,true);
+}
+std::uint32_t fmaxVersion(const SmuTarget &t) {
+    return t.profile == SmuProfile::GraniteRidge ? 0x00625400u : 0x00732e00u;
+}
+AmdPboCapabilities fmaxCapabilities(HardwareSession &s, const SmuTarget &t) {
+    AmdPboCapabilities out;
+    if ((out.error = checkFmaxTarget(s,t))) return out;
+    const auto reply = fmaxExchange(s,t,0x6f);
+    out.error = reply.error; out.response = reply.response;
+    out.messageAttempted = reply.messageAttempted; out.raw = reply.raw; out.valid = reply.valid;
+    return out;
+}
 std::uint32_t floatBits(unsigned multiplier) {
     const float value = float(multiplier); std::uint32_t raw = 0;
     std::memcpy(&raw, &value, sizeof(raw)); return raw;
@@ -171,22 +203,28 @@ AmdPowerAdjustmentUpdate setShimadaPowerAdjustment(HardwareSession &s, const Smu
     if ((out.error = s.checkpoint())) return out;
     out.verified = true; out.phase = AmdPboPhase::Complete; return out;
 }
-AmdPboFmax readShimadaPboFmax(HardwareSession &s, const SmuTarget &target) {
+AmdPboFmax readAmdPboFmax(HardwareSession &s, const SmuTarget &target) {
     AmdPboFmax out;
-    if ((out.error = checkTarget(s, target))) return out;
-    const auto version = detail::exchangeShimadaRsmu(s, 2, 0, true, true);
+    if ((out.error = checkFmaxTarget(s, target))) return out;
+    const auto version = fmaxExchange(s,target,2);
     out.firmwareResponse = version.response;
     if ((out.error = version.error)) return out;
-    if ((out.error = checkTarget(s, target))) return out;
+    if ((out.error = checkFmaxTarget(s, target))) return out;
     out.firmwareVersion = version.raw; out.firmwareValid = true;
-    if (version.raw != 0x00732e00u) { out.error = -ENOTSUP; return out; }
-    out.capabilities = readShimadaPboCapabilities(s, target);
+    if (version.raw != fmaxVersion(target)) { out.error = -ENOTSUP; return out; }
+    out.capabilities = fmaxCapabilities(s,target);
     if ((out.error = out.capabilities.error)) return out;
-    if ((out.error = checkTarget(s, target))) return out;
-    const auto reply = detail::exchangeShimadaRsmu(s, 0x6e, 0, true, true);
+    if ((out.error = checkFmaxTarget(s, target))) return out;
+    const auto reply = fmaxExchange(s,target,0x6e);
     out.response = reply.response; out.messageAttempted = reply.messageAttempted;
     if ((out.error = reply.error)) return out;
-    if ((out.error = checkTarget(s, target))) return out;
+    if ((out.error = checkFmaxTarget(s, target))) return out;
+    if (target.profile == SmuProfile::GraniteRidge) {
+        const auto recheck = fmaxExchange(s,target,2);
+        if ((out.error = recheck.error)) return out;
+        if (recheck.raw != version.raw) { out.error = -EAGAIN; return out; }
+        if ((out.error = checkFmaxTarget(s,target))) return out;
+    }
     if ((out.error = s.checkpoint())) return out;
     out.raw = reply.raw; out.rawValid = true;
     // Preserve zero, but reject negative/saturated conversion words and values
@@ -194,13 +232,13 @@ AmdPboFmax readShimadaPboFmax(HardwareSession &s, const SmuTarget &target) {
     if (out.raw > 0xfffffu) { out.error = -ERANGE; return out; }
     out.valid = true; return out;
 }
-AmdPboFmaxUpdate setShimadaPboFmax(HardwareSession &s, const SmuTarget &target,
+AmdPboFmaxUpdate setAmdPboFmax(HardwareSession &s, const SmuTarget &target,
                                  std::uint32_t expectedCapabilities, unsigned mhz, unsigned expectedMHz) {
     AmdPboFmaxUpdate out; out.requestedMHz = mhz;
     if (!mhz || mhz > 0xfffffu || expectedMHz > 0xfffffu) { out.error = -ERANGE; return out; }
     if (!amdPboFmaxAvailable(expectedCapabilities)) { out.error = -ENOTSUP; return out; }
     out.phase = AmdPboPhase::Compare;
-    out.previous = readShimadaPboFmax(s, target);
+    out.previous = readAmdPboFmax(s, target);
     out.before = out.previous.capabilities;
     if ((out.error = out.previous.error)) return out;
     if (out.before.raw != expectedCapabilities || out.previous.raw != expectedMHz) { out.error = -EAGAIN; return out; }
@@ -209,22 +247,37 @@ AmdPboFmaxUpdate setShimadaPboFmax(HardwareSession &s, const SmuTarget &target,
         out.after = out.previous; out.verified = out.unchanged = true;
         out.phase = AmdPboPhase::Complete; return out;
     }
-    const auto caps = readShimadaPboCapabilities(s, target);
+    if (target.profile == SmuProfile::GraniteRidge) {
+        if ((out.error = checkFmaxTarget(s,target))) return out;
+        const auto version = fmaxExchange(s,target,2);
+        if ((out.error = version.error)) return out;
+        if (version.raw != fmaxVersion(target)) { out.error = -EAGAIN; return out; }
+    }
+    const auto caps = fmaxCapabilities(s,target);
     if ((out.error = caps.error)) return out;
     if (caps.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
-    if ((out.error = checkTarget(s, target))) return out;
+    if ((out.error = checkFmaxTarget(s, target))) return out;
     out.phase = AmdPboPhase::Write;
-    const auto reply = detail::exchangeShimadaRsmu(s, 0x70, mhz, false, true);
+    const auto reply = fmaxExchange(s,target,0x70,mhz);
     out.writeAttempted = reply.messageAttempted; out.response = reply.response;
     out.accepted = reply.response == 1;
     if ((out.error = reply.error)) return out;
     out.phase = AmdPboPhase::Verify;
-    out.after = readShimadaPboFmax(s, target);
+    out.after = readAmdPboFmax(s, target);
     if ((out.error = out.after.error)) return out;
     if (out.after.capabilities.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
     if (out.after.raw != mhz) { out.error = -EIO; return out; }
     if ((out.error = s.checkpoint())) return out;
     out.verified = true; out.phase = AmdPboPhase::Complete; return out;
+}
+AmdPboFmax readShimadaPboFmax(HardwareSession &s, const SmuTarget &target) {
+    if (target.profile != SmuProfile::Shimada) { AmdPboFmax out; out.error = -ENOTSUP; return out; }
+    return readAmdPboFmax(s,target);
+}
+AmdPboFmaxUpdate setShimadaPboFmax(HardwareSession &s, const SmuTarget &target,
+    std::uint32_t capabilities, unsigned mhz, unsigned expectedMHz) {
+    if (target.profile != SmuProfile::Shimada) { AmdPboFmaxUpdate out; out.error = -ENOTSUP; return out; }
+    return setAmdPboFmax(s,target,capabilities,mhz,expectedMHz);
 }
 const char *amdPboLimitName(AmdPboLimit limit) {
     switch (limit) {

@@ -43,7 +43,7 @@ class Slice:
     def getf(self, address):
         return struct.unpack('<f', struct.pack('<I', self.get(address)))[0]
 
-    def run(self, pc, stop, budget=10000):
+    def run(self, pc, stop, budget=10000, hooks=None):
         loop = None
         val = lambda a: self.r[a] if a.startswith('a') else int(a, 0)
         for _ in range(budget):
@@ -59,6 +59,12 @@ class Slice:
             self.trace.append(pc)
             if op in ('entry', 'memw'):
                 pass
+            elif op == 'call8' and hooks is not None:
+                destination = val(a[0])
+                assert destination in hooks, f'Unmodeled call at {pc:x}'
+                hooks[destination](self)
+            elif op == 'retw' and stop is None and hooks is not None:
+                return
             elif op in ('mov', 'movi'):
                 self.r[a[0]] = val(a[1]) & 0xffffffff
             elif op == 'l32r':

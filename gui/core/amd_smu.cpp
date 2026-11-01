@@ -32,7 +32,7 @@ Reply indirect(HardwareSession &s, const SmuTarget &t, std::uint32_t address, bo
 }
 }
 bool allowedSmuMessage(SmuProfile profile, std::uint32_t message) {
-    if (profile == SmuProfile::None) return false;
+    if (profile != SmuProfile::Shimada && profile != SmuProfile::Phoenix && profile != SmuProfile::Gpt) return false;
     if (message == 1 || message == 2) return true;
     // Only individually recovered controls, no reset/USB/firmware/table-DMA
     // commands from the original large table. Unknown arguments stay encoded.

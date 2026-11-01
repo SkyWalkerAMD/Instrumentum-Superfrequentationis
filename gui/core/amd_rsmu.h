@@ -5,7 +5,7 @@
 #include <chrono>
 #include <thread>
 
-// Internal transport for individually verified Shimada RSMU commands. Callers
+// Internal transports for individually verified RSMU commands. Callers
 // must validate the CPU/model/PCI identity first and hold a service transaction.
 // This is neither the BIOS SMU mailbox nor the MP1 mailbox.
 namespace octool { namespace core { namespace detail {
@@ -63,6 +63,41 @@ inline AmdRsmuReply exchangeShimadaRsmu(HardwareSession &s, std::uint32_t comman
     if (readArgument) {
         reply = rsmuIndirect(s, 0x3b10a40, false); if ((out.error = reply.error)) return out;
         out.raw = std::uint32_t(reply.value);
+    }
+    if ((out.error = s.checkpoint())) { out.raw = 0; return out; }
+    out.valid = true; return out;
+}
+// Granite 98.84.0 uses a different message/response pair. Keep this transport
+// closed to version, capability, stored Fmax and its one verified setter.
+inline AmdRsmuReply exchangeGraniteFmax(HardwareSession &s, std::uint32_t command,
+                                      std::uint32_t argument = 0) {
+    AmdRsmuReply out;
+    if ((command != 2 && command != 0x6e && command != 0x6f && command != 0x70) ||
+        (command == 0x70 ? !argument || argument > 0xfffffu : argument != 0)) {
+        out.error = -EINVAL; return out;
+    }
+    const auto wait = [&]() {
+        for (unsigned n = 0; n < 100; ++n) {
+            auto r = rsmuIndirect(s,0x3b10570,false);
+            if (r.error || r.value) return r;
+            rsmuDelay();
+        }
+        Reply r; r.error = -ETIMEDOUT; return r;
+    };
+    auto r = wait(); if ((out.error = r.error)) return out;
+    r = rsmuIndirect(s,0x3b10570,true,0); if ((out.error = r.error)) return out;
+    for (unsigned i = 0; i < 6; ++i) {
+        r = rsmuIndirect(s,0x3b10a40+4*i,true,i ? 0 : argument);
+        if ((out.error = r.error)) return out;
+    }
+    out.messageAttempted = true;
+    r = rsmuIndirect(s,0x3b10524,true,command); if ((out.error = r.error)) return out;
+    r = wait(); if ((out.error = r.error)) return out;
+    out.response = std::uint32_t(r.value);
+    if (out.response != 1) { out.error = -EIO; return out; }
+    if (command != 0x70) {
+        r = rsmuIndirect(s,0x3b10a40,false); if ((out.error = r.error)) return out;
+        out.raw = std::uint32_t(r.value);
     }
     if ((out.error = s.checkpoint())) { out.raw = 0; return out; }
     out.valid = true; return out;

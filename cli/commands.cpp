@@ -193,6 +193,7 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "spd-decode") keys.insert("--file");
     if (pm || c.name == "amd-pm-native-read") keys.insert("--bclk-mhz");
     if (c.name == "amd-pm-native-read") { keys.insert("--map-ccd"); keys.insert("--platform"); }
+    if (c.name == "amd-pbo-fmax-read" || c.name == "amd-pbo-fmax-set") keys.insert("--platform");
     if (c.name == "amd-pm-decode") { keys.insert("--file"); keys.insert("--version"); }
     if (umcOffline || memoryOffline || clockOffline) keys.insert("--file");
     if (c.name == "intel-memory-read") { keys.insert("--controller"); keys.insert("--channel"); }
@@ -479,6 +480,11 @@ Command parse(const std::vector<std::string> &args) {
     if ((pm || c.name == "amd-pm-native-read") && options.count("--bclk-mhz")) {
         c.pmOptions.hasBclk = true; c.pmOptions.bclkMHz = decimal(get(options, "--bclk-mhz"), "--bclk-mhz");
         require(c.pmOptions.bclkMHz > 0, "--bclk-mhz must be positive");
+    }
+    if ((c.name == "amd-pbo-fmax-read" || c.name == "amd-pbo-fmax-set") && options.count("--platform")) {
+        const auto platform = get(options,"--platform");
+        require(platform == "shimada" || platform == "granite-ridge", "--platform must be shimada or granite-ridge");
+        c.smu.profile = platform == "granite-ridge" ? SmuProfile::GraniteRidge : SmuProfile::Shimada;
     }
     if (c.name == "amd-pm-native-read" && options.count("--platform")) {
         const auto platform = get(options,"--platform");
@@ -1162,14 +1168,15 @@ Result hardware(const Command &c, HardwareSession &s) {
         };
         out.data={{"scope",quote("shared firmware ceiling")},{"hardware_effect_measured","false"},
             {"operating_frequency_mhz","null"},{"readback_supported","true"},
-            {"supported_firmware_version",hex(0x00732e00)},
+            {"platform",quote(c.smu.profile == SmuProfile::GraniteRidge ? "granite-ridge" : "shimada")},
+            {"supported_firmware_version",hex(c.smu.profile == SmuProfile::GraniteRidge ? 0x00625400 : 0x00732e00)},
             {"detail",quote("Stored ceiling in integer MHz; firmware may clamp requests. Operating clocks are not measured. No retry or rollback.")}};
         if (c.name == "amd-pbo-fmax-read") {
-            const auto r=readShimadaPboFmax(s,c.smu); out.error=r.error;
+            const auto r=readAmdPboFmax(s,c.smu); out.error=r.error;
             out.data.push_back({"fmax",snapshot(r)});
             out.data.push_back({"current_fmax_mhz",r.valid && !r.error?number(r.raw):"null"});
         } else {
-            const auto r=setShimadaPboFmax(s,c.smu,c.pboExpected,c.pboFmax,c.pboExpectedMHz); out.error=r.error;
+            const auto r=setAmdPboFmax(s,c.smu,c.pboExpected,c.pboFmax,c.pboExpectedMHz); out.error=r.error;
             out.data.push_back({"expected_capabilities",hex(c.pboExpected)});
             out.data.push_back({"capabilities_raw",r.before.valid?hex(r.before.raw):"null"});
             out.data.push_back({"expected_mhz",number(c.pboExpectedMHz)});
@@ -1574,9 +1581,10 @@ Usage: octool-cli COMMAND [OPTIONS]
     Frequency has acknowledgement only, with no current-frequency readback.
     Mode changes do not send VID, frequency or scalar resets; disabling mode is
     not an assurance that all firmware settings have returned to defaults.
-  amd-pbo-fmax-read --cpu N
-  amd-pbo-fmax-set --cpu N --mhz N --expect-mhz PREVIOUS --expect-caps RAW --apply
-                                   Firmware acknowledgement only; no Fmax readback
+  amd-pbo-fmax-read --cpu N [--platform shimada|granite-ridge]
+  amd-pbo-fmax-set --cpu N [--platform shimada|granite-ridge] --mhz N --expect-mhz PREVIOUS --expect-caps RAW --apply
+                                   Stored ceiling readback; operating clocks not measured
+                                   Shimada SMU 115.46.0 / Granite Ridge SMU 98.84.0 only
   amd-pbo-limit-set --cpu N --limit ppt|tdc|edc|temperature --value N --expect-caps RAW --apply
                                    One shared limit; firmware acknowledgement only
     Shimada 1Ah/08h at domain 0 / BDF 0 only. Read capabilities first: power limits

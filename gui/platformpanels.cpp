@@ -173,10 +173,14 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     profile_ = new QComboBox(this); profile_->setObjectName("smuProfile");
     profile_->addItem("Shimada · AMD 1022:153a", int(octool::core::SmuProfile::Shimada));
     profile_->addItem("Phoenix · AMD 1022:14e8 · query only", int(octool::core::SmuProfile::Phoenix));
-    profile_->addItem("GPT · AMD 1022:1122 · query only", int(octool::core::SmuProfile::Gpt)); form->addRow("Original profile", profile_);
+    profile_->addItem("GPT · AMD 1022:1122 · query only", int(octool::core::SmuProfile::Gpt));
+    profile_->addItem("Granite Ridge · Fmax · SMU 98.84.0", int(octool::core::SmuProfile::GraniteRidge));
+    form->addRow("Platform", profile_);
     command_ = new QComboBox(this); command_->setObjectName("smuCommand");
     auto commands = [this] {
-        command_->clear(); command_->addItem("Get SMU version (02)", 2); command_->addItem("Test message (01)", 1);
+        command_->clear();
+        if (profile_->currentData().toInt() == int(octool::core::SmuProfile::GraniteRidge)) return;
+        command_->addItem("Get SMU version (02)", 2); command_->addItem("Test message (01)", 1);
         if (profile_->currentData().toInt() != int(octool::core::SmuProfile::Shimada)) return;
         const std::pair<const char *, int> list[] = {{"Enable OC",0x24},{"Disable OC",0x25},{"All-core frequency",0x26},
             {"Per-core frequency",0x27},{"OC VID",0x28},{"Boost limit frequency",0x29},{"All-core boost limit",0x2b},
@@ -249,7 +253,7 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     pboFmax_ = edit("pboFmax", "", this); pboFmax_->setPlaceholderText("Requested ceiling in MHz"); fmax->addWidget(pboFmax_);
     auto *readFmax = new QPushButton("Read Fmax", this); readFmax->setObjectName("pboFmaxRead"); fmax->addWidget(readFmax);
     auto *applyFmax = new QPushButton("Apply Fmax…", this); applyFmax->setObjectName("pboFmaxApply"); fmax->addWidget(applyFmax);
-    form->addRow("Shimada Fmax · SMU 115.46.0", fmax);
+    form->addRow("Fmax · Shimada / Granite Ridge", fmax);
     connect(readFmax, &QPushButton::clicked, this, [this] { readPboFmax(); });
     connect(applyFmax, &QPushButton::clicked, this, [this] { applyPboFmax(); });
     auto *limits = new QHBoxLayout;
@@ -319,6 +323,10 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     form->addRow("Arg0 … Arg5 (32-bit hex)", args); layout->addLayout(form);
     auto *buttons = new QHBoxLayout; auto *probe = new QPushButton("Probe", this); probe->setObjectName("smuProbe"); buttons->addWidget(probe);
     auto *send = new QPushButton("Send command…", this); send->setObjectName("smuSend"); buttons->addWidget(send); layout->addLayout(buttons);
+    connect(profile_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this,probe,send] {
+        const bool bios = profile_->currentData().toInt() != int(octool::core::SmuProfile::GraniteRidge);
+        probe->setEnabled(bios); send->setEnabled(bios);
+    });
     auto *topology = new QPushButton("Read CPU topology",this); topology->setObjectName("smuTopology"); buttons->addWidget(topology);
     connect(topology,&QPushButton::clicked,this,[this] { readTopology(); });
     auto *topologyL3 = new QCheckBox("Include L3 cache",this); topologyL3->setObjectName("smuTopologyL3");
@@ -358,12 +366,13 @@ void AmdTuningPanel::readPboFmax() {
     using namespace octool::core;
     invalidateCurve();
     quint64 cpu=0,bus=0,device=0,function=0;
-    if (profile_->currentData().toInt()!=int(SmuProfile::Shimada) ||
+    const auto profile = SmuProfile(profile_->currentData().toInt());
+    if ((profile != SmuProfile::Shimada && profile != SmuProfile::GraniteRidge) ||
         !parseNumber(cpu_->text(),10,UINT32_MAX,cpu) || !parseNumber(bus_->text(),16,0,bus) ||
         !parseNumber(device_->text(),16,0,device) || !parseNumber(function_->text(),16,0,function)) {
-        status_->setText("Use Shimada at 0000:00:00.0 and a valid logical CPU. No query sent."); return;
+        status_->setText("Select Shimada or Granite Ridge at 0000:00:00.0 and a valid logical CPU. No query sent."); return;
     }
-    SmuTarget target; target.cpu=unsigned(cpu); target.profile=SmuProfile::Shimada;
+    SmuTarget target; target.cpu=unsigned(cpu); target.profile=profile;
     const auto revision=curveRevision_; setEnabled(false); status_->setText("Reading firmware version and Fmax ceiling…");
     auto *watcher=new QFutureWatcher<AmdPboFmax>(this);
     connect(watcher,&QFutureWatcher<AmdPboFmax>::finished,this,[this,watcher,revision,target] {
@@ -374,9 +383,13 @@ void AmdTuningPanel::readPboFmax() {
             append(table_,{"Stored Fmax ceiling (MHz)",r.valid?QString::number(r.raw):"Unavailable"});
             append(table_,{"Capability raw",r.capabilities.valid?hexValue(r.capabilities.raw,4):"Unavailable"});
             append(table_,{"Operating frequency","Not measured"});
-            if (r.error || !r.valid) status_->setText(failure(r.error?r.error:-EIO)+" Fmax readback requires SMU 115.46.0.");
+            if (r.error || !r.valid) status_->setText(failure(r.error?r.error:-EIO) +
+                (target.profile == SmuProfile::GraniteRidge ? " Granite Ridge Fmax requires SMU 98.84.0." : " Shimada Fmax requires SMU 115.46.0."));
             else {
-                fmaxSnapshot_=r; pboCaps_=r.capabilities; pboTarget_=target;
+                fmaxSnapshot_=r; pboTarget_=target;
+                // Other PBO editors remain Shimada-only; a Granite Fmax query
+                // must not prepare a snapshot for an unrelated setter.
+                if (target.profile == SmuProfile::Shimada) pboCaps_=r.capabilities;
                 status_->setText("Stored shared ceiling read. Firmware can clamp requests; operating frequency is not measured.");
             }
         }
@@ -385,7 +398,7 @@ void AmdTuningPanel::readPboFmax() {
     const auto access=access_; const auto cancelled=cancelled_;
     watcher->setFuture(QtConcurrent::run([access,cancelled,target] {
         AmdPboFmax out;
-        const int error=access->transaction([&](HardwareSession &s) { out=readShimadaPboFmax(s,target); return out.error; },10000,cancelled.get());
+        const int error=access->transaction([&](HardwareSession &s) { out=readAmdPboFmax(s,target); return out.error; },10000,cancelled.get());
         if (error) { out.error=error; out.valid=false; }
         return out;
     }));
@@ -600,7 +613,7 @@ void AmdTuningPanel::applyAllCoreCurve() {
 void AmdTuningPanel::applyPboFmax() {
     using namespace octool::core;
     if (!fmaxSnapshot_.valid || fmaxSnapshot_.error || !amdPboFmaxAvailable(fmaxSnapshot_.capabilities.raw)) {
-        status_->setText("Read Fmax first. SMU 115.46.0, PBO available and manual OC disabled are required."); return;
+        status_->setText("Read Fmax first for the selected platform. The supported SMU version, PBO available and manual OC disabled are required."); return;
     }
     quint64 mhz = 0;
     if (!parseNumber(pboFmax_->text(), 10, 0xfffff, mhz) || !mhz) {
@@ -609,9 +622,10 @@ void AmdTuningPanel::applyPboFmax() {
     const auto target = pboTarget_; const auto before = fmaxSnapshot_; const auto prepared = curveRevision_;
     const auto input = pboFmax_->text();
     if (QMessageBox::question(this, "Apply AMD Fmax ceiling",
-        QString("CPU %1 · Shimada shared Fmax ceiling: %2 MHz\n"
+        QString("CPU %1 · %3 shared Fmax ceiling: %2 MHz\n"
                 "Changing this limit can affect voltage, power, heat and stability. The stored ceiling will be compared and read back; firmware can clamp it. Operating frequency is not measured. "
-                "No automatic mode change, retry or rollback. Apply this ceiling?").arg(target.cpu).arg(mhz),
+                "No automatic mode change, retry or rollback. Apply this ceiling?").arg(target.cpu).arg(mhz)
+                .arg(target.profile == SmuProfile::GraniteRidge ? "Granite Ridge" : "Shimada"),
         QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Yes) return;
     if (prepared != curveRevision_ || input != pboFmax_->text()) { invalidateCurve(); status_->setText("Inputs changed. Read Fmax again."); return; }
     invalidateCurve(); const auto revision = curveRevision_; setEnabled(false); status_->setText("Checking capability and submitting Fmax ceiling…");
@@ -635,7 +649,7 @@ void AmdTuningPanel::applyPboFmax() {
     const auto access = access_; const auto cancelled = cancelled_;
     watcher->setFuture(QtConcurrent::run([access, cancelled, target, before, mhz] {
         AmdPboFmaxUpdate out;
-        const int error = access->transaction([&](HardwareSession &s) { out = setShimadaPboFmax(s, target, before.capabilities.raw, unsigned(mhz), before.raw); return out.error; }, 10000, cancelled.get());
+        const int error = access->transaction([&](HardwareSession &s) { out = setAmdPboFmax(s, target, before.capabilities.raw, unsigned(mhz), before.raw); return out.error; }, 10000, cancelled.get());
         if (error) { out.error = error; out.verified = false; }
         return out;
     }));

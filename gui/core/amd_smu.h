@@ -4,7 +4,9 @@
 #include <array>
 
 namespace octool { namespace core {
-enum class SmuProfile { None, Shimada, Phoenix, Gpt };
+// GraniteRidge is an explicit target for the separate, pinned Fmax service.
+// It has no generic BIOS SMU command allowlist.
+enum class SmuProfile { None, Shimada, Phoenix, Gpt, GraniteRidge };
 struct SmuTarget {
     unsigned cpu = 0, bus = 0, device = 0, function = 0;
     SmuProfile profile = SmuProfile::None;
