@@ -21,9 +21,15 @@ SOURCE_SHA = '44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10'
 # Separately pinned UEFI modules from public ASUS 1317 and 2503 capsules.
 # These profiles do not relax the original ELF identity check.
 FIRMWARE_STUDIES = {
+    'granite_topology_provider_a': ('8ea4e45882f053775e87943b20b092d2086787a9500a120fb9f35af62d424295',
+        tuple((offset, 'FUN_') for offset in ('0x13e4', '0x1840', '0x1a50', '0x1ce0', '0x1d00',
+              '0x1d28', '0x1d78', '0x1de4', '0x1e7c', '0x1f40', '0x2118', '0x2bb0'))),
+    'granite_topology_provider_b': ('c4828555b14a4d8b8e84c7f94f2258b941a778a553cbb7666aac603b251a56b4',
+        tuple((offset, 'FUN_') for offset in ('0x1454', '0x18b4', '0x1ac4', '0x1d54', '0x1d74',
+              '0x1d9c', '0x1dec', '0x1e58', '0x1ef0', '0x1fb4', '0x2178', '0x2b20'))),
     'granite_topology': ('78e0fae1bbe0c4a35d6edaf1e50f0b1c5572066fdf63f9da5b8b59517d93b813',
                          (('0x526c','FUN_'),('0x3a0','FUN_'),('0x4c4','entry'),
-                          ('0x1844','FUN_'),('0x2094','FUN_'),('0x2d24','FUN_'))),
+                          ('0x1844','FUN_'),('0x2094','FUN_'),('0x2d24','FUN_'),('0x54e0','FUN_'))),
     'granite_transport': ('563fbf5d9350c95a9f8a063e4f98a6fbe4d22d3e2bc11d2a3346a4e3320578c9',
                           (('0x4e4', 'entry'),('0xbb4','FUN_'))),
     'granite_transport2': ('9ca8b4e78e40f98853163c8414cd61745005ed8d4cd8f7a8463c76e6b16a280e',
