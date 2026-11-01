@@ -216,7 +216,8 @@ def main():
         outcomes[name] = dict(source_sha256=sha, **check(Replay(provider, topology, functions)))
     report = dict(schema=1, hardware_execution=False, providers=outcomes,
         topology_source_sha256=TOPOLOGY_SHA, protocol_guid='D20482F8-7ECF-4A40-8C11-D326D8153806',
-        record_header_bytes=0x10, groups_base=0x30, outer_stride=0x33, middle_stride=0x19, core_stride=3,
+        record_header_bytes=0x30, record_fields_bytes=0x10, record_hmac_bytes=0x20,
+        record_hmac_verified=False, groups_base=0x30, outer_stride=0x33, middle_stride=0x19, core_stride=3,
         enumeration_limits=[8, 2, 8, 2], invalid_record_id=255,
         ordering=list(ORDER), ordering_returns='original ordinals sorted by stored identifiers',
         diagnostic_helper_is_fixture=True, installer_and_record_producer_executed=False,
