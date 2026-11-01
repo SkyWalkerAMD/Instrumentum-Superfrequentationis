@@ -174,7 +174,7 @@ class Slice:
                 if val(a[0]) == val(a[1]): next_pc = val(a[2])
             elif op in ('bltu','bltui'):
                 if val(a[0]) < val(a[1]): next_pc = val(a[2])
-            elif op == 'bgeu':
+            elif op in ('bgeu','bgeui'):
                 if val(a[0]) >= val(a[1]): next_pc = val(a[2])
             elif op == 'bgei':
                 signed = val(a[0]); signed -= (1 << 32) if signed & (1 << 31) else 0
