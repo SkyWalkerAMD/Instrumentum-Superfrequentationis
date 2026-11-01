@@ -3295,7 +3295,7 @@ private slots:
     }
     void amdTopologyRecordPreservesIdsWithoutHardwareAccess() {
         auto *device=new amd_topology_fixture::Device;
-        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device)));
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)));
         panel.resize(1500,1400); panel.show();
         QVERIFY(panel.findChild<QPushButton*>("smuTopologyRecord"));
         panel.findChild<QLineEdit*>("smuCpu")->setText("invalid");
@@ -3319,7 +3319,7 @@ private slots:
     }
     void amdTopologyRecordFailuresClearPriorResults() {
         auto *device=new amd_topology_fixture::Device;
-        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device)));
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)));
         QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path=dir.filePath("record.bin");
         for(unsigned mode=0;mode<4;++mode) {
             auto b=amd_apob_fixture::record();
