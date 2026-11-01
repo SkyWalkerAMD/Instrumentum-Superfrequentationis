@@ -1,8 +1,8 @@
 # 安装包与源码归档
 
-<!-- amd-granite-97759e8 -->
-2026-11-01：[9950X3D 本轮验证](amd-granite-validation.md)通过 44/44 云端任务，18 组固件回放本地/云端逐项一致。GUI/CLI 同步明确 CCD 第 2 行的配置选择语义；REA 新增 UEFI APIC 构造及三个调用者研究。两个配置输入是各目标按阈值选择的候选值，命令确认不等于设备回读。本轮新增确认物理单位为 0：剩余八行单位、PM 到物理 CCD/OS 核心绑定及第二 rails 独立写入回读仍未完成。[研究细节](amd-granite-config-routing.md)；源码与 33 个安装包：`dist/gui-cli-amd-granite-97759e8/`。既有 Fmax 功能保留；以下为历史阶段记录，以本段和当前验证报告为准。
-<!-- /amd-granite-97759e8 -->
+<!-- amd-granite-f723de6 -->
+2026-11-01：[9950X3D 本轮验证](amd-granite-validation.md)通过 46/46 最终云端任务，19 组固件回放本地/云端逐项一致。GUI/CLI 同步新增 APOB 拓扑记录离线解码，读取枚举序号、存储编号与线程标志；REA 追到两份动态安装的拓扑协议实现，完成 5348 个原指令案例。此记录尚不能把 PM 槽位绑定到物理 CCD/OS 核心。剩余八行单位和第二 rails 独立写入回读仍未完成。[用法与研究](amd-apob-topology.md)；源码与 33 个安装包：`dist/gui-cli-amd-granite-f723de6/`。以下为历史阶段记录，以本段和当前验证报告为准。
+<!-- /amd-granite-f723de6 -->
 
 <!-- amd-pm-ccd-168a618 -->
 2026-10-26：[PM 固件 CCD 映射验证](amd-pm-ccd-validation.md)已通过 44/44 云端任务；GUI/CLI 同步提供 `--map-ccd`。适用 Shimada SMU 115.46.0，9950X3D 的 Granite Ridge 路径、字段单位和第二 rails 回读仍待恢复。源码与包：`dist/gui-cli-amd-pm-ccd-168a618/`。
