@@ -1,13 +1,11 @@
-name: GUI fixture review
+name: Granite Fmax GUI review
 on:
-  push:
-    paths: ['.github/workflows/gui-fixture-review.yml']
   workflow_dispatch:
     inputs:
       baseline_run:
-        description: Portability run with successful SDK jobs and identical application inputs (blank selects latest success)
+        description: Portability run with successful SDK jobs and identical GUI inputs
         type: string
-        default: ''
+        required: true
 permissions:
   contents: read
   actions: read
@@ -26,82 +24,62 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Resolve baseline and verify unchanged application inputs
-        id: baseline
+      - name: Verify identical GUI and build inputs
         env:
           GH_TOKEN: ${{ github.token }}
           BASELINE_RUN: ${{ inputs.baseline_run }}
         run: |
-          mkdir -p build/fixture-review
+          mkdir -p build/fmax-review
           python3 - <<'PY'
-          import json, os, pathlib, subprocess
-          repo=os.environ['GITHUB_REPOSITORY']; run=os.environ.get('BASELINE_RUN','')
-          if not run:
-              found=json.loads(subprocess.check_output(['gh','api','--method','GET',f'repos/{repo}/actions/workflows/portability.yml/runs',
-                  '-f','status=success','-f','branch='+os.environ['GITHUB_REF_NAME'],'-f','per_page=1']))['workflow_runs']
-              assert found, 'No successful baseline on this branch'
-              run=str(found[0]['id'])
+          import hashlib, json, os, pathlib, subprocess
+          repo=os.environ['GITHUB_REPOSITORY']; run=os.environ['BASELINE_RUN']
           assert run.isdecimal()
-          baseline=json.loads(subprocess.check_output(['gh','api',f'repos/{repo}/actions/runs/{run}']))
+          api=lambda path:json.loads(subprocess.check_output(['gh','api',f'repos/{repo}/'+path]))
+          baseline=api(f'actions/runs/{run}')
           assert baseline['path']=='.github/workflows/portability.yml'
           assert baseline['conclusion']=='success' or (baseline['status']=='in_progress' and baseline['conclusion'] is None)
-          jobs=json.loads(subprocess.check_output(['gh','api',f'repos/{repo}/actions/runs/{run}/jobs?per_page=100']))['jobs']
-          sdk_jobs=[j for j in jobs if j['name'] in ('baseline','baseline_el7')]
-          assert len(sdk_jobs)==2 and all(j['conclusion']=='success' for j in sdk_jobs), 'Both SDK jobs must have passed'
+          jobs=api(f'actions/runs/{run}/jobs?per_page=100')['jobs']
+          sdk=[j for j in jobs if j['name'] in ('baseline','baseline_el7')]
+          assert len(sdk)==2 and all(j['conclusion']=='success' for j in sdk)
           base=baseline['head_sha']; head=os.environ['GITHUB_SHA']
           changed=subprocess.check_output(['git','diff','--name-only',base,head]).decode().splitlines()
-          allowed={'gui/tests/regression.cpp','.github/workflows/gui-fixture-review.yml'}
-          assert all(p in allowed or p.startswith(('docs/','analysis/')) or p=='README.md' for p in changed), changed
-          path='gui/tests/regression.cpp'; old=subprocess.check_output(['git','show',base+':'+path]).decode()
-          current=pathlib.Path(path).read_text(); expected=old
-          anchor='                table->scrollToItem(table->item(13*8*storageSlots,0),QAbstractItemView::PositionAtTop);'
-          settle='                // Let the newly selected table update its scroll range first.\n                QApplication::processEvents();\n'
-          assert expected.count(anchor)==1
-          if settle+anchor not in expected: expected=expected.replace(anchor,settle+anchor)
-          for row,variable in ((13,'fractions'),(15,'counters')):
-              anchor=f'                const auto {variable}=qEnvironmentVariable('
-              check=f'                QCOMPARE(table->rowAt(0),int({row}*8*storageSlots));\n'
-              assert expected.count(anchor)==1
-              if check+anchor not in expected: expected=expected.replace(anchor,check+anchor)
-          assert current==expected, 'Supplement may only settle and assert Granite screenshot viewports'
-          patch=subprocess.check_output(['git','diff',base,head,'--',path])
-          pathlib.Path('build/fixture-review/test-only.patch').write_bytes(patch)
-          evidence={'source_commit':head,'baseline_commit':base,'baseline_run':int(run),'baseline_url':baseline['html_url'],
-                    'sdk_jobs_successful':True,'baseline_conclusion_at_start':baseline['conclusion'],
-                    'changed_paths':changed,'runtime_inputs_identical':True,'change_scope':'Granite screenshot viewport settling/assertions and evidence workflow only; application and fixture values unchanged'}
-          pathlib.Path('build/fixture-review/provenance.json').write_text(json.dumps(evidence,indent=2)+'\n')
-          with open(os.environ['GITHUB_OUTPUT'],'a') as output: output.write('run='+run+'\n')
+          allowed={'cli/test_process.py','.github/workflows/gui-fixture-review.yml'}
+          assert all(p in allowed or p.startswith('docs/') or p=='README.md' for p in changed),changed
+          same=subprocess.check_output(['git','diff','--name-only',base,head,'--','gui','port','cli/commands.cpp','cli/tests.cpp'])
+          assert not same,same
+          workflow=pathlib.Path('.github/workflows/gui-fixture-review.yml')
+          evidence=dict(source_commit=head,baseline_commit=base,baseline_run=int(run),changed_paths=changed,
+              runtime_and_build_inputs_identical=True,fixture_inputs_identical=True,
+              workflow_sha256=hashlib.sha256(workflow.read_bytes()).hexdigest(),hardware_execution=False,
+              reason='The main workflow retained the previous fixed screenshot list; this supplement exports the already-generated Granite Fmax capture without changing application or fixture inputs.')
+          pathlib.Path('build/fmax-review/provenance.json').write_text(json.dumps(evidence,indent=2)+'\n')
           PY
       - uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.sdk }}
-          run-id: ${{ steps.baseline.outputs.run }}
+          run-id: ${{ inputs.baseline_run }}
           github-token: ${{ github.token }}
           path: build/inputs
-      - name: Compile unchanged GUI and retain fixture pages
+      - name: Run GUI regression and retain Fmax captures
         env:
           TARGET: ${{ matrix.target }}
           IMAGE: ${{ matrix.image }}
         run: |
           docker pull "$IMAGE"
-          docker image inspect "$IMAGE" > build/fixture-review/container-image.json
           docker run --rm --init -e OCTOOL_DISPOSABLE_CONTAINER=1 -e JOBS=4 \
-            -v "$PWD:/src" -v "$PWD/build/inputs:/inputs:ro" -v "$PWD/build/fixture-review:/out" \
+            -v "$PWD:/src" -v "$PWD/build/inputs:/inputs:ro" -v "$PWD/build/fmax-review:/out" \
             -w /src "$IMAGE" bash port/ci/in-container.sh desktop "$TARGET"
-          for page in pm-granite-fractions-fixture pm-granite-counters-fixture pm-granite-ccd-counter-fixture; do
-            test -s "build/fixture-review/$page.png"
-          done
+          cp "build/gui-$TARGET/regression/granite-fmax-fixture.png" build/fmax-review/
+          test -s build/fmax-review/granite-fmax-fixture.png
+          test -s build/fmax-review/pbo-fmax-verified-fixture.png
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: gui-fixture-review-${{ matrix.target }}
+          name: granite-fmax-review-${{ matrix.target }}
           path: |
-            build/fixture-review/provenance.json
-            build/fixture-review/container-image.json
-            build/fixture-review/test-only.patch
-            build/fixture-review/gui-tests.txt
-            build/fixture-review/pm-granite-fractions-fixture.png
-            build/fixture-review/pm-granite-counters-fixture.png
-            build/fixture-review/pm-granite-ccd-counter-fixture.png
+            build/fmax-review/provenance.json
+            build/fmax-review/gui-tests.txt
+            build/fmax-review/granite-fmax-fixture.png
+            build/fmax-review/pbo-fmax-verified-fixture.png
           if-no-files-found: error
           retention-days: 14
