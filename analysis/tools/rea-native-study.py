@@ -24,11 +24,11 @@ FIRMWARE_STUDIES = {
     'granite_topology_provider_a': ('8ea4e45882f053775e87943b20b092d2086787a9500a120fb9f35af62d424295',
         tuple((offset, 'FUN_') for offset in ('0x13e4', '0x1840', '0x1a50', '0x1ce0', '0x1d00',
               '0x1d28', '0x1d78', '0x1de4', '0x1e7c', '0x1f40', '0x2118', '0x2bb0',
-              '0x2ac0', '0x99c', '0x96c'))),
+              '0x2ac0', '0x99c', '0x96c', '0x72c', '0x390'))),
     'granite_topology_provider_b': ('c4828555b14a4d8b8e84c7f94f2258b941a778a553cbb7666aac603b251a56b4',
         tuple((offset, 'FUN_') for offset in ('0x1454', '0x18b4', '0x1ac4', '0x1d54', '0x1d74',
               '0x1d9c', '0x1dec', '0x1e58', '0x1ef0', '0x1fb4', '0x2178', '0x2b20',
-              '0x2a30', '0x9e4', '0x9b4'))),
+              '0x2a30', '0x9e4', '0x9b4', '0x72c', '0x390', '0x960'))),
     'granite_fabric_topology': ('4ec3a9dd5c115f221349071bc5aceb3cc0901190808dc3fea4e72ae80801cea0',
         (('0x404', 'entry'),) + tuple((offset, 'FUN_') for offset in
             ('0x4a38', '0x5338', '0x5364', '0x53a4', '0x546c',

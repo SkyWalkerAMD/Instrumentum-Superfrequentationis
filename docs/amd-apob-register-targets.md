@@ -29,6 +29,36 @@ emulated image; firmware initialization, assertion handlers and devices do
 not run. A read error prevents the write; a warning status does not. The
 write's status is returned without reading back the register afterward.
 
+## CPU eligibility narrows the reference path
+
+Following the PE entry into `0x72c` reveals different CPU gates before either
+provider's installer. REA exports the gate and CPUID wrapper for both images,
+plus B's comparison helper `0x960`. Original-instruction replay supplies
+synthetic `CPUID 0x80000001` results at the actual `cpuid` instruction `0x395`:
+
+| Provider | EAX condition | EBX condition | Accepted / rejected boundary |
+| --- | --- | --- | --- |
+| A | `(EAX & 0x0fff0f00) == 0x00b40f00` | `EBX[31:28] == 0` | `0x785` / `0x897` |
+| B | `(EAX & 0x0fff0ff0)` is `0x00b60f80` or `0x00b60f00` | `EBX[31:28] == 0` | `0x779` / `0x88b` |
+
+The project's 9950X3D fixture signature `0x00b40f40`, with EBX's high nibble
+zero, passes A and rejects B. A ignores the low model nibble as well as
+stepping; B keeps the low model nibble and tries two signatures. Both ignore
+the low 28 EBX bits. This supports prioritizing A's **group-based reference
+selector** for that input, rather than treating the two entry gates as
+equivalent. It does not prove that the user's installed BIOS executed A,
+that its dependencies allowed protocol installation, or what the register
+does. No machine CPUID capture is available; both offline candidate routes
+remain visible and neither becomes an executable target.
+
+The gate replay covers **16,636 cases**: every model byte and package nibble
+with endpoint steppings, every single-bit change around three signatures,
+ignored-register variation and explicit matching/nonmatching examples.
+Only gate/helper instructions and stack writes are allowed. Execution stops
+at the branch boundary before any firmware service or installer. Host CPUID
+does not run, and no protocol installation, HMAC check, PM binding or
+physical mapping is inferred from passing the gate.
+
 ## Ambiguity that matters to mapping
 
 - A uses a group ID while B uses a subgroup ID. A record that is unique under
@@ -78,6 +108,11 @@ PYTHONPATH=build/firmware-tools/python python3 analysis/tools/firmware-granite-r
   --provider-a build/firmware-input/uefi-granite-topology-provider-a.bin \
   --provider-b build/firmware-input/uefi-granite-topology-provider-b.bin \
   --output build/firmware-evidence/granite-register-targets.json
+
+PYTHONPATH=build/firmware-tools/python python3 analysis/tools/firmware-granite-provider-gates.py \
+  --provider-a build/firmware-input/uefi-granite-topology-provider-a.bin \
+  --provider-b build/firmware-input/uefi-granite-topology-provider-b.bin \
+  --output build/firmware-evidence/granite-provider-gates.json
 ```
 
 No new physical units or physical/OS/PM binding are established. The remaining
