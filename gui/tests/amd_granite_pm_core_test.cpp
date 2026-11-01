@@ -346,6 +346,6 @@ int main() {
         assert(r.snapshot.raw.empty() && !r.metadataRechecked && !t.d->presenceQueries);
         if(!mode) assert(!r.transferAttempted && !t.d->memoryReads && r.phase==AmdPmNativePhase::Topology);
     } ++groups;
-    assert(groups == 17);
+    assert(groups == 19);
     std::cout << groups << " AMD Granite Ridge PM scenario groups passed\n";
 }
