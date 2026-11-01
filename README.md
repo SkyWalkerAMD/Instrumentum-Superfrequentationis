@@ -1,8 +1,8 @@
 # Instrumentum Superfrequentationis
 
-<!-- amd-granite-aa40b23 -->
-2026-11-01：[9950X3D 本轮验证](docs/amd-granite-validation.md)通过 46/46 最终云端任务，23 组固件回放本地/云端逐项一致。GUI/CLI 修复公开 9950X3D CPUID 中冗余 CCD 层级被拒绝的问题，保留两层原始数据并核对边界与计数；512 组公开 CPUID 输入回放检查 16,384 条 APIC 记录。剩余八行单位、PM 到物理 CCD/OS 核心绑定、第二 rails 独立写入与设备回读仍未完成。[用法与证据](docs/amd-granite-published-topology.md)；源码和 33 个安装包：`dist/gui-cli-amd-granite-aa40b23/`。以下为历史阶段记录，以本段和当前验证报告为准。
-<!-- /amd-granite-aa40b23 -->
+<!-- amd-granite-ee1aee1 -->
+2026-11-01：[9950X3D 本轮验证](docs/amd-granite-validation.md)通过 44/44 云端任务，24 组固件回放本地/云端一致。还原 MP5 内部配置写入与原始字节读取流程，发现配置码改变后 PM 值仍可保留旧值；GUI/CLI 同步显示该限制，并核对导入文件不能伪造设备回读。新增 12,288 组读写与 126 组状态分支回放。剩余八行单位、PM 到物理 CCD/OS 核心绑定、第二 rails 独立写入与设备回读仍未完成。[研究证据](docs/amd-granite-config-port.md)；源码和 33 个安装包：`dist/gui-cli-amd-granite-ee1aee1/`。以下为历史阶段记录，以本段和当前验证报告为准。
+<!-- /amd-granite-ee1aee1 -->
 
 <!-- amd-pm-ccd-168a618 -->
 2026-10-26：[PM 固件 CCD 映射验证](docs/amd-pm-ccd-validation.md)已通过 44/44 云端任务；GUI/CLI 同步提供 `--map-ccd`。适用 Shimada SMU 115.46.0，9950X3D 的 Granite Ridge 路径、字段单位和第二 rails 回读仍待恢复。源码与包：`dist/gui-cli-amd-pm-ccd-168a618/`。

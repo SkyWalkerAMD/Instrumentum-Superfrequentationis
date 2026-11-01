@@ -136,3 +136,13 @@ rows. This executable was inspected statically, not executed. Absolute counter
 timebase, event identities, model coefficient units,
 physical CCD/core mapping and independent second-rail write/readback remain
 unverified. No new hardware write is enabled.
+
+A further static label inventory at Windows VA `0x14008328e..0x1400833f7`
+constructs 15 core labels from 32-byte string objects at stack offsets
+`0x4e90..0x5070`; `0x1400833fc..0x140083519` constructs 11 CCD labels at
+`0x36b0..0x3810`. The checked Granite firmware exports 18 core and 12 CCD
+rows. These label-vector counts do not establish the original application's
+runtime index mapping or a unit binding for the newer layout. A matching
+label such as `VDDM Voltage` is therefore still insufficient to assign volts
+to a Granite row. This inventory is a static cross-check, not an additional
+original-application execution or hardware test.
