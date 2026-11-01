@@ -335,7 +335,13 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     auto *catalogButtons=new QHBoxLayout;
     auto *catalog=new QPushButton("Read all available CPU topology",this); catalog->setObjectName("smuTopologyCatalog");
     catalog->setToolTip("Read CPUs allowed to this process, preserving OS and APIC IDs. Include L3 cache to compare CCD capacities.");
-    catalogButtons->addWidget(catalog); catalogButtons->addStretch(); layout->addLayout(catalogButtons);
+    catalogButtons->addWidget(catalog);
+    auto *record=new QPushButton("Open firmware topology record…",this); record->setObjectName("smuTopologyRecord");
+    catalogButtons->addWidget(record); catalogButtons->addStretch(); layout->addLayout(catalogButtons);
+    connect(record,&QPushButton::clicked,this,[this] {
+        const auto path=QFileDialog::getOpenFileName(this,"Open APOB topology record",QString(),"Binary records (*.bin);;All files (*)");
+        if(!path.isEmpty()) loadTopologyRecord(path);
+    });
     connect(catalog,&QPushButton::clicked,this,[this] { readTopologyCatalog(); });
     table_ = table({"Item", "Result"}, this, layout); table_->setObjectName("smuTable");
     status_ = description("Ready. No hardware access has been performed.", layout, this); status_->setObjectName("smuStatus");
@@ -993,6 +999,35 @@ void AmdTuningPanel::applyCurve() {
         if (error) out.error = error;
         return out;
     }));
+}
+bool AmdTuningPanel::loadTopologyRecord(const QString &path) {
+    using namespace octool::core;
+    // The public loader also refuses calls during an outstanding hardware read.
+    if(!isEnabled()) return false;
+    invalidateCurve(); table_->setRowCount(0);
+    QFile file(path);
+    if(!file.open(QIODevice::ReadOnly)) { status_->setText("Cannot open topology record: "+file.errorString()); return false; }
+    const auto bytes=file.read(1048577);
+    if(file.error()!=QFile::NoError) { status_->setText("Cannot read topology record: "+file.errorString()); return false; }
+    const auto t=decodeAmdApobTopology(std::vector<std::uint8_t>(bytes.begin(),bytes.end()));
+    if(t.error) { status_->setText(QString::fromStdString(t.detail)); return false; }
+    append(table_,{"Record instance",QString::number(t.instance)});
+    append(table_,{"Unparsed extension bytes",QString::number(qulonglong(t.extensionBytes))});
+    append(table_,{"Duplicate IDs within a parent",QString::number(t.duplicateIds)});
+    append(table_,{"Non-prefix thread flags",QString::number(t.nonPrefixThreadFlags)});
+    for(const auto &g:t.groups) {
+        const auto group=QString("Firmware group %1").arg(g.ordinal);
+        append(table_,{group,QString("Stored ID %1").arg(g.storedId)});
+        for(const auto &s:g.subgroups) {
+            const auto sub=group+QString(" / subgroup %1").arg(s.ordinal);
+            append(table_,{sub,QString("Stored ID %1").arg(s.storedId)});
+            for(const auto &c:s.cores) append(table_,{sub+QString(" / core entry %1").arg(c.ordinal),
+                QString("Stored ID %1 · thread flags [%2, %3] · enabled prefix %4")
+                    .arg(c.storedId).arg(c.threadFlags[0]).arg(c.threadFlags[1]).arg(c.threadCount)});
+        }
+    }
+    status_->setText("Offline reference-layout record. Stored IDs and thread flags are preserved; these are not verified physical CCD/core, OS CPU or PM slot mappings. No hardware access performed.");
+    return true;
 }
 void AmdTuningPanel::readTopology() {
     using namespace octool::core;

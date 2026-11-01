@@ -9,6 +9,7 @@
 #include "tests/amd_pm_native_fixture.h"
 #include "tests/amd_granite_pm_fixture.h"
 #include "tests/amd_topology_fixture.h"
+#include "tests/amd_apob_fixture.h"
 #include "tests/amd_curve_fixture.h"
 #include "tests/amd_pbo_fixture.h"
 #include "tests/intel_oc_fixture.h"
@@ -1109,6 +1110,34 @@ void offlineUmcDoesNotCreateBackend() {
     assert(octool::platform::readBoundedFile(path, buffer, 0) == -EINVAL && buffer.empty());
     assert(octool::platform::readBoundedFile(path, buffer, 1048577) == -EINVAL);
     assert(octool::platform::readBoundedFile(std::string(path) + '\0' + "suffix", buffer, 65536) == -EINVAL);
+    assert(!opens);
+}
+void offlineTopologyDoesNotCreateBackend() {
+    char path[]="/tmp/octool-apob-XXXXXX"; const int fd=mkstemp(path); assert(fd>=0); close(fd);
+    struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
+    unsigned opens=0;
+    const auto factory=[&]() { ++opens; return std::unique_ptr<HardwareBackend>(); };
+    for(unsigned mode=0;mode<8;++mode) {
+        auto b=amd_apob_fixture::record();
+        if(mode==1) b[4]=4;
+        if(mode==2) b.resize(455);
+        if(mode==3) b.resize(1048577);
+        if(mode==4) b[12]=0;
+        { std::ofstream file(path,std::ios::binary); file.write(reinterpret_cast<const char*>(b.data()),b.size()); }
+        std::vector<std::string> args={"amd-topology-decode","--file",path};
+        if(mode==5) args.back()=std::string(path)+".missing";
+        if(mode==6) args.resize(1);
+        if(mode==7) { args.push_back("--cpu"); args.push_back("0"); }
+        std::ostringstream out; assert(run(args,out,factory)==(mode>=6?2:mode?3:0));
+        const auto json=out.str();
+        if(mode<6) {
+            assert(json.find("\"hardware_accessed\":false")!=std::string::npos);
+            assert(json.find("\"pm_slot_mapping_verified\":false")!=std::string::npos);
+            if(mode) assert(json.find("\"groups\":[]")!=std::string::npos);
+        }
+        if(!mode) assert(json.find("\"thread_flags\":[0,1],\"thread_prefix_count\":0")!=std::string::npos);
+        if(emit) std::cout<<json;
+    }
     assert(!opens);
 }
 void offlineSpdDoesNotCreateBackend() {
@@ -2591,6 +2620,6 @@ int main(int argc, char **argv) {
     pl4Commands(); hwpContextCommands(); hwpPackageCommands(); legacyPstateCommands(); electricalPstateCommands();
     assert(quote("\"\\\n\t") == "\"\\\"\\\\\\u000a\\u0009\"");
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
-    l3TopologyCommands(); topologyCatalogCommands();
-    if (!emit) std::cout << "80 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    l3TopologyCommands(); topologyCatalogCommands(); offlineTopologyDoesNotCreateBackend();
+    if (!emit) std::cout << "81 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

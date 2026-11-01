@@ -132,6 +132,7 @@ Command parse(const std::vector<std::string> &args) {
         "intel-memory-read", "intel-clock-read", "intel-tvb-read", "intel-tvb-set", "intel-tvb-table", "intel-tvb-table-set", "intel-energy-read", "intel-energy-set", "intel-avx-read", "intel-avx-set", "intel-bclk-voltage-read", "intel-bclk-voltage-set", "intel-thermal-read", "intel-thermal-set", "intel-limits-read", "intel-limits-clear", "intel-uncore-read", "intel-uncore-set", "amd-smu-probe", "amd-smu-read", "amd-smu-send", "amd-curve-read", "amd-curve-set", "amd-pbo-scalar-read", "amd-pbo-scalar-set", "amd-topology", "amd-umc-read", "register-read", "register-write"};
     const bool memoryOffline = c.name == "intel-memory-decode";
     const bool clockOffline = c.name == "intel-clock-decode";
+    const bool topologyOffline = c.name == "amd-topology-decode";
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
     const bool pm = c.name == "amd-pm-read" || c.name == "amd-pm-decode";
     const bool pboCapabilityCommand = c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-fmax-read" || c.name == "amd-pbo-fmax-set" || c.name == "amd-pbo-limit-set" ||
@@ -140,7 +141,7 @@ Command parse(const std::vector<std::string> &args) {
         c.name == "amd-power-adjustment-read" || c.name == "amd-power-adjustment-set";
     const bool rails = c.name == "amd-pbo-rails-encode";
     const bool layoutAudit = c.name == "amd-pm-layout-audit";
-    require(hardware.count(c.name) || pboCapabilityCommand || rails || layoutAudit || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || memoryOffline || clockOffline || pm, "Unknown command: " + c.name);
+    require(hardware.count(c.name) || pboCapabilityCommand || rails || layoutAudit || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || memoryOffline || clockOffline || topologyOffline || pm, "Unknown command: " + c.name);
     std::set<std::string> keys = {"--json"};
     if (hardware.count(c.name) || pboCapabilityCommand) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
@@ -190,7 +191,7 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "amd-pbo-scalar-set") { keys.insert("--scalar"); keys.insert("--expect-raw"); }
     if (c.name == "amd-umc-read") { keys.insert("--bank"); keys.insert("--refresh-slot"); }
     if (c.name == "amd-topology") { keys.insert("--l3"); keys.insert("--all-cpus"); }
-    if (c.name == "spd-decode") keys.insert("--file");
+    if (c.name == "spd-decode" || topologyOffline) keys.insert("--file");
     if (pm || c.name == "amd-pm-native-read") keys.insert("--bclk-mhz");
     if (c.name == "amd-pm-native-read") { keys.insert("--map-ccd"); keys.insert("--platform"); }
     if (c.name == "amd-pbo-fmax-read" || c.name == "amd-pbo-fmax-set") keys.insert("--platform");
@@ -476,6 +477,7 @@ Command parse(const std::vector<std::string> &args) {
     }
     if (c.name == "amd-umc-read") { c.umc.bank = uintOption(options, "--bank", 22); c.umc.refreshSlot = uintOption(options, "--refresh-slot", 15); }
     if (c.name == "spd-decode") { c.path = get(options, "--file"); require(!c.path.empty(), "Empty SPD path"); }
+    if (topologyOffline) { c.path=get(options,"--file"); require(!c.path.empty(),"Empty topology record path"); }
     c.pmMapCcds = options.count("--map-ccd") != 0;
     if ((pm || c.name == "amd-pm-native-read") && options.count("--bclk-mhz")) {
         c.pmOptions.hasBclk = true; c.pmOptions.bclkMHz = decimal(get(options, "--bclk-mhz"), "--bclk-mhz");
@@ -1488,6 +1490,13 @@ Result execute(const Command &c, const BackendFactory &factory) {
             {"rail1_mv", number(r.rail1Millivolts)}, {"argument", r.empty ? "null" : hex(r.argument)},
             {"mirrored", boolean(r.mirrored)}, {"empty", boolean(r.empty)},
             {"detail", quote("Original SVI3 encoding preview only. Dual-rail firmware semantics and operating limits are unverified.")}};
+    } else if (c.name == "amd-topology-decode") {
+        std::vector<std::uint8_t> bytes; out.error=platform::readBoundedFile(c.path,bytes,1048576);
+        AmdApobTopology topology;
+        if(!out.error) { topology=decodeAmdApobTopology(bytes); out.error=topology.error; }
+        else { topology.error=out.error; topology.detail="Cannot read topology record."; }
+        out.data={{"offline","true"},{"hardware_accessed","false"},{"path",quote(c.path)},
+            {"detail",quote(topology.detail)},{"topology_record",amdApobTopologyJson(topology)}};
     } else if (c.name == "spd-decode") {
         std::vector<std::uint8_t> bytes; out.error = platform::readBoundedFile(c.path, bytes);
         out.data.push_back({"spd", spd(c.path, bytes, out.error)});
@@ -1520,6 +1529,7 @@ Usage: octool-cli COMMAND [OPTIONS]
   diagnose                         OS/CPU affinity/driver presence, no device open
   inventory                        BIOS, hwmon and bound-driver DDR4/DDR5 SPD
   spd-decode --file PATH            Decode a bounded offline SPD file
+  amd-topology-decode --file PATH   Decode one raw APOB topology record (reference layout only)
   cpu --cpu N                      CPU identity
   register-read --space msr --cpu N --address A
   register-read --space mmio --address A --width 1|2|4|8

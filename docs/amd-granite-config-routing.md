@@ -126,7 +126,9 @@ obtained through firmware protocol enumeration, not read from the PM table.
 The selected bodies locate protocol GUIDs
 `2ADCD53F-4C94-40BB-BBA5-7DEBFF8A13AC` (data at `0x7320`) and
 `D20482F8-7ECF-4A40-8C11-D326D8153806` (data at `0x7370`).
-Their interface field names and provider implementations remain unverified.
+Their provider implementations are now partially recovered in the
+[APOB protocol study](amd-apob-topology.md); physical identifier meanings
+and runtime model applicability remain unverified.
 
 | Caller | Static observation; not an executed caller proof |
 | --- | --- |
@@ -160,8 +162,10 @@ PYTHONPATH=build/firmware-tools/python python3 analysis/tools/firmware-granite-a
   --output build/firmware-evidence/granite-apic.json
 ```
 
-The three proofs are included in the REA workflow, bringing the replay count to 18.
-REA 6.7.0 analyzes two UEFI transport modules and the topology module; the pinned Ghidra Xtensa
+The three proofs are included in the REA workflow. The subsequent APOB
+provider/getter replay brings the replay count to 19.
+REA 6.7.0 analyzes two UEFI transport modules, the topology module and its two
+protocol providers; the pinned Ghidra Xtensa
 decoder supplies instruction evidence for the bounded Python replays. REA does
 not execute the Xtensa firmware. See [completed validation](amd-granite-validation.md)
 for the commits and cloud results actually verified.

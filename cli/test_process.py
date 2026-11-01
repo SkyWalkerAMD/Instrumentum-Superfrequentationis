@@ -58,7 +58,23 @@ for r in query_results:
         assert d['ln2_enabled'] is None and d['command'] == '0x0000005c'
         assert d['firmware_index'] in (0,1,7,127)
 assert sum(r['error'] == -22 for r in queries) == 20
-assert len(reports) == 1572, len(reports)
+assert len(reports) == 1580, len(reports)
+apob=[r for r in reports if r['command']=='amd-topology-decode']
+assert len(apob)==8 and sum(r['ok'] for r in apob)==1
+for r in apob:
+    if 'topology_record' not in r['data']:
+        assert not r['ok']
+        continue
+    t=r['data']['topology_record']
+    assert t['error']==r['error']
+    assert not any(t[k] for k in ('hardware_accessed','reference_identity_verified',
+        'physical_mapping_verified','os_cpu_mapping_verified','pm_slot_mapping_verified'))
+    if r['ok']:
+        assert [g['stored_id'] for g in t['groups']]==[8,4]
+        c=t['groups'][0]['subgroups'][0]['cores'][1]
+        assert c['stored_id']==2 and c['thread_flags']==[0,1] and c['thread_prefix_count']==0
+    else:
+        assert t['groups']==[] and t['instance'] is None
 catalogs=[r['data']['topology_catalog'] for r in reports if 'topology_catalog' in r['data']]
 assert len(catalogs)==4 and [t['complete'] for t in catalogs]==[True,True,False,False]
 for t in catalogs:
@@ -1786,6 +1802,9 @@ with tempfile.TemporaryDirectory(prefix="octool-cli-") as directory:
     duplicate.symlink_to(eeprom.parent, target_is_directory=True)
     put("bus/i2c/drivers/spd5118/1-0051/eeprom", b"\0" * 4097)
     os.mkfifo(root / "fifo")
+    for invalid in ('fifo','missing'):
+        r=run('amd-topology-decode','--file',str(root/invalid),code=3)
+        assert r['data']['topology_record']['error']==r['error']
     subprocess.run([fixture, "--inventory-fixture", str(root)], check=True, env=env, timeout=10)
     run("spd-decode", "--file", str(root / "fifo"), code=3)
     run("spd-decode", "--file", str(root / "missing"), code=3)

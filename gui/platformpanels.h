@@ -32,6 +32,7 @@ class AmdTuningPanel : public QWidget {
 public:
     AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *parent = nullptr, unsigned cpu = 0);
     ~AmdTuningPanel() override;
+    bool loadTopologyRecord(const QString &path);
 private:
     void submit(bool probeOnly);
     void readTopology();

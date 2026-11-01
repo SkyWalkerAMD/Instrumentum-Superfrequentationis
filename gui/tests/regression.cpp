@@ -41,6 +41,7 @@
 #include "amd_pm_native_fixture.h"
 #include "amd_granite_pm_fixture.h"
 #include "amd_topology_fixture.h"
+#include "amd_apob_fixture.h"
 #include "platform/linux_inventory.h"
 #include "platform/linux_hwio.h"
 #include "platform/linux_cpu.h"
@@ -3288,6 +3289,45 @@ private slots:
         QCOMPARE(reference.writes.load(),0); QVERIFY(reference.msrs.empty());
         QCOMPARE(panel.findChild<QTableWidget *>("umcTable")->rowCount(),0);
         QVERIFY(panel.findChild<QLabel *>("umcStatus")->text().contains("Read failed"));
+    }
+    void amdTopologyRecordPreservesIdsWithoutHardwareAccess() {
+        auto *device=new amd_topology_fixture::Device;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device)));
+        panel.resize(1500,1400); panel.show();
+        QVERIFY(panel.findChild<QPushButton*>("smuTopologyRecord"));
+        panel.findChild<QLineEdit*>("smuCpu")->setText("invalid");
+        panel.findChild<QLineEdit*>("smuArg0")->setText("1234");
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path=dir.filePath("record.bin");
+        const auto b=amd_apob_fixture::record();
+        QFile file(path); QVERIFY(file.open(QIODevice::WriteOnly));
+        QCOMPARE(file.write(reinterpret_cast<const char*>(b.data()),qint64(b.size())),qint64(b.size())); file.close();
+        QVERIFY(panel.loadTopologyRecord(path));
+        const auto *table=panel.findChild<QTableWidget*>("smuTable");
+        QCOMPARE(table->rowCount(),11);
+        QCOMPARE(table->item(4,1)->text(),QString("Stored ID 8"));
+        QVERIFY(table->item(7,1)->text().contains("flags [0, 1] · enabled prefix 0"));
+        QCOMPARE(table->item(8,1)->text(),QString("Stored ID 4"));
+        QCOMPARE(panel.findChild<QLineEdit*>("smuArg0")->text(),QString("1234"));
+        QVERIFY(panel.findChild<QLabel*>("smuStatus")->text().contains("No hardware access"));
+        QCOMPARE(device->calls,0u); QCOMPARE(device->topologyReads,0u); QCOMPARE(device->registerRequests,0u);
+        QApplication::processEvents();
+        const auto shot=qEnvironmentVariable("OCTOOL_AMD_APOB_TEST_SCREENSHOT");
+        if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+    }
+    void amdTopologyRecordFailuresClearPriorResults() {
+        auto *device=new amd_topology_fixture::Device;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device)));
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path=dir.filePath("record.bin");
+        for(unsigned mode=0;mode<4;++mode) {
+            auto b=amd_apob_fixture::record();
+            if(mode==1) b.resize(455);
+            if(mode==2) b.resize(1048577);
+            QFile file(path); QVERIFY(file.open(QIODevice::WriteOnly));
+            QCOMPARE(file.write(reinterpret_cast<const char*>(b.data()),qint64(b.size())),qint64(b.size())); file.close();
+            QCOMPARE(panel.loadTopologyRecord(mode==3?path+".missing":path),mode==0);
+            QCOMPARE(panel.findChild<QTableWidget*>("smuTable")->rowCount(),mode==0?11:0);
+        }
+        QCOMPARE(device->calls,0u); QCOMPARE(device->topologyReads,0u); QCOMPARE(device->registerRequests,0u);
     }
     void amdTopologyShowsSparseIdsWithoutPreparingACommand() {
         PstateReference reference; reference.extendedMaximum=0x80000026;

@@ -48,4 +48,31 @@ struct AmdTopologyCatalog {
 AmdTopologyCatalog readAmdTopologyCatalog(HardwareSession &session,
     const std::vector<unsigned> &cpus,bool includeL3=false);
 std::string amdTopologyCatalogJson(const AmdTopologyCatalog &catalog);
+
+struct AmdApobCore {
+    unsigned ordinal=0, storedId=0, threadCount=0;
+    std::array<unsigned,2> threadFlags{};
+};
+struct AmdApobSubgroup {
+    unsigned ordinal=0, storedId=0;
+    std::vector<AmdApobCore> cores;
+};
+struct AmdApobGroup {
+    unsigned ordinal=0, storedId=0;
+    std::vector<AmdApobSubgroup> subgroups;
+};
+struct AmdApobTopology {
+    int error=0;
+    std::string detail;
+    std::uint32_t instance=0;
+    std::size_t bytes=0, extensionBytes=0;
+    unsigned duplicateIds=0, nonPrefixThreadFlags=0;
+    std::vector<AmdApobGroup> groups;
+};
+// Offline single APOB group 3/type 3 record, INCLUDING its 16-byte record header.
+// Reference: ASUS ProArt X870E-CREATOR WIFI 2503, D20482F8 protocol providers.
+// This accepts a reference layout, not a verified platform/firmware identity.
+// Stored IDs are not asserted to be physical CCD/core, OS CPU or PM target IDs.
+AmdApobTopology decodeAmdApobTopology(const std::vector<std::uint8_t> &record);
+std::string amdApobTopologyJson(const AmdApobTopology &topology);
 } }

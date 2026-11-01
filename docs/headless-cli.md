@@ -1,5 +1,7 @@
 # 无桌面版 OCTool
 
+新增 [APOB 拓扑记录离线解码](amd-apob-topology.md)：`amd-topology-decode --file PATH` 与 GUI 的 Open firmware topology record 共用解析器，显示枚举序号、存储编号、线程标志及重复编号。只接受带完整记录头的单条原始记录，不访问硬件，也不据此绑定 PM/物理/OS 核心。
+
 新增 [Granite Ridge Fmax](amd-granite-fmax.md)：`amd-pbo-fmax-read/set --platform granite-ridge` 支持精确 SMU 98.84.0 的保存上限读取、比较旧值与写后回读；GUI 同步提供平台选项。实际运行频率尚未测量。
 
 2026-10-31：[GHz 请求策略与全部可用 CPU 拓扑目录](amd-granite-performance-policy.md)已同步接入 GUI/CLI。

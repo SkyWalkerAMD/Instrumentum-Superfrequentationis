@@ -174,4 +174,77 @@ std::string amdTopologyCatalogJson(const AmdTopologyCatalog &t) {
     if(!t.error) for(std::size_t i=0;i<t.cpus.size();++i) { if(i) out+=','; out+=amdTopologyJson(t.cpus[i]); }
     return out+"]}";
 }
+AmdApobTopology decodeAmdApobTopology(const std::vector<std::uint8_t> &record) {
+    AmdApobTopology out; out.bytes=record.size();
+    if(record.size()>1048576) { out.error=-EFBIG; out.detail="Topology record exceeds 1 MiB."; return out; }
+    // Maximum getter span: 0x30 + 8 * (1 + 2 * (1 + 8 * 3)).
+    if(record.size()<0x1c8) { out.error=-EINVAL; out.detail="Truncated APOB topology record (minimum 456 bytes)."; return out; }
+    const auto word=[&](std::size_t at) {
+        return std::uint32_t(record[at]) | (std::uint32_t(record[at+1])<<8) |
+            (std::uint32_t(record[at+2])<<16) | (std::uint32_t(record[at+3])<<24);
+    };
+    if(word(0)!=3 || word(4)!=3) { out.error=-ENOTSUP; out.detail="Expected a single APOB group 3/type 3 record, including its header."; return out; }
+    if(word(12)!=record.size()) { out.error=-EINVAL; out.detail="Declared record length does not match the file."; return out; }
+    out.instance=word(8); out.extensionBytes=record.size()-0x1c8;
+    std::set<unsigned> groupIds;
+    for(unsigned g=0;g<8;++g) {
+        const std::size_t base=0x30+g*0x33;
+        if(record[base]==0xff) break;
+        AmdApobGroup group; group.ordinal=g; group.storedId=record[base];
+        if(!groupIds.insert(group.storedId).second) ++out.duplicateIds;
+        std::set<unsigned> subgroupIds;
+        for(unsigned s=0;s<2;++s) {
+            const std::size_t sub=base+1+s*0x19;
+            if(record[sub]==0xff) break;
+            AmdApobSubgroup subgroup; subgroup.ordinal=s; subgroup.storedId=record[sub];
+            if(!subgroupIds.insert(subgroup.storedId).second) ++out.duplicateIds;
+            std::set<unsigned> coreIds;
+            for(unsigned c=0;c<8;++c) {
+                const std::size_t at=sub+1+c*3;
+                if(record[at]==0xff) break;
+                AmdApobCore core; core.ordinal=c; core.storedId=record[at];
+                if(!coreIds.insert(core.storedId).second) ++out.duplicateIds;
+                core.threadFlags={{record[at+1],record[at+2]}};
+                // Protocol +0x38 counts a nonzero prefix, NOT a population count.
+                while(core.threadCount<2 && core.threadFlags[core.threadCount]) ++core.threadCount;
+                if(!core.threadFlags[0] && core.threadFlags[1]) ++out.nonPrefixThreadFlags;
+                subgroup.cores.push_back(core);
+            }
+            group.subgroups.push_back(subgroup);
+        }
+        out.groups.push_back(group);
+    }
+    out.detail="Reference-layout record decoded; input firmware identity and physical/OS/PM mappings remain unverified.";
+    return out;
+}
+std::string amdApobTopologyJson(const AmdApobTopology &t) {
+    std::string out="{\"format\":\"octool-amd-apob-topology\",\"schema\":1,\"error\":"+std::to_string(t.error)+
+        ",\"source\":\"offline-apob-record\",\"reference_layout\":\"asus-creator-2503-d20482f8\","
+        "\"reference_identity_verified\":false,\"physical_mapping_verified\":false,\"os_cpu_mapping_verified\":false,"
+        "\"pm_slot_mapping_verified\":false,\"hardware_accessed\":false,\"bytes\":"+std::to_string(t.bytes);
+    const auto add=[&](const char *key,std::uint64_t value) { out+=",\""+std::string(key)+"\":"+(t.error?"null":std::to_string(value)); };
+    add("instance",t.instance); add("extension_bytes",t.extensionBytes);
+    add("duplicate_ids",t.duplicateIds); add("non_prefix_thread_flags",t.nonPrefixThreadFlags);
+    out+=",\"groups\":[";
+    if(!t.error) for(std::size_t g=0;g<t.groups.size();++g) {
+        if(g) out+=',';
+        const auto &group=t.groups[g];
+        out+="{\"ordinal\":"+std::to_string(group.ordinal)+",\"stored_id\":"+std::to_string(group.storedId)+",\"subgroups\":[";
+        for(std::size_t s=0;s<group.subgroups.size();++s) {
+            if(s) out+=',';
+            const auto &sub=group.subgroups[s];
+            out+="{\"ordinal\":"+std::to_string(sub.ordinal)+",\"stored_id\":"+std::to_string(sub.storedId)+",\"cores\":[";
+            for(std::size_t c=0;c<sub.cores.size();++c) {
+                if(c) out+=',';
+                const auto &core=sub.cores[c];
+                out+="{\"ordinal\":"+std::to_string(core.ordinal)+",\"stored_id\":"+std::to_string(core.storedId)+
+                    ",\"thread_flags\":["+std::to_string(core.threadFlags[0])+","+std::to_string(core.threadFlags[1])+
+                    "],\"thread_prefix_count\":"+std::to_string(core.threadCount)+"}";
+            }
+            out+="]}";
+        }
+        out+="]}";
+    }
+    return out+"]}";
+}
 } }

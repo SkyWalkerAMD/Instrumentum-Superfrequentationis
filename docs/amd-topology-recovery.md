@@ -15,6 +15,8 @@ GUI 显示 Complex level。其它型号仍要求显式 type 3；缺失或保留�
 
 ## 已实现
 
+- GUI/CLI 共用的 [APOB 记录离线解码](amd-apob-topology.md)：读取固件枚举序号、存储编号、线程标志和重复编号；不绑定 PM 槽位或物理/OS 核心。
+
 - 显示 APIC ID、socket ID、socket 内 CCD、CCD 内 core、core 内 thread 和每级原始信息。
 - 用每级提供的位移划分 APIC ID，保留空洞；不按线程总数除以 16，也不把 Linux CPU 号码当核心位置。
 - 检查层级顺序、位移/数量、ECX 回显和 APIC 一致性；不支持或不一致时显示失败，不猜测目标。
