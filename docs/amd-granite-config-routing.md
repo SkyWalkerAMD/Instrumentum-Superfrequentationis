@@ -88,6 +88,60 @@ stream are explicit fixtures. Cache maintenance, DMA completion and the full
 scheduler are not emulated. A nearby power-limit consumer does not by itself
 prove that the eight exported rows have calibrated power/frequency units.
 
+## UEFI APIC construction is a separate coordinate space
+
+The pinned module `9FB8AC55-D266-4F86-AC43-BF2BA74F5A7A` is 34,368 bytes,
+SHA-256 `78e0fae1bbe0c4a35d6edaf1e50f0b1c5572066fdf63f9da5b8b59517d93b813`.
+REA resolves constructor `0x526c`, CPUID wrapper `0x3a0` and entry `0x4c4`
+from exact file offsets. Its caller inventory identifies `0x1844`, `0x2094`
+and `0x2d24`, while explicitly warning that two call references into the
+function body lack resolved caller entries. It is not a complete call graph.
+
+The constructor reads leaf 0Bh and four subleaves of 80000026h. For synthetic
+level types 1, 2, 4, 0, with eight core positions per complex, its result is:
+
+```
+(coordinate0 << type4_shift) + coordinate2
+  + (coordinate3 << type2_shift) + (coordinate4 << type1_shift)
+  + (coordinate5 if leaf0B_shift == 1 else 0)
+```
+
+The absent type-3 shift remains zero. A nonzero coordinate2 is accepted by this
+selected function, so `(0,0,1,0,0,0)` and `(0,0,0,0,0,1)` both produce APIC ID 1
+in the SMT-enabled fixture. In the same fixture `(0,0,0,1,0,0)` produces 16.
+These coordinates are numbered arguments, not established physical CCD/core
+names. The examples demonstrate why blindly substituting a PM CCD slot is
+insufficient; they do not demonstrate incorrect BIOS behavior on valid inputs.
+
+The 256 local instruction replays use Unicorn 2.1.4 and pefile 2024.8.26 with
+synthetic CPUID words. Only the constructor and wrapper are permitted to run;
+unknown branches/calls fail. No UEFI entry point or hardware instruction is
+executed on the host. The proof covers both SMT shifts 0/1, but not execution
+of the constructor's callers or their runtime data. The existing GUI/CLI
+CPUID catalog remains separate from PM storage IDs and retains unverified PM
+binding. Runtime coordinate provenance still needs to be established.
+
+REA's three caller bodies narrow the next dependency: these coordinates are
+obtained through firmware protocol enumeration, not read from the PM table.
+The selected bodies locate protocol GUIDs
+`2ADCD53F-4C94-40BB-BBA5-7DEBFF8A13AC` (data at `0x7320`) and
+`D20482F8-7ECF-4A40-8C11-D326D8153806` (data at `0x7370`).
+Their interface field names and provider implementations remain unverified.
+
+| Caller | Static observation; not an executed caller proof |
+| --- | --- |
+| `0x1844` | Six nested enumeration coordinates reach the constructor; its result is appended to a per-outer-coordinate APIC list, with a 512-entry storage guard |
+| `0x2094` | The same enumeration feeds the constructor and leaf `8000001Dh` cache queries; resulting records contain the APIC and a separate running-ordinal bitmap |
+| `0x2d24` | Coordinate 2 comes through an intermediate list populated by helper `0x54e0`, rather than being the list index; the constructor's result is stored in processor-affinity-shaped records |
+
+The last helper makes an indirect call through protocol offset `+0x40`.
+Its fixed ordering data and interface results are not a PM-to-physical map.
+REA's decompilation also omits some inferred output arguments on indirect
+calls, so these observations are leads for the protocol provider study, not
+validated C declarations. None of the three recovered caller bodies supplies
+a checked link from MP5/SMU PM storage to those enumerated coordinates. Only
+the constructor itself has the 256-case instruction replay described above.
+
 ## Reproduce
 
 After the pinned extraction and instruction study:
@@ -101,10 +155,13 @@ for proof in config-route consumers; do
     --mp5-study build/firmware-evidence/mp5/smu-study.json \
     --output build/firmware-evidence/granite-$proof.json
 done
+PYTHONPATH=build/firmware-tools/python python3 analysis/tools/firmware-granite-apic.py \
+  --binary build/firmware-input/uefi-granite-topology.bin \
+  --output build/firmware-evidence/granite-apic.json
 ```
 
-Both proofs are included in the REA workflow, bringing the replay count to 17.
-REA 6.7.0 analyzes the two UEFI transport modules; the pinned Ghidra Xtensa
+The three proofs are included in the REA workflow, bringing the replay count to 18.
+REA 6.7.0 analyzes two UEFI transport modules and the topology module; the pinned Ghidra Xtensa
 decoder supplies instruction evidence for the bounded Python replays. REA does
 not execute the Xtensa firmware. See [completed validation](amd-granite-validation.md)
 for the commits and cloud results actually verified.

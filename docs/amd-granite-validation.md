@@ -1,36 +1,28 @@
-# Granite Ridge / 9950X3D Fmax 验证
+# Granite Ridge / 9950X3D 配置通道与拓扑验证
 
-2026-11-01，GUI 和 CLI 同步新增 Granite Ridge Fmax 保存上限读取、比较旧值、设置和写后回读。精确限定 SMU 98.84.0；固件限幅或回读不同会报告未验证，不自动重试、切换模式或回滚。读取单位为 MHz，实际运行频率未测量。
+2026-11-01，继续使用 REA 6.7.0 研究 BIOS 2503 / SMU 98.84.0。GUI 与 CLI 同步补充 CCD 第 2 行的配置选择语义，纠正把两个输入当成两个可独立寻址 rails 的解释。**本轮没有新增确认的物理单位，也没有开放第二 rails 写入。**
 
-目标为 9950X3D + ASUS X870E Creator（按 ProArt X870E-CREATOR WIFI 匹配）。用户确认机器不在手边，实际 BIOS 未知；ASUS 2503 是研究参考，目标真机验收尚未执行。
+目标为 9950X3D + ASUS X870E Creator（按 ProArt X870E-CREATOR WIFI 匹配）。目标机器不在用户手边，实际 BIOS 未知；参考固件与合成回放不替代真机验收。
 
 | 验证 | 实际结果 |
 |---|---|
-| [可移植核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41272403084) | 4/4；Ubuntu 22/24、Windows 2022、macOS 14 各 36 CTest、488 场景组；6 个 ASan/UBSan 套件 |
-| [无 GUI CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41273485165) | 13/13；11 Linux 目标各 38 CTest、80 CLI 场景组、1572 JSON 报告；安装、卸载、重装、无 Qt/显示运行 |
-| [GUI 与内核](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41272412665) | 26/26；各目标及 EL7/EL8 基线 241 Qt 测试；142 分析测试、34 移植测试；12 次 QEMU 内核启动 |
-| [Granite 固件研究](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41272418086) | 1/1；REA 6.7.0 分析两个 UEFI 模块；SMU/MP5 各 12240 项编码自检；15 项本地/云端回放结果一致 |
-| [原版 REA 复核](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41271795943) | 1/1；原版 Fmax、构造函数与调用者的 pbo_layout 静态分析；保留调用约定和终止流限制 |
-| [截图补充复核](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41273776159) | 2/2；EL7、Ubuntu 24.04 各 241 Qt 测试；核对 GUI/构建/测试输入与原矩阵相同，补充收集新增 Fmax 图像 |
-| Fmax 策略回放 | 2496 组；2179 接受、317 拒绝、1669 次限幅或哨兵处理、179 次条件降频接受；硬件接口为合成输入 |
-| 能力位回放 | 4204 组；检查 bit 2、手动 OC bit 16、前置门控及其他位保留 |
-| 应用回归 | 身份、版本、六参数清零、旧快照、能力变化、固件拒绝、限幅、超时、各读取故障点、取消及跨平台误用；同一核心供 GUI/CLI 使用 |
+| [可移植核心](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41276893928) | 4/4；Ubuntu 22/24、Windows 2022、macOS 14 各 36 CTest、488 场景组；6 个 ASan/UBSan 套件 |
+| [无 GUI CLI](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41276899123) | 13/13；11 Linux 目标各 38 CTest、80 CLI 场景组、1572 JSON 报告；安装、卸载、重装及无 Qt/显示环境运行 |
+| [GUI 与内核](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41276903816) | 26/26；各目标及 EL7/EL8 基线 241 Qt 测试；142 分析测试、34 移植测试；12 次 QEMU 内核启动 |
+| [Granite 固件研究](https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41277923617) | 1/1；REA 分析两个 UEFI 传输模块和一个拓扑模块；SMU/MP5 各 12240 项编码自检；18 组本地/云端回放结果逐项一致 |
+| 配置通道 | 1344 组广播，756 组非成功但非零的确认值仍获主机成功返回；2 个停滞目标；378 组成对目标选择、756 次值选择和 756 次旧值保留 |
+| 模型消费路径 | 128 组成对目标、3072 次反馈选择；区分模型复合值与相邻反馈流，未据此赋予瓦特等单位 |
+| UEFI APIC 构造 | 256 组合成 CPUID 回放；REA 复核构造函数、CPUID 包装、入口和三个调用者；调用者本身未执行 |
 | 本机扩展检查 | 用户源码树 50 项：37 通过、13 因工具链/平台限制跳过；保留八项既有扩展 |
 
-**47/47 最终云端任务通过。** 核心、GUI/内核和 Granite 固件工作流使用实现提交 `5d12a19212292d7fae3a17fbcbde408d6c31ea16`。
-CLI 工作流使用 `e58010d45957787871954e9645484e0fe7454839`：前两次运行分别发现报告总数断言未更新（1551 → 1572），以及 Scalar 结果筛选混入新增的非法平台参数拒绝。只更正这两项测试断言后重跑 CLI 矩阵，拒绝结果和设备回读分别检查。运行代码、构建脚本和其他测试输入均未改变；失败日志与替代运行保留在验证记录中。
-原版 REA 工作流使用上一发布提交 `310d04cae43e706a91a3deb559aeebf80717dec8`，其工作流和分析脚本与本轮一致，分别核对哈希。22 个 Granite 研究源文件与通过版本一致。
-最终 main 提交只补充文档和证据，应用与构建输入保持通过版本。
+**44/44 最终云端任务通过：43 个应用任务、1 个最终研究任务。** 应用、核心、GUI/内核工作流均使用 `97759e849bf64aad01b9b072846e2d4d2af5d044`；最终研究工作流使用 `22f2a51c219dc18e3ed30d8ee8bf44ac34ef5546`。两次先前成功的 REA 研究迭代不计入这 44 项。中间研究提交 `25749d3` 的派发未返回运行编号，修正依赖安装步骤的 YAML 块后重新派发；最终研究运行成功。
 
-本机第一次分析测试因缺少 Capstone/Unicorn 无法加载，已由云端完整运行；移植测试的首次临时目录权限问题通过使用工作区内临时目录解决。记录为环境限制，不计作通过的本地测试。
-任务、源文件哈希、产物摘要和限制见[验证 JSON](validation/amd-granite-ci-5d12a19.json)及[原版 REA 证据](validation/amd-granite-fmax-native.json)。
+应用通过提交之后只增加研究脚本、研究工作流与文档。25 个研究源文件与最终 REA 通过版本逐项相同；应用和构建源码与应用通过版本相同。最终 main 文档提交不另算一次应用测试。验证提交、产物摘要、源码比较与限制见[验证 JSON](validation/amd-granite-ci-97759e8.json)和[研究 JSON](validation/amd-granite-research.json)。
 
-11 个 x86_64 目标：`el7, el8, el9, el10, ubuntu20.04, ubuntu22.04, ubuntu24.04, ubuntu26.04, debian11, debian12, debian13`。EL7 指 Oracle Linux 7.9；Windows/macOS 只验证核心。
-生成 33 个安装包，主矩阵每目标保留 147 张截图，共 1617 张；另补充导出 4 张 Fmax 截图。直接检查 EL7 与 Ubuntu 24.04 的 Granite Fmax 成功回读和原有 Shimada Fmax 回读视图；均为合成设备场景。
-QEMU 验证驱动集成，未验证物理寄存器调参或 Secure Boot。
+11 个 x86_64 目标：`el7, el8, el9, el10, ubuntu20.04, ubuntu22.04, ubuntu24.04, ubuntu26.04, debian11, debian12, debian13`。EL7 指 Oracle Linux 7.9；Windows/macOS 只验证共享核心。生成 33 个安装包、1617 张截图；直接检查 EL7 与 Ubuntu 24.04 的 Granite PM 视图。GUI 截图来自合成表数据。QEMU 验证驱动集成，未验证目标机寄存器调参或 Secure Boot。
 
-当前仍有核心 0/4/12、CCD 0/1/2/6/8 的物理单位未确认；PM 到物理 CCD/OS 核心绑定、第二 rails 的物理身份与独立写入/设备侧回读、其他未还原调参及其他固件适配仍未完成。已有模型、软件镜像与共享 Fmax 保存值不能替代真机测量。
+GUI 的 CCD 第 2 行标为“Selected configuration; unit unverified”，CLI/JSON 提供相同的 `configuration_protocol` 元数据；导入会从原始表重新生成它，不信任伪造的 rail、回读或写入可用性声明。已有 [Fmax 读取、设置与保存值回读](amd-granite-fmax.md)继续保留。
 
-交付目录 `dist/gui-cli-amd-granite-5d12a19/` 含 33 个安装包。推荐使用 `updated-source/`：包含通过 CLI 复测的两项断言更正、用户扩展与最终文档。根源码包以保留的 GUI/内核云端原始快照为基础，仅加入通过复测的两项测试断言更正，并逐文件核对与 CLI 通过提交一致；此本地重建过程及前后哈希单独记录。`MANIFEST.json` 区分来源，`SHA256SUMS` 覆盖全部交付文件。
+剩余八行仍是核心 **0/4/12**、CCD **0/1/2/6/8**。模型缺少系数标定，计数器缺少事件身份与独立时间基准。固件协议枚举坐标尚未绑定到 PM 槽位和物理 CCD/OS 核心；第二 rails 仍缺少物理身份、独立写入和设备侧回读的完整证据。详见[本轮配置与拓扑研究](amd-granite-config-routing.md)。
 
-[Fmax 协议与用法](amd-granite-fmax.md)、[Granite 研究证据](validation/amd-granite-research.json)、[八行剩余来源](amd-granite-producer-paths.md)。
+交付目录 `dist/gui-cli-amd-granite-97759e8/` 含 33 个安装包及源码。根目录源码包保持应用云端测试时的原始快照；推荐 `updated-source/` 源码包，含随后通过验证的研究脚本、最终文档及保留的八项用户扩展。清单明确区分这两种来源，`SHA256SUMS` 覆盖全部交付文件。研究回放依赖仅供研究环境使用，不加入 GUI/CLI 安装包。

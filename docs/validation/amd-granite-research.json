@@ -1,148 +1,156 @@
 {
   "schema": 2,
   "date": "2026-11-01",
-  "source_commit": "5d12a19212292d7fae3a17fbcbde408d6c31ea16",
+  "source_commit": "22f2a51c219dc18e3ed30d8ee8bf44ac34ef5546",
   "run": {
     "attempt": 1,
     "conclusion": "success",
-    "headSha": "5d12a19212292d7fae3a17fbcbde408d6c31ea16",
+    "headSha": "22f2a51c219dc18e3ed30d8ee8bf44ac34ef5546",
     "jobs": [
       {
-        "completedAt": "2026-11-01T04:18:24Z",
+        "completedAt": "2026-11-01T05:45:03Z",
         "conclusion": "success",
-        "databaseId": 124747732639,
+        "databaseId": 124763777929,
         "name": "firmware",
-        "startedAt": "2026-11-01T04:16:10Z",
+        "startedAt": "2026-11-01T05:41:55Z",
         "status": "completed",
         "steps": [
           {
-            "completedAt": "2026-11-01T04:16:13Z",
+            "completedAt": "2026-11-01T05:41:57Z",
             "conclusion": "success",
             "name": "Set up job",
             "number": 1,
-            "startedAt": "2026-11-01T04:16:11Z",
+            "startedAt": "2026-11-01T05:41:56Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T04:16:14Z",
+            "completedAt": "2026-11-01T05:41:59Z",
             "conclusion": "success",
             "name": "Run actions/checkout@v4",
             "number": 2,
-            "startedAt": "2026-11-01T04:16:13Z",
+            "startedAt": "2026-11-01T05:41:57Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T04:16:20Z",
+            "completedAt": "2026-11-01T05:42:04Z",
             "conclusion": "success",
             "name": "Run actions/setup-node@v4",
             "number": 3,
-            "startedAt": "2026-11-01T04:16:14Z",
+            "startedAt": "2026-11-01T05:41:59Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T04:16:21Z",
+            "completedAt": "2026-11-01T05:42:04Z",
             "conclusion": "success",
             "name": "Run actions/setup-java@v4",
             "number": 4,
-            "startedAt": "2026-11-01T04:16:20Z",
+            "startedAt": "2026-11-01T05:42:04Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T04:16:38Z",
+            "completedAt": "2026-11-01T05:42:22Z",
             "conclusion": "success",
             "name": "Install pinned analysis tools",
             "number": 5,
-            "startedAt": "2026-11-01T04:16:21Z",
+            "startedAt": "2026-11-01T05:42:04Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T04:16:41Z",
+            "completedAt": "2026-11-01T05:42:26Z",
             "conclusion": "success",
             "name": "Extend and compile the isolated static Xtensa decoder",
             "number": 6,
-            "startedAt": "2026-11-01T04:16:38Z",
+            "startedAt": "2026-11-01T05:42:22Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T04:16:47Z",
+            "completedAt": "2026-11-01T05:42:28Z",
+            "conclusion": "success",
+            "name": "Install isolated APIC replay dependencies",
+            "number": 7,
+            "startedAt": "2026-11-01T05:42:26Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-01T05:42:35Z",
             "conclusion": "success",
             "name": "Extract pinned Granite Ridge reference inputs",
-            "number": 7,
-            "startedAt": "2026-11-01T04:16:41Z",
+            "number": 8,
+            "startedAt": "2026-11-01T05:42:28Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T04:17:25Z",
+            "completedAt": "2026-11-01T05:43:28Z",
             "conclusion": "success",
             "name": "Static SMU and MP5 discovery without Shimada address assumptions",
-            "number": 8,
-            "startedAt": "2026-11-01T04:16:47Z",
+            "number": 9,
+            "startedAt": "2026-11-01T05:42:35Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T04:17:52Z",
+            "completedAt": "2026-11-01T05:44:05Z",
             "conclusion": "success",
             "name": "Replay byte-checked Granite Ridge layout and metadata instructions",
-            "number": 9,
-            "startedAt": "2026-11-01T04:17:25Z",
+            "number": 10,
+            "startedAt": "2026-11-01T05:43:28Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T04:18:18Z",
+            "completedAt": "2026-11-01T05:44:56Z",
             "conclusion": "success",
             "name": "REA static UEFI entry points and RSMU transport helpers",
-            "number": 10,
-            "startedAt": "2026-11-01T04:17:52Z",
+            "number": 11,
+            "startedAt": "2026-11-01T05:44:05Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T04:18:21Z",
+            "completedAt": "2026-11-01T05:44:59Z",
             "conclusion": "success",
             "name": "Run actions/upload-artifact@v4",
-            "number": 11,
-            "startedAt": "2026-11-01T04:18:18Z",
+            "number": 12,
+            "startedAt": "2026-11-01T05:44:56Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T04:18:21Z",
+            "completedAt": "2026-11-01T05:44:59Z",
             "conclusion": "success",
             "name": "Post Run actions/setup-java@v4",
-            "number": 20,
-            "startedAt": "2026-11-01T04:18:21Z",
+            "number": 22,
+            "startedAt": "2026-11-01T05:44:59Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T04:18:21Z",
+            "completedAt": "2026-11-01T05:44:59Z",
             "conclusion": "success",
             "name": "Post Run actions/setup-node@v4",
-            "number": 21,
-            "startedAt": "2026-11-01T04:18:21Z",
+            "number": 23,
+            "startedAt": "2026-11-01T05:44:59Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T04:18:21Z",
+            "completedAt": "2026-11-01T05:45:00Z",
             "conclusion": "success",
             "name": "Post Run actions/checkout@v4",
-            "number": 22,
-            "startedAt": "2026-11-01T04:18:21Z",
+            "number": 24,
+            "startedAt": "2026-11-01T05:44:59Z",
             "status": "completed"
           },
           {
-            "completedAt": "2026-11-01T04:18:21Z",
+            "completedAt": "2026-11-01T05:45:00Z",
             "conclusion": "success",
             "name": "Complete job",
-            "number": 23,
-            "startedAt": "2026-11-01T04:18:21Z",
+            "number": 25,
+            "startedAt": "2026-11-01T05:45:00Z",
             "status": "completed"
           }
         ],
-        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41272418086/job/124747732639"
+        "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41277923617/job/124763777929"
       }
     ],
     "status": "completed",
-    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41272418086"
+    "url": "https://github.com/SkyWalkerAMD/Instrumentum-Superfrequentationis/actions/runs/41277923617"
   },
-  "artifact_id": 13069378232,
+  "artifact_id": 13072456094,
   "hardware_execution": false,
   "physical_hardware_acceptance": "not_run",
   "installed_bios_known": false,
@@ -186,7 +194,7 @@
           "provider_id": "ghidra"
         },
         "file": "open.json",
-        "seconds": 0.16,
+        "seconds": 0.2,
         "error": false
       },
       {
@@ -195,7 +203,7 @@
           "procedure": "file-offset:0x4e4"
         },
         "file": "pseudo-0x4e4.json",
-        "seconds": 10.97,
+        "seconds": 14.07,
         "error": false
       },
       {
@@ -204,7 +212,7 @@
           "procedure": "0x4e4"
         },
         "file": "info-0x4e4.json",
-        "seconds": 0.01,
+        "seconds": 0.02,
         "error": false
       },
       {
@@ -213,7 +221,7 @@
           "procedure": "file-offset:0xbb4"
         },
         "file": "pseudo-0xbb4.json",
-        "seconds": 0.03,
+        "seconds": 0.04,
         "error": false
       },
       {
@@ -247,7 +255,7 @@
         "tool": "close_binary",
         "arguments": {},
         "file": "close.json",
-        "seconds": 0.1,
+        "seconds": 0.12,
         "error": false
       }
     ],
@@ -270,7 +278,7 @@
           "provider_id": "ghidra"
         },
         "file": "open.json",
-        "seconds": 0.16,
+        "seconds": 0.19,
         "error": false
       },
       {
@@ -279,7 +287,7 @@
           "procedure": "file-offset:0x4e4"
         },
         "file": "pseudo-0x4e4.json",
-        "seconds": 11.13,
+        "seconds": 14.15,
         "error": false
       },
       {
@@ -331,13 +339,169 @@
         "tool": "close_binary",
         "arguments": {},
         "file": "close.json",
-        "seconds": 0.1,
+        "seconds": 0.13,
         "error": false
       }
     ],
     "startup_timeout_ms": 900000,
     "disabled_analyzers": "",
     "study": "granite_transport2",
+    "error": null
+  },
+  "rea-topology": {
+    "schema": 1,
+    "source_sha256": "78e0fae1bbe0c4a35d6edaf1e50f0b1c5572066fdf63f9da5b8b59517d93b813",
+    "hardware_execution": false,
+    "rea_version": "6.7.0",
+    "ghidra_version": "12.1.4",
+    "records": [
+      {
+        "tool": "open_binary",
+        "arguments": {
+          "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/firmware-input/uefi-granite-topology.bin",
+          "provider_id": "ghidra"
+        },
+        "file": "open.json",
+        "seconds": 0.19,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0x526c"
+        },
+        "file": "pseudo-0x526c.json",
+        "seconds": 15.11,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0x526c"
+        },
+        "file": "info-0x526c.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0x3a0"
+        },
+        "file": "pseudo-0x3a0.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0x3a0"
+        },
+        "file": "info-0x3a0.json",
+        "seconds": 0.0,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0x4c4"
+        },
+        "file": "pseudo-0x4c4.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0x4c4"
+        },
+        "file": "info-0x4c4.json",
+        "seconds": 0.0,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0x1844"
+        },
+        "file": "pseudo-0x1844.json",
+        "seconds": 0.07,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0x1844"
+        },
+        "file": "info-0x1844.json",
+        "seconds": 0.04,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0x2094"
+        },
+        "file": "pseudo-0x2094.json",
+        "seconds": 0.15,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0x2094"
+        },
+        "file": "info-0x2094.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "procedure_pseudo_code",
+        "arguments": {
+          "procedure": "file-offset:0x2d24"
+        },
+        "file": "pseudo-0x2d24.json",
+        "seconds": 0.08,
+        "error": false
+      },
+      {
+        "tool": "procedure_info",
+        "arguments": {
+          "procedure": "0x2d24"
+        },
+        "file": "info-0x2d24.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "procedure_callers",
+        "arguments": {
+          "procedure": "0x526c"
+        },
+        "file": "pm-callers.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "export_evidence_bundle",
+        "arguments": {
+          "path": "/home/runner/work/Instrumentum-Superfrequentationis/Instrumentum-Superfrequentationis/build/firmware-evidence/rea-topology/evidence.json"
+        },
+        "file": "export.json",
+        "seconds": 0.01,
+        "error": false
+      },
+      {
+        "tool": "close_binary",
+        "arguments": {},
+        "file": "close.json",
+        "seconds": 0.13,
+        "error": false
+      }
+    ],
+    "startup_timeout_ms": 900000,
+    "disabled_analyzers": "",
+    "study": "granite_topology",
     "error": null
   },
   "input_manifest": {
@@ -373,6 +537,12 @@
       }
     ],
     "modules": [
+      {
+        "guid": "9FB8AC55-D266-4F86-AC43-BF2BA74F5A7A",
+        "name": "topology",
+        "bytes": 34368,
+        "sha256": "78e0fae1bbe0c4a35d6edaf1e50f0b1c5572066fdf63f9da5b8b59517d93b813"
+      },
       {
         "guid": "308612BE-4783-4B9B-9E7A-A39244D34929",
         "name": "transport",
@@ -3133,10 +3303,172 @@
     "hardware_validation": false,
     "independent_rail_readback": false
   },
+  "configuration_route_proof": {
+    "schema": 1,
+    "hardware_execution": false,
+    "source_sha256": {
+      "smu": "5d7951d30fefea6c5f435ac219fe4879adb0d8f66727211e32af1ff89d6b7596",
+      "mp5": "fb5d96c17b909cc4f681523ccc931796e27c7457ba5ad637a3d4fce1c78ce556"
+    },
+    "dispatch": {
+      "cases": 1344,
+      "non_success_nonzero_responses_acknowledged": 756,
+      "stalled_targets": 2,
+      "rsmu_command": "0x72",
+      "handler": "0x1dcc0",
+      "broadcaster": "0x1d690",
+      "mp5_command": "0x75",
+      "presence_mask": "ushort[0x6814]",
+      "active_mask_used": false,
+      "completion_test": "nonzero, not equality with success code 1",
+      "caller_reply_after_completions": 1,
+      "all_commands_sent_before_completion_wait": true,
+      "no_present_target_still_acknowledges": true,
+      "payload_returned_to_host": false,
+      "timeout_in_selected_firmware_loop": false,
+      "completion_values_are_fixtures": true,
+      "lock_helpers_are_fixtures": true,
+      "trace_sha256": "046df36f105ebb90793ae1d4a26dbc1a72e3614dd55ee74e436b7210b04b77a1"
+    },
+    "alternatives": {
+      "paired_target_cases": 378,
+      "selections": 756,
+      "retained_row_cases": 756,
+      "input_count": 2,
+      "selector": "float[0x11428] > float[0x119b4]",
+      "selected_pair_addresses": [
+        "0x11725",
+        "0x11728"
+      ],
+      "exported_source": "0x8030",
+      "zero_upper_half_reuses_lower": true,
+      "same_payload_sent_to_each_present_target": true,
+      "mp5_ack_precedes_policy_selection": true,
+      "target_selectors_are_independent_fixtures": true,
+      "physical_unit_verified": false,
+      "physical_rail_identity_verified": false,
+      "device_readback_verified": false,
+      "trace_sha256": "6c29c57ff83c68fef9abb73d77845b57261aa00cb96ebf2aff471f7a8dce2c9e"
+    },
+    "physical_or_os_core_mapping_verified": false,
+    "independent_second_rail_verified": false,
+    "new_physical_units": {},
+    "runtime_write_enabled": false
+  },
+  "model_consumer_proof": {
+    "schema": 1,
+    "hardware_execution": false,
+    "source_sha256": {
+      "smu": "5d7951d30fefea6c5f435ac219fe4879adb0d8f66727211e32af1ff89d6b7596",
+      "mp5": "fb5d96c17b909cc4f681523ccc931796e27c7457ba5ad637a3d4fce1c78ce556"
+    },
+    "consumers": {
+      "paired_target_cases": 128,
+      "feedback_selection_cases": 3072,
+      "mp5_aggregate": "0x12a2c",
+      "transfer_bytes": 228,
+      "smu_target_bases": [
+        "0xa1c0",
+        "0xa2a4"
+      ],
+      "consumer_slice": "0x2800d..0x280bf",
+      "composite": "0xa38c",
+      "composite_contribution_per_target": "2*sum(core row 0)+CCD row 0+CCD row 1",
+      "composite_initial_other_contributors_are_fixtures": true,
+      "alternate_feedback": "0xa390",
+      "alternate_producer_offsets": [
+        "0x1c",
+        "0x20"
+      ],
+      "feedback_selection_slice": "0x28121..0x28189",
+      "feedback_before_gain": "0xa398",
+      "feedback_after_bias": "0xa394",
+      "composite_is_not_selected_feedback_in_checked_path": true,
+      "active_mask_does_not_filter_first_composite": true,
+      "copy_is_explicit_fixture": true,
+      "other_model_stream_is_fixture": true,
+      "complete_scheduler_or_peripheral_execution": false,
+      "physical_units_verified": false,
+      "trace_sha256": "24da2e699d2ffe8b3b191642a7489d6032111e4181d853c6a67840de639abec3"
+    },
+    "new_physical_units": {},
+    "physical_or_os_core_mapping_verified": false,
+    "runtime_write_enabled": false
+  },
+  "uefi_apic_proof": {
+    "schema": 1,
+    "source_sha256": "78e0fae1bbe0c4a35d6edaf1e50f0b1c5572066fdf63f9da5b8b59517d93b813",
+    "hardware_execution": false,
+    "entry_file_offset": "0x526c",
+    "cpuid_wrapper_file_offset": "0x3a0",
+    "cases": 256,
+    "instruction_addresses": 127,
+    "synthetic_smt_shifts": [
+      0,
+      1
+    ],
+    "synthetic_topology_level_types": [
+      1,
+      2,
+      4,
+      0
+    ],
+    "formula": "(coordinate0 << type4_shift) + coordinate2 + (coordinate3 << type2_shift) + (coordinate4 << type1_shift) + (coordinate5 if leaf0B_shift == 1 else 0)",
+    "coordinate1_checked_zero_in_selected_path": true,
+    "absent_type3_shift_stays_zero": true,
+    "nonzero_coordinate2_is_not_rejected": true,
+    "collision_examples": [
+      {
+        "coordinates": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "apic": 1
+      },
+      {
+        "coordinates": [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        "apic": 16
+      },
+      {
+        "coordinates": [
+          0,
+          0,
+          1,
+          0,
+          0,
+          0
+        ],
+        "apic": 1
+      }
+    ],
+    "cpuid_words_are_fixtures": true,
+    "constructor_only_not_callers": true,
+    "topology_protocol_argument_names_verified": false,
+    "pm_storage_to_constructor_coordinates_verified": false,
+    "physical_or_os_core_mapping_verified": false,
+    "runtime_write_enabled": false,
+    "trace_sha256": "ceefd1cd6c5666b366dd0cf14d0f92c5c79c40a505f0b0c4127f46809679032c",
+    "unicorn_version": "2.1.4",
+    "pefile_version": "2024.8.26"
+  },
   "local_cloud_replays_identical": [
+    "apic",
     "channels",
     "clock-models",
     "codes",
+    "config-route",
+    "consumers",
     "counters",
     "fmax",
     "model-inputs",
@@ -3152,275 +3484,400 @@
   ],
   "evidence_files": [
     {
-      "path": "build/granite-study-41272418086/artifact.json",
+      "path": "build/granite-study-41277923617/artifact.json",
       "bytes": 863,
-      "sha256": "4707594b13ea33abbb9236d38fe916a5dc8545cec1971e36819d7ea2ae3baead"
+      "sha256": "8dd4c7d68d0e200b6a10d7f2e17a32f49df462c324735883383dec595083b4ef"
     },
     {
-      "path": "build/granite-study-41272418086/artifact.zip",
-      "bytes": 2315953,
-      "sha256": "8aacb0039da51387c955cd6c9e71b1b5df8b0d6ef61febda9078e3ec63140533"
+      "path": "build/granite-study-41277923617/artifact.zip",
+      "bytes": 2384925,
+      "sha256": "568dd562f4fe460a1c6ba0e53f0e1a7d0e0a41785964076d73cd825cd9f83608"
     },
     {
-      "path": "build/granite-study-41272418086/granite-channels.json",
+      "path": "build/granite-study-41277923617/granite-apic.json",
+      "bytes": 1509,
+      "sha256": "6c5b7e93d85129ce974e48e64610e3280c5df767cfb14443c516b5535c5a30db"
+    },
+    {
+      "path": "build/granite-study-41277923617/granite-channels.json",
       "bytes": 2363,
       "sha256": "1ab3cd3eff9fffada57ac1708c85e9b503a41d67d10561b30b3034a92f489997"
     },
     {
-      "path": "build/granite-study-41272418086/granite-clock-models.json",
+      "path": "build/granite-study-41277923617/granite-clock-models.json",
       "bytes": 3905,
       "sha256": "7c02e1623702393751f65c7a2c9ad98e65bf760b32005a67594064e5de0e9740"
     },
     {
-      "path": "build/granite-study-41272418086/granite-codes.json",
+      "path": "build/granite-study-41277923617/granite-codes.json",
       "bytes": 950,
       "sha256": "ebd749e1635d91493b73eccf580e755b59718c3b9ff17d876e21d537fa5dcfab"
     },
     {
-      "path": "build/granite-study-41272418086/granite-counters.json",
+      "path": "build/granite-study-41277923617/granite-config-route.json",
+      "bytes": 1857,
+      "sha256": "4c3282989932cf82de9a87a35c621bf1ff1b00ea3d968e8126dbb1195c2678df"
+    },
+    {
+      "path": "build/granite-study-41277923617/granite-consumers.json",
+      "bytes": 1389,
+      "sha256": "1de0f9ba3d7a737aa2cc9fdee547ed630294abca3ba865cb0d498910a83df28e"
+    },
+    {
+      "path": "build/granite-study-41277923617/granite-counters.json",
       "bytes": 2681,
       "sha256": "15270b81a04bb032404de4e16fef79a0dc48048b3c25f570fcd4d522ad974e24"
     },
     {
-      "path": "build/granite-study-41272418086/granite-fmax.json",
+      "path": "build/granite-study-41277923617/granite-fmax.json",
       "bytes": 900,
       "sha256": "40a0e733eb5eff51b2c9e5b1e563e065d8ed395c103d5ae8a3f57a9a81dc10a2"
     },
     {
-      "path": "build/granite-study-41272418086/granite-input-manifest.json",
-      "bytes": 1527,
-      "sha256": "4ba9860e2368d014d6934e86b28e68258f605cbc981a2177526e55e961b0b501"
+      "path": "build/granite-study-41277923617/granite-input-manifest.json",
+      "bytes": 1725,
+      "sha256": "73b8f7d5fa07e92f8c46f7a6e4264b3d35cb8a6a8b6282e0e265d7537a3d7d81"
     },
     {
-      "path": "build/granite-study-41272418086/granite-model-inputs.json",
+      "path": "build/granite-study-41277923617/granite-model-inputs.json",
       "bytes": 2283,
       "sha256": "14d1d7a558da772a4a630363085c275e7d0190890c9a1d7df3a71b71cab95f3b"
     },
     {
-      "path": "build/granite-study-41272418086/granite-performance.json",
+      "path": "build/granite-study-41277923617/granite-performance.json",
       "bytes": 5044,
       "sha256": "7c85779ab9e2bd81ba902d303c92e1de161196226d33cbb12e46cc09582bd942"
     },
     {
-      "path": "build/granite-study-41272418086/granite-producers.json",
+      "path": "build/granite-study-41277923617/granite-producers.json",
       "bytes": 3130,
       "sha256": "fa18faceb9a1bb25a007c8eb1a999590527b9b00b11e54626649938c9c2ac21a"
     },
     {
-      "path": "build/granite-study-41272418086/granite-proof.json",
+      "path": "build/granite-study-41277923617/granite-proof.json",
       "bytes": 3373,
       "sha256": "b595fd2b1dba1e53733b429d702fc4f87f3ea6ce2fb17afb839932f0b7b836f6"
     },
     {
-      "path": "build/granite-study-41272418086/granite-rails-proof.json",
+      "path": "build/granite-study-41277923617/granite-rails-proof.json",
       "bytes": 2939,
       "sha256": "a06a2f4c580a5730bc6b3cb0a66137cf6fb6ac5cfdb601060c3eba78a07fcb84"
     },
     {
-      "path": "build/granite-study-41272418086/granite-registers.json",
+      "path": "build/granite-study-41277923617/granite-registers.json",
       "bytes": 1748,
       "sha256": "9188731a950ac20c601226ce6c2401bae3954a4631ebe6547e996ecb39f86c36"
     },
     {
-      "path": "build/granite-study-41272418086/granite-semantics.json",
+      "path": "build/granite-study-41277923617/granite-semantics.json",
       "bytes": 3038,
       "sha256": "e713f6d307f1b47caaafbc0673390b820107a79ba6b39d904dccc135c7730b0b"
     },
     {
-      "path": "build/granite-study-41272418086/granite-telemetry.json",
+      "path": "build/granite-study-41277923617/granite-telemetry.json",
       "bytes": 3823,
       "sha256": "5a4e3d34a8410ac946a140eb7735af32144e6cdb9a405ee779e25d81f5f1767c"
     },
     {
-      "path": "build/granite-study-41272418086/granite-topology.json",
+      "path": "build/granite-study-41277923617/granite-topology.json",
       "bytes": 16953,
       "sha256": "105017644becf8ae4b7c6bfd84137bb142cceaaefeb26578935c16a928d6f57d"
     },
     {
-      "path": "build/granite-study-41272418086/granite-transfers.json",
+      "path": "build/granite-study-41277923617/granite-transfers.json",
       "bytes": 5589,
       "sha256": "732cdda068ca346962e2a4b09f2eccca9e6f754cdca0e0df79bd3729bde5b7c3"
     },
     {
-      "path": "build/granite-study-41272418086/mp5/smu-study.json",
+      "path": "build/granite-study-41277923617/mp5/smu-study.json",
       "bytes": 3661570,
       "sha256": "08135dd0d1359241fbd0b8cd8c1ecaf3e98fa4c5de3f1fcf94f85516a82ab7bf"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport/close.json",
+      "path": "build/granite-study-41277923617/rea-topology/close.json",
       "bytes": 251,
       "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport/evidence.json",
+      "path": "build/granite-study-41277923617/rea-topology/evidence.json",
+      "bytes": 112595,
+      "sha256": "59167cbc1fddfdadf2c354d74eabd8b46ad6e29f42482813a1ff3d35d413bb67"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/export.json",
+      "bytes": 555,
+      "sha256": "11dcfad5c13753f91369204b868c54f50cc6184db64773f3edab334089e52529"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/info-0x1844.json",
+      "bytes": 20791,
+      "sha256": "cafd25f72ac835c68829340298f89bc333e49a5f6da0a35104e315525dc80320"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/info-0x2094.json",
+      "bytes": 21863,
+      "sha256": "a6aa950c9d20c1eca0e1b6adfa6fa647f0f7364152c9eb96d958d90adeb7c55c"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/info-0x2d24.json",
+      "bytes": 19955,
+      "sha256": "830310c6caf0945fd35527997078fc75e2d315dd280278c0ce3de56e254cdcdc"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/info-0x3a0.json",
+      "bytes": 10297,
+      "sha256": "ce2d3d76ac98ffa585fe461452af42f21383cf1e7c4f7aec4a47abc7bede7488"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/info-0x4c4.json",
+      "bytes": 9929,
+      "sha256": "c2d4de9d3abf3d9f70bcdea5fecd3614652b79cae9b0e958557bd4674faa4727"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/info-0x526c.json",
+      "bytes": 14227,
+      "sha256": "b9a03d037d16dd068e1492057938d91527bb48992c5fabb6b7fe5ea1c0011ac0"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/initialize.json",
+      "bytes": 1222,
+      "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/open.json",
+      "bytes": 862,
+      "sha256": "7ea23dbd310f007fb91f4dab2193fba3940cd3998f142dd0443934ce22c40c9d"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/pm-callers.json",
+      "bytes": 9267,
+      "sha256": "ac9cef874a4421b32baddf861a5d75e7a10010a1f900591994de5fcf34f64da0"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/pseudo-0x1844.json",
+      "bytes": 34495,
+      "sha256": "62bbb5009a557640f0e663abecccd1d739fd4e83006d0ead01976ccc114767ee"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/pseudo-0x2094.json",
+      "bytes": 37005,
+      "sha256": "9c1bc4736cc72abefd6c6f2d8305f9ec2ecdcb0217007a5c6d8ce82d148f76f2"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/pseudo-0x2d24.json",
+      "bytes": 34049,
+      "sha256": "95d611782bd1731b94a9d1e4a0fd1c013388b23019482b00f071b320c0bfa840"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/pseudo-0x3a0.json",
+      "bytes": 17611,
+      "sha256": "ab696fadbe1847f3ca1611c4f63ed27f1ce4736fd9e9dd792eee84c8f8a4a0c4"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/pseudo-0x4c4.json",
+      "bytes": 9473,
+      "sha256": "8b03389dd19d79dde56b0dd789b1ebc953929343a81d0d423d6ac9b5ea973867"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/pseudo-0x526c.json",
+      "bytes": 15623,
+      "sha256": "51bb9c142c3c0412aa52e9fb510ecee7bd4b61ce8e325fdbe84691b8e9c3209d"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/rea-stderr.log",
+      "bytes": 2709,
+      "sha256": "a2728e4055830362d6e0c6c72ef8eca461b12bde6cb28c3a4f95f155ec7fa137"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/resolved-functions.json",
+      "bytes": 16036,
+      "sha256": "33f543b6375498a65d667f88aae70b2c262461c0ae31b53dc143266aee84169f"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/selected-tool-schemas.json",
+      "bytes": 80370,
+      "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-topology/study.json",
+      "bytes": 3593,
+      "sha256": "0c84f749ec6260c78468ac64292f3771a4cffd011f64bf226b8261b7e7d8aa4a"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-transport/close.json",
+      "bytes": 251,
+      "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
+    },
+    {
+      "path": "build/granite-study-41277923617/rea-transport/evidence.json",
       "bytes": 27914,
       "sha256": "ed8807980e5b102ede8bf534e01b6c1e03b67672220361966a4e95356ec7852e"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport/export.json",
+      "path": "build/granite-study-41277923617/rea-transport/export.json",
       "bytes": 553,
       "sha256": "18f876a121ef434309031d0b9a8dadd6b386fb737138cfa30d071ba0f56904a8"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport/info-0x4e4.json",
+      "path": "build/granite-study-41277923617/rea-transport/info-0x4e4.json",
       "bytes": 9933,
       "sha256": "2eed5c66efd56193f1f4ee28d65d29b75eaec6bb81bf1db8ff4aaca581aa32dc"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport/info-0xbb4.json",
+      "path": "build/granite-study-41277923617/rea-transport/info-0xbb4.json",
       "bytes": 15469,
       "sha256": "e5e80bc0a55ce4395d829262be54f6f353a55af0725b5c8109a283bc93d24e6e"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport/initialize.json",
+      "path": "build/granite-study-41277923617/rea-transport/initialize.json",
       "bytes": 1222,
       "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport/open.json",
+      "path": "build/granite-study-41277923617/rea-transport/open.json",
       "bytes": 864,
       "sha256": "0494bed192f61d9bf4ad60af81a4ebb13ce28d3b5a9574b56e68259bd6ebca46"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport/pm-callers.json",
+      "path": "build/granite-study-41277923617/rea-transport/pm-callers.json",
       "bytes": 8409,
       "sha256": "25b8298d8fbfe609d764f141a391095e4e358915a64094a5a3e9259fab41f397"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport/pseudo-0x4e4.json",
+      "path": "build/granite-study-41277923617/rea-transport/pseudo-0x4e4.json",
       "bytes": 9433,
       "sha256": "719f871d8773c37ff96ba1438d87d72823792863a80c9dd937c06a05535fd5a7"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport/pseudo-0xbb4.json",
+      "path": "build/granite-study-41277923617/rea-transport/pseudo-0xbb4.json",
       "bytes": 21053,
       "sha256": "8a8d39b0df43120395e0e60f49f4b25d078519804e0516dbd9c8a0e41f4ef88b"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport/rea-stderr.log",
-      "bytes": 1258,
-      "sha256": "77897083f2d1cecf9c465225d88f4e34533740d0e2387ebb9a3444af5a02e2cd"
+      "path": "build/granite-study-41277923617/rea-transport/rea-stderr.log",
+      "bytes": 1260,
+      "sha256": "a05ec9277e929c2f29de5acd5704baf72e7463795beafc5e6dfb3af584ee672c"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport/resolved-functions.json",
+      "path": "build/granite-study-41277923617/rea-transport/resolved-functions.json",
       "bytes": 3400,
       "sha256": "0234a84227976f5059b12aff824dc59cb418f6a9d181f8cadc815818b5aa1269"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport/selected-tool-schemas.json",
+      "path": "build/granite-study-41277923617/rea-transport/selected-tool-schemas.json",
       "bytes": 80370,
       "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport/study.json",
+      "path": "build/granite-study-41277923617/rea-transport/study.json",
       "bytes": 2047,
-      "sha256": "164e47e5887c949892fafdeaff3be56c505adc765f6348fbe9d54da0de2eb8fe"
+      "sha256": "426d844acf4b0124e14e1dd4418868e3b0d78b2384b9f7a6ba00f5020eec05b6"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport2/close.json",
+      "path": "build/granite-study-41277923617/rea-transport2/close.json",
       "bytes": 251,
       "sha256": "fb3beac94c0871148d4cdb98bf38d13aafaa4e281a422cb0995a943c16648a51"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport2/evidence.json",
+      "path": "build/granite-study-41277923617/rea-transport2/evidence.json",
       "bytes": 27924,
       "sha256": "4d5b619976f415c5ebe06572256ae8ec41acf045399ee10023dd92f13a6c4715"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport2/export.json",
+      "path": "build/granite-study-41277923617/rea-transport2/export.json",
       "bytes": 555,
       "sha256": "eb4e1a89063ea32680688db9bf6695ec67604764c4c6b1cf798d92a2af814658"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport2/info-0x4e4.json",
+      "path": "build/granite-study-41277923617/rea-transport2/info-0x4e4.json",
       "bytes": 9937,
       "sha256": "d4bc4d6114aca5d3c773f258048e82f46e2971c4a5244ab1321a05661cae57df"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport2/info-0xbf4.json",
+      "path": "build/granite-study-41277923617/rea-transport2/info-0xbf4.json",
       "bytes": 15473,
       "sha256": "92bf5887daf705a8c50e5f3a340d52637d81246013a3c30d56ba0b51fd4369d3"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport2/initialize.json",
+      "path": "build/granite-study-41277923617/rea-transport2/initialize.json",
       "bytes": 1222,
       "sha256": "b0e8490955f532f626043f94299de5fe66bdbd870ee8fc15598a17b3ee59d7b3"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport2/open.json",
+      "path": "build/granite-study-41277923617/rea-transport2/open.json",
       "bytes": 866,
       "sha256": "055babf43601ca39797d4d7a9038f10ea681b59056d951d756a843157c3c32d2"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport2/pm-callers.json",
+      "path": "build/granite-study-41277923617/rea-transport2/pm-callers.json",
       "bytes": 8413,
       "sha256": "6baf10327045d2492f6468602072a55c90204b211131e494fd8a805ddc885fb9"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport2/pseudo-0x4e4.json",
+      "path": "build/granite-study-41277923617/rea-transport2/pseudo-0x4e4.json",
       "bytes": 9437,
       "sha256": "90612c8e85fe61dadcaa649c25be2533072290422aa21901506dd34dd6cd5f92"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport2/pseudo-0xbf4.json",
+      "path": "build/granite-study-41277923617/rea-transport2/pseudo-0xbf4.json",
       "bytes": 21057,
       "sha256": "075d1f49756f6797f70ad867b3b693eae2b7a0de84eb2623ef191bd8a99cc465"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport2/rea-stderr.log",
-      "bytes": 1258,
-      "sha256": "e809ed1be44abb616860a748715571de9f5609cc3ec5c77b0a5f59d23db5afaf"
+      "path": "build/granite-study-41277923617/rea-transport2/rea-stderr.log",
+      "bytes": 1260,
+      "sha256": "b9fa9859f3d32bbc29d738ae08a88b851655b7dfa032160ab1e9bb4f77b0474c"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport2/resolved-functions.json",
+      "path": "build/granite-study-41277923617/rea-transport2/resolved-functions.json",
       "bytes": 3400,
       "sha256": "89e52ef8a2a8707e7cf9b225ffa09057ef5aae2f4f229ab02fb0614c4e8ee9a6"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport2/selected-tool-schemas.json",
+      "path": "build/granite-study-41277923617/rea-transport2/selected-tool-schemas.json",
       "bytes": 80370,
       "sha256": "922323d821d3a6a88e586afb0c3359fb3758151506d8c7b56d19fb5ad8f92d5a"
     },
     {
-      "path": "build/granite-study-41272418086/rea-transport2/study.json",
-      "bytes": 2050,
-      "sha256": "6a92db176523d3f9eb4c59aff4c0be5aa03e40f9480afcd34e41b3f2fb30dc24"
+      "path": "build/granite-study-41277923617/rea-transport2/study.json",
+      "bytes": 2051,
+      "sha256": "9e25ee52de4beb3fff9cc2cc12a15c904ea6e88b9aa4b5128c3cbda46fc75cf5"
     },
     {
-      "path": "build/granite-study-41272418086/run.json",
-      "bytes": 4722,
-      "sha256": "f06e95bbfacd46eeb3cc4802969ce5b9f7ac1ec8c27ae62ceb6d946121dbff8a"
+      "path": "build/granite-study-41277923617/run.json",
+      "bytes": 5001,
+      "sha256": "2affb365dbfc2532a8ae886789ba066e7b024993ffb4ebf4acb10a74cc8cb5e6"
     },
     {
-      "path": "build/granite-study-41272418086/run.log",
-      "bytes": 128044,
-      "sha256": "51d883dcbde0c3ac5dbe9278b72a5ae50a3602afad82734576c8982e43774d3a"
+      "path": "build/granite-study-41277923617/run.log",
+      "bytes": 139824,
+      "sha256": "d417772f99e869577af33d30b4117bc206e3ba86c9c07ef416e640d174089907"
     },
     {
-      "path": "build/granite-study-41272418086/smu/smu-study.json",
+      "path": "build/granite-study-41277923617/smu/smu-study.json",
       "bytes": 8701085,
       "sha256": "b9e0f8988b389633b4591f2bf30192a367df9b90c9121e9dcc45b8f719b5a7f1"
     },
     {
-      "path": "build/granite-study-41272418086/xtensa-fp-extension.json",
+      "path": "build/granite-study-41277923617/xtensa-fp-extension.json",
       "bytes": 1793,
       "sha256": "ddecf3c59b86b5dd337d38fa73bd82cd9ba9090b66d188d4448b8028d77e4bad"
     },
     {
-      "path": "build/granite-study-41272418086/xtensa-fp-selftest-mp5.json",
+      "path": "build/granite-study-41277923617/xtensa-fp-selftest-mp5.json",
       "bytes": 104,
       "sha256": "d62d6ee6649c6634cc5ebba4bb05b6ffc96b20b479e45ed510b135eac32fff8f"
     },
     {
-      "path": "build/granite-study-41272418086/xtensa-fp-selftest-smu.json",
+      "path": "build/granite-study-41277923617/xtensa-fp-selftest-smu.json",
       "bytes": 104,
       "sha256": "d62d6ee6649c6634cc5ebba4bb05b6ffc96b20b479e45ed510b135eac32fff8f"
     }
   ],
   "source_files": {
-    ".github/workflows/rea-granite-study.yml": "f7e43ca02779dacc1eec27b683ffc8d2193d65a3941657e14aaad9614accff39",
-    "analysis/tools/rea-native-study.py": "0c6a791d68f5c527fe3d61be5a7b8a1a52b584df938b296c92c2e0c9b4748d72",
-    "analysis/tools/firmware-granite-input.py": "a7e2448802d69415889cc2fae43dd1f910120e6d20a978e1ac9b8b63d36e1beb",
+    ".github/workflows/rea-granite-study.yml": "1c014e4e6743341cbd49fec2576de5cfeebadafdcd72026192dd0e7c9e42d1a7",
+    "analysis/tools/rea-native-study.py": "06e2c5aaaf141d17a2d2d048c965193561c6ff8987606d64980b47f1aa477c35",
+    "analysis/tools/firmware-granite-input.py": "928877d40e6cdd1d2aab8cc06d3be53a176a318905eab7b92b0682510cf12184",
     "analysis/tools/firmware-granite-proof.py": "808db166fab45eff0f00549da638cf2d1b99a004205941df5e1c877e92eeac11",
     "analysis/tools/firmware-granite-rails.py": "b5df94724f0baaf56e513fa218060c6239b0b169e3579a4e6055b2ef4e7714bc",
     "analysis/tools/firmware-granite-semantics.py": "5df1e42f49a8b53d01f530321e43cb15ff304db5c23aaa0ec3109fb84e87ba99",
@@ -3436,12 +3893,18 @@
     "analysis/tools/firmware-granite-transfers.py": "e698958465aa4fc309d2bbb42cd1b3848f3fc18adb54757dffebcd4e5a395a39",
     "analysis/tools/firmware-granite-model-inputs.py": "bc7781f2c2f38b2ee63e8b293057ca73f4a54e582138eafc8b789b4ca4b61f29",
     "analysis/tools/firmware-granite-fmax.py": "36aad9594c8401c8310168d0016efd6f05f214d298ea54ce19b62a7ec8addb5f",
+    "analysis/tools/firmware-granite-config-route.py": "94230f84c8f147a239904d1f2c8bdd299f20a77cbefb51e8775e6feb8ad0b104",
+    "analysis/tools/firmware-granite-consumers.py": "b07fc10543051ba316b952e5e1aa5950d3466f94f760504cb9182b374da2f7d3",
+    "analysis/tools/firmware-granite-apic.py": "92cfb0debb8dc863eafa05f915e6a236da7ca251a964360d5bebc2dd6cd2a9a6",
     "analysis/tools/ghidra/GraniteSeed.java": "ec0db3ae63fd9cb998bfca1b5df10816590a4e7aff82030d324a2cbbe3ba6fd4",
     "analysis/tools/ghidra/GraniteStudy.java": "1a96cf1e05121153d0c3f380786b2fb77a0a83bca2c95de84823683140912dc5",
     "analysis/tools/ghidra/SmuFpPatch.py": "a484de6016665c92d975ceec727c5e7588db5ff0e6d3ca18e439cdea1f92d246",
     "analysis/tools/ghidra/SmuFpSelfTest.java": "51b25d844d8ccabe75185d29350d9752ec00b199ec3dcc8ce0ca1454f89c23fe"
   },
   "limitations": [
+    "The pinned UEFI APIC constructor is replayed against synthetic CPUID. Missing type 3 leaves a zero shift and can produce coordinate collisions; its input coordinates are not bound to firmware PM slots or physical cores.",
+    "RSMU 72 broadcasts two threshold alternatives through MP5 75 to present targets. Host reply does not check a success code and MP5 acknowledgement precedes policy selection. This is not independent rail addressing or device readback.",
+    "MP5 core row 0 and CCD rows 0/1 reach SMU composite a38c; the adjacent feedback selection uses a distinct a390 stream. A nearby power-limit consumer does not establish a physical unit.",
     "Granite 98.84.0 Fmax read/set and stored policy readback are exposed in GUI and CLI after identity, version and capability checks. Policy helper/fuse/transport inputs remain synthetic; this is not target hardware acceptance or an operating-clock measurement.",
     "Static discovery is not a proof that every function has been recovered; only byte-checked slices are used.",
     "Twelve SVI telemetry fields, three software command mirrors, thirteen core and six CCD rows have static unit evidence. Two additional core rows and one CCD row have an averaged integer-code representation, with unresolved meanings. SVI values can be stale or zero in scale mode 0; neither channel identity nor applied settings are authenticated. Voltage model is not measured rail voltage; conditional sensors may retain old values; counter fractions/percentages have unverified event identities and freshness; CCD row 11 has a late firmware multiply by 100. Core rows 9/10 are averaged GHz request policy values, not measured clocks or independent setting readback. Core row 3 and CCD row 5 are GHz frequency models; CCD row 10 is a GHz fused frequency policy, not measured frequency or setting readback. CCD row 9 is a quantized percentage with zero-denominator retention and no clamp to 100. Other units and physical identities remain unresolved.",
