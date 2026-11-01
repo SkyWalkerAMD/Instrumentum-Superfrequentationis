@@ -13,7 +13,7 @@ inline std::vector<std::uint8_t> record() {
     amd_apob_fixture::word(b,0,3); amd_apob_fixture::word(b,4,3); amd_apob_fixture::word(b,12,456);
     for(unsigned g=0;g<2;++g) {
         const unsigned at=48+51*g; b[at]=g?0:4; b[at+1]=0;
-        for(unsigned c=0;c<8;++c) { b[at+2+3*c]=15-c; b[at+3+3*c]=1; b[at+4+3*c]=1; }
+        for(unsigned c=0;c<8;++c) { b[at+2+3*c]=std::uint8_t(15-c); b[at+3+3*c]=1; b[at+4+3*c]=1; }
     }
     return b;
 }
