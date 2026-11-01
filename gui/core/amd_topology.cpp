@@ -324,4 +324,123 @@ std::string amdApobTopologyJson(const AmdApobTopology &t) {
     }
     return out+"]}";
 }
+AmdApobComparison readAmdApobComparison(HardwareSession &s,
+    const std::vector<std::uint8_t> &bytes,const std::vector<unsigned> &cpus,bool includeL3) {
+    AmdApobComparison out; out.record=decodeAmdApobTopology(bytes);
+    out.catalog.requestedCpus=cpus; out.catalog.l3Requested=includeL3;
+    const auto fail=[&](int error,const char *detail) {
+        out.error=error; out.detail=detail; out.inputsRechecked=false; out.completeReferenceMatch=false;
+        out.matched=out.missingApics=0; out.candidates.clear(); out.unmatchedCpus.clear(); out.inputs.clear();
+        out.catalog.error=error; out.catalog.rechecked=false; out.catalog.cpus.clear(); return out;
+    };
+    if(out.record.error) return fail(out.record.error,"Invalid APOB record or container.");
+    const auto &record=out.record;
+    if(record.instance || record.groups.empty() || record.groups.size()>2 || record.duplicateIds || record.nonPrefixThreadFlags)
+        return fail(-ENOTSUP,"Reference comparison requires instance 0, one or two unambiguous groups and prefix thread flags.");
+    for(const auto &g:record.groups) {
+        if(g.storedId>15 || g.subgroups.size()!=1 || g.subgroups[0].cores.empty())
+            return fail(-ENOTSUP,"Record is outside the single-subgroup Model 44h reference shape.");
+    }
+    std::set<unsigned> uniqueCpus;
+    if(cpus.empty() || cpus.size()>32) return fail(-EINVAL,"Select between 1 and 32 available OS CPUs for this reference shape.");
+    for(unsigned cpu:cpus) if(cpu>1048575 || !uniqueCpus.insert(cpu).second)
+        return fail(-EINVAL,"Invalid or duplicate OS CPU ID.");
+    const std::array<std::uint32_t,3> leaves={{0,0x80000001,0xb}};
+    // Bracket both catalog sweeps with the constructor/provider inputs. The
+    // CPUID backend binds each read to the requested OS CPU and restores affinity.
+    for(unsigned cpu:cpus) {
+        std::array<std::array<std::uint32_t,4>,3> input{};
+        for(unsigned i=0;i<leaves.size();++i) {
+            const auto r=s.cpuid(cpu,leaves[i]);
+            if(r.error) return fail(r.error,"Cannot read reference CPUID inputs.");
+            for(unsigned j=0;j<4;++j) input[i][j]=r.words[j];
+            if(i==0 && (r.words[0]<0xb || r.words[1]!=0x68747541 || r.words[2]!=0x444d4163 || r.words[3]!=0x69746e65))
+                return fail(-ENOTSUP,"Reference comparison requires AMD CPUID Fn0B.");
+            // Pinned provider A's entry predicate, not proof it was installed.
+            if(i==1 && ((r.words[0]&0x0fff0f00)!=0x00b40f00 || (r.words[1]>>28)!=0))
+                return fail(-ENOTSUP,"CPUID does not meet the reference provider A entry predicate.");
+            if(i==2 && ((r.words[0]&31)!=1 || (r.words[1]&0xffff)!=2 || (r.words[2]&0xffff)!=0x100))
+                return fail(-ENOTSUP,"Reference comparison requires the published SMT2 Fn0B boundary.");
+        }
+        out.inputs.push_back(input);
+    }
+    out.catalog=readAmdTopologyCatalog(s,cpus,includeL3);
+    if(out.catalog.error) return fail(out.catalog.error,"OS CPU catalog changed or is unavailable.");
+    const unsigned shifts[]={1,4,4,5}, counts[]={2,16,16,32};
+    std::map<std::uint32_t,unsigned> osByApic;
+    for(std::size_t i=0;i<cpus.size();++i) {
+        const auto &t=out.catalog.cpus[i];
+        if(t.identity.family!=0x1a || t.identity.model!=0x44 || t.socketId || t.apicId>=32 || t.levels.size()!=4 || !t.redundantCcdLevel)
+            return fail(-ENOTSUP,"OS topology is outside the published single-socket Model 44h reference shape.");
+        for(unsigned j=0;j<4;++j) if(t.levels[j].type!=j+1 || t.levels[j].shift!=shifts[j] || t.levels[j].logicalCount!=counts[j])
+            return fail(-ENOTSUP,"Reference comparison requires the actual redundant CCD level and published boundaries.");
+        for(unsigned j=0;j<leaves.size();++j) {
+            const auto r=s.cpuid(cpus[i],leaves[j]);
+            if(r.error) return fail(r.error,"Cannot recheck reference CPUID inputs.");
+            for(unsigned k=0;k<4;++k) if(out.inputs[i][j][k]!=r.words[k])
+                return fail(-EAGAIN,"Reference CPUID inputs changed; comparison discarded.");
+        }
+        if(out.inputs[i][2][3]!=t.apicId || out.inputs[i][1][0]!=t.identity.signature)
+            return fail(-EAGAIN,"CPUID identity or APIC ID disagrees between leaves.");
+        osByApic.emplace(t.apicId,t.cpu);
+    }
+    // Recovered sorter 0x54e0 returns original group ORDINALS in stored-ID
+    // order. Constructor 0x526c uses those ordinals, not the stored IDs.
+    const unsigned order[]={0,4,8,12,2,6,10,14,3,7,11,15,1,5,9,13};
+    std::set<std::uint32_t> predicted;
+    std::set<unsigned> matchedCpus;
+    for(unsigned stored:order) for(const auto &g:record.groups) if(g.storedId==stored)
+        for(const auto &sub:g.subgroups) for(const auto &core:sub.cores) for(unsigned thread=0;thread<core.threadCount;++thread) {
+            AmdApobCpuCandidate row;
+            row.group=g.ordinal; row.subgroup=sub.ordinal; row.core=core.ordinal; row.thread=thread;
+            row.storedGroup=g.storedId; row.storedSubgroup=sub.storedId; row.storedCore=core.storedId;
+            row.apicId=(g.ordinal<<4)+(sub.ordinal<<4)+(core.ordinal<<1)+thread;
+            if(!predicted.insert(row.apicId).second) return fail(-EINVAL,"Reference APIC candidates collide.");
+            const auto found=osByApic.find(row.apicId);
+            if(found!=osByApic.end()) { row.matched=true; row.cpu=found->second; ++out.matched; matchedCpus.insert(row.cpu); }
+            else ++out.missingApics;
+            out.candidates.push_back(row);
+        }
+    if(out.candidates.empty()) return fail(-ENODATA,"Record has no enabled thread prefixes to compare.");
+    for(unsigned cpu:cpus) if(!matchedCpus.count(cpu)) out.unmatchedCpus.push_back(cpu);
+    out.inputsRechecked=true;
+    out.completeReferenceMatch=!out.missingApics && out.unmatchedCpus.empty();
+    out.detail="Reference APIC comparison only. Record origin, HMAC, installed provider, physical targets and PM slots remain unverified.";
+    return out;
+}
+std::string amdApobComparisonJson(const AmdApobComparison &t) {
+    std::string out="{\"format\":\"octool-amd-apob-os-comparison\",\"schema\":1,\"error\":"+std::to_string(t.error)+
+        ",\"reference\":\"asus-creator-2503-provider-a-model44-smt2\",\"scope\":\"requested-os-cpus\","
+        "\"runtime_provider_verified\":false,\"record_origin_verified\":false,\"record_hmac_verified\":false,"
+        "\"physical_mapping_verified\":false,\"pm_slot_mapping_verified\":false,\"runtime_write_enabled\":false,"
+        "\"inputs_rechecked\":"+std::string(!t.error && t.inputsRechecked?"true":"false")+
+        ",\"complete_reference_match\":"+(!t.error && t.completeReferenceMatch?"true":"false")+
+        ",\"matched\":"+(t.error?"null":std::to_string(t.matched))+
+        ",\"missing_apics\":"+(t.error?"null":std::to_string(t.missingApics))+
+        ",\"topology_catalog\":"+amdTopologyCatalogJson(t.catalog)+",\"cpuid_inputs\":[";
+    if(!t.error) for(std::size_t i=0;i<t.inputs.size();++i) {
+        if(i) out+=',';
+        out+="{\"cpu\":"+std::to_string(t.catalog.requestedCpus[i]);
+        const char *names[]={"fn00000000","fn80000001","fn0000000b_0"};
+        for(unsigned j=0;j<3;++j) {
+            out+=",\""+std::string(names[j])+"\":[";
+            for(unsigned k=0;k<4;++k) { if(k) out+=','; out+=std::to_string(t.inputs[i][j][k]); }
+            out+=']';
+        }
+        out+='}';
+    }
+    out+="],\"candidates\":[";
+    if(!t.error) for(std::size_t i=0;i<t.candidates.size();++i) {
+        if(i) out+=',';
+        const auto &r=t.candidates[i];
+        out+="{\"group_ordinal\":"+std::to_string(r.group)+",\"subgroup_ordinal\":"+std::to_string(r.subgroup)+
+            ",\"core_ordinal\":"+std::to_string(r.core)+",\"thread\":"+std::to_string(r.thread)+
+            ",\"stored_group_id\":"+std::to_string(r.storedGroup)+",\"stored_subgroup_id\":"+std::to_string(r.storedSubgroup)+
+            ",\"stored_core_id\":"+std::to_string(r.storedCore)+",\"reference_apic_id\":"+std::to_string(r.apicId)+
+            ",\"os_cpu\":"+(r.matched?std::to_string(r.cpu):"null")+"}";
+    }
+    out+="],\"unmatched_os_cpus\":[";
+    if(!t.error) for(std::size_t i=0;i<t.unmatchedCpus.size();++i) { if(i) out+=','; out+=std::to_string(t.unmatchedCpus[i]); }
+    return out+"]}";
+}
 } }

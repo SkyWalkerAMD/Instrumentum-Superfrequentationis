@@ -190,7 +190,7 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "amd-curve-set") { keys.insert("--margin"); keys.insert("--expect-raw"); }
     if (c.name == "amd-pbo-scalar-set") { keys.insert("--scalar"); keys.insert("--expect-raw"); }
     if (c.name == "amd-umc-read") { keys.insert("--bank"); keys.insert("--refresh-slot"); }
-    if (c.name == "amd-topology") { keys.insert("--l3"); keys.insert("--all-cpus"); }
+    if (c.name == "amd-topology") { keys.insert("--l3"); keys.insert("--all-cpus"); keys.insert("--apob"); }
     if (c.name == "spd-decode" || topologyOffline) keys.insert("--file");
     if (pm || c.name == "amd-pm-native-read") keys.insert("--bclk-mhz");
     if (c.name == "amd-pm-native-read") { keys.insert("--map-ccd"); keys.insert("--platform"); }
@@ -236,6 +236,10 @@ Command parse(const std::vector<std::string> &args) {
     }
     if (writing) require(options.count("--apply") != 0, "Settings commands require --apply; nothing was opened or changed");
     c.topologyL3=options.count("--l3")!=0;
+    if(options.count("--apob")) {
+        require(c.topologyAll,"--apob requires --all-cpus");
+        c.path=get(options,"--apob"); require(!c.path.empty(),"Empty APOB path");
+    }
     if (c.name == "intel-iccmax-set") {
         c.value = decimal(get(options, "--amps"), "--amps"); std::uint32_t encoded = 0;
         require(!encodeIntelIccMax(c.value, 0, encoded), "--amps must be 1..511.75 in exact 0.25 A steps");
@@ -1460,7 +1464,32 @@ Result pmTable(const Command &c) {
 }
 Result execute(const Command &c, const BackendFactory &factory) {
     Result out;
-    if (c.name == "diagnose") {
+    if(c.name=="amd-topology" && !c.path.empty()) {
+        std::vector<std::uint8_t> bytes; AmdApobComparison comparison;
+        int error=platform::readBoundedFile(c.path,bytes,1048576);
+        if(!error) error=decodeAmdApobTopology(bytes).error;
+        if(!error) {
+            const auto before=platform::systemInfo(); error=before.affinityError;
+            if(!error) {
+                HardwareService service(factory());
+                error=service.transaction([&](HardwareSession &s) {
+                    comparison=readAmdApobComparison(s,bytes,before.allowedCpus,c.topologyL3); return comparison.error;
+                },int(c.timeout));
+                const auto after=platform::systemInfo();
+                if(!error && (after.affinityError || before.allowedCpus!=after.allowedCpus))
+                    error=after.affinityError?after.affinityError:-EAGAIN;
+            }
+        }
+        if(error) {
+            const auto detail=comparison.detail;
+            comparison=AmdApobComparison{}; comparison.error=error; comparison.catalog.error=error;
+            comparison.detail=detail.empty()?"Cannot read or consistently compare the APOB file and available CPUs.":detail;
+        }
+        out.error=error;
+        out.data={{"path",quote(c.path)},{"detail",quote(comparison.detail)},
+            {"register_accessed","false"},{"firmware_mapping_verified","false"},
+            {"apob_comparison",amdApobComparisonJson(comparison)}};
+    } else if (c.name == "diagnose") {
         const auto info = platform::systemInfo(); struct utsname uts{};
         out.error = info.affinityError;
         if (uname(&uts) && !out.error) out.error = -errno;
@@ -1619,6 +1648,10 @@ Usage: octool-cli COMMAND [OPTIONS]
     ascending core order. CO counts, not mV. Recheck and readback per core;
     stop on first failure, report partial completion, no retry or rollback.
   amd-topology (--cpu N | --all-cpus) [--l3]
+  amd-topology --all-cpus --apob FILE [--l3]
+    Compare a reference APOB record/container with available OS CPUs via CPUID.
+    Model 44h SMT2 reference only; reports unmatched APICs/CPUs. Matching does
+    not verify record origin, installed provider, physical targets or PM slots.
   amd-pm-read [--bclk-mhz N]        Read an already installed ryzen_smu driver
   amd-pm-layout-audit --version V --bytes N --fused-ccds N
                                    Offline core/CCD range and conflict diagnostic

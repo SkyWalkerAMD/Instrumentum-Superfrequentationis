@@ -9,6 +9,8 @@ struct Device : octool::core::HardwareBackend {
     unsigned expectedCpu=130,calls=0,failAt=UINT32_MAX,topologyReads=0,l3Reads=0,registerRequests=0;
     std::uint32_t apic=0x1f;
     std::uint32_t signature=0x00b40f40;
+    std::uint32_t maximum=1,extendedSignature=0,package=0,smtShift=1,smtCount=2,smtType=0x100;
+    bool changeReferenceInputs=false;
     bool extension=true,changeApic=false,changeCache=false;
     std::vector<std::array<std::uint32_t,4>> caches;
     std::vector<std::array<std::uint32_t,3>> levels;
@@ -24,10 +26,14 @@ struct Device : octool::core::HardwareBackend {
     octool::core::CpuIdReply cpuid(unsigned cpu,std::uint32_t leaf,std::uint32_t subleaf) override {
         using octool::core::CpuIdReply; CpuIdReply r;
         assert(cpu==expectedCpu); if(calls++==failAt) { r.error=-EACCES; return r; }
-        if(!leaf) { r.words[0]=1; r.words[1]=0x68747541; r.words[2]=0x444d4163; r.words[3]=0x69746e65; }
+        if(!leaf) { r.words[0]=maximum; r.words[1]=0x68747541; r.words[2]=0x444d4163; r.words[3]=0x69746e65; }
         else if(leaf==1) r.words[0]=signature;
         else if(leaf==0x80000000) r.words[0]=0x80000026;
-        else if(leaf==0x80000001) r.words[2]=extension?1u<<22:0;
+        else if(leaf==0x80000001) { r.words[0]=extendedSignature; r.words[1]=package; r.words[2]=extension?1u<<22:0; }
+        else if(leaf==0xb) {
+            r.words[0]=smtShift; r.words[1]=smtCount; r.words[2]=smtType; r.words[3]=apic;
+            if(changeReferenceInputs && topologyReads>=2) r.words[0]^=1;
+        }
         else if(leaf==0x80000026) {
             if(!subleaf) ++topologyReads;
             if(subleaf<levels.size()) {

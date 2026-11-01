@@ -37,6 +37,7 @@ private:
     void submit(bool probeOnly);
     void readTopology();
     void readTopologyCatalog();
+    void compareTopologyRecord();
     void readCurve();
     void applyCurve();
     void applyAllCoreCurve();
@@ -70,6 +71,7 @@ private:
     octool::core::SmuTarget pboTarget_;
     octool::core::AmdCurveSnapshot curveSnapshot_;
     octool::core::SmuTarget curveTarget_;
+    std::vector<std::uint8_t> topologyRecord_;
     unsigned curveRevision_ = 0;
     QComboBox *profile_, *command_;
     QLabel *status_;

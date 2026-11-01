@@ -58,7 +58,29 @@ for r in query_results:
         assert d['ln2_enabled'] is None and d['command'] == '0x0000005c'
         assert d['firmware_index'] in (0,1,7,127)
 assert sum(r['error'] == -22 for r in queries) == 20
-assert len(reports) == 1618, len(reports)
+assert len(reports) == 1630, len(reports)
+comparisons=[r for r in reports if 'apob_comparison' in r['data']]
+assert len(comparisons)==12 and [r['ok'] for r in comparisons]==[True]*3+[False]*9
+for i,r in enumerate(comparisons):
+    c=r['data']['apob_comparison']
+    assert c['error']==r['error'] and not r['data']['register_accessed']
+    assert not any(c[k] for k in ('runtime_provider_verified','record_origin_verified','record_hmac_verified',
+        'physical_mapping_verified','pm_slot_mapping_verified','runtime_write_enabled','complete_reference_match'))
+    if i<3:
+        assert c['inputs_rechecked'] and c['topology_catalog']['rechecked']
+        assert c['topology_catalog']['requested_cpus']==[cpu]
+        assert c['matched']==(1 if i<2 else 0) and c['missing_apics']==(31 if i<2 else 16)
+        assert c['unmatched_os_cpus']==([] if i<2 else [cpu])
+        candidates=c['candidates']
+        assert [x['reference_apic_id'] for x in candidates]==(list(range(16,32))+list(range(16)) if i<2 else list(range(16)))
+        assert [x['os_cpu'] for x in candidates if x['os_cpu'] is not None]==([cpu] if i<2 else [])
+        assert all(x['stored_core_id']==15-x['core_ordinal'] for x in candidates)
+        assert c['cpuid_inputs'][0]['fn80000001'][0]==0xb40f40
+        assert c['cpuid_inputs'][0]['fn0000000b_0']==[1,2,0x100,31]
+        if i==1: assert c['topology_catalog']['cpus'][0]['l3']['bytes']==33554432
+    else:
+        assert c['candidates']==c['cpuid_inputs']==c['unmatched_os_cpus']==c['topology_catalog']['cpus']==[]
+        assert not c['inputs_rechecked'] and c['matched'] is None and c['missing_apics'] is None
 apob=[r for r in reports if r['command']=='amd-topology-decode']
 assert len(apob)==12 and sum(r['ok'] for r in apob)==2
 for r in apob:

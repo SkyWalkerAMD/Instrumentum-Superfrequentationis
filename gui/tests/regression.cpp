@@ -43,6 +43,7 @@
 #include "amd_topology_fixture.h"
 #include "amd_9950x3d_topology_fixture.h"
 #include "amd_apob_fixture.h"
+#include "amd_apob_comparison_fixture.h"
 #include "platform/linux_inventory.h"
 #include "platform/linux_hwio.h"
 #include "platform/linux_cpu.h"
@@ -3301,6 +3302,48 @@ private slots:
         QCOMPARE(reference.writes.load(),0); QVERIFY(reference.msrs.empty());
         QCOMPARE(panel.findChild<QTableWidget *>("umcTable")->rowCount(),0);
         QVERIFY(panel.findChild<QLabel *>("umcStatus")->text().contains("Read failed"));
+    }
+    void amdApobComparisonReportsMatchesAndDiscardsFailures() {
+        using namespace octool::core;
+        const auto cpus=octool::platform::systemInfo().allowedCpus; QVERIFY(!cpus.empty());
+        auto *device=new amd_topology_fixture::CatalogDevice(cpus);
+        if(cpus.size()<=32) amd_apob_comparison_fixture::configure(*device,cpus);
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<HardwareBackend>(device)));
+        panel.resize(1500,1400); panel.show();
+        auto *compare=panel.findChild<QPushButton*>("smuTopologyCompare"); QVERIFY(compare); QVERIFY(!compare->isEnabled());
+        panel.findChild<QCheckBox*>("smuTopologyL3")->setChecked(true);
+        panel.findChild<QLineEdit*>("smuArg0")->setText("1234");
+        QTemporaryDir dir; QVERIFY(dir.isValid()); const auto path=dir.filePath("apob.bin");
+        const auto bytes=amd_apob_comparison_fixture::record();
+        QFile file(path); QVERIFY(file.open(QIODevice::WriteOnly));
+        QCOMPARE(file.write(reinterpret_cast<const char*>(bytes.data()),qint64(bytes.size())),qint64(bytes.size())); file.close();
+        QVERIFY(panel.loadTopologyRecord(path)); QVERIFY(compare->isEnabled()); QCOMPARE(device->calls,0u);
+        // The loaded bytes are retained; changing the file cannot silently
+        // change the record compared by the explicit button press.
+        QVERIFY(file.open(QIODevice::WriteOnly)); file.write("changed"); file.close();
+        compare->click(); QTRY_VERIFY(panel.isEnabled());
+        auto *table=panel.findChild<QTableWidget*>("smuTable");
+        if(cpus.size()<=32) {
+            QCOMPARE(table->rowCount(),33);
+            QVERIFY(table->item(0,1)->text().startsWith(QString("%1 matched").arg(qulonglong(cpus.size()))));
+            unsigned matched=0;
+            for(int row=1;row<33;++row) if(table->item(row,1)->text().contains("OS CPU ")) {
+                QVERIFY(table->item(row,1)->text().contains("L3")); ++matched;
+            }
+            QCOMPARE(matched,unsigned(cpus.size()));
+            QVERIFY(table->item(1,0)->text().startsWith("Group 1 /"));
+            QVERIFY(panel.findChild<QLabel*>("smuStatus")->text().contains("PM slots are not bound"));
+            QApplication::processEvents();
+            const auto shot=qEnvironmentVariable("OCTOOL_AMD_APOB_COMPARISON_TEST_SCREENSHOT");
+            if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+            device->failAt=device->calls; compare->click(); QTRY_VERIFY(panel.isEnabled());
+        }
+        QCOMPARE(table->rowCount(),0);
+        QVERIFY(panel.findChild<QLabel*>("smuStatus")->text().contains("Comparison discarded"));
+        QCOMPARE(panel.findChild<QLineEdit*>("smuArg0")->text(),QString("1234"));
+        QCOMPARE(device->registerRequests,0u);
+        QVERIFY(!panel.loadTopologyRecord(path)); QVERIFY(!compare->isEnabled());
+        QCOMPARE(table->rowCount(),0);
     }
     void amdTopologyRecordPreservesIdsWithoutHardwareAccess() {
         auto *device=new amd_topology_fixture::Device;

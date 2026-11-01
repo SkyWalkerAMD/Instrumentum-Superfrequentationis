@@ -94,4 +94,32 @@ struct AmdApobTopology {
 // thread argument is never accepted here. No provider or write is selected.
 AmdApobTopology decodeAmdApobTopology(const std::vector<std::uint8_t> &record);
 std::string amdApobTopologyJson(const AmdApobTopology &topology);
+struct AmdApobCpuCandidate {
+    unsigned group=0, subgroup=0, core=0, thread=0;
+    unsigned storedGroup=0, storedSubgroup=0, storedCore=0;
+    std::uint32_t apicId=0;
+    bool matched=false;
+    unsigned cpu=0;
+};
+struct AmdApobComparison {
+    int error=0;
+    std::string detail;
+    bool inputsRechecked=false, completeReferenceMatch=false;
+    unsigned matched=0, missingApics=0;
+    AmdApobTopology record;
+    AmdTopologyCatalog catalog;
+    // In requested CPU order: Fn0, Fn80000001, Fn0B subleaf 0.
+    std::vector<std::array<std::array<std::uint32_t,4>,3>> inputs;
+    std::vector<AmdApobCpuCandidate> candidates;
+    std::vector<unsigned> unmatchedCpus;
+};
+// Read-only comparison against the pinned 2503 enumeration, restricted to the
+// published Model 44h, SMT2, redundant-type-3, single-socket 32-APIC shape.
+// The record's origin/HMAC, installed provider, proximity callbacks and PM
+// storage order are NOT verified. Even a complete APIC match is only a
+// reference comparison, never a physical target authorization.
+// Bounds/shape errors precede CPUID; any read/change discards all candidates.
+AmdApobComparison readAmdApobComparison(HardwareSession &session,
+    const std::vector<std::uint8_t> &record,const std::vector<unsigned> &cpus,bool includeL3=false);
+std::string amdApobComparisonJson(const AmdApobComparison &comparison);
 } }

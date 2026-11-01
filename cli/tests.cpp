@@ -5,12 +5,14 @@
 #include "platform/linux_inventory_native.h"
 #include "platform/linux_amd_pm.h"
 #include "platform/system_info.h"
+#include "platform/linux_cpu.h"
 #include "tests/amd_pm_fixture.h"
 #include "tests/amd_pm_native_fixture.h"
 #include "tests/amd_granite_pm_fixture.h"
 #include "tests/amd_topology_fixture.h"
 #include "tests/amd_9950x3d_topology_fixture.h"
 #include "tests/amd_apob_fixture.h"
+#include "tests/amd_apob_comparison_fixture.h"
 #include "tests/amd_curve_fixture.h"
 #include "tests/amd_pbo_fixture.h"
 #include "tests/intel_oc_fixture.h"
@@ -1157,6 +1159,55 @@ void offlineTopologyDoesNotCreateBackend() {
         if(emit) std::cout<<json;
     }
     assert(!opens);
+}
+void apobComparisonCommands() {
+    const auto available=octool::platform::systemInfo().allowedCpus; assert(!available.empty());
+    const int error=octool::platform::onLinuxCpu(available.back(),[&] {
+        const auto cpus=octool::platform::systemInfo().allowedCpus; assert(cpus.size()==1);
+        char path[]="/tmp/octool-apob-compare-XXXXXX"; const int fd=mkstemp(path); assert(fd>=0); close(fd);
+        struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
+        for(unsigned mode=0;mode<12;++mode) {
+            auto bytes=amd_apob_comparison_fixture::record();
+            if(mode==2) bytes[0x63]=255;
+            if(mode==3) bytes[8]=1;
+            if(mode==4) bytes[0x33]=0;
+            if(mode==5) bytes.resize(455);
+            { std::ofstream f(path,std::ios::binary); f.write(reinterpret_cast<const char*>(bytes.data()),bytes.size()); }
+            amd_topology_fixture::CatalogDevice d(cpus); amd_apob_comparison_fixture::configure(d,cpus);
+            auto &cpu=d.devices.at(cpus[0]);
+            if(mode==7) cpu.package=1u<<28;
+            if(mode==8) { cpu.levels.erase(cpu.levels.begin()+2); cpu.levels[2][2]=0x402; }
+            if(mode==9) d.failAt=7;
+            if(mode==10) cpu.changeReferenceInputs=true;
+            if(mode==11) cpu.apic=32;
+            unsigned opens=0; std::ostringstream out;
+            std::vector<std::string> args={"amd-topology","--all-cpus","--apob",mode==6?std::string(path)+".missing":path};
+            if(mode==1) args.push_back("--l3");
+            assert(run(args,out,[&] { ++opens; return std::unique_ptr<HardwareBackend>(new Borrowed(d)); })==(mode<3?0:3));
+            if(mode==5 || mode==6) assert(!opens);
+            if(mode>=3 && mode<=6) assert(!d.calls);
+            assert(!d.registerRequests);
+            const auto json=out.str();
+            assert(json.find("\"runtime_write_enabled\":false")!=std::string::npos);
+            assert(json.find("\"pm_slot_mapping_verified\":false")!=std::string::npos);
+            assert(json.find(mode<3?"\"inputs_rechecked\":true":"\"candidates\":[]")!=std::string::npos);
+            if(emit) std::cout<<json;
+        }
+        return 0;
+    });
+    assert(!error && octool::platform::systemInfo().allowedCpus==available);
+}
+void apobComparisonInvalidBeforeOpen() {
+    for(const auto &args:std::vector<std::vector<std::string>>{
+        {"amd-topology","--cpu","0","--apob","a"},
+        {"amd-topology","--all-cpus","--apob"},
+        {"amd-topology","--all-cpus","--apob",""},
+        {"amd-topology","--all-cpus","--apob","a","--apob","b"},
+        {"amd-topology","--all-cpus","--apob","a","--apply"},
+        {"amd-topology-decode","--file","a","--apob","b"}}) {
+        unsigned opens=0; std::ostringstream out;
+        assert(run(args,out,[&] { ++opens; return std::unique_ptr<HardwareBackend>(); })==2 && !opens);
+    }
 }
 void offlineSpdDoesNotCreateBackend() {
     char path[] = "/tmp/octool-spd-XXXXXX"; const int fd = mkstemp(path); assert(fd >= 0); close(fd);
@@ -2640,5 +2691,6 @@ int main(int argc, char **argv) {
     assert(quote(std::string("\xff\xc0\x80", 3)) == "\"\\ufffd\\ufffd\\ufffd\"");
     l3TopologyCommands(); topologyCatalogCommands(); offlineTopologyDoesNotCreateBackend();
     published9950x3dTopologyCommands();
-    if (!emit) std::cout << "82 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    apobComparisonCommands(); apobComparisonInvalidBeforeOpen();
+    if (!emit) std::cout << "84 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

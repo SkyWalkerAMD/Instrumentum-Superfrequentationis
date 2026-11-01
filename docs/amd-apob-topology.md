@@ -1,5 +1,9 @@
 # APOB topology record recovery
 
+The [OS CPU comparison](amd-apob-os-comparison.md) adds an explicit CPUID-only
+comparison of reference APIC candidates to available OS CPUs. It does not
+verify the file's origin, runtime provider or PM/physical mapping.
+
 The GUI and CLI share a bounded offline decoder for an **APOB group 3,
 type 3 record**, including its complete 48-byte header (16-byte fields and
 32-byte HMAC). Complete APOB containers with exactly one such record are also

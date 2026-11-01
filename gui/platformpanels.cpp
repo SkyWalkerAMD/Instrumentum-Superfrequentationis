@@ -337,7 +337,12 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     catalog->setToolTip("Read CPUs allowed to this process, preserving OS and APIC IDs. Include L3 cache to compare CCD capacities.");
     catalogButtons->addWidget(catalog);
     auto *record=new QPushButton("Open firmware topology file…",this); record->setObjectName("smuTopologyRecord");
-    catalogButtons->addWidget(record); catalogButtons->addStretch(); layout->addLayout(catalogButtons);
+    catalogButtons->addWidget(record);
+    auto *compare=new QPushButton("Compare file with OS CPUs",this); compare->setObjectName("smuTopologyCompare");
+    compare->setEnabled(false);
+    compare->setToolTip("Open an APOB file first. Compare its reference APIC candidates with available OS CPUs using CPUID. Does not bind PM slots or prepare settings.");
+    catalogButtons->addWidget(compare); catalogButtons->addStretch(); layout->addLayout(catalogButtons);
+    connect(compare,&QPushButton::clicked,this,[this] { compareTopologyRecord(); });
     connect(record,&QPushButton::clicked,this,[this] {
         const auto path=QFileDialog::getOpenFileName(this,"Open APOB record or container",QString(),"Binary files (*.bin);;All files (*)");
         if(!path.isEmpty()) loadTopologyRecord(path);
@@ -1004,12 +1009,14 @@ bool AmdTuningPanel::loadTopologyRecord(const QString &path) {
     using namespace octool::core;
     // The public loader also refuses calls during an outstanding hardware read.
     if(!isEnabled()) return false;
-    invalidateCurve(); table_->setRowCount(0);
+    invalidateCurve(); table_->setRowCount(0); topologyRecord_.clear();
+    findChild<QPushButton*>("smuTopologyCompare")->setEnabled(false);
     std::vector<std::uint8_t> bytes;
     const int error=octool::platform::readBoundedFile(path.toStdString(),bytes,1048576);
     if(error) { status_->setText("Cannot read topology record: "+failure(error)); return false; }
     const auto t=decodeAmdApobTopology(bytes);
     if(t.error) { status_->setText(QString::fromStdString(t.detail)); return false; }
+    topologyRecord_=bytes; findChild<QPushButton*>("smuTopologyCompare")->setEnabled(true);
     if(t.container) {
         append(table_,{"APOB container version",QString::number(t.containerVersion)});
         append(table_,{"Container records",QString::number(t.containerRecords)});
@@ -1116,6 +1123,54 @@ void AmdTuningPanel::readTopologyCatalog() {
         if(!out.error && (after.affinityError || before.allowedCpus!=after.allowedCpus))
             out.error=after.affinityError?after.affinityError:-EAGAIN;
         if(out.error) { out.cpus.clear(); out.rechecked=false; }
+        return out;
+    }));
+}
+void AmdTuningPanel::compareTopologyRecord() {
+    using namespace octool::core;
+    if(!isEnabled() || topologyRecord_.empty()) return;
+    invalidateCurve(); table_->setRowCount(0); setEnabled(false);
+    status_->setText("Comparing file reference APIC IDs with available OS CPUs…");
+    const bool includeL3=findChild<QCheckBox*>("smuTopologyL3")->isChecked();
+    auto *watcher=new QFutureWatcher<AmdApobComparison>(this);
+    connect(watcher,&QFutureWatcher<AmdApobComparison>::finished,this,[this,watcher] {
+        const auto r=watcher->result(); setEnabled(true); table_->setRowCount(0);
+        if(r.error) status_->setText(failure(r.error)+" Comparison discarded. "+QString::fromStdString(r.detail));
+        else {
+            append(table_,{"Reference comparison",QString("%1 matched · %2 APICs absent from available CPUs · %3 OS CPUs unmatched")
+                .arg(r.matched).arg(r.missingApics).arg(qulonglong(r.unmatchedCpus.size()))});
+            for(const auto &c:r.candidates) {
+                const auto label=QString("Group %1 / subgroup %2 / core entry %3 / thread %4").arg(c.group).arg(c.subgroup).arg(c.core).arg(c.thread);
+                QString value=QString("Reference APIC %1 · ").arg(hexValue(c.apicId,4));
+                if(c.matched) {
+                    value+=QString("OS CPU %1").arg(c.cpu);
+                    for(const auto &t:r.catalog.cpus) if(t.cpu==c.cpu && t.l3Valid)
+                        value+=QString(" · L3 %1 MiB · CPUID cache ID %2").arg(double(t.l3.bytes)/1048576.0).arg(t.l3.cacheId);
+                } else value+="absent from available OS CPUs";
+                append(table_,{label,value});
+                table_->item(table_->rowCount()-1,0)->setToolTip(QString("Stored IDs: group %1, subgroup %2, core %3. Reference APIC calculation uses entry positions, not these stored IDs.")
+                    .arg(c.storedGroup).arg(c.storedSubgroup).arg(c.storedCore));
+            }
+            for(unsigned cpu:r.unmatchedCpus) append(table_,{QString("OS CPU %1").arg(cpu),"No matching reference APIC candidate"});
+            status_->setText(QString(r.completeReferenceMatch?"Reference APIC sets agree. ":"Reference APIC sets differ or the available CPU set is partial. ")+
+                "CPUID inputs rechecked. File origin and installed firmware provider remain unverified; physical targets and PM slots are not bound. No settings prepared or sent.");
+        }
+        watcher->deleteLater();
+    });
+    const auto access=access_; const auto cancelled=cancelled_; const auto bytes=topologyRecord_;
+    watcher->setFuture(QtConcurrent::run([access,cancelled,bytes,includeL3] {
+        AmdApobComparison out; const auto before=octool::platform::systemInfo();
+        int error=before.affinityError;
+        if(!error) error=access->transaction([&](HardwareSession &s) {
+            out=readAmdApobComparison(s,bytes,before.allowedCpus,includeL3); return out.error;
+        },10000,cancelled.get());
+        const auto after=octool::platform::systemInfo();
+        if(!error && (after.affinityError || before.allowedCpus!=after.allowedCpus))
+            error=after.affinityError?after.affinityError:-EAGAIN;
+        if(error) {
+            const auto detail=out.detail; out=AmdApobComparison{}; out.error=error; out.catalog.error=error;
+            out.detail=detail.empty()?"Available CPU set changed or could not be read.":detail;
+        }
         return out;
     }));
 }
