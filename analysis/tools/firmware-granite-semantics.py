@@ -111,8 +111,11 @@ class Slice:
                 signed = val(a[1]); signed -= (1 << 32) if signed & (1 << 31) else 0
                 self.f[a[0]] = f32(signed/(1 << val(a[2])))
             elif op == 'const.s':
-                assert val(a[1]) in (0, 1), 'Only zero and one constants are modeled'
-                self.f[a[0]] = float(val(a[1]))
+                constants = (0.0, 1.0, 2.0, 0.5)
+                assert 0 <= val(a[1]) < len(constants), 'Reserved CONST.S immediate'
+                self.f[a[0]] = constants[val(a[1])]
+            elif op == 'neg.s':
+                self.f[a[0]] = -self.f[a[1]]
             elif op == 'mov.s':
                 self.f[a[0]] = self.f[a[1]]
             elif op == 'movnez.s':
@@ -135,13 +138,14 @@ class Slice:
                 self.b[a[0]] = self.f[a[1]] < self.f[a[2]] if op=='olt.s' else self.f[a[1]] <= self.f[a[2]] if op=='ole.s' else self.f[a[1]] == self.f[a[2]]
             elif op in ('bt', 'bf'):
                 if self.b[a[0]] == (op == 'bt'): next_pc = val(a[1])
-            elif op in ('add.s', 'sub.s', 'mul.s', 'madd.s'):
+            elif op in ('add.s', 'sub.s', 'mul.s', 'madd.s', 'msub.s'):
                 x, y = self.f[a[1]], self.f[a[2]]
-                self.f[a[0]] = f32(x+y if op=='add.s' else x-y if op=='sub.s' else x*y+self.f[a[0]] if op=='madd.s' else x*y)
+                self.f[a[0]] = f32(x+y if op=='add.s' else x-y if op=='sub.s' else x*y+self.f[a[0]] if op=='madd.s' else self.f[a[0]]-x*y if op=='msub.s' else x*y)
             elif op == 'loopgtz':
                 assert loop is None
                 count, end = val(a[0]), val(a[1])
-                if count: loop = [next_pc, end, count]
+                # LOOPGTZ tests a signed register: n-1 skips for n == 0.
+                if 0 < count < (1 << 31): loop = [next_pc, end, count]
                 else: next_pc = end
             elif op == 'bbci':
                 if not (val(a[0]) & (1 << val(a[1]))): next_pc = val(a[2])

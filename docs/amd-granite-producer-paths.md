@@ -154,3 +154,10 @@ plus two core and one CCD code rows. The eight rows above, seven common
 candidates, physical PM-to-CCD/OS-CPU binding and independent second-rail
 write/readback are still incomplete. See [validation](amd-granite-validation.md)
 for the latest completed batch; pending work is not a passed cloud result.
+
+The subsequent [model-input replay](amd-granite-model-inputs.md) executes the
+exponential/power helpers and composes their outputs with the row-producing
+slices. It supplements the independent tail fixtures here, which intentionally
+retain arbitrary helper outputs for negative and boundary cases. It also
+checks command quantization and configuration selection. Neither proof
+establishes the missing coefficient scales or physical units.
