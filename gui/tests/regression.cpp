@@ -3315,10 +3315,16 @@ private slots:
         QCOMPARE(file.write(reinterpret_cast<const char*>(b.data()),qint64(b.size())),qint64(b.size())); file.close();
         QVERIFY(panel.loadTopologyRecord(path));
         const auto *table=panel.findChild<QTableWidget*>("smuTable");
-        QCOMPARE(table->rowCount(),11);
+        QCOMPARE(table->rowCount(),14);
         QCOMPARE(table->item(4,1)->text(),QString("Stored ID 8"));
         QVERIFY(table->item(7,1)->text().contains("flags [0, 1] · enabled prefix 0"));
         QCOMPARE(table->item(8,1)->text(),QString("Stored ID 4"));
+        QCOMPARE(table->item(11,1)->text(),QString("2"));
+        QCOMPARE(table->item(12,1)->text(),QString("2"));
+        QCOMPARE(table->item(13,1)->text(),QString("4 candidates · A: 0 duplicates · B: 0 duplicates"));
+        QVERIFY(table->item(13,1)->toolTip().contains("243C0020"));
+        QVERIFY(table->item(13,1)->toolTip().contains("20FC0020"));
+        QVERIFY(table->item(13,1)->toolTip().contains("bit 3"));
         QCOMPARE(panel.findChild<QLineEdit*>("smuArg0")->text(),QString("1234"));
         QVERIFY(panel.findChild<QLabel*>("smuStatus")->text().contains("No hardware access"));
         QCOMPARE(device->calls,0u); QCOMPARE(device->topologyReads,0u); QCOMPARE(device->registerRequests,0u);
@@ -3337,7 +3343,7 @@ private slots:
             QFile file(path); QVERIFY(file.open(QIODevice::WriteOnly));
             QCOMPARE(file.write(reinterpret_cast<const char*>(b.data()),qint64(b.size())),qint64(b.size())); file.close();
             QCOMPARE(panel.loadTopologyRecord(mode==3?path+".missing":path),mode==0);
-            QCOMPARE(panel.findChild<QTableWidget*>("smuTable")->rowCount(),mode==0?11:0);
+            QCOMPARE(panel.findChild<QTableWidget*>("smuTable")->rowCount(),mode==0?14:0);
         }
 #ifdef Q_OS_LINUX
         const auto fifo=dir.filePath("record.fifo");
@@ -3361,7 +3367,7 @@ private slots:
                 QFile file(path); QVERIFY(file.open(QIODevice::WriteOnly));
                 QCOMPARE(file.write(reinterpret_cast<const char*>(b.data()),qint64(b.size())),qint64(b.size()));
             };
-            save(); QVERIFY(panel.loadTopologyRecord(path)); QCOMPARE(table->rowCount(),14);
+            save(); QVERIFY(panel.loadTopologyRecord(path)); QCOMPARE(table->rowCount(),17);
             QCOMPARE(table->item(0,1)->text(),QString("5"));
             QCOMPARE(table->item(1,1)->text(),QString("3"));
             QCOMPARE(table->item(2,1)->text(),QString("80"));

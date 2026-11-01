@@ -79,6 +79,12 @@ Protocol slot `+0x48` (`0x2118` / `0x2178`) is **not an inverse topology
 lookup**. Its body reads then writes a register through another interface,
 using an address derived from a stored ID. It is outside the emulator's
 allowed execution range and is not exposed as a product command.
+The [register-target follow-up](amd-apob-register-targets.md) now executes
+these two bodies in a separate bounded replay with scripted register services.
+It proves that A uses the group ID while B uses the subgroup ID, and that
+both use the first core's flag prefix for the bit stride. GUI/CLI expose
+candidate-route ambiguity as an offline diagnostic; neither provider nor a
+hardware write is selected.
 
 ## Replay and limits
 

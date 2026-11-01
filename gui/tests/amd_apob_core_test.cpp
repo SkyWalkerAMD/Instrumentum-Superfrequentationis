@@ -19,6 +19,15 @@ void sparseIdsAndFlags() {
     assert(c[1].threadFlags[0]==0 && c[1].threadFlags[1]==1);
     assert(t.groups[1].subgroups[0].cores[0].threadCount==1);
     assert(t.nonPrefixThreadFlags==1 && !t.duplicateIds);
+    assert(t.referenceThreadStride==2 && t.differentThreadPrefixes==2);
+    assert(t.referenceRoutes.size()==4 && !t.referenceRouteAliases[0] && !t.referenceRouteAliases[1]);
+    const auto &r=t.referenceRoutes;
+    assert(r[0].providerAAddress==0x243c0020 && r[0].providerBAddress==0x20fc0020 && r[0].bit==0);
+    assert(r[1].bit==1 && r[2].bit==3 && r[2].core==1 && r[2].thread==1);
+    assert(r[3].providerAAddress==0x223c0020 && r[3].providerBAddress==0x20bc0020 && r[3].bit==0);
+    // Changing the stored core ID must not change a reference selector bit.
+    auto b=record(); b[0x35]=200;
+    assert(decodeAmdApobTopology(b).referenceRoutes[2].bit==3);
 }
 void boundedSingleRecord() {
     const auto good=record();
@@ -28,7 +37,7 @@ void boundedSingleRecord() {
         std::vector<std::uint8_t> b(n);
         for(std::size_t i=0;i<n;++i) b[i]=good[i];
         const auto t=decodeAmdApobTopology(b);
-        assert(t.error==-EINVAL && t.groups.empty());
+        assert(t.error==-EINVAL && t.groups.empty() && t.referenceRoutes.empty());
     }
     for(unsigned at:{0u,4u,12u}) {
         auto b=good; word(b,at,0xffffffff);
@@ -56,6 +65,7 @@ void completeSpanAndArbitraryIds() {
         }
     }
     assert(t.groups[7].subgroups[1].cores[7].ordinal==7);
+    assert(t.referenceRoutes.size()==256 && t.referenceRouteAliases[0]==240 && t.referenceRouteAliases[1]==240);
 }
 void sentinelAndAmbiguousRecords() {
     auto b=record(); b[0x30]=255;
@@ -66,6 +76,20 @@ void sentinelAndAmbiguousRecords() {
     t=decodeAmdApobTopology(b); assert(t.groups[0].subgroups[0].cores.empty());
     b=record(); b[0x63]=8; b[0x35]=6;
     t=decodeAmdApobTopology(b); assert(t.duplicateIds==2 && t.groups.size()==2);
+    assert(t.referenceRouteAliases[0]==1 && t.referenceRouteAliases[1]==0);
+    // A zero initial prefix aliases different entries, even though the raw
+    // second flags remain nonzero and the original selector accepts them.
+    b=record(); b[0x33]=0; t=decodeAmdApobTopology(b);
+    assert(t.referenceThreadStride==0 && t.referenceRoutes.size()==3);
+    assert(t.referenceRouteAliases[0]==1 && t.referenceRouteAliases[1]==1);
+    assert(t.referenceRoutes[0].bit==1 && t.referenceRoutes[1].bit==1);
+    // Address construction is OR, not addition. Distinct stored IDs can
+    // collide with bits already set in the fixed address base.
+    b=record(); b[0x30]=0; b[0x63]=64; b[0x31]=0; b[0x64]=2;
+    t=decodeAmdApobTopology(b); assert(!t.duplicateIds);
+    assert(t.referenceRouteAliases[0]==1 && t.referenceRouteAliases[1]==1);
+    assert(t.referenceRoutes[0].providerAAddress==0x203c0020 && t.referenceRoutes[3].providerAAddress==0x203c0020);
+    assert(t.referenceRoutes[0].providerBAddress==0x20bc0020 && t.referenceRoutes[3].providerBAddress==0x20bc0020);
     for(unsigned first:{0u,1u,2u,255u}) for(unsigned second:{0u,1u,2u,255u}) {
         b=record(); b[0x33]=std::uint8_t(first); b[0x34]=std::uint8_t(second);
         const auto c=decodeAmdApobTopology(b).groups[0].subgroups[0].cores[0];
@@ -81,8 +105,14 @@ void jsonAndMutationBoundaries() {
         assert(json.find("\"pm_slot_mapping_verified\":false")!=std::string::npos);
         assert(json.find("\"reference_identity_verified\":false")!=std::string::npos);
         assert(json.find("\"hardware_accessed\":false")!=std::string::npos);
-        if(t.error) assert(t.groups.empty() && json.find("\"instance\":null")!=std::string::npos);
-        else assert(t.groups.size()<=8);
+        if(t.error) assert(t.groups.empty() && t.referenceRoutes.empty() && json.find("\"instance\":null")!=std::string::npos &&
+                           json.find("\"reference_register_routes\":null")!=std::string::npos);
+        else {
+            assert(t.groups.size()<=8 && t.referenceRoutes.size()<=256);
+            assert(json.find("\"runtime_provider_verified\":false")!=std::string::npos);
+            assert(json.find("\"runtime_write_enabled\":false")!=std::string::npos);
+            for(const auto &route:t.referenceRoutes) assert(route.thread<2 && route.bit<16);
+        }
     }
 }
 void completeContainerAndAmbiguity() {
@@ -91,6 +121,7 @@ void completeContainerAndAmbiguity() {
     assert(!t.error && t.container && t.containerVersion==5 && t.containerRecords==3);
     assert(t.recordOffset==80 && t.inputBytes==584 && t.bytes==456 && t.groups.size()==2);
     assert(t.instance==0x102 && t.groups[0].storedId==8);
+    assert(t.referenceRoutes.size()==4 && t.referenceRoutes[2].bit==3);
     auto json=amdApobTopologyJson(t);
     assert(json.find("\"source\":\"offline-apob-container\"")!=std::string::npos);
     assert(json.find("\"record_hmac_verified\":false")!=std::string::npos);

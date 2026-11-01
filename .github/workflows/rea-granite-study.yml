@@ -28,6 +28,7 @@ on:
       - 'analysis/tools/firmware-granite-published-topology.py'
       - 'gui/tests/amd_9950x3d_topology_fixture.h'
       - 'analysis/tools/firmware-granite-topology-protocol.py'
+      - 'analysis/tools/firmware-granite-register-targets.py'
       - 'analysis/tools/firmware-granite-apob-handoff.py'
       - 'analysis/tools/ghidra/Granite*.java'
       - 'analysis/tools/ghidra/SmuFpPatch.py'
@@ -207,6 +208,10 @@ jobs:
             --provider-b build/firmware-input/uefi-granite-topology-provider-b.bin \
             --topology build/firmware-input/uefi-granite-topology.bin \
             --output build/firmware-evidence/granite-topology-protocol.json
+          PYTHONPATH="$PWD/build/firmware-tools/python" python3 analysis/tools/firmware-granite-register-targets.py \
+            --provider-a build/firmware-input/uefi-granite-topology-provider-a.bin \
+            --provider-b build/firmware-input/uefi-granite-topology-provider-b.bin \
+            --output build/firmware-evidence/granite-register-targets.json
           PYTHONPATH="$PWD/build/firmware-tools/python" python3 analysis/tools/firmware-granite-apob-handoff.py \
             --provider-a build/firmware-input/uefi-granite-topology-provider-a.bin \
             --provider-b build/firmware-input/uefi-granite-topology-provider-b.bin \

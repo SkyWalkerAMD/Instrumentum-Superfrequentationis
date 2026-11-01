@@ -226,6 +226,8 @@ AmdApobTopology decodeAmdApobTopology(const std::vector<std::uint8_t> &record) {
     if(word(0)!=3 || word(4)!=3) { out.error=-ENOTSUP; out.detail="Expected a single APOB group 3/type 3 record, including its header."; return out; }
     if(word(12)!=record.size()) { out.error=-EINVAL; out.detail="Declared record length does not match the file."; return out; }
     out.instance=word(8); out.extensionBytes=record.size()-0x1c8;
+    while(out.referenceThreadStride<2 && record[0x33+out.referenceThreadStride]) ++out.referenceThreadStride;
+    std::array<std::set<std::pair<std::uint32_t,unsigned>>,2> routeKeys;
     std::set<unsigned> groupIds;
     for(unsigned g=0;g<8;++g) {
         const std::size_t base=0x30+g*0x33;
@@ -248,6 +250,17 @@ AmdApobTopology decodeAmdApobTopology(const std::vector<std::uint8_t> &record) {
                 // Protocol +0x38 counts a nonzero prefix, NOT a population count.
                 while(core.threadCount<2 && core.threadFlags[core.threadCount]) ++core.threadCount;
                 if(!core.threadFlags[0] && core.threadFlags[1]) ++out.nonPrefixThreadFlags;
+                if(core.threadCount!=out.referenceThreadStride) ++out.differentThreadPrefixes;
+                for(unsigned thread=0;thread<2;++thread) if(core.threadFlags[thread]) {
+                    AmdApobRegisterRoute route;
+                    route.group=g; route.subgroup=s; route.core=c; route.thread=thread;
+                    route.bit=out.referenceThreadStride*c+thread;
+                    route.providerAAddress=0x203c0020u | (std::uint32_t(group.storedId)<<23);
+                    route.providerBAddress=0x20bc0020u | (std::uint32_t(subgroup.storedId)<<22);
+                    if(!routeKeys[0].insert({route.providerAAddress,route.bit}).second) ++out.referenceRouteAliases[0];
+                    if(!routeKeys[1].insert({route.providerBAddress,route.bit}).second) ++out.referenceRouteAliases[1];
+                    out.referenceRoutes.push_back(route);
+                }
                 subgroup.cores.push_back(core);
             }
             group.subgroups.push_back(subgroup);
@@ -270,6 +283,25 @@ std::string amdApobTopologyJson(const AmdApobTopology &t) {
     if(t.container && !t.error) out+="{\"version\":"+std::to_string(t.containerVersion)+
         ",\"record_count\":"+std::to_string(t.containerRecords)+",\"selected_record_offset\":"+std::to_string(t.recordOffset)+"}";
     else out+="null";
+    out+=",\"reference_register_routes\":";
+    if(t.error) out+="null";
+    else {
+        out+="{\"evidence\":\"asus-creator-2503-d20482f8-static\",\"runtime_provider_verified\":false,"
+            "\"register_effect_verified\":false,\"host_physical_addresses\":false,\"runtime_write_enabled\":false,"
+            "\"thread_indices_limited_to_flags\":true,\"first_core_flag_prefix\":"+std::to_string(t.referenceThreadStride)+
+            ",\"different_thread_prefixes\":"+std::to_string(t.differentThreadPrefixes)+
+            ",\"provider_a_aliases\":"+std::to_string(t.referenceRouteAliases[0])+
+            ",\"provider_b_aliases\":"+std::to_string(t.referenceRouteAliases[1])+",\"candidates\":[";
+        for(std::size_t i=0;i<t.referenceRoutes.size();++i) {
+            if(i) out+=',';
+            const auto &r=t.referenceRoutes[i];
+            out+="{\"group_ordinal\":"+std::to_string(r.group)+",\"subgroup_ordinal\":"+std::to_string(r.subgroup)+
+                ",\"core_ordinal\":"+std::to_string(r.core)+",\"thread_flag_index\":"+std::to_string(r.thread)+
+                ",\"bit\":"+std::to_string(r.bit)+",\"provider_a_address\":"+std::to_string(r.providerAAddress)+
+                ",\"provider_b_address\":"+std::to_string(r.providerBAddress)+"}";
+        }
+        out+="]}";
+    }
     out+=",\"groups\":[";
     if(!t.error) for(std::size_t g=0;g<t.groups.size();++g) {
         if(g) out+=',';

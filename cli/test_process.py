@@ -72,6 +72,17 @@ for r in apob:
     assert t['record_header_bytes']==48
     if r['ok']:
         assert [g['stored_id'] for g in t['groups']]==[8,4]
+        routes=t['reference_register_routes']
+        assert routes['evidence']=='asus-creator-2503-d20482f8-static'
+        assert not any(routes[k] for k in ('runtime_provider_verified','register_effect_verified',
+            'host_physical_addresses','runtime_write_enabled'))
+        assert routes['thread_indices_limited_to_flags']
+        assert routes['first_core_flag_prefix']==2 and routes['different_thread_prefixes']==2
+        assert routes['provider_a_aliases']==routes['provider_b_aliases']==0
+        assert [(x['provider_a_address'],x['provider_b_address'],x['bit']) for x in routes['candidates']]==[
+            (0x243c0020,0x20fc0020,0),(0x243c0020,0x20fc0020,1),
+            (0x243c0020,0x20fc0020,3),(0x223c0020,0x20bc0020,0)]
+        assert routes['candidates'][2]['thread_flag_index']==1 and routes['candidates'][2]['core_ordinal']==1
         c=t['groups'][0]['subgroups'][0]['cores'][1]
         assert c['stored_id']==2 and c['thread_flags']==[0,1] and c['thread_prefix_count']==0
         if t['source']=='offline-apob-container':
@@ -81,6 +92,7 @@ for r in apob:
             assert t['container'] is None and t['input_bytes']==456
     else:
         assert t['groups']==[] and t['instance'] is None and t['container'] is None
+        assert t['reference_register_routes'] is None
 catalogs=[r['data']['topology_catalog'] for r in reports if 'topology_catalog' in r['data']]
 assert len(catalogs)==4 and [t['complete'] for t in catalogs]==[True,True,False,False]
 for t in catalogs:

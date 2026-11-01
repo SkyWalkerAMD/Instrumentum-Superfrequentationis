@@ -1030,7 +1030,18 @@ bool AmdTuningPanel::loadTopologyRecord(const QString &path) {
                     .arg(c.storedId).arg(c.threadFlags[0]).arg(c.threadFlags[1]).arg(c.threadCount)});
         }
     }
-    status_->setText("Offline reference-layout record. Origin, HMAC and physical/OS/PM mappings remain unverified. Stored IDs and thread flags are preserved. No hardware access performed.");
+    append(table_,{"Reference initial thread prefix",QString::number(t.referenceThreadStride)});
+    append(table_,{"Entries with a different thread prefix",QString::number(t.differentThreadPrefixes)});
+    append(table_,{"Reference target candidates",QString("%1 candidates · A: %2 duplicates · B: %3 duplicates")
+        .arg(qulonglong(t.referenceRoutes.size())).arg(t.referenceRouteAliases[0]).arg(t.referenceRouteAliases[1])});
+    QStringList routes;
+    for(const auto &r:t.referenceRoutes) routes << QString("Group %1 / subgroup %2 / core entry %3 / flag %4: A %5, B %6, bit %7")
+        .arg(r.group).arg(r.subgroup).arg(r.core).arg(r.thread)
+        .arg(hexValue(r.providerAAddress,4)).arg(hexValue(r.providerBAddress,4)).arg(r.bit);
+    const auto note=QString("Two different reference providers; neither is selected. These are register selectors, not physical CCD/OS CPU/PM identities. No register access.\n")+routes.join('\n');
+    table_->item(table_->rowCount()-1,0)->setToolTip(note);
+    table_->item(table_->rowCount()-1,1)->setToolTip(note);
+    status_->setText("Offline reference-layout record. Origin, HMAC and physical/OS/PM mappings remain unverified. Reference providers A/B use different target selectors; neither is selected. Stored IDs and thread flags are preserved. No hardware access performed.");
     return true;
 }
 void AmdTuningPanel::readTopology() {

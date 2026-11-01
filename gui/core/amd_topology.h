@@ -64,6 +64,10 @@ struct AmdApobGroup {
     unsigned ordinal=0, storedId=0;
     std::vector<AmdApobSubgroup> subgroups;
 };
+struct AmdApobRegisterRoute {
+    unsigned group=0, subgroup=0, core=0, thread=0, bit=0;
+    std::uint32_t providerAAddress=0, providerBAddress=0;
+};
 struct AmdApobTopology {
     int error=0;
     std::string detail;
@@ -73,6 +77,9 @@ struct AmdApobTopology {
     std::uint32_t containerVersion=0;
     unsigned containerRecords=0;
     unsigned duplicateIds=0, nonPrefixThreadFlags=0;
+    unsigned referenceThreadStride=0, differentThreadPrefixes=0;
+    std::array<unsigned,2> referenceRouteAliases{};
+    std::vector<AmdApobRegisterRoute> referenceRoutes;
     std::vector<AmdApobGroup> groups;
 };
 // Offline group 3/type 3 record INCLUDING its 48-byte header (16-byte fields
@@ -82,6 +89,9 @@ struct AmdApobTopology {
 // Reference: ASUS ProArt X870E-CREATOR WIFI 2503, D20482F8 protocol providers.
 // This accepts a reference layout, not a verified platform/firmware identity.
 // Stored IDs are not asserted to be physical CCD/core, OS CPU or PM target IDs.
+// Reference routes describe two DIFFERENT pinned protocol +0x48 selectors.
+// Only raw nonzero flags 0/1 produce candidates; the firmware's unchecked
+// thread argument is never accepted here. No provider or write is selected.
 AmdApobTopology decodeAmdApobTopology(const std::vector<std::uint8_t> &record);
 std::string amdApobTopologyJson(const AmdApobTopology &topology);
 } }
