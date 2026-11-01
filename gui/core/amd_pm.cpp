@@ -166,6 +166,7 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
             auto &v = out.firmwareCores.back(); v.row = row; v.slot = slot; v.slotCount = cores;
             if(row==1) { v.name="Core voltage model (averaged)"; v.unit="V"; }
             if(row==2) { v.name="Core temperature (sensor maximum, averaged)"; v.unit="deg C"; }
+            if(row==3) { v.name="Core divider frequency model (averaged)"; v.unit="GHz"; }
             if(row>=5 && row<=7) {
                 const char *residencies[]={"C0 residency candidate (averaged)","CC1 residency candidate (averaged)","CC6 residency candidate (averaged)"};
                 v.name=residencies[row-5]; v.unit="%";
@@ -186,21 +187,24 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
                 v.name=row==9?"Core request policy A (averaged)":"Core request policy B (averaged)";
                 v.unit="GHz";
             }
-            if(row==1 || row==2 || (row>=5 && row<=11) || row>=13) v.unitEvidence="granite-mp5-98.84.0-static";
+            if((row>=1 && row<=3) || (row>=5 && row<=11) || row>=13) v.unitEvidence="granite-mp5-98.84.0-static";
         }
         for (unsigned row = 0; row < 12; ++row) for (unsigned slot = 0; slot < out.firmwareCcdSlots; ++slot) {
             field(out,out.firmwareCcds,("CCD row " + std::to_string(row)).c_str(),"unverified",0x4b4+4*(18*cores+row*out.firmwareCcdSlots+slot),false,"ccd_storage");
             auto &v = out.firmwareCcds.back(); v.row = row; v.slot = slot; v.slotCount = out.firmwareCcdSlots;
             if(row==3) { v.name="CCD sensor maximum A (averaged)"; v.unit="deg C"; }
             if(row==4) { v.name="CCD sensor maximum B (conditional, averaged)"; v.unit="deg C"; }
+            if(row==5) { v.name="CCD frequency model (averaged)"; v.unit="GHz"; }
             if(row==7) { v.name="CCD firmware code (averaged)"; v.unit="code"; }
+            if(row==9) { v.name="CCD counter percentage (averaged, may retain old value)"; v.unit="%"; }
+            if(row==10) { v.name="CCD fused frequency policy (averaged)"; v.unit="GHz"; }
             if(row==11) { v.name="MP5 interval counter percentage (averaged)"; v.unit="%"; }
-            if(row==3 || row==4 || row==7 || row==11) v.unitEvidence="granite-mp5-98.84.0-static";
+            if((row>=3 && row<=5) || row==7 || row>=9) v.unitEvidence="granite-mp5-98.84.0-static";
         }
         for (unsigned offset = 0; offset < bytes.size(); offset += 4)
             field(out,out.graniteRaw,("Word " + std::to_string(offset/4)).c_str(),"unverified",offset,false,"granite_storage");
         out.detail = out.error ? "Some Granite Ridge stored words are non-finite; raw bits and other values are retained" :
-            "Granite Ridge storage decoded using the 98.84.0 reference. Command mirrors are averaged software values, not voltage measurements or setting readback. SVI telemetry can retain old values after failed reads; current scale mode 0 produces zero and validity flags are absent here. Channel numbers do not identify physical rails. Core model voltage is not measured rail voltage. Request policy A/B use the GHz Fmax scale, not measured core clocks; both-zero requests retain old values, and B can exceed A. Conditional sensors and counters may retain old values. Code and counter meanings and freshness are unverified; averaged codes may be fractional. Stored values are not rescaled or clamped. CCD/core slots describe storage only. Other units, physical CCD/OS CPU mapping and capture provenance remain unverified.";
+            "Granite Ridge storage decoded using the 98.84.0 reference. Command mirrors are averaged software values, not voltage measurements or setting readback. SVI telemetry can retain old values after failed reads; current scale mode 0 produces zero and validity flags are absent here. Channel numbers do not identify physical rails. Core model voltage is not measured rail voltage. GHz fields describe frequency models or policies, not measured clocks or setting readback. Disabled core models can retain old values. Request policy A/B use the GHz Fmax scale; both-zero requests retain old values, and B can exceed A. Conditional sensors and counters may retain old values; CCD counter percentage retains its old value on a zero denominator and can exceed 100. Code and counter meanings and freshness are unverified; averaged codes may be fractional. Stored values are not rescaled or clamped. CCD/core slots describe storage only. Other units, physical CCD/OS CPU mapping and capture provenance remain unverified.";
         return out;
     }
     // Independently implemented from the pinned layout facts in
@@ -334,11 +338,15 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
         if (s.graniteRidge && v.unit=="code") out += ",\"code_meaning_verified\":false,\"freshness_verified\":false";
         if (s.graniteRidge && v.group=="core_storage" && (v.row==9 || v.row==10)) out +=
             ",\"request_policy_value\":true,\"measured_frequency\":false,\"freshness_verified\":false,\"setting_readback_verified\":false";
+        if (s.graniteRidge && ((v.group=="core_storage" && v.row==3) || (v.group=="ccd_storage" && v.row==5))) out +=
+            ",\"frequency_model\":true,\"measured_frequency\":false,\"freshness_verified\":false,\"setting_readback_verified\":false";
+        if (s.graniteRidge && v.group=="ccd_storage" && v.row==10) out +=
+            ",\"fused_frequency_policy\":true,\"measured_frequency\":false,\"freshness_verified\":false,\"setting_readback_verified\":false";
         if (s.graniteRidge && v.group=="core_storage") out +=
             ",\"firmware_ccd_storage_slot\":" + std::to_string(v.slot/8) +
             ",\"firmware_local_core_slot\":" + std::to_string(v.slot%8);
         if (s.graniteRidge && ((v.group=="core_storage" && v.row>=13 && v.row<=17) ||
-            (v.group=="ccd_storage" && v.row==11)))
+            (v.group=="ccd_storage" && (v.row==9 || v.row==11))))
             out += ",\"counter_meaning_verified\":false,\"freshness_verified\":false";
         if (v.slotCount) out += ",\"slot\":" + std::to_string(v.slot) + ",\"slot_count\":" + std::to_string(v.slotCount);
         if (v.group == "core_storage" || v.group == "ccd_storage") out += ",\"row\":" + std::to_string(v.row);

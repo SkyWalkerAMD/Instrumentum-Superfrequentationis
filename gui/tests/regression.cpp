@@ -697,6 +697,10 @@ private slots:
             QVERIFY(!table->item(0,0)->text().contains("FW CCD"));
             for(unsigned core=0;core<8*storageSlots;++core) {
                 QVERIFY(table->item(core,0)->text().contains(QString("CCD slot %1, core slot %2").arg(core/8).arg(core%8)));
+                const unsigned modelIndex=3*8*storageSlots+core;
+                QCOMPARE(table->item(modelIndex,1)->text(),QString("4.375"));
+                QCOMPARE(table->item(modelIndex,2)->text(),QString("GHz"));
+                QVERIFY(table->item(modelIndex,6)->text().contains("Frequency model; not measured clock"));
                 for(unsigned row:{8u,11u}) {
                     const unsigned index=row*8*storageSlots+core;
                     QCOMPARE(table->item(index,1)->text(),row==8?QString("3.5"):QString("127.5"));
@@ -720,6 +724,11 @@ private slots:
             if(mode==1) {
                 // Let the newly selected table update its scroll range first.
                 QApplication::processEvents();
+                table->scrollToItem(table->item(3*8*storageSlots,0),QAbstractItemView::PositionAtTop);
+                QApplication::processEvents();
+                QCOMPARE(table->rowAt(0),int(3*8*storageSlots));
+                const auto models=qEnvironmentVariable("OCTOOL_PM_GRANITE_MODELS_TEST_SCREENSHOT");
+                if(!models.isEmpty()) QVERIFY(panel.grab().save(models));
                 table->scrollToItem(table->item(8*8*storageSlots,0),QAbstractItemView::PositionAtTop);
                 QApplication::processEvents();
                 QCOMPARE(table->rowAt(0),int(8*8*storageSlots));
@@ -746,6 +755,17 @@ private slots:
             QCOMPARE(table->item(4*storageSlots,2)->text(),QString("deg C"));
             QCOMPARE(table->item(7*storageSlots,2)->text(),QString("code"));
             QCOMPARE(table->item(7*storageSlots,1)->text(),QString("32767.5"));
+            for(unsigned ccd=0;ccd<storageSlots;++ccd) {
+                QCOMPARE(table->item(5*storageSlots+ccd,1)->text(),QString("6"));
+                QCOMPARE(table->item(5*storageSlots+ccd,2)->text(),QString("GHz"));
+                QVERIFY(table->item(5*storageSlots+ccd,6)->text().contains("Frequency model; not measured clock"));
+                QCOMPARE(table->item(9*storageSlots+ccd,1)->text(),QString("150.125"));
+                QCOMPARE(table->item(9*storageSlots+ccd,2)->text(),QString("%"));
+                QVERIFY(table->item(9*storageSlots+ccd,6)->text().contains("counter unverified"));
+                QCOMPARE(table->item(10*storageSlots+ccd,1)->text(),QString("5.75"));
+                QCOMPARE(table->item(10*storageSlots+ccd,2)->text(),QString("GHz"));
+                QVERIFY(table->item(10*storageSlots+ccd,6)->text().contains("Fused frequency policy; not readback"));
+            }
             QVERIFY(table->item(7*storageSlots,6)->text().contains("meaning unverified"));
             QCOMPARE(table->item(11*storageSlots,2)->text(),QString("%"));
             QCOMPARE(table->item(11*storageSlots,1)->text(),mode?QString("25"):QString("100"));

@@ -163,6 +163,7 @@ def main():
                     OCTOOL_PM_GRANITE_MIRRORS_TEST_SCREENSHOT=str((tests / "pm-granite-mirrors-fixture.png").resolve()),
                     OCTOOL_PM_GRANITE_CODES_TEST_SCREENSHOT=str((tests / "pm-granite-codes-fixture.png").resolve()),
                     OCTOOL_PM_GRANITE_PERFORMANCE_TEST_SCREENSHOT=str((tests / "pm-granite-performance-fixture.png").resolve()),
+                    OCTOOL_PM_GRANITE_MODELS_TEST_SCREENSHOT=str((tests / "pm-granite-models-fixture.png").resolve()),
                     OCTOOL_AMD_TOPOLOGY_CATALOG_TEST_SCREENSHOT=str((tests / "amd-topology-catalog-fixture.png").resolve()),
                      OCTOOL_PM_GRANITE_FRACTIONS_TEST_SCREENSHOT=str((tests / "pm-granite-fractions-fixture.png").resolve()),
                      OCTOOL_PM_GRANITE_COUNTERS_TEST_SCREENSHOT=str((tests / "pm-granite-counters-fixture.png").resolve()),

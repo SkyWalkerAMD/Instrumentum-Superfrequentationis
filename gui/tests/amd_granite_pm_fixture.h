@@ -19,13 +19,18 @@ inline std::vector<std::uint8_t> bytes(unsigned size = 2452) {
         pm_fixture::put(b,4*(49+channel*5+kind),telemetry[channel][kind]);
     const unsigned storageSlots=size==1828?1:2;
     for(unsigned core=0;core<8*storageSlots;++core) {
+        pm_fixture::put(b,0x4b4+4*(3*8*storageSlots+core),0x408c0000); // 4.375 GHz divider model
         pm_fixture::put(b,0x4b4+4*(8*8*storageSlots+core),0x40600000); // averaged code 3.5
         pm_fixture::put(b,0x4b4+4*(9*8*storageSlots+core),0x40b00000); // 5.5 GHz request policy A
         pm_fixture::put(b,0x4b4+4*(10*8*storageSlots+core),0x40c80000); // 6.25 GHz B can exceed A; no clamp
         pm_fixture::put(b,0x4b4+4*(11*8*storageSlots+core),0x42ff0000); // averaged code 127.5
     }
-    for(unsigned ccd=0;ccd<storageSlots;++ccd)
+    for(unsigned ccd=0;ccd<storageSlots;++ccd) {
+        pm_fixture::put(b,0x4b4+4*(144*storageSlots+5*storageSlots+ccd),0x40c00000); // 6 GHz model
         pm_fixture::put(b,0x4b4+4*(144*storageSlots+7*storageSlots+ccd),0x46ffff00); // averaged code 32767.5
+        pm_fixture::put(b,0x4b4+4*(144*storageSlots+9*storageSlots+ccd),0x43162000); // 150.125 percent; not clamped
+        pm_fixture::put(b,0x4b4+4*(144*storageSlots+10*storageSlots+ccd),0x40b80000); // 5.75 GHz fused policy
+    }
     const std::uint32_t counters[]={0x3f200000,0x3e000000,0x41c80000,0x42960000,0x43160000}; // .625, .125, 25, 75, 150
     for(unsigned row=13;row<18;++row) for(unsigned core=0;core<8*storageSlots;++core)
         pm_fixture::put(b,0x4b4+4*(row*8*storageSlots+core),counters[row-13]);

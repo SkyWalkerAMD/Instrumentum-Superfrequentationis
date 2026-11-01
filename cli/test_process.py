@@ -891,8 +891,8 @@ for report in reports:
             assert off not in seen and first_core<=off and off+4<=len(raw); seen.add(off)
             assert bits==struct.unpack_from('<I',raw,off)[0]
             assert f['row']==j//slots and f['slot']==j%slots and f['slot_count']==slots
-            units=({1:'V',2:'deg C',5:'%',6:'%',7:'%',8:'code',9:'GHz',10:'GHz',11:'code',13:'ratio',14:'ratio',15:'%',16:'%',17:'%'} if key=='firmware_core_arrays'
-                   else {3:'deg C',4:'deg C',7:'code',11:'%'}) if pm['platform']=='granite-ridge' else {}
+            units=({1:'V',2:'deg C',3:'GHz',5:'%',6:'%',7:'%',8:'code',9:'GHz',10:'GHz',11:'code',13:'ratio',14:'ratio',15:'%',16:'%',17:'%'} if key=='firmware_core_arrays'
+                   else {3:'deg C',4:'deg C',5:'GHz',7:'code',9:'%',10:'GHz',11:'%'}) if pm['platform']=='granite-ridge' else {}
             known=f['row'] in units
             assert f['unit']==units.get(f['row'],'unverified')
             assert not f['clock'] and f['scaled_clock_mhz'] is None
@@ -902,12 +902,15 @@ for report in reports:
             if f['unit']=='code':
                 assert not f['code_meaning_verified'] and not f['freshness_verified']
             if f['unit']=='GHz':
-                assert f['request_policy_value'] and not f['measured_frequency']
+                flag=('request_policy_value' if key=='firmware_core_arrays' and f['row'] in (9,10)
+                      else 'fused_frequency_policy' if key=='firmware_ccd_arrays' and f['row']==10 else 'frequency_model')
+                assert f[flag] and not f['measured_frequency']
+                assert all(k not in f for k in ('frequency_model','fused_frequency_policy','request_policy_value') if k!=flag)
                 assert not f['freshness_verified'] and not f['setting_readback_verified']
             if known:
                 assert f['unit_evidence']=='granite-mp5-98.84.0-static' and not f['capture_firmware_verified']
             counter = pm['platform']=='granite-ridge' and ((key=='firmware_core_arrays' and f['row']>=13) or
-                                                         (key=='firmware_ccd_arrays' and f['row']==11))
+                                                         (key=='firmware_ccd_arrays' and f['row'] in (9,11)))
             if counter:
                 assert not f['counter_meaning_verified'] and not f['freshness_verified']
             else:

@@ -258,9 +258,11 @@ void AmdPmPanel::showFields() {
             f.group == "granite_command_mirror" ? "Software command mirror; not readback" :
             f.group == "granite_svi" ? "98.84.0 unit; freshness and rail unverified" :
             s.graniteRidge && f.group=="core_storage" && (f.row==9 || f.row==10) ? "Request policy; not measured clock" :
+            s.graniteRidge && ((f.group=="core_storage" && f.row==3) || (f.group=="ccd_storage" && f.row==5)) ? "Frequency model; not measured clock" :
+            s.graniteRidge && f.group=="ccd_storage" && f.row==10 ? "Fused frequency policy; not readback" :
             s.graniteRidge && f.unit=="code" ? "98.84.0 code; meaning unverified" :
             s.graniteRidge && ((f.group=="core_storage" && f.row>=13 && f.row<=17) ||
-                (f.group=="ccd_storage" && f.row==11)) ? "98.84.0 unit; counter unverified" :
+                (f.group=="ccd_storage" && (f.row==9 || f.row==11))) ? "98.84.0 unit; counter unverified" :
             !f.unitEvidence.empty() ? "Unit from SMU 98.84.0 reference" :
             original ? "Units unverified" : f.clock && !s.options.hasBclk ? "BCLK not supplied" : "Decoded";
         QString label = QString::fromStdString(f.name) +

@@ -76,6 +76,9 @@ class Slice:
                 if val(a[2]): self.r[a[0]] = val(a[1])
             elif op in ('minu', 'maxu'):
                 self.r[a[0]] = (min if op=='minu' else max)(val(a[1]),val(a[2]))
+            elif op in ('min', 'max'):
+                signed = lambda x: x-(1 << 32) if x & (1 << 31) else x
+                self.r[a[0]] = (min if op=='min' else max)(signed(val(a[1])),signed(val(a[2]))) & 0xffffffff
             elif op in ('and', 'or'):
                 self.r[a[0]] = val(a[1]) & val(a[2]) if op=='and' else val(a[1]) | val(a[2])
             elif op == 'ssl':
@@ -114,6 +117,12 @@ class Slice:
                 value=f32(self.f[a[1]]*(1<<val(a[2])))
                 assert -2147483648 <= value < 2147483648
                 self.r[a[0]]=round(value)&0xffffffff
+            elif op == 'utrunc.s':
+                value=f32(self.f[a[1]]*(1<<val(a[2])))
+                # Deliberately exclude negative, non-finite and overflowing
+                # inputs: their hardware conversion semantics are not modeled.
+                assert 0 <= value < 4294967296
+                self.r[a[0]]=int(value)
             elif op == 'movt':
                 if self.b[a[2]]: self.r[a[0]] = val(a[1])
             elif op in ('olt.s', 'ole.s', 'oeq.s'):
@@ -130,8 +139,8 @@ class Slice:
                 else: next_pc = end
             elif op == 'bbci':
                 if not (val(a[0]) & (1 << val(a[1]))): next_pc = val(a[2])
-            elif op == 'bbc':
-                if not (val(a[0]) & (1 << (val(a[1])&31))): next_pc = val(a[2])
+            elif op in ('bbc','bbs'):
+                if bool(val(a[0]) & (1 << (val(a[1])&31))) == (op=='bbs'): next_pc = val(a[2])
             elif op == 'beqz':
                 if not val(a[0]): next_pc = val(a[1])
             elif op == 'bnez':
