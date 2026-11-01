@@ -69,7 +69,8 @@ jobs:
           build/firmware-tools/ghidra_12.1.4_PUBLIC/support/sleigh \
             build/firmware-tools/ghidra_12.1.4_PUBLIC/Ghidra/Processors/Xtensa/data/languages/xtensa_le.slaspec
       - name: Install isolated APIC replay dependencies
-        run: python3 -m pip install --disable-pip-version-check --only-binary=:all: --no-deps --target build/firmware-tools/python unicorn==2.1.4 pefile==2024.8.26
+        run: |
+          python3 -m pip install --disable-pip-version-check --only-binary=:all: --no-deps --target build/firmware-tools/python unicorn==2.1.4 pefile==2024.8.26
       - name: Extract pinned Granite Ridge reference inputs
         id: inputs
         run: |

@@ -22,7 +22,8 @@ SOURCE_SHA = '44598dc8177050599afcc46f6355504161f942330d7917d1aaa010d864aaff10'
 # These profiles do not relax the original ELF identity check.
 FIRMWARE_STUDIES = {
     'granite_topology': ('78e0fae1bbe0c4a35d6edaf1e50f0b1c5572066fdf63f9da5b8b59517d93b813',
-                         (('0x526c','FUN_'),('0x3a0','FUN_'),('0x4c4','entry'))),
+                         (('0x526c','FUN_'),('0x3a0','FUN_'),('0x4c4','entry'),
+                          ('0x1844','FUN_'),('0x2094','FUN_'),('0x2d24','FUN_'))),
     'granite_transport': ('563fbf5d9350c95a9f8a063e4f98a6fbe4d22d3e2bc11d2a3346a4e3320578c9',
                           (('0x4e4', 'entry'),('0xbb4','FUN_'))),
     'granite_transport2': ('9ca8b4e78e40f98853163c8414cd61745005ed8d4cd8f7a8463c76e6b16a280e',
