@@ -430,17 +430,21 @@ octool-cli amd-pm-decode --file pm.bin --version 0x730204 --bclk-mhz 102.5
 另有 `original_package` 的 53 项[公共功耗与策略监控](amd-pm-package.md)，按五个 `group` 分组；单位、策略状态和目标仍未核实。
 另有 `original_fabric` 的 27 项[链路与片内时钟监控](amd-pm-fabric.md)，按两个 `group` 分组；单位、实际链路/时钟状态和目标仍未核实。
 另有 `original_arrays` 的 92 个 [GMI/DIMM/PCIe 数组存储值](amd-pm-arrays.md)，每项含 `slot`、`slot_count`；它们不是物理目标编号或已安装设备数量。
-另有 `firmware_core_arrays` / `firmware_ccd_arrays`，提供[已核实边界的逐核 / CCD 存储字](amd-pm-core-ccd.md)；单位和物理映射未认证。GUI 的 Display 现有十四组；旧 schema-1 快照会重算派生字段，撤回两项 VDDG 解释。PM JSON 上限为 1 MiB / 65536 个值，包含 CLI 外层；其它格式保持原限制。
+另有 `firmware_core_arrays` / `firmware_ccd_arrays`，提供[已核实边界的逐核 / CCD 存储字](amd-pm-core-ccd.md)；单位和物理映射未认证。GUI 的 Display 现有十六组，包括 Granite 完整存储表和 DPM 策略视图；旧 schema-1 快照会重算派生字段，撤回两项 VDDG 解释。PM JSON 上限为 1 MiB / 65536 个值，包含 CLI 外层；其它格式保持原限制。
 
 9950X3D 使用独立的 [Granite Ridge 配置](amd-granite-pm.md)：
 `amd-pm-native-read --cpu 0 --platform granite-ridge`，接受精确 SMU 98.84.0；
 双槽表可加 `--map-ccd` 标出固件目标 0/1，但没有物理 CCD/OS 核心绑定。
-两种 Granite 表的公共 `fields` 有 23 项：七个未解释候选、三个软件电压命令镜像、十二个 SVI 遥测字段，
-以及一个[公共电压请求镜像](amd-granite-shared-request.md)。新增请求位于 PM 索引 19／偏移 0x4c，
-以 V 显示；在字段列表末尾追加，保留已有字段顺序。其 `group` 为 `granite_shared_request`，
+两种 Granite 表的公共 `fields` 有 39 项：20 个 [DPM 策略／采样占比字段](amd-granite-dpm-policy.md)、
+三个未解释候选、三个软件电压命令镜像、十二个 SVI 遥测字段，以及一个
+[公共电压请求镜像](amd-granite-shared-request.md)。请求位于 PM 索引 19／偏移 0x4c，
+以 V 显示，保留在字段列表末尾。其 `group` 为 `granite_shared_request`，
 `software_request_mirror: true`，`firmware_consumer_channel: 0`；独立 rail 和设备回读标记均为 false。
 命令镜像的 `group` 为 `granite_command_mirror`，并明确给出 `measurement: false`、
 `setting_readback_verified: false`。不要将字段列表下标当作 PM 索引，应使用 `offset` 与 `group`。
+DPM 字段的 `group` 为 `granite_dpm_clock`、`granite_dpm_voltage` 或 `granite_dpm_share`，
+`policy_state` 表示策略状态 0..3，不能用作 CCD/OS 核心编号。MHz 是标称参考下的频率策略，
+V 是软件电压策略，% 是采样占比；实测频率、物理 rail、时间驻留率和设备回读没有因此得到确认。
 核心第 8/11 行与 CCD 第 7 行以 `code` 保留平均代码，可能有小数，具体含义仍未确认。
 核心数组另含 `firmware_ccd_storage_slot` 与 `firmware_local_core_slot`，均只是存储坐标。
 这些字段由 GUI/CLI 共享解码器生成；详情见[命令镜像、代码和槽位说明](amd-granite-channel-mirrors.md)。

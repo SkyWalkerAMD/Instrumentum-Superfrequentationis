@@ -106,7 +106,9 @@ Core rows **0, 4, 12** and CCD rows **0, 1, 2, 6, 8** still have unknown units.
 The [producer follow-up](amd-granite-producer-paths.md) verifies their arithmetic
 tails, configuration updates and shared-parameter paths without promoting a
 physical unit. It supersedes the discovery leads below where applicable.
-Seven common candidate fields, the meanings of the three code rows, physical
+The [DPM follow-up](amd-granite-dpm-policy.md) resolves qualified nominal MHz,
+software volts and sample-share interpretations for 20 common fields; three
+other common candidates remain unverified. The meanings of the three code rows, physical
 PM-to-CCD/OS-CPU mapping and second-rail independent write/readback remain open.
 
 The next static trace leads are recorded below. These are producer/consumer

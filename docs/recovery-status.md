@@ -1,8 +1,8 @@
 # 功能还原状态
 
-<!-- amd-granite-d50da8d -->
-2026-11-01：[9950X3D 本轮验证](amd-granite-validation.md)通过 46/46 云端任务，28 组固件回放本地/云端一致。GUI/CLI 新增 APOB 参考 APIC 与可用 OS CPU 的只读核对，保留稀疏 CPU 编号，报告缺项与冲突。另新增 8,246 组调度回放，确认队列门限与确认早于入队的边界，仍不能据此确定绝对更新周期。新增 48 组原固件指令回放生成 24 组 / 312 行独立对照数据。完整匹配也不代表运行时 PM 或物理核心绑定；剩余八行单位、PM 物理映射和第二 rails 独立写入与设备回读仍未完成。[使用方式与证据](amd-apob-os-comparison.md)；源码和 33 个安装包：`dist/gui-cli-amd-granite-d50da8d/`。以下为历史阶段记录，以本段和当前验证报告为准。
-<!-- /amd-granite-d50da8d -->
+<!-- amd-granite-72f349e -->
+2026-11-02：[9950X3D 本轮验证](amd-granite-validation.md)通过 44/44 云端任务，29 组固件回放本地/云端一致。GUI/CLI 同步补全四状态 DPM 策略表，显示 20 个采样占比、频率策略和电压策略字段，公共字段由 23 个增至 39 个。新增独立 GUI 策略视图；标称 MHz 不代表实测频率，V 策略不代表设备回读，采样占比不代表时间驻留率。剩余八行单位、PM 物理映射和第二 rails 独立写入与设备回读仍未完成。[用法与 REA 证据](amd-granite-dpm-policy.md)；源码和 33 个安装包：`dist/gui-cli-amd-granite-72f349e/`。以下为历史阶段记录，以本段和当前验证报告为准。
+<!-- /amd-granite-72f349e -->
 
 <!-- amd-pm-ccd-168a618 -->
 2026-10-26：[PM 固件 CCD 映射验证](amd-pm-ccd-validation.md)已通过 44/44 云端任务；GUI/CLI 同步提供 `--map-ccd`。适用 Shimada SMU 115.46.0，9950X3D 的 Granite Ridge 路径、字段单位和第二 rails 回读仍待恢复。源码与包：`dist/gui-cli-amd-pm-ccd-168a618/`。
