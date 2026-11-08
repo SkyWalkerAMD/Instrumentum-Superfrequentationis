@@ -107,8 +107,8 @@ The [producer follow-up](amd-granite-producer-paths.md) verifies their arithmeti
 tails, configuration updates and shared-parameter paths without promoting a
 physical unit. It supersedes the discovery leads below where applicable.
 The [DPM follow-up](amd-granite-dpm-policy.md) resolves qualified nominal MHz,
-software volts and sample-share interpretations for 20 common fields; three
-other common candidates remain unverified. The meanings of the three code rows, physical
+software volts and sample-share interpretations for 20 common fields; five
+common configuration values retain unverified physical units. The meanings of the three code rows, physical
 PM-to-CCD/OS-CPU mapping and second-rail independent write/readback remain open.
 
 The next static trace leads are recorded below. These are producer/consumer

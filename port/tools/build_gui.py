@@ -160,6 +160,7 @@ def main():
                    OCTOOL_OC_ALL_TEST_SCREENSHOT=str((tests / "oc-frequency-all-fixture.png").resolve()),
                     OCTOOL_PM_NATIVE_TEST_SCREENSHOT=str((tests / "pm-native-fixture.png").resolve()),
                     OCTOOL_PM_GRANITE_TEST_SCREENSHOT=str((tests / "pm-granite-fixture.png").resolve()),
+                    OCTOOL_PM_GRANITE_CONFIG_TEST_SCREENSHOT=str((tests / "pm-granite-config-fixture.png").resolve()),
                     OCTOOL_PM_GRANITE_DPM_TEST_SCREENSHOT=str((tests / "pm-granite-dpm-fixture.png").resolve()),
                     OCTOOL_PM_GRANITE_SVI_TEST_SCREENSHOT=str((tests / "pm-granite-svi-fixture.png").resolve()),
                     OCTOOL_PM_GRANITE_MIRRORS_TEST_SCREENSHOT=str((tests / "pm-granite-mirrors-fixture.png").resolve()),

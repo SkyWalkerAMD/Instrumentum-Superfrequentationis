@@ -54,7 +54,7 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader, std::shared_ptr<Hard
     auto *readNativeButton = new QPushButton("Read native PM table", controls_); readNativeButton->setObjectName("pmNativeRead");
     readNativeButton->setEnabled(bool(access_)); native->addWidget(readNativeButton);
     mapCcds_ = new QCheckBox("Map firmware CCD slots", controls_); mapCcds_->setObjectName("pmMapCcds");
-    mapCcds_->setToolTip("Shimada 115.46.0 queries CCD presence. Granite 98.84.0 maps only the exact two-slot table to firmware IDs 0/1; one-slot tables are ambiguous. Firmware IDs are not OS CPU/APIC IDs.");
+    mapCcds_->setToolTip("Shimada 115.46.0 queries CCD presence. Granite 98.84.0 maps only the exact two-slot table to firmware IDs 0/1; one-slot tables are ambiguous. Firmware IDs are not OS CPU/APIC IDs. The checked Granite core-command path uses a separate sparse remap requiring runtime core masks.");
     native->addWidget(mapCcds_);
     auto *nativeScope = new QLabel("Firmware transfer; no tuning change requested", controls_);
     nativeScope->setWordWrap(true); native->addWidget(nativeScope); controls->addLayout(native);
@@ -86,7 +86,7 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader, std::shared_ptr<Hard
         "Link bandwidth (original mapping)", "Internal clocks (original mapping)",
         "GMI stored arrays", "DIMM stored arrays", "PCIe stored arrays",
         "Core stored arrays (18 rows)", "CCD stored arrays", "Granite Ridge complete stored table",
-        "Granite Ridge DPM policies"});
+        "Granite Ridge DPM policies", "Granite Ridge configuration mirrors"});
     viewRow->addWidget(view_); viewRow->addStretch();
     layout->addLayout(viewRow);
     metadata_ = new QLabel(this); metadata_->setObjectName("pmMetadata"); metadata_->setTextFormat(Qt::PlainText); layout->addWidget(metadata_);
@@ -248,12 +248,13 @@ void AmdPmPanel::showFields() {
     const bool original = index != 0 || s.graniteRidge;
     const char *groups[] = {"power", "workload", "power_model", "voltage_policy", "limit_contributors",
         "link_bandwidth", "internal_clocks", "gmi_storage", "dimm_storage", "pcie_storage", "core_storage", "ccd_storage"};
-    const auto &fields = index == 0 || index == 15 ? s.fields : index == 1 ? s.originalLimits :
+    const auto &fields = index == 0 || index >= 15 ? s.fields : index == 1 ? s.originalLimits :
         index < 7 ? s.originalPackage : index < 9 ? s.originalFabric : index < 12 ? s.originalArrays :
         index == 12 ? s.firmwareCores : index == 13 ? s.firmwareCcds : s.graniteRaw;
     table_->setRowCount(0);
     for (const auto &f : fields) {
         if (index == 15 && f.group != "granite_dpm_clock" && f.group != "granite_dpm_voltage" && f.group != "granite_dpm_share") continue;
+        if (index == 16 && f.group != "granite_target_config" && f.group != "granite_local_config") continue;
         if (index >= 2 && index < 14 && f.group != groups[index-2]) continue;
         const int row = table_->rowCount(); table_->insertRow(row);
         const QString state = f.error ? "Non-finite stored value" : f.scaleError ? "Clock scaling out of range" :
@@ -292,7 +293,8 @@ void AmdPmPanel::showFields() {
         if (!f.producerNote.empty()) {
             QString note=QString::fromStdString(f.producerNote);
             if(f.producerSourceAddress) {
-                note += "\nReference MP5-local producer: "+hex(f.producerSourceAddress);
+                const bool smu=f.group=="granite_target_config" || f.group=="granite_local_config";
+                note += QString(smu?"\nReference SMU-local producer: ":"\nReference MP5-local producer: ")+hex(f.producerSourceAddress);
                 if(!f.counterSourceAddresses.empty()) {
                     QStringList addresses;
                     for(auto address:f.counterSourceAddresses) addresses << hex(address);

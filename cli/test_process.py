@@ -247,7 +247,7 @@ for i, r in enumerate(granite_pm):
         assert len(pm['firmware_ccd_arrays']) == 12*slots
         assert len(pm['granite_stored_words']) == length//4
         assert pm['granite_stored_words'][-1]['raw'] == ('0x7f800001' if i == 2 else '0x42c80000')
-        assert len(pm['fields'])==39
+        assert len(pm['fields'])==41
         assert all(f['unit'] == 'unverified' for f in pm['fields'][4:7])
         assert [f['unit'] for f in pm['fields'][7:22]]==['V','V','A','W','deg C']*3
         assert [f['stored_value'] for f in pm['fields'][7:22]]==[1.125,1.25,12.5,15.625,60.5,.875,1.5,20,30,65.25,.625,1,2,2,70]
@@ -282,11 +282,22 @@ with tempfile.TemporaryDirectory(prefix='octool-granite-') as directory:
         decoded = run('amd-pm-decode','--file',str(capture),code=code)['data']['pm']
         assert decoded == pm
         forged = json.loads(json.dumps(r))
+        forged['data']['pm']['core_command_mapping'] = dict(smt_target_stride=16,
+            runtime_mapping_verified=True, command_indexes_are_pm_slots=True, runtime_masks_required=False)
         forged['data']['pm']['fields'][-1].update(software_request_mirror=False,
             firmware_consumer_channel=1, measurement=True, physical_rail_verified=True,
             setting_readback_verified=True, independent_rail_addressing=True,
             runtime_write_enabled=True, producer_source_address='0xffffffff')
         for field in forged['data']['pm']['fields']:
+            if field['group']=='granite_command_mirror':
+                field.update(startup_source='device_getter',startup_query_packet_sent=True,
+                    startup_completion_checked=True,independent_runtime_device_getter_verified=True)
+            if field['group'] in ('granite_target_config','granite_local_config'):
+                field.update(firmware_target=99, configuration_kind='physical rail', unit='V',
+                    reference_address_space='host_physical', producer_source_address='0xffffffff',
+                    physical_unit_verified=True, target_present_verified=True,
+                    target_is_compact_pm_slot=True, step_setter_reads_device=True,
+                    step_setter_equal_code_retains_previous_value=False)
             if field['group'].startswith('granite_dpm_'):
                 field.update(policy_state=99, clock_policy_kind=99, unit='W',
                     nominal_reference_mhz=200, measurement=True, measured_frequency=True,
@@ -330,6 +341,20 @@ with tempfile.TemporaryDirectory(prefix='octool-granite-') as directory:
                 assert int(f['raw'],16) == bits and bool(f['error']) == invalid
                 assert f['stored_value'] == (None if invalid else struct.unpack('<f',struct.pack('<I',bits))[0])
             assert decoded['fields'][7]['stored_value'] == 1.125 and decoded['fields'][-1]['stored_value'] == 1.5
+    for width, version in ((1,'0x620105'),(2,'0x620205')):
+        original=bytes.fromhex(granite_pm[width-1]['data']['pm']['raw_hex'])
+        for bits in (0x80000000,1,0xbf800000,0x43160000,0x7f800000,0x7f800001,0xffc12345):
+            changed=bytearray(original)
+            for index in (259,260,261,262,269):struct.pack_into('<I',changed,4*index,bits)
+            raw.write_bytes(changed);invalid=bits&0x7f800000==0x7f800000
+            decoded=run('amd-pm-decode','--file',str(raw),'--version',version,code=3 if invalid else 0)['data']['pm']
+            fields=[f for f in decoded['fields'] if f['group'] in ('granite_target_config','granite_local_config')]
+            assert len(fields)==5
+            for f in fields:
+                assert int(f['raw'],16)==bits and bool(f['error'])==invalid
+                assert f['unit']=='unverified' and 'unit_evidence' not in f
+                assert not f['physical_unit_verified'] and not f['setting_readback_verified']
+            assert decoded['fields'][7]['stored_value']==1.125 and decoded['fields'][-1]['stored_value']==1.5
 oc_modes = [r for r in reports if r['command'] == 'amd-oc-mode-set' and 'requested_enabled' in r['data']]
 assert len(oc_modes) == 9 and [r['ok'] for r in oc_modes] == [True]*3 + [False]*6
 for r in oc_modes:
@@ -998,9 +1023,32 @@ for report in reports:
         first_core, ccd_rows = 0x4b4, 12
         start = first_core+18*8*n*4
         assert pm['firmware_arrays_layout'] == 'granite-ridge-18-core-12-ccd-rows'
-        assert len(pm['fields'])==39
-        assert all('candidate' in f['name'] and f['unit'] == 'unverified' for f in pm['fields'][4:7])
+        assert len(pm['fields'])==41
+        assert all(f['producer_kind']=='configuration' and f['unit'] == 'unverified' for f in pm['fields'][4:7])
+        mapping=pm['core_command_mapping']
+        assert mapping['smt_target_stride']==32 and mapping['non_smt_target_stride']==16
+        assert mapping['enabled_core_ranks_compacted'] and mapping['runtime_masks_required']
+        assert not any(mapping[k] for k in ('command_indexes_are_pm_slots','command_indexes_are_os_cpu_ids','runtime_mapping_verified','runtime_write_enabled'))
         raw=bytes.fromhex(pm['raw_hex'])
+        configurations=[f for f in pm['fields'] if f['group'] in ('granite_target_config','granite_local_config')]
+        assert len(configurations)==5 and {int(f['offset'],16)//4 for f in configurations}=={259,260,261,262,269}
+        for f in configurations:
+            index=int(f['offset'],16)//4;local=index==269
+            assert f['unit']=='unverified' and 'unit_evidence' not in f and 'slot' not in f
+            assert f['producer_kind']=='configuration' and f['producer_evidence']=='granite-smu-98.84.0-static'
+            assert f['reference_address_space']=='smu_local' and f['configuration_mirror']
+            assert f['stored_value']==struct.unpack_from('<f',raw,4*index)[0]
+            assert int(f['producer_source_address'],16)==(0xc27c if local else 0xa55c+8*((index-259)%2)+16*((index-259)//2))
+            assert not any(f[k] for k in ('physical_unit_verified','physical_measurement_verified','physical_rail_verified',
+                'physical_mapping_verified','measurement','freshness_verified','setting_readback_verified','runtime_write_enabled'))
+            assert f['averaged']!=local
+            if local:
+                assert f['step_setter_equal_code_retains_previous_value'] and not f['step_setter_reads_device']
+                assert 'firmware_target' not in f
+            else:
+                assert f['firmware_target']==(index-259)%2 and f['configuration_kind']==('A' if index<261 else 'B')
+                assert not f['target_present_verified'] and not f['target_is_compact_pm_slot']
+                assert f['absent_target_can_retain_value']
         policies=[f for f in pm['fields'] if f['group'].startswith('granite_dpm_')]
         assert len(policies)==20 and {int(f['offset'],16)//4 for f in policies}==set(range(67,87))
         for f in policies:
@@ -1024,7 +1072,10 @@ for report in reports:
         for j,f in enumerate(pm['fields'][7:22]):
             channel,kind=divmod(j,5); off=4*(48+5*channel+kind)
             assert f['group']==('granite_command_mirror' if kind==0 else 'granite_svi') and f['firmware_channel']==channel
-            if kind==0: assert f['software_command_mirror'] and not f['measurement']
+            if kind==0:
+                assert f['software_command_mirror'] and not f['measurement']
+                assert f['startup_source']=='local_controller_status_bits_14_6' and f['producer_note']
+                assert not any(f[k] for k in ('startup_query_packet_sent','startup_completion_checked','independent_runtime_device_getter_verified'))
             assert f['unit']==('V','V','A','W','deg C')[kind] and int(f['offset'],16)==off
             assert f['unit_evidence']=='granite-smu-98.84.0-static'
             assert not any(f[k] for k in ('capture_firmware_verified','physical_rail_verified','freshness_verified','setting_readback_verified'))

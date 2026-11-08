@@ -24,7 +24,7 @@ int main() {
     assert(amdPmLayouts().size() == 8 && amdGranitePmLayouts().size() == 2);
     for (unsigned n = 0; n < 2; ++n) {
         const auto b = granite_pm_fixture::bytes(sizes[n]); const auto s = decodeAmdPm(b,versions[n]);
-        assert(!s.error && s.graniteRidge && s.raw == b && s.fields.size() == 39 && s.fields[0].value == 2000);
+        assert(!s.error && s.graniteRidge && s.raw == b && s.fields.size() == 41 && s.fields[0].value == 2000);
         const auto &request=s.fields.back();
         assert(request.group=="granite_shared_request" && request.unit=="V" && request.offset==76);
         assert(request.value==1.5 && request.unitEvidence=="granite-smu-98.84.0-static");
@@ -92,6 +92,13 @@ int main() {
         assert(auditLegacyAmdPmLayout(versions[n],sizes[n],n+1).error == -ENOTSUP);
         for(const auto &entry:std::vector<std::pair<std::string,std::string>>{
             {"\"software_command_mirror\":true","\"software_command_mirror\":false"},
+            {"\"startup_query_packet_sent\":false","\"startup_query_packet_sent\":true"},
+            {"\"startup_completion_checked\":false","\"startup_completion_checked\":true"},
+            {"\"independent_runtime_device_getter_verified\":false","\"independent_runtime_device_getter_verified\":true"},
+            {"\"smt_target_stride\":32","\"smt_target_stride\":16"},
+            {"\"runtime_masks_required\":true","\"runtime_masks_required\":false"},
+            {"\"command_indexes_are_pm_slots\":false","\"command_indexes_are_pm_slots\":true"},
+            {"\"runtime_mapping_verified\":false","\"runtime_mapping_verified\":true"},
             {"\"software_request_mirror\":true","\"software_request_mirror\":false"},
             {"\"firmware_consumer_channel\":0","\"firmware_consumer_channel\":1"},
             {"\"reference_address_space\":\"smu_local\"","\"reference_address_space\":\"host_physical\""},
@@ -139,6 +146,43 @@ int main() {
         assert(amdPmJson(parseAmdPmCapture(forged))==json);
         assert(json.find("\"freshness_verified\":false")!=std::string::npos);
         assert(json.find("\"setting_readback_verified\":false")!=std::string::npos);
+    } ++groups;
+    // Two fixed firmware-target positions exist even in a one-slot PM table.
+    // They must not inherit compact slot IDs or claim a measured voltage.
+    for(unsigned width=1;width<=2;++width) {
+        const auto s=decodeAmdPm(granite_pm_fixture::bytes(sizes[width-1]),versions[width-1]);
+        unsigned count=0;const double expected[]={.75,1.125,.875,1.25};
+        for(const auto &f:s.fields) if(f.group=="granite_target_config" || f.group=="granite_local_config") {
+            ++count;const bool local=f.offset==269*4;const unsigned index=f.offset/4-259;
+            assert(f.unit=="unverified" && f.unitEvidence.empty() && !f.slotCount && !f.clock && !f.scaled);
+            assert(f.producerEvidence=="granite-smu-98.84.0-static" && f.producerKind=="configuration");
+            assert(f.value==(local?1:expected[index]) && !f.producerNote.empty());
+            assert(f.producerSourceAddress==(local?0xc27c:0xa55c+8*(index%2)+16*(index/2)));
+            if(!local) assert(f.slot==index%2 && f.row==index/2);
+        }
+        assert(count==5);const auto json=amdPmJson(s);
+        for(const auto &entry:std::vector<std::pair<std::string,std::string>>{
+            {"\"firmware_target\":1","\"firmware_target\":0"},
+            {"\"configuration_kind\":\"B\"","\"configuration_kind\":\"voltage\""},
+            {"\"target_present_verified\":false","\"target_present_verified\":true"},
+            {"\"absent_target_can_retain_value\":true","\"absent_target_can_retain_value\":false"},
+            {"\"target_is_compact_pm_slot\":false","\"target_is_compact_pm_slot\":true"},
+            {"\"step_setter_reads_device\":false","\"step_setter_reads_device\":true"}}) {
+            auto forged=json;const auto p=forged.find(entry.first);assert(p!=std::string::npos);
+            forged.replace(p,entry.first.size(),entry.second);assert(amdPmJson(parseAmdPmCapture(forged))==json);
+        }
+    } ++groups;
+    for(unsigned width=1;width<=2;++width) for(std::uint32_t bits:
+            {0x80000000u,1u,0xbf800000u,0x43160000u,0x7f800000u,0x7f800001u,0xffc12345u}) {
+        auto b=granite_pm_fixture::bytes(sizes[width-1]);
+        for(unsigned index:{259u,260u,261u,262u,269u}) pm_fixture::put(b,4*index,bits);
+        const auto s=decodeAmdPm(b,versions[width-1]);
+        for(const auto &f:s.fields) if(f.group=="granite_target_config" || f.group=="granite_local_config") {
+            assert(f.raw==bits && f.unit=="unverified" && f.unitEvidence.empty() && !f.scaled);
+            assert(bool(f.error)==((bits&0x7f800000u)==0x7f800000u));
+        }
+        assert(s.fields[7].value==1.125 && s.fields.back().value==1.5);
+        const auto json=amdPmJson(s);assert(amdPmJson(parseAmdPmCapture(json))==json);
     } ++groups;
     // Every policy state is exported, including the zero-share state. Preserve
     // the already converted values, without BCLK scaling or physical IDs.
@@ -346,6 +390,6 @@ int main() {
         assert(r.snapshot.raw.empty() && !r.metadataRechecked && !t.d->presenceQueries);
         if(!mode) assert(!r.transferAttempted && !t.d->memoryReads && r.phase==AmdPmNativePhase::Topology);
     } ++groups;
-    assert(groups == 19);
+    assert(groups == 21);
     std::cout << groups << " AMD Granite Ridge PM scenario groups passed\n";
 }

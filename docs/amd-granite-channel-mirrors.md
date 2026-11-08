@@ -105,7 +105,7 @@ code representations do not establish fully identified physical metrics.
 The [frequency-model follow-up](amd-granite-clock-models.md) adds GHz models,
 a fused frequency policy and a quantized CCD counter percentage.
 The [DPM follow-up](amd-granite-dpm-policy.md) now brings the common view to
-39 fields: 20 software policies/sample shares, three unresolved candidates,
+41 fields: 20 software policies/sample shares, five configuration mirrors with unverified units,
 three command mirrors, twelve telemetry fields and one shared request mirror.
 See [the current validation report](amd-granite-validation.md)
 for tested builds, reproducible outputs and remaining hardware limitations.

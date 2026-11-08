@@ -59,7 +59,7 @@ class Slice:
             next_pc = pc+len(raw)
             branched = False
             self.trace.append(pc)
-            if op in ('entry', 'memw'):
+            if op in ('entry', 'memw', 'nop'):
                 pass
             elif op == 'call8' and hooks is not None:
                 destination = val(a[0])
@@ -68,11 +68,23 @@ class Slice:
             elif op == 'retw' and stop is None and hooks is not None:
                 return
             elif op in ('mov', 'movi'):
-                self.r[a[0]] = val(a[1]) & 0xffffffff
+                value = val(a[1])
+                if ins['text'].startswith('movi.n '):
+                    # RI7 has the asymmetric range -32..95. Ghidra renders
+                    # negative operands as unsigned bytes (e.g. 7cf5 -> ff).
+                    # Decode the signed value from the already checked bytes.
+                    assert len(raw) == 2 and raw[0] & 0x8f == 0x0c
+                    immediate = ((raw[0] >> 4) & 7) * 16 + (raw[1] >> 4)
+                    value = immediate - 128 if immediate >= 96 else immediate
+                    assert a[0] == 'a'+str(raw[1] & 15)
+                    assert val(a[1]) & 255 == value & 255
+                self.r[a[0]] = value & 0xffffffff
             elif op == 'l32r':
                 self.r[a[0]] = struct.unpack_from('<I', self.body, val(a[1]))[0]
-            elif op in ('l8ui', 'l16ui', 'l32i'):
-                self.r[a[0]] = self.get(val(a[1])+val(a[2]), {'l8ui':1, 'l16ui':2, 'l32i':4}[op])
+            elif op in ('l8ui', 'l16ui', 'l16si', 'l32i'):
+                value = self.get(val(a[1])+val(a[2]), {'l8ui':1, 'l16ui':2, 'l16si':2, 'l32i':4}[op])
+                if op == 'l16si' and value & 0x8000: value -= 0x10000
+                self.r[a[0]] = value & 0xffffffff
             elif op in ('s8i', 's16i', 's32i'):
                 self.put(val(a[1])+val(a[2]), val(a[0]), {'s8i':1, 's16i':2, 's32i':4}[op])
             elif op in ('add', 'addi', 'addmi', 'addx2', 'addx4', 'addx8', 'mull', 'quou', 'sub'):
@@ -99,6 +111,9 @@ class Slice:
                 self.shift = val(a[0]) & 31
             elif op == 'srl':
                 self.r[a[0]] = val(a[1]) >> self.shift
+            elif op == 'sra':
+                value = val(a[1]); value -= (1 << 32) if value & (1 << 31) else 0
+                self.r[a[0]] = (value >> self.shift) & 0xffffffff
             elif op == 'slli':
                 self.r[a[0]] = (val(a[1]) << val(a[2])) & 0xffffffff
             elif op == 'srli':
@@ -178,7 +193,7 @@ class Slice:
                 if val(a[0]): next_pc = val(a[1]); branched = True
             elif op in ('bne', 'bnei'):
                 if val(a[0]) != val(a[1]): next_pc = val(a[2]); branched = True
-            elif op == 'beq':
+            elif op in ('beq', 'beqi'):
                 if val(a[0]) == val(a[1]): next_pc = val(a[2]); branched = True
             elif op in ('bltu','bltui'):
                 if val(a[0]) < val(a[1]): next_pc = val(a[2]); branched = True

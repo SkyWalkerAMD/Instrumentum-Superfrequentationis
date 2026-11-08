@@ -650,6 +650,38 @@ private slots:
         }
     }
 
+    void pmGraniteConfigurationMirrors() {
+        using namespace octool::core;
+        QTemporaryDir dir;QVERIFY(dir.isValid());QFile file(dir.path()+"/configuration.json");
+        AmdPmPanel panel;panel.resize(1500,1050);panel.show();
+        auto *view=panel.findChild<QComboBox *>("pmView");auto *table=panel.findChild<QTableWidget *>("pmTable");
+        view->setCurrentIndex(view->findText("Granite Ridge configuration mirrors"));
+        for(unsigned width=1;width<=2;++width) {
+            const auto capture=amdPmJson(decodeAmdPm(granite_pm_fixture::bytes(width==1?1828:2452),width==1?0x620105:0x620205));
+            QVERIFY(file.open(QIODevice::WriteOnly|QIODevice::Truncate));file.write(QByteArray::fromStdString(capture));file.close();
+            QVERIFY(panel.loadSnapshotFile(file.fileName()));QCOMPARE(table->rowCount(),5);
+            const double expected[]={.75,.875,1,1.125,1.25};
+            for(int row=0;row<5;++row) {
+                QCOMPARE(table->item(row,1)->text().toDouble(),expected[row]);
+                QCOMPARE(table->item(row,2)->text(),QString("Unverified"));
+                QVERIFY(table->item(row,6)->text().contains("Configuration mirror"));
+                const auto note=table->item(row,0)->toolTip();QVERIFY(note.contains("Reference SMU-local producer"));
+                QVERIFY(!note.contains("Reference MP5-local"));
+                QVERIFY(note.contains(row==2?"not averaged":"absent target"));
+            }
+            QVERIFY(table->item(3,0)->text().contains("target 1")); // also in the one-slot layout
+            panel.findChild<QPushButton *>("pmCopy")->click();
+            QCOMPARE(QApplication::clipboard()->text(),QString::fromStdString(capture));
+            if(width==2) {
+                QApplication::processEvents();const auto shot=qEnvironmentVariable("OCTOOL_PM_GRANITE_CONFIG_TEST_SCREENSHOT");
+                if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+            }
+        }
+        const auto layout=amdPmLayouts().front();
+        const auto other=amdPmJson(decodeAmdPm(std::vector<std::uint8_t>(layout.bytes),layout.version));
+        QVERIFY(file.open(QIODevice::WriteOnly|QIODevice::Truncate));file.write(QByteArray::fromStdString(other));file.close();
+        QVERIFY(panel.loadSnapshotFile(file.fileName()));QCOMPARE(table->rowCount(),0);
+    }
     void pmGraniteDpmPolicySnapshot() {
         using namespace octool::core;
         QTemporaryDir dir;QVERIFY(dir.isValid());QFile file(dir.path()+"/policies.json");
@@ -707,13 +739,13 @@ private slots:
             auto *table = panel.findChild<QTableWidget *>("pmTable");
             auto *view = panel.findChild<QComboBox *>("pmView");
             read->click(); QTRY_VERIFY(read->isEnabled());
-            QCOMPARE(table->rowCount(),39); QCOMPARE(table->item(0,1)->text(),QString("2000"));
-            QCOMPARE(table->item(38,1)->text(),QString("1.5"));
-            QCOMPARE(table->item(38,2)->text(),QString("V"));
-            QCOMPARE(table->item(38,6)->text(),QString("Shared request mirror; not readback"));
-            QVERIFY(table->item(38,0)->toolTip().contains("firmware channel 0"));
-            QVERIFY(table->item(38,0)->toolTip().contains("0x8c34"));
-            QVERIFY(table->item(38,0)->toolTip().contains("pre-quantization"));
+            QCOMPARE(table->rowCount(),41); QCOMPARE(table->item(0,1)->text(),QString("2000"));
+            QCOMPARE(table->item(40,1)->text(),QString("1.5"));
+            QCOMPARE(table->item(40,2)->text(),QString("V"));
+            QCOMPARE(table->item(40,6)->text(),QString("Shared request mirror; not readback"));
+            QVERIFY(table->item(40,0)->toolTip().contains("firmware channel 0"));
+            QVERIFY(table->item(40,0)->toolTip().contains("0x8c34"));
+            QVERIFY(table->item(40,0)->toolTip().contains("pre-quantization"));
             QCOMPARE(table->item(0,2)->text(),QString("MHz"));
             const QStringList units{"V","A","W","deg C"};
             for(int channel=0;channel<3;++channel) for(int kind=0;kind<4;++kind) {
@@ -942,7 +974,7 @@ private slots:
             QTemporaryDir dir; QFile file(dir.path()+"/old.bin"); QVERIFY(file.open(QIODevice::WriteOnly));
             file.write(reinterpret_cast<const char *>(device->bytes.data()),qint64(device->bytes.size())); file.close();
             QVERIFY(panel.loadRawFile(file.fileName(),0x620205));
-            auto *table = panel.findChild<QTableWidget *>("pmTable"); QCOMPARE(table->rowCount(),39);
+            auto *table = panel.findChild<QTableWidget *>("pmTable"); QCOMPARE(table->rowCount(),41);
             auto *read = panel.findChild<QPushButton *>("pmNativeRead"); read->click();
             QCOMPARE(table->rowCount(),0); QTRY_VERIFY(read->isEnabled()); QCOMPARE(table->rowCount(),0);
             panel.findChild<QPushButton *>("pmCopy")->click();
@@ -1239,7 +1271,7 @@ private slots:
         panel.resize(1150,650); panel.show();
         auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
         auto *copy=panel.findChild<QPushButton *>("pmCopy"); auto *status=panel.findChild<QLabel *>("pmStatus");
-        QCOMPARE(view->count(),16);
+        QCOMPARE(view->count(),17);
         const int counts[]={7,8,4,10,24}; const char *names[]={"CPU Power","PPT_WC","VDDCR_CPU_DYN_POWER_WC","FIT PID0","PPT0"};
         const char *values[]={"10","11.75","13.75","14.75","17.25"};
         for (const auto &layout : amdPmLayouts()) {
@@ -1321,7 +1353,7 @@ private slots:
         panel.resize(1150,650); panel.show();
         auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
         auto *copy=panel.findChild<QPushButton *>("pmCopy"); auto *status=panel.findChild<QLabel *>("pmStatus");
-        QCOMPARE(view->count(),16);
+        QCOMPARE(view->count(),17);
         for (const auto &layout : amdPmLayouts()) {
             QVERIFY(savePmFile(raw,pm_fixture::bytes(layout.bytes))); QVERIFY(panel.loadRawFile(raw,layout.version));
             view->setCurrentIndex(7); QCOMPARE(table->rowCount(),9);
@@ -1412,7 +1444,7 @@ private slots:
         panel.resize(1150,940); panel.show();
         auto *view=panel.findChild<QComboBox *>("pmView"); auto *table=panel.findChild<QTableWidget *>("pmTable");
         auto *copy=panel.findChild<QPushButton *>("pmCopy"); auto *status=panel.findChild<QLabel *>("pmStatus");
-        QCOMPARE(view->count(),16);
+        QCOMPARE(view->count(),17);
         const int counts[]={36,48,8}, first[]={0,36,84};
         for (const auto &layout : amdPmLayouts()) {
             QVERIFY(savePmFile(raw,pm_fixture::bytes(layout.bytes))); QVERIFY(panel.loadRawFile(raw,layout.version));

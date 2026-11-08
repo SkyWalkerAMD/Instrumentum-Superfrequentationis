@@ -159,9 +159,20 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
                 "Software frequency policy using nominal 100 MHz reference arithmetic. Policy C rounds policy B and applies a configured multiplier with 16-bit truncation. FCLK/UCLK/MCLK identities are candidates; this is not measured frequency or setting readback. All four states are exported, not averaged. State numbers do not identify physical CCDs or cores.";
         };
         for(unsigned kind=0;kind<4;++kind) policy(0,kind);
-        const char *names[] = {"CLDO_VDDG_IOD candidate","CLDO_VDDG_CCD candidate","CLDO_VDDP candidate"};
-        const unsigned indices[] = {259,261,269};
-        for (unsigned i = 0; i < 3; ++i) field(out,out.fields,names[i],"unverified",indices[i]*4,false,"granite_common");
+        const auto configuration = [&](unsigned index) {
+            const bool local=index==269;
+            const unsigned target=local?0:(index-259)%2,kind=local?2:(index-259)/2;
+            const auto name=local?std::string("Local configuration C mirror"):
+                "Firmware target "+std::to_string(target)+" configuration "+(kind?"B":"A")+" (averaged)";
+            field(out,out.fields,name.c_str(),"unverified",index*4,false,local?"granite_local_config":"granite_target_config");
+            auto &v=out.fields.back();v.slot=target;v.row=kind;
+            v.producerEvidence="granite-smu-98.84.0-static";v.producerKind="configuration";
+            v.producerSourceAddress=local?0xc27c:0xa55c+8*target+16*kind;
+            v.producerNote=local?
+                "Direct copy of a software configuration mirror. Initialization converts a raw local-port byte; later step writes update the mirror without reading back the device. An equal-code request to the step setter retains the previous float; other update paths are separate. This field is not averaged. Physical unit, rail identity and applied-setting readback are unverified.":
+                "Two cached input codes are selected by a strict reference-frequency threshold, then converted and averaged. Only present firmware targets are updated; both fixed target positions are accumulated, so an absent target may export retained values. Target numbers are not compact PM slots, physical CCDs or OS CPUs. Physical unit, freshness and applied-setting readback are unverified.";
+        };
+        configuration(259);configuration(261);configuration(269);
         const char *quantities[] = {"voltage", "current", "power", "temperature"};
         const char *units[] = {"V", "A", "W", "deg C"};
         for (unsigned channel = 0; channel < 3; ++channel) {
@@ -169,6 +180,7 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
           field(out,out.fields,mirror.c_str(),"V",4*(48+5*channel),false,"granite_command_mirror");
           out.fields.back().firmwareChannel = channel;
           out.fields.back().unitEvidence = "granite-smu-98.84.0-static";
+          out.fields.back().producerNote = "Initialized from local controller status bits 14:6, then maintained by software write paths and averaged. The startup helper neither issues a peripheral query packet nor checks a completion flag. This is a command mirror, not an independent runtime device getter or proof that a voltage was applied.";
           for (unsigned quantity = 0; quantity < 4; ++quantity) {
             const auto name = "SVI channel " + std::to_string(channel) + " " + quantities[quantity] + " (averaged)";
             field(out,out.fields,name.c_str(),units[quantity],4*(49+5*channel+quantity),false,"granite_svi");
@@ -178,6 +190,7 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
         }
         for(unsigned state=0;state<4;++state) policy(state,4);
         for(unsigned state=1;state<4;++state) for(unsigned kind=0;kind<4;++kind) policy(state,kind);
+        configuration(260);configuration(262);
         field(out,out.fields,"Shared voltage request mirror (averaged)","V",19*4,false,"granite_shared_request");
         out.fields.back().unitEvidence = "granite-smu-98.84.0-static";
         out.fields.back().producerNote = "Shared software voltage request, averaged from SMU-local 0x8c34. The enabled 61h path selects the first or last configured entry and keeps the pre-quantization request; its encoded code may be capped at 255. The disabled path reconstructs the request from its rounded code. The checked writer uses firmware channel 0 and can retain the previous command mirror while locked. This value is neither a second independently addressed rail nor measured voltage or applied-setting readback.";
@@ -254,7 +267,7 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
         for (unsigned offset = 0; offset < bytes.size(); offset += 4)
             field(out,out.graniteRaw,("Word " + std::to_string(offset/4)).c_str(),"unverified",offset,false,"granite_storage");
         out.detail = out.error ? "Some Granite Ridge stored words are non-finite; raw bits and other values are retained" :
-            "Granite Ridge storage decoded using the 98.84.0 reference. DPM states contain software clock/voltage policies and sampling shares, not measured frequency/voltage or elapsed-time residency. Clock policies use nominal 100 MHz reference arithmetic; physical clock identities remain candidates. Command mirrors are averaged software values, not voltage measurements or setting readback. SVI telemetry can retain old values after failed reads; current scale mode 0 produces zero and validity flags are absent here. Channel numbers do not identify physical rails. Core model voltage is not measured rail voltage. GHz fields describe frequency models or policies, not measured clocks or setting readback. Disabled core models can retain old values. Request policy A/B use the GHz Fmax scale; both-zero requests retain old values, and B can exceed A. Conditional sensors and counters may retain old values; CCD counter percentage retains its old value on a zero denominator and can exceed 100. Code and counter meanings and freshness are unverified; averaged codes may be fractional. Stored values are not rescaled or clamped. CCD/core slots describe storage only. Other units, physical CCD/OS CPU mapping and capture provenance remain unverified.";
+            "Granite Ridge storage decoded using the 98.84.0 reference. DPM states contain software clock/voltage policies and sampling shares, not measured frequency/voltage or elapsed-time residency. Clock policies use nominal 100 MHz reference arithmetic; physical clock identities remain candidates. Command mirrors are averaged software values, not voltage measurements or setting readback. SVI telemetry can retain old values after failed reads; current scale mode 0 produces zero and validity flags are absent here. Channel numbers do not identify physical rails. Core model voltage is not measured rail voltage. GHz fields describe frequency models or policies, not measured clocks or setting readback. Disabled core models can retain old values. Request policy A/B use the GHz Fmax scale; both-zero requests retain old values, and B can exceed A. Conditional sensors and counters may retain old values; CCD counter percentage retains its old value on a zero denominator and can exceed 100. Code and counter meanings and freshness are unverified; averaged codes may be fractional. Stored values are not rescaled or clamped. CCD/core slots describe storage only. The checked core-command path uses a separate sparse remap based on active-target/core ranks; command indexes cannot be inferred from PM slots or OS CPU IDs. Other units, physical CCD/OS CPU mapping and capture provenance remain unverified.";
         return out;
     }
     // Independently implemented from the pinned layout facts in
@@ -387,7 +400,8 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
             ",\"physical_unit_verified\":false,\"physical_measurement_verified\":false,\"capture_firmware_verified\":false," +
             "\"freshness_verified\":false,\"setting_readback_verified\":false";
         if (v.producerSourceAddress) {
-            out += ",\"reference_address_space\":\"mp5_local\",\"producer_source_address\":"+word(v.producerSourceAddress)+
+            const bool smu=v.group=="granite_target_config" || v.group=="granite_local_config";
+            out += ",\"reference_address_space\":"+quote(smu?"smu_local":"mp5_local")+",\"producer_source_address\":"+word(v.producerSourceAddress)+
                 ",\"counter_source_addresses\":[";
             for(std::size_t i=0;i<v.counterSourceAddresses.size();++i) {
                 if(i) out += ',';
@@ -406,7 +420,20 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
             "\"independent_rail_addressing\":false,\"device_readback\":false,\"runtime_write_enabled\":false}";
         if (v.group == "granite_svi" || v.group == "granite_command_mirror") out += ",\"firmware_channel\":" + std::to_string(v.firmwareChannel) +
             ",\"physical_rail_verified\":false,\"freshness_verified\":false,\"setting_readback_verified\":false";
-        if (v.group == "granite_command_mirror") out += ",\"software_command_mirror\":true,\"measurement\":false";
+        if (v.group == "granite_command_mirror") out += ",\"software_command_mirror\":true,\"measurement\":false"
+            ",\"startup_source\":\"local_controller_status_bits_14_6\",\"startup_query_packet_sent\":false"
+            ",\"startup_completion_checked\":false,\"independent_runtime_device_getter_verified\":false"
+            ",\"producer_note\":"+quote(v.producerNote);
+        if (v.group == "granite_target_config" || v.group == "granite_local_config") {
+            out += ",\"configuration_mirror\":true,\"measurement\":false,\"physical_rail_verified\":false"
+                ",\"physical_mapping_verified\":false,\"runtime_write_enabled\":false";
+            if(v.group=="granite_target_config") out += ",\"firmware_target\":"+std::to_string(v.slot)+
+                ",\"configuration_kind\":"+quote(v.row?"B":"A")+",\"averaged\":true"
+                ",\"target_present_verified\":false,\"absent_target_can_retain_value\":true"
+                ",\"target_is_compact_pm_slot\":false,\"select_second\":\"strictly_above_reference_frequency_threshold\"";
+            else out += ",\"averaged\":false,\"step_setter_equal_code_retains_previous_value\":true"
+                ",\"step_setter_reads_device\":false";
+        }
         if (v.group == "granite_dpm_clock" || v.group == "granite_dpm_voltage" || v.group == "granite_dpm_share") {
             const unsigned source = v.row==4 ? 0x155c0+4*v.slot : 0x96a0+80*v.slot+(v.row==3?0x23c:0x228+4*v.row);
             out += ",\"policy_state\":"+std::to_string(v.slot)+",\"reference_address_space\":\"smu_local\""
@@ -458,7 +485,12 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
     appendFields(s.firmwareCores);
     out += "],\"firmware_ccd_arrays\":[";
     appendFields(s.firmwareCcds);
-    out += "],\"platform\":" + quote(s.graniteRidge ? "granite-ridge" : "shimada") + ",\"granite_stored_words\":[";
+    out += "],\"platform\":" + quote(s.graniteRidge ? "granite-ridge" : "shimada");
+    if(s.graniteRidge) out += ",\"core_command_mapping\":{\"evidence\":\"granite-smu-98.84.0-static\","
+        "\"smt_target_stride\":32,\"non_smt_target_stride\":16,\"enabled_core_ranks_compacted\":true,"
+        "\"runtime_masks_required\":true,\"command_indexes_are_pm_slots\":false,\"command_indexes_are_os_cpu_ids\":false,"
+        "\"runtime_mapping_verified\":false,\"runtime_write_enabled\":false}";
+    out += ",\"granite_stored_words\":[";
     appendFields(s.graniteRaw);
     return out + "]}";
 }

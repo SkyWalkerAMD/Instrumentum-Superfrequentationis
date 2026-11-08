@@ -156,8 +156,8 @@ Reproduce with [firmware-granite-producers.py](../analysis/tools/firmware-granit
 and the [REA workflow](../.github/workflows/rea-granite-study.yml).
 There remain 13 core and six CCD rows with physical/dimensionless unit evidence,
 plus two core and one CCD code rows. The [DPM follow-up](amd-granite-dpm-policy.md)
-adds 20 common policies/sample shares. The eight rows above, three other common
-candidates, physical PM-to-CCD/OS-CPU binding and independent second-rail
+adds 20 common policies/sample shares. The eight rows above, five common
+configuration values, physical PM-to-CCD/OS-CPU binding and independent second-rail
 write/readback are still incomplete. See [validation](amd-granite-validation.md)
 for the latest completed batch; pending work is not a passed cloud result.
 

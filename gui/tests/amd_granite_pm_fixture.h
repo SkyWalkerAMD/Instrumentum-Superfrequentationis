@@ -14,6 +14,9 @@ inline std::vector<std::uint8_t> bytes(unsigned size = 2452) {
     for(unsigned kind=0;kind<5;++kind) for(unsigned state=0;state<4;++state)
         pm_fixture::put(b,4*(67+4*kind+state),dpm[kind][state]);
     pm_fixture::put(b,19*4,0x3fc00000); // 1.5 V shared request, distinct from command/telemetry
+    const unsigned configIndices[]={259,260,261,262,269};
+    const std::uint32_t configBits[]={0x3f400000,0x3f900000,0x3f600000,0x3fa00000,0x3f800000};
+    for(unsigned i=0;i<5;++i) pm_fixture::put(b,4*configIndices[i],configBits[i]); // units unverified
     pm_fixture::put(b,48*4,0x3f900000); // 1.125 V command mirror
     pm_fixture::put(b,53*4,0x3f600000); // .875 V command mirror
     pm_fixture::put(b,58*4,0x3f200000); // .625 V command mirror

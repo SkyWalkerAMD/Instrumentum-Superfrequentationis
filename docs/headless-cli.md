@@ -1,3 +1,5 @@
+2026-11-08：GUI / CLI 同步补齐[公共配置镜像](amd-granite-common-config.md)，增加固件目标 1 的两个字段，公共字段合计 41 项。新 GUI 配置视图与 CLI 共用解码；单位、物理身份和设备回读仍未确认。另增加[命令索引重编码](amd-granite-slot-binding.md)、[rails 启动来源](amd-granite-rail-routing.md)和[计时器边界](amd-granite-unit-anchors.md)证据。云端结果见[当前验证记录](amd-granite-validation.md)。
+
 # 无桌面版 OCTool
 
 新增 [Granite Ridge 四状态 DPM 策略表](amd-granite-dpm-policy.md)：
@@ -435,8 +437,8 @@ octool-cli amd-pm-decode --file pm.bin --version 0x730204 --bclk-mhz 102.5
 9950X3D 使用独立的 [Granite Ridge 配置](amd-granite-pm.md)：
 `amd-pm-native-read --cpu 0 --platform granite-ridge`，接受精确 SMU 98.84.0；
 双槽表可加 `--map-ccd` 标出固件目标 0/1，但没有物理 CCD/OS 核心绑定。
-两种 Granite 表的公共 `fields` 有 39 项：20 个 [DPM 策略／采样占比字段](amd-granite-dpm-policy.md)、
-三个未解释候选、三个软件电压命令镜像、十二个 SVI 遥测字段，以及一个
+两种 Granite 表的公共 `fields` 有 41 项：20 个 [DPM 策略／采样占比字段](amd-granite-dpm-policy.md)、
+五个单位未确认的配置镜像、三个软件电压命令镜像、十二个 SVI 遥测字段，以及一个
 [公共电压请求镜像](amd-granite-shared-request.md)。请求位于 PM 索引 19／偏移 0x4c，
 以 V 显示，保留在字段列表末尾。其 `group` 为 `granite_shared_request`，
 `software_request_mirror: true`，`firmware_consumer_channel: 0`；独立 rail 和设备回读标记均为 false。
