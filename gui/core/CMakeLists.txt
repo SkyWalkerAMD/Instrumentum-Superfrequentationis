@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(Threads REQUIRED)
 
-add_library(octool_core STATIC amd_pstates.cpp hardware.cpp helper_protocol.cpp amd_pm_native.cpp amd_granite_mapping.cpp
+add_library(octool_core STATIC amd_pstates.cpp hardware.cpp helper_protocol.cpp amd_pm_native.cpp amd_granite_mapping.cpp amd_granite_core_status.cpp
     register_update.cpp intel_controls.cpp intel_oc.cpp intel_turbo.cpp intel_uncore.cpp intel_energy.cpp intel_thermal.cpp intel_limits.cpp amd_smu.cpp amd_curve.cpp amd_pbo.cpp amd_pm.cpp amd_umc.cpp umc_capture.cpp amd_topology.cpp spd.cpp intel_memory.cpp intel_mchbar.cpp intel_clock.cpp)
 target_include_directories(octool_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(octool_core PUBLIC Threads::Threads)
@@ -18,7 +18,7 @@ endif()
 
 include(CTest)
 if(BUILD_TESTING)
-    foreach(component pstates hardware helper_protocol platform memory amd_apob intel_oc intel_turbo intel_uncore intel_energy intel_thermal intel_limits intel_avx intel_bclk_voltage intel_iccmax intel_pl4 intel_vf intel_tvb intel_tvb_table intel_tvb_table_edit amd_curve amd_curve_all amd_pbo amd_pbo_query amd_power_adjustment amd_pbo_fmax amd_granite_fmax amd_granite_scalar amd_granite_mapping amd_granite_controls amd_granite_curve amd_granite_shaper amd_pbo_limits amd_oc amd_oc_cores amd_pm amd_pm_native amd_granite_pm umc_capture spd intel_memory intel_clock)
+    foreach(component pstates hardware helper_protocol platform memory amd_apob intel_oc intel_turbo intel_uncore intel_energy intel_thermal intel_limits intel_avx intel_bclk_voltage intel_iccmax intel_pl4 intel_vf intel_tvb intel_tvb_table intel_tvb_table_edit amd_curve amd_curve_all amd_pbo amd_pbo_query amd_power_adjustment amd_pbo_fmax amd_granite_fmax amd_granite_scalar amd_granite_mapping amd_granite_core_status amd_granite_controls amd_granite_curve amd_granite_shaper amd_pbo_limits amd_oc amd_oc_cores amd_pm amd_pm_native amd_granite_pm umc_capture spd intel_memory intel_clock)
         add_executable(${component}_core_test ../tests/${component}_core_test.cpp)
         target_link_libraries(${component}_core_test PRIVATE octool_core)
         # These regressions use assertions. Release builds must test too.

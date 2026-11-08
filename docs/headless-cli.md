@@ -4,8 +4,16 @@
 
 新增 `amd-curve-shaper-read --cpu N --platform granite-ridge`：与 GUI 同步读取
 5×3 个保存的 signed8 计数偏移，保留完整 −128..127；读取失败或上下文变化时
-清空整表。它不包含 fuse 锚点、隐藏 baseline 或实际硬件效果，也不开放 Shaper 写入。
-协议与原字节验证见 [Curve Shaper](amd-granite-curve-shaper.md)。
+清空整表。它不包含 fuse 锚点、隐藏 baseline 或实际硬件效果。
+GUI 和 CLI 现同步提供[保存偏移写入](amd-granite-shaper-write.md)：
+`amd-curve-shaper-set --cpu N --platform granite-ridge --tier 0..4 --counts C0,C1,C2 --expect-words W0,W1,W2,W3,W4 --expect-caps RAW --apply`。
+三个新计数与全部十五个旧计数均需在 −50..30，且完整旧表与能力字必须匹配两次新读取。
+写入后校验全部五个保存字；相同请求不发送设置命令。成功只确认保存表，不能确认下游
+应用或电气效果。失败不自动重试或回滚。协议见 [Curve Shaper](amd-granite-curve-shaper.md)。
+
+新增 `amd-core-status-decode --file capture.hob`，与 GUI 同步离线解码一份
+524 字节的[参考固件核心状态记录](amd-granite-map-binding.md)。保留两套独立掩码
+和三种核心状态，缺席目标单独标注；不访问硬件，不据此绑定 PM、物理 CCD 或 OS 核心。
 
 新增 [Granite Ridge 四状态 DPM 策略表](amd-granite-dpm-policy.md)：
 `amd-pm-decode` / `amd-pm-native-read --platform granite-ridge` 与 GUI 同步显示

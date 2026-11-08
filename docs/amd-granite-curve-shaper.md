@@ -1,6 +1,8 @@
 # Granite Curve Shaper stored offsets and downstream interpolation
 
-The product exposes saved offsets as a read-only table. Scope is ASUS ProArt
+The product reads saved offsets and supports a guarded, whole-table-verified
+[saved-offset write](amd-granite-shaper-write.md). This does not establish
+downstream application or physical behavior. Scope is ASUS ProArt
 X870E-CREATOR WIFI BIOS 2503, SMU/MP5 98.84.0. The user's 9950X3D is unavailable
 and its installed BIOS is unknown. No transport, fuse or physical behavior was
 observed on that machine.
@@ -154,8 +156,8 @@ This limited negative result does not prove the original lacks the feature,
 and a new implementation must not be counted as an exact original UI recovery
 without a corresponding original call path.
 
-The shared core provides an exact-version **read-only saved Curve Shaper offset
-table**, labelled in counts with its SMU-storage provenance. GUI and CLI use
+The shared core provides an exact-version **saved Curve Shaper offset table**,
+labelled in counts with its SMU-storage provenance. GUI and CLI use
 the same decoder. The reader validates low-byte tier tags `0..4`, retains all
 signed8 counts, and ignores the unused sixth word. The sequence
 `02/6f/84/6f/02` brackets the read with complete capability and exact-version
@@ -165,11 +167,13 @@ the getter does not check either. CPU/PCI target checks remain required.
 Reading saved offsets does not imply physical application or matching BIOS
 baseline. The raw five words remain available alongside the decoded counts.
 
-Do not enable the writer solely from its command name. Any subsequent typed
-writer needs an explicit whole-table effect policy, stale table/capability and
-version checks, a clearly scoped stored-offset readback result, and resolution
-or accurate presentation of the separate baseline and downstream failure issue.
-The product does not enable `0xa6` or raw MP5 `0x47` writes.
+The [typed writer](amd-granite-shaper-write.md) checks all fifteen old counts,
+all five expected words and the full capability word against two fresh reads.
+It requires bit 2 and manual OC off, then sends at most one A6h setting with
+bit 7 clear and validates the complete saved table. A no-op sends no setting.
+Readback reports only saved offsets; hidden baselines, interpolation and
+downstream application remain unknown. External writers can race these checks.
+The product never exposes raw MP5 `0x47` writes or silently retries a failure.
 
 ## Reproduction and coverage
 

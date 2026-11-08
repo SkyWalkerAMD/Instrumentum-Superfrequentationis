@@ -58,7 +58,38 @@ for r in query_results:
         assert d['ln2_enabled'] is None and d['command'] == '0x0000005c'
         assert d['firmware_index'] in (0,1,7,127)
 assert sum(r['error'] == -22 for r in queries) == 20
-assert len(reports) == 1706, len(reports)
+assert len(reports) == 1740, len(reports)
+core_status = [r for r in reports if r['command'] == 'amd-core-status-decode']
+assert len(core_status) == 17 and [r['ok'] for r in core_status] == [True]*4+[False]*13
+for i,r in enumerate(core_status):
+    d=r['data']
+    assert d['offline'] and d['valid']==r['ok'] and d['expected_bytes']==524
+    assert d['stored_mask_bits']==8
+    assert not any(d[k] for k in ('hardware_accessed','origin_verified','flags_are_smt',
+        'mapper_upper_bits_available','smu_enabled_mask_equivalence_verified',
+        'pm_slot_mapping_verified','apob_binding_verified','physical_ccd_mapping_verified','os_cpu_mapping_verified'))
+    if i<4:
+        assert d['captured_bytes']==524
+        assert d['reference_guid']=='0cdfa7da-0d0b-41f0-b98b-0f6359c0857f'
+        assert int(d['presence_mask'],16)==(3,2,0,1)[i]
+        assert d['fuse_flag']==(1,0,0,1)[i] and d['inverse_control_flag']==(1,0,0,0)[i]
+        targets=d['targets']
+        assert [t['firmware_target_index'] for t in targets]==[0,1]
+        assert [int(t['disabled_fuse_mask'],16) for t in targets]==([128,3],[255,128],[255,255],[0,255])[i]
+        assert [int(t['runtime_enabled_mask'],16) for t in targets]==([63,252],[0,129],[0,0],[0,0])[i]
+        for j,t in enumerate(targets):
+            assert t['present']==bool((3,2,0,1)[i] & (1<<j))
+            disabled,enabled=int(t['disabled_fuse_mask'],16),int(t['runtime_enabled_mask'],16)
+            assert int(t['overlap_mask'],16)==(disabled&enabled)
+            assert [c['core_bit'] for c in t['cores']]==list(range(8))
+            for bit,c in enumerate(t['cores']):
+                expected=0 if disabled&(1<<bit) else 1 if enabled&(1<<bit) else 2
+                assert c['code']==expected
+                assert c['state']==(('fuse_disabled','runtime_enabled','runtime_not_enabled')[expected] if t['present'] else 'absent')
+    else:
+        assert d['targets']==[] and d['presence_mask'] is None
+        assert d['fuse_flag'] is None and d['inverse_control_flag'] is None
+run('amd-core-status-decode',code=2)
 comparisons=[r for r in reports if 'apob_comparison' in r['data']]
 assert len(comparisons)==12 and [r['ok'] for r in comparisons]==[True]*3+[False]*9
 for i,r in enumerate(comparisons):
@@ -555,8 +586,9 @@ for r in shaper:
     d=r['data']
     assert d['platform']=='granite-ridge' and d['supported_firmware_version']=='0x00625400'
     assert d['unit']=='count' and d['frequency_anchors_ghz'] is None and d['temperature_anchors_celsius'] is None
-    for name in ('baseline_included','effective_offset_verified','hardware_effect_measured','write_supported','setting_commands_sent','physical_mapping_verified'):
+    for name in ('baseline_included','effective_offset_verified','hardware_effect_measured','setting_commands_sent','physical_mapping_verified','write_ready'):
         assert d[name] is False
+    assert d['write_supported'] and d['write_requires_full_snapshot']
     assert d['valid']==d['raw_valid']==r['ok']
     if r['ok']:
         assert d['words_read']==5 and [v['frequency_tier'] for v in d['stored_offsets']]==list(range(5))
@@ -571,6 +603,24 @@ assert shaper[8]['data']['words_read']==2
 run('amd-curve-shaper-read','--cpu',str(cpu),code=2)
 run('amd-curve-shaper-read','--cpu',str(cpu),'--platform','shimada',code=2)
 run('amd-curve-shaper-read','--cpu',str(cpu),'--platform','granite-ridge','--apply',code=2)
+shaper_writes=[r for r in reports if r['command']=='amd-curve-shaper-set']
+assert len(shaper_writes)==17 and [r['ok'] for r in shaper_writes]==[True]*2+[False]*15
+for i,r in enumerate(shaper_writes):
+    d=r['data'];assert d['platform']=='granite-ridge' and d['unit']=='count'
+    assert d['frequency_tier']==2 and d['command']=='0x000000a6'
+    assert d['verified']==r['ok'] and d['unchanged']==(i==1)
+    assert d['write_attempted']==(i==0 or 9<=i<=15)
+    assert d['expected_words']==['0x00000000','0x00000001','0x00000002','0x00000003','0x00000004']
+    assert d['verification_scope']=='complete saved offset table only'
+    for key in ('baseline_included','effective_offset_verified','hardware_effect_measured','physical_mapping_verified','atomic_against_external_writers','retry_performed','rollback_performed'):
+        assert d[key] is False
+    if i<2:
+        assert d['after']['raw_words']==(['0x00000000','0x00000001','0x1e00ce02','0x00000003','0x00000004'] if i==0 else d['expected_words'])
+        assert d['after']['stored_offsets'][2]['counts']==([-50,0,30] if i==0 else [0,0,0])
+assert shaper_writes[10]['data']['after']['raw_words'][4]=='0x00000104'
+assert shaper_writes[14]['data']['after']['words_read']==2 and shaper_writes[14]['data']['after']['raw_words'] is None
+assert shaper_writes[15]['data']['write_attempted'] and not shaper_writes[15]['data']['accepted']
+run('amd-curve-shaper-set','--cpu',str(cpu),'--platform','granite-ridge','--tier','2','--counts','-50,0,30','--expect-words','0,1,2,3,4','--expect-caps','7',code=2)
 curve_settings = [r for r in reports if r['command'] == 'amd-curve-set' and r['error'] != -22]
 assert len(curve_settings) == 9
 assert [r['ok'] for r in curve_settings] == [True, False, False, False, False, False, False, True, True]

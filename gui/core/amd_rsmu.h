@@ -190,4 +190,38 @@ inline AmdRsmuShaperReply exchangeGraniteShaper(HardwareSession &s,
     if ((out.error = s.checkpoint())) return out;
     out.raw = raw; out.valid = true; return out;
 }
+// Deliberately separate from the query and generic command families. This
+// typed A6 path permits only canonical tiers/counts and six initialized args.
+// A host acknowledgement is not a downstream MP5 or physical-effect readback.
+inline AmdRsmuReply exchangeGraniteShaperWrite(HardwareSession &s,
+                                             std::uint32_t command,
+                                             std::uint32_t argument) {
+    AmdRsmuReply out;
+    if (command != 0xa6 || (argument & 0xffu) >= 5) { out.error = -EINVAL; return out; }
+    for (unsigned point = 0; point < 3; ++point) {
+        const unsigned byte = (argument >> (8 + 8*point)) & 0xffu;
+        if (byte > 30 && byte < 206) { out.error = -EINVAL; return out; }
+    }
+    const auto wait = [&]() {
+        for (unsigned n = 0; n < 100; ++n) {
+            auto r = rsmuIndirect(s,0x3b10570,false);
+            if (r.error || r.value) return r;
+            rsmuDelay();
+        }
+        Reply r; r.error = -ETIMEDOUT; return r;
+    };
+    auto r = wait(); if ((out.error = r.error)) return out;
+    r = rsmuIndirect(s,0x3b10570,true,0); if ((out.error = r.error)) return out;
+    for (unsigned i = 0; i < 6; ++i) {
+        r = rsmuIndirect(s,0x3b10a40+4*i,true,i ? 0 : argument);
+        if ((out.error = r.error)) return out;
+    }
+    out.messageAttempted = true;
+    r = rsmuIndirect(s,0x3b10524,true,command); if ((out.error = r.error)) return out;
+    r = wait(); if ((out.error = r.error)) return out;
+    out.response = std::uint32_t(r.value);
+    if (out.response != 1) { out.error = -EIO; return out; }
+    if ((out.error = s.checkpoint())) return out;
+    out.valid = true; return out;
+}
 } } }

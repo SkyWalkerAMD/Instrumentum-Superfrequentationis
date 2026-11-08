@@ -652,6 +652,59 @@ AmdCurveShaper readAmdCurveShaper(HardwareSession &s, const SmuTarget &target) {
     out.raw = reply.raw; out.counts = counts; out.rawValid = out.valid = true;
     return out;
 }
+int encodeAmdCurveShaper(unsigned tier, const std::array<int, 3> &counts,
+                        std::uint32_t &argument) {
+    argument = 0;
+    if (tier >= 5) return -ERANGE;
+    for (int count : counts) if (count < -50 || count > 30) return -ERANGE;
+    argument = tier;
+    for (unsigned point = 0; point < counts.size(); ++point)
+        argument |= (std::uint32_t(counts[point]) & 0xffu) << (8 + 8*point);
+    return 0;
+}
+AmdCurveShaperUpdate setAmdCurveShaper(HardwareSession &s, const SmuTarget &target,
+    std::uint32_t expectedCapabilities, const std::array<std::uint32_t, 5> &expectedWords,
+    unsigned tier, const std::array<int, 3> &counts) {
+    AmdCurveShaperUpdate out; out.tier = tier; out.requestedCounts = counts;
+    if ((out.error = encodeAmdCurveShaper(tier,counts,out.argument))) return out;
+    std::array<std::array<int, 3>, 5> previous{};
+    if (!decodeAmdCurveShaper(expectedWords,previous)) { out.error = -EINVAL; return out; }
+    // The firmware normalizes the entire saved table, including unselected
+    // tiers. Refuse a transaction that would silently alter those values.
+    for (const auto &row : previous) for (int count : row)
+        if (count < -50 || count > 30) { out.error = -ERANGE; return out; }
+    if (!amdAllCoreCurveAvailable(expectedCapabilities)) { out.error = -ENOTSUP; return out; }
+    out.requestedRaw = expectedWords; out.requestedRaw[tier] = out.argument;
+    out.phase = AmdPboPhase::Compare;
+    out.before = readAmdCurveShaper(s,target);
+    if ((out.error = out.before.error)) return out;
+    if (out.before.capabilities.raw != expectedCapabilities || out.before.raw != expectedWords) {
+        out.error = -EAGAIN; return out;
+    }
+    if (out.before.raw == out.requestedRaw) {
+        if ((out.error = s.checkpoint())) return out;
+        out.after = out.before; out.verified = out.unchanged = true;
+        out.phase = AmdPboPhase::Complete; return out;
+    }
+    const auto current = readAmdCurveShaper(s,target);
+    if ((out.error = current.error)) return out;
+    if (current.capabilities.raw != expectedCapabilities || current.raw != expectedWords) {
+        out.error = -EAGAIN; return out;
+    }
+    if ((out.error = checkFmaxTarget(s,target))) return out;
+    out.phase = AmdPboPhase::Write;
+    const auto sent = detail::exchangeGraniteShaperWrite(s,0xa6,out.argument);
+    out.writeAttempted = sent.messageAttempted; out.response = sent.response;
+    out.accepted = sent.response == 1;
+    if ((out.error = sent.error)) return out;
+    out.phase = AmdPboPhase::Verify;
+    out.after = readAmdCurveShaper(s,target);
+    if ((out.error = out.after.error)) return out;
+    if (out.after.capabilities.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
+    if (out.after.raw != out.requestedRaw) { out.error = -EIO; return out; }
+    if ((out.error = s.checkpoint())) return out;
+    out.verified = true; out.phase = AmdPboPhase::Complete; return out;
+}
 AmdPboRailsEncoding encodeLegacyAmdPboRails(unsigned a, unsigned b) {
     AmdPboRailsEncoding out;
     const auto valid = [](unsigned v) { return !v || (v >= 250 && v <= 2800 && v % 5 == 0); };

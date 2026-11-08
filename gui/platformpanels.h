@@ -33,6 +33,7 @@ public:
     AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *parent = nullptr, unsigned cpu = 0);
     ~AmdTuningPanel() override;
     bool loadTopologyRecord(const QString &path);
+    bool loadCoreStatusRecord(const QString &path);
 private:
     void submit(bool probeOnly);
     void readTopology();
@@ -43,6 +44,7 @@ private:
     void applyAllCoreCurve();
     void invalidateCurve();
     void readCurveShaper();
+    void applyCurveShaper();
     void readPboScalar();
     void applyPboScalar();
     void readPboCapabilities();
@@ -65,6 +67,10 @@ private:
     QLineEdit *powerAdjustment_;
     octool::core::AmdPowerAdjustment powerSnapshot_;
     octool::core::AmdPboFmax fmaxSnapshot_;
+    octool::core::AmdCurveShaper shaperSnapshot_;
+    octool::core::SmuTarget shaperTarget_;
+    QComboBox *shaperTier_;
+    QLineEdit *shaperCounts_[3];
     QComboBox *ocMode_, *ocFrequencyScope_;
     QLineEdit *ocCcd_, *ocCore_, *ocMHz_;
     octool::core::AmdPboScalar pboSnapshot_;

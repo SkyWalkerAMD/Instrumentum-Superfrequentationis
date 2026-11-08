@@ -229,13 +229,35 @@ struct AmdCurveShaper {
 };
 // Require the low byte of each word to equal its tier 0..4; decode the other
 // three bytes as signed8 without imposing the setter's narrower input range.
-// A bad tier clears the entire output matrix. No setter is exposed.
+// A bad tier clears the entire output matrix.
 bool decodeAmdCurveShaper(const std::array<std::uint32_t, 5> &raw,
                          std::array<std::array<int, 3>, 5> &counts);
 // Exact Granite CPU/PCI/non-VM and firmware guard. Bracket query 84 with full
 // capability and version checks. Any failure leaves raw/counts unpublished;
 // wordsRead, response and identity/capability reports remain diagnostic only.
 AmdCurveShaper readAmdCurveShaper(HardwareSession &session, const SmuTarget &target);
+struct AmdCurveShaperUpdate {
+    int error = 0;
+    AmdPboPhase phase = AmdPboPhase::Validate;
+    AmdCurveShaper before, after;
+    std::array<std::uint32_t, 5> requestedRaw{};
+    std::array<int, 3> requestedCounts{};
+    unsigned tier = 0;
+    std::uint32_t argument = 0, response = 0;
+    bool writeAttempted = false, accepted = false, verified = false, unchanged = false;
+};
+// One tier 0..4, three signed counts -50..30, with the ignored bit 7 clear.
+int encodeAmdCurveShaper(unsigned tier, const std::array<int, 3> &counts,
+                        std::uint32_t &argument);
+// Exact Granite 98.84.0 only. Require bit 2/manual OC off, valid expected tier
+// tags and all 15 existing counts inside -50..30: A6 normalizes EVERY tier.
+// Compare the complete expected table and capabilities twice before one A6.
+// Verification compares all five saved offset words after the write; it does
+// not include the hidden baseline or prove MP5 completion/electrical effects.
+// No automatic retry or rollback, including when the acknowledgement is lost.
+AmdCurveShaperUpdate setAmdCurveShaper(HardwareSession &session, const SmuTarget &target,
+    std::uint32_t expectedCapabilities, const std::array<std::uint32_t, 5> &expectedWords,
+    unsigned tier, const std::array<int, 3> &counts);
 struct AmdPboRailsEncoding {
     int error = 0;
     unsigned rail0Millivolts = 0, rail1Millivolts = 0;

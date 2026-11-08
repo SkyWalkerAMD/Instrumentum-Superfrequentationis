@@ -3,6 +3,7 @@
 #include "core/amd_curve.h"
 #include "core/bounded_json.h"
 #include "tests/amd_granite_mapping_vectors.h"
+#include "tests/amd_granite_core_status_vectors.h"
 #include "json.h"
 #include "platform/linux_inventory_native.h"
 #include "platform/linux_amd_pm.h"
@@ -1159,6 +1160,58 @@ void offlineTopologyDoesNotCreateBackend() {
         if(good) assert(json.find("\"thread_flags\":[0,1],\"thread_prefix_count\":0")!=std::string::npos);
         if(mode==8) assert(json.find("\"selected_record_offset\":80")!=std::string::npos);
         if(emit) std::cout<<json;
+    }
+    assert(!opens);
+}
+void offlineCoreStatusDoesNotCreateBackend() {
+    char path[]="/tmp/octool-core-status-XXXXXX"; const int fd=mkstemp(path); assert(fd>=0); close(fd);
+    struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
+    unsigned opens=0;
+    const auto factory=[&]() { ++opens; return std::unique_ptr<HardwareBackend>(); };
+    for(unsigned mode=0;mode<17;++mode) {
+        auto bytes=granite_core_status_fixture::bytes(granite_core_status_fixture::vectors[mode<4?mode:0]);
+        if(mode==4) bytes.resize(523);
+        if(mode==5) bytes.push_back(0);
+        if(mode==6) bytes[8]^=1; // Wrong GUID.
+        if(mode==7) bytes[0]=3; // Not a GUID HOB.
+        if(mode==8) bytes[4]=1; // Reserved header.
+        if(mode==9) bytes[24+12]=4; // Unsupported presence bit.
+        if(mode==10) bytes[24]=3; // Unsupported target count.
+        if(mode==11) bytes[24+8]=2; // Opaque flag must still be a bit.
+        if(mode==12) bytes[24+0x10+8]=1; // Unused target has data.
+        if(mode==13) bytes[24+0x74]=0; // State conflicts with masks.
+        if(mode==15) bytes[24+12]=1; // Absent target still has enabled cores.
+        if(mode==16) { bytes=granite_core_status_fixture::bytes(granite_core_status_fixture::vectors[2]); bytes[24+8]=1; }
+        { std::ofstream file(path,std::ios::binary); file.write(reinterpret_cast<const char*>(bytes.data()),bytes.size()); }
+        std::ostringstream out;
+        assert(run({"amd-core-status-decode","--file",mode==14?std::string(path)+".missing":path},out,factory)==(mode<4?0:3));
+        const auto json=out.str();
+        assert(json.find("\"hardware_accessed\":false")!=std::string::npos);
+        assert(json.find("\"pm_slot_mapping_verified\":false")!=std::string::npos);
+        assert(json.find("\"os_cpu_mapping_verified\":false")!=std::string::npos);
+        if(mode<4) {
+            assert(json.find("\"valid\":true")!=std::string::npos);
+            assert(json.find("\"firmware_target_index\":1")!=std::string::npos);
+        } else {
+            assert(json.find("\"targets\":[]")!=std::string::npos);
+            assert(json.find("\"presence_mask\":null")!=std::string::npos);
+            assert(json.find("\"fuse_flag\":null")!=std::string::npos);
+        }
+        if(emit) std::cout<<json;
+    }
+    assert(!opens);
+}
+void coreStatusInvalidBeforeOpen() {
+    unsigned opens=0;
+    for(const auto &args:std::vector<std::vector<std::string>>{
+        {"amd-core-status-decode"},{"amd-core-status-decode","--file",""},
+        {"amd-core-status-decode","--file","a","--file","b"},
+        {"amd-core-status-decode","--file","a","--apply"},
+        {"amd-core-status-decode","--file","a","--cpu","0"},
+        {"amd-core-status-decode","--file","a","--platform","granite-ridge"},
+        {"amd-core-status-decode","--file","a","--apob","b"}}) {
+        std::ostringstream out;
+        assert(run(args,out,[&] { ++opens; return std::unique_ptr<HardwareBackend>(); })==2);
     }
     assert(!opens);
 }
@@ -2832,6 +2885,68 @@ void graniteCurveShaperInvalidBeforeOpen() {
         assert(run(args,output,[&]{++opened;return std::unique_ptr<HardwareBackend>(new AmdPboFixture);})==2 && !opened);
     }
 }
+void graniteCurveShaperWriteCommands() {
+    for(unsigned mode=0;mode<17;++mode) {
+        AmdPboFixture d;d.useGraniteShaperWrite();d.capsRaw=7;d.shaperWords={{0,1,2,3,4}};
+        bool changed=false;
+        if(mode==2)d.shaperWords[4]|=0x100;
+        if(mode==3)d.capsRaw=4;
+        if(mode==4)d.capsRaw=0;
+        if(mode==5)d.capsRaw=0x10007;
+        if(mode==6)d.firmwareVersion=0x00625401;
+        if(mode==7)d.shaperWords[4]|=0x1f00;
+        if(mode==8)d.afterRequest=[&]{if(!changed && d.shaperReads==5){changed=true;d.shaperWords[3]|=0x100;}};
+        if(mode==9)d.discardChange=true;
+        if(mode==10)d.afterRequest=[&]{if(!changed && d.shaperWrites){changed=true;d.shaperWords[4]|=0x100;}};
+        if(mode==11)d.afterRequest=[&]{if(!changed && d.shaperWrites){changed=true;d.capsRaw^=0x80000000;}};
+        if(mode==12)d.afterRequest=[&]{if(!changed && d.shaperWrites){changed=true;d.firmwareVersion=0x00625401;}};
+        if(mode==13)d.writeCompletion=0xfe;
+        if(mode==14)d.afterRequest=[&]{if(d.shaperWrites && d.shaperReads==12)d.failAt=int(d.calls);};
+        if(mode==15)d.afterRequest=[&]{if(!changed && d.shaperWrites){changed=true;d.failAt=int(d.calls);}};
+        if(mode==16)d.hypervisor=true;
+        const auto text=command(d,{"amd-curve-shaper-set","--cpu","130","--platform","granite-ridge",
+            "--tier","2","--counts",mode==1?"0,0,0":"-50,0,30","--expect-words","0,1,2,3,4",
+            "--expect-caps","7","--apply"},mode<2?0:3);
+        const auto data=capture_json::Parser(text).parse().at("data");
+        assert(capture_json::equals(data.at("verified"),capture_json::Json::Boolean,mode<2?"true":"false"));
+        assert(capture_json::equals(data.at("unchanged"),capture_json::Json::Boolean,mode==1?"true":"false"));
+        const bool attempted=mode==0 || (mode>=9 && mode<=15);
+        assert(d.shaperWrites==(attempted?1u:0u) && d.settings==d.shaperWrites && !d.wrongCpu);
+        assert(capture_json::equals(data.at("write_attempted"),capture_json::Json::Boolean,attempted?"true":"false"));
+        for(const char *key:{"baseline_included","effective_offset_verified","hardware_effect_measured",
+                "physical_mapping_verified","atomic_against_external_writers","retry_performed","rollback_performed"})
+            assert(capture_json::equals(data.at(key),capture_json::Json::Boolean,"false"));
+        for(unsigned i=0;i<d.messages.size();++i) {
+            for(unsigned a=1;a<6;++a)assert(d.commandArgs[i][a]==0);
+            if(d.messages[i]!=0xa6)assert(d.commandArgs[i][0]==0);
+        }
+        if(mode==0) {
+            assert(d.shaperArgument==0x1e00ce02u && d.shaperWords[2]==0x1e00ce02u);
+            assert(d.shaperReads==15 && data.at("after").at("raw_words").items.size()==5);
+            assert(d.messages==std::vector<std::uint32_t>({2,0x6f,0x84,0x6f,2,2,0x6f,0x84,0x6f,2,0xa6,2,0x6f,0x84,0x6f,2}));
+        }
+        if(mode==14)assert(data.at("after").at("words_read").text=="2" && data.at("after").at("raw_words").kind==capture_json::Json::Null);
+        if(mode==15)assert(d.shaperWords[2]==0x1e00ce02u && data.at("after").at("raw_words").kind==capture_json::Json::Null);
+    }
+}
+void graniteCurveShaperWriteInvalidBeforeOpen() {
+    const std::vector<std::string> base={"amd-curve-shaper-set","--cpu","130","--platform","granite-ridge",
+        "--tier","2","--counts","-50,0,30","--expect-words","0,1,2,3,4","--expect-caps","7","--apply"};
+    std::vector<std::vector<std::string>> invalid;
+    for(unsigned index:{1u,3u,5u,7u,9u,11u}){auto a=base;a.erase(a.begin()+index,a.begin()+index+2);invalid.push_back(a);}
+    auto missing=base;missing.pop_back();invalid.push_back(missing);
+    for(const auto &item:std::vector<std::pair<unsigned,std::vector<std::string>>>{
+        {4,{"shimada","unknown"}},{6,{"5","-1","1.5","4294967296"}},
+        {8,{"-51,0,30","-50,0,31","1,2","1,2,3,4",",0,0","0,0,","0,,0","1.5,0,0","0x1,0,0","+1,0,0"," 1,0,0","--apply"}},
+        {10,{"0,1,2,3","0,1,2,3,4,5","0,1,2,3,5","0,1,2,3,0x1f04","0,1,2,3,0xcd04","0,1,2,3,0x100000004","0,1,2,3,","0,1,,3,4"}},
+        {12,{"0","2","0x10007","4294967296"}}})
+        for(const auto &value:item.second){auto a=base;a[item.first]=value;invalid.push_back(a);}
+    for(const char *key:{"--ccd","--core","--arg0","--bus","--margin"}){auto a=base;a.insert(a.end(),{key,"0"});invalid.push_back(a);}
+    for(const auto &args:invalid) {
+        unsigned opened=0;std::ostringstream out;
+        assert(run(args,out,[&]{++opened;return std::unique_ptr<HardwareBackend>(new AmdPboFixture);})==2 && !opened);
+    }
+}
 void pboOfflineCommands() {
     unsigned opened = 0;
     const auto factory = [&] { ++opened; return std::unique_ptr<HardwareBackend>(new AmdPboFixture); };
@@ -2890,6 +3005,7 @@ int main(int argc, char **argv) {
     graniteMappingCommands(); graniteMappingInvalidBeforeOpen();
     graniteAllCoreCurveCommands(); graniteAllCoreCurveInvalidBeforeOpen();
     graniteCurveShaperCommands(); graniteCurveShaperInvalidBeforeOpen();
+    graniteCurveShaperWriteCommands(); graniteCurveShaperWriteInvalidBeforeOpen();
     allCoreCurveCommands(); allCoreCurveInvalidBeforeOpen();
     pboQueryCommands(); pboQueryInvalidBeforeOpen();
     powerAdjustmentCommands(); powerAdjustmentInvalidBeforeOpen();
@@ -2907,5 +3023,6 @@ int main(int argc, char **argv) {
     l3TopologyCommands(); topologyCatalogCommands(); offlineTopologyDoesNotCreateBackend();
     published9950x3dTopologyCommands();
     apobComparisonCommands(); apobComparisonInvalidBeforeOpen();
-    if (!emit) std::cout << "93 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    offlineCoreStatusDoesNotCreateBackend(); coreStatusInvalidBeforeOpen();
+    if (!emit) std::cout << "97 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

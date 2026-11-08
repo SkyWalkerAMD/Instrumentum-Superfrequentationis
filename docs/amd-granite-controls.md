@@ -13,9 +13,10 @@ synthetic tests and cross-platform builds do not establish machine acceptance.
 | PPT / TDC / EDC / temperature limit | `amd-pbo-limit-set` | Acknowledgement only; effective limit remains unknown |
 | Manual OC mode | `amd-oc-mode-set` | Requested mode flag readback; no automatic frequency, voltage or Scalar setting |
 | All-core Curve Optimizer | `amd-curve-all-set` | Acknowledgement only; per-target application and current margins remain unknown |
-| Curve Shaper table | `amd-curve-shaper-read` | Five by three saved signed-byte offsets, in counts; fuse anchors and hidden baselines are not read |
+| Curve Shaper table | `amd-curve-shaper-read`, `amd-curve-shaper-set` | Five by three saved signed-byte offsets, in counts; one-tier writes verify all five saved words, not effective downstream values |
 | Fmax ceiling | `amd-pbo-fmax-read`, `amd-pbo-fmax-set` | Stored ceiling readback, as in the preceding release |
 | PM / command index diagnostic | `amd-granite-map` | Reference mapping from explicit caller inputs; no live capture or OS binding |
+| Firmware core status record | `amd-core-status-decode` | Offline decoding of one reference GUID HOB; separate fuse-disabled and runtime-enabled masks, without PM or OS binding |
 
 Select **Granite Ridge** in the GUI's AMD SMU panel. Capability reads populate
 the supported controls. Scalar has a separate read step. Changes to the CPU,
@@ -43,6 +44,7 @@ amd-pbo-scalar-set --cpu N --platform granite-ridge --scalar N --expect-raw RAW 
 amd-pbo-limit-set --cpu N --platform granite-ridge --limit ppt|tdc|edc|temperature --value N --expect-caps RAW --apply
 amd-oc-mode-set --cpu N --platform granite-ridge --enabled 0|1 --expect-caps RAW --apply
 amd-curve-all-set --cpu N --platform granite-ridge --margin N --expect-caps RAW --apply
+amd-curve-shaper-set --cpu N --platform granite-ridge --tier 0..4 --counts C0,C1,C2 --expect-words W0,W1,W2,W3,W4 --expect-caps RAW --apply
 ```
 
 Expected words must come from the current read, not from this document. Scalar
@@ -63,10 +65,18 @@ Curve Shaper reads preserve all signed-byte values from −128 to +127, includin
 values outside the setter's supported interval. This is an observation of stored
 offsets, not permission to write those values. PBO-off and manual-OC states do
 not block this read. A malformed tier tag, partial read or changing context
-invalidates the entire table. No Shaper writer is exposed: the reference A6h
-path clamps all fifteen stored offsets, adds hidden baselines with byte
-truncation and forwards all five tiers, including tiers the caller did not edit.
-The 5×3 table feeds interpolation; it is not fifteen independent switches.
+invalidates the entire table. The writer requires all fifteen prior offsets to
+be inside −50..+30, matches all five expected words and the full capability word
+against two fresh snapshots, then submits one A6h setting. It rereads the entire
+table and version/capability context. An unchanged request sends no A6h. A stale
+snapshot or an out-of-range unselected tier prevents writing. A late failure can
+follow a changed saved value; there is no retry or automatic rollback.
+
+The reference A6h path still adds hidden baselines with byte truncation and
+forwards all five tiers. Matching saved words does not establish successful
+MP5 application, known baselines or electrical effects. The 5×3 table feeds
+interpolation; it is not fifteen independent switches. External software may
+race the prechecks. See [write protocol and boundaries](amd-granite-shaper-write.md).
 
 ## Mapping diagnostic
 
@@ -94,6 +104,16 @@ APIC/OS association and live runtime provider selection remain unresolved.
 - [Scalar](amd-granite-pbo-scalar.md), [four limits](amd-granite-pbo-limits.md),
   [mode](amd-granite-oc-mode.md), [all-core CO](amd-granite-curve-all.md).
 - [Curve Shaper saved offsets, baselines and interpolation](amd-granite-curve-shaper.md).
+- [Guarded Shaper saved-offset write](amd-granite-shaper-write.md).
+- [Core status GUID HOB](amd-granite-map-binding.md) separates the fuse mask
+  from the runtime mask and retains three per-core states. The caller supplies
+  the 524-byte record with `amd-core-status-decode --file capture.hob`, or loads
+  it in the GUI topology area. This is not a live acquisition or an APOB record.
+  Its low eight mask bits and two opaque flags do not reconstruct the SMU
+  mapper's full input or identify physical CCDs and OS CPUs.
+- [Two-channel automatic rail policy](amd-granite-rail-policy.md) explains
+  automatic caps and manual overrides. No independent rail writer or device
+  readback has been established.
 - [Mapping inputs and diagnostics](amd-granite-mapping-diagnostic.md).
 - [Reference UEFI acquisition](amd-granite-map-acquisition.md) traces the
   presence query through a selected SMN service. Provider selection and equality

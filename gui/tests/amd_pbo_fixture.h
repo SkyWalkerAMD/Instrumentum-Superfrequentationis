@@ -13,8 +13,9 @@ struct AmdPboFixture : AmdCurveFixture {
     bool allowGraniteScalar = false, clampScalar = false;
     bool allowGraniteLimits = false, allowGraniteMode = false;
     bool allowGraniteCurve = false;
-    bool allowGraniteShaper = false;
-    unsigned shaperReads = 0;
+    bool allowGraniteShaper = false, allowGraniteShaperWrite = false;
+    unsigned shaperReads = 0, shaperWrites = 0;
+    std::uint32_t shaperArgument = 0;
     std::array<std::uint32_t, 5> shaperWords{{0,1,2,3,4}};
     std::vector<unsigned> shaperReadIndices;
     std::uint32_t scalarClampedRaw = 0x40200000;
@@ -23,6 +24,7 @@ struct AmdPboFixture : AmdCurveFixture {
     void useGraniteMode() { useGraniteFmax(); allowGraniteMode = allowManualOc = true; }
     void useGraniteCurve() { useGraniteFmax(); allowGraniteCurve = allowAllCoreCurve = true; }
     void useGraniteShaper() { useGraniteFmax(); allowGraniteShaper = true; }
+    void useGraniteShaperWrite() { useGraniteShaper(); allowGraniteShaperWrite = true; }
     void useGraniteFmax() {
         graniteFmax = allowFmaxReadback = true;
         model = 0x44; pciId = 0x14d81022; firmwareVersion = 0x00625400;
@@ -64,13 +66,17 @@ struct AmdPboFixture : AmdCurveFixture {
                      (allowGraniteScalar && (r.value == 0x5b || r.value == 0x6d)) ||
                      (allowGraniteLimits && r.value >= 0x56 && r.value <= 0x59) ||
                      (allowGraniteMode && (r.value == 0x5d || r.value == 0x5e)) ||
-                     (allowGraniteCurve && r.value == 7) || (allowGraniteShaper && r.value == 0x84)) &&
+                     (allowGraniteCurve && r.value == 7) || (allowGraniteShaper && r.value == 0x84) ||
+                     (allowGraniteShaperWrite && r.value == 0xa6)) &&
                      (r.value == 0x6d || r.value == 0x5b || r.value == 0x6f || r.value == 0x70 || (r.value >= 0x56 && r.value <= 0x59) ||
                      (allowManualOc && r.value >= 0x5d && r.value <= 0x60) || (allowAllCoreCurve && r.value == 7) ||
                      (allowStatusQueries && (r.value == 0xa6 || r.value == 0x5c)) ||
                      (allowPowerAdjustment && (r.value == 2 || r.value == 0xa7 || r.value == 0xa8)) ||
-                     (allowFmaxReadback && (r.value == 2 || r.value == 0x6e)) || (allowGraniteShaper && r.value == 0x84))) {
-                const bool query = r.value == 0x6d || r.value == 0x6e || r.value == 0x6f || r.value == 0xa6 || r.value == 0x5c || r.value == 2 || r.value == 0xa8 || r.value == 0x84;
+                     (allowFmaxReadback && (r.value == 2 || r.value == 0x6e)) || (allowGraniteShaper && r.value == 0x84) ||
+                     (allowGraniteShaperWrite && r.value == 0xa6))) {
+                const bool shaperSetting = graniteFmax && allowGraniteShaperWrite && r.value == 0xa6;
+                const bool query = r.value == 0x6d || r.value == 0x6e || r.value == 0x6f ||
+                    (r.value == 0xa6 && !shaperSetting) || r.value == 0x5c || r.value == 2 || r.value == 0xa8 || r.value == 0x84;
                 for (unsigned i = query && r.value != 0x5c ? 0 : 1; i < 6; ++i) if (scalarArgs[i]) out.error = -EINVAL;
                 if (r.value == 0x5c && scalarArgs[0] > 127) out.error = -EINVAL;
                 if (r.value == 0x5b && (scalarArgs[0] < 100 || scalarArgs[0] > 1000 || scalarArgs[0] % 100)) out.error = -EINVAL;
@@ -82,13 +88,33 @@ struct AmdPboFixture : AmdCurveFixture {
                 if (r.value == 0x60 && (!(scalarArgs[0] & 0xfffff) || (scalarArgs[0] & 0x0f800000u))) out.error = -EINVAL;
                 if (r.value == 7 && !(scalarArgs[0] <= (graniteFmax ? 30u : 50u) || (scalarArgs[0] >= 0xffce && scalarArgs[0] <= 0xffff))) out.error = -EINVAL;
                 if (r.value == 0xa7 && !(scalarArgs[0] <= 5 || scalarArgs[0] >= 0xfffffff6u)) out.error = -EINVAL;
+                if (shaperSetting && (scalarArgs[0] & 0x7fu) >= 5) out.error = -EINVAL;
                 if (!out.error) {
                     ++commands; polls = 0; messages.push_back(std::uint32_t(r.value)); commandArgs.push_back(scalarArgs);
                     response = query ? completion : writeCompletion;
                     if (!query) {
                         ++settings;
-                        if (writeCompletion == 1 && !discardChange) {
-                            if (r.value == 0xa7) powerAdjustmentRaw = scalarArgs[0];
+                        if (shaperSetting) {
+                            ++shaperWrites; shaperArgument = scalarArgs[0];
+                            if (!(capsRaw & 4u)) response = 0xff;
+                        }
+                        if (response == 1 && !discardChange) {
+                            if (shaperSetting) {
+                                shaperWords[scalarArgs[0] & 0x7fu] = scalarArgs[0];
+                                // A6 rewrites every saved offset after signed8
+                                // clamping, including the four unselected tiers.
+                                for (unsigned tier=0;tier<shaperWords.size();++tier) {
+                                    const auto word=shaperWords[tier];std::uint32_t normalized=tier;
+                                    for (unsigned point=0;point<3;++point) {
+                                        const unsigned byte=(word>>(8+8*point))&255u;
+                                        int count=byte<128?int(byte):int(byte)-256;
+                                        if(count < -50)count=-50;
+                                        if(count > 30)count=30;
+                                        normalized|=(std::uint32_t(count)&255u)<<(8+8*point);
+                                    }
+                                    shaperWords[tier]=normalized;
+                                }
+                            } else if (r.value == 0xa7) powerAdjustmentRaw = scalarArgs[0];
                             else if (r.value == 7) allCurveArgument = scalarArgs[0];
                             else if (r.value == 0x70) fmaxMHz = clampFmax ? fmaxClampedMHz : scalarArgs[0];
                             else if (r.value == 0x5d || r.value == 0x5e) capsRaw = overrideModeCaps ? modeCapsAfter : r.value == 0x5d ? capsRaw | 0x10000u : capsRaw & ~0x10000u;

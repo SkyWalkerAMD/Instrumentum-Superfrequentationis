@@ -6,6 +6,7 @@
 #include "core/amd_pm.h"
 #include "core/amd_pm_native.h"
 #include "core/amd_granite_mapping.h"
+#include "core/amd_granite_core_status.h"
 #include "core/amd_pstates.h"
 #include "core/amd_smu.h"
 #include "core/amd_topology.h"
@@ -113,6 +114,9 @@ struct Command {
     unsigned pboScalar = 0, pboFmax = 0, pboExpectedMHz = 0, rail0 = 0, rail1 = 0;
     std::uint32_t pboExpected = 0, pboExpectedCaps = 0;
     std::uint32_t powerExpectedRaw = 0;
+    unsigned shaperTier = 0;
+    std::array<std::uint32_t, 5> shaperExpected{};
+    std::array<int, 3> shaperCounts{};
     unsigned firmwareIndex = 0;
     AmdPboLimit pboLimit = AmdPboLimit::Ppt;
     unsigned pboLimitValue = 0;
@@ -135,16 +139,17 @@ Command parse(const std::vector<std::string> &args) {
     const bool memoryOffline = c.name == "intel-memory-decode";
     const bool clockOffline = c.name == "intel-clock-decode";
     const bool topologyOffline = c.name == "amd-topology-decode";
+    const bool coreStatusOffline = c.name == "amd-core-status-decode";
     const bool umcOffline = c.name == "amd-umc-decode" || c.name == "amd-umc-diff";
     const bool pm = c.name == "amd-pm-read" || c.name == "amd-pm-decode";
     const bool pboCapabilityCommand = c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-fmax-read" || c.name == "amd-pbo-fmax-set" || c.name == "amd-pbo-limit-set" ||
         c.name == "amd-oc-mode-set" || c.name == "amd-oc-frequency-set" || c.name == "amd-curve-all-set" ||
         c.name == "amd-ln2-read" || c.name == "amd-core-performance-read" ||
-        c.name == "amd-power-adjustment-read" || c.name == "amd-power-adjustment-set" || c.name == "amd-curve-shaper-read";
+        c.name == "amd-power-adjustment-read" || c.name == "amd-power-adjustment-set" || c.name == "amd-curve-shaper-read" || c.name == "amd-curve-shaper-set";
     const bool rails = c.name == "amd-pbo-rails-encode";
     const bool layoutAudit = c.name == "amd-pm-layout-audit";
     const bool graniteMap = c.name == "amd-granite-map";
-    require(hardware.count(c.name) || pboCapabilityCommand || rails || layoutAudit || graniteMap || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || memoryOffline || clockOffline || topologyOffline || pm, "Unknown command: " + c.name);
+    require(hardware.count(c.name) || pboCapabilityCommand || rails || layoutAudit || graniteMap || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || memoryOffline || clockOffline || topologyOffline || coreStatusOffline || pm, "Unknown command: " + c.name);
     std::set<std::string> keys = {"--json"};
     if (hardware.count(c.name) || pboCapabilityCommand) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
@@ -195,12 +200,14 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "amd-pbo-scalar-set") { keys.insert("--scalar"); keys.insert("--expect-raw"); keys.insert("--expect-caps"); }
     if (c.name == "amd-umc-read") { keys.insert("--bank"); keys.insert("--refresh-slot"); }
     if (c.name == "amd-topology") { keys.insert("--l3"); keys.insert("--all-cpus"); keys.insert("--apob"); }
-    if (c.name == "spd-decode" || topologyOffline) keys.insert("--file");
+    if (c.name == "spd-decode" || topologyOffline || coreStatusOffline) keys.insert("--file");
     if (pm || c.name == "amd-pm-native-read") keys.insert("--bclk-mhz");
     if (c.name == "amd-pm-native-read") { keys.insert("--map-ccd"); keys.insert("--platform"); }
     if (c.name == "amd-pbo-fmax-read" || c.name == "amd-pbo-fmax-set" ||
         c.name == "amd-pbo-scalar-read" || c.name == "amd-pbo-scalar-set" ||
-        c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-limit-set" || c.name == "amd-oc-mode-set" || c.name == "amd-curve-all-set" || c.name == "amd-curve-shaper-read") keys.insert("--platform");
+        c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-limit-set" || c.name == "amd-oc-mode-set" || c.name == "amd-curve-all-set" || c.name == "amd-curve-shaper-read" || c.name == "amd-curve-shaper-set") keys.insert("--platform");
+    if (c.name == "amd-curve-shaper-set")
+        for (const char *key : {"--tier", "--counts", "--expect-words", "--expect-caps", "--apply"}) keys.insert(key);
     if (c.name == "amd-pm-decode") { keys.insert("--file"); keys.insert("--version"); }
     if (umcOffline || memoryOffline || clockOffline) keys.insert("--file");
     if (c.name == "intel-memory-read") { keys.insert("--controller"); keys.insert("--channel"); }
@@ -488,6 +495,7 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "amd-umc-read") { c.umc.bank = uintOption(options, "--bank", 22); c.umc.refreshSlot = uintOption(options, "--refresh-slot", 15); }
     if (c.name == "spd-decode") { c.path = get(options, "--file"); require(!c.path.empty(), "Empty SPD path"); }
     if (topologyOffline) { c.path=get(options,"--file"); require(!c.path.empty(),"Empty topology record path"); }
+    if (coreStatusOffline) { c.path=get(options,"--file"); require(!c.path.empty(),"Empty core-status record path"); }
     c.pmMapCcds = options.count("--map-ccd") != 0;
     if ((pm || c.name == "amd-pm-native-read") && options.count("--bclk-mhz")) {
         c.pmOptions.hasBclk = true; c.pmOptions.bclkMHz = decimal(get(options, "--bclk-mhz"), "--bclk-mhz");
@@ -495,15 +503,51 @@ Command parse(const std::vector<std::string> &args) {
     }
     if ((c.name == "amd-pbo-fmax-read" || c.name == "amd-pbo-fmax-set" ||
          c.name == "amd-pbo-scalar-read" || c.name == "amd-pbo-scalar-set" ||
-         c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-limit-set" || c.name == "amd-oc-mode-set" || c.name == "amd-curve-all-set" || c.name == "amd-curve-shaper-read") && options.count("--platform")) {
+         c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-limit-set" || c.name == "amd-oc-mode-set" || c.name == "amd-curve-all-set" || c.name == "amd-curve-shaper-read" || c.name == "amd-curve-shaper-set") && options.count("--platform")) {
         const auto platform = get(options,"--platform");
         require(platform == "shimada" || platform == "granite-ridge", "--platform must be shimada or granite-ridge");
         c.smu.profile = platform == "granite-ridge" ? SmuProfile::GraniteRidge : SmuProfile::Shimada;
     }
     if(c.name=="amd-curve-all-set" && c.smu.profile==SmuProfile::GraniteRidge)
         require(c.margin<=30,"Granite all-core curve requires -50..30 CO counts, not mV");
-    if(c.name=="amd-curve-shaper-read")
+    if(c.name=="amd-curve-shaper-read" || c.name=="amd-curve-shaper-set")
         require(c.smu.profile==SmuProfile::GraniteRidge,"Curve Shaper requires explicit --platform granite-ridge");
+    if(c.name=="amd-curve-shaper-set") {
+        require(options.count("--apply"),"Curve Shaper settings require --apply; verification covers saved offsets only");
+        c.shaperTier=uintOption(options,"--tier",4);
+        c.pboExpectedCaps=uintOption(options,"--expect-caps",UINT32_MAX);
+        require(amdAllCoreCurveAvailable(c.pboExpectedCaps),"Curve Shaper editing requires PBO available and manual OC disabled");
+        const auto list=[](const std::string &text,std::size_t count,const std::string &key) {
+            std::vector<std::string> parts;
+            std::size_t begin=0;
+            for(;;) {
+                const auto end=text.find(',',begin);
+                const auto part=text.substr(begin,end==std::string::npos?end:end-begin);
+                require(!part.empty(),"Empty item in "+key);
+                parts.push_back(part);
+                if(end==std::string::npos)break;
+                begin=end+1;
+            }
+            require(parts.size()==count,key+" requires exactly "+std::to_string(count)+" comma-separated values");
+            return parts;
+        };
+        const auto words=list(get(options,"--expect-words"),5,"--expect-words");
+        for(unsigned i=0;i<5;++i)c.shaperExpected[i]=std::uint32_t(wideInteger(words[i],UINT32_MAX,"--expect-words"));
+        std::array<std::array<int,3>,5> previous{};
+        require(decodeAmdCurveShaper(c.shaperExpected,previous),"--expect-words must preserve all five tier tags in order");
+        std::uint32_t encoded=0;
+        for(unsigned i=0;i<5;++i)
+            require(!encodeAmdCurveShaper(i,previous[i],encoded),"All 15 previous offsets must be in -50..30; refusing implicit normalization of another tier");
+        const auto counts=list(get(options,"--counts"),3,"--counts");
+        for(unsigned i=0;i<3;++i) {
+            const auto &v=counts[i];const bool negative=v[0]=='-';const std::size_t start=negative?1:0;
+            require(start<v.size() && v.find_first_not_of("0123456789",start)==std::string::npos,
+                "--counts requires three decimal integers -50..30; these are counts, not mV");
+            const int magnitude=int(wideInteger(v.substr(start),negative?50:30,"--counts"));
+            c.shaperCounts[i]=negative?-magnitude:magnitude;
+        }
+        require(!encodeAmdCurveShaper(c.shaperTier,c.shaperCounts,encoded),"Invalid Curve Shaper tier or count");
+    }
     if (c.name == "amd-pbo-scalar-set") {
         if (c.smu.profile == SmuProfile::GraniteRidge) {
             c.pboExpectedCaps = uintOption(options,"--expect-caps",UINT32_MAX);
@@ -690,6 +734,33 @@ public:
     }
 private: HardwareSession &s_;
 };
+Fields curveShaperState(const AmdCurveShaper &r) {
+    std::vector<std::string> rows,words;
+    bool ready=r.valid && !r.error && r.rawValid && amdAllCoreCurveAvailable(r.capabilities.raw);
+    if(r.valid && !r.error)for(unsigned tier=0;tier<5;++tier) {
+        std::vector<std::string> counts;
+        for(unsigned point=0;point<3;++point)counts.push_back(number(r.counts[tier][point]));
+        words.push_back(hex(r.raw[tier]));
+        rows.push_back(object({{"frequency_tier",number(tier)},{"counts",array(counts)}}));
+        std::uint32_t unused=0;
+        if(encodeAmdCurveShaper(tier,r.counts[tier],unused))ready=false;
+    }
+    return {{"platform",quote("granite-ridge")},{"supported_firmware_version",hex(0x00625400)},
+        {"error",number(r.error)},{"firmware_version",r.firmwareValid?hex(r.firmwareVersion):"null"},
+        {"capabilities_raw",r.capabilities.valid?hex(r.capabilities.raw):"null"},
+        {"capabilities_after",r.capabilitiesAfter.valid?hex(r.capabilitiesAfter.raw):"null"},
+        {"command",hex(0x84)},{"response",hex(r.response)},{"query_attempted",boolean(r.messageAttempted)},
+        {"words_read",number(r.wordsRead)},{"raw_valid",boolean(r.rawValid)},
+        {"valid",boolean(r.valid && !r.error)},{"raw_words",r.valid && !r.error?array(words):"null"},
+        {"stored_offsets",array(rows)},{"unit",quote("count")},
+        {"temperature_point_order",quote("firmware columns 0, 1, 2")},
+        {"frequency_anchors_ghz","null"},{"temperature_anchors_celsius","null"},
+        {"baseline_included","false"},{"effective_offset_verified","false"},
+        {"hardware_effect_measured","false"},{"write_supported","true"},{"write_ready",boolean(ready)},
+        {"write_requires_full_snapshot","true"},{"setting_commands_sent","false"},
+        {"physical_mapping_verified","false"},
+        {"detail",quote("Five frequency tiers by three temperature points: saved signed-byte count offsets only. Hidden baselines, fuse anchors and interpolated effects are not read here. The separate setter requires all 15 previous offsets in -50..30 and compares the entire table; values outside that range remain readable.")}};
+}
 Result hardware(const Command &c, HardwareSession &s) {
     Result out;
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
@@ -1113,27 +1184,27 @@ Result hardware(const Command &c, HardwareSession &s) {
                 "Opaque firmware performance word. Index is not a Linux CPU ID; no power, ranking or physical core mapping is inferred.")}};
     } else if (c.name == "amd-curve-shaper-read") {
         const auto r=readAmdCurveShaper(s,c.smu);out.error=r.error;
-        std::vector<std::string> rows,words;
-        if(r.valid && !r.error)for(unsigned tier=0;tier<5;++tier) {
-            std::vector<std::string> counts;
-            for(unsigned point=0;point<3;++point)counts.push_back(number(r.counts[tier][point]));
-            words.push_back(hex(r.raw[tier]));
-            rows.push_back(object({{"frequency_tier",number(tier)},{"counts",array(counts)}}));
-        }
+        out.data=curveShaperState(r);
+    } else if(c.name == "amd-curve-shaper-set") {
+        const auto r=setAmdCurveShaper(s,c.smu,c.pboExpectedCaps,c.shaperExpected,c.shaperTier,c.shaperCounts);
+        out.error=r.error;
+        std::vector<std::string> expected,requested,counts;
+        for(auto v:c.shaperExpected)expected.push_back(hex(v));
+        for(auto v:r.requestedRaw)requested.push_back(hex(v));
+        for(auto v:c.shaperCounts)counts.push_back(number(v));
         out.data={{"platform",quote("granite-ridge")},{"supported_firmware_version",hex(0x00625400)},
-            {"firmware_version",r.firmwareValid?hex(r.firmwareVersion):"null"},
-            {"capabilities_raw",r.capabilities.valid?hex(r.capabilities.raw):"null"},
-            {"capabilities_after",r.capabilitiesAfter.valid?hex(r.capabilitiesAfter.raw):"null"},
-            {"command",hex(0x84)},{"response",hex(r.response)},{"query_attempted",boolean(r.messageAttempted)},
-            {"words_read",number(r.wordsRead)},{"raw_valid",boolean(r.rawValid)},
-            {"valid",boolean(r.valid && !r.error)},{"raw_words",r.valid && !r.error?array(words):"null"},
-            {"stored_offsets",array(rows)},{"unit",quote("count")},
-            {"temperature_point_order",quote("firmware columns 0, 1, 2")},
-            {"frequency_anchors_ghz","null"},{"temperature_anchors_celsius","null"},
+            {"frequency_tier",number(c.shaperTier)},{"requested_counts",array(counts)},{"unit",quote("count")},
+            {"expected_words",array(expected)},{"expected_capabilities",hex(c.pboExpectedCaps)},
+            {"requested_words",array(requested)},{"before",object(curveShaperState(r.before))},
+            {"after",object(curveShaperState(r.after))},{"command",hex(0xa6)},{"argument",hex(r.argument)},
+            {"response",hex(r.response)},{"phase",quote(amdPboPhaseName(r.phase))},
+            {"write_attempted",boolean(r.writeAttempted)},{"accepted",boolean(r.accepted)},
+            {"verified",boolean(r.verified && !r.error)},{"unchanged",boolean(r.unchanged)},
+            {"verification_scope",quote("complete saved offset table only")},
             {"baseline_included","false"},{"effective_offset_verified","false"},
-            {"hardware_effect_measured","false"},{"write_supported","false"},{"setting_commands_sent","false"},
-            {"physical_mapping_verified","false"},
-            {"detail",quote("Five frequency tiers by three temperature points: saved signed-byte count offsets only. Hidden baselines, actual fuse anchors and interpolated effects are not read here. Values outside the supported write range remain readable. No Curve Shaper setter is exposed.")}};
+            {"hardware_effect_measured","false"},{"physical_mapping_verified","false"},
+            {"atomic_against_external_writers","false"},{"retry_performed","false"},{"rollback_performed","false"},
+            {"detail",quote("One tier of saved count offsets, guarded by two complete pre-write snapshots and full-table readback. Firmware resends all five tiers and commits to its targets; saved values and host ACK do not prove downstream success, voltage, stability or hidden-baseline bounds. A failed attempted write can have changed state. No automatic retry or rollback.")}};
     } else if (c.name == "amd-pbo-capabilities") {
         const auto r = readAmdPboCapabilities(s, c.smu); out.error = r.error;
         const bool granite=c.smu.profile==SmuProfile::GraniteRidge;
@@ -1597,6 +1668,30 @@ Result execute(const Command &c, const BackendFactory &factory) {
             {"rail1_mv", number(r.rail1Millivolts)}, {"argument", r.empty ? "null" : hex(r.argument)},
             {"mirrored", boolean(r.mirrored)}, {"empty", boolean(r.empty)},
             {"detail", quote("Original SVI3 encoding preview only. Dual-rail firmware semantics and operating limits are unverified.")}};
+    } else if(c.name == "amd-core-status-decode") {
+        std::vector<std::uint8_t> bytes;out.error=platform::readBoundedFile(c.path,bytes,524);
+        AmdGraniteCoreStatus r;
+        if(!out.error){r=decodeAmdGraniteCoreStatus(bytes);out.error=r.error;}
+        std::vector<std::string> targets;
+        if(r.valid)for(const auto &target:r.targets) {
+            std::vector<std::string> states;
+            for(unsigned bit=0;bit<target.states.size();++bit)
+                states.push_back(object({{"core_bit",number(bit)},{"code",number(target.states[bit])},
+                    {"state",quote(target.present?amdGraniteCoreStateName(target.states[bit]):"absent")}}));
+            targets.push_back(object({{"firmware_target_index",number(target.index)},{"present",boolean(target.present)},
+                {"disabled_fuse_mask",hex(target.disabledMask)},{"runtime_enabled_mask",hex(target.enabledMask)},
+                {"overlap_mask",hex(target.overlapMask)},{"cores",array(states)}}));
+        }
+        out.data={{"path",quote(c.path)},{"captured_bytes",number(bytes.size())},{"expected_bytes",number(524)},
+            {"format",quote("Granite reference GUID HOB")},{"reference_guid",quote("0cdfa7da-0d0b-41f0-b98b-0f6359c0857f")},
+            {"valid",boolean(r.valid && !out.error)},{"presence_mask",r.valid?hex(r.presenceMask):"null"},
+            {"fuse_flag",r.valid?number(r.fuseFlag):"null"},{"inverse_control_flag",r.valid?number(r.inverseControlFlag):"null"},
+            {"targets",array(targets)},{"stored_mask_bits",number(8)},
+            {"offline","true"},{"hardware_accessed","false"},{"origin_verified","false"},
+            {"flags_are_smt","false"},{"mapper_upper_bits_available","false"},
+            {"smu_enabled_mask_equivalence_verified","false"},{"pm_slot_mapping_verified","false"},
+            {"apob_binding_verified","false"},{"physical_ccd_mapping_verified","false"},{"os_cpu_mapping_verified","false"},
+            {"detail",quote("Caller-supplied 524-byte firmware status HOB, not acquired from hardware. Two target indexes and eight core-bit positions per target. Absent targets contain ff/0/zero-state sentinel rows, not measured fuse states. For present targets, fuse-disabled takes precedence over runtime-enabled; overlapping masks are retained. Only low eight mask bits were stored, so this record cannot reconstruct the SMU mapper's low sixteen bits or establish PM, APOB, physical CCD or OS identities. The two flags are not decoded as SMT.")}};
     } else if (c.name == "amd-topology-decode") {
         std::vector<std::uint8_t> bytes; out.error=platform::readBoundedFile(c.path,bytes,1048576);
         AmdApobTopology topology;
@@ -1637,6 +1732,9 @@ Usage: octool-cli COMMAND [OPTIONS]
   inventory                        BIOS, hwmon and bound-driver DDR4/DDR5 SPD
   spd-decode --file PATH            Decode a bounded offline SPD file
   amd-topology-decode --file PATH   Decode an APOB record or unique-record container (reference layout)
+  amd-core-status-decode --file PATH
+    Decode an exact 524-byte Granite reference core-status GUID HOB offline.
+    Stored fuse/runtime masks and three-state core bits only; no PM/physical/OS binding.
   cpu --cpu N                      CPU identity
   register-read --space msr --cpu N --address A
   register-read --space mmio --address A --width 1|2|4|8
@@ -1690,7 +1788,11 @@ Usage: octool-cli COMMAND [OPTIONS]
     Writes require PBO available/manual OC off; firmware clamping is reported as a readback mismatch.
   amd-pbo-capabilities --cpu N [--platform shimada|granite-ridge]
   amd-curve-shaper-read --cpu N --platform granite-ridge
-    Read the 5x3 saved count-offset table on exact SMU 98.84.0; no anchors, baseline or writer.
+    Read the 5x3 saved count-offset table on exact SMU 98.84.0; no anchors or baseline.
+  amd-curve-shaper-set --cpu N --platform granite-ridge --tier 0..4 --counts LOW,MID,HIGH --expect-words W0,W1,W2,W3,W4 --expect-caps RAW --apply
+    Each count and all 15 previous offsets must be -50..30. Compare all five words
+    from a fresh read and the complete capability word. PBO available / manual OC off.
+    Verify only the entire saved table; firmware resends all tiers. No retry or rollback.
   amd-oc-mode-set --cpu N [--platform shimada|granite-ridge] --enabled 0|1 --expect-caps RAW --apply
                                    Change mode explicitly; re-read the mode bit
   amd-oc-frequency-set --cpu N --scope all-cores --mhz N --expect-caps RAW --apply

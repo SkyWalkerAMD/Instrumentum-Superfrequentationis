@@ -3,6 +3,7 @@
 #include "core/amd_smu.h"
 #include "core/amd_curve.h"
 #include "core/amd_topology.h"
+#include "core/amd_granite_core_status.h"
 #include "core/spd.h"
 #include "platform/linux_inventory.h"
 #include "platform/linux_inventory_native.h"
@@ -255,8 +256,19 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     connect(applyScalar, &QPushButton::clicked, this, [this] { applyPboScalar(); });
     auto *readShaper = new QPushButton("Read saved Curve Shaper offsets", this); readShaper->setObjectName("pboShaperRead");
     readShaper->setToolTip("Read 15 signed count offsets. Frequency and temperature anchors and combined applied counts remain unverified.");
-    form->addRow("Curve Shaper · Granite 98.84.0 · read only", readShaper);
+    form->addRow("Curve Shaper · Granite 98.84.0 · saved offsets", readShaper);
     connect(readShaper, &QPushButton::clicked, this, [this] { readCurveShaper(); });
+    auto *shaperEdit=new QHBoxLayout;
+    shaperTier_=new QComboBox(this);shaperTier_->setObjectName("pboShaperTier");shaperTier_->addItem("Select frequency tier",-1);
+    for(int tier=0;tier<5;++tier)shaperTier_->addItem(QString("Firmware tier %1").arg(tier),tier);
+    shaperEdit->addWidget(shaperTier_);
+    for(unsigned point=0;point<3;++point) {
+        shaperCounts_[point]=edit(qPrintable(QString("pboShaperCount%1").arg(point)),"",this);
+        shaperCounts_[point]->setPlaceholderText(QString("Point %1: -50..30 counts").arg(point));shaperEdit->addWidget(shaperCounts_[point]);
+    }
+    auto *applyShaper=new QPushButton("Apply saved offsets…",this);applyShaper->setObjectName("pboShaperApply");shaperEdit->addWidget(applyShaper);
+    form->addRow("Read full Shaper table first · one tier",shaperEdit);
+    connect(applyShaper,&QPushButton::clicked,this,[this]{applyCurveShaper();});
     auto *fmax = new QHBoxLayout;
     pboFmax_ = edit("pboFmax", "", this); pboFmax_->setPlaceholderText("Requested ceiling in MHz"); fmax->addWidget(pboFmax_);
     auto *readFmax = new QPushButton("Read Fmax", this); readFmax->setObjectName("pboFmaxRead"); fmax->addWidget(readFmax);
@@ -356,6 +368,12 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
         if(!path.isEmpty()) loadTopologyRecord(path);
     });
     connect(catalog,&QPushButton::clicked,this,[this] { readTopologyCatalog(); });
+    auto *coreStatus=new QPushButton("Open firmware core status…",this);coreStatus->setObjectName("smuCoreStatusOpen");
+    layout->addWidget(coreStatus);
+    connect(coreStatus,&QPushButton::clicked,this,[this] {
+        const auto path=QFileDialog::getOpenFileName(this,"Open reference core-status GUID HOB",QString(),"Core-status records (*.hob *.bin);;All files (*)");
+        if(!path.isEmpty())loadCoreStatusRecord(path);
+    });
     table_ = table({"Item", "Result"}, this, layout); table_->setObjectName("smuTable");
     status_ = description("Ready. No hardware access has been performed.", layout, this); status_->setObjectName("smuStatus");
     copyButton(this, buttons, table_, status_);
@@ -381,7 +399,7 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
 }
 AmdTuningPanel::~AmdTuningPanel() { cancelled_->store(true); }
 void AmdTuningPanel::invalidateCurve() {
-    ++curveRevision_; curveSnapshot_ = {}; pboSnapshot_ = {}; pboCaps_ = {}; powerSnapshot_ = {}; fmaxSnapshot_ = {};
+    ++curveRevision_; curveSnapshot_ = {}; pboSnapshot_ = {}; pboCaps_ = {}; powerSnapshot_ = {}; fmaxSnapshot_ = {}; shaperSnapshot_ = {};
     table_->setRowCount(0); table_->setColumnCount(2); table_->setHorizontalHeaderLabels({"Item", "Result"});
 }
 void AmdTuningPanel::readCurveShaper() {
@@ -416,11 +434,18 @@ void AmdTuningPanel::readCurveShaper() {
                 for (int column=0;column<5;++column) table_->item(int(tier),column)->setToolTip(
                     "Firmware tier and temperature point indices. Saved signed count offsets; physical frequency and temperature anchors remain unverified.");
             }
-            // This read does not prepare any capability, policy or curve writer.
+            shaperSnapshot_=r;shaperTarget_=target;
+            bool bounded=true;
+            for(const auto &row:r.counts)for(int count:row)if(count < -50 || count > 30)bounded=false;
+            const bool editable=bounded && amdAllCoreCurveAvailable(r.capabilities.raw);
+            // Only the dedicated Shaper editor receives this read snapshot.
             status_->setText(QString("CPU %1 · Granite Ridge SMU 98.84.0 (%2) · 15 saved signed count offsets · 5 / 5 words. "
                 "Capability before %3 / after %4; identity checks matched.\n"
-                "Read only. Frequency and temperature anchors, baseline + offset combined counts, and applied CO / voltage remain unverified. No write prepared.")
-                .arg(target.cpu).arg(hexValue(r.firmwareVersion,4)).arg(hexValue(r.capabilities.raw,4)).arg(hexValue(r.capabilitiesAfter.raw,4)));
+                "Frequency and temperature anchors, baseline + offset combined counts, and applied CO / voltage remain unverified. ")
+                .arg(target.cpu).arg(hexValue(r.firmwareVersion,4)).arg(hexValue(r.capabilities.raw,4)).arg(hexValue(r.capabilitiesAfter.raw,4))+
+                (editable?"Only Curve Shaper editing is prepared; other controls require their own read.":
+                    bounded?"Read only. No write prepared: PBO must be available and manual OC disabled.":
+                    "Read only. No write prepared: an existing saved count is outside -50..30; a write could normalize other tiers."));
         }
         setEnabled(true); watcher->deleteLater();
     });
@@ -429,6 +454,83 @@ void AmdTuningPanel::readCurveShaper() {
         AmdCurveShaper out;
         const int error=access->transaction([&](HardwareSession &s) { out=readAmdCurveShaper(s,target); return out.error; },10000,cancelled.get());
         if (error) { out.error=error; out.valid=false; out.rawValid=false; }
+        return out;
+    }));
+}
+void AmdTuningPanel::applyCurveShaper() {
+    using namespace octool::core;
+    if(!shaperSnapshot_.valid || shaperSnapshot_.error || !shaperSnapshot_.rawValid) {
+        status_->setText("Read the complete Curve Shaper table before editing its saved offsets.");return;
+    }
+    if(!amdAllCoreCurveAvailable(shaperSnapshot_.capabilities.raw)) {
+        status_->setText("Curve Shaper edits require PBO available and manual OC disabled. No setting sent.");return;
+    }
+    for(const auto &row:shaperSnapshot_.counts)for(int count:row)if(count < -50 || count > 30) {
+        status_->setText("A saved count is outside -50..30. A write would normalize other tiers; editing is blocked. No setting sent.");return;
+    }
+    const int selected=shaperTier_->currentData().toInt();std::array<int,3> counts{};std::array<QString,3> inputs;
+    if(selected<0 || selected>4) {status_->setText("Select a firmware frequency tier 0..4. No setting sent.");return;}
+    for(unsigned point=0;point<3;++point) {
+        inputs[point]=shaperCounts_[point]->text();bool ok=false;counts[point]=inputs[point].toInt(&ok,10);
+        if(!ok || counts[point] < -50 || counts[point] > 30) {
+            status_->setText("Enter three integer saved count offsets in -50..30. No setting sent.");return;
+        }
+    }
+    std::uint32_t argument=0;
+    if(encodeAmdCurveShaper(unsigned(selected),counts,argument)) {status_->setText("Invalid saved offset request. No setting sent.");return;}
+    const auto before=shaperSnapshot_;const auto target=shaperTarget_;const auto prepared=curveRevision_;
+    if(QMessageBox::question(this,"Apply saved Curve Shaper offsets",
+        QString("Granite Ridge SMU 98.84.0 · CPU %1 · firmware tier %2\n"
+                "New saved counts at points 0 / 1 / 2: %3 / %4 / %5\n"
+                "The firmware broadcasts all five tiers, including unchanged tiers. All 15 prior offsets must remain within -50..30. "
+                "The complete saved table and capabilities will be compared before one request, then all five saved words read back.\n"
+                "Verification covers saved offsets only. Hidden baselines, MP5 application, physical frequency/temperature anchors and electrical effects remain unverified. "
+                "Changing these offsets can affect stability. No automatic retry or rollback. Apply this tier?")
+            .arg(target.cpu).arg(selected).arg(counts[0]).arg(counts[1]).arg(counts[2]),
+        QMessageBox::Yes|QMessageBox::Cancel,QMessageBox::Cancel)!=QMessageBox::Yes) {
+        shaperSnapshot_={};status_->setText("Curve Shaper edit cancelled. No setting sent. Read the table again before editing.");return;
+    }
+    bool changed=prepared!=curveRevision_ || selected!=shaperTier_->currentData().toInt();
+    for(unsigned point=0;point<3;++point)changed=changed || inputs[point]!=shaperCounts_[point]->text();
+    if(changed) {invalidateCurve();status_->setText("Inputs changed during confirmation. No setting sent. Read Curve Shaper again.");return;}
+    auto requested=before.raw;requested[std::size_t(selected)]=argument;
+    invalidateCurve();const auto revision=curveRevision_;setEnabled(false);
+    status_->setText("Comparing the complete saved table and applying one Curve Shaper tier…");
+    auto *watcher=new QFutureWatcher<AmdCurveShaperUpdate>(this);
+    connect(watcher,&QFutureWatcher<AmdCurveShaperUpdate>::finished,this,[this,watcher,revision,target,selected,counts,requested] {
+        const auto r=watcher->result();
+        if(revision==curveRevision_) {
+            table_->setColumnCount(5);
+            table_->setHorizontalHeaderLabels({"Firmware frequency tier","Expected saved word","Readback saved word",
+                "Readback counts 0 / 1 / 2","Stored word comparison"});
+            for(unsigned tier=0;tier<5;++tier) {
+                const bool valid=r.after.valid && r.after.rawValid && !r.after.error;
+                append(table_,{QString::number(tier),hexValue(requested[tier],4),valid?hexValue(r.after.raw[tier],4):"Unavailable",
+                    valid?QString("%1 / %2 / %3").arg(r.after.counts[tier][0]).arg(r.after.counts[tier][1]).arg(r.after.counts[tier][2]):"Unavailable",
+                    valid?(r.after.raw[tier]==requested[tier]?"Matched":"Mismatch"):"Unverified"});
+            }
+        }
+        const QString command=r.unchanged?"Unchanged; no setting sent":r.accepted?"Firmware accepted":
+            r.writeAttempted?"Attempted; completion not confirmed":"Not sent";
+        status_->setText(QString("CPU %1 · requested tier %2: %3 / %4 / %5 counts. Setting command: %6. "
+            "Write attempted: %7; response %8; phase %9. Complete saved-table verification: %10.\n")
+            .arg(target.cpu).arg(selected).arg(counts[0]).arg(counts[1]).arg(counts[2]).arg(command)
+            .arg(r.writeAttempted?"yes":"no").arg(hexValue(r.response,4)).arg(amdPboPhaseName(r.phase))
+            .arg(r.verified && !r.error?"Matched":"Not verified")+
+            (r.error?failure(r.error)+" ":QString())+
+            (revision!=curveRevision_?"Inputs changed; result table discarded. ":QString())+
+            (r.writeAttempted?"All five tiers may have been forwarded. ":QString())+
+            "Readback covers saved offsets only. Baselines, physical anchors, MP5 application and electrical effects remain unverified. "
+            "No automatic retry or rollback. Read the table again before editing.");
+        setEnabled(true);watcher->deleteLater();
+    });
+    const auto access=access_;const auto cancelled=cancelled_;
+    watcher->setFuture(QtConcurrent::run([access,cancelled,target,before,selected,counts] {
+        AmdCurveShaperUpdate out;
+        const int error=access->transaction([&](HardwareSession &s) {
+            out=setAmdCurveShaper(s,target,before.capabilities.raw,before.raw,unsigned(selected),counts);return out.error;
+        },10000,cancelled.get());
+        if(error) {out.error=error;out.verified=false;}
         return out;
     }));
 }
@@ -1083,6 +1185,38 @@ void AmdTuningPanel::applyCurve() {
         if (error) out.error = error;
         return out;
     }));
+}
+bool AmdTuningPanel::loadCoreStatusRecord(const QString &path) {
+    using namespace octool::core;
+    if(!isEnabled())return false;
+    invalidateCurve();topologyRecord_.clear();findChild<QPushButton*>("smuTopologyCompare")->setEnabled(false);
+    std::vector<std::uint8_t> bytes;
+    const int error=octool::platform::readBoundedFile(path.toStdString(),bytes,524);
+    if(error) {status_->setText("Cannot read core-status record: "+failure(error));return false;}
+    const auto status=decodeAmdGraniteCoreStatus(bytes);
+    if(status.error || !status.valid) {
+        status_->setText("Invalid reference core-status GUID HOB. A complete, consistent 524-byte record is required. Previous results cleared.");return false;
+    }
+    table_->setColumnCount(7);
+    table_->setHorizontalHeaderLabels({"Firmware target","Present in record","Disabled mask (low 8)","Enabled mask (low 8)",
+        "Local core bit","Raw state","Recorded state"});
+    for(const auto &target:status.targets)for(unsigned core=0;core<8;++core) {
+        const QString state=!target.present?"Absent target (fill value)":target.states[core]==0?"Excluded by fuse mask":
+            target.states[core]==1?"Enabled in register":"Not enabled in register";
+        append(table_,{QString::number(target.index),target.present?"Yes":"No",hexValue(target.disabledMask,1),hexValue(target.enabledMask,1),
+            QString::number(core),QString::number(target.states[core]),state});
+        const QString note=QString("Target %1: disabled/enabled mask overlap %2. Fuse exclusion has priority; overlapping raw bits are retained. ")
+            .arg(target.index).arg(hexValue(target.overlapMask,1))+
+            "Local firmware coordinates only; this record does not identify PM slots, APIC IDs or OS CPUs.";
+        for(int column=0;column<7;++column)table_->item(table_->rowCount()-1,column)->setToolTip(note);
+    }
+    status_->setText(QString("Offline caller-supplied core-status HOB · 524 bytes · presence %1. "
+        "Opaque flags: fuse bit-8 OR %2; inverse control bit-8 OR %3. Mask overlap target 0 / 1: %4 / %5.\n"
+        "The record retains only low-8 masks; the SMU mapper uses low-16 masks. These flags use bit 8, while the mapper's SMT input uses bit 10. "
+        "Origin, runtime provider and PM / physical CCD / APIC / OS CPU binding remain unverified. Absent-target rows are fill values. No hardware access or edit preparation.")
+        .arg(hexValue(status.presenceMask,1)).arg(status.fuseFlag).arg(status.inverseControlFlag)
+        .arg(hexValue(status.targets[0].overlapMask,1)).arg(hexValue(status.targets[1].overlapMask,1)));
+    return true;
 }
 bool AmdTuningPanel::loadTopologyRecord(const QString &path) {
     using namespace octool::core;
