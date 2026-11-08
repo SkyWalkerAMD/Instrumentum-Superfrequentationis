@@ -1,8 +1,8 @@
 # 安装包与源码归档
 
-<!-- amd-granite-72f349e -->
-2026-11-02：[9950X3D 本轮验证](amd-granite-validation.md)通过 44/44 云端任务，29 组固件回放本地/云端一致。GUI/CLI 同步补全四状态 DPM 策略表，显示 20 个采样占比、频率策略和电压策略字段，公共字段由 23 个增至 39 个。新增独立 GUI 策略视图；标称 MHz 不代表实测频率，V 策略不代表设备回读，采样占比不代表时间驻留率。剩余八行单位、PM 物理映射和第二 rails 独立写入与设备回读仍未完成。[用法与 REA 证据](amd-granite-dpm-policy.md)；源码和 33 个安装包：`dist/gui-cli-amd-granite-72f349e/`。以下为历史阶段记录，以本段和当前验证报告为准。
-<!-- /amd-granite-72f349e -->
+<!-- amd-granite-5d886cc -->
+2026-11-08：[9950X3D 本轮验证](amd-granite-validation.md)通过 44/44 云端任务，33 组固件回放本地/云端一致。GUI/CLI 补齐五个公共配置镜像，新增固件目标 1 的两个字段，公共字段由 39 个增至 41 个，并新增 GUI 配置视图。恢复逐核命令的稀疏重编码、rails 镜像启动来源和计时器边界；这些证据不等于物理绑定或设备回读。剩余八行单位、五个公共配置值单位、PM 物理映射和第二 rails 独立写入／回读仍未完成。[用法与 REA 证据](amd-granite-common-config.md)；源码和 33 个安装包：`dist/gui-cli-amd-granite-5d886cc/`。以下为历史阶段记录，以本段和当前验证报告为准。
+<!-- /amd-granite-5d886cc -->
 
 <!-- amd-pm-ccd-168a618 -->
 2026-10-26：[PM 固件 CCD 映射验证](amd-pm-ccd-validation.md)已通过 44/44 云端任务；GUI/CLI 同步提供 `--map-ccd`。适用 Shimada SMU 115.46.0，9950X3D 的 Granite Ridge 路径、字段单位和第二 rails 回读仍待恢复。源码与包：`dist/gui-cli-amd-pm-ccd-168a618/`。
