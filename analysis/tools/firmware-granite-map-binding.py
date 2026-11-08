@@ -3,8 +3,9 @@
 
 The two masks are independent synthetic register inputs. This deliberately does
 not substitute an inverted fuse byte for the SMU initializer's core mask.
-Original IA32 TE bytes execute in Unicorn; PCI windows, HOB allocation/lookup,
-CPUID and the consumer's IDTR are fixtures. No host hardware access occurs.
+Original IA32 TE bytes execute in Unicorn, including the producer's HOB
+wrapper and the reference PEI core allocator. PCI windows, PEI/PHIT memory,
+HOB lookup, CPUID and IDTR values are fixtures. No host hardware access occurs.
 """
 import argparse
 import hashlib
@@ -20,9 +21,11 @@ from unicorn import x86_const as x
 
 PRODUCER_SHA = '7464250e2d6f8e3268af5da403997d57c86485ef86b25a23bc2b4af6abc65f1f'
 CONSUMER_SHA = 'c76d2ac61c511c113406297113d999f9cf7f1827c3b4413029907d5f7966ecb6'
+ALLOCATOR_SHA = '7530328588b4a385c8c75d500b59245badc9237c9020a574cc61dcbc8f850a58'
 HOB_GUID = uuid.UUID('0cdfa7da-0d0b-41f0-b98b-0f6359c0857f').bytes_le
 STACK, STACK_BASE, DATA, STOP = 0x110008, 0x100000, 0x300000, 0x400000
 HOB, OUTPUT, IDTR = DATA, DATA + 0x1000, DATA + 0x2004
+PHIT, SERVICES = DATA + 0x3000, DATA + 0x4000
 PCI = 0xe0000000
 
 
@@ -81,12 +84,70 @@ def ret(vm, value):
 
 
 class Replay:
-    def __init__(self, producer, consumer):
-        self.producer, self.consumer = producer, consumer
-        self.seen = {'producer': set(), 'consumer': set(), 'gate': set()}
+    def __init__(self, producer, consumer, allocator):
+        self.producer, self.consumer, self.allocator = producer, consumer, allocator
+        assert allocator.memory[0x6700:0x6708] == b'PEI SERV'
+        assert struct.unpack_from('<I', allocator.memory, 0x6734)[0] == allocator.base+0x32bf
+        self.seen = {'producer': set(), 'consumer': set(), 'gate': set(), 'allocator': set()}
         self.trace = hashlib.sha256()
         self.cases = self.reads = self.index_writes = self.consumer_cases = 0
         self.gate_cases = self.gate_accepted = 0
+        self.allocator_calls = 0
+        self.allocator_cases = []
+
+    def prepare_allocator(self, vm, free_bytes=0x1000, padding=b'\xa5'*4):
+        self.allocator.install(vm)
+        # Only environment inputs are synthetic. The service pointer references
+        # the original PEI table; its original +0x34 slot selects CreateHob.
+        vm.mem_write(IDTR-4, struct.pack('<I', SERVICES))
+        vm.mem_write(SERVICES, struct.pack('<I', self.allocator.base+0x6700))
+        vm.mem_write(SERVICES+0x60, struct.pack('<I', PHIT))
+        vm.mem_write(PHIT, struct.pack('<HHI', 1, 0x38, 0))
+        vm.mem_write(PHIT+0x20, struct.pack('<3Q', HOB+8+free_bytes, HOB+8, HOB))
+        vm.mem_write(HOB, b'\xa5'*0x218)
+        vm.mem_write(HOB+0x20c, padding)
+
+    def allocator_case(self, length, free_bytes):
+        image = self.allocator
+        vm = vm_for(image)
+        # vm_for already installed this TE; initialize the same synthetic PHIT
+        # without creating a second mapping for its original code sections.
+        vm.mem_write(SERVICES+0x60, struct.pack('<I', PHIT))
+        vm.mem_write(PHIT+0x20, struct.pack('<3Q', HOB+8+free_bytes, HOB+8, HOB))
+        vm.mem_write(HOB, b'\xa5'*0x218)
+        vm.mem_write(STACK+4, struct.pack('<4I', SERVICES, 4, length, OUTPUT))
+        writes = []
+
+        def instruction(uc, address, size, _):
+            self.seen['allocator'].add(image.instruction(uc,address,size,((0x32bf,0x335b),)))
+
+        def write(uc, access, address, size, value, _):
+            assert (STACK_BASE <= address and address+size <= STACK_BASE+0x20000 or
+                    HOB <= address and address+size <= HOB+0x10000), hex(address)
+            writes.append((address,size,value))
+
+        vm.hook_add(u.UC_HOOK_CODE,instruction)
+        vm.hook_add(u.UC_HOOK_MEM_WRITE,write)
+        vm.emu_start(image.base+0x32bf,STOP,count=100)
+        assert vm.reg_read(x.UC_X86_REG_EIP) == STOP
+        aligned = (length+7)&0xfff8
+        expected = 0x80000002 if length > 0xfff8 else 0x80000009 if free_bytes < aligned else 0
+        result = vm.reg_read(x.UC_X86_REG_EAX)
+        assert result == expected
+        if not result:
+            assert struct.unpack('<HHI',vm.mem_read(HOB,8)) == (4,aligned,0)
+            assert struct.unpack('<HHI',vm.mem_read(HOB+aligned,8)) == (0xffff,8,0)
+            assert struct.unpack('<Q',vm.mem_read(PHIT+0x30,8))[0] == HOB+aligned
+            assert struct.unpack('<Q',vm.mem_read(PHIT+0x28,8))[0] == HOB+aligned+8
+            if length == 0x20c:
+                assert bytes(vm.mem_read(HOB+0x20c,4)) == b'\xa5'*4
+        else:
+            assert bytes(vm.mem_read(HOB,8)) == b'\xa5'*8
+        row = dict(request_bytes=length,free_bytes=free_bytes,response=hex(result),
+                   allocated_bytes=aligned if not result else None,
+                   original_instruction_writes=len(writes))
+        self.allocator_cases.append(row)
+        self.trace.update(json.dumps(row,sort_keys=True,separators=(',',':')).encode())
 
     def gate(self, signature, ebx):
         image = self.producer
@@ -122,9 +183,11 @@ class Replay:
         self.gate_accepted += int(accepted)
         self.trace.update(struct.pack('<IIB', signature, ebx, accepted))
 
-    def produce(self, presence, disabled, enabled, controls=(0, 0), allocate=True):
+    def produce(self, presence, disabled, enabled, controls=(0, 0), allocate=True, padding=b'\xa5'*4):
         image = self.producer
         vm = vm_for(image)
+        assert len(padding) == 4
+        self.prepare_allocator(vm, 0x1000 if allocate else 0, padding)
         vm.mem_map(PCI, 0x1000)
         previous, selected = 0xabcdef01, 0xabcdef01
         words = {0x5d3bc: presence}
@@ -132,23 +195,30 @@ class Replay:
             words[0x304a03dc | (target << 25)] = disabled[target]
             words[0x203c0030 | (target << 23)] = controls[target]
             words[0x203c003c | (target << 23)] = enabled[target]
-        reads, writes, allocations = [], [], []
+        reads, writes, allocations, services = [], [], [], []
 
         def instruction(uc, address, size, _):
+            if self.allocator.base <= address < self.allocator.base+len(self.allocator.memory):
+                rva = self.allocator.instruction(uc,address,size,((0x32bf,0x335b),))
+                self.seen['allocator'].add(rva)
+                if rva == 0x32bf:
+                    sp = uc.reg_read(x.UC_X86_REG_ESP)
+                    args = struct.unpack('<4I',uc.mem_read(sp+4,16))
+                    assert args[:3] == (SERVICES,4,0x20c)
+                    assert STACK_BASE <= args[3] < STACK_BASE+0x20000
+                    services.append(args[:3])
+                return
             rva = address-image.base
             if rva == 0x8bf:
-                # The actual caller supplies GUID-HOB type/size. The allocator
-                # returns an explicitly synthetic buffer and initializes header.
                 args = (uc.reg_read(x.UC_X86_REG_ECX), uc.reg_read(x.UC_X86_REG_EDX))
                 assert args == (4, 0x20c)
                 allocations.append(args)
-                if allocate:
-                    uc.mem_write(HOB, struct.pack('<HHI', 4, 0x20c, 0))
-                ret(uc, HOB if allocate else 0)
-                return
             self.seen['producer'].add(image.instruction(uc, address, size,
                 ((0x240, 0x25d), (0x260, 0x299), (0x66d, 0x840),
-                 (0x997, 0x9b2), (0x4789, 0x47b2), (0x4917, 0x4940))))
+                 (0x8bf,0x8f9), (0x997, 0x9b2), (0x4789, 0x47b2), (0x4917, 0x4940))))
+            if rva == 0x8d0:
+                uc.mem_write(uc.reg_read(x.UC_X86_REG_EAX),struct.pack('<HI',0x3ff,IDTR))
+                uc.reg_write(x.UC_X86_REG_EIP,address+size)
 
         def read(uc, access, address, size, value, _):
             if address == PCI+0xb8:
@@ -169,7 +239,10 @@ class Replay:
                 selected = value
                 writes.append(value)
             else:
-                assert STACK_BASE <= address and address+size <= STACK_BASE+0x20000 or HOB <= address and address+size <= HOB+0x20c, hex(address)
+                assert (STACK_BASE <= address and address+size <= STACK_BASE+0x20000 or
+                        HOB <= address and address+size <= HOB+0x20c or
+                        HOB+0x210 <= address and address+size <= HOB+0x218 or
+                        PHIT+0x28 <= address and address+size <= PHIT+0x38), hex(address)
 
         vm.hook_add(u.UC_HOOK_CODE, instruction)
         vm.hook_add(u.UC_HOOK_MEM_READ, read)
@@ -185,7 +258,9 @@ class Replay:
         assert [a for a, v in reads] == coordinates
         assert writes == [v for a in coordinates for v in (a, previous)]
         assert selected == previous and allocations == [(4, 0x20c)]
-        data = bytes(vm.mem_read(HOB, 0x20c)) if allocate else None
+        assert services == [(SERVICES,4,0x20c)]
+        self.allocator_calls += len(services)
+        data = bytes(vm.mem_read(HOB, 0x210)) if allocate else None
         if allocate:
             expected = bytearray(500)
             struct.pack_into('<4I', expected, 0, 2, 8,
@@ -202,10 +277,15 @@ class Replay:
                     state = 0 if f & 1 << core else 1 if e & 1 << core else 2
                     struct.pack_into('<I', expected, 0x74+4*(t*8+core), state)
             struct.pack_into('<I', expected, 0x70, flag8)
-            assert data[:8] == struct.pack('<HHI', 4, 0x20c, 0)
-            assert data[8:24] == HOB_GUID and data[24:] == expected
+            assert data[:8] == struct.pack('<HHI', 4, 0x210, 0)
+            assert data[8:24] == HOB_GUID and data[24:0x20c] == expected
+            assert data[0x20c:] == padding
+            assert struct.unpack('<HHI',vm.mem_read(HOB+0x210,8)) == (0xffff,8,0)
+            assert struct.unpack('<Q',vm.mem_read(PHIT+0x30,8))[0] == HOB+0x210
+        else:
+            assert bytes(vm.mem_read(HOB,8)) == b'\xa5'*8
         row = dict(presence=presence, disabled=disabled, enabled=enabled,
-                   controls=controls, allocated=allocate, reads=reads,
+                   controls=controls, allocated=allocate, reads=reads, padding=padding.hex(),
                    hob_sha256=hashlib.sha256(data).hexdigest() if data else None)
         self.trace.update(json.dumps(row, sort_keys=True, separators=(',', ':')).encode())
         self.cases += 1
@@ -261,11 +341,18 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--producer', type=Path, required=True)
     parser.add_argument('--consumer', type=Path, required=True)
+    parser.add_argument('--allocator', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--example-hob', type=Path)
     parser.add_argument('--vectors', type=Path)
     args = parser.parse_args()
-    replay = Replay(TeImage(args.producer, PRODUCER_SHA), TeImage(args.consumer, CONSUMER_SHA))
+    replay = Replay(TeImage(args.producer, PRODUCER_SHA), TeImage(args.consumer, CONSUMER_SHA),
+                    TeImage(args.allocator, ALLOCATOR_SHA))
+    for length,free in ((8,0x1000),(9,0x1000),(0x20b,0x1000),(0x20c,0x1000),
+                        (0x20d,0x1000),(0x210,0x1000),(0x211,0x1000),
+                        (0x20c,0),(0x20c,527),(0x20c,528),(0xfff8,0x10000),
+                        (0xfff9,0x10000),(0xffff,0x10000)):
+        replay.allocator_case(length,free)
     examples = []
     # Independent fuse/enabled inputs expose software-disabled and conflicting
     # states. Full-byte variation plus one-bit enabled bases exercise every bit.
@@ -292,12 +379,12 @@ def main():
         replay.gate(0x00b40f40 ^ 1 << bit, 0)
         replay.gate(0x00b40f40, 1 << bit)
     vectors = []
-    for name, p, fs, es, cs in (
-        ('sparse-two-targets', 3, [0x180, 3], [0x3f, 0xfc], [0x100, 0x400]),
-        ('target-one-overlap', 2, [0x1ff, 0x80], [0xffff, 0x81], [0, 0x100]),
-        ('no-target-present', 0, [0x1ff, 0x1ff], [0xffffffff, 0xffffffff], [0, 0]),
-        ('enabled-high-byte-is-lost', 1, [0x100, 0], [0x100, 0xffffffff], [0x100, 0])):
-        data = replay.produce(p << 22, fs, es, cs)
+    for name, p, fs, es, cs, padding in (
+        ('sparse-two-targets', 3, [0x180, 3], [0x3f, 0xfc], [0x100, 0x400], b'\0'*4),
+        ('target-one-overlap', 2, [0x1ff, 0x80], [0xffff, 0x81], [0, 0x100], bytes.fromhex('5aa5ff00')),
+        ('no-target-present', 0, [0x1ff, 0x1ff], [0xffffffff, 0xffffffff], [0, 0], b'\xa5'*4),
+        ('enabled-high-byte-is-lost', 1, [0x100, 0], [0x100, 0xffffffff], [0x100, 0], bytes.fromhex('11223344'))):
+        data = replay.produce(p << 22, fs, es, cs, padding=padding)
         replay.consume(data)
         vectors.append((name, data))
     example = vectors[0][1]
@@ -308,11 +395,15 @@ def main():
     if args.vectors:
         args.vectors.parent.mkdir(parents=True, exist_ok=True)
         args.vectors.write_bytes(vector_header.encode('utf-8'))
-    report = dict(producer_sha256=PRODUCER_SHA, consumer_sha256=CONSUMER_SHA,
+    report = dict(producer_sha256=PRODUCER_SHA, consumer_sha256=CONSUMER_SHA, allocator_sha256=ALLOCATOR_SHA,
         machine='IA32', producer_image_base=hex(replay.producer.base),
         producer_rva_minus_file_offset=hex(replay.producer.delta),
         consumer_image_base=hex(replay.consumer.base), consumer_rva_minus_file_offset=hex(replay.consumer.delta),
-        hob_guid=str(uuid.UUID(bytes_le=HOB_GUID)), hob_bytes=524, payload_bytes=500,
+        allocator_image_base=hex(replay.allocator.base), allocator_rva_minus_file_offset=hex(replay.allocator.delta),
+        allocator_entry='0x32bf', allocator_service_table='0x6700', allocator_service_slot='0x34',
+        allocator_calls=replay.allocator_calls, allocator_cases=replay.allocator_cases,
+        hob_guid=str(uuid.UUID(bytes_le=HOB_GUID)), hob_bytes=528, request_bytes=524, allocated_bytes=528,
+        payload_bytes=500, padding_bytes=4, padding_initialized=False,
         producer_entry='0x66d', consumer_entry='0x1f7b', consumer_stop='0x20ee',
         producer_cases=replay.cases, consumer_cases=replay.consumer_cases,
         gate_cases=replay.gate_cases, gate_accepted=replay.gate_accepted,
@@ -323,7 +414,8 @@ def main():
         example_hob_sha256=hashlib.sha256(example).hexdigest(),
         oracle_vectors=len(vectors), oracle_header_sha256=hashlib.sha256(vector_header.encode()).hexdigest(),
         hob_omits_core_mask_bits_8_to_15=True, hob_control_bit_is_8_not_mapper_smt_bit_10=True,
-        hob_allocator_is_fixture=True, hob_lookup_is_fixture=True, consumer_idtr_is_fixture=True,
+        hob_allocator_is_fixture=False, pei_services_pointer_and_phit_are_fixtures=True,
+        producer_idtr_is_fixture=True, hob_lookup_is_fixture=True, consumer_idtr_is_fixture=True,
         cpuid_is_fixture=True, gate_stops_before_initializers_and_firmware_services=True,
         hardware_execution=False, runtime_provider_verified=False,
         physical_ccd_mapping_verified=False, apic_mapping_verified=False,
@@ -336,8 +428,10 @@ def main():
 def make_vectors(vectors):
     lines = ['// SPDX-License-Identifier: GPL-2.0-only',
         '// Generated from original IA32 instructions by firmware-granite-map-binding.py.',
-        '// HOB allocator/register inputs are synthetic; these are not hardware captures.',
-        '// Producer SHA-256: '+PRODUCER_SHA, '#pragma once', '#include <array>',
+        '// Producer and PEI allocator execute original instructions; RAM/register inputs are synthetic.',
+        '// Complete 528-byte HOB: 524-byte request, 500-byte payload, 4 undefined padding bytes.',
+        '// Producer SHA-256: '+PRODUCER_SHA,
+        '// Allocator SHA-256: '+ALLOCATOR_SHA, '#pragma once', '#include <array>',
         '#include <cstdint>', '#include <string>', '#include <vector>',
         'namespace granite_core_status_fixture {',
         'struct Vector {', '    const char *name, *hobHex;',

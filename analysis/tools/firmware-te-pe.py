@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Strict IA32 TE -> analysis-only PE32 wrapper; never load or execute firmware.
 
-Only the two pinned Granite images are used by the pipeline. No relocation,
+Only the three pinned Granite images are used by the pipeline. No relocation,
 rebasing or instruction patching is performed. Original TE bytes remain the
 identity for emulation; REA evidence identifies the separately hashed wrapper.
 """
@@ -18,13 +18,19 @@ GRANITE_TE_MODULES = {
         sha256='7464250e2d6f8e3268af5da403997d57c86485ef86b25a23bc2b4af6abc65f1f',
         image_base=0x09ac6280, entry_rva=0x3c0,
         analysis_sha256='ecf94dafb435b1058bf5351960b18910674170bf066e148a9bc73616232c0992',
-        procedure_rvas=(0x3c0, 0x409, 0x66d, 0x997, 0x4789, 0x4917, 0x492a, 0x4a21)),
+        procedure_rvas=(0x3c0, 0x409, 0x66d, 0x8bf, 0x997, 0x4789, 0x4917, 0x492a, 0x4a21)),
     'core-status-consumer': dict(
         guid='C8F6D366-DDF1-4960-9D57-82F2655A1294', bytes=20736,
         sha256='c76d2ac61c511c113406297113d999f9cf7f1827c3b4413029907d5f7966ecb6',
         image_base=0x09b07988, entry_rva=0x399,
         analysis_sha256='c821f23f2ac30abfb9a4b6a93ab2920b9b15a19cab8be836e1409c77b1c635a9',
         procedure_rvas=(0x399, 0x1f7b, 0x434a)),
+    'core-status-allocator': dict(
+        guid='52C05B14-0B98-496C-BC3B-04B50211D680', bytes=27840,
+        sha256='7530328588b4a385c8c75d500b59245badc9237c9020a574cc61dcbc8f850a58',
+        image_base=0x09a00164, entry_rva=0x3fd,
+        analysis_sha256='e4b07186089c95a59a86a24a62431448e3dc3755504e234b3de284115859ff4a',
+        procedure_rvas=(0x3fd, 0x32af, 0x32bf)),
 }
 PE_OFFSET = 0x80
 OPTIONAL_SIZE = 224
@@ -190,6 +196,9 @@ def pinned_wrapper(name, body):
     te, pe = parse_te(body), parse_pe(wrapped)
     require(te['image_base'] == profile['image_base'] and te['entry_rva'] == profile['entry_rva'],
             'Unexpected pinned TE address identity')
+    for rva in profile['procedure_rvas']:
+        require(any(s['flags'] & 0x20000000 and s['rva'] <= rva < s['rva'] + s['virtual_size']
+                    for s in te['sections']), 'Procedure seed is not in executable virtual section extent')
     report['procedures'] = [dict(rva=hex(rva), virtual_address=hex(te['image_base'] + rva),
         original_te_file_offset=hex(rva_to_offset(te, rva, 'te')),
         analysis_pe_file_offset=hex(rva_to_offset(pe, rva, 'pe')))

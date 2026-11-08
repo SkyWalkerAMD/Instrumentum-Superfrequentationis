@@ -19,9 +19,11 @@ const char *amdGraniteCoreStateName(unsigned state) {
 }
 AmdGraniteCoreStatus decodeAmdGraniteCoreStatus(const std::vector<std::uint8_t> &bytes) {
     AmdGraniteCoreStatus invalid; invalid.error = -EINVAL;
-    if (bytes.size() != 0x20c) return invalid;
-    // EFI_HOB_GUID_TYPE: type 4, u16 length 0x20c, reserved u32 zero.
-    if (word(bytes,0) != 0x020c0004u || word(bytes,4)) return invalid;
+    if (bytes.size() != 0x210) return invalid;
+    // CreateHob rounds the 524-byte request to an 8-byte boundary. The HOB
+    // header records 528; bytes 524..527 are unspecified allocator padding.
+    // EFI_HOB_GUID_TYPE: type 4, u16 length 0x210, reserved u32 zero.
+    if (word(bytes,0) != 0x02100004u || word(bytes,4)) return invalid;
     const std::array<std::uint8_t,16> guid{{
         0xda,0xa7,0xdf,0x0c,0x0b,0x0d,0xf0,0x41,
         0xb9,0x8b,0x0f,0x63,0x59,0xc0,0x85,0x7f

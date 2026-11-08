@@ -113,6 +113,10 @@ class WrapperTests(unittest.TestCase):
         self.verify_original('core-status-consumer', 0x09b07988, 0x180, 21120,
             'c821f23f2ac30abfb9a4b6a93ab2920b9b15a19cab8be836e1409c77b1c635a9')
 
+    def test_original_allocator_with_independent_pefile(self):
+        self.verify_original('core-status-allocator', 0x09a00164, 0x180, 28224,
+            'e4b07186089c95a59a86a24a62431448e3dc3755504e234b3de284115859ff4a')
+
     def verify_original(self, name, expected_base, expected_delta, expected_size, expected_sha):
         if name not in INPUTS:
             self.skipTest('Pinned original input supplied only by explicit integration arguments')
@@ -146,15 +150,19 @@ class WrapperTests(unittest.TestCase):
             compared += size
         for procedure in report['procedures']:
             rva = int(procedure['rva'], 16)
+            executable = [s for s in independent.sections if s.Characteristics & 0x20000000 and
+                          s.VirtualAddress <= rva and rva + 32 <= s.VirtualAddress + s.Misc_VirtualSize]
+            self.assertEqual(len(executable), 1)
             new_offset = independent.get_offset_from_rva(rva)
             old_offset = rva-expected_delta
             self.assertEqual(int(procedure['analysis_pe_file_offset'], 16), new_offset)
             self.assertEqual(int(procedure['original_te_file_offset'], 16), old_offset)
             self.assertEqual(int(procedure['virtual_address'], 16), expected_base+rva)
-            self.assertEqual(wrapped[new_offset:new_offset+16], body[old_offset:old_offset+16])
+            self.assertEqual(wrapped[new_offset:new_offset+32], body[old_offset:old_offset+32])
         report['independent_parser'] = 'pefile ' + pefile.__version__
         report['independently_compared_file_backed_bytes'] = compared
         report['all_file_backed_rva_mappings_equal'] = True
+        report['all_seed_32byte_prefixes_within_executable_virtual_extent'] = True
         ACTUAL_REPORTS.append(report)
 
 
@@ -162,12 +170,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--producer', type=Path)
     parser.add_argument('--consumer', type=Path)
+    parser.add_argument('--allocator', type=Path)
     parser.add_argument('--output', type=Path)
     args = parser.parse_args()
-    if bool(args.producer) != bool(args.consumer):
-        parser.error('Supply both pinned original TE images')
+    supplied = (args.producer, args.consumer, args.allocator)
+    if any(supplied) and not all(supplied):
+        parser.error('Supply all three pinned original TE images')
     if args.producer:
-        INPUTS.update({'core-status-producer':args.producer, 'core-status-consumer':args.consumer})
+        INPUTS.update({'core-status-producer':args.producer, 'core-status-consumer':args.consumer,
+                       'core-status-allocator':args.allocator})
     result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(WrapperTests))
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

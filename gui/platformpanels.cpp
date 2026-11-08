@@ -1191,11 +1191,11 @@ bool AmdTuningPanel::loadCoreStatusRecord(const QString &path) {
     if(!isEnabled())return false;
     invalidateCurve();topologyRecord_.clear();findChild<QPushButton*>("smuTopologyCompare")->setEnabled(false);
     std::vector<std::uint8_t> bytes;
-    const int error=octool::platform::readBoundedFile(path.toStdString(),bytes,524);
+    const int error=octool::platform::readBoundedFile(path.toStdString(),bytes,528);
     if(error) {status_->setText("Cannot read core-status record: "+failure(error));return false;}
     const auto status=decodeAmdGraniteCoreStatus(bytes);
     if(status.error || !status.valid) {
-        status_->setText("Invalid reference core-status GUID HOB. A complete, consistent 524-byte record is required. Previous results cleared.");return false;
+        status_->setText("Invalid reference core-status GUID HOB. A complete, consistent 528-byte record is required. Previous results cleared.");return false;
     }
     table_->setColumnCount(7);
     table_->setHorizontalHeaderLabels({"Firmware target","Present in record","Disabled mask (low 8)","Enabled mask (low 8)",
@@ -1210,7 +1210,7 @@ bool AmdTuningPanel::loadCoreStatusRecord(const QString &path) {
             "Local firmware coordinates only; this record does not identify PM slots, APIC IDs or OS CPUs.";
         for(int column=0;column<7;++column)table_->item(table_->rowCount()-1,column)->setToolTip(note);
     }
-    status_->setText(QString("Offline caller-supplied core-status HOB · 524 bytes · presence %1. "
+    status_->setText(QString("Offline caller-supplied core-status HOB · 528 bytes (524 requested, 4 padding) · presence %1. "
         "Opaque flags: fuse bit-8 OR %2; inverse control bit-8 OR %3. Mask overlap target 0 / 1: %4 / %5.\n"
         "The record retains only low-8 masks; the SMU mapper uses low-16 masks. These flags use bit 8, while the mapper's SMT input uses bit 10. "
         "Origin, runtime provider and PM / physical CCD / APIC / OS CPU binding remain unverified. Absent-target rows are fill values. No hardware access or edit preparation.")

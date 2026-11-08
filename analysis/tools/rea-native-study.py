@@ -177,7 +177,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--binary', type=Path, required=True)
     parser.add_argument('--original-te', type=Path,
-                        help='Required original TE identity for the two derived analysis PE profiles')
+                        help='Required original TE identity for each derived analysis PE profile')
     parser.add_argument('--rea', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout', 'pbo_semantics', 'pbo_limits', 'oc_frequency', 'oc_cores', 'pm_transport', 'curve_all', 'vf_sources', 'power_adjustment', *FIRMWARE_STUDIES), default='baseline')
@@ -210,7 +210,7 @@ def main():
         seeds = dict(path=str(seed_path), sha256=hashlib.sha256(payload).hexdigest(),
                      addresses=addresses, analyst_declared=True,
                      coordinate_kind='virtual-address', coordinate_map=derivation['procedures'],
-                     basis='Pinned original IA32 TE entry, HOB producer/consumer and called helpers; ImageBase + RVA')
+                     basis='Pinned original IA32 TE entry, HOB producer/consumer/allocator and called helpers; ImageBase + RVA')
         (output / 'analysis-derivation.json').write_text(json.dumps(derivation, indent=2) + '\n', encoding='utf-8')
     elif args.study in ('granite_topology_provider_a', 'granite_topology_provider_b',
                       'granite_fabric_topology', 'granite_register_service'):

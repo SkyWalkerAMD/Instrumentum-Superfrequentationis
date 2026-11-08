@@ -98,6 +98,8 @@ def main():
                 raise ValueError('Unexpected UEFI module: ' + guid)
             (output / ('uefi-granite-' + name + '.bin')).write_bytes(body)
             manifest['modules'].append(dict(guid=guid, name=name, bytes=len(body), sha256=expected))
+        # Keep original producer, consumer and PEI allocator TE identities;
+        # their separate PE32 derivatives are only static-analysis inputs.
         for name, profile in TE['GRANITE_TE_MODULES'].items():
             body = (dump / ('Section_TE_image_' + profile['guid'] + '_body.bin')).read_bytes()
             wrapped, evidence = TE['pinned_wrapper'](name, body)

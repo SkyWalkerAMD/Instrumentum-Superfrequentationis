@@ -21,8 +21,10 @@ struct AmdGraniteCoreStatus {
     std::uint32_t presenceMask = 0, fuseFlag = 0, inverseControlFlag = 0;
     std::array<AmdGraniteCoreStatusTarget, 2> targets{};
 };
-// Strict 524-byte HOB, including type/length/reserved/GUID. All unused target
-// fields must be zero. Retain overlapping disabled/enabled bits; disabled has
+// Strict 528-byte HOB, including type/length/reserved/GUID. The 500-byte payload
+// follows the 24-byte GUID header; ignore the final four allocator padding
+// bytes, whose contents are unspecified. All unused target fields in the
+// payload must be zero. Retain overlapping disabled/enabled bits; disabled has
 // priority in the stored state. A malformed record publishes no partial data.
 AmdGraniteCoreStatus decodeAmdGraniteCoreStatus(const std::vector<std::uint8_t> &bytes);
 const char *amdGraniteCoreStateName(unsigned state);

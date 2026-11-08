@@ -6,8 +6,10 @@ This supplies a concrete producer and consumer for a **core-status GUID HOB**.
 It does not supply a PM-to-APOB, physical CCD, APIC or OS-CPU binding.
 
 The source remains ASUS ProArt X870E-CREATOR WIFI BIOS 2503. The user's
-9950X3D is unavailable and its installed BIOS is unknown. All register values,
-CPUID replies and firmware service outcomes below are synthetic inputs.
+9950X3D is unavailable and its installed BIOS is unknown. Register values,
+CPUID replies, the PEI services pointer and PHIT memory are synthetic inputs.
+The producer, allocation wrapper and reference PEI allocator execute their
+original instructions; this does not replay a complete firmware boot.
 
 ## Immutable IA32 inputs and address conventions
 
@@ -15,18 +17,21 @@ CPUID replies and firmware service outcomes below are synthetic inputs.
 |---|---|---:|---|
 | Early mask/HOB producer | `F3FDA9D8-4EE5-44D8-8E49-AFAA77B5FC51` | 33584 | `7464250e2d6f8e3268af5da403997d57c86485ef86b25a23bc2b4af6abc65f1f` |
 | Core-status consumer | `C8F6D366-DDF1-4960-9D57-82F2655A1294` | 20736 | `c76d2ac61c511c113406297113d999f9cf7f1827c3b4413029907d5f7966ecb6` |
+| PEI core / HOB allocator | `52C05B14-0B98-496C-BC3B-04B50211D680` | 27840 | `7530328588b4a385c8c75d500b59245badc9237c9020a574cc61dcbc8f850a58` |
 
 These are **IA32 TE images**, machine `0x14c`, rather than the AMD64 PE
 modules used by the earlier topology protocol. The producer image base is
 `0x09ac6280`; its original section RVA minus stripped-file offset is `0x190`.
-The consumer base is `0x09b07988` and its delta is `0x180`. Addresses below
-are RVAs; add the relevant image base for virtual addresses. Reading these
+The consumer base is `0x09b07988` and its delta is `0x180`. The PEI core base
+is `0x09a00164`, with delta `0x180`; its two extracted capsule copies have
+the same original SHA-256. Addresses below are RVAs; add the relevant image
+base for virtual addresses. Reading these
 bytes as x86-64 incorrectly interprets IA32 INC instructions as prefixes.
 
 The proof maps each original section at its TE virtual address and verifies
 every executed instruction against those bytes. An analysis PE wrapper, if
 used for REA/Ghidra discovery, is a derived analysis input and does not replace
-either original TE identity. Claim IDs below are local research identifiers;
+any original TE identity. Claim IDs below are local research identifiers;
 they are not invented REA Evidence IDs.
 
 ## GMB-01: a model/package-gated producer reads both masks
@@ -65,11 +70,38 @@ checked coordinate connection; the values are still independent inputs.
 
 ## GMB-02: complete GUID HOB layout and three-state construction
 
-The producer requests a type-4 HOB of size `0x20c`, writes GUID
+The producer requests a type-4 HOB of size `0x20c` (524 bytes), writes GUID
 `0cdfa7da-0d0b-41f0-b98b-0f6359c0857f` at HOB `+8`, and copies exactly
-`0x1f4` bytes of zero-initialized local payload to HOB `+0x18`.
-The allocator's memory and common header are fixtures; the GUID stores and
-full payload construction/copy execute original instructions.
+`0x1f4` (500) bytes of zero-initialized local payload to HOB `+0x18`.
+The **complete allocated HOB is `0x210` (528) bytes**, including four final
+padding bytes. The request size is not the declared `HobLength`.
+
+The original producer wrapper `0x8bf..0x8f8` obtains the PEI services pointer
+through IDTR, forwards its type and length to service-table slot `+0x34`,
+and returns the HOB header pointer written by that service. It does not
+construct the header itself. The pinned PEI core's `PEI SERV` table at
+`0x6700` contains `0x09a03423` at that slot, selecting allocator `0x32bf`.
+The composed replay substitutes only the IDTR/PHIT environment and executes
+the original wrapper and allocator through this original function pointer.
+It does not prove which service pointer was installed on the user's system.
+
+In the allocator, `0x32eb` computes `length + 7`, `0x32ee` masks with
+`0xfff8`, and `0x332e` writes that aligned value to header `+2`.
+`0x3334` clears the reserved DWORD. The allocator also creates the next
+end-of-list HOB and updates PHIT's free-memory/end pointers. These stores
+are checked in the original-byte replay. This agrees with the official
+[PI CreateHob contract](https://uefi.org/specs/PI/1.8A/V1_Services_PEI.html#createhob),
+which rounds allocation length to eight bytes and returns the new HOB header.
+The [generic header definition](https://uefi.org/specs/PI/1.8A/V3_HOB_Code_Definitions.html#efi-hob-generic-header)
+defines `HobLength` as the whole HOB length and requires its reserved DWORD
+to be zero.
+
+Neither the allocator nor this producer initializes HOB `+0x20c..+0x20f`.
+The replay preloads nonzero patterns and forbids writes to these four bytes;
+the patterns survive both allocation and payload construction. They are
+padding with no decoded meaning and must not be required to contain zero.
+The earlier 524-byte test envelope came from an allocator stub, not from
+the original allocator. It is no longer accepted as a complete HOB.
 
 | Payload offset | Encoding and recovered meaning |
 |---|---|
@@ -151,12 +183,14 @@ is added by this study.
 
 ## Strict offline import contract
 
-The shared decoder accepts only a complete 524-byte GUID HOB. It checks
-type 4, declared length 524, the exact GUID, target/core counts 2/8,
+The shared decoder accepts only a complete 528-byte GUID HOB. It checks
+type 4, declared length 528, the exact GUID, target/core counts 2/8,
 presence bits 0/1 only, low-byte masks, flags 0/1, exact three-state
-consistency and zero unused target storage. Requiring the common-header
-reserved DWORD to be zero is an application envelope check; it is not
-an observed allocator behavior in the synthetic replay.
+consistency and zero unused target storage inside the 500-byte payload.
+The common-header reserved DWORD must be zero, as the original allocator
+writes it. The final four alignment bytes are ignored, including nonzero
+values; they are outside that payload. A 524-byte file, a declared length
+of 524, or trailing bytes beyond the complete 528-byte HOB are rejected.
 With no present target, both aggregate flags must also be zero; neither
 target loop ran. With a present target the two flags remain independent.
 
@@ -172,6 +206,7 @@ must not prepare any tuning command or overwrite a verified live identity.
 python3 analysis/tools/firmware-granite-map-binding.py \
   --producer build/firmware-input/uefi-granite-core-status-producer.bin \
   --consumer build/firmware-input/uefi-granite-core-status-consumer.bin \
+  --allocator build/firmware-input/uefi-granite-core-status-allocator.bin \
   --output build/firmware-evidence/granite-map-binding.json \
   --example-hob build/firmware-evidence/granite-core-status-example.hob \
   --vectors build/firmware-evidence/granite-core-status-vectors.h
@@ -179,10 +214,17 @@ python3 analysis/tools/firmware-granite-map-binding.py \
 
 The input filenames above designate the **original TE files**. Dependencies
 are pinned Unicorn 2.1.4; only standard-library parsing is used for TE mapping.
-The default run includes 5,384 producer cases, 5,380 composed consumer slices
-and 8,256 CPU-gate cases. It varies every disabled-byte encoding, independent
+The default run includes 5,384 producer cases, each calling the original
+allocator, 5,380 composed consumer slices, and 8,256 CPU-gate cases. Thirteen
+additional allocator-only cases check length rounding, exact available
+space, allocation failure and the upper length boundary. It varies every
+disabled-byte encoding, independent
 enabled-bit bases, present/absent targets, high bits, both control bits and
 allocation failures. Original instruction counts, data/index read counts,
 gate acceptance, trace hashes and four independently generated C++ oracle
-vectors are retained in the JSON report. All cases are bounded synthetic
-execution, including the success of the HOB service fixtures.
+vectors are retained in the JSON report. The report distinguishes
+`request_bytes=524`, `allocated_bytes=528`, `payload_bytes=500`, and
+`padding_bytes=4`. The four vectors include distinct zero/nonzero padding
+patterns, all written by original producer/allocator instructions except
+the deliberately unchanged padding. All cases remain bounded synthetic
+execution; HOB lookup and the surrounding PEI memory environment are fixtures.

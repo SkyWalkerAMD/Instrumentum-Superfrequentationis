@@ -1669,7 +1669,7 @@ Result execute(const Command &c, const BackendFactory &factory) {
             {"mirrored", boolean(r.mirrored)}, {"empty", boolean(r.empty)},
             {"detail", quote("Original SVI3 encoding preview only. Dual-rail firmware semantics and operating limits are unverified.")}};
     } else if(c.name == "amd-core-status-decode") {
-        std::vector<std::uint8_t> bytes;out.error=platform::readBoundedFile(c.path,bytes,524);
+        std::vector<std::uint8_t> bytes;out.error=platform::readBoundedFile(c.path,bytes,528);
         AmdGraniteCoreStatus r;
         if(!out.error){r=decodeAmdGraniteCoreStatus(bytes);out.error=r.error;}
         std::vector<std::string> targets;
@@ -1682,7 +1682,8 @@ Result execute(const Command &c, const BackendFactory &factory) {
                 {"disabled_fuse_mask",hex(target.disabledMask)},{"runtime_enabled_mask",hex(target.enabledMask)},
                 {"overlap_mask",hex(target.overlapMask)},{"cores",array(states)}}));
         }
-        out.data={{"path",quote(c.path)},{"captured_bytes",number(bytes.size())},{"expected_bytes",number(524)},
+        out.data={{"path",quote(c.path)},{"captured_bytes",number(bytes.size())},{"expected_bytes",number(528)},
+            {"payload_bytes",number(500)},{"allocation_request_bytes",number(524)},{"alignment_padding_bytes",number(4)},
             {"format",quote("Granite reference GUID HOB")},{"reference_guid",quote("0cdfa7da-0d0b-41f0-b98b-0f6359c0857f")},
             {"valid",boolean(r.valid && !out.error)},{"presence_mask",r.valid?hex(r.presenceMask):"null"},
             {"fuse_flag",r.valid?number(r.fuseFlag):"null"},{"inverse_control_flag",r.valid?number(r.inverseControlFlag):"null"},
@@ -1691,7 +1692,7 @@ Result execute(const Command &c, const BackendFactory &factory) {
             {"flags_are_smt","false"},{"mapper_upper_bits_available","false"},
             {"smu_enabled_mask_equivalence_verified","false"},{"pm_slot_mapping_verified","false"},
             {"apob_binding_verified","false"},{"physical_ccd_mapping_verified","false"},{"os_cpu_mapping_verified","false"},
-            {"detail",quote("Caller-supplied 524-byte firmware status HOB, not acquired from hardware. Two target indexes and eight core-bit positions per target. Absent targets contain ff/0/zero-state sentinel rows, not measured fuse states. For present targets, fuse-disabled takes precedence over runtime-enabled; overlapping masks are retained. Only low eight mask bits were stored, so this record cannot reconstruct the SMU mapper's low sixteen bits or establish PM, APOB, physical CCD or OS identities. The two flags are not decoded as SMT.")}};
+            {"detail",quote("Caller-supplied 528-byte firmware status HOB, not acquired from hardware. The 524-byte allocation request is rounded to eight-byte alignment; the last four padding bytes have no decoded meaning. Two target indexes and eight core-bit positions per target. Absent targets contain ff/0/zero-state sentinel rows, not measured fuse states. For present targets, fuse-disabled takes precedence over runtime-enabled; overlapping masks are retained. Only low eight mask bits were stored, so this record cannot reconstruct the SMU mapper's low sixteen bits or establish PM, APOB, physical CCD or OS identities. The two flags are not decoded as SMT.")}};
     } else if (c.name == "amd-topology-decode") {
         std::vector<std::uint8_t> bytes; out.error=platform::readBoundedFile(c.path,bytes,1048576);
         AmdApobTopology topology;
@@ -1733,7 +1734,7 @@ Usage: octool-cli COMMAND [OPTIONS]
   spd-decode --file PATH            Decode a bounded offline SPD file
   amd-topology-decode --file PATH   Decode an APOB record or unique-record container (reference layout)
   amd-core-status-decode --file PATH
-    Decode an exact 524-byte Granite reference core-status GUID HOB offline.
+    Decode an exact 528-byte Granite reference core-status GUID HOB offline.
     Stored fuse/runtime masks and three-state core bits only; no PM/physical/OS binding.
   cpu --cpu N                      CPU identity
   register-read --space msr --cpu N --address A

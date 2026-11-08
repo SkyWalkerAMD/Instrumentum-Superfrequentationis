@@ -1168,9 +1168,10 @@ void offlineCoreStatusDoesNotCreateBackend() {
     struct Remove { const char *path; ~Remove() { unlink(path); } } cleanup{path};
     unsigned opens=0;
     const auto factory=[&]() { ++opens; return std::unique_ptr<HardwareBackend>(); };
-    for(unsigned mode=0;mode<17;++mode) {
+    for(unsigned mode=0;mode<19;++mode) {
         auto bytes=granite_core_status_fixture::bytes(granite_core_status_fixture::vectors[mode<4?mode:0]);
-        if(mode==4) bytes.resize(523);
+        if(mode==0) { bytes[524]=0x5a;bytes[527]=0xa5; } // Unspecified allocation padding is not payload.
+        if(mode==4) bytes.resize(527);
         if(mode==5) bytes.push_back(0);
         if(mode==6) bytes[8]^=1; // Wrong GUID.
         if(mode==7) bytes[0]=3; // Not a GUID HOB.
@@ -1182,6 +1183,8 @@ void offlineCoreStatusDoesNotCreateBackend() {
         if(mode==13) bytes[24+0x74]=0; // State conflicts with masks.
         if(mode==15) bytes[24+12]=1; // Absent target still has enabled cores.
         if(mode==16) { bytes=granite_core_status_fixture::bytes(granite_core_status_fixture::vectors[2]); bytes[24+8]=1; }
+        if(mode==17) { bytes.resize(524);bytes[2]=0x0c; } // Reject former unaligned synthetic envelope.
+        if(mode==18) bytes[2]=0x0c; // Header length must describe the complete aligned record.
         { std::ofstream file(path,std::ios::binary); file.write(reinterpret_cast<const char*>(bytes.data()),bytes.size()); }
         std::ostringstream out;
         assert(run({"amd-core-status-decode","--file",mode==14?std::string(path)+".missing":path},out,factory)==(mode<4?0:3));

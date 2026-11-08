@@ -107,8 +107,10 @@ APIC/OS association and live runtime provider selection remain unresolved.
 - [Guarded Shaper saved-offset write](amd-granite-shaper-write.md).
 - [Core status GUID HOB](amd-granite-map-binding.md) separates the fuse mask
   from the runtime mask and retains three per-core states. The caller supplies
-  the 524-byte record with `amd-core-status-decode --file capture.hob`, or loads
-  it in the GUI topology area. This is not a live acquisition or an APOB record.
+  the complete 528-byte record with `amd-core-status-decode --file capture.hob`, or loads
+  it in the GUI topology area. The allocator rounds the 524-byte request to
+  eight-byte alignment; the last four bytes are padding, not payload. This is
+  not a live acquisition or an APOB record.
   Its low eight mask bits and two opaque flags do not reconstruct the SMU
   mapper's full input or identify physical CCDs and OS CPUs.
 - [Two-channel automatic rail policy](amd-granite-rail-policy.md) explains

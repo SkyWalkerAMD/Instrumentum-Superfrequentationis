@@ -12,7 +12,7 @@ GUI 和 CLI 现同步提供[保存偏移写入](amd-granite-shaper-write.md)：
 应用或电气效果。失败不自动重试或回滚。协议见 [Curve Shaper](amd-granite-curve-shaper.md)。
 
 新增 `amd-core-status-decode --file capture.hob`，与 GUI 同步离线解码一份
-524 字节的[参考固件核心状态记录](amd-granite-map-binding.md)。保留两套独立掩码
+528 字节的[参考固件核心状态记录](amd-granite-map-binding.md)：申请 524 字节后按 8 字节对齐，最后 4 字节仅为填充。保留两套独立掩码
 和三种核心状态，缺席目标单独标注；不访问硬件，不据此绑定 PM、物理 CCD 或 OS 核心。
 
 新增 [Granite Ridge 四状态 DPM 策略表](amd-granite-dpm-policy.md)：

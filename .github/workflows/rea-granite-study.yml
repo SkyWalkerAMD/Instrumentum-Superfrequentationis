@@ -119,6 +119,7 @@ jobs:
           PYTHONPATH="$PWD/build/firmware-tools/python" python3 analysis/tests/test_firmware_te_pe.py \
             --producer build/firmware-input/uefi-granite-core-status-producer.bin \
             --consumer build/firmware-input/uefi-granite-core-status-consumer.bin \
+            --allocator build/firmware-input/uefi-granite-core-status-allocator.bin \
             --output build/firmware-evidence/granite-te-wrapper-tests.json \
             2>&1 | tee build/firmware-evidence/granite-te-wrapper-tests.log
       - name: Static SMU and MP5 discovery without Shimada address assumptions
@@ -360,11 +361,12 @@ jobs:
             --mp5 build/firmware-input/mp5-62-54-body.bin \
             --mp5-study build/firmware-evidence/mp5/smu-study.json \
             --output build/firmware-evidence/granite-unit-calibration.json
-      - name: Replay original IA32 TE core-status HOB producer and consumer
+      - name: Replay original IA32 TE core-status HOB producer, allocator and consumer
         run: |
           PYTHONPATH="$PWD/build/firmware-tools/python" python3 analysis/tools/firmware-granite-map-binding.py \
             --producer build/firmware-input/uefi-granite-core-status-producer.bin \
             --consumer build/firmware-input/uefi-granite-core-status-consumer.bin \
+            --allocator build/firmware-input/uefi-granite-core-status-allocator.bin \
             --output build/firmware-evidence/granite-map-binding.json \
             --example-hob build/firmware-evidence/granite-core-status-example.hob \
             --vectors build/firmware-evidence/granite-core-status-vectors.h
@@ -386,6 +388,7 @@ jobs:
           python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-granite-register-service.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-register-service --study granite_register_service
           python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-granite-core-status-producer.analysis-pe.bin --original-te build/firmware-input/uefi-granite-core-status-producer.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-core-status-producer --study granite_core_status_producer
           python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-granite-core-status-consumer.analysis-pe.bin --original-te build/firmware-input/uefi-granite-core-status-consumer.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-core-status-consumer --study granite_core_status_consumer
+          python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-granite-core-status-allocator.analysis-pe.bin --original-te build/firmware-input/uefi-granite-core-status-allocator.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-core-status-allocator --study granite_core_status_allocator
       - uses: actions/upload-artifact@v4
         if: always()
         with:

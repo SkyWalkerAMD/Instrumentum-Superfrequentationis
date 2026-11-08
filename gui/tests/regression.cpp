@@ -4550,7 +4550,8 @@ private slots:
         panel.resize(1500,1750);panel.show();QApplication::processEvents();
         auto *table=panel.findChild<QTableWidget *>("smuTable");auto *status=panel.findChild<QLabel *>("smuStatus");
         for(const auto &v:granite_core_status_fixture::vectors) {
-            QVERIFY(savePmFile(path,granite_core_status_fixture::bytes(v)));QVERIFY(panel.loadCoreStatusRecord(path));
+            auto padded=granite_core_status_fixture::bytes(v);padded[524]=0x5a;padded[527]=0xa5;
+            QVERIFY(savePmFile(path,padded));QVERIFY(panel.loadCoreStatusRecord(path));
             QCOMPARE(table->rowCount(),16);QCOMPARE(table->columnCount(),7);
             for(unsigned target=0;target<2;++target)for(unsigned core=0;core<8;++core) {
                 const int row=int(target*8+core);const bool present=v.presenceMask&(1u<<target);
@@ -4559,6 +4560,7 @@ private slots:
                 if(!present)QCOMPARE(table->item(row,6)->text(),QString("Absent target (fill value)"));
             }
             QVERIFY(status->text().contains("caller-supplied"));QVERIFY(status->text().contains("SMU mapper uses low-16 masks"));
+            QVERIFY(status->text().contains("528 bytes (524 requested, 4 padding)"));
             QVERIFY(status->text().contains("SMT input uses bit 10"));QVERIFY(status->text().contains("No hardware access or edit preparation"));
             if(QString::fromLatin1(v.name)=="sparse-two-targets") {
                 QCOMPARE(table->item(6,6)->text(),QString("Not enabled in register"));QCOMPARE(table->item(7,6)->text(),QString("Excluded by fuse mask"));
@@ -4585,6 +4587,9 @@ private slots:
         QCOMPARE(table->rowCount(),0);QCOMPARE(table->columnCount(),2);QVERIFY(status->text().contains("Previous results cleared"));
         bytes=granite_core_status_fixture::bytes(granite_core_status_fixture::vectors[0]);bytes.push_back(0);
         QVERIFY(savePmFile(path,bytes));QVERIFY(!panel.loadCoreStatusRecord(path));QCOMPARE(table->rowCount(),0);
+        bytes=granite_core_status_fixture::bytes(granite_core_status_fixture::vectors[0]);bytes[2]=0x0c;
+        QVERIFY(savePmFile(path,bytes));QVERIFY(!panel.loadCoreStatusRecord(path));QCOMPARE(table->rowCount(),0);
+        bytes.resize(524);QVERIFY(savePmFile(path,bytes));QVERIFY(!panel.loadCoreStatusRecord(path));QCOMPARE(table->rowCount(),0);
         QVERIFY(!panel.loadCoreStatusRecord(directory.filePath("missing.hob")));QCOMPARE(d->calls,calls);
         QCOMPARE(d->settings,0u);
     }

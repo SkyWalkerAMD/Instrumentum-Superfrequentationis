@@ -58,18 +58,19 @@ for r in query_results:
         assert d['ln2_enabled'] is None and d['command'] == '0x0000005c'
         assert d['firmware_index'] in (0,1,7,127)
 assert sum(r['error'] == -22 for r in queries) == 20
-assert len(reports) == 1740, len(reports)
+assert len(reports) == 1742, len(reports)
 core_status = [r for r in reports if r['command'] == 'amd-core-status-decode']
-assert len(core_status) == 17 and [r['ok'] for r in core_status] == [True]*4+[False]*13
+assert len(core_status) == 19 and [r['ok'] for r in core_status] == [True]*4+[False]*15
 for i,r in enumerate(core_status):
     d=r['data']
-    assert d['offline'] and d['valid']==r['ok'] and d['expected_bytes']==524
+    assert d['offline'] and d['valid']==r['ok'] and d['expected_bytes']==528
+    assert (d['payload_bytes'],d['allocation_request_bytes'],d['alignment_padding_bytes'])==(500,524,4)
     assert d['stored_mask_bits']==8
     assert not any(d[k] for k in ('hardware_accessed','origin_verified','flags_are_smt',
         'mapper_upper_bits_available','smu_enabled_mask_equivalence_verified',
         'pm_slot_mapping_verified','apob_binding_verified','physical_ccd_mapping_verified','os_cpu_mapping_verified'))
     if i<4:
-        assert d['captured_bytes']==524
+        assert d['captured_bytes']==528
         assert d['reference_guid']=='0cdfa7da-0d0b-41f0-b98b-0f6359c0857f'
         assert int(d['presence_mask'],16)==(3,2,0,1)[i]
         assert d['fuse_flag']==(1,0,0,1)[i] and d['inverse_control_flag']==(1,0,0,0)[i]
