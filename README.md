@@ -1,8 +1,8 @@
 # Instrumentum Superfrequentationis
 
-<!-- amd-granite-991e7ab -->
-2026-11-08：[9950X3D 本轮验证](docs/amd-granite-validation.md)通过 44/44 云端任务，42 组固件回放本地/云端一致。GUI/CLI 同步新增 Granite Scalar 设置与回读、PPT/TDC/EDC/温度限制、手动 OC 模式、全核 CO、Curve Shaper 保存表读取和离线映射诊断。限制和 CO 仅确认应答；Scalar 与模式验证各自存储值。新增掩码读取链、消息通道和配置镜像截断证据，仍不等于真机或物理绑定。剩余八行单位、五个公共配置值单位、PM 物理映射和第二 rails 独立写入／回读仍未完成。[用法与 REA 证据](docs/amd-granite-controls.md)；源码和 33 个安装包：`dist/gui-cli-amd-granite-991e7ab/`。以下为历史阶段记录，以本段和当前验证报告为准。
-<!-- /amd-granite-991e7ab -->
+<!-- amd-granite-5055a86 -->
+2026-11-08：[9950X3D 本轮验证](docs/amd-granite-validation.md)通过 44/44 云端任务；46 组固件证明与本地结果一致，REA 实际分析十个 UEFI 模块。GUI/CLI 同步加入 Curve Shaper 单档位保存偏移写入、全表旧值检查与五字回读，以及按原始分配器确认的 528 字节核心状态 HOB 只读导入。保存表匹配不代表下游应用；HOB 不建立 PM、物理 CCD 或 OS 绑定。新增 rails 自动策略和模型校准边界证据，仍未确认八行物理单位、五个配置值单位及第二 rails 独立写入／回读。[用法与证据](docs/amd-granite-controls.md)；源码与 33 个安装包位于 `dist/gui-cli-amd-granite-5055a86/`。以下保留历史阶段记录，以本段和当前验证报告为准。
+<!-- /amd-granite-5055a86 -->
 
 <!-- amd-pm-ccd-168a618 -->
 2026-10-26：[PM 固件 CCD 映射验证](docs/amd-pm-ccd-validation.md)已通过 44/44 云端任务；GUI/CLI 同步提供 `--map-ccd`。适用 Shimada SMU 115.46.0，9950X3D 的 Granite Ridge 路径、字段单位和第二 rails 回读仍待恢复。源码与包：`dist/gui-cli-amd-pm-ccd-168a618/`。
