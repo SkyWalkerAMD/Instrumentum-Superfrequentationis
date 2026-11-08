@@ -4332,7 +4332,8 @@ private slots:
         for(int tier=0;tier<5;++tier) {
             QCOMPARE(table->item(tier,0)->text(),QString::number(tier));
             for(int point=0;point<3;++point) QCOMPARE(table->item(tier,point+1)->text(),QString::number(counts[tier][point]));
-            QCOMPARE(table->item(tier,4)->text(),QString("0x%1").arg(d->shaperWords[std::size_t(tier)],8,16,QLatin1Char('0')));
+            QCOMPARE(table->item(tier,4)->text(),QString("0x%1").arg(
+                QString::number(d->shaperWords[std::size_t(tier)],16).rightJustified(8,QLatin1Char('0')).toUpper()));
         }
         QVERIFY(status->text().contains("15 saved signed count offsets"));
         QVERIFY(status->text().contains("baseline + offset combined counts"));
@@ -4343,7 +4344,7 @@ private slots:
         for(auto *button:panel.findChildren<QPushButton *>()) if(button->text()=="Copy snapshot")copy=button;
         QVERIFY(copy);copy->click();
         const auto copied=QApplication::clipboard()->text();
-        QVERIFY(copied.contains("Temperature point 2 (counts)"));QVERIFY(copied.contains("0xffce8000"));
+        QVERIFY(copied.contains("Temperature point 2 (counts)"));QVERIFY(copied.contains("0xFFCE8000"));
         QVERIFY(copied.contains("baseline + offset combined counts"));
         QTRY_VERIFY(table->viewport()->height()>table->rowCount()*table->rowHeight(0));
         QTRY_VERIFY(status->height()>=status->heightForWidth(status->width()));

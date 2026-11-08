@@ -1708,7 +1708,8 @@ Usage: octool-cli COMMAND [OPTIONS]
                                    Shimada SMU 115.46.0 / Granite Ridge SMU 98.84.0 only
   amd-pbo-limit-set --cpu N [--platform shimada|granite-ridge] --limit ppt|tdc|edc|temperature --value N --expect-caps RAW --apply
                                    One shared limit; firmware acknowledgement only
-    Shimada 1Ah/08h at domain 0 / BDF 0 only. Read capabilities first: power limits
+    Shimada 1Ah/08h or Granite Ridge SMU 98.84.0 at domain 0 / BDF 0 only.
+    Read capabilities first: power limits
     must be available and manual OC disabled. PPT uses W, TDC/EDC use A; integer
     1..2000. Temperature uses integer 1..100 C. These are application input bounds,
     not operating recommendations. Current limit and actual effect are unverified.
