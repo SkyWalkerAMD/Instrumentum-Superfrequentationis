@@ -15,6 +15,30 @@ Slice,f32=H['Slice'],H['f32']
 ACC,OUT,CONFIG=0x15320,0x15b40,0xc270
 
 
+class RawWord:
+    """Opaque FR storage; arithmetic on these objects is intentionally invalid."""
+    def __init__(self,bits):self.bits=bits
+
+
+class RawCopySlice(Slice):
+    """LSI/SSI transfer bits without converting through a host floating type.
+
+    Python's float32 -> double -> float32 conversion can quiet a signalling
+    NaN on Linux. That conversion is not an Xtensa load/store operation. This
+    slice permits only the checked pointer-copy loop, never FP arithmetic.
+    """
+    def getf(self,address):return RawWord(self.get(address))
+    def putf(self,address,value):
+        assert isinstance(value,RawWord)
+        self.put(address,value.bits)
+    def run(self,pc,stop,**kwargs):
+        assert (pc,stop)==(0x2d13a,0x2d14e)
+        for address,ins in self.code.items():
+            if pc<=address<stop:
+                assert ins['text'].split()[0].removesuffix('.n') in ('l32r','loopgtz','l32i','addi','beqz','lsi','ssi')
+        return super().run(pc,stop,**kwargs)
+
+
 def helper(body,code,entry,integer=0,value=None):
     v=Slice(body,code);v.r['a2']=integer
     if value is not None:v.f['f0']=value
@@ -158,14 +182,15 @@ def local_mirror(body,code):
         trace.update(struct.pack('<IIf',old,new,v.getf(CONFIG+12)))
     assert struct.unpack_from('<I',body,0xb340+269*4)[0]==CONFIG+12
     for bits in (0x80000000,1,0xbf800000,0x3f800000,0x7f800001):
-        v=Slice(body,code);v.ram.update(enumerate(body));v.put(CONFIG+12,bits)
+        v=RawCopySlice(body,code);v.ram.update(enumerate(body));v.put(CONFIG+12,bits)
         v.r.update(a12=OUT,a13=301);v.run(0x2d13a,0x2d14e)
         assert v.get(OUT+269*4)==bits
     return dict(decode_codes=256,decode_base_bits='0x3efeb1e6',decode_step_bits='0x3b41e659',
         initializer_cases=init_cases,initializer_records=3*init_cases,transition_cases=cases,
         descending_cases=down,equal_code_retentions=equal,synthetic_write_calls=writes,
         raw_read_during_step_setter=False,peripheral_effects_verified=False,delay_units_verified=False,
-        averaged=False,pm_index=269,direct_copy_words=5,trace_sha256=trace.hexdigest())
+        averaged=False,pm_index=269,direct_copy_words=5,raw_fr_load_store=True,
+        host_float_conversion_used_for_copy=False,trace_sha256=trace.hexdigest())
 
 
 def density_immediates():

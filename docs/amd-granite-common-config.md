@@ -74,11 +74,19 @@ retentions and 3,052 synthetic writer calls. This retention statement is
 specific to the step setter: the separate `0x32298` path also writes this
 mirror and is not covered by the transition experiment.
 
-The PM pointer table directly copies `0xc27c` to word 269. Five integer-copy
-fixtures include negative zero, subnormal and signalling-NaN bits. Firmware
+The PM pointer table directly copies `0xc27c` to word 269 using `LSI`/`SSI`
+floating-register loads and stores, with no intervening FP arithmetic. Five
+raw-bit fixtures include negative zero, subnormal and signalling-NaN bits. Firmware
 does not average or reconvert this word on that path. The shared application
 decoder also preserves the stored value and classifies non-finite bits without
 changing them.
+
+This copy experiment uses opaque 32-bit register words rather than Python
+floating values. The first cloud run exposed a host-runtime difference:
+converting a signalling NaN through Python's float can quiet its bits on Linux.
+That is not part of the firmware's load/store operation. The dedicated replay
+rejects arithmetic instructions and avoids host floating conversion entirely;
+the general numerical interpreter still makes no NaN/FPU-exception claim.
 
 ## Shared GUI and CLI behavior
 
