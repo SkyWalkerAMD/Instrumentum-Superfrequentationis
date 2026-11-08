@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import runpy
 import struct
 import subprocess
 import zipfile
@@ -34,6 +35,7 @@ MODULES = {
     'AC991242-FBB0-42FA-AEF4-AA9746FD68E1':
         ('register-service', '61a6f2850ea3cd207264d4c831dbaff253a53137eefcc5a3890e254698c10963'),
 }
+TE = runpy.run_path(str(Path(__file__).resolve().with_name('firmware-te-pe.py')))
 
 
 def digest(data):
@@ -96,6 +98,19 @@ def main():
                 raise ValueError('Unexpected UEFI module: ' + guid)
             (output / ('uefi-granite-' + name + '.bin')).write_bytes(body)
             manifest['modules'].append(dict(guid=guid, name=name, bytes=len(body), sha256=expected))
+        for name, profile in TE['GRANITE_TE_MODULES'].items():
+            body = (dump / ('Section_TE_image_' + profile['guid'] + '_body.bin')).read_bytes()
+            wrapped, evidence = TE['pinned_wrapper'](name, body)
+            original_name = 'uefi-granite-' + name + '.bin'
+            analysis_name = 'uefi-granite-' + name + '.analysis-pe.bin'
+            report_name = 'uefi-granite-' + name + '.analysis-pe.json'
+            (output / original_name).write_bytes(body)
+            (output / analysis_name).write_bytes(wrapped)
+            (output / report_name).write_text(json.dumps(evidence, indent=2) + '\n', encoding='utf-8')
+            manifest['modules'].append(dict(guid=profile['guid'], name=name,
+                bytes=len(body), sha256=profile['sha256'], format='IA32 TE',
+                original_file=original_name, analysis_file=analysis_name,
+                analysis_wrapper=evidence, analysis_report=report_name))
     (output / 'granite-input-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     print('Verified Granite Ridge reference inputs; no hardware execution')
 

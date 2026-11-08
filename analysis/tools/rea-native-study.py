@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import queue
+import runpy
 import shutil
 import signal
 import subprocess
@@ -48,6 +49,11 @@ FIRMWARE_STUDIES = {
     'firmware_limits': ('7da8e70b76a41f065bfa645b04bdcb58a1cdab3f02bcae111c3c8581467e9f4d',
                         (('0x4850', 'entry'),)),
 }
+TE_WRAPPER = runpy.run_path(str(Path(__file__).resolve().with_name('firmware-te-pe.py')))
+TE_STUDIES = {'granite_' + name.replace('-', '_'): name
+              for name in TE_WRAPPER['GRANITE_TE_MODULES']}
+FIRMWARE_STUDIES.update({study: (TE_WRAPPER['GRANITE_TE_MODULES'][name]['analysis_sha256'], ())
+                         for study, name in TE_STUDIES.items()})
 # Exact file offsets in the executable PT_LOAD of the hash-verified ELF.
 # These happen to equal ELF virtual addresses. Ghidra may relocate this PIE;
 # unqualified hexadecimal queries could select an unrelated function.
@@ -170,6 +176,8 @@ def selected_address(reply, offset):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--binary', type=Path, required=True)
+    parser.add_argument('--original-te', type=Path,
+                        help='Required original TE identity for the two derived analysis PE profiles')
     parser.add_argument('--rea', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--study', choices=('baseline', 'arrays', 'monitors', 'percore', 'pbo_layout', 'pbo_semantics', 'pbo_limits', 'oc_frequency', 'oc_cores', 'pm_transport', 'curve_all', 'vf_sources', 'power_adjustment', *FIRMWARE_STUDIES), default='baseline')
@@ -178,9 +186,33 @@ def main():
     source_sha = FIRMWARE_STUDIES[args.study][0] if args.study in FIRMWARE_STUDIES else SOURCE_SHA
     if hashlib.sha256(binary.read_bytes()).hexdigest() != source_sha:
         raise ValueError('Unexpected reference binary')
+    derivation, te_procedures, te_addresses = None, None, {}
+    if args.study in TE_STUDIES:
+        if not args.original_te:
+            raise ValueError('Derived analysis PE requires its separately pinned original TE')
+        wrapped, derivation = TE_WRAPPER['pinned_wrapper'](TE_STUDIES[args.study], args.original_te.read_bytes())
+        if binary.read_bytes() != wrapped:
+            raise ValueError('Analysis input is not the byte-verified derivative of the original TE')
+        te_procedures = tuple((p['analysis_pe_file_offset'],
+            'entry' if p['rva'] == derivation['entry_rva'] else 'FUN_') for p in derivation['procedures'])
+        te_addresses = {p['analysis_pe_file_offset']:p['virtual_address'] for p in derivation['procedures']}
+    elif args.original_te:
+        raise ValueError('Original TE argument is only valid for a derived analysis PE study')
     output.mkdir(parents=True, exist_ok=True)
     seeds = None
-    if args.study in ('granite_topology_provider_a', 'granite_topology_provider_b',
+    if derivation:
+        # PE file offsets and original TE offsets are not virtual addresses.
+        # Preserve the nonzero TE ImageBase and seed ImageBase + original RVA.
+        addresses = list(te_addresses.values())
+        payload = ''.join(address + '\tfunction\n' for address in addresses).encode()
+        seed_path = output / 'analysis-seeds.tsv'
+        seed_path.write_bytes(payload)
+        seeds = dict(path=str(seed_path), sha256=hashlib.sha256(payload).hexdigest(),
+                     addresses=addresses, analyst_declared=True,
+                     coordinate_kind='virtual-address', coordinate_map=derivation['procedures'],
+                     basis='Pinned original IA32 TE entry, HOB producer/consumer and called helpers; ImageBase + RVA')
+        (output / 'analysis-derivation.json').write_text(json.dumps(derivation, indent=2) + '\n', encoding='utf-8')
+    elif args.study in ('granite_topology_provider_a', 'granite_topology_provider_b',
                       'granite_fabric_topology', 'granite_register_service'):
         # These PE images have base zero and file offsets equal to RVAs here.
         # Their installer constructs a function table at runtime; REA's default
@@ -298,10 +330,14 @@ def main():
                               'vf_sources': VF_SOURCES_PROCEDURES,
                               'power_adjustment': POWER_ADJUSTMENT_PROCEDURES,
                               **{key: value[1] for key, value in FIRMWARE_STUDIES.items()}}[args.study]
+                if te_procedures is not None:
+                    procedures = te_procedures
                 for offset, name in procedures:
                     pseudo = call('procedure_pseudo_code',
                         dict(procedure='file-offset:' + offset), 'pseudo-' + offset)
                     address = selected_address(pseudo, offset)
+                    if derivation and int(address, 16) != int(te_addresses[offset], 16):
+                        raise ValueError('Derived PE file offset did not retain the original TE virtual address')
                     info = call('procedure_info', dict(procedure=address), 'info-' + offset)
                     function = info['structuredContent']['normalized_result']
                     if function['entrypoint'] != address or name not in function['name']:
@@ -334,6 +370,7 @@ def main():
                     startup_timeout_ms=startup_ms,
                     disabled_analyzers=env.get('REA_GHIDRA_DISABLED_ANALYZERS', ''),
                     study=args.study, analysis_seeds=seeds,
+                    analysis_derivation=derivation,
                     error=None if failure is None else str(failure)))
                 proc.stdin.close()
                 try:
@@ -347,6 +384,8 @@ def main():
                         proc.wait(timeout=10)
     if hashlib.sha256(binary.read_bytes()).hexdigest() != source_sha:
         raise ValueError('Reference changed during analysis')
+    if derivation and hashlib.sha256(args.original_te.read_bytes()).hexdigest() != derivation['original_sha256']:
+        raise ValueError('Original TE changed during analysis')
     if failure is not None:
         raise failure
     print('Static study completed; no target execution or hardware acceptance', flush=True)

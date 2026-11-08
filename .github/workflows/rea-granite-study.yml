@@ -4,6 +4,9 @@ on:
     paths:
       - '.github/workflows/rea-granite-study.yml'
       - 'analysis/tools/firmware-granite-input.py'
+      - 'analysis/tools/firmware-te-pe.py'
+      - 'analysis/tests/test_firmware_te_pe.py'
+      - 'analysis/tools/rea-native-study.py'
       - 'analysis/tools/firmware-granite-proof.py'
       - 'analysis/tools/firmware-granite-rails.py'
       - 'analysis/tools/firmware-granite-shared-request.py'
@@ -15,16 +18,21 @@ on:
       - 'analysis/tools/firmware-granite-slot-binding.py'
       - 'analysis/tools/firmware-granite-rail-routing.py'
       - 'analysis/tools/firmware-granite-unit-anchors.py'
+      - 'analysis/tools/firmware-granite-unit-calibration.py'
       - 'analysis/tools/firmware-granite-pbo-scalar.py'
       - 'analysis/tools/firmware-granite-pbo-limits.py'
       - 'analysis/tools/firmware-granite-oc-mode.py'
       - 'analysis/tools/firmware-granite-host-routing.py'
       - 'analysis/tools/firmware-granite-curve-all.py'
       - 'analysis/tools/firmware-granite-curve-shaper.py'
+      - 'analysis/tools/firmware-granite-shaper-write.py'
+      - 'analysis/tools/firmware-granite-rail-policy.py'
+      - 'analysis/tools/firmware-granite-map-binding.py'
       - 'analysis/tools/firmware-granite-map-inputs.py'
       - 'analysis/tools/firmware-granite-map-acquisition.py'
       - 'analysis/tools/firmware-granite-local-config.py'
       - 'gui/tests/amd_granite_mapping_vectors.h'
+      - 'gui/tests/amd_granite_core_status_vectors.h'
       - 'analysis/tools/firmware-granite-registers.py'
       - 'analysis/tools/firmware-granite-counters.py'
       - 'analysis/tools/firmware-granite-channels.py'
@@ -104,6 +112,15 @@ jobs:
           curl --fail --location --retry 3 https://dlcdnets.asus.com/pub/ASUS/mb/BIOS/ProArt-X870E-CREATOR-WIFI-ASUS-2503.ZIP -o build/firmware-input/asus-2503.zip
           python3 analysis/tools/firmware-granite-input.py --archive build/firmware-input/asus-2503.zip --output build/firmware-input --uefi-extract build/firmware-tools/uefi/uefiextract
           cp build/firmware-input/granite-input-manifest.json build/firmware-evidence/
+          cp build/firmware-input/uefi-granite-core-status-*.analysis-pe.json build/firmware-evidence/
+      - name: Verify original TE and analysis PE byte and address equivalence
+        run: |
+          set -o pipefail
+          PYTHONPATH="$PWD/build/firmware-tools/python" python3 analysis/tests/test_firmware_te_pe.py \
+            --producer build/firmware-input/uefi-granite-core-status-producer.bin \
+            --consumer build/firmware-input/uefi-granite-core-status-consumer.bin \
+            --output build/firmware-evidence/granite-te-wrapper-tests.json \
+            2>&1 | tee build/firmware-evidence/granite-te-wrapper-tests.log
       - name: Static SMU and MP5 discovery without Shimada address assumptions
         run: |
           mkdir -p build/firmware-project build/firmware-home
@@ -327,6 +344,31 @@ jobs:
             --provider-a build/firmware-input/uefi-granite-topology-provider-a.bin \
             --register-service build/firmware-input/uefi-granite-register-service.bin \
             --output build/firmware-evidence/granite-map-acquisition.json
+      - name: Replay saved Curve Shaper writes and rail policy with synthetic services
+        run: |
+          python3 analysis/tools/firmware-granite-shaper-write.py \
+            --smu build/firmware-input/smu-62-54-body.bin \
+            --study build/firmware-evidence/smu/smu-study.json \
+            --output build/firmware-evidence/granite-shaper-write.json
+          python3 analysis/tools/firmware-granite-rail-policy.py \
+            --smu build/firmware-input/smu-62-54-body.bin \
+            --study build/firmware-evidence/smu/smu-study.json \
+            --output build/firmware-evidence/granite-rail-policy.json
+          python3 analysis/tools/firmware-granite-unit-calibration.py \
+            --smu build/firmware-input/smu-62-54-body.bin \
+            --smu-study build/firmware-evidence/smu/smu-study.json \
+            --mp5 build/firmware-input/mp5-62-54-body.bin \
+            --mp5-study build/firmware-evidence/mp5/smu-study.json \
+            --output build/firmware-evidence/granite-unit-calibration.json
+      - name: Replay original IA32 TE core-status HOB producer and consumer
+        run: |
+          PYTHONPATH="$PWD/build/firmware-tools/python" python3 analysis/tools/firmware-granite-map-binding.py \
+            --producer build/firmware-input/uefi-granite-core-status-producer.bin \
+            --consumer build/firmware-input/uefi-granite-core-status-consumer.bin \
+            --output build/firmware-evidence/granite-map-binding.json \
+            --example-hob build/firmware-evidence/granite-core-status-example.hob \
+            --vectors build/firmware-evidence/granite-core-status-vectors.h
+          diff -u gui/tests/amd_granite_core_status_vectors.h build/firmware-evidence/granite-core-status-vectors.h
       - name: REA static UEFI entry points and RSMU transport helpers
         if: (success() || failure()) && steps.inputs.outcome == 'success'
         env:
@@ -342,6 +384,8 @@ jobs:
           python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-granite-topology-provider-b.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-topology-provider-b --study granite_topology_provider_b
           python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-granite-fabric-topology.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-fabric-topology --study granite_fabric_topology
           python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-granite-register-service.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-register-service --study granite_register_service
+          python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-granite-core-status-producer.analysis-pe.bin --original-te build/firmware-input/uefi-granite-core-status-producer.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-core-status-producer --study granite_core_status_producer
+          python3 analysis/tools/rea-native-study.py --binary build/firmware-input/uefi-granite-core-status-consumer.analysis-pe.bin --original-te build/firmware-input/uefi-granite-core-status-consumer.bin --rea build/firmware-tools/node_modules/rea-agents/scripts/rea.mjs --output build/firmware-evidence/rea-core-status-consumer --study granite_core_status_consumer
       - uses: actions/upload-artifact@v4
         if: always()
         with:
