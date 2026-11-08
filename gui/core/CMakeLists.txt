@@ -40,7 +40,11 @@ if(BUILD_TESTING)
     set_tests_properties(amd_pbo_core PROPERTIES TIMEOUT 240)
     set_tests_properties(amd_pbo_fmax_core PROPERTIES TIMEOUT 240)
     set_tests_properties(amd_granite_fmax_core PROPERTIES TIMEOUT 360)
-    set_tests_properties(amd_granite_scalar_core amd_granite_controls_core amd_granite_curve_core amd_granite_shaper_core PROPERTIES TIMEOUT 240)
+    set_tests_properties(amd_granite_scalar_core amd_granite_controls_core amd_granite_curve_core PROPERTIES TIMEOUT 240)
+    # Whole-table write/fault cases retain every real 2 ms transport delay.
+    # Windows/macOS timer granularity can exceed the old read-only budget.
+    # This is only CTest's process deadline, not a product transaction timeout.
+    set_tests_properties(amd_granite_shaper_core PROPERTIES TIMEOUT 600)
     set_tests_properties(amd_pbo_limits_core PROPERTIES TIMEOUT 240)
     set_tests_properties(amd_curve_all_core PROPERTIES TIMEOUT 240)
     set_tests_properties(amd_pbo_query_core PROPERTIES TIMEOUT 240)
