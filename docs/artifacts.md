@@ -1,8 +1,8 @@
 # 安装包与源码归档
 
-<!-- amd-granite-5d886cc -->
-2026-11-08：[9950X3D 本轮验证](amd-granite-validation.md)通过 44/44 云端任务，33 组固件回放本地/云端一致。GUI/CLI 补齐五个公共配置镜像，新增固件目标 1 的两个字段，公共字段由 39 个增至 41 个，并新增 GUI 配置视图。恢复逐核命令的稀疏重编码、rails 镜像启动来源和计时器边界；这些证据不等于物理绑定或设备回读。剩余八行单位、五个公共配置值单位、PM 物理映射和第二 rails 独立写入／回读仍未完成。[用法与 REA 证据](amd-granite-common-config.md)；源码和 33 个安装包：`dist/gui-cli-amd-granite-5d886cc/`。以下为历史阶段记录，以本段和当前验证报告为准。
-<!-- /amd-granite-5d886cc -->
+<!-- amd-granite-991e7ab -->
+2026-11-08：[9950X3D 本轮验证](amd-granite-validation.md)通过 44/44 云端任务，42 组固件回放本地/云端一致。GUI/CLI 同步新增 Granite Scalar 设置与回读、PPT/TDC/EDC/温度限制、手动 OC 模式、全核 CO、Curve Shaper 保存表读取和离线映射诊断。限制和 CO 仅确认应答；Scalar 与模式验证各自存储值。新增掩码读取链、消息通道和配置镜像截断证据，仍不等于真机或物理绑定。剩余八行单位、五个公共配置值单位、PM 物理映射和第二 rails 独立写入／回读仍未完成。[用法与 REA 证据](amd-granite-controls.md)；源码和 33 个安装包：`dist/gui-cli-amd-granite-991e7ab/`。以下为历史阶段记录，以本段和当前验证报告为准。
+<!-- /amd-granite-991e7ab -->
 
 <!-- amd-pm-ccd-168a618 -->
 2026-10-26：[PM 固件 CCD 映射验证](amd-pm-ccd-validation.md)已通过 44/44 云端任务；GUI/CLI 同步提供 `--map-ccd`。适用 Shimada SMU 115.46.0，9950X3D 的 Granite Ridge 路径、字段单位和第二 rails 回读仍待恢复。源码与包：`dist/gui-cli-amd-pm-ccd-168a618/`。
