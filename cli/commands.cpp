@@ -5,6 +5,7 @@
 #include "core/amd_pbo.h"
 #include "core/amd_pm.h"
 #include "core/amd_pm_native.h"
+#include "core/amd_granite_mapping.h"
 #include "core/amd_pstates.h"
 #include "core/amd_smu.h"
 #include "core/amd_topology.h"
@@ -107,9 +108,10 @@ struct Command {
     std::uint32_t pmVersion = 0;
     unsigned pmCaptured = 0, pmFusedCcds = 0;
     AmdPmOptions pmOptions;
+    AmdGraniteMappingInput graniteMapping;
     AmdCurveSnapshot curve;
     unsigned pboScalar = 0, pboFmax = 0, pboExpectedMHz = 0, rail0 = 0, rail1 = 0;
-    std::uint32_t pboExpected = 0;
+    std::uint32_t pboExpected = 0, pboExpectedCaps = 0;
     std::uint32_t powerExpectedRaw = 0;
     unsigned firmwareIndex = 0;
     AmdPboLimit pboLimit = AmdPboLimit::Ppt;
@@ -141,7 +143,8 @@ Command parse(const std::vector<std::string> &args) {
         c.name == "amd-power-adjustment-read" || c.name == "amd-power-adjustment-set";
     const bool rails = c.name == "amd-pbo-rails-encode";
     const bool layoutAudit = c.name == "amd-pm-layout-audit";
-    require(hardware.count(c.name) || pboCapabilityCommand || rails || layoutAudit || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || memoryOffline || clockOffline || topologyOffline || pm, "Unknown command: " + c.name);
+    const bool graniteMap = c.name == "amd-granite-map";
+    require(hardware.count(c.name) || pboCapabilityCommand || rails || layoutAudit || graniteMap || c.name == "diagnose" || c.name == "inventory" || c.name == "spd-decode" || umcOffline || memoryOffline || clockOffline || topologyOffline || pm, "Unknown command: " + c.name);
     std::set<std::string> keys = {"--json"};
     if (hardware.count(c.name) || pboCapabilityCommand) { keys.insert("--cpu"); keys.insert("--timeout-ms"); }
     const bool rawRegister = c.name == "register-read" || c.name == "register-write";
@@ -173,6 +176,7 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "amd-oc-frequency-set") for (const char *key : {"--scope","--ccd","--core","--cores","--mhz","--expect-caps","--apply"}) keys.insert(key);
     if (rails) { keys.insert("--rail0-mv"); keys.insert("--rail1-mv"); }
     if (layoutAudit) { keys.insert("--version"); keys.insert("--bytes"); keys.insert("--fused-ccds"); }
+    if (graniteMap) for(const char *key:{"--version","--presence-mask","--core-mask0","--core-mask1","--smt"}) keys.insert(key);
     if (c.name == "intel-set" || c.name == "intel-oc-set") { keys.insert("--field"); keys.insert("--value"); }
     if (c.name == "intel-oc-read" || c.name == "intel-oc-set" || vf) keys.insert("--domain");
     if (c.name == "intel-oc-set") keys.insert("--mode");
@@ -188,13 +192,15 @@ Command parse(const std::vector<std::string> &args) {
         keys.insert("--ccd"); keys.insert("--core"); keys.insert("--cores");
     }
     if (c.name == "amd-curve-set") { keys.insert("--margin"); keys.insert("--expect-raw"); }
-    if (c.name == "amd-pbo-scalar-set") { keys.insert("--scalar"); keys.insert("--expect-raw"); }
+    if (c.name == "amd-pbo-scalar-set") { keys.insert("--scalar"); keys.insert("--expect-raw"); keys.insert("--expect-caps"); }
     if (c.name == "amd-umc-read") { keys.insert("--bank"); keys.insert("--refresh-slot"); }
     if (c.name == "amd-topology") { keys.insert("--l3"); keys.insert("--all-cpus"); keys.insert("--apob"); }
     if (c.name == "spd-decode" || topologyOffline) keys.insert("--file");
     if (pm || c.name == "amd-pm-native-read") keys.insert("--bclk-mhz");
     if (c.name == "amd-pm-native-read") { keys.insert("--map-ccd"); keys.insert("--platform"); }
-    if (c.name == "amd-pbo-fmax-read" || c.name == "amd-pbo-fmax-set") keys.insert("--platform");
+    if (c.name == "amd-pbo-fmax-read" || c.name == "amd-pbo-fmax-set" ||
+        c.name == "amd-pbo-scalar-read" || c.name == "amd-pbo-scalar-set" ||
+        c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-limit-set" || c.name == "amd-oc-mode-set" || c.name == "amd-curve-all-set") keys.insert("--platform");
     if (c.name == "amd-pm-decode") { keys.insert("--file"); keys.insert("--version"); }
     if (umcOffline || memoryOffline || clockOffline) keys.insert("--file");
     if (c.name == "intel-memory-read") { keys.insert("--controller"); keys.insert("--channel"); }
@@ -487,10 +493,20 @@ Command parse(const std::vector<std::string> &args) {
         c.pmOptions.hasBclk = true; c.pmOptions.bclkMHz = decimal(get(options, "--bclk-mhz"), "--bclk-mhz");
         require(c.pmOptions.bclkMHz > 0, "--bclk-mhz must be positive");
     }
-    if ((c.name == "amd-pbo-fmax-read" || c.name == "amd-pbo-fmax-set") && options.count("--platform")) {
+    if ((c.name == "amd-pbo-fmax-read" || c.name == "amd-pbo-fmax-set" ||
+         c.name == "amd-pbo-scalar-read" || c.name == "amd-pbo-scalar-set" ||
+         c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-limit-set" || c.name == "amd-oc-mode-set" || c.name == "amd-curve-all-set") && options.count("--platform")) {
         const auto platform = get(options,"--platform");
         require(platform == "shimada" || platform == "granite-ridge", "--platform must be shimada or granite-ridge");
         c.smu.profile = platform == "granite-ridge" ? SmuProfile::GraniteRidge : SmuProfile::Shimada;
+    }
+    if(c.name=="amd-curve-all-set" && c.smu.profile==SmuProfile::GraniteRidge)
+        require(c.margin<=30,"Granite all-core curve requires -50..30 CO counts, not mV");
+    if (c.name == "amd-pbo-scalar-set") {
+        if (c.smu.profile == SmuProfile::GraniteRidge) {
+            c.pboExpectedCaps = uintOption(options,"--expect-caps",UINT32_MAX);
+            require(amdPboFmaxAvailable(c.pboExpectedCaps),"Granite scalar requires PBO available and manual OC disabled");
+        } else require(!options.count("--expect-caps"),"--expect-caps for scalar requires --platform granite-ridge");
     }
     if (c.name == "amd-pm-native-read" && options.count("--platform")) {
         const auto platform = get(options,"--platform");
@@ -508,6 +524,14 @@ Command parse(const std::vector<std::string> &args) {
     if (umcOffline || memoryOffline || clockOffline) {
         c.path = get(options, "--file"); require(!c.path.empty(), "Empty snapshot path");
         if (c.name == "amd-umc-diff") { c.otherPath = get(options, "--compare"); require(!c.otherPath.empty(), "Empty comparison path"); }
+    }
+    if (graniteMap) {
+        c.graniteMapping.tableVersion=uintOption(options,"--version",UINT32_MAX);
+        c.graniteMapping.presenceMask=uintOption(options,"--presence-mask",UINT32_MAX);
+        c.graniteMapping.coreMasks[0]=uintOption(options,"--core-mask0",UINT32_MAX);
+        c.graniteMapping.coreMasks[1]=uintOption(options,"--core-mask1",UINT32_MAX);
+        const auto smt=get(options,"--smt"); require(smt=="on" || smt=="off","--smt must be explicitly on or off");
+        c.graniteMapping.smt=smt=="on";
     }
     return c;
 }
@@ -1086,8 +1110,11 @@ Result hardware(const Command &c, HardwareSession &s) {
             {"detail",quote(ln2 ? "Firmware LN2 state only; no EC access or LN2 setting." :
                 "Opaque firmware performance word. Index is not a Linux CPU ID; no power, ranking or physical core mapping is inferred.")}};
     } else if (c.name == "amd-pbo-capabilities") {
-        const auto r = readShimadaPboCapabilities(s, c.smu); out.error = r.error;
+        const auto r = readAmdPboCapabilities(s, c.smu); out.error = r.error;
+        const bool granite=c.smu.profile==SmuProfile::GraniteRidge;
         out.data = {{"capabilities_raw", r.valid ? hex(r.raw) : "null"}, {"valid", boolean(r.valid)},
+            {"platform",quote(granite?"granite-ridge":"shimada")},
+            {"firmware_version",r.firmwareValid?hex(r.firmwareVersion):"null"},
             {"pbo_available", r.valid ? boolean(r.raw & 4u) : "null"},
             {"manual_oc_available", r.valid ? boolean(amdManualOcAvailable(r.raw)) : "null"},
             {"manual_oc_enabled", r.valid ? boolean(amdManualOcEnabled(r.raw)) : "null"},
@@ -1095,20 +1122,26 @@ Result hardware(const Command &c, HardwareSession &s) {
             {"limit_commands_available", boolean(r.valid && amdPboLimitsAvailable(r.raw))},
             {"fmax_command_available", boolean(r.valid && amdPboFmaxAvailable(r.raw))},
             {"all_core_curve_command_available", boolean(r.valid && amdAllCoreCurveAvailable(r.raw))},
+            {"manual_oc_frequency_command_available",boolean(!granite && r.valid && amdManualOcEnabled(r.raw))},
             {"current_fmax_mhz", "null"}, {"readback_supported", "null"},
             {"fmax_readback_command",quote("amd-pbo-fmax-read")},
-            {"detail",quote("Capability bits only. Fmax readback requires a separate SMU 115.46.0 version check.")},
+            {"detail",quote(granite?"Exact SMU 98.84.0 capability flags. Effective power/current/temperature limits are unverified. Scalar and Fmax require separate stored-policy reads.":
+                "Capability bits only. Fmax readback requires a separate SMU 115.46.0 version check.")},
             {"response", hex(r.response)}};
     } else if (c.name == "amd-oc-mode-set") {
-        const auto r = setShimadaOcMode(s,c.smu,c.pboExpected,c.ocEnabled); out.error = r.error;
+        const auto r = setAmdOcMode(s,c.smu,c.pboExpected,c.ocEnabled); out.error = r.error;
+        const bool granite=c.smu.profile==SmuProfile::GraniteRidge;
         const auto snapshot = [](const AmdPboCapabilities &v) {
             const bool valid = v.valid && !v.error;
             return object({{"valid",boolean(valid)},{"error",number(v.error)},
+                {"firmware_version",v.firmwareValid?hex(v.firmwareVersion):"null"},
                 {"capabilities_raw",valid?hex(v.raw):"null"},
                 {"manual_oc_available",valid?boolean(amdManualOcAvailable(v.raw)):"null"},
                 {"manual_oc_enabled",valid?boolean(amdManualOcEnabled(v.raw)):"null"}});
         };
         out.data = {{"requested_enabled",boolean(c.ocEnabled)},{"expected_capabilities",hex(c.pboExpected)},
+            {"platform",quote(granite?"granite-ridge":"shimada")},
+            {"supported_firmware_version",granite?hex(0x00625400):"null"},
             {"before",snapshot(r.before)},{"after",snapshot(r.after)},{"command",hex(r.command)},
             {"phase",quote(amdPboPhaseName(r.phase))},{"write_attempted",boolean(r.writeAttempted)},
             {"accepted",boolean(r.accepted)},{"verified",boolean(r.verified && !r.error)},{"unchanged",boolean(r.unchanged)},
@@ -1147,22 +1180,28 @@ Result hardware(const Command &c, HardwareSession &s) {
             {"hardware_effect_measured","false"},{"response",hex(r.response)},
             {"detail",quote("Firmware acknowledgement only. Explicit firmware indices are not Linux CPU IDs. No mode, VID or scalar command, automatic retry or rollback.")}};
     } else if (c.name == "amd-curve-all-set") {
-        const auto r = setShimadaAllCoreCurve(s,c.smu,c.pboExpected,c.margin); out.error = r.error;
+        const auto r = setAmdAllCoreCurve(s,c.smu,c.pboExpected,c.margin); out.error = r.error;
         out.data = {{"scope",quote("all-cores")},{"margin_counts",number(c.margin)},
+            {"platform",quote(c.smu.profile==SmuProfile::GraniteRidge?"granite-ridge":"shimada")},
+            {"firmware_version",r.before.firmwareValid?hex(r.before.firmwareVersion):"null"},
             {"expected_capabilities",hex(c.pboExpected)},{"capabilities_raw",r.before.valid?hex(r.before.raw):"null"},
             {"command",hex(7)},{"argument",hex(r.argument)},{"phase",quote(amdPboPhaseName(r.phase))},
             {"write_attempted",boolean(r.writeAttempted)},{"accepted",boolean(r.accepted)},
             {"response",hex(r.response)},{"verified","false"},{"physical_mapping_verified","false"},
-            {"current_margin_counts","null"},{"affected_core_count","null"}};
+            {"current_margin_counts","null"},{"affected_core_count","null"},
+            {"readback_supported","false"},{"hardware_effect_measured","false"},
+            {"detail",quote("Host acknowledgement only. Per-target application, physical core identities and current margins are unverified. No automatic retry or rollback.")}};
     } else if (c.name == "amd-pbo-limit-set") {
-        const auto r = setShimadaPboLimit(s, c.smu, c.pboExpected, c.pboLimit, c.pboLimitValue); out.error = r.error;
+        const auto r = setAmdPboLimit(s, c.smu, c.pboExpected, c.pboLimit, c.pboLimitValue); out.error = r.error;
         out.data = {{"limit", quote(amdPboLimitName(c.pboLimit))}, {"unit", quote(amdPboLimitUnit(c.pboLimit))},
+            {"platform",quote(c.smu.profile==SmuProfile::GraniteRidge?"granite-ridge":"shimada")},
+            {"firmware_version",r.before.firmwareValid?hex(r.before.firmwareVersion):"null"},
             {"requested_value", number(c.pboLimitValue)}, {"expected_capabilities", hex(c.pboExpected)},
             {"capabilities_raw", r.before.valid ? hex(r.before.raw) : "null"},
             {"command", hex(r.command)}, {"argument", hex(r.argument)}, {"phase", quote(amdPboPhaseName(r.phase))},
             {"write_attempted", boolean(r.writeAttempted)}, {"accepted", boolean(r.accepted)}, {"verified", "false"},
             {"current_limit", "null"}, {"readback_supported", "false"}, {"hardware_effect_measured", "false"}, {"response", hex(r.response)},
-            {"scope", quote("Shimada shared package limit via selected CPU and domain 0 / BDF 0")},
+            {"scope", quote("Shared package limit via selected CPU and domain 0 / BDF 0")},
             {"detail", quote("Firmware acknowledgement only; effective limit is unverified. One limit per operation; no automatic mode change, retry or rollback.")}};
     } else if (c.name == "amd-pbo-fmax-read" || c.name == "amd-pbo-fmax-set") {
         const auto snapshot = [](const AmdPboFmax &r) {
@@ -1198,15 +1237,26 @@ Result hardware(const Command &c, HardwareSession &s) {
         const auto scalar = [](const AmdPboScalar &r) {
             return object({{"valid", boolean(r.valid && !r.error)}, {"error", number(r.error)},
                 {"query_attempted", boolean(r.messageAttempted)}, {"response", hex(r.response)},
-                {"raw", r.rawValid ? hex(r.raw) : "null"}, {"multiplier", r.valid && !r.error ? number(r.multiplier) : "null"}});
+                {"raw", r.rawValid ? hex(r.raw) : "null"}, {"multiplier", r.valid && !r.error ? number(r.multiplier) : "null"},
+                {"firmware_version",r.firmwareValid?hex(r.firmwareVersion):"null"},
+                {"capabilities",r.capabilities.valid?hex(r.capabilities.raw):"null"},
+                {"write_available",boolean(r.valid && !r.error && (!r.firmwareValid || amdPboFmaxAvailable(r.capabilities.raw)))}});
         };
-        out.data.push_back({"scope", quote("Shimada shared PBO scalar via selected CPU and domain 0 / BDF 0")});
+        const bool granite = c.smu.profile == SmuProfile::GraniteRidge;
+        out.data.push_back({"platform",quote(granite?"granite-ridge":"shimada")});
+        out.data.push_back({"scope", quote("Shared PBO scalar via selected CPU and domain 0 / BDF 0")});
+        out.data.push_back({"supported_firmware_version",granite?hex(0x00625400):"null"});
+        out.data.push_back({"readback_supported","true"});
+        out.data.push_back({"detail",quote(granite?
+            "Exact SMU 98.84.0. Stored policy readback; manual OC returns zero. Firmware may clamp or override an accepted request. Electrical effects are not measured.":
+            "Shimada stored scalar readback; zero's policy meaning is unverified. Electrical effects are not measured.")});
         out.data.push_back({"hardware_effect_measured", "false"});
         if (c.name == "amd-pbo-scalar-read") {
-            const auto r = readShimadaPboScalar(s, c.smu); out.error = r.error;
+            const auto r = readAmdPboScalar(s, c.smu); out.error = r.error;
             out.data.push_back({"scalar", scalar(r)});
         } else {
-            const auto r = setShimadaPboScalar(s, c.smu, c.pboExpected, c.pboScalar); out.error = r.error;
+            const auto r = setAmdPboScalar(s, c.smu, c.pboExpectedCaps, c.pboExpected, c.pboScalar); out.error = r.error;
+            out.data.push_back({"expected_capabilities",granite?hex(c.pboExpectedCaps):"null"});
             out.data.push_back({"expected_raw", hex(c.pboExpected)});
             out.data.push_back({"requested_multiplier", number(c.pboScalar)});
             out.data.push_back({"argument", hex(r.argument)});
@@ -1508,6 +1558,9 @@ Result execute(const Command &c, const BackendFactory &factory) {
         }
         for (const auto &r : native.spd) { int error = r.error; devices.push_back(spd(r.path, r.bytes, error)); if (error && !out.error) out.error = error; }
         out.data = {{"rows", array(rows)}, {"spd", array(devices)}, {"partial", boolean(out.error != 0)}};
+    } else if (c.name == "amd-granite-map") {
+        const auto r=diagnoseAmdGraniteMapping(c.graniteMapping); out.error=r.error;
+        out.data={{"offline","true"},{"hardware_accessed","false"},{"mapping",amdGraniteMappingJson(r)}};
     } else if (c.name == "amd-pm-layout-audit") {
         const auto r = auditLegacyAmdPmLayout(c.pmVersion, c.pmCaptured, c.pmFusedCcds); out.error = r.error;
         out.data = {{"offline", "true"}, {"hardware_accessed", "false"}, {"layout_audit", amdPmLayoutAuditJson(r)},
@@ -1606,10 +1659,12 @@ Usage: octool-cli COMMAND [OPTIONS]
   amd-smu-probe --cpu N --profile shimada|phoenix|gpt [PCI]
   amd-smu-read --cpu N --profile P --message 1|2 [PCI]
   amd-smu-send --cpu N --profile P --message M --arg0 A [--arg1 A ... --arg5 A] [PCI] --apply
-  amd-pbo-scalar-read --cpu N
-  amd-pbo-scalar-set --cpu N --scalar 1..10 --expect-raw RAW --apply
-  amd-pbo-capabilities --cpu N      Read Shimada PBO/manual OC capability flags
-  amd-oc-mode-set --cpu N --enabled 0|1 --expect-caps RAW --apply
+  amd-pbo-scalar-read --cpu N [--platform shimada|granite-ridge]
+  amd-pbo-scalar-set --cpu N [--platform shimada|granite-ridge] --scalar 1..10 --expect-raw RAW --apply
+    Granite SMU 98.84.0 also requires --expect-caps RAW from a fresh scalar read.
+    Writes require PBO available/manual OC off; firmware clamping is reported as a readback mismatch.
+  amd-pbo-capabilities --cpu N [--platform shimada|granite-ridge]
+  amd-oc-mode-set --cpu N [--platform shimada|granite-ridge] --enabled 0|1 --expect-caps RAW --apply
                                    Change mode explicitly; re-read the mode bit
   amd-oc-frequency-set --cpu N --scope all-cores --mhz N --expect-caps RAW --apply
   amd-oc-frequency-set --cpu N --scope core --ccd N --core N --mhz N --expect-caps RAW --apply
@@ -1624,7 +1679,7 @@ Usage: octool-cli COMMAND [OPTIONS]
   amd-pbo-fmax-set --cpu N [--platform shimada|granite-ridge] --mhz N --expect-mhz PREVIOUS --expect-caps RAW --apply
                                    Stored ceiling readback; operating clocks not measured
                                    Shimada SMU 115.46.0 / Granite Ridge SMU 98.84.0 only
-  amd-pbo-limit-set --cpu N --limit ppt|tdc|edc|temperature --value N --expect-caps RAW --apply
+  amd-pbo-limit-set --cpu N [--platform shimada|granite-ridge] --limit ppt|tdc|edc|temperature --value N --expect-caps RAW --apply
                                    One shared limit; firmware acknowledgement only
     Shimada 1Ah/08h at domain 0 / BDF 0 only. Read capabilities first: power limits
     must be available and manual OC disabled. PPT uses W, TDC/EDC use A; integer
@@ -1639,7 +1694,8 @@ Usage: octool-cli COMMAND [OPTIONS]
   amd-pbo-rails-encode --rail0-mv N --rail1-mv N
                                    Offline encoding preview; no hardware access
   amd-curve-read --cpu N --ccd N --core N
-  amd-curve-all-set --cpu N --margin -50..50 --expect-caps RAW --apply
+  amd-curve-all-set --cpu N [--platform shimada|granite-ridge] --margin N --expect-caps RAW --apply
+    Shimada -50..50; Granite -50..30 counts on exact SMU 98.84.0. Acknowledgement only.
                                     All-core CO counts; firmware acknowledgement only
   amd-curve-read --cpu N --ccd N --cores 0,2,7
   amd-curve-set --cpu N --ccd N (--core N | --cores 0,2,7)
@@ -1654,6 +1710,9 @@ Usage: octool-cli COMMAND [OPTIONS]
     not verify record origin, installed provider, physical targets or PM slots.
   amd-pm-read [--bclk-mhz N]        Read an already installed ryzen_smu driver
   amd-pm-layout-audit --version V --bytes N --fused-ccds N
+  amd-granite-map --version 0x620105|0x620205 --presence-mask MASK --core-mask0 MASK --core-mask1 MASK --smt on|off
+    Offline reference diagnostic using explicitly supplied masks. No hardware access;
+    PM slots, sparse command indexes and OS CPU numbers are different coordinates.
                                    Offline core/CCD range and conflict diagnostic
   amd-pm-decode --file SNAPSHOT     Decode GUI/CLI PM JSON offline
   amd-pm-decode --file RAW --version V [--bclk-mhz N]  Decode a raw PM table

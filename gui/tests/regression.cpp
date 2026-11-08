@@ -40,6 +40,7 @@
 #include "amd_pm_fixture.h"
 #include "amd_pm_native_fixture.h"
 #include "amd_granite_pm_fixture.h"
+#include "amd_granite_mapping_vectors.h"
 #include "amd_topology_fixture.h"
 #include "amd_9950x3d_topology_fixture.h"
 #include "amd_apob_fixture.h"
@@ -982,6 +983,107 @@ private slots:
             QVERIFY(data["pm"].toObject()["raw_hex"].toString().isEmpty());
             QVERIFY(!data["native"].toObject()["metadata_rechecked"].toBool());
         }
+    }
+    void graniteMappingDialogMatchesOriginalByteOracleWithoutHardware() {
+        auto *device=new granite_pm_fixture::Device;
+        auto access=std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device));
+        AmdPmPanel panel(nullptr,{},access,130);
+        panel.findChild<QPushButton *>("pmGraniteMap")->click();
+        auto *dialog=panel.findChild<QWidget *>("graniteMappingDialog"); QVERIFY(dialog);
+        auto *version=dialog->findChild<QComboBox *>("graniteMapVersion");
+        auto *presence=dialog->findChild<QLineEdit *>("graniteMapPresence");
+        auto *first=dialog->findChild<QLineEdit *>("graniteMapCore0");
+        auto *second=dialog->findChild<QLineEdit *>("graniteMapCore1");
+        auto *smt=dialog->findChild<QComboBox *>("graniteMapSmt");
+        auto *calculate=dialog->findChild<QPushButton *>("graniteMapCalculate");
+        auto *copy=dialog->findChild<QPushButton *>("graniteMapCopy");
+        auto *table=dialog->findChild<QTableWidget *>("graniteMapTable");
+        QVERIFY(version && presence && first && second && smt && calculate && copy && table);
+        QVERIFY(!copy->isEnabled()); QCOMPARE(table->rowCount(),0);
+        for(const auto &v:amd_granite_mapping_vectors::values) {
+            version->setCurrentIndex(version->findData(v.version));
+            presence->setText(QString::number(v.presence,16));
+            first->setText(QString::number(v.masks[0],16));second->setText(QString::number(v.masks[1],16));
+            smt->setCurrentIndex(v.smt?1:2); calculate->click();
+            QCOMPARE(table->rowCount(),v.version==0x620205?16:8); QVERIFY(copy->isEnabled());
+            copy->click(); QJsonParseError error;
+            const auto root=QJsonDocument::fromJson(QApplication::clipboard()->text().toUtf8(),&error).object();
+            QCOMPARE(error.error,QJsonParseError::NoError); QCOMPARE(root["error"].toInt(),0);
+            QCOMPARE(root["input_provenance"].toString(),QString("caller-supplied"));
+            const auto map=root["command_remap"].toArray(); QCOMPARE(map.size(),64);
+            for(int i=0;i<64;++i) {
+                if(v.remap[i]==0xffff) QVERIFY(map[i].isNull()); else QCOMPARE(map[i].toInt(),int(v.remap[i]));
+            }
+            for(const auto name:{"live_capture","runtime_mapping_verified","physical_ccd_mapping_verified",
+                                "apic_mapping_verified","os_cpu_mapping_verified","runtime_write_enabled"}) {
+                QVERIFY(root.contains(name)); QVERIFY(!root[name].toBool());
+            }
+            QCOMPARE(device->calls,0u); QCOMPARE(device->memoryReads,0u);
+        }
+        dialog->close();
+    }
+    void graniteMappingDialogShowsSparseSlotsAndInvalidatesEdits() {
+        AmdPmPanel panel;panel.findChild<QPushButton *>("pmGraniteMap")->click();
+        auto *dialog=panel.findChild<QWidget *>("graniteMappingDialog");QVERIFY(dialog);
+        auto *version=dialog->findChild<QComboBox *>("graniteMapVersion");
+        auto *presence=dialog->findChild<QLineEdit *>("graniteMapPresence");
+        auto *first=dialog->findChild<QLineEdit *>("graniteMapCore0");
+        auto *second=dialog->findChild<QLineEdit *>("graniteMapCore1");
+        auto *smt=dialog->findChild<QComboBox *>("graniteMapSmt");
+        auto *calculate=dialog->findChild<QPushButton *>("graniteMapCalculate");
+        auto *copy=dialog->findChild<QPushButton *>("graniteMapCopy");
+        auto *table=dialog->findChild<QTableWidget *>("graniteMapTable");
+        for(unsigned change=0;change<5;++change) {
+            version->setCurrentIndex(version->findData(0x620205u)); presence->setText("3");
+            first->setText("0");second->setText("81");smt->setCurrentIndex(1);calculate->click();
+            QVERIFY(copy->isEnabled());QCOMPARE(table->rowCount(),16);
+            QCOMPARE(table->item(8,0)->text(),QString("8"));QCOMPARE(table->item(8,1)->text(),QString("1"));
+            QCOMPARE(table->item(8,5)->text(),QString("0, 1"));QCOMPARE(table->item(15,5)->text(),QString("2, 3"));
+            QCOMPARE(table->item(0,4)->text(),QString("No"));
+            if(!change) {
+                dialog->resize(1200,760);QApplication::processEvents();
+                const auto shot=qEnvironmentVariable("OCTOOL_GRANITE_MAPPING_TEST_SCREENSHOT");
+                if(!shot.isEmpty()) QVERIFY(dialog->grab().save(shot));
+            }
+            if(change==0) presence->setText("2");
+            if(change==1) first->setText("100");
+            if(change==2) second->setText("80");
+            if(change==3) smt->setCurrentIndex(2);
+            if(change==4) version->setCurrentIndex(version->findData(0x620105u));
+            QVERIFY(!copy->isEnabled());QCOMPARE(table->rowCount(),0);
+            QVERIFY(copy->property("mappingJson").toString().isEmpty());
+        }
+        dialog->close();
+    }
+    void graniteMappingDialogRejectsInvalidInputsAndRetainsWideMasks() {
+        AmdPmPanel panel;panel.findChild<QPushButton *>("pmGraniteMap")->click();
+        auto *dialog=panel.findChild<QWidget *>("graniteMappingDialog");QVERIFY(dialog);
+        auto *version=dialog->findChild<QComboBox *>("graniteMapVersion");
+        auto *presence=dialog->findChild<QLineEdit *>("graniteMapPresence");
+        auto *first=dialog->findChild<QLineEdit *>("graniteMapCore0");
+        auto *second=dialog->findChild<QLineEdit *>("graniteMapCore1");
+        auto *smt=dialog->findChild<QComboBox *>("graniteMapSmt");
+        auto *calculate=dialog->findChild<QPushButton *>("graniteMapCalculate");
+        auto *copy=dialog->findChild<QPushButton *>("graniteMapCopy");
+        auto *table=dialog->findChild<QTableWidget *>("graniteMapTable");
+        auto *status=dialog->findChild<QLabel *>("graniteMapStatus");
+        version->setCurrentIndex(version->findData(0x620205u));presence->setText("3");
+        first->setText("ffff0100");second->setText("1");smt->setCurrentIndex(1);calculate->click();
+        QCOMPARE(table->rowCount(),16);QCOMPARE(table->item(8,5)->text(),QString("32, 33"));
+        QVERIFY(status->text().contains("0xffff0000") && status->text().contains("0x00000100"));
+        copy->click();const auto root=QJsonDocument::fromJson(QApplication::clipboard()->text().toUtf8()).object();
+        QCOMPARE(root["active_command_targets"].toInt(),2);QCOMPARE(root["enabled_core_slots"].toInt(),1);
+        QCOMPARE(root["inputs"].toObject()["core_masks"].toArray()[0].toString(),QString("0xffff0100"));
+        for(const QString bad:{QString(""),QString("-1"),QString("100000000"),QString("gg"),QString("1.5")}) {
+            first->setText(bad);calculate->click();QCOMPARE(table->rowCount(),0);QVERIFY(!copy->isEnabled());
+        }
+        first->setText("0");presence->setText("2");calculate->click();
+        QCOMPARE(table->rowCount(),0);QVERIFY(copy->isEnabled()); // Error report remains copyable.
+        copy->click();const auto error=QJsonDocument::fromJson(QApplication::clipboard()->text().toUtf8()).object();
+        QVERIFY(error["error"].toInt()!=0);QVERIFY(error["core_slots"].toArray().isEmpty());
+        presence->setText("3");smt->setCurrentIndex(0);calculate->click();QVERIFY(!copy->isEnabled());
+        smt->setCurrentIndex(1);version->setCurrentIndex(0);calculate->click();QVERIFY(!copy->isEnabled());
+        dialog->close();
     }
     void pmGraniteProfileChangeDuringRead() {
         using namespace octool::core;
@@ -4202,6 +4304,77 @@ private slots:
         QApplication::processEvents(); // Settle PBO/PM fixture layout.
         const auto shot=qEnvironmentVariable("OCTOOL_PBO_FMAX_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
     }
+    void graniteScalarVerifiedNoopAndClampedReadback() {
+        auto *d=new AmdPboFixture;d->useGraniteScalar();
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        panel.resize(1400,1250);panel.show();QApplication::processEvents();
+        auto *profile=panel.findChild<QComboBox *>("smuProfile");
+        profile->setCurrentIndex(profile->findData(int(octool::core::SmuProfile::GraniteRidge)));
+        auto *read=panel.findChild<QPushButton *>("pboScalarRead"),*apply=panel.findChild<QPushButton *>("pboScalarApply");
+        auto *table=panel.findChild<QTableWidget *>("smuTable");auto *status=panel.findChild<QLabel *>("smuStatus");
+        auto *value=panel.findChild<QLineEdit *>("pboScalar");value->setText("5");
+        apply->click();QCOMPARE(d->calls,0u);
+        for(unsigned mode=0;mode<3;++mode) {
+            if(mode==2) { d->clampScalar=true;value->setText("6"); }
+            read->click();QTRY_VERIFY(panel.isEnabled());QCOMPARE(table->rowCount(),5);
+            QCOMPARE(table->item(3,1)->text(),QString("0x00625400"));
+            bool described=false;
+            QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());if(box) {
+                described=box->text().contains("Granite Ridge SMU 98.84.0") && box->text().contains("CPU 130");
+                box->button(QMessageBox::Yes)->click(); }});
+            apply->click();QTRY_VERIFY(panel.isEnabled());QVERIFY(described);QCOMPARE(d->settings,mode==2?2u:1u);
+            QCOMPARE(table->item(2,1)->text(),QString(mode==2?"2.5":"5"));
+            QCOMPARE(table->item(4,1)->text(),QString(mode==2?"Not verified":"Matched"));
+            if(mode==1) QCOMPARE(table->item(3,1)->text(),QString("Unchanged; no setting sent"));
+            if(mode==2) {
+                QVERIFY(status->text().contains("Stopped at verify"));QVERIFY(status->text().contains("may have changed"));
+            }
+            if(!mode) {
+                QApplication::processEvents();const auto shot=qEnvironmentVariable("OCTOOL_GRANITE_SCALAR_TEST_SCREENSHOT");
+                if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+            }
+            QCOMPARE(d->wrongCpu,0u);
+        }
+    }
+    void graniteScalarRejectsVersionManualOcAndChangedPolicy() {
+        auto *d=new AmdPboFixture;d->useGraniteScalar();d->firmwareVersion=0x00625401;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        auto *profile=panel.findChild<QComboBox *>("smuProfile");
+        profile->setCurrentIndex(profile->findData(int(octool::core::SmuProfile::GraniteRidge)));
+        auto *read=panel.findChild<QPushButton *>("pboScalarRead"),*apply=panel.findChild<QPushButton *>("pboScalarApply");
+        auto *table=panel.findChild<QTableWidget *>("smuTable");auto *status=panel.findChild<QLabel *>("smuStatus");
+        panel.findChild<QLineEdit *>("pboScalar")->setText("5");
+        read->click();QTRY_VERIFY(panel.isEnabled());QVERIFY(status->text().contains("unavailable"));
+        auto calls=d->calls;apply->click();QCOMPARE(d->calls,calls);
+        d->firmwareVersion=0x00625400;d->capsRaw=0x10004;
+        read->click();QTRY_VERIFY(panel.isEnabled());QCOMPARE(table->item(1,1)->text(),QString("0"));
+        calls=d->calls;apply->click();QCOMPARE(d->calls,calls);QVERIFY(status->text().contains("manual OC disabled"));
+        d->capsRaw=4;read->click();QTRY_VERIFY(panel.isEnabled());d->scalarRaw=0x40000000;
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());if(box)box->button(QMessageBox::Yes)->click(); });
+        apply->click();QTRY_VERIFY(panel.isEnabled());QCOMPARE(d->settings,0u);QVERIFY(status->text().contains("Stopped at compare"));
+        read->click();QTRY_VERIFY(panel.isEnabled());d->firmwareVersion=0x00625401;
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());if(box)box->button(QMessageBox::Yes)->click(); });
+        apply->click();QTRY_VERIFY(panel.isEnabled());QCOMPARE(d->settings,0u);QCOMPARE(table->item(3,1)->text(),QString("Not sent"));
+    }
+    void graniteScalarDiscardsProfileChangesAndConfirmationEdits() {
+        auto *d=new AmdPboFixture;d->useGraniteScalar();
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        auto *profile=panel.findChild<QComboBox *>("smuProfile");
+        const auto granite=profile->findData(int(octool::core::SmuProfile::GraniteRidge));
+        const auto shimada=profile->findData(int(octool::core::SmuProfile::Shimada));
+        profile->setCurrentIndex(granite);
+        auto *read=panel.findChild<QPushButton *>("pboScalarRead"),*apply=panel.findChild<QPushButton *>("pboScalarApply");
+        auto *table=panel.findChild<QTableWidget *>("smuTable");auto *status=panel.findChild<QLabel *>("smuStatus");
+        panel.findChild<QLineEdit *>("pboScalar")->setText("5");
+        read->click();profile->setCurrentIndex(shimada);QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(),0);QVERIFY(status->text().contains("Inputs changed while reading"));
+        profile->setCurrentIndex(granite);auto calls=d->calls;apply->click();QCOMPARE(d->calls,calls);
+        read->click();QTRY_VERIFY(panel.isEnabled());calls=d->calls;
+        QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());if(box) {
+            profile->setCurrentIndex(shimada);box->button(QMessageBox::Yes)->click(); }});
+        apply->click();QCOMPARE(d->calls,calls);QCOMPARE(d->settings,0u);QCOMPARE(table->rowCount(),0);
+        QVERIFY(status->text().contains("Inputs changed"));
+    }
     void pboFmaxRejectsChangedAndInvalidInputs() {
         auto *device = new AmdPboFixture; device->allowFmaxReadback=true; device->fmaxMHz=5500;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
@@ -4522,6 +4695,106 @@ private slots:
         QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("result belongs to CPU 130"));
         const auto calls=device->calls; apply->click(); QCOMPARE(device->calls,calls);
     }
+    void graniteAllCoreCurveAcknowledgesBoundsWithoutReadback() {
+        auto *d=new AmdPboFixture; d->useGraniteCurve(); d->capsRaw=4; d->discardChange=true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        panel.resize(1400,1250); panel.show(); QApplication::processEvents();
+        auto *profile=panel.findChild<QComboBox *>("smuProfile");
+        profile->setCurrentIndex(profile->findData(int(octool::core::SmuProfile::GraniteRidge)));
+        auto *read=panel.findChild<QPushButton *>("allCurveCapsRead"), *apply=panel.findChild<QPushButton *>("allCurveApply");
+        auto *input=panel.findChild<QLineEdit *>("allCurveMargin");
+        auto *table=panel.findChild<QTableWidget *>("smuTable"); auto *status=panel.findChild<QLabel *>("smuStatus");
+        QVERIFY(input->placeholderText().contains("-50..30"));
+        input->setText("-50"); apply->click(); QCOMPARE(d->calls,0u);
+        unsigned settings=0;
+        for(int margin:{-50,0,30}) {
+            input->setText(QString::number(margin)); read->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(table->rowCount(),10);
+            QVERIFY(table->item(8,1)->text().contains("Available: -50..30"));
+            QVERIFY(table->item(7,1)->text().contains("Not enabled for Granite"));
+            QCOMPARE(table->item(5,1)->text(),QString("No")); // CO requires PBO, not the power-limit bit.
+            bool described=false;
+            QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) {
+                described=box->text().contains("Granite Ridge SMU 98.84.0") && box->text().contains("CPU 130") &&
+                    box->text().contains(QString("New CO count: %1").arg(margin)) && box->text().contains("final values are unverified");
+                box->button(QMessageBox::Yes)->click(); }});
+            apply->click(); QTRY_VERIFY(panel.isEnabled()); QVERIFY(described); QCOMPARE(d->settings,++settings);
+            QCOMPARE(d->messages.back(),std::uint32_t(7));
+            QCOMPARE(d->commandArgs.back()[0],std::uint32_t(margin < 0 ? 65536+margin : margin));
+            for(unsigned i=1;i<6;++i) QCOMPARE(d->commandArgs.back()[i],0u);
+            QCOMPARE(d->allCurveArgument,UINT32_MAX); // Accepted-but-discarded writes remain unverified.
+            QCOMPARE(table->item(2,1)->text(),QString("Firmware accepted"));
+            QCOMPARE(table->item(4,1)->text(),QString("Unavailable / not verified"));
+            QCOMPARE(table->item(5,1)->text(),QString("Unknown"));
+            QVERIFY(status->text().contains("Per-core values remain unverified"));
+            if(margin==-50) {
+                QApplication::processEvents(); const auto shot=qEnvironmentVariable("OCTOOL_GRANITE_CURVE_TEST_SCREENSHOT");
+                if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+            }
+            const auto calls=d->calls; apply->click(); QCOMPARE(d->calls,calls);
+        }
+        QCOMPARE(d->wrongCpu,0u); QCOMPARE(d->ocAllMHz,0u); QCOMPARE(d->ocCoreArgument,0u);
+    }
+    void graniteAllCoreCurveRejectsBoundsAndChangedConfirmation() {
+        auto *d=new AmdPboFixture; d->useGraniteCurve(); d->capsRaw=4;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        auto *profile=panel.findChild<QComboBox *>("smuProfile");
+        const auto granite=profile->findData(int(octool::core::SmuProfile::GraniteRidge));
+        const auto shimada=profile->findData(int(octool::core::SmuProfile::Shimada)); profile->setCurrentIndex(granite);
+        auto *read=panel.findChild<QPushButton *>("allCurveCapsRead"), *apply=panel.findChild<QPushButton *>("allCurveApply");
+        auto *input=panel.findChild<QLineEdit *>("allCurveMargin"); auto *cpu=panel.findChild<QLineEdit *>("smuCpu");
+        read->click(); QTRY_VERIFY(panel.isEnabled()); const auto calls=d->calls;
+        for(const QString bad:{QString(""),QString("31"),QString("50"),QString("-51"),QString("-1.5"),QString("0x10"),QString("2147483648")}) {
+            input->setText(bad); apply->click(); QCOMPARE(d->calls,calls);
+            QVERIFY(panel.findChild<QLabel *>("smuStatus")->text().contains("-50..30"));
+        }
+        for(unsigned mode=0;mode<4;++mode) {
+            profile->setCurrentIndex(granite); cpu->setText("130"); input->setText("-25");
+            read->click(); QTRY_VERIFY(panel.isEnabled()); const auto before=d->calls;
+            QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box) {
+                if(mode==0) input->setText("-24");
+                if(mode==1) profile->setCurrentIndex(shimada);
+                if(mode==2) cpu->setText("131");
+                box->button(mode==3?QMessageBox::Cancel:QMessageBox::Yes)->click(); }});
+            apply->click(); QCOMPARE(d->calls,before); QCOMPARE(d->settings,0u);
+        }
+        profile->setCurrentIndex(shimada); QVERIFY(input->placeholderText().contains("-50..50"));
+        profile->setCurrentIndex(granite); QVERIFY(input->placeholderText().contains("-50..30"));
+        const auto before=d->calls; apply->click(); QCOMPARE(d->calls,before);
+    }
+    void graniteAllCoreCurveRejectsChangedStateAndStaleResults() {
+        auto *d=new AmdPboFixture; d->useGraniteCurve(); d->capsRaw=4;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        auto *profile=panel.findChild<QComboBox *>("smuProfile");
+        const auto granite=profile->findData(int(octool::core::SmuProfile::GraniteRidge)); profile->setCurrentIndex(granite);
+        auto *read=panel.findChild<QPushButton *>("allCurveCapsRead"), *apply=panel.findChild<QPushButton *>("allCurveApply");
+        auto *table=panel.findChild<QTableWidget *>("smuTable"); auto *status=panel.findChild<QLabel *>("smuStatus");
+        panel.findChild<QLineEdit *>("allCurveMargin")->setText("-25");
+        for(unsigned mode=0;mode<3;++mode) {
+            d->capsRaw=4; d->firmwareVersion=0x00625400; d->writeCompletion=1;
+            read->click(); QTRY_VERIFY(panel.isEnabled());
+            if(mode==0) d->capsRaw=0x80000004;
+            if(mode==1) d->firmwareVersion=0x00625401;
+            if(mode==2) d->writeCompletion=0xff;
+            QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box)box->button(QMessageBox::Yes)->click(); });
+            apply->click(); QTRY_VERIFY(panel.isEnabled()); QCOMPARE(d->settings,mode==2?1u:0u);
+            QCOMPARE(table->item(2,1)->text(),QString(mode==2?"Attempted; not confirmed":"Not sent"));
+            QVERIFY(status->text().contains(mode==2?"may have changed":"No setting sent"));
+        }
+        d->writeCompletion=1;
+        for(unsigned caps:{2u,0x10004u}) {
+            d->capsRaw=caps; read->click(); QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(table->item(8,1)->text(),QString("Unavailable"));
+            const auto calls=d->calls; apply->click(); QCOMPARE(d->calls,calls); QCOMPARE(d->settings,1u);
+        }
+        d->capsRaw=4; read->click(); profile->setCurrentIndex(profile->findData(int(octool::core::SmuProfile::Shimada)));
+        QTRY_VERIFY(panel.isEnabled()); QCOMPARE(table->rowCount(),0); QVERIFY(status->text().contains("Inputs changed while reading"));
+        profile->setCurrentIndex(granite); read->click(); QTRY_VERIFY(panel.isEnabled());
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget()); if(box)box->button(QMessageBox::Yes)->click(); });
+        apply->click(); panel.findChild<QLineEdit *>("smuCpu")->setText("131"); QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(),0); QVERIFY(status->text().contains("result belongs to CPU 130"));
+        const auto calls=d->calls; apply->click(); QCOMPARE(d->calls,calls);
+    }
     void pboLimitsAcknowledgementOnly() {
         auto *device = new AmdPboFixture; device->capsRaw = 6; device->discardChange = true;
         AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(device)), nullptr, 130);
@@ -4605,6 +4878,135 @@ private slots:
         read->click(); panel.findChild<QLineEdit *>("smuCpu")->setText("131"); QTRY_VERIFY(panel.isEnabled());
         QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0);
         const auto calls=device->calls; apply->click(); QCOMPARE(device->calls,calls);
+    }
+    void graniteLimitsAcknowledgeFourCommandsWithoutClaimingReadback() {
+        auto *d=new AmdPboFixture;d->useGraniteLimits();d->capsRaw=2;d->discardChange=true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        panel.resize(1400,1250);panel.show();QApplication::processEvents();
+        auto *profile=panel.findChild<QComboBox *>("smuProfile");
+        profile->setCurrentIndex(profile->findData(int(octool::core::SmuProfile::GraniteRidge)));
+        auto *read=panel.findChild<QPushButton *>("pboCapsRead"),*apply=panel.findChild<QPushButton *>("pboLimitApply");
+        auto *kind=panel.findChild<QComboBox *>("pboLimit");auto *value=panel.findChild<QLineEdit *>("pboLimitValue");
+        auto *table=panel.findChild<QTableWidget *>("smuTable");auto *status=panel.findChild<QLabel *>("smuStatus");
+        apply->click();QCOMPARE(d->calls,0u);
+        const unsigned values[]={350,280,500,90};
+        for(unsigned i=0;i<4;++i) {
+            kind->setCurrentIndex(int(i));value->setText(QString::number(values[i]));
+            read->click();QTRY_VERIFY(panel.isEnabled());QCOMPARE(table->rowCount(),10);
+            QCOMPARE(table->item(1,1)->text(),QString("No")); // Limits do not require the separate PBO bit.
+            QCOMPARE(table->item(5,1)->text(),QString("Yes"));QCOMPARE(table->item(9,1)->text(),QString("0x00625400"));
+            QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());if(box)box->button(QMessageBox::Yes)->click(); });
+            apply->click();QTRY_VERIFY(panel.isEnabled());QCOMPARE(d->settings,i+1);
+            QCOMPARE(d->messages.back(),std::uint32_t(0x56+i));QCOMPARE(d->commandArgs.back()[0],i==3?values[i]:values[i]*1000);
+            QCOMPARE(d->limitArguments[i],0u);QCOMPARE(table->item(1,1)->text(),QString("Firmware accepted"));
+            QCOMPARE(table->item(3,1)->text(),QString("Unavailable / not verified"));
+            QVERIFY(status->text().contains("effective limit remains unverified"));
+            if(!i) {
+                QApplication::processEvents();const auto shot=qEnvironmentVariable("OCTOOL_GRANITE_LIMITS_TEST_SCREENSHOT");
+                if(!shot.isEmpty())QVERIFY(panel.grab().save(shot));
+            }
+            const auto calls=d->calls;apply->click();QCOMPARE(d->calls,calls);
+        }
+        QCOMPARE(d->wrongCpu,0u);
+    }
+    void graniteLimitsRejectInvalidInputsAndUnpreparedWriters() {
+        auto *d=new AmdPboFixture;d->useGraniteLimits();d->capsRaw=6;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        auto *profile=panel.findChild<QComboBox *>("smuProfile");
+        profile->setCurrentIndex(profile->findData(int(octool::core::SmuProfile::GraniteRidge)));
+        auto *read=panel.findChild<QPushButton *>("pboCapsRead"),*apply=panel.findChild<QPushButton *>("pboLimitApply");
+        auto *value=panel.findChild<QLineEdit *>("pboLimitValue");auto *kind=panel.findChild<QComboBox *>("pboLimit");
+        read->click();QTRY_VERIFY(panel.isEnabled());auto calls=d->calls;
+        for(const QString bad:{QString(""),QString("0"),QString("-1"),QString("2001"),QString("350.5"),QString("1e0")}) {
+            value->setText(bad);apply->click();QCOMPARE(d->calls,calls);
+        }
+        kind->setCurrentIndex(3);value->setText("101");apply->click();QCOMPARE(d->calls,calls);
+        for(const auto name:{"allCurveApply","ocFrequencyApply","pboScalarApply"}) {
+            panel.findChild<QPushButton *>(name)->click();QCOMPARE(d->calls,calls);
+        }
+        value->setText("90");
+        for(unsigned caps:{4u,0x10006u}) {
+            d->capsRaw=caps;read->click();QTRY_VERIFY(panel.isEnabled());calls=d->calls;
+            apply->click();QCOMPARE(d->calls,calls);QCOMPARE(d->settings,0u);
+        }
+        d->capsRaw=6;d->firmwareVersion=0x00625401;read->click();QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(panel.findChild<QTableWidget *>("smuTable")->rowCount(),0);
+        calls=d->calls;apply->click();QCOMPARE(d->calls,calls);QCOMPARE(d->settings,0u);
+    }
+    void graniteLimitsRejectChangedCapabilitiesFirmwareAndStaleRead() {
+        auto *d=new AmdPboFixture;d->useGraniteLimits();
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        auto *profile=panel.findChild<QComboBox *>("smuProfile");
+        profile->setCurrentIndex(profile->findData(int(octool::core::SmuProfile::GraniteRidge)));
+        auto *read=panel.findChild<QPushButton *>("pboCapsRead"),*apply=panel.findChild<QPushButton *>("pboLimitApply");
+        auto *table=panel.findChild<QTableWidget *>("smuTable");auto *status=panel.findChild<QLabel *>("smuStatus");
+        panel.findChild<QLineEdit *>("pboLimitValue")->setText("350");
+        for(unsigned mode=0;mode<3;++mode) {
+            d->capsRaw=6;d->firmwareVersion=0x00625400;d->writeCompletion=1;
+            read->click();QTRY_VERIFY(panel.isEnabled());
+            if(mode==0)d->capsRaw=0x80000006;
+            if(mode==1)d->firmwareVersion=0x00625401;
+            if(mode==2)d->writeCompletion=0xfd;
+            QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());if(box)box->button(QMessageBox::Yes)->click(); });
+            apply->click();QTRY_VERIFY(panel.isEnabled());QCOMPARE(d->settings,mode==2?1u:0u);
+            QCOMPARE(table->item(1,1)->text(),QString(mode==2?"Attempted; not confirmed":"Not sent"));
+            QVERIFY(status->text().contains(mode==2?"may have changed":"No setting sent"));
+        }
+        read->click();profile->setCurrentIndex(profile->findData(int(octool::core::SmuProfile::Shimada)));
+        QTRY_VERIFY(panel.isEnabled());QCOMPARE(table->rowCount(),0);QVERIFY(status->text().contains("Inputs changed while reading"));
+        const auto calls=d->calls;apply->click();QCOMPARE(d->calls,calls);
+    }
+    void graniteModeEnableDisableNoopAndDisableWithoutAvailability() {
+        auto *d=new AmdPboFixture;d->useGraniteMode();d->capsRaw=7;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        panel.resize(1400,1250);panel.show();QApplication::processEvents();
+        auto *profile=panel.findChild<QComboBox *>("smuProfile");
+        profile->setCurrentIndex(profile->findData(int(octool::core::SmuProfile::GraniteRidge)));
+        auto *read=panel.findChild<QPushButton *>("ocCapsRead"),*apply=panel.findChild<QPushButton *>("ocModeApply");
+        auto *mode=panel.findChild<QComboBox *>("ocMode");auto *table=panel.findChild<QTableWidget *>("smuTable");
+        const unsigned settings[]={1,2,2,3};
+        for(unsigned i=0;i<4;++i) {
+            if(i==3)d->capsRaw=0x10000;
+            mode->setCurrentIndex(i==0?1:0);read->click();QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(table->rowCount(),10);QCOMPARE(table->item(9,1)->text(),QString("0x00625400"));
+            if(i==3)QCOMPARE(table->item(2,1)->text(),QString("No"));
+            const auto calls=d->calls;
+            for(const auto name:{"allCurveApply","ocFrequencyApply","pboScalarApply"}) {
+                panel.findChild<QPushButton *>(name)->click();QCOMPARE(d->calls,calls);
+            }
+            QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());if(box)box->button(QMessageBox::Yes)->click(); });
+            apply->click();QTRY_VERIFY(panel.isEnabled());QCOMPARE(d->settings,settings[i]);
+            QCOMPARE(table->item(2,1)->text(),QString(i==0?"Enabled":"Disabled"));
+            QCOMPARE(table->item(3,1)->text(),QString("Mode bit matches"));
+            if(i==2)QCOMPARE(table->item(1,1)->text(),QString("Not sent; already requested mode"));
+            if(!i) {
+                QApplication::processEvents();const auto shot=qEnvironmentVariable("OCTOOL_GRANITE_MODE_TEST_SCREENSHOT");
+                if(!shot.isEmpty())QVERIFY(panel.grab().save(shot));
+            }
+        }
+        QCOMPARE(d->capsRaw,0u);QCOMPARE(d->scalarRaw,0x3f800000u);QCOMPARE(d->ocAllMHz,0u);QCOMPARE(d->ocCoreArgument,0u);
+    }
+    void graniteModeRejectsUnverifiedReadbackAndStalePreparation() {
+        auto *d=new AmdPboFixture;d->useGraniteMode();d->capsRaw=7;d->discardChange=true;
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        auto *profile=panel.findChild<QComboBox *>("smuProfile");
+        const auto granite=profile->findData(int(octool::core::SmuProfile::GraniteRidge));profile->setCurrentIndex(granite);
+        auto *read=panel.findChild<QPushButton *>("ocCapsRead"),*apply=panel.findChild<QPushButton *>("ocModeApply");
+        auto *table=panel.findChild<QTableWidget *>("smuTable");auto *status=panel.findChild<QLabel *>("smuStatus");
+        panel.findChild<QComboBox *>("ocMode")->setCurrentIndex(1);
+        read->click();QTRY_VERIFY(panel.isEnabled());
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());if(box)box->button(QMessageBox::Yes)->click(); });
+        apply->click();QTRY_VERIFY(panel.isEnabled());QCOMPARE(d->settings,1u);
+        QCOMPARE(table->item(1,1)->text(),QString("Firmware accepted"));QCOMPARE(table->item(2,1)->text(),QString("Disabled"));
+        QCOMPARE(table->item(3,1)->text(),QString("Not verified"));QVERIFY(status->text().contains("may have changed"));
+        d->discardChange=false;read->click();QTRY_VERIFY(panel.isEnabled());d->capsRaw=0x80000007;
+        QTimer::singleShot(0,[] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());if(box)box->button(QMessageBox::Yes)->click(); });
+        apply->click();QTRY_VERIFY(panel.isEnabled());QCOMPARE(d->settings,1u);QCOMPARE(table->item(1,1)->text(),QString("Not sent"));
+        read->click();QTRY_VERIFY(panel.isEnabled());const auto calls=d->calls;
+        QTimer::singleShot(0,[&] { auto *box=qobject_cast<QMessageBox *>(QApplication::activeModalWidget());if(box) {
+            profile->setCurrentIndex(profile->findData(int(octool::core::SmuProfile::Shimada)));box->button(QMessageBox::Yes)->click(); }});
+        apply->click();QCOMPARE(d->calls,calls);QCOMPARE(table->rowCount(),0);QCOMPARE(d->settings,1u);
+        profile->setCurrentIndex(granite);apply->click();QCOMPARE(d->calls,calls);
     }
     void ocModeChecksReadback() {
         auto *device=new AmdPboFixture;device->allowManualOc=true;device->capsRaw=7;

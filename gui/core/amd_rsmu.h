@@ -68,12 +68,21 @@ inline AmdRsmuReply exchangeShimadaRsmu(HardwareSession &s, std::uint32_t comman
     out.valid = true; return out;
 }
 // Granite 98.84.0 uses a different message/response pair. Keep this transport
-// closed to version, capability, stored Fmax and its one verified setter.
-inline AmdRsmuReply exchangeGraniteFmax(HardwareSession &s, std::uint32_t command,
-                                      std::uint32_t argument = 0) {
+// closed to the individually checked version/capability, Fmax, scalar, limit,
+// all-core CO and zero-argument OC-mode commands. The wrappers
+// below further restrict each operation's command family.
+inline AmdRsmuReply exchangeGranitePbo(HardwareSession &s, std::uint32_t command,
+                                     std::uint32_t argument = 0) {
     AmdRsmuReply out;
-    if ((command != 2 && command != 0x6e && command != 0x6f && command != 0x70) ||
-        (command == 0x70 ? !argument || argument > 0xfffffu : argument != 0)) {
+    const bool limit = command >= 0x56 && command <= 0x59;
+    const bool mode = command == 0x5d || command == 0x5e;
+    const bool curve = command == 7;
+    const bool setting = command == 0x70 || command == 0x5b || limit || mode || curve;
+    if ((command != 2 && command != 0x6d && command != 0x6e && command != 0x6f && !setting) ||
+        (command == 0x70 ? !argument || argument > 0xfffffu :
+         command == 0x5b ? argument < 100 || argument > 1000 || argument % 100 :
+         curve ? !(argument <= 30 || (argument >= 0xffce && argument <= 0xffff)) :
+         limit ? !argument || (command == 0x59 ? argument > 100 : argument > 2000000 || argument % 1000) : argument != 0)) {
         out.error = -EINVAL; return out;
     }
     const auto wait = [&]() {
@@ -95,11 +104,46 @@ inline AmdRsmuReply exchangeGraniteFmax(HardwareSession &s, std::uint32_t comman
     r = wait(); if ((out.error = r.error)) return out;
     out.response = std::uint32_t(r.value);
     if (out.response != 1) { out.error = -EIO; return out; }
-    if (command != 0x70) {
+    if (!setting) {
         r = rsmuIndirect(s,0x3b10a40,false); if ((out.error = r.error)) return out;
         out.raw = std::uint32_t(r.value);
     }
     if ((out.error = s.checkpoint())) { out.raw = 0; return out; }
     out.valid = true; return out;
+}
+inline AmdRsmuReply exchangeGraniteFmax(HardwareSession &s, std::uint32_t command,
+                                      std::uint32_t argument = 0) {
+    if (command != 2 && command != 0x6e && command != 0x6f && command != 0x70) {
+        AmdRsmuReply out; out.error = -EINVAL; return out;
+    }
+    return exchangeGranitePbo(s,command,argument);
+}
+inline AmdRsmuReply exchangeGraniteScalar(HardwareSession &s, std::uint32_t command,
+                                        std::uint32_t argument = 0) {
+    if (command != 2 && command != 0x6d && command != 0x6f && command != 0x5b) {
+        AmdRsmuReply out; out.error = -EINVAL; return out;
+    }
+    return exchangeGranitePbo(s,command,argument);
+}
+inline AmdRsmuReply exchangeGraniteLimits(HardwareSession &s, std::uint32_t command,
+                                        std::uint32_t argument = 0) {
+    if (command != 2 && command != 0x6f && (command < 0x56 || command > 0x59)) {
+        AmdRsmuReply out; out.error = -EINVAL; return out;
+    }
+    return exchangeGranitePbo(s,command,argument);
+}
+inline AmdRsmuReply exchangeGraniteMode(HardwareSession &s, std::uint32_t command,
+                                      std::uint32_t argument = 0) {
+    if (command != 2 && command != 0x6f && command != 0x5d && command != 0x5e) {
+        AmdRsmuReply out; out.error = -EINVAL; return out;
+    }
+    return exchangeGranitePbo(s,command,argument);
+}
+inline AmdRsmuReply exchangeGraniteCurve(HardwareSession &s, std::uint32_t command,
+                                       std::uint32_t argument = 0) {
+    if (command != 2 && command != 0x6f && command != 7) {
+        AmdRsmuReply out; out.error = -EINVAL; return out;
+    }
+    return exchangeGranitePbo(s,command,argument);
 }
 } } }

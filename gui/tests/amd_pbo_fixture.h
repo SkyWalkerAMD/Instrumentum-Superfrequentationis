@@ -10,6 +10,14 @@ struct AmdPboFixture : AmdCurveFixture {
     std::uint32_t capsRaw = 4, fmaxMHz = 0;
     bool allowFmaxReadback = false, clampFmax = false;
     bool graniteFmax = false, hypervisor = false;
+    bool allowGraniteScalar = false, clampScalar = false;
+    bool allowGraniteLimits = false, allowGraniteMode = false;
+    bool allowGraniteCurve = false;
+    std::uint32_t scalarClampedRaw = 0x40200000;
+    void useGraniteScalar() { useGraniteFmax(); allowGraniteScalar = true; }
+    void useGraniteLimits() { useGraniteFmax(); allowGraniteLimits = true; }
+    void useGraniteMode() { useGraniteFmax(); allowGraniteMode = allowManualOc = true; }
+    void useGraniteCurve() { useGraniteFmax(); allowGraniteCurve = allowAllCoreCurve = true; }
     void useGraniteFmax() {
         graniteFmax = allowFmaxReadback = true;
         model = 0x44; pciId = 0x14d81022; firmwareVersion = 0x00625400;
@@ -47,7 +55,11 @@ struct AmdPboFixture : AmdCurveFixture {
         else if (r.write) {
             if (index == responseAddress && !r.value) response = 0;
             else if (index >= 0x3b10a40 && index <= 0x3b10a54) scalarArgs[(index-0x3b10a40)/4] = std::uint32_t(r.value);
-            else if (index == commandAddress && (!graniteFmax || r.value == 2 || r.value == 0x6e || r.value == 0x6f || r.value == 0x70) &&
+            else if (index == commandAddress && (!graniteFmax || r.value == 2 || r.value == 0x6e || r.value == 0x6f || r.value == 0x70 ||
+                     (allowGraniteScalar && (r.value == 0x5b || r.value == 0x6d)) ||
+                     (allowGraniteLimits && r.value >= 0x56 && r.value <= 0x59) ||
+                     (allowGraniteMode && (r.value == 0x5d || r.value == 0x5e)) ||
+                     (allowGraniteCurve && r.value == 7)) &&
                      (r.value == 0x6d || r.value == 0x5b || r.value == 0x6f || r.value == 0x70 || (r.value >= 0x56 && r.value <= 0x59) ||
                      (allowManualOc && r.value >= 0x5d && r.value <= 0x60) || (allowAllCoreCurve && r.value == 7) ||
                      (allowStatusQueries && (r.value == 0xa6 || r.value == 0x5c)) ||
@@ -63,7 +75,7 @@ struct AmdPboFixture : AmdCurveFixture {
                 if ((r.value == 0x5d || r.value == 0x5e) && scalarArgs[0]) out.error = -EINVAL;
                 if (r.value == 0x5f && (!scalarArgs[0] || scalarArgs[0] > 0xfffff)) out.error = -EINVAL;
                 if (r.value == 0x60 && (!(scalarArgs[0] & 0xfffff) || (scalarArgs[0] & 0x0f800000u))) out.error = -EINVAL;
-                if (r.value == 7 && !(scalarArgs[0] <= 50 || (scalarArgs[0] >= 0xffce && scalarArgs[0] <= 0xffff))) out.error = -EINVAL;
+                if (r.value == 7 && !(scalarArgs[0] <= (graniteFmax ? 30u : 50u) || (scalarArgs[0] >= 0xffce && scalarArgs[0] <= 0xffff))) out.error = -EINVAL;
                 if (r.value == 0xa7 && !(scalarArgs[0] <= 5 || scalarArgs[0] >= 0xfffffff6u)) out.error = -EINVAL;
                 if (!out.error) {
                     ++commands; polls = 0; messages.push_back(std::uint32_t(r.value)); commandArgs.push_back(scalarArgs);
@@ -78,9 +90,11 @@ struct AmdPboFixture : AmdCurveFixture {
                             else if (r.value == 0x5f) ocAllMHz = scalarArgs[0];
                             else if (r.value == 0x60) ocCoreArgument = scalarArgs[0];
                             else if (r.value >= 0x56 && r.value <= 0x59) limitArguments[std::size_t(r.value-0x56)] = scalarArgs[0];
-                            else { const float value = float(scalarArgs[0]/100); std::memcpy(&scalarRaw, &value, 4); }
+                            else { const float value = float(scalarArgs[0]/100); std::memcpy(&scalarRaw, &value, 4);
+                                if (clampScalar) scalarRaw = scalarClampedRaw; }
                         }
-                    } else if (completion == 1) scalarArgs[0] = r.value == 2 ? firmwareVersion : r.value == 0x6e ? fmaxMHz : r.value == 0xa8 ? powerAdjustmentRaw : r.value == 0x6d ? scalarRaw : r.value == 0x6f ? capsRaw : r.value == 0xa6 ? ln2Raw : performanceRaw;
+                    } else if (completion == 1) scalarArgs[0] = r.value == 2 ? firmwareVersion : r.value == 0x6e ? fmaxMHz : r.value == 0xa8 ? powerAdjustmentRaw : r.value == 0x6d ?
+                        (graniteFmax && (capsRaw & 0x10000u) ? 0u : scalarRaw) : r.value == 0x6f ? capsRaw : r.value == 0xa6 ? ln2Raw : performanceRaw;
                 }
             } else out.error = -EINVAL;
         } else if (index == responseAddress) {

@@ -31,6 +31,8 @@ MODULES = {
         ('transport', '563fbf5d9350c95a9f8a063e4f98a6fbe4d22d3e2bc11d2a3346a4e3320578c9'),
     '69233953-AFD7-40D7-BBEB-CFBCDFC8A646':
         ('transport2', '9ca8b4e78e40f98853163c8414cd61745005ed8d4cd8f7a8463c76e6b16a280e'),
+    'AC991242-FBB0-42FA-AEF4-AA9746FD68E1':
+        ('register-service', '61a6f2850ea3cd207264d4c831dbaff253a53137eefcc5a3890e254698c10963'),
 }
 
 

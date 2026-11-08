@@ -120,6 +120,95 @@ AmdPboCapabilities readShimadaPboCapabilities(HardwareSession &s, const SmuTarge
     if (out.error) return out;
     out.raw = reply.raw; out.valid = true; return out;
 }
+AmdPboScalar readAmdPboScalar(HardwareSession &s, const SmuTarget &target) {
+    if (target.profile != SmuProfile::GraniteRidge) return readShimadaPboScalar(s,target);
+    AmdPboScalar out;
+    if ((out.error = checkFmaxTarget(s,target))) return out;
+    const auto version = detail::exchangeGraniteScalar(s,2);
+    out.firmwareResponse = version.response;
+    if ((out.error = version.error)) return out;
+    if ((out.error = checkFmaxTarget(s,target))) return out;
+    out.firmwareVersion = version.raw; out.firmwareValid = true;
+    if (version.raw != 0x00625400u) { out.error = -ENOTSUP; return out; }
+    out.capabilities = fmaxCapabilities(s,target);
+    if ((out.error = out.capabilities.error)) return out;
+    if ((out.error = checkFmaxTarget(s,target))) return out;
+    const auto value = detail::exchangeGraniteScalar(s,0x6d);
+    out.response = value.response; out.messageAttempted = value.messageAttempted;
+    if ((out.error = value.error)) return out;
+    const auto caps = fmaxCapabilities(s,target);
+    if ((out.error = caps.error)) return out;
+    if (caps.raw != out.capabilities.raw) { out.error = -EAGAIN; return out; }
+    if ((out.error = checkFmaxTarget(s,target))) return out;
+    const auto recheck = detail::exchangeGraniteScalar(s,2);
+    if ((out.error = recheck.error)) return out;
+    if (recheck.raw != version.raw) { out.error = -EAGAIN; return out; }
+    if ((out.error = checkFmaxTarget(s,target))) return out;
+    out.raw = value.raw; out.rawValid = true;
+    if (!decodeAmdPboScalar(out.raw,out.multiplier)) { out.error = -ERANGE; return out; }
+    out.valid = true; return out;
+}
+AmdPboCapabilities readAmdPboCapabilities(HardwareSession &s, const SmuTarget &target) {
+    if(target.profile != SmuProfile::GraniteRidge) return readShimadaPboCapabilities(s,target);
+    AmdPboCapabilities out;
+    if((out.error=checkFmaxTarget(s,target))) return out;
+    const auto version=fmaxExchange(s,target,2);
+    if((out.error=version.error)) return out;
+    if((out.error=checkFmaxTarget(s,target))) return out;
+    out.firmwareVersion=version.raw;out.firmwareValid=true;
+    if(version.raw!=0x00625400u) {out.error=-ENOTSUP;return out;}
+    const auto caps=fmaxCapabilities(s,target);
+    out.messageAttempted=caps.messageAttempted;out.response=caps.response;
+    if((out.error=caps.error)) return out;
+    if((out.error=checkFmaxTarget(s,target))) return out;
+    const auto recheck=fmaxExchange(s,target,2);
+    if((out.error=recheck.error)) return out;
+    if(recheck.raw!=version.raw) {out.error=-EAGAIN;return out;}
+    if((out.error=checkFmaxTarget(s,target))) return out;
+    out.raw=caps.raw;out.valid=true;return out;
+}
+AmdPboScalarUpdate setAmdPboScalar(HardwareSession &s, const SmuTarget &target,
+    std::uint32_t expectedCapabilities, std::uint32_t expectedRaw, unsigned multiplier) {
+    if (target.profile != SmuProfile::GraniteRidge)
+        return setShimadaPboScalar(s,target,expectedRaw,multiplier);
+    AmdPboScalarUpdate out; double previous = 0;
+    if (multiplier < 1 || multiplier > 10 || !decodeAmdPboScalar(expectedRaw,previous)) {
+        out.error = -ERANGE; return out;
+    }
+    if (!amdPboFmaxAvailable(expectedCapabilities)) { out.error = -ENOTSUP; return out; }
+    out.argument = multiplier * 100; out.phase = AmdPboPhase::Compare;
+    out.before = readAmdPboScalar(s,target);
+    if ((out.error = out.before.error)) return out;
+    if (out.before.capabilities.raw != expectedCapabilities || out.before.raw != expectedRaw) {
+        out.error = -EAGAIN; return out;
+    }
+    const auto requested = floatBits(multiplier);
+    if (out.before.raw == requested) {
+        if ((out.error = s.checkpoint())) return out;
+        out.after = out.before; out.verified = out.unchanged = true;
+        out.phase = AmdPboPhase::Complete; return out;
+    }
+    if ((out.error = checkFmaxTarget(s,target))) return out;
+    const auto version = detail::exchangeGraniteScalar(s,2);
+    if ((out.error = version.error)) return out;
+    if (version.raw != 0x00625400u) { out.error = -EAGAIN; return out; }
+    const auto caps = fmaxCapabilities(s,target);
+    if ((out.error = caps.error)) return out;
+    if (caps.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
+    if ((out.error = checkFmaxTarget(s,target))) return out;
+    out.phase = AmdPboPhase::Write;
+    const auto sent = detail::exchangeGraniteScalar(s,0x5b,out.argument);
+    out.writeAttempted = sent.messageAttempted; out.response = sent.response;
+    out.accepted = sent.response == 1;
+    if ((out.error = sent.error)) return out;
+    out.phase = AmdPboPhase::Verify;
+    out.after = readAmdPboScalar(s,target);
+    if ((out.error = out.after.error)) return out;
+    if (out.after.capabilities.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
+    if (out.after.raw != requested) { out.error = -EIO; return out; }
+    if ((out.error = s.checkpoint())) return out;
+    out.verified = true; out.phase = AmdPboPhase::Complete; return out;
+}
 AmdPboQueryResult readShimadaPboQuery(HardwareSession &s, const SmuTarget &target,
                                      AmdPboQuery query, unsigned firmwareIndex) {
     AmdPboQueryResult out; out.query = query; out.firmwareIndex = firmwareIndex;
@@ -364,6 +453,51 @@ AmdOcModeUpdate setShimadaOcMode(HardwareSession &s, const SmuTarget &target,
     if ((out.error = s.checkpoint())) return out;
     out.verified = true; out.phase = AmdPboPhase::Complete; return out;
 }
+AmdPboLimitUpdate setAmdPboLimit(HardwareSession &s,const SmuTarget &target,
+    std::uint32_t expectedCapabilities,AmdPboLimit limit,unsigned value) {
+    if(target.profile!=SmuProfile::GraniteRidge) return setShimadaPboLimit(s,target,expectedCapabilities,limit,value);
+    AmdPboLimitUpdate out;out.limit=limit;out.requested=value;
+    if((out.error=encodeAmdPboLimit(limit,value,out.command,out.argument))) return out;
+    if(!amdPboLimitsAvailable(expectedCapabilities)) {out.error=-ENOTSUP;return out;}
+    out.phase=AmdPboPhase::Compare;out.before=readAmdPboCapabilities(s,target);
+    if((out.error=out.before.error)) return out;
+    if(out.before.raw!=expectedCapabilities) {out.error=-EAGAIN;return out;}
+    const auto current=readAmdPboCapabilities(s,target);
+    if((out.error=current.error)) return out;
+    if(current.raw!=expectedCapabilities) {out.error=-EAGAIN;return out;}
+    if((out.error=checkFmaxTarget(s,target))) return out;
+    out.phase=AmdPboPhase::Write;
+    const auto reply=detail::exchangeGraniteLimits(s,out.command,out.argument);
+    out.writeAttempted=reply.messageAttempted;out.response=reply.response;out.accepted=reply.response==1;
+    if((out.error=reply.error)) return out;
+    out.phase=AmdPboPhase::Complete;return out;
+}
+AmdOcModeUpdate setAmdOcMode(HardwareSession &s,const SmuTarget &target,
+    std::uint32_t expectedCapabilities,bool enabled) {
+    if(target.profile!=SmuProfile::GraniteRidge) return setShimadaOcMode(s,target,expectedCapabilities,enabled);
+    AmdOcModeUpdate out;out.requestedEnabled=enabled;out.command=enabled?0x5d:0x5e;
+    out.phase=AmdPboPhase::Compare;out.before=readAmdPboCapabilities(s,target);
+    if((out.error=out.before.error)) return out;
+    if(out.before.raw!=expectedCapabilities) {out.error=-EAGAIN;return out;}
+    if(amdManualOcEnabled(out.before.raw)==enabled) {
+        if((out.error=s.checkpoint())) return out;
+        out.after=out.before;out.verified=out.unchanged=true;out.phase=AmdPboPhase::Complete;return out;
+    }
+    if(enabled && !amdManualOcAvailable(out.before.raw)) {out.error=-ENOTSUP;return out;}
+    const auto current=readAmdPboCapabilities(s,target);
+    if((out.error=current.error)) return out;
+    if(current.raw!=expectedCapabilities) {out.error=-EAGAIN;return out;}
+    if((out.error=checkFmaxTarget(s,target))) return out;
+    out.phase=AmdPboPhase::Write;
+    const auto reply=detail::exchangeGraniteMode(s,out.command);
+    out.writeAttempted=reply.messageAttempted;out.response=reply.response;out.accepted=reply.response==1;
+    if((out.error=reply.error)) return out;
+    out.phase=AmdPboPhase::Verify;out.after=readAmdPboCapabilities(s,target);
+    if((out.error=out.after.error)) return out;
+    if(amdManualOcEnabled(out.after.raw)!=enabled) {out.error=-EIO;return out;}
+    if((out.error=s.checkpoint())) return out;
+    out.verified=true;out.phase=AmdPboPhase::Complete;return out;
+}
 const char *amdOcFrequencyScopeName(AmdOcFrequencyScope scope) {
     switch (scope) {
     case AmdOcFrequencyScope::AllCores: return "all-cores";
@@ -427,6 +561,12 @@ int encodeShimadaAllCoreCurve(int margin, std::uint32_t &argument) {
     argument = std::uint32_t(margin) & 0xffffu;
     return 0;
 }
+int encodeGraniteAllCoreCurve(int margin, std::uint32_t &argument) {
+    argument = 0;
+    if (margin < -50 || margin > 30) return -ERANGE;
+    argument = std::uint32_t(margin) & 0xffffu;
+    return 0;
+}
 AmdCurveAllUpdate setShimadaAllCoreCurve(HardwareSession &s, const SmuTarget &target,
     std::uint32_t expectedCapabilities, int margin) {
     AmdCurveAllUpdate out; out.requestedMargin = margin;
@@ -442,6 +582,30 @@ AmdCurveAllUpdate setShimadaAllCoreCurve(HardwareSession &s, const SmuTarget &ta
     out.writeAttempted = reply.messageAttempted; out.response = reply.response;
     out.accepted = reply.response == 1;
     if ((out.error = reply.error)) return out;
+    out.phase = AmdPboPhase::Complete; return out;
+}
+AmdCurveAllUpdate setAmdAllCoreCurve(HardwareSession &s, const SmuTarget &target,
+    std::uint32_t expectedCapabilities, int margin) {
+    if (target.profile != SmuProfile::GraniteRidge)
+        return setShimadaAllCoreCurve(s,target,expectedCapabilities,margin);
+    AmdCurveAllUpdate out; out.requestedMargin = margin;
+    if ((out.error = encodeGraniteAllCoreCurve(margin,out.argument))) return out;
+    if (!amdAllCoreCurveAvailable(expectedCapabilities)) { out.error = -ENOTSUP; return out; }
+    out.phase = AmdPboPhase::Compare;
+    out.before = readAmdPboCapabilities(s,target);
+    if ((out.error = out.before.error)) return out;
+    if (out.before.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
+    const auto current = readAmdPboCapabilities(s,target);
+    if ((out.error = current.error)) return out;
+    if (current.raw != expectedCapabilities) { out.error = -EAGAIN; return out; }
+    if ((out.error = checkFmaxTarget(s,target))) return out;
+    out.phase = AmdPboPhase::Write;
+    const auto reply = detail::exchangeGraniteCurve(s,7,out.argument);
+    out.writeAttempted = reply.messageAttempted; out.response = reply.response;
+    out.accepted = reply.response == 1;
+    if ((out.error = reply.error)) return out;
+    // The host reply is only an acknowledgement: the internal broadcast waits
+    // for nonzero target completions without checking that each returned 1.
     out.phase = AmdPboPhase::Complete; return out;
 }
 AmdPboRailsEncoding encodeLegacyAmdPboRails(unsigned a, unsigned b) {

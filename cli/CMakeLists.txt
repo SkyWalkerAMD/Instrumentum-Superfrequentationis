@@ -40,3 +40,7 @@ install(FILES ../docs/intel-tvb.md ../docs/intel-energy.md ../docs/intel-avx-off
 install(FILES ../docs/intel-iccmax.md ../docs/intel-bclk-voltage.md ../docs/intel-energy-counters.md ../docs/intel-pl4.md DESTINATION share/doc/octool-cli)
 install(FILES ../docs/amd-pstates-legacy.md ../docs/amd-pstates-electrical.md DESTINATION share/doc/octool-cli)
 install(FILES ../docs/amd-manual-oc.md ../docs/amd-pbo-limits.md DESTINATION share/doc/octool-cli)
+install(FILES ../docs/amd-granite-controls.md ../docs/amd-granite-pbo-scalar.md
+    ../docs/amd-granite-pbo-limits.md ../docs/amd-granite-oc-mode.md ../docs/amd-granite-curve-all.md
+    ../docs/amd-granite-mapping-diagnostic.md ../docs/amd-granite-host-routing.md
+    ../docs/amd-granite-local-config.md ../docs/amd-granite-map-acquisition.md DESTINATION share/doc/octool-cli)

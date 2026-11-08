@@ -184,7 +184,7 @@ for r in adjustments:
         if d['verified']:
             assert d['after']['counts'] == d['requested_counts']
         assert d['command'] == '0x000000a7'
-all_curve = [r for r in reports if r['command'] == 'amd-curve-all-set']
+all_curve = [r for r in reports if r['command'] == 'amd-curve-all-set' and r['data'].get('platform') != 'granite-ridge']
 assert len(all_curve) == 35 and [r['ok'] for r in all_curve] == [True]*8+[False]*27
 for i,r in enumerate(all_curve[:13]):
     d = r['data']
@@ -297,7 +297,11 @@ with tempfile.TemporaryDirectory(prefix='octool-granite-') as directory:
                     reference_address_space='host_physical', producer_source_address='0xffffffff',
                     physical_unit_verified=True, target_present_verified=True,
                     target_is_compact_pm_slot=True, step_setter_reads_device=True,
-                    step_setter_equal_code_retains_previous_value=False)
+                    step_setter_equal_code_retains_previous_value=False,
+                    step_setter_target_bits=8, submitted_code_bits=32,
+                    mirror_can_differ_from_submitted_code=False,
+                    alternate_initializer_truncates_before_conversion=False,
+                    independent_runtime_device_getter_verified=True)
             if field['group'].startswith('granite_dpm_'):
                 field.update(policy_state=99, clock_policy_kind=99, unit='W',
                     nominal_reference_mhz=200, measurement=True, measured_frequency=True,
@@ -355,7 +359,7 @@ with tempfile.TemporaryDirectory(prefix='octool-granite-') as directory:
                 assert f['unit']=='unverified' and 'unit_evidence' not in f
                 assert not f['physical_unit_verified'] and not f['setting_readback_verified']
             assert decoded['fields'][7]['stored_value']==1.125 and decoded['fields'][-1]['stored_value']==1.5
-oc_modes = [r for r in reports if r['command'] == 'amd-oc-mode-set' and 'requested_enabled' in r['data']]
+oc_modes = [r for r in reports if r['command'] == 'amd-oc-mode-set' and 'requested_enabled' in r['data'] and r['data'].get('platform') != 'granite-ridge']
 assert len(oc_modes) == 9 and [r['ok'] for r in oc_modes] == [True]*3 + [False]*6
 for r in oc_modes:
     d = r['data']
@@ -417,7 +421,7 @@ run('amd-oc-mode-set','--cpu',str(cpu),'--enabled','1','--expect-caps','6',code=
 run('amd-oc-mode-set','--cpu',str(cpu),'--enabled','true','--expect-caps','6','--apply',code=2)
 run('amd-oc-frequency-set','--cpu',str(cpu),'--scope','all-cores','--mhz','5000','--expect-caps','0x10007',code=2)
 run('amd-oc-frequency-set','--cpu',str(cpu),'--scope','core','--ccd','0','--core','0','--mhz','5000','--expect-caps','7','--apply',code=2)
-limits = [r for r in reports if r['command'] == 'amd-pbo-limit-set' and 'requested_value' in r['data']]
+limits = [r for r in reports if r['command'] == 'amd-pbo-limit-set' and 'requested_value' in r['data'] and r['data'].get('platform') != 'granite-ridge']
 assert len(limits) == 9 and [r['ok'] for r in limits] == [True]*4 + [False]*5
 for r,kind,unit,value,arg,cmd in zip(limits[:4],('ppt','tdc','edc','temperature'),('W','A','A','C'),(350,280,500,90),(350000,280000,500000,90),(0x56,0x57,0x58,0x59)):
     d = r['data']
@@ -456,7 +460,7 @@ small = run('amd-pm-layout-audit','--version','0x730204','--bytes','2844','--fus
 large = run('amd-pm-layout-audit','--version','0x731004','--bytes','11636','--fused-ccds','16')['data']['layout_audit']
 assert small['outside_words'] == 22 and large['overlapping_words'] == 176
 assert not large['decoder_enabled'] and not large['physical_mapping_verified']
-pbo_settings = [r for r in reports if r['command'] == 'amd-pbo-scalar-set' and 'requested_multiplier' in r['data']]
+pbo_settings = [r for r in reports if r['command'] == 'amd-pbo-scalar-set' and 'requested_multiplier' in r['data'] and r['data'].get('platform') != 'granite-ridge']
 assert len(pbo_settings) == 8
 assert [r['ok'] for r in pbo_settings] == [True,True,False,False,False,False,False,False]
 assert [r['data']['write_attempted'] for r in pbo_settings] == [True,False,False,True,True,False,False,True]
@@ -472,9 +476,78 @@ assert pbo_settings[3]['data']['after']['multiplier'] == 1 and pbo_settings[3]['
 assert pbo_settings[7]['data']['after']['multiplier'] is None and int(pbo_settings[7]['data']['after']['raw'],16) == 0x7fc00000
 pbo_read_rejections = [r for r in reports if r['command'] == 'amd-pbo-scalar-read' and 'scalar' not in r['data']]
 assert len(pbo_read_rejections) == 1 and pbo_read_rejections[0]['error'] == -22
-pbo_reads = [r for r in reports if r['command'] == 'amd-pbo-scalar-read' and 'scalar' in r['data']]
+pbo_reads = [r for r in reports if r['command'] == 'amd-pbo-scalar-read' and 'scalar' in r['data'] and r['data'].get('platform') != 'granite-ridge']
 assert [r['data']['scalar']['multiplier'] for r in pbo_reads] == [0,2.5,None]
 assert [r['data']['scalar']['valid'] for r in pbo_reads] == [True,True,False]
+granite_scalar_reads = [r for r in reports if r['command'] == 'amd-pbo-scalar-read' and r['data'].get('platform') == 'granite-ridge']
+assert [r['ok'] for r in granite_scalar_reads] == [True,True,False,False]
+assert [r['data']['scalar']['multiplier'] for r in granite_scalar_reads] == [1,0,None,None]
+assert not granite_scalar_reads[1]['data']['scalar']['write_available']
+granite_scalar = [r for r in reports if r['command'] == 'amd-pbo-scalar-set' and r['data'].get('platform') == 'granite-ridge']
+assert len(granite_scalar) == 10 and [r['ok'] for r in granite_scalar] == [True]*2+[False]*8
+assert [r['data']['write_attempted'] for r in granite_scalar] == [True,False,True,True,False,False,False,False,True,False]
+assert [r['data']['accepted'] for r in granite_scalar] == [True,False,True,True,False,False,False,False,False,False]
+assert granite_scalar[1]['data']['unchanged']
+assert [r['data']['after']['multiplier'] for r in granite_scalar[:4]] == [5,5,2.5,1]
+for r in granite_scalar+granite_scalar_reads:
+    assert r['data']['supported_firmware_version']=='0x00625400'
+    assert r['data']['readback_supported'] and not r['data']['hardware_effect_measured']
+for r in granite_scalar:
+    assert r['data']['verified']==r['ok'] and int(r['data']['argument'],16)==500
+granite_caps = [r for r in reports if r['command']=='amd-pbo-capabilities' and r['data'].get('platform')=='granite-ridge']
+assert len(granite_caps)==6 and [r['ok'] for r in granite_caps]==[True]*5+[False]
+for r,raw in zip(granite_caps[:5],(0,2,4,7,0x10007)):
+    d=r['data']
+    assert int(d['capabilities_raw'],16)==raw and d['firmware_version']=='0x00625400'
+    assert d['limit_commands_available']==bool(raw&2 and not raw&0x10000)
+    assert d['all_core_curve_command_available']==bool(raw&4 and not raw&0x10000)
+    assert not d['manual_oc_frequency_command_available']
+granite_limits = [r for r in reports if r['command']=='amd-pbo-limit-set' and r['data'].get('platform')=='granite-ridge']
+assert len(granite_limits)==8 and [r['ok'] for r in granite_limits]==[True]*5+[False]*3
+for i,r in enumerate(granite_limits):
+    d=r['data']
+    assert d['accepted']==(i<5) and d['write_attempted']==(i<5)
+    assert not d['verified'] and not d['readback_supported'] and d['current_limit'] is None
+    assert not d['hardware_effect_measured']
+    if i<4:
+        assert d['limit']==('ppt','tdc','edc','temperature')[i]
+        assert d['unit']==('W','A','A','C')[i] and int(d['command'],16)==0x56+i
+        assert int(d['argument'],16)==(90 if i==3 else 350000)
+granite_modes = [r for r in reports if r['command']=='amd-oc-mode-set' and r['data'].get('platform')=='granite-ridge']
+assert len(granite_modes)==6 and [r['ok'] for r in granite_modes]==[True]*3+[False]*3
+for r in granite_modes:
+    d=r['data']
+    assert d['verified']==r['ok'] and not d['hardware_effect_measured'] and not d['scalar_reset_requested']
+    assert d['supported_firmware_version']=='0x00625400'
+    if r['ok']:assert d['after']['manual_oc_enabled']==d['requested_enabled']
+assert granite_modes[1]['data']['before']['manual_oc_available'] is False
+assert granite_modes[2]['data']['unchanged'] and not granite_modes[2]['data']['write_attempted']
+assert granite_modes[4]['data']['accepted'] and not granite_modes[4]['data']['verified']
+granite_curve = [r for r in reports if r['command']=='amd-curve-all-set' and r['data'].get('platform')=='granite-ridge']
+assert len(granite_curve)==10 and [r['ok'] for r in granite_curve]==[True]*5+[False]*5
+for i,r in enumerate(granite_curve):
+    d=r['data']
+    assert not d['verified'] and not d['physical_mapping_verified'] and not d['readback_supported']
+    assert not d['hardware_effect_measured'] and d['current_margin_counts'] is None and d['affected_core_count'] is None
+    assert int(d['argument'],16)==d['margin_counts']&0xffff and int(d['command'],16)==7
+    assert d['accepted']==(i<5) and d['write_attempted']==(i<5 or i==8)
+granite_maps = [r for r in reports if r['command']=='amd-granite-map']
+assert len(granite_maps)==22 and [r['ok'] for r in granite_maps]==[True]*18+[False]*4
+for r in granite_maps:
+    d=r['data'];m=d['mapping']
+    assert d['offline'] and not d['hardware_accessed'] and m['input_provenance']=='caller-supplied'
+    for name in ('live_capture','runtime_mapping_verified','physical_ccd_mapping_verified','apic_mapping_verified',
+                 'os_cpu_mapping_verified','runtime_write_enabled','command_indexes_are_pm_slots','command_indexes_are_os_cpu_ids'):
+        assert m[name] is False
+    assert len(m['command_remap'])==64
+    if not r['ok']:assert not m['targets'] and not m['core_slots'] and all(v is None for v in m['command_remap'])
+sparse=run('amd-granite-map','--version','0x620105','--presence-mask','2','--core-mask0','0xffffffff','--core-mask1','0x81','--smt','on')['data']
+assert not sparse['hardware_accessed'] and sparse['mapping']['command_remap']==[32,33,46,47]+[None]*60
+assert sparse['mapping']['core_slots'][7]['pm_core_slot']==7 and sparse['mapping']['core_slots'][7]['command_indexes']==[2,3]
+run('amd-granite-map','--version','0x620205','--presence-mask','1','--core-mask0','255','--core-mask1','255','--smt','off',code=3)
+run('amd-granite-map','--version','0x620205','--presence-mask','3','--core-mask0','255','--core-mask1','255',code=2)
+run('amd-pbo-scalar-set','--cpu',str(cpu),'--platform','granite-ridge','--scalar','5','--expect-raw','0x3f800000','--apply',code=2)
+run('amd-curve-all-set','--cpu',str(cpu),'--platform','granite-ridge','--margin','31','--expect-caps','4','--apply',code=2)
 curve_settings = [r for r in reports if r['command'] == 'amd-curve-set' and r['error'] != -22]
 assert len(curve_settings) == 9
 assert [r['ok'] for r in curve_settings] == [True, False, False, False, False, False, False, True, True]
@@ -1044,6 +1117,9 @@ for report in reports:
             assert f['averaged']!=local
             if local:
                 assert f['step_setter_equal_code_retains_previous_value'] and not f['step_setter_reads_device']
+                assert f['step_setter_target_bits']==32 and f['submitted_code_bits']==8
+                assert f['mirror_can_differ_from_submitted_code'] and f['alternate_initializer_truncates_before_conversion']
+                assert not f['independent_runtime_device_getter_verified']
                 assert 'firmware_target' not in f
             else:
                 assert f['firmware_target']==(index-259)%2 and f['configuration_kind']==('A' if index<261 else 'B')

@@ -4,6 +4,11 @@ This profile is a separate implementation of the Granite Ridge PM transport and
 stored table layout. It does not enable Shimada tuning commands on Granite Ridge.
 GUI and CLI use the same core decoder and capture implementation.
 
+The separate [Granite control and mapping interfaces](amd-granite-controls.md)
+now provide exact-version Scalar, limits, mode and all-core CO paths. The PM
+panel also offers an offline mapping diagnostic with explicit masks. This does
+not establish physical CCD/OS binding or enable the generic Shimada mailbox.
+
 The [four-state DPM policy study](amd-granite-dpm-policy.md) exposes all 20
 common sampling-share and clock/voltage policy fields. The common view now has
 41 fields; the GUI has dedicated DPM policy and configuration-mirror views. Nominal MHz policies

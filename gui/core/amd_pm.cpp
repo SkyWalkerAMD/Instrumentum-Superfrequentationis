@@ -169,7 +169,7 @@ AmdPmSnapshot decodeAmdPm(const std::vector<std::uint8_t> &bytes, std::uint32_t 
             v.producerEvidence="granite-smu-98.84.0-static";v.producerKind="configuration";
             v.producerSourceAddress=local?0xc27c:0xa55c+8*target+16*kind;
             v.producerNote=local?
-                "Direct copy of a software configuration mirror. Initialization converts a raw local-port byte; later step writes update the mirror without reading back the device. An equal-code request to the step setter retains the previous float; other update paths are separate. This field is not averaged. Physical unit, rail identity and applied-setting readback are unverified.":
+                "Direct copy of a software configuration mirror. Initialization converts a raw local-port byte; later step writes use a full 32-bit target for the mirror but submit only its low byte, so the mirror can differ from the submitted code. Neither path reads back the device. An equal-code request to the step setter retains the previous float; the alternate initializer rewrites and converts the truncated byte. This field is not averaged. Physical unit, rail identity and applied-setting readback are unverified.":
                 "Two cached input codes are selected by a strict reference-frequency threshold, then converted and averaged. Only present firmware targets are updated; both fixed target positions are accumulated, so an absent target may export retained values. Target numbers are not compact PM slots, physical CCDs or OS CPUs. Physical unit, freshness and applied-setting readback are unverified.";
         };
         configuration(259);configuration(261);configuration(269);
@@ -432,7 +432,9 @@ std::string amdPmJson(const AmdPmSnapshot &s) {
                 ",\"target_present_verified\":false,\"absent_target_can_retain_value\":true"
                 ",\"target_is_compact_pm_slot\":false,\"select_second\":\"strictly_above_reference_frequency_threshold\"";
             else out += ",\"averaged\":false,\"step_setter_equal_code_retains_previous_value\":true"
-                ",\"step_setter_reads_device\":false";
+                ",\"step_setter_reads_device\":false,\"step_setter_target_bits\":32,\"submitted_code_bits\":8"
+                ",\"mirror_can_differ_from_submitted_code\":true,\"alternate_initializer_truncates_before_conversion\":true"
+                ",\"independent_runtime_device_getter_verified\":false";
         }
         if (v.group == "granite_dpm_clock" || v.group == "granite_dpm_voltage" || v.group == "granite_dpm_share") {
             const unsigned source = v.row==4 ? 0x155c0+4*v.slot : 0x96a0+80*v.slot+(v.row==3?0x23c:0x228+4*v.row);

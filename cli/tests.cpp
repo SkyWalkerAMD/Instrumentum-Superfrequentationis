@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "commands.h"
 #include "core/amd_curve.h"
+#include "core/bounded_json.h"
+#include "tests/amd_granite_mapping_vectors.h"
 #include "json.h"
 #include "platform/linux_inventory_native.h"
 #include "platform/linux_amd_pm.h"
@@ -2305,8 +2307,8 @@ void graniteFmaxInvalidBeforeOpen() {
         {"amd-pbo-fmax-read","--cpu","130","--platform","granite-ridge","--platform","shimada"},
         {"amd-pbo-fmax-set","--cpu","130","--platform","granite-ridge","--mhz","5000","--expect-mhz","5500","--expect-caps","4"},
         {"amd-pbo-fmax-set","--cpu","130","--platform","granite-ridge","--mhz","5000","--expect-mhz","5500","--expect-caps","0x10004","--apply"},
-        {"amd-pbo-scalar-read","--cpu","130","--platform","granite-ridge"},
-        {"amd-pbo-capabilities","--cpu","130","--platform","granite-ridge"}}) {
+        {"amd-pbo-scalar-read","--cpu","130","--platform","unknown"},
+        {"amd-pbo-capabilities","--cpu","130","--platform","unknown"}}) {
         unsigned opened=0; std::ostringstream output;
         assert(run(args,output,[&] { ++opened; return std::unique_ptr<HardwareBackend>(new AmdPboFixture); })==2);
         assert(!opened); if(emit) std::cout << output.str();
@@ -2621,6 +2623,170 @@ void ocInvalidBeforeOpen() {
         if(emit)std::cout<<output.str();
     }
 }
+void graniteScalarCommands() {
+    for(unsigned mode=0;mode<4;++mode) {
+        AmdPboFixture d;d.useGraniteScalar();
+        if(mode==1)d.capsRaw=0x10004;
+        if(mode==2)d.scalarRaw=0x7fc00000;
+        if(mode==3)d.firmwareVersion=0x00625401;
+        const auto text=command(d,{"amd-pbo-scalar-read","--cpu","130","--platform","granite-ridge"},mode<2?0:3);
+        assert(text.find("\"platform\":\"granite-ridge\"")!=std::string::npos && !d.settings && !d.wrongCpu);
+        if(mode==3)assert(d.messages==std::vector<std::uint32_t>{2});
+    }
+    for(unsigned mode=0;mode<10;++mode) {
+        AmdPboFixture d;d.useGraniteScalar();
+        if(mode==1)d.scalarRaw=0x40a00000;
+        if(mode==2)d.clampScalar=true;
+        if(mode==3)d.discardChange=true;
+        if(mode==4)d.capsRaw=6;
+        if(mode==5)d.capsRaw=0x10004;
+        if(mode==6)d.firmwareVersion=0x00625401;
+        if(mode==7)d.model=8;
+        if(mode==8)d.writeCompletion=0xfd;
+        if(mode==9)d.scalarRaw=0x40000000;
+        const auto text=command(d,{"amd-pbo-scalar-set","--cpu","130","--platform","granite-ridge",
+            "--scalar","5","--expect-raw",mode==1?"0x40a00000":"0x3f800000","--expect-caps","4","--apply"},mode<2?0:3);
+        assert(text.find(mode<2?"\"verified\":true":"\"verified\":false")!=std::string::npos);
+        assert(d.settings==((mode==0 || mode==2 || mode==3 || mode==8)?1u:0u) && !d.wrongCpu);
+    }
+}
+void graniteControlsCommands() {
+    for(unsigned caps:{0u,2u,4u,7u,0x10007u}) {
+        AmdPboFixture d;d.useGraniteLimits();d.capsRaw=caps;
+        const auto text=command(d,{"amd-pbo-capabilities","--cpu","130","--platform","granite-ridge"},0);
+        assert(text.find("\"firmware_version\":\"0x00625400\"")!=std::string::npos);
+        assert((d.messages==std::vector<std::uint32_t>{2,0x6f,2}) && !d.settings);
+    }
+    AmdPboFixture bad;bad.useGraniteLimits();bad.firmwareVersion=0x00625401;
+    command(bad,{"amd-pbo-capabilities","--cpu","130","--platform","granite-ridge"},3);
+    assert(bad.messages==std::vector<std::uint32_t>{2});
+    const char *kinds[]={"ppt","tdc","edc","temperature"};
+    for(unsigned mode=0;mode<8;++mode) {
+        AmdPboFixture d;d.useGraniteLimits();d.capsRaw=2;
+        if(mode==4)d.discardChange=true;
+        if(mode==5)d.firmwareVersion=0x00625401;
+        if(mode==6)d.capsRaw=6;
+        if(mode==7)d.capsRaw=0x10002;
+        const unsigned index=mode<4?mode:0;
+        const auto text=command(d,{"amd-pbo-limit-set","--cpu","130","--platform","granite-ridge",
+            "--limit",kinds[index],"--value",index==3?"90":"350","--expect-caps","2","--apply"},mode<5?0:3);
+        assert(text.find("\"verified\":false")!=std::string::npos && d.settings==(mode<5?1u:0u));
+        if(mode<5) {
+            assert(d.messages.back()==0x56+index && d.commandArgs.back()[0]==(index==3?90u:350000u));
+            for(unsigned i=1;i<6;++i)assert(!d.commandArgs.back()[i]);
+        }
+    }
+    for(unsigned mode=0;mode<6;++mode) {
+        AmdPboFixture d;d.useGraniteMode();d.capsRaw=7;
+        if(mode==1)d.capsRaw=0x10004; // Turning off remains available without bit 0.
+        if(mode==2)d.capsRaw=0x10007;
+        if(mode==3)d.capsRaw=6;
+        if(mode==4)d.discardChange=true;
+        if(mode==5)d.firmwareVersion=0x00625401;
+        const auto text=command(d,{"amd-oc-mode-set","--cpu","130","--platform","granite-ridge",
+            "--enabled",mode==1?"0":"1","--expect-caps",std::to_string(d.capsRaw),"--apply"},mode<3?0:3);
+        assert(text.find(mode<3?"\"verified\":true":"\"verified\":false")!=std::string::npos);
+        assert(d.settings==((mode==0 || mode==1 || mode==4)?1u:0u));
+    }
+}
+void graniteControlsInvalidBeforeOpen() {
+    const std::vector<std::vector<std::string>> bases={
+        {"amd-pbo-scalar-set","--cpu","130","--platform","granite-ridge","--scalar","5","--expect-raw","0x3f800000","--expect-caps","4","--apply"},
+        {"amd-pbo-limit-set","--cpu","130","--platform","granite-ridge","--limit","ppt","--value","350","--expect-caps","2","--apply"},
+        {"amd-oc-mode-set","--cpu","130","--platform","granite-ridge","--enabled","1","--expect-caps","7","--apply"}};
+    std::vector<std::vector<std::string>> invalid;
+    for(const auto &base:bases) {
+        auto args=base;args.pop_back();invalid.push_back(args);
+        // --platform has a default, whereas explicit CPU and expected state do not.
+        for(std::size_t i=1;i+1<base.size();i+=2)if(base[i]!="--platform") {
+            args=base;args.erase(args.begin()+i,args.begin()+i+2);invalid.push_back(args);
+        }
+        args=base;args[4]="unknown";invalid.push_back(args);
+        args=base;args.insert(args.end(),{"--platform","granite-ridge"});invalid.push_back(args);
+    }
+    for(const char *value:{"0","11","5.5","-1"}) {auto a=bases[0];a[6]=value;invalid.push_back(a);}
+    for(const char *value:{"0","2001","-1"}) {auto a=bases[1];a[8]=value;invalid.push_back(a);}
+    auto a=bases[1];a[6]="temperature";a[8]="101";invalid.push_back(a);
+    a=bases[0];a[4]="shimada";invalid.push_back(a); // Granite-only expected-caps is not silently ignored.
+    for(const auto &args:invalid) {
+        unsigned opened=0;std::ostringstream output;
+        assert(run(args,output,[&]{++opened;return std::unique_ptr<HardwareBackend>(new AmdPboFixture);})==2 && !opened);
+    }
+}
+void graniteMappingCommands() {
+    unsigned opened=0;
+    const auto factory=[&]{++opened;return std::unique_ptr<HardwareBackend>(new AmdPboFixture);};
+    for(const auto &v:amd_granite_mapping_vectors::values) {
+        std::ostringstream output;
+        assert(run({"amd-granite-map","--version",std::to_string(v.version),"--presence-mask",std::to_string(v.presence),
+            "--core-mask0",std::to_string(v.masks[0]),"--core-mask1",std::to_string(v.masks[1]),"--smt",v.smt?"on":"off"},output,factory)==0 && !opened);
+        const auto j=capture_json::Parser(output.str()).parse();const auto &data=j.at("data");
+        assert(capture_json::equals(data.at("hardware_accessed"),capture_json::Json::Boolean,"false"));
+        const auto &map=data.at("mapping");
+        assert(capture_json::equals(map.at("input_provenance"),capture_json::Json::String,"caller-supplied"));
+        const auto &remap=map.at("command_remap").items;assert(remap.size()==64);
+        for(unsigned i=0;i<64;++i) {
+            if(v.remap[i]==0xffff)assert(remap[i].kind==capture_json::Json::Null);
+            else assert(remap[i].kind==capture_json::Json::Number && std::stoul(remap[i].text)==v.remap[i]);
+        }
+        if(emit)std::cout<<output.str();
+    }
+    for(const auto &values:std::vector<std::pair<std::string,std::string>>{{"0x620205","1"},{"0x620105","3"},{"0x620205","4"},{"0x730204","3"}}) {
+        std::ostringstream output;
+        assert(run({"amd-granite-map","--version",values.first,"--presence-mask",values.second,
+            "--core-mask0","255","--core-mask1","255","--smt","on"},output,factory)==3 && !opened);
+        const auto data=capture_json::Parser(output.str()).parse().at("data");
+        assert(data.at("mapping").at("core_slots").items.empty());
+        if(emit)std::cout<<output.str();
+    }
+}
+void graniteMappingInvalidBeforeOpen() {
+    const std::vector<std::string> base={"amd-granite-map","--version","0x620205","--presence-mask","3","--core-mask0","255","--core-mask1","255","--smt","on"};
+    std::vector<std::vector<std::string>> invalid;
+    for(std::size_t i=1;i<base.size();i+=2) {auto a=base;a.erase(a.begin()+i,a.begin()+i+2);invalid.push_back(a);}
+    for(const char *v:{"true","1","On",""}) {auto a=base;a[10]=v;invalid.push_back(a);}
+    for(const char *v:{"-1","0x100000000","2.5","255junk"}) {auto a=base;a[6]=v;invalid.push_back(a);}
+    for(const char *v:{"--cpu","--apply","--hardware"}) {auto a=base;a.push_back(v);invalid.push_back(a);}
+    auto a=base;a.insert(a.end(),{"--smt","off"});invalid.push_back(a);
+    for(const auto &args:invalid) {
+        unsigned opened=0;std::ostringstream output;
+        assert(run(args,output,[&]{++opened;return std::unique_ptr<HardwareBackend>(new AmdPboFixture);})==2 && !opened);
+    }
+}
+void graniteAllCoreCurveCommands() {
+    for(int margin:{-50,-1,0,1,30}) {
+        AmdPboFixture d;d.useGraniteCurve();d.discardChange=true;
+        const auto text=command(d,{"amd-curve-all-set","--cpu","130","--platform","granite-ridge",
+            "--margin",std::to_string(margin),"--expect-caps","4","--apply"},0);
+        assert(text.find("\"accepted\":true")!=std::string::npos && text.find("\"verified\":false")!=std::string::npos);
+        assert(d.settings==1 && !d.wrongCpu && d.commandArgs.back()[0]==(std::uint32_t(margin)&0xffff));
+        assert((d.messages==std::vector<std::uint32_t>{2,0x6f,2,2,0x6f,2,7}));
+    }
+    for(unsigned mode=0;mode<5;++mode) {
+        AmdPboFixture d;d.useGraniteCurve();
+        if(mode==0)d.firmwareVersion=0x00625401;
+        if(mode==1)d.capsRaw=6;
+        if(mode==2)d.capsRaw=0x10004;
+        if(mode==3)d.writeCompletion=0xfd;
+        if(mode==4)d.hypervisor=true;
+        const auto text=command(d,{"amd-curve-all-set","--cpu","130","--platform","granite-ridge",
+            "--margin","-10","--expect-caps","4","--apply"},3);
+        assert(text.find("\"verified\":false")!=std::string::npos && d.settings==(mode==3?1u:0u));
+    }
+}
+void graniteAllCoreCurveInvalidBeforeOpen() {
+    const std::vector<std::string> base={"amd-curve-all-set","--cpu","130","--platform","granite-ridge","--margin","-10","--expect-caps","4","--apply"};
+    std::vector<std::vector<std::string>> invalid;
+    for(const char *v:{"31","50","-51","1.5","-0x1","0xffff"}) {auto a=base;a[6]=v;invalid.push_back(a);}
+    for(const char *v:{"0","2","0x10004"}) {auto a=base;a[8]=v;invalid.push_back(a);}
+    auto a=base;a.pop_back();invalid.push_back(a);
+    a=base;a.erase(a.begin()+7,a.begin()+9);invalid.push_back(a);
+    a=base;a.insert(a.end(),{"--ccd","0"});invalid.push_back(a);
+    for(const auto &args:invalid) {
+        unsigned opened=0;std::ostringstream output;
+        assert(run(args,output,[&]{++opened;return std::unique_ptr<HardwareBackend>(new AmdPboFixture);})==2 && !opened);
+    }
+}
 void pboOfflineCommands() {
     unsigned opened = 0;
     const auto factory = [&] { ++opened; return std::unique_ptr<HardwareBackend>(new AmdPboFixture); };
@@ -2675,6 +2841,9 @@ int main(int argc, char **argv) {
     emit = argc == 2 && std::string(argv[1]) == "--emit";
     curveSettingCommands(); pboScalarCommands(); pboFmaxCommands(); pboOfflineCommands(); pboLimitCommands(); pboLimitInvalidBeforeOpen();
     graniteFmaxCommands(); graniteFmaxInvalidBeforeOpen();
+    graniteScalarCommands(); graniteControlsCommands(); graniteControlsInvalidBeforeOpen();
+    graniteMappingCommands(); graniteMappingInvalidBeforeOpen();
+    graniteAllCoreCurveCommands(); graniteAllCoreCurveInvalidBeforeOpen();
     allCoreCurveCommands(); allCoreCurveInvalidBeforeOpen();
     pboQueryCommands(); pboQueryInvalidBeforeOpen();
     powerAdjustmentCommands(); powerAdjustmentInvalidBeforeOpen();
@@ -2692,5 +2861,5 @@ int main(int argc, char **argv) {
     l3TopologyCommands(); topologyCatalogCommands(); offlineTopologyDoesNotCreateBackend();
     published9950x3dTopologyCommands();
     apobComparisonCommands(); apobComparisonInvalidBeforeOpen();
-    if (!emit) std::cout << "84 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "91 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

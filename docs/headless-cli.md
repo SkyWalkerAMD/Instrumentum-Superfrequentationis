@@ -1,4 +1,4 @@
-2026-11-08：GUI / CLI 同步补齐[公共配置镜像](amd-granite-common-config.md)，增加固件目标 1 的两个字段，公共字段合计 41 项。新 GUI 配置视图与 CLI 共用解码；单位、物理身份和设备回读仍未确认。另增加[命令索引重编码](amd-granite-slot-binding.md)、[rails 启动来源](amd-granite-rail-routing.md)和[计时器边界](amd-granite-unit-anchors.md)证据。云端结果见[当前验证记录](amd-granite-validation.md)。
+2026-11-08：GUI / CLI 同步新增 [Granite Ridge 调参和离线映射](amd-granite-controls.md)：精确 SMU 98.84.0 的 Scalar 设置与回读、PPT/TDC/EDC/温度限制、手动 OC 模式和 −50..+30 全核 CO；用 `--platform granite-ridge` 选择。限制和 CO 仅确认命令应答。`amd-granite-map` 根据显式掩码诊断 PM 槽位与命令编号，不绑定物理 CCD 或 OS 核心。五个[公共配置镜像](amd-granite-common-config.md)仍未确认单位；本轮又证明其中 local C 的镜像可能与实际提交字节不一致。云端结果见[当前验证记录](amd-granite-validation.md)。
 
 # 无桌面版 OCTool
 

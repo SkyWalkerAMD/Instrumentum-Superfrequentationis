@@ -174,7 +174,7 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     profile_->addItem("Shimada · AMD 1022:153a", int(octool::core::SmuProfile::Shimada));
     profile_->addItem("Phoenix · AMD 1022:14e8 · query only", int(octool::core::SmuProfile::Phoenix));
     profile_->addItem("GPT · AMD 1022:1122 · query only", int(octool::core::SmuProfile::Gpt));
-    profile_->addItem("Granite Ridge · Fmax · SMU 98.84.0", int(octool::core::SmuProfile::GraniteRidge));
+    profile_->addItem("Granite Ridge · PBO · SMU 98.84.0", int(octool::core::SmuProfile::GraniteRidge));
     form->addRow("Platform", profile_);
     command_ = new QComboBox(this); command_->setObjectName("smuCommand");
     auto commands = [this] {
@@ -214,10 +214,14 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     connect(applyCurveButton, &QPushButton::clicked, this, [this] { applyCurve(); });
     auto *allCurve = new QHBoxLayout;
     allCurveMargin_ = edit("allCurveMargin", "", this); allCurveMargin_->setPlaceholderText("CO count -50..50");
+    connect(profile_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this] {
+        allCurveMargin_->setPlaceholderText(profile_->currentData().toInt() == int(octool::core::SmuProfile::GraniteRidge) ?
+            "CO count -50..30" : "CO count -50..50");
+    });
     allCurve->addWidget(allCurveMargin_);
     auto *readAllCurveCaps = new QPushButton("Read capability", this); readAllCurveCaps->setObjectName("allCurveCapsRead"); allCurve->addWidget(readAllCurveCaps);
     auto *applyAllCurve = new QPushButton("Apply curve to all cores…", this); applyAllCurve->setObjectName("allCurveApply"); allCurve->addWidget(applyAllCurve);
-    form->addRow("Shimada all-core curve · acknowledgement only", allCurve);
+    form->addRow("All-core curve · Shimada / Granite · acknowledgement only", allCurve);
     connect(readAllCurveCaps, &QPushButton::clicked, this, [this] { readPboCapabilities(); });
     connect(applyAllCurve, &QPushButton::clicked, this, [this] { applyAllCoreCurve(); });
     auto *query = new QHBoxLayout;
@@ -246,7 +250,7 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     scalar->addWidget(pboScalar_);
     auto *readScalar = new QPushButton("Read scalar", this); readScalar->setObjectName("pboScalarRead"); scalar->addWidget(readScalar);
     auto *applyScalar = new QPushButton("Apply scalar…", this); applyScalar->setObjectName("pboScalarApply"); scalar->addWidget(applyScalar);
-    form->addRow("Shimada PBO scalar · read before applying", scalar);
+    form->addRow("PBO scalar · Shimada / Granite 98.84.0", scalar);
     connect(readScalar, &QPushButton::clicked, this, [this] { readPboScalar(); });
     connect(applyScalar, &QPushButton::clicked, this, [this] { applyPboScalar(); });
     auto *fmax = new QHBoxLayout;
@@ -267,7 +271,7 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     auto *caps = new QPushButton("Read PBO capability", this); caps->setObjectName("pboCapsRead"); limits->addWidget(caps);
     connect(caps, &QPushButton::clicked, this, [this] { readPboCapabilities(); });
     auto *applyLimit = new QPushButton("Apply limit…", this); applyLimit->setObjectName("pboLimitApply"); limits->addWidget(applyLimit);
-    form->addRow("Shimada PBO limits · read capability first", limits);
+    form->addRow("PBO limits · Shimada / Granite 98.84.0", limits);
     connect(pboLimit_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this] {
         const auto kind = octool::core::AmdPboLimit(pboLimit_->currentData().toInt());
         pboLimitValue_->clear();
@@ -398,8 +402,8 @@ void AmdTuningPanel::readPboFmax() {
                 (target.profile == SmuProfile::GraniteRidge ? " Granite Ridge Fmax requires SMU 98.84.0." : " Shimada Fmax requires SMU 115.46.0."));
             else {
                 fmaxSnapshot_=r; pboTarget_=target;
-                // Other PBO editors remain Shimada-only; a Granite Fmax query
-                // must not prepare a snapshot for an unrelated setter.
+                // A Granite Fmax query stays dedicated to Fmax. Other editors
+                // require their own explicit capability or policy read.
                 if (target.profile == SmuProfile::Shimada) pboCaps_=r.capabilities;
                 status_->setText("Stored shared ceiling read. Firmware can clamp requests; operating frequency is not measured.");
             }
@@ -537,12 +541,13 @@ void AmdTuningPanel::readPboCapabilities() {
     using namespace octool::core;
     invalidateCurve();
     quint64 cpu = 0, bus = 0, device = 0, function = 0;
-    if (profile_->currentData().toInt() != int(SmuProfile::Shimada) ||
+    const auto profile = SmuProfile(profile_->currentData().toInt());
+    if ((profile != SmuProfile::Shimada && profile != SmuProfile::GraniteRidge) ||
         !parseNumber(cpu_->text(), 10, UINT32_MAX, cpu) || !parseNumber(bus_->text(), 16, 0, bus) ||
         !parseNumber(device_->text(), 16, 0, device) || !parseNumber(function_->text(), 16, 0, function)) {
-        status_->setText("PBO capability requires Shimada at 0000:00:00.0 and a valid logical CPU. No query sent."); return;
+        status_->setText("PBO capability requires Shimada or Granite at 0000:00:00.0 and a valid logical CPU. No query sent."); return;
     }
-    SmuTarget target; target.cpu = unsigned(cpu); target.profile = SmuProfile::Shimada;
+    SmuTarget target; target.cpu = unsigned(cpu); target.profile = profile;
     const auto revision = curveRevision_; setEnabled(false); status_->setText("Reading PBO capability…");
     auto *watcher = new QFutureWatcher<AmdPboCapabilities>(this);
     connect(watcher, &QFutureWatcher<AmdPboCapabilities>::finished, this, [this, watcher, target, revision] {
@@ -555,13 +560,17 @@ void AmdTuningPanel::readPboCapabilities() {
             append(table_, {"PBO available", r.raw & 4u ? "Yes" : "No"});
             append(table_, {"Manual OC available", amdManualOcAvailable(r.raw) ? "Yes" : "No"});
             append(table_, {"Manual OC enabled", amdManualOcEnabled(r.raw) ? "Yes" : "No"});
-            append(table_, {"Current Fmax", "Use Read Fmax (SMU 115.46.0)"});
+            const bool granite=target.profile==SmuProfile::GraniteRidge;
+            append(table_, {"Current Fmax",granite?"Use Read Fmax (SMU 98.84.0)":"Use Read Fmax (SMU 115.46.0)"});
             append(table_, {"Power limits available", r.raw & 2u ? "Yes" : "No"});
             append(table_, {"PPT / TDC / EDC / temperature commands", amdPboLimitsAvailable(r.raw) ? "Available; effective limits unverified" : "Unavailable"});
-            append(table_, {"Manual OC frequency commands", amdManualOcEnabled(r.raw) ? "Mode enabled; frequency readback unavailable" : "Mode disabled; explicit mode change required"});
-            append(table_, {"All-core curve command", amdAllCoreCurveAvailable(r.raw) ? "Available; per-core readback unverified" : "Unavailable"});
+            append(table_, {"Manual OC frequency commands",granite?"Not enabled for Granite":amdManualOcEnabled(r.raw) ? "Mode enabled; frequency readback unavailable" : "Mode disabled; explicit mode change required"});
+            append(table_, {"All-core curve command",amdAllCoreCurveAvailable(r.raw) ?
+                (granite ? "Available: -50..30 counts; per-core readback unverified" : "Available: -50..50 counts; per-core readback unverified") : "Unavailable"});
+            if(granite) append(table_,{"Capability firmware version",hexValue(r.firmwareVersion,4)});
             status_->setText((amdPboFmaxAvailable(r.raw) ?
-                "Fmax requires Read Fmax before applying. Stored ceiling readback supports SMU 115.46.0; operating frequency is not measured." :
+                (granite?"Granite 98.84.0 capabilities read. Use Read Fmax or Read scalar before editing those policies; neither measures physical clocks or voltage.":
+                "Fmax requires Read Fmax before applying. Stored ceiling readback supports SMU 115.46.0; operating frequency is not measured.") :
                 "Fmax unavailable: PBO must be available and manual OC disabled. No mode change was requested.") +
                 QString(amdPboLimitsAvailable(r.raw) ? " PBO limit commands available; select one limit to change." : " PBO limit commands unavailable.") +
                 QString(amdManualOcEnabled(r.raw) ? " Manual OC is enabled." : " Manual OC is disabled."));
@@ -571,7 +580,7 @@ void AmdTuningPanel::readPboCapabilities() {
     const auto access = access_; const auto cancelled = cancelled_;
     watcher->setFuture(QtConcurrent::run([access, cancelled, target] {
         AmdPboCapabilities out;
-        const int error = access->transaction([&](HardwareSession &s) { out = readShimadaPboCapabilities(s, target); return out.error; }, 10000, cancelled.get());
+        const int error = access->transaction([&](HardwareSession &s) { out = readAmdPboCapabilities(s, target); return out.error; }, 10000, cancelled.get());
         if (error) { out.error = error; out.valid = false; } return out;
     }));
 }
@@ -580,17 +589,19 @@ void AmdTuningPanel::applyAllCoreCurve() {
     if (!pboCaps_.valid || pboCaps_.error || !amdAllCoreCurveAvailable(pboCaps_.raw)) {
         status_->setText("Read capability first. All-core curve requires PBO available and manual OC disabled."); return;
     }
+    const bool granite = pboTarget_.profile == SmuProfile::GraniteRidge;
     const auto input = allCurveMargin_->text(); bool ok = false;
     const int margin = input.toInt(&ok, 10); std::uint32_t argument = 0;
-    if (!ok || encodeShimadaAllCoreCurve(margin, argument)) {
-        status_->setText("All-core curve requires an integer CO count -50..50, not mV."); return;
+    if (!ok || (granite ? encodeGraniteAllCoreCurve(margin, argument) : encodeShimadaAllCoreCurve(margin, argument))) {
+        status_->setText(QString("All-core curve requires an integer CO count -50..%1, not mV.").arg(granite ? 30 : 50)); return;
     }
     const auto target = pboTarget_; const auto before = pboCaps_; const auto prepared = curveRevision_;
     if (QMessageBox::question(this, "Apply AMD all-core curve",
-        QString("CPU %1 · firmware all-core scope\nNew CO count: %2 (not mV)\n"
+        QString("%3\nCPU %1 · firmware all-core scope\nNew CO count: %2 (not mV)\n"
                 "This overwrites individual core curve settings and can affect stability. "
                 "Only firmware acceptance is checked; the affected physical cores and their final values are unverified. "
-                "No automatic mode change, retry or rollback. Apply to all cores?").arg(target.cpu).arg(margin),
+                "No automatic mode change, retry or rollback. Apply to all cores?").arg(target.cpu).arg(margin)
+                .arg(granite ? "Granite Ridge SMU 98.84.0" : "Shimada family 1Ah/model 08h"),
         QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Yes) return;
     if (prepared != curveRevision_ || input != allCurveMargin_->text()) {
         invalidateCurve(); status_->setText("Inputs changed. Read capability again."); return;
@@ -616,7 +627,7 @@ void AmdTuningPanel::applyAllCoreCurve() {
     const auto access = access_; const auto cancelled = cancelled_;
     watcher->setFuture(QtConcurrent::run([access, cancelled, target, before, margin] {
         AmdCurveAllUpdate out;
-        const int error = access->transaction([&](HardwareSession &s) { out = setShimadaAllCoreCurve(s,target,before.raw,margin); return out.error; },10000,cancelled.get());
+        const int error = access->transaction([&](HardwareSession &s) { out = setAmdAllCoreCurve(s,target,before.raw,margin); return out.error; },10000,cancelled.get());
         if (error) out.error = error;
         return out;
     }));
@@ -707,7 +718,7 @@ void AmdTuningPanel::applyPboLimit() {
     const auto access = access_; const auto cancelled = cancelled_;
     watcher->setFuture(QtConcurrent::run([access, cancelled, target, before, kind, value] {
         AmdPboLimitUpdate out;
-        const int error = access->transaction([&](HardwareSession &s) { out = setShimadaPboLimit(s, target, before.raw, kind, unsigned(value)); return out.error; }, 10000, cancelled.get());
+        const int error = access->transaction([&](HardwareSession &s) { out = setAmdPboLimit(s, target, before.raw, kind, unsigned(value)); return out.error; }, 10000, cancelled.get());
         if (error) out.error = error;
         return out;
     }));
@@ -746,13 +757,14 @@ void AmdTuningPanel::applyOcMode() {
     const auto access=access_;const auto cancelled=cancelled_;
     watcher->setFuture(QtConcurrent::run([access,cancelled,target,before,enabled]{
         AmdOcModeUpdate out;out.requestedEnabled=enabled;
-        const int e=access->transaction([&](HardwareSession &s){out=setShimadaOcMode(s,target,before.raw,enabled);return out.error;},10000,cancelled.get());
+        const int e=access->transaction([&](HardwareSession &s){out=setAmdOcMode(s,target,before.raw,enabled);return out.error;},10000,cancelled.get());
         if(e)out.error=e;
         return out;
     }));
 }
 void AmdTuningPanel::applyOcFrequency() {
     using namespace octool::core;
+    if(pboTarget_.profile==SmuProfile::GraniteRidge) {status_->setText("Manual OC frequency setting is not enabled for Granite.");return;}
     if(!pboCaps_.valid || pboCaps_.error || !amdManualOcEnabled(pboCaps_.raw)) {
         status_->setText("Read OC capability first. Manual OC must already be enabled; no mode change was requested.");return;
     }
@@ -839,12 +851,13 @@ void AmdTuningPanel::readPboScalar() {
     using namespace octool::core;
     invalidateCurve();
     quint64 cpu = 0, bus = 0, device = 0, function = 0;
-    if (profile_->currentData().toInt() != int(SmuProfile::Shimada) ||
+    const auto profile = SmuProfile(profile_->currentData().toInt());
+    if ((profile != SmuProfile::Shimada && profile != SmuProfile::GraniteRidge) ||
         !parseNumber(cpu_->text(), 10, UINT32_MAX, cpu) || !parseNumber(bus_->text(), 16, 0, bus) ||
         !parseNumber(device_->text(), 16, 0, device) || !parseNumber(function_->text(), 16, 0, function)) {
-        status_->setText("PBO scalar requires Shimada at 0000:00:00.0 and a valid logical CPU. No query sent."); return;
+        status_->setText("PBO scalar requires Shimada or Granite at 0000:00:00.0 and a valid logical CPU. No query sent."); return;
     }
-    SmuTarget target; target.cpu = unsigned(cpu); target.profile = SmuProfile::Shimada;
+    SmuTarget target; target.cpu = unsigned(cpu); target.profile = profile;
     const auto revision = curveRevision_;
     setEnabled(false); status_->setText("Reading PBO scalar…");
     auto *watcher = new QFutureWatcher<AmdPboScalar>(this);
@@ -855,10 +868,16 @@ void AmdTuningPanel::readPboScalar() {
             append(table_, {"PBO scalar raw", r.rawValid ? hexValue(r.raw, 4) : "—"});
             append(table_, {"PBO scalar multiplier", r.valid ? QString::number(r.multiplier, 'g', 9) : "Unavailable"});
             append(table_, {"Firmware response", hexValue(r.response, 4)});
+            if (target.profile == SmuProfile::GraniteRidge) {
+                append(table_, {"Scalar firmware version",r.firmwareValid?hexValue(r.firmwareVersion,4):"Unavailable"});
+                append(table_, {"Scalar capability word",r.capabilities.valid?hexValue(r.capabilities.raw,4):"Unavailable"});
+            }
             if (r.error || !r.valid) status_->setText(failure(r.error ? r.error : -EIO) + " PBO scalar unavailable. Read again before editing.");
             else {
                 pboSnapshot_ = r; pboTarget_ = target;
-                status_->setText("PBO scalar read. This shared firmware setting is not a measured voltage or power value. Writes support integer multipliers 1..10; zero's policy meaning is unknown.");
+                status_->setText(target.profile == SmuProfile::GraniteRidge?
+                    "Granite scalar read. This is a stored policy; manual OC returns zero. Writes require PBO available and OC off. Firmware may clamp an accepted request; readback must match. Voltage and power are not measured.":
+                    "PBO scalar read. This shared firmware setting is not a measured voltage or power value. Writes support integer multipliers 1..10; zero's policy meaning is unknown.");
             }
         }
         setEnabled(true); watcher->deleteLater();
@@ -866,7 +885,7 @@ void AmdTuningPanel::readPboScalar() {
     const auto access = access_; const auto cancelled = cancelled_;
     watcher->setFuture(QtConcurrent::run([access, cancelled, target] {
         AmdPboScalar out;
-        const int error = access->transaction([&](HardwareSession &s) { out = readShimadaPboScalar(s, target); return out.error; }, 10000, cancelled.get());
+        const int error = access->transaction([&](HardwareSession &s) { out = readAmdPboScalar(s, target); return out.error; }, 10000, cancelled.get());
         if (error) { out.error = error; out.valid = false; }
         return out;
     }));
@@ -879,10 +898,15 @@ void AmdTuningPanel::applyPboScalar() {
         status_->setText("PBO scalar requires an integer multiplier 1..10."); return;
     }
     const auto target = pboTarget_; const auto before = pboSnapshot_; const auto prepared = curveRevision_;
+    if (target.profile == SmuProfile::GraniteRidge &&
+        (!before.capabilities.valid || !amdPboFmaxAvailable(before.capabilities.raw))) {
+        status_->setText("Granite scalar changes require PBO available and manual OC disabled. No setting sent."); return;
+    }
     if (QMessageBox::question(this, "Apply AMD PBO scalar",
-        QString("Shimada family 1Ah/model 08h · logical CPU %1\nSet shared PBO scalar from %2 to %3?\n"
+        QString("%4 · logical CPU %1\nSet shared PBO scalar from %2 to %3?\n"
                 "Changing this policy may increase voltage, power and heat. The old value will be checked and the result read back. No automatic OC enable, retry or rollback.")
-            .arg(target.cpu).arg(before.multiplier, 0, 'g', 9).arg(multiplier),
+            .arg(target.cpu).arg(before.multiplier, 0, 'g', 9).arg(multiplier)
+            .arg(target.profile == SmuProfile::GraniteRidge?"Granite Ridge SMU 98.84.0":"Shimada family 1Ah/model 08h"),
         QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Yes) return;
     if (prepared != curveRevision_) { status_->setText("Inputs changed. Read PBO scalar again."); return; }
     invalidateCurve(); const auto revision = curveRevision_;
@@ -906,7 +930,7 @@ void AmdTuningPanel::applyPboScalar() {
     const auto access = access_; const auto cancelled = cancelled_;
     watcher->setFuture(QtConcurrent::run([access, cancelled, target, before, multiplier] {
         AmdPboScalarUpdate out;
-        const int error = access->transaction([&](HardwareSession &s) { out = setShimadaPboScalar(s, target, before.raw, unsigned(multiplier)); return out.error; }, 10000, cancelled.get());
+        const int error = access->transaction([&](HardwareSession &s) { out = setAmdPboScalar(s, target, before.capabilities.raw, before.raw, unsigned(multiplier)); return out.error; }, 10000, cancelled.get());
         if (error) { out.error = error; out.verified = false; }
         return out;
     }));

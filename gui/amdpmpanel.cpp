@@ -1,12 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include "amdpmpanel.h"
 #include "core/amd_pm_native.h"
+#include "core/amd_granite_mapping.h"
 #include "platform/linux_amd_pm.h"
 #include "platform/linux_inventory_native.h"
 #include <QApplication>
 #include <QCheckBox>
 #include <QClipboard>
 #include <QComboBox>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFormLayout>
 #include <QFileDialog>
 #include <QFutureWatcher>
 #include <QHeaderView>
@@ -28,6 +32,68 @@ using namespace octool::core;
 namespace {
 QString hex(std::uint32_t n) { return QString("0x%1").arg(n, 8, 16, QChar('0')); }
 QString number(double n) { return QString::number(n, 'g', 10); }
+void openGraniteMapping(QWidget *parent, std::uint32_t selectedVersion) {
+    auto *dialog=new QDialog(parent); dialog->setObjectName("graniteMappingDialog");
+    dialog->setAttribute(Qt::WA_DeleteOnClose); dialog->setWindowTitle("Granite core index diagnostic");
+    dialog->resize(1200,760); auto *layout=new QVBoxLayout(dialog);
+    auto *intro=new QLabel("Offline SMU 98.84.0 reference. Enter the presence/core masks and SMT mode explicitly. "
+        "These inputs cannot be recovered from a PM float table. Results describe stored slots and command indexes; "
+        "physical CCD, APIC and OS CPU identities remain unverified.",dialog);
+    intro->setWordWrap(true); layout->addWidget(intro);
+    auto *form=new QFormLayout;
+    auto *version=new QComboBox(dialog); version->setObjectName("graniteMapVersion");
+    version->addItem("Select table version",0u); version->addItem("0x00620105",0x620105u);version->addItem("0x00620205",0x620205u);
+    const auto at=version->findData(selectedVersion); if(at>=0)version->setCurrentIndex(at);
+    form->addRow("PM table version",version);
+    auto *presence=new QLineEdit(dialog);presence->setObjectName("graniteMapPresence");
+    presence->setPlaceholderText("Hex; bits 0 and 1");form->addRow("Presence mask",presence);
+    auto *mask0=new QLineEdit(dialog);mask0->setObjectName("graniteMapCore0");mask0->setPlaceholderText("Hex; original 32-bit word");form->addRow("Firmware target 0 core mask",mask0);
+    auto *mask1=new QLineEdit(dialog);mask1->setObjectName("graniteMapCore1");mask1->setPlaceholderText("Hex; original 32-bit word");form->addRow("Firmware target 1 core mask",mask1);
+    auto *smt=new QComboBox(dialog);smt->setObjectName("graniteMapSmt");smt->addItems({"Select SMT mode","On","Off"});form->addRow("SMT mode",smt);
+    layout->addLayout(form);
+    auto *buttons=new QHBoxLayout;
+    auto *calculate=new QPushButton("Calculate reference indexes",dialog);calculate->setObjectName("graniteMapCalculate");buttons->addWidget(calculate);
+    auto *copy=new QPushButton("Copy diagnostic JSON",dialog);copy->setObjectName("graniteMapCopy");copy->setEnabled(false);buttons->addWidget(copy);layout->addLayout(buttons);
+    auto *table=new QTableWidget(0,7,dialog);table->setObjectName("graniteMapTable");
+    table->setHorizontalHeaderLabels({"PM core slot","PM CCD slot","Firmware target","Core bit","Enabled by input","Command indexes","Encoded coordinates"});
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);table->verticalHeader()->hide();table->horizontalHeader()->setStretchLastSection(true);layout->addWidget(table);
+    auto *status=new QLabel("No mapping computed. No hardware access is performed.",dialog);status->setObjectName("graniteMapStatus");status->setWordWrap(true);layout->addWidget(status);
+    auto *close=new QDialogButtonBox(QDialogButtonBox::Close,dialog);layout->addWidget(close);
+    QObject::connect(close,&QDialogButtonBox::rejected,dialog,&QDialog::close);
+    const auto invalidate=[copy,table,status] {copy->setEnabled(false);copy->setProperty("mappingJson",QString());table->setRowCount(0);status->setText("Inputs changed. Calculate the reference indexes again.");};
+    for(auto *field:{presence,mask0,mask1})QObject::connect(field,&QLineEdit::textChanged,dialog,invalidate);
+    QObject::connect(version,QOverload<int>::of(&QComboBox::currentIndexChanged),dialog,invalidate);
+    QObject::connect(smt,QOverload<int>::of(&QComboBox::currentIndexChanged),dialog,invalidate);
+    QObject::connect(copy,&QPushButton::clicked,dialog,[copy]{QApplication::clipboard()->setText(copy->property("mappingJson").toString());});
+    QObject::connect(calculate,&QPushButton::clicked,dialog,[version,presence,mask0,mask1,smt,copy,table,status,invalidate] {
+        invalidate();quint64 p=0,m0=0,m1=0;
+        if(!version->currentData().toUInt() || !parseNumber(presence->text(),16,UINT32_MAX,p) ||
+            !parseNumber(mask0->text(),16,UINT32_MAX,m0) || !parseNumber(mask1->text(),16,UINT32_MAX,m1) || !smt->currentIndex()) {
+            status->setText("Select a version and SMT mode, then enter all three masks as unsigned 32-bit hex values.");return;
+        }
+        AmdGraniteMappingInput input;input.tableVersion=version->currentData().toUInt();input.presenceMask=std::uint32_t(p);
+        input.coreMasks={{std::uint32_t(m0),std::uint32_t(m1)}};input.smt=smt->currentIndex()==1;
+        const auto result=diagnoseAmdGraniteMapping(input);
+        copy->setProperty("mappingJson",QString::fromStdString(amdGraniteMappingJson(result)));copy->setEnabled(true);
+        if(result.error) {status->setText(QString::fromStdString(result.detail));return;}
+        for(const auto &core:result.coreSlots) {
+            const int row=table->rowCount();table->insertRow(row);QStringList indexes,coordinates;
+            for(auto index:core.commandIndexes)indexes<<QString::number(index);
+            for(auto coordinate:core.encodedCoordinates)coordinates<<QString::number(coordinate);
+            const QStringList cells={QString::number(core.pmCoreSlot),QString::number(core.pmCcdSlot),QString::number(core.firmwareTarget),
+                QString::number(core.localCoreSlot),core.enabled?"Yes":"No",indexes.isEmpty()?"—":indexes.join(", "),coordinates.isEmpty()?"—":coordinates.join(", ")};
+            for(int column=0;column<cells.size();++column)table->setItem(row,column,new QTableWidgetItem(cells[column]));
+        }
+        table->resizeColumnsToContents();
+        QString notes=QString("%1 PM CCD slots; %2 command targets; %3 enabled core slots. ").arg(result.pmCcdSlots).arg(result.activeTargets).arg(result.enabledCores);
+        for(const auto &target:result.targets) {
+            if(target.discardedHighBits || target.nonEnumeratedBits)
+                notes+=QString("Target %1: high bits discarded %2; non-enumerated bits 8..15 %3. ").arg(target.firmwareTarget).arg(hex(target.discardedHighBits)).arg(hex(target.nonEnumeratedBits));
+        }
+        status->setText(notes+"Caller-supplied inputs; no live mapping or physical CCD/APIC/OS CPU binding verified. SMT siblings alias one core in the checked command consumer. No setting command is generated.");
+    });
+    dialog->show();
+}
 }
 AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader, std::shared_ptr<HardwareAccess> access, unsigned cpu)
     : QWidget(parent), reader_(reader ? reader : octool::platform::linuxAmdPmReader()), access_(access),
@@ -77,6 +143,8 @@ AmdPmPanel::AmdPmPanel(QWidget *parent, AmdPmReader reader, std::shared_ptr<Hard
     connect(auditButton, &QPushButton::clicked, this, [this] { auditLayout(); });
     connect(copyAudit_, &QPushButton::clicked, this, [this] { QApplication::clipboard()->setText(QString::fromStdString(layoutAuditJson_)); });
     connect(layoutCcds_, &QLineEdit::textChanged, this, [this] { layoutAuditJson_.clear(); copyAudit_->setEnabled(false); showFields(); });
+    auto *graniteMap=new QPushButton("Diagnose Granite core indexes...",controls_);graniteMap->setObjectName("pmGraniteMap");controls->addWidget(graniteMap);
+    connect(graniteMap,&QPushButton::clicked,this,[this]{openGraniteMapping(this,version_->currentData().toUInt());});
     auto *viewRow = new QHBoxLayout;
     viewRow->addWidget(new QLabel("Display", this));
     view_ = new QComboBox(this); view_->setObjectName("pmView");

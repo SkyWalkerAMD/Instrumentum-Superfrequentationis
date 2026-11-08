@@ -3,6 +3,14 @@
 #include "amd_smu.h"
 
 namespace octool { namespace core {
+// Preserve the complete firmware word, including unknown capability bits.
+struct AmdPboCapabilities {
+    int error = 0;
+    std::uint32_t raw = 0, response = 0;
+    bool valid = false, messageAttempted = false;
+    std::uint32_t firmwareVersion = 0;
+    bool firmwareValid = false;
+};
 // Exact Shimada 1Ah/08h, 1022:153a at domain 0 / BDF 0 only. Returned raw is
 // binary32, whereas the setter accepts integer multiplier * 100. Never reuse
 // the query's raw word as the setter argument.
@@ -11,6 +19,10 @@ struct AmdPboScalar {
     std::uint32_t raw = 0, response = 0;
     double multiplier = 0;
     bool valid = false, rawValid = false, messageAttempted = false;
+    // Populated by the exact Granite 98.84.0 route; old Shimada API is unchanged.
+    std::uint32_t firmwareVersion = 0, firmwareResponse = 0;
+    bool firmwareValid = false;
+    AmdPboCapabilities capabilities;
 };
 enum class AmdPboPhase { Validate, Compare, Write, Verify, Complete };
 struct AmdPboScalarUpdate {
@@ -27,13 +39,14 @@ const char *amdPboPhaseName(AmdPboPhase phase);
 AmdPboScalar readShimadaPboScalar(HardwareSession &session, const SmuTarget &target);
 AmdPboScalarUpdate setShimadaPboScalar(HardwareSession &session, const SmuTarget &target,
                                      std::uint32_t expectedRaw, unsigned multiplier);
+AmdPboScalar readAmdPboScalar(HardwareSession &session, const SmuTarget &target);
+// Granite additionally compares the complete capability word, rejects manual
+// OC, and rechecks exact firmware identity. Readback is the software policy,
+// not a voltage measurement. Limits can clamp an acknowledged request.
+AmdPboScalarUpdate setAmdPboScalar(HardwareSession &session, const SmuTarget &target,
+    std::uint32_t expectedCapabilities, std::uint32_t expectedRaw, unsigned multiplier);
 // Capability flags are firmware reports, not a guarantee that a setting will
 // take effect. Preserve unknown bits and compare the complete word on apply.
-struct AmdPboCapabilities {
-    int error = 0;
-    std::uint32_t raw = 0, response = 0;
-    bool valid = false, messageAttempted = false;
-};
 // Shimada SMU 115.46.0 / Granite Ridge SMU 98.84.0 only.
 // 6E reports the stored shared Fmax ceiling in integer
 // MHz after firmware policy/clamping; this is not a measured core clock.
@@ -58,7 +71,8 @@ struct AmdPboFmaxUpdate {
     bool verified = false, unchanged = false;
 };
 AmdPboCapabilities readShimadaPboCapabilities(HardwareSession &session, const SmuTarget &target);
-// Firmware 115.46.0 (0x00732e00): bit 0 is availability; bit 16 is live OC state.
+AmdPboCapabilities readAmdPboCapabilities(HardwareSession &session, const SmuTarget &target);
+// Shimada 115.46.0 / Granite 98.84.0: bit 0 is availability; bit 16 is OC state.
 // Keep these separate even when other bits change during a mode transition.
 bool amdManualOcAvailable(std::uint32_t capabilities);
 bool amdManualOcEnabled(std::uint32_t capabilities);
@@ -128,6 +142,8 @@ struct AmdPboLimitUpdate {
 // current-limit readback from an unverified PM field or echoed argument.
 AmdPboLimitUpdate setShimadaPboLimit(HardwareSession &session, const SmuTarget &target,
                                     std::uint32_t expectedCapabilities, AmdPboLimit limit, unsigned value);
+AmdPboLimitUpdate setAmdPboLimit(HardwareSession &session, const SmuTarget &target,
+    std::uint32_t expectedCapabilities, AmdPboLimit limit, unsigned value);
 // Manual OC mode is a separate, explicit action. Verification below means only
 // that bit 16 of a fresh 6F reply matches; it is not voltage/frequency telemetry.
 struct AmdOcModeUpdate {
@@ -140,6 +156,8 @@ struct AmdOcModeUpdate {
 };
 AmdOcModeUpdate setShimadaOcMode(HardwareSession &session, const SmuTarget &target,
                                  std::uint32_t expectedCapabilities, bool enabled);
+AmdOcModeUpdate setAmdOcMode(HardwareSession &session, const SmuTarget &target,
+    std::uint32_t expectedCapabilities, bool enabled);
 enum class AmdOcFrequencyScope { AllCores, Core, Cores };
 const char *amdOcFrequencyScopeName(AmdOcFrequencyScope scope);
 int encodeShimadaOcFrequency(AmdOcFrequencyScope scope, unsigned ccd, unsigned core, unsigned mhz,
@@ -181,11 +199,20 @@ struct AmdCurveAllUpdate {
 };
 bool amdAllCoreCurveAvailable(std::uint32_t capabilities);
 int encodeShimadaAllCoreCurve(int margin, std::uint32_t &argument);
+int encodeGraniteAllCoreCurve(int margin, std::uint32_t &argument);
 // Explicit firmware all-core scope, signed CO counts -50..50 (not mV).
 // Compare the complete capability word; require PBO available/manual OC off as
 // an application guard. RSMU 07 with six initialized arguments, exactly once.
 // No inferred core list or all-core readback; acknowledgement is not verification.
 AmdCurveAllUpdate setShimadaAllCoreCurve(HardwareSession &session, const SmuTarget &target,
+    std::uint32_t expectedCapabilities, int margin);
+// Granite 98.84.0 accepts application counts -50..30, with high16 and the
+// other five arguments zero. Check exact CPU/PCI/version and compare the
+// complete capability word twice; bit 2 must be set and manual OC off.
+// RSMU 07 acknowledgement does not verify MP5 completion, affected core count,
+// physical core identity or an applied-setting readback. No retry or rollback.
+// Other profiles retain the existing Shimada API's restrictions and range.
+AmdCurveAllUpdate setAmdAllCoreCurve(HardwareSession &session, const SmuTarget &target,
     std::uint32_t expectedCapabilities, int margin);
 struct AmdPboRailsEncoding {
     int error = 0;

@@ -1,5 +1,7 @@
 # AMD PBO Scalar 读取与设置
 
+2026-11-08：另新增 [Granite Ridge Scalar](amd-granite-pbo-scalar.md)，GUI/CLI 共用精确 SMU 98.84.0 路径与完整能力字检查。CLI 使用 `--platform granite-ridge` 并额外提供 `--expect-caps`。下文保留原 Shimada 接口说明；当前两个平台的用法见[Granite 调参总览](amd-granite-controls.md)。
+
 2026-10-21：GUI 的 AMD Tuning 页面与 CLI 共用 `gui/core/amd_pbo.*`，
 支持 **Shimada、AMD family 1Ah/model 08h、PCI 1022:153a、domain/BDF 0** 的 PBO Scalar。
 这是该目标的共享固件设置，不是逐核或逐 CCD Scalar；其它平台返回不支持。

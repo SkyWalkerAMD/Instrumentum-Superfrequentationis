@@ -120,6 +120,14 @@ class Slice:
                 self.r[a[0]] = val(a[1]) >> val(a[2])
             elif op == 'extui':
                 self.r[a[0]] = (val(a[1]) >> val(a[2])) & ((1 << val(a[3]))-1)
+            elif op == 'sext':
+                # Xtensa SEXT's immediate names the sign bit (QEMU
+                # translate_sext extracts immediate+1 signed bits).
+                sign_bit = val(a[2])
+                assert 7 <= sign_bit <= 22, 'Reserved SEXT immediate'
+                sign = 1 << sign_bit
+                low = val(a[1]) & ((sign << 1)-1)
+                self.r[a[0]] = ((low ^ sign)-sign) & 0xffffffff
             elif op == 'lsx':
                 self.f[a[0]] = self.getf(val(a[1])+val(a[2]))
             elif op in ('lsi', 'lsip', 'lsxp'):
