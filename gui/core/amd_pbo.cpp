@@ -608,6 +608,50 @@ AmdCurveAllUpdate setAmdAllCoreCurve(HardwareSession &s, const SmuTarget &target
     // for nonzero target completions without checking that each returned 1.
     out.phase = AmdPboPhase::Complete; return out;
 }
+bool decodeAmdCurveShaper(const std::array<std::uint32_t, 5> &raw,
+                         std::array<std::array<int, 3>, 5> &counts) {
+    counts = {};
+    for (unsigned tier = 0; tier < raw.size(); ++tier)
+        if ((raw[tier] & 0xffu) != tier) return false;
+    for (unsigned tier = 0; tier < raw.size(); ++tier) {
+        for (unsigned point = 0; point < counts[tier].size(); ++point) {
+            const unsigned byte = (raw[tier] >> (8 + 8*point)) & 0xffu;
+            counts[tier][point] = byte & 0x80u ? int(byte) - 256 : int(byte);
+        }
+    }
+    return true;
+}
+AmdCurveShaper readAmdCurveShaper(HardwareSession &s, const SmuTarget &target) {
+    AmdCurveShaper out;
+    if (target.profile != SmuProfile::GraniteRidge) { out.error = -ENOTSUP; return out; }
+    if ((out.error = checkFmaxTarget(s,target))) return out;
+    const auto version = fmaxExchange(s,target,2);
+    out.firmwareResponse = version.response;
+    if ((out.error = version.error)) return out;
+    if ((out.error = checkFmaxTarget(s,target))) return out;
+    out.firmwareVersion = version.raw; out.firmwareValid = true;
+    if (version.raw != 0x00625400u) { out.error = -ENOTSUP; return out; }
+    out.capabilities = fmaxCapabilities(s,target);
+    if ((out.error = out.capabilities.error)) return out;
+    if ((out.error = checkFmaxTarget(s,target))) return out;
+    const auto reply = detail::exchangeGraniteShaper(s);
+    out.response = reply.response; out.messageAttempted = reply.messageAttempted;
+    out.wordsRead = reply.wordsRead;
+    if ((out.error = reply.error)) return out;
+    out.capabilitiesAfter = fmaxCapabilities(s,target);
+    if ((out.error = out.capabilitiesAfter.error)) return out;
+    if (out.capabilitiesAfter.raw != out.capabilities.raw) { out.error = -EAGAIN; return out; }
+    if ((out.error = checkFmaxTarget(s,target))) return out;
+    const auto recheck = fmaxExchange(s,target,2);
+    if ((out.error = recheck.error)) return out;
+    if (recheck.raw != version.raw) { out.error = -EAGAIN; return out; }
+    if ((out.error = checkFmaxTarget(s,target))) return out;
+    std::array<std::array<int, 3>, 5> counts{};
+    if (!decodeAmdCurveShaper(reply.raw,counts)) { out.error = -EPROTO; return out; }
+    if ((out.error = s.checkpoint())) return out;
+    out.raw = reply.raw; out.counts = counts; out.rawValid = out.valid = true;
+    return out;
+}
 AmdPboRailsEncoding encodeLegacyAmdPboRails(unsigned a, unsigned b) {
     AmdPboRailsEncoding out;
     const auto valid = [](unsigned v) { return !v || (v >= 250 && v <= 2800 && v % 5 == 0); };

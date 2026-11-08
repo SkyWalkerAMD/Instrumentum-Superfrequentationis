@@ -155,6 +155,7 @@ def main():
                    OCTOOL_GRANITE_LIMITS_TEST_SCREENSHOT=str((tests / "granite-limits-fixture.png").resolve()),
                    OCTOOL_GRANITE_MODE_TEST_SCREENSHOT=str((tests / "granite-mode-fixture.png").resolve()),
                    OCTOOL_GRANITE_CURVE_TEST_SCREENSHOT=str((tests / "granite-curve-fixture.png").resolve()),
+                   OCTOOL_GRANITE_SHAPER_TEST_SCREENSHOT=str((tests / "granite-shaper-fixture.png").resolve()),
                    OCTOOL_PBO_RAILS_TEST_SCREENSHOT=str((tests / "pbo-rails-fixture.png").resolve()),
                    OCTOOL_PBO_LIMIT_PPT_TEST_SCREENSHOT=str((tests / "pbo-limit-ppt-fixture.png").resolve()),
                    OCTOOL_PBO_LIMIT_TEMP_TEST_SCREENSHOT=str((tests / "pbo-limit-temperature-fixture.png").resolve()),

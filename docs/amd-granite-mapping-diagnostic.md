@@ -11,7 +11,7 @@ The core API is `diagnoseAmdGraniteMapping(AmdGraniteMappingInput)`, in
 The CLI accepts the following inputs; the GUI's PM page offers the same fields:
 
 ```sh
-octool-cli amd-granite-map --table-version 0x620205 --presence-mask 3 \
+octool-cli amd-granite-map --version 0x620205 --presence-mask 3 \
   --core-mask0 0 --core-mask1 0x81 --smt on
 ```
 

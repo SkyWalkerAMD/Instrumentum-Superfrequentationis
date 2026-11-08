@@ -1492,7 +1492,12 @@ private slots:
         if (!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
         // Leave room for the native-capture controls while still checking that
         // this exported screenshot shows every internal-clock row.
-        view->setCurrentIndex(8); panel.resize(1150,1020);
+        view->setCurrentIndex(8); panel.resize(1150,1020); QApplication::processEvents();
+        // Qt 5/6 use different row and control heights. Fit the measured rows
+        // after layout rather than relying on one platform's fixed window size.
+        const int clockRowsHeight=table->rowCount()*table->rowHeight(0);
+        if(table->viewport()->height()<=clockRowsHeight)
+            panel.resize(panel.width(),panel.height()+clockRowsHeight-table->viewport()->height()+32);
         QTRY_VERIFY(table->viewport()->height()>table->rowCount()*table->rowHeight(0));
         QTRY_VERIFY(status->geometry().bottom()<panel.height());
         shot=qEnvironmentVariable("OCTOOL_PM_CLOCK_TEST_SCREENSHOT");
@@ -4303,6 +4308,108 @@ private slots:
         const auto calls = device->calls; apply->click(); QCOMPARE(device->calls,calls);
         QApplication::processEvents(); // Settle PBO/PM fixture layout.
         const auto shot=qEnvironmentVariable("OCTOOL_PBO_FMAX_TEST_SCREENSHOT"); if(!shot.isEmpty()) QVERIFY(panel.grab().save(shot));
+    }
+    void graniteShaperSavedCountMatrixAndReaderTransitions() {
+        auto *d=new AmdPboFixture;d->useGraniteShaper();d->useGraniteScalar();d->capsRaw=7;
+        d->shaperWords={{0xffce8000u,0x1e010001u,0x7f321f02u,0x1dfe8103u,0xcd207e04u}};
+        const int counts[5][3]={{-128,-50,-1},{0,1,30},{31,50,127},{-127,-2,29},{126,32,-51}};
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        panel.resize(1400,1350);panel.show();QApplication::processEvents();
+        auto *profile=panel.findChild<QComboBox *>("smuProfile");
+        profile->setCurrentIndex(profile->findData(int(octool::core::SmuProfile::GraniteRidge)));
+        auto *read=panel.findChild<QPushButton *>("pboShaperRead");
+        auto *table=panel.findChild<QTableWidget *>("smuTable");auto *status=panel.findChild<QLabel *>("smuStatus");
+        QVERIFY(read);QVERIFY(table);QVERIFY(status);
+        panel.findChild<QLineEdit *>("pboScalar")->setText("5");
+        panel.findChild<QLineEdit *>("pboFmax")->setText("5500");
+        panel.findChild<QLineEdit *>("pboLimitValue")->setText("100");
+        panel.findChild<QLineEdit *>("allCurveMargin")->setText("-10");
+        panel.findChild<QPushButton *>("pboCapsRead")->click();QTRY_VERIFY(panel.isEnabled());
+        read->click();QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(),5);QCOMPARE(table->columnCount(),5);QCOMPARE(d->shaperReads,5u);
+        QCOMPARE(table->horizontalHeaderItem(0)->text(),QString("Firmware frequency tier"));
+        QCOMPARE(table->horizontalHeaderItem(4)->text(),QString("Packed word (hex)"));
+        for(int tier=0;tier<5;++tier) {
+            QCOMPARE(table->item(tier,0)->text(),QString::number(tier));
+            for(int point=0;point<3;++point) QCOMPARE(table->item(tier,point+1)->text(),QString::number(counts[tier][point]));
+            QCOMPARE(table->item(tier,4)->text(),QString("0x%1").arg(d->shaperWords[std::size_t(tier)],8,16,QLatin1Char('0')));
+        }
+        QVERIFY(status->text().contains("15 saved signed count offsets"));
+        QVERIFY(status->text().contains("baseline + offset combined counts"));
+        QVERIFY(status->text().contains("applied CO / voltage remain unverified"));
+        QVERIFY(status->text().contains("No write prepared"));
+        QVERIFY(status->text().contains("0x00625400"));
+        QPushButton *copy=nullptr;
+        for(auto *button:panel.findChildren<QPushButton *>()) if(button->text()=="Copy snapshot")copy=button;
+        QVERIFY(copy);copy->click();
+        const auto copied=QApplication::clipboard()->text();
+        QVERIFY(copied.contains("Temperature point 2 (counts)"));QVERIFY(copied.contains("0xffce8000"));
+        QVERIFY(copied.contains("baseline + offset combined counts"));
+        QTRY_VERIFY(table->viewport()->height()>table->rowCount()*table->rowHeight(0));
+        QTRY_VERIFY(status->height()>=status->heightForWidth(status->width()));
+        QTRY_VERIFY(status->geometry().bottom()<panel.height());
+        const auto shot=qEnvironmentVariable("OCTOOL_GRANITE_SHAPER_TEST_SCREENSHOT");
+        if(!shot.isEmpty())QVERIFY(panel.grab().save(shot));
+        const auto calls=d->calls;
+        for(const auto *name:{"pboScalarApply","pboFmaxApply","pboLimitApply","allCurveApply","ocModeApply"}) {
+            panel.findChild<QPushButton *>(name)->click();QCOMPARE(d->calls,calls);
+        }
+        // Same target: each ordinary reader must restore its own two-column view.
+        // The stored shaper query also works while manual OC is set and PBO is absent.
+        d->capsRaw=0x10000;
+        for(const auto *name:{"pboScalarRead","pboFmaxRead","pboCapsRead"}) {
+            read->click();QTRY_VERIFY(panel.isEnabled());QCOMPARE(table->columnCount(),5);QCOMPARE(table->rowCount(),5);
+            panel.findChild<QPushButton *>(name)->click();QTRY_VERIFY(panel.isEnabled());
+            QCOMPARE(table->columnCount(),2);QVERIFY(table->rowCount()>0);
+            QCOMPARE(table->horizontalHeaderItem(0)->text(),QString("Item"));
+            QCOMPARE(table->horizontalHeaderItem(1)->text(),QString("Result"));
+        }
+        QCOMPARE(d->settings,0u);QCOMPARE(d->wrongCpu,0u);
+    }
+    void graniteShaperRejectsUnsupportedIncompleteAndChangedSnapshots() {
+        auto *d=new AmdPboFixture;d->useGraniteShaper();
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        auto *profile=panel.findChild<QComboBox *>("smuProfile");
+        auto *read=panel.findChild<QPushButton *>("pboShaperRead");
+        auto *table=panel.findChild<QTableWidget *>("smuTable");auto *status=panel.findChild<QLabel *>("smuStatus");
+        read->click();QCOMPARE(d->calls,0u);QVERIFY(status->text().contains("requires Granite Ridge"));
+        profile->setCurrentIndex(profile->findData(int(octool::core::SmuProfile::GraniteRidge)));
+        panel.findChild<QLineEdit *>("smuCpu")->setText("invalid");read->click();QCOMPARE(d->calls,0u);
+        panel.findChild<QLineEdit *>("smuCpu")->setText("130");
+        d->firmwareVersion=0x00625401;read->click();QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(),0);QCOMPARE(table->columnCount(),2);QCOMPARE(d->shaperReads,0u);
+        QVERIFY(status->text().contains("Curve Shaper unavailable"));QVERIFY(status->text().contains("0x00625401"));
+        d->firmwareVersion=0x00625400;
+        read->click();QTRY_VERIFY(panel.isEnabled());QCOMPARE(table->rowCount(),5);
+        d->shaperWords[2]=9;read->click();QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(),0);QCOMPARE(table->columnCount(),2);QVERIFY(status->text().contains("Saved offsets cleared"));
+        d->shaperWords[2]=2;d->shaperReads=0;
+        d->afterRequest=[d] { if(d->shaperReads==2)d->failAt=int(d->calls); };
+        read->click();QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(),0);QCOMPARE(table->columnCount(),2);QVERIFY(status->text().contains("received 2 / 5 words"));
+        d->afterRequest={};d->failAt=-1;d->shaperReads=0;bool changed=false;
+        d->afterRequest=[d,&changed] { if(d->shaperReads==5 && !changed) { changed=true;d->capsRaw^=1; } };
+        read->click();QTRY_VERIFY(panel.isEnabled());
+        QVERIFY(changed);QCOMPARE(table->rowCount(),0);QCOMPARE(table->columnCount(),2);
+        QVERIFY(status->text().contains("Curve Shaper unavailable"));d->afterRequest={};
+        QCOMPARE(d->settings,0u);QCOMPARE(d->wrongCpu,0u);
+    }
+    void graniteShaperDiscardsCpuAndProfileChanges() {
+        auto *d=new AmdPboFixture;d->useGraniteShaper();
+        AmdTuningPanel panel(std::make_shared<HardwareAccess>(std::unique_ptr<octool::core::HardwareBackend>(d)),nullptr,130);
+        auto *profile=panel.findChild<QComboBox *>("smuProfile");auto *cpu=panel.findChild<QLineEdit *>("smuCpu");
+        const auto granite=profile->findData(int(octool::core::SmuProfile::GraniteRidge));
+        const auto shimada=profile->findData(int(octool::core::SmuProfile::Shimada));profile->setCurrentIndex(granite);
+        auto *read=panel.findChild<QPushButton *>("pboShaperRead");
+        auto *table=panel.findChild<QTableWidget *>("smuTable");auto *status=panel.findChild<QLabel *>("smuStatus");
+        read->click();cpu->setText("131");QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(),0);QCOMPARE(table->columnCount(),2);QVERIFY(status->text().contains("Result discarded"));
+        cpu->setText("130");read->click();profile->setCurrentIndex(shimada);QTRY_VERIFY(panel.isEnabled());
+        QCOMPARE(table->rowCount(),0);QCOMPARE(table->columnCount(),2);QVERIFY(status->text().contains("Result discarded"));
+        profile->setCurrentIndex(granite);read->click();QTRY_VERIFY(panel.isEnabled());QCOMPARE(table->rowCount(),5);
+        cpu->setText("131");QCOMPARE(table->rowCount(),0);QCOMPARE(table->columnCount(),2);
+        QVERIFY(status->text().contains("Previous results cleared"));
+        QCOMPARE(d->settings,0u);QCOMPARE(d->wrongCpu,0u);
     }
     void graniteScalarVerifiedNoopAndClampedReadback() {
         auto *d=new AmdPboFixture;d->useGraniteScalar();

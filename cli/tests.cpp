@@ -2787,6 +2787,51 @@ void graniteAllCoreCurveInvalidBeforeOpen() {
         assert(run(args,output,[&]{++opened;return std::unique_ptr<HardwareBackend>(new AmdPboFixture);})==2 && !opened);
     }
 }
+void graniteCurveShaperCommands() {
+    const int expected[5][3]={{-128,-50,-1},{0,1,30},{31,50,127},{-127,-2,29},{126,32,-51}};
+    for(unsigned mode=0;mode<10;++mode) {
+        AmdPboFixture d;d.useGraniteShaper();
+        for(unsigned tier=0;tier<5;++tier) {
+            d.shaperWords[tier]=tier;
+            for(unsigned point=0;point<3;++point)d.shaperWords[tier]|=(std::uint32_t(expected[tier][point])&255u)<<(8+8*point);
+        }
+        if(mode==1)d.capsRaw=0;
+        if(mode==2)d.capsRaw=0x10007;
+        if(mode==3)d.firmwareVersion=0x00625401;
+        if(mode==4)d.shaperWords[3]^=1;
+        if(mode==5)d.afterRequest=[&]{if(d.shaperReads==3)d.capsRaw=0x80000004;};
+        if(mode==6)d.afterRequest=[&]{if(d.shaperReads==3)d.firmwareVersion=0x00625401;};
+        if(mode==7)d.completion=0xfe;
+        if(mode==8)d.afterRequest=[&]{if(d.shaperReads==2)d.failAt=int(d.calls);};
+        if(mode==9)d.hypervisor=true;
+        const auto text=command(d,{"amd-curve-shaper-read","--cpu","130","--platform","granite-ridge"},mode<3?0:3);
+        const auto data=capture_json::Parser(text).parse().at("data");
+        assert(!d.settings && !d.wrongCpu);
+        if(mode<3) {
+            assert((d.messages==std::vector<std::uint32_t>{2,0x6f,0x84,0x6f,2}));
+            assert(data.at("stored_offsets").items.size()==5 && data.at("raw_words").items.size()==5);
+            for(unsigned tier=0;tier<5;++tier)for(unsigned point=0;point<3;++point)
+                assert(std::stoi(data.at("stored_offsets").items[tier].at("counts").items[point].text)==expected[tier][point]);
+            for(const auto &args:d.commandArgs)for(auto v:args)assert(!v);
+        } else {
+            assert(data.at("stored_offsets").items.empty() && data.at("raw_words").kind==capture_json::Json::Null);
+            assert(capture_json::equals(data.at("raw_valid"),capture_json::Json::Boolean,"false"));
+        }
+        if(mode==8)assert(d.shaperReads==2);
+    }
+}
+void graniteCurveShaperInvalidBeforeOpen() {
+    const std::vector<std::string> base={"amd-curve-shaper-read","--cpu","130","--platform","granite-ridge"};
+    std::vector<std::vector<std::string>> invalid;
+    for(const char *v:{"--apply","--margin","--expect-caps","--tier","--offset","--write"}) {auto a=base;a.push_back(v);invalid.push_back(a);}
+    for(const char *v:{"shimada","phoenix","unknown"}) {auto a=base;a[4]=v;invalid.push_back(a);}
+    auto a=base;a.erase(a.begin()+3,a.end());invalid.push_back(a);
+    a=base;a.erase(a.begin()+1,a.begin()+3);invalid.push_back(a);
+    for(const auto &args:invalid) {
+        unsigned opened=0;std::ostringstream output;
+        assert(run(args,output,[&]{++opened;return std::unique_ptr<HardwareBackend>(new AmdPboFixture);})==2 && !opened);
+    }
+}
 void pboOfflineCommands() {
     unsigned opened = 0;
     const auto factory = [&] { ++opened; return std::unique_ptr<HardwareBackend>(new AmdPboFixture); };
@@ -2844,6 +2889,7 @@ int main(int argc, char **argv) {
     graniteScalarCommands(); graniteControlsCommands(); graniteControlsInvalidBeforeOpen();
     graniteMappingCommands(); graniteMappingInvalidBeforeOpen();
     graniteAllCoreCurveCommands(); graniteAllCoreCurveInvalidBeforeOpen();
+    graniteCurveShaperCommands(); graniteCurveShaperInvalidBeforeOpen();
     allCoreCurveCommands(); allCoreCurveInvalidBeforeOpen();
     pboQueryCommands(); pboQueryInvalidBeforeOpen();
     powerAdjustmentCommands(); powerAdjustmentInvalidBeforeOpen();
@@ -2861,5 +2907,5 @@ int main(int argc, char **argv) {
     l3TopologyCommands(); topologyCatalogCommands(); offlineTopologyDoesNotCreateBackend();
     published9950x3dTopologyCommands();
     apobComparisonCommands(); apobComparisonInvalidBeforeOpen();
-    if (!emit) std::cout << "91 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
+    if (!emit) std::cout << "93 CLI scenario groups passed (invalid inputs and real core with simulated devices)\n";
 }

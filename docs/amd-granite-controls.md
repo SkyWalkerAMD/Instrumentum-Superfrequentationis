@@ -13,6 +13,7 @@ synthetic tests and cross-platform builds do not establish machine acceptance.
 | PPT / TDC / EDC / temperature limit | `amd-pbo-limit-set` | Acknowledgement only; effective limit remains unknown |
 | Manual OC mode | `amd-oc-mode-set` | Requested mode flag readback; no automatic frequency, voltage or Scalar setting |
 | All-core Curve Optimizer | `amd-curve-all-set` | Acknowledgement only; per-target application and current margins remain unknown |
+| Curve Shaper table | `amd-curve-shaper-read` | Five by three saved signed-byte offsets, in counts; fuse anchors and hidden baselines are not read |
 | Fmax ceiling | `amd-pbo-fmax-read`, `amd-pbo-fmax-set` | Stored ceiling readback, as in the preceding release |
 | PM / command index diagnostic | `amd-granite-map` | Reference mapping from explicit caller inputs; no live capture or OS binding |
 
@@ -32,6 +33,7 @@ mailbox by trying writes. Start with reads:
 octool-cli amd-pbo-capabilities --cpu 0 --platform granite-ridge
 octool-cli amd-pbo-scalar-read --cpu 0 --platform granite-ridge
 octool-cli amd-pbo-fmax-read --cpu 0 --platform granite-ridge
+octool-cli amd-curve-shaper-read --cpu 0 --platform granite-ridge
 ```
 
 Use an allowed CPU from `octool-cli diagnose`. The write interfaces are:
@@ -56,6 +58,15 @@ stored Scalar was erased. Setter `5Bh` can acknowledge a clamped value. CO's
 internal broadcast accepts any nonzero target completion, so its host ACK
 cannot establish that every target applied the margin. Setting a limit does
 not establish its effective value. There is no automatic mode change.
+
+Curve Shaper reads preserve all signed-byte values from −128 to +127, including
+values outside the setter's supported interval. This is an observation of stored
+offsets, not permission to write those values. PBO-off and manual-OC states do
+not block this read. A malformed tier tag, partial read or changing context
+invalidates the entire table. No Shaper writer is exposed: the reference A6h
+path clamps all fifteen stored offsets, adds hidden baselines with byte
+truncation and forwards all five tiers, including tiers the caller did not edit.
+The 5×3 table feeds interpolation; it is not fifteen independent switches.
 
 ## Mapping diagnostic
 
@@ -82,6 +93,7 @@ APIC/OS association and live runtime provider selection remain unresolved.
 
 - [Scalar](amd-granite-pbo-scalar.md), [four limits](amd-granite-pbo-limits.md),
   [mode](amd-granite-oc-mode.md), [all-core CO](amd-granite-curve-all.md).
+- [Curve Shaper saved offsets, baselines and interpolation](amd-granite-curve-shaper.md).
 - [Mapping inputs and diagnostics](amd-granite-mapping-diagnostic.md).
 - [Reference UEFI acquisition](amd-granite-map-acquisition.md) traces the
   presence query through a selected SMN service. Provider selection and equality

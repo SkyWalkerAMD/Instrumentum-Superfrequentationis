@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #pragma once
 #include "hardware.h"
+#include <array>
 #include <cerrno>
 #include <chrono>
 #include <thread>
@@ -145,5 +146,48 @@ inline AmdRsmuReply exchangeGraniteCurve(HardwareSession &s, std::uint32_t comma
         AmdRsmuReply out; out.error = -EINVAL; return out;
     }
     return exchangeGranitePbo(s,command,argument);
+}
+struct AmdRsmuShaperReply {
+    int error = 0;
+    std::uint32_t response = 0;
+    std::array<std::uint32_t, 5> raw{};
+    unsigned wordsRead = 0;
+    bool messageAttempted = false, valid = false;
+};
+// Separate read-only family: do not add 84/A6 to the generic Granite mailbox.
+// Query 84 initializes six arguments but returns exactly five packed words;
+// the untouched sixth argument is not a record. Partial replies never publish.
+inline AmdRsmuShaperReply exchangeGraniteShaper(HardwareSession &s,
+                                              std::uint32_t command = 0x84,
+                                              std::uint32_t argument = 0) {
+    AmdRsmuShaperReply out;
+    if (command != 0x84 || argument) { out.error = -EINVAL; return out; }
+    const auto wait = [&]() {
+        for (unsigned n = 0; n < 100; ++n) {
+            auto r = rsmuIndirect(s,0x3b10570,false);
+            if (r.error || r.value) return r;
+            rsmuDelay();
+        }
+        Reply r; r.error = -ETIMEDOUT; return r;
+    };
+    auto r = wait(); if ((out.error = r.error)) return out;
+    r = rsmuIndirect(s,0x3b10570,true,0); if ((out.error = r.error)) return out;
+    for (unsigned i = 0; i < 6; ++i) {
+        r = rsmuIndirect(s,0x3b10a40+4*i,true,0);
+        if ((out.error = r.error)) return out;
+    }
+    out.messageAttempted = true;
+    r = rsmuIndirect(s,0x3b10524,true,0x84); if ((out.error = r.error)) return out;
+    r = wait(); if ((out.error = r.error)) return out;
+    out.response = std::uint32_t(r.value);
+    if (out.response != 1) { out.error = -EIO; return out; }
+    std::array<std::uint32_t, 5> raw{};
+    for (unsigned i = 0; i < raw.size(); ++i) {
+        r = rsmuIndirect(s,0x3b10a40+4*i,false);
+        if ((out.error = r.error)) return out;
+        raw[i] = std::uint32_t(r.value); ++out.wordsRead;
+    }
+    if ((out.error = s.checkpoint())) return out;
+    out.raw = raw; out.valid = true; return out;
 }
 } } }

@@ -13,11 +13,16 @@ struct AmdPboFixture : AmdCurveFixture {
     bool allowGraniteScalar = false, clampScalar = false;
     bool allowGraniteLimits = false, allowGraniteMode = false;
     bool allowGraniteCurve = false;
+    bool allowGraniteShaper = false;
+    unsigned shaperReads = 0;
+    std::array<std::uint32_t, 5> shaperWords{{0,1,2,3,4}};
+    std::vector<unsigned> shaperReadIndices;
     std::uint32_t scalarClampedRaw = 0x40200000;
     void useGraniteScalar() { useGraniteFmax(); allowGraniteScalar = true; }
     void useGraniteLimits() { useGraniteFmax(); allowGraniteLimits = true; }
     void useGraniteMode() { useGraniteFmax(); allowGraniteMode = allowManualOc = true; }
     void useGraniteCurve() { useGraniteFmax(); allowGraniteCurve = allowAllCoreCurve = true; }
+    void useGraniteShaper() { useGraniteFmax(); allowGraniteShaper = true; }
     void useGraniteFmax() {
         graniteFmax = allowFmaxReadback = true;
         model = 0x44; pciId = 0x14d81022; firmwareVersion = 0x00625400;
@@ -59,13 +64,13 @@ struct AmdPboFixture : AmdCurveFixture {
                      (allowGraniteScalar && (r.value == 0x5b || r.value == 0x6d)) ||
                      (allowGraniteLimits && r.value >= 0x56 && r.value <= 0x59) ||
                      (allowGraniteMode && (r.value == 0x5d || r.value == 0x5e)) ||
-                     (allowGraniteCurve && r.value == 7)) &&
+                     (allowGraniteCurve && r.value == 7) || (allowGraniteShaper && r.value == 0x84)) &&
                      (r.value == 0x6d || r.value == 0x5b || r.value == 0x6f || r.value == 0x70 || (r.value >= 0x56 && r.value <= 0x59) ||
                      (allowManualOc && r.value >= 0x5d && r.value <= 0x60) || (allowAllCoreCurve && r.value == 7) ||
                      (allowStatusQueries && (r.value == 0xa6 || r.value == 0x5c)) ||
                      (allowPowerAdjustment && (r.value == 2 || r.value == 0xa7 || r.value == 0xa8)) ||
-                     (allowFmaxReadback && (r.value == 2 || r.value == 0x6e)))) {
-                const bool query = r.value == 0x6d || r.value == 0x6e || r.value == 0x6f || r.value == 0xa6 || r.value == 0x5c || r.value == 2 || r.value == 0xa8;
+                     (allowFmaxReadback && (r.value == 2 || r.value == 0x6e)) || (allowGraniteShaper && r.value == 0x84))) {
+                const bool query = r.value == 0x6d || r.value == 0x6e || r.value == 0x6f || r.value == 0xa6 || r.value == 0x5c || r.value == 2 || r.value == 0xa8 || r.value == 0x84;
                 for (unsigned i = query && r.value != 0x5c ? 0 : 1; i < 6; ++i) if (scalarArgs[i]) out.error = -EINVAL;
                 if (r.value == 0x5c && scalarArgs[0] > 127) out.error = -EINVAL;
                 if (r.value == 0x5b && (scalarArgs[0] < 100 || scalarArgs[0] > 1000 || scalarArgs[0] % 100)) out.error = -EINVAL;
@@ -93,12 +98,20 @@ struct AmdPboFixture : AmdCurveFixture {
                             else { const float value = float(scalarArgs[0]/100); std::memcpy(&scalarRaw, &value, 4);
                                 if (clampScalar) scalarRaw = scalarClampedRaw; }
                         }
-                    } else if (completion == 1) scalarArgs[0] = r.value == 2 ? firmwareVersion : r.value == 0x6e ? fmaxMHz : r.value == 0xa8 ? powerAdjustmentRaw : r.value == 0x6d ?
-                        (graniteFmax && (capsRaw & 0x10000u) ? 0u : scalarRaw) : r.value == 0x6f ? capsRaw : r.value == 0xa6 ? ln2Raw : performanceRaw;
+                    } else if (completion == 1) {
+                        if (r.value == 0x84) {
+                            for (unsigned i=0;i<shaperWords.size();++i) scalarArgs[i]=shaperWords[i];
+                        } else scalarArgs[0] = r.value == 2 ? firmwareVersion : r.value == 0x6e ? fmaxMHz : r.value == 0xa8 ? powerAdjustmentRaw : r.value == 0x6d ?
+                            (graniteFmax && (capsRaw & 0x10000u) ? 0u : scalarRaw) : r.value == 0x6f ? capsRaw : r.value == 0xa6 ? ln2Raw : performanceRaw;
+                    }
                 }
             } else out.error = -EINVAL;
         } else if (index == responseAddress) {
             ++polls; out.value = (!commands && busyBefore) || (commands && polls <= busyPolls) ? 0 : response;
+        } else if (allowGraniteShaper && !messages.empty() && messages.back()==0x84 &&
+                   index>=0x3b10a40 && index<=0x3b10a50) {
+            const unsigned slot=(index-0x3b10a40)/4;
+            ++argumentReads; ++shaperReads; shaperReadIndices.push_back(slot); out.value=scalarArgs[slot];
         } else if (index == 0x3b10a40) { ++argumentReads; out.value = scalarArgs[0]; }
         else out.error = -EINVAL;
         if (afterRequest) afterRequest();

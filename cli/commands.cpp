@@ -140,7 +140,7 @@ Command parse(const std::vector<std::string> &args) {
     const bool pboCapabilityCommand = c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-fmax-read" || c.name == "amd-pbo-fmax-set" || c.name == "amd-pbo-limit-set" ||
         c.name == "amd-oc-mode-set" || c.name == "amd-oc-frequency-set" || c.name == "amd-curve-all-set" ||
         c.name == "amd-ln2-read" || c.name == "amd-core-performance-read" ||
-        c.name == "amd-power-adjustment-read" || c.name == "amd-power-adjustment-set";
+        c.name == "amd-power-adjustment-read" || c.name == "amd-power-adjustment-set" || c.name == "amd-curve-shaper-read";
     const bool rails = c.name == "amd-pbo-rails-encode";
     const bool layoutAudit = c.name == "amd-pm-layout-audit";
     const bool graniteMap = c.name == "amd-granite-map";
@@ -200,7 +200,7 @@ Command parse(const std::vector<std::string> &args) {
     if (c.name == "amd-pm-native-read") { keys.insert("--map-ccd"); keys.insert("--platform"); }
     if (c.name == "amd-pbo-fmax-read" || c.name == "amd-pbo-fmax-set" ||
         c.name == "amd-pbo-scalar-read" || c.name == "amd-pbo-scalar-set" ||
-        c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-limit-set" || c.name == "amd-oc-mode-set" || c.name == "amd-curve-all-set") keys.insert("--platform");
+        c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-limit-set" || c.name == "amd-oc-mode-set" || c.name == "amd-curve-all-set" || c.name == "amd-curve-shaper-read") keys.insert("--platform");
     if (c.name == "amd-pm-decode") { keys.insert("--file"); keys.insert("--version"); }
     if (umcOffline || memoryOffline || clockOffline) keys.insert("--file");
     if (c.name == "intel-memory-read") { keys.insert("--controller"); keys.insert("--channel"); }
@@ -495,13 +495,15 @@ Command parse(const std::vector<std::string> &args) {
     }
     if ((c.name == "amd-pbo-fmax-read" || c.name == "amd-pbo-fmax-set" ||
          c.name == "amd-pbo-scalar-read" || c.name == "amd-pbo-scalar-set" ||
-         c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-limit-set" || c.name == "amd-oc-mode-set" || c.name == "amd-curve-all-set") && options.count("--platform")) {
+         c.name == "amd-pbo-capabilities" || c.name == "amd-pbo-limit-set" || c.name == "amd-oc-mode-set" || c.name == "amd-curve-all-set" || c.name == "amd-curve-shaper-read") && options.count("--platform")) {
         const auto platform = get(options,"--platform");
         require(platform == "shimada" || platform == "granite-ridge", "--platform must be shimada or granite-ridge");
         c.smu.profile = platform == "granite-ridge" ? SmuProfile::GraniteRidge : SmuProfile::Shimada;
     }
     if(c.name=="amd-curve-all-set" && c.smu.profile==SmuProfile::GraniteRidge)
         require(c.margin<=30,"Granite all-core curve requires -50..30 CO counts, not mV");
+    if(c.name=="amd-curve-shaper-read")
+        require(c.smu.profile==SmuProfile::GraniteRidge,"Curve Shaper requires explicit --platform granite-ridge");
     if (c.name == "amd-pbo-scalar-set") {
         if (c.smu.profile == SmuProfile::GraniteRidge) {
             c.pboExpectedCaps = uintOption(options,"--expect-caps",UINT32_MAX);
@@ -1109,6 +1111,29 @@ Result hardware(const Command &c, HardwareSession &s) {
             {"physical_mapping_verified","false"},{"setting_commands_sent","false"},
             {"detail",quote(ln2 ? "Firmware LN2 state only; no EC access or LN2 setting." :
                 "Opaque firmware performance word. Index is not a Linux CPU ID; no power, ranking or physical core mapping is inferred.")}};
+    } else if (c.name == "amd-curve-shaper-read") {
+        const auto r=readAmdCurveShaper(s,c.smu);out.error=r.error;
+        std::vector<std::string> rows,words;
+        if(r.valid && !r.error)for(unsigned tier=0;tier<5;++tier) {
+            std::vector<std::string> counts;
+            for(unsigned point=0;point<3;++point)counts.push_back(number(r.counts[tier][point]));
+            words.push_back(hex(r.raw[tier]));
+            rows.push_back(object({{"frequency_tier",number(tier)},{"counts",array(counts)}}));
+        }
+        out.data={{"platform",quote("granite-ridge")},{"supported_firmware_version",hex(0x00625400)},
+            {"firmware_version",r.firmwareValid?hex(r.firmwareVersion):"null"},
+            {"capabilities_raw",r.capabilities.valid?hex(r.capabilities.raw):"null"},
+            {"capabilities_after",r.capabilitiesAfter.valid?hex(r.capabilitiesAfter.raw):"null"},
+            {"command",hex(0x84)},{"response",hex(r.response)},{"query_attempted",boolean(r.messageAttempted)},
+            {"words_read",number(r.wordsRead)},{"raw_valid",boolean(r.rawValid)},
+            {"valid",boolean(r.valid && !r.error)},{"raw_words",r.valid && !r.error?array(words):"null"},
+            {"stored_offsets",array(rows)},{"unit",quote("count")},
+            {"temperature_point_order",quote("firmware columns 0, 1, 2")},
+            {"frequency_anchors_ghz","null"},{"temperature_anchors_celsius","null"},
+            {"baseline_included","false"},{"effective_offset_verified","false"},
+            {"hardware_effect_measured","false"},{"write_supported","false"},{"setting_commands_sent","false"},
+            {"physical_mapping_verified","false"},
+            {"detail",quote("Five frequency tiers by three temperature points: saved signed-byte count offsets only. Hidden baselines, actual fuse anchors and interpolated effects are not read here. Values outside the supported write range remain readable. No Curve Shaper setter is exposed.")}};
     } else if (c.name == "amd-pbo-capabilities") {
         const auto r = readAmdPboCapabilities(s, c.smu); out.error = r.error;
         const bool granite=c.smu.profile==SmuProfile::GraniteRidge;
@@ -1664,6 +1689,8 @@ Usage: octool-cli COMMAND [OPTIONS]
     Granite SMU 98.84.0 also requires --expect-caps RAW from a fresh scalar read.
     Writes require PBO available/manual OC off; firmware clamping is reported as a readback mismatch.
   amd-pbo-capabilities --cpu N [--platform shimada|granite-ridge]
+  amd-curve-shaper-read --cpu N --platform granite-ridge
+    Read the 5x3 saved count-offset table on exact SMU 98.84.0; no anchors, baseline or writer.
   amd-oc-mode-set --cpu N [--platform shimada|granite-ridge] --enabled 0|1 --expect-caps RAW --apply
                                    Change mode explicitly; re-read the mode bit
   amd-oc-frequency-set --cpu N --scope all-cores --mhz N --expect-caps RAW --apply

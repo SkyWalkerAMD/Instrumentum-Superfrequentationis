@@ -253,6 +253,10 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     form->addRow("PBO scalar · Shimada / Granite 98.84.0", scalar);
     connect(readScalar, &QPushButton::clicked, this, [this] { readPboScalar(); });
     connect(applyScalar, &QPushButton::clicked, this, [this] { applyPboScalar(); });
+    auto *readShaper = new QPushButton("Read saved Curve Shaper offsets", this); readShaper->setObjectName("pboShaperRead");
+    readShaper->setToolTip("Read 15 signed count offsets. Frequency and temperature anchors and combined applied counts remain unverified.");
+    form->addRow("Curve Shaper · Granite 98.84.0 · read only", readShaper);
+    connect(readShaper, &QPushButton::clicked, this, [this] { readCurveShaper(); });
     auto *fmax = new QHBoxLayout;
     pboFmax_ = edit("pboFmax", "", this); pboFmax_->setPlaceholderText("Requested ceiling in MHz"); fmax->addWidget(pboFmax_);
     auto *readFmax = new QPushButton("Read Fmax", this); readFmax->setObjectName("pboFmaxRead"); fmax->addWidget(readFmax);
@@ -376,7 +380,58 @@ AmdTuningPanel::AmdTuningPanel(std::shared_ptr<HardwareAccess> access, QWidget *
     connect(profile_, QOverload<int>::of(&QComboBox::currentIndexChanged), this, clear);
 }
 AmdTuningPanel::~AmdTuningPanel() { cancelled_->store(true); }
-void AmdTuningPanel::invalidateCurve() { ++curveRevision_; curveSnapshot_ = {}; pboSnapshot_ = {}; pboCaps_ = {}; powerSnapshot_ = {}; fmaxSnapshot_ = {}; table_->setRowCount(0); }
+void AmdTuningPanel::invalidateCurve() {
+    ++curveRevision_; curveSnapshot_ = {}; pboSnapshot_ = {}; pboCaps_ = {}; powerSnapshot_ = {}; fmaxSnapshot_ = {};
+    table_->setRowCount(0); table_->setColumnCount(2); table_->setHorizontalHeaderLabels({"Item", "Result"});
+}
+void AmdTuningPanel::readCurveShaper() {
+    using namespace octool::core;
+    invalidateCurve();
+    quint64 cpu=0,bus=0,device=0,function=0;
+    if (profile_->currentData().toInt()!=int(SmuProfile::GraniteRidge) ||
+        !parseNumber(cpu_->text(),10,UINT32_MAX,cpu) || !parseNumber(bus_->text(),16,0,bus) ||
+        !parseNumber(device_->text(),16,0,device) || !parseNumber(function_->text(),16,0,function)) {
+        status_->setText("Curve Shaper requires Granite Ridge at 0000:00:00.0 and a valid logical CPU. No query sent."); return;
+    }
+    SmuTarget target; target.cpu=unsigned(cpu); target.profile=SmuProfile::GraniteRidge;
+    const auto revision=curveRevision_; setEnabled(false);
+    status_->setText("Reading saved Curve Shaper offsets and checking firmware identity…");
+    auto *watcher=new QFutureWatcher<AmdCurveShaper>(this);
+    connect(watcher,&QFutureWatcher<AmdCurveShaper>::finished,this,[this,watcher,revision,target] {
+        const auto r=watcher->result();
+        if (revision!=curveRevision_) {
+            status_->setText("Inputs changed while reading Curve Shaper. Result discarded; read again.");
+        } else if (r.error || !r.valid || !r.rawValid || r.wordsRead!=5) {
+            status_->setText(failure(r.error?r.error:-EIO)+QString(
+                " Curve Shaper unavailable. Requires SMU 98.84.0 and a complete, consistent five-word snapshot. "
+                "SMU version %1; received %2 / 5 words; response %3. Saved offsets cleared.")
+                .arg(r.firmwareValid?hexValue(r.firmwareVersion,4):"unavailable").arg(r.wordsRead).arg(hexValue(r.response,4)));
+        } else {
+            table_->setColumnCount(5);
+            table_->setHorizontalHeaderLabels({"Firmware frequency tier", "Temperature point 0 (counts)",
+                "Temperature point 1 (counts)", "Temperature point 2 (counts)", "Packed word (hex)"});
+            for (unsigned tier=0;tier<5;++tier) {
+                append(table_,{QString::number(tier),QString::number(r.counts[tier][0]),QString::number(r.counts[tier][1]),
+                    QString::number(r.counts[tier][2]),hexValue(r.raw[tier],4)});
+                for (int column=0;column<5;++column) table_->item(int(tier),column)->setToolTip(
+                    "Firmware tier and temperature point indices. Saved signed count offsets; physical frequency and temperature anchors remain unverified.");
+            }
+            // This read does not prepare any capability, policy or curve writer.
+            status_->setText(QString("CPU %1 · Granite Ridge SMU 98.84.0 (%2) · 15 saved signed count offsets · 5 / 5 words. "
+                "Capability before %3 / after %4; identity checks matched.\n"
+                "Read only. Frequency and temperature anchors, baseline + offset combined counts, and applied CO / voltage remain unverified. No write prepared.")
+                .arg(target.cpu).arg(hexValue(r.firmwareVersion,4)).arg(hexValue(r.capabilities.raw,4)).arg(hexValue(r.capabilitiesAfter.raw,4)));
+        }
+        setEnabled(true); watcher->deleteLater();
+    });
+    const auto access=access_; const auto cancelled=cancelled_;
+    watcher->setFuture(QtConcurrent::run([access,cancelled,target] {
+        AmdCurveShaper out;
+        const int error=access->transaction([&](HardwareSession &s) { out=readAmdCurveShaper(s,target); return out.error; },10000,cancelled.get());
+        if (error) { out.error=error; out.valid=false; out.rawValid=false; }
+        return out;
+    }));
+}
 void AmdTuningPanel::readPboFmax() {
     using namespace octool::core;
     invalidateCurve();

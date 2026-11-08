@@ -58,7 +58,7 @@ for r in query_results:
         assert d['ln2_enabled'] is None and d['command'] == '0x0000005c'
         assert d['firmware_index'] in (0,1,7,127)
 assert sum(r['error'] == -22 for r in queries) == 20
-assert len(reports) == 1630, len(reports)
+assert len(reports) == 1706, len(reports)
 comparisons=[r for r in reports if 'apob_comparison' in r['data']]
 assert len(comparisons)==12 and [r['ok'] for r in comparisons]==[True]*3+[False]*9
 for i,r in enumerate(comparisons):
@@ -548,6 +548,29 @@ run('amd-granite-map','--version','0x620205','--presence-mask','1','--core-mask0
 run('amd-granite-map','--version','0x620205','--presence-mask','3','--core-mask0','255','--core-mask1','255',code=2)
 run('amd-pbo-scalar-set','--cpu',str(cpu),'--platform','granite-ridge','--scalar','5','--expect-raw','0x3f800000','--apply',code=2)
 run('amd-curve-all-set','--cpu',str(cpu),'--platform','granite-ridge','--margin','31','--expect-caps','4','--apply',code=2)
+shaper = [r for r in reports if r['command']=='amd-curve-shaper-read']
+assert len(shaper)==10 and [r['ok'] for r in shaper]==[True]*3+[False]*7
+expected_shaper=[[-128,-50,-1],[0,1,30],[31,50,127],[-127,-2,29],[126,32,-51]]
+for r in shaper:
+    d=r['data']
+    assert d['platform']=='granite-ridge' and d['supported_firmware_version']=='0x00625400'
+    assert d['unit']=='count' and d['frequency_anchors_ghz'] is None and d['temperature_anchors_celsius'] is None
+    for name in ('baseline_included','effective_offset_verified','hardware_effect_measured','write_supported','setting_commands_sent','physical_mapping_verified'):
+        assert d[name] is False
+    assert d['valid']==d['raw_valid']==r['ok']
+    if r['ok']:
+        assert d['words_read']==5 and [v['frequency_tier'] for v in d['stored_offsets']]==list(range(5))
+        assert [v['counts'] for v in d['stored_offsets']]==expected_shaper
+        for tier,raw in enumerate(d['raw_words']):
+            value=int(raw,16)
+            assert value&255==tier
+            assert [((value>>(8+8*j)&255)^128)-128 for j in range(3)]==expected_shaper[tier]
+    else:assert d['raw_words'] is None and not d['stored_offsets']
+assert shaper[1]['data']['capabilities_raw']=='0x00000000' and shaper[2]['data']['capabilities_raw']=='0x00010007'
+assert shaper[8]['data']['words_read']==2
+run('amd-curve-shaper-read','--cpu',str(cpu),code=2)
+run('amd-curve-shaper-read','--cpu',str(cpu),'--platform','shimada',code=2)
+run('amd-curve-shaper-read','--cpu',str(cpu),'--platform','granite-ridge','--apply',code=2)
 curve_settings = [r for r in reports if r['command'] == 'amd-curve-set' and r['error'] != -22]
 assert len(curve_settings) == 9
 assert [r['ok'] for r in curve_settings] == [True, False, False, False, False, False, False, True, True]

@@ -214,6 +214,28 @@ AmdCurveAllUpdate setShimadaAllCoreCurve(HardwareSession &session, const SmuTarg
 // Other profiles retain the existing Shimada API's restrictions and range.
 AmdCurveAllUpdate setAmdAllCoreCurve(HardwareSession &session, const SmuTarget &target,
     std::uint32_t expectedCapabilities, int margin);
+// Granite 98.84.0 Curve Shaper: five ordered tiers, three temperature-point
+// positions per tier. These are saved signed-byte count offsets, not mV,
+// calibrated temperature/frequency anchors, hidden baseline + offset, or an
+// applied MP5/device readback. Reading does not require PBO or OC mode enabled.
+struct AmdCurveShaper {
+    int error = 0;
+    std::uint32_t firmwareVersion = 0, firmwareResponse = 0, response = 0;
+    AmdPboCapabilities capabilities, capabilitiesAfter;
+    std::array<std::uint32_t, 5> raw{};
+    std::array<std::array<int, 3>, 5> counts{};
+    unsigned wordsRead = 0;
+    bool firmwareValid = false, messageAttempted = false, rawValid = false, valid = false;
+};
+// Require the low byte of each word to equal its tier 0..4; decode the other
+// three bytes as signed8 without imposing the setter's narrower input range.
+// A bad tier clears the entire output matrix. No setter is exposed.
+bool decodeAmdCurveShaper(const std::array<std::uint32_t, 5> &raw,
+                         std::array<std::array<int, 3>, 5> &counts);
+// Exact Granite CPU/PCI/non-VM and firmware guard. Bracket query 84 with full
+// capability and version checks. Any failure leaves raw/counts unpublished;
+// wordsRead, response and identity/capability reports remain diagnostic only.
+AmdCurveShaper readAmdCurveShaper(HardwareSession &session, const SmuTarget &target);
 struct AmdPboRailsEncoding {
     int error = 0;
     unsigned rail0Millivolts = 0, rail1Millivolts = 0;

@@ -2,6 +2,11 @@
 
 # 无桌面版 OCTool
 
+新增 `amd-curve-shaper-read --cpu N --platform granite-ridge`：与 GUI 同步读取
+5×3 个保存的 signed8 计数偏移，保留完整 −128..127；读取失败或上下文变化时
+清空整表。它不包含 fuse 锚点、隐藏 baseline 或实际硬件效果，也不开放 Shaper 写入。
+协议与原字节验证见 [Curve Shaper](amd-granite-curve-shaper.md)。
+
 新增 [Granite Ridge 四状态 DPM 策略表](amd-granite-dpm-policy.md)：
 `amd-pm-decode` / `amd-pm-native-read --platform granite-ridge` 与 GUI 同步显示
 20 个采样占比、频率策略和电压策略字段，公共字段由 23 个增至 39 个。

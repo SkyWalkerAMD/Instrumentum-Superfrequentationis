@@ -42,6 +42,7 @@ private:
     void applyCurve();
     void applyAllCoreCurve();
     void invalidateCurve();
+    void readCurveShaper();
     void readPboScalar();
     void applyPboScalar();
     void readPboCapabilities();

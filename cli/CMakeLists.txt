@@ -44,3 +44,5 @@ install(FILES ../docs/amd-granite-controls.md ../docs/amd-granite-pbo-scalar.md
     ../docs/amd-granite-pbo-limits.md ../docs/amd-granite-oc-mode.md ../docs/amd-granite-curve-all.md
     ../docs/amd-granite-mapping-diagnostic.md ../docs/amd-granite-host-routing.md
     ../docs/amd-granite-local-config.md ../docs/amd-granite-map-acquisition.md DESTINATION share/doc/octool-cli)
+
+install(FILES ../docs/amd-granite-curve-shaper.md DESTINATION share/doc/octool-cli)
